@@ -5,7 +5,7 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
-import kotlinx.rpc.codegen.VersionSpecificApiImpl.asConstValue
+import kotlinx.rpc.codegen.VersionSpecificApiImpl.asConstValueVS
 import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
@@ -40,6 +40,7 @@ import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
+import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
@@ -84,6 +85,7 @@ import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
+import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.getPropertyGetter
@@ -324,7 +326,7 @@ internal class RpcStubGenerator(
             overriddenSymbols = listOf(method.function.symbol)
 
             body = irBuilder(symbol).irBlockBody {
-                if (method.function.isNonSuspendingWithFlowReturn()) {
+                if (method.function.isNonSuspendingWithFlowReturn(declaration.stubClass.file)) {
                     +irReturn(
                         irRpcMethodClientCall(
                             method = method,
@@ -369,7 +371,7 @@ internal class RpcStubGenerator(
         functionThisReceiver: IrValueParameter,
         arguments: List<IrValueParameter>,
     ): IrCall {
-        val clientCallee = if (method.function.isNonSuspendingWithFlowReturn()) {
+        val clientCallee = if (method.function.isNonSuspendingWithFlowReturn(declaration.stubClass.file)) {
             ctx.functions.rpcClientCallServerStreaming.symbol
         } else {
             ctx.functions.rpcClientCall.symbol
@@ -656,7 +658,7 @@ internal class RpcStubGenerator(
             }
 
             val resultType = when {
-                returnsFlow -> ctx.flow.typeWith(ctx.anyNullable)
+                returnsFlow -> ctx.flow(declaration.stubClass.file).typeWith(ctx.anyNullable)
                 else -> ctx.anyNullable
             }
 
@@ -784,8 +786,7 @@ internal class RpcStubGenerator(
      *  - `<callable-name-k>` - the name of the k-th callable in the service
      */
     private fun IrClass.generateCallablesProperty() {
-        val interfaceProperty = ctx.rpcServiceDescriptor.findPropertyByName(Descriptor.CALLABLES)
-            ?: error("Expected RpcServiceDescriptor.callables property to exist")
+        val interfaceProperty = ctx.properties.rpcServiceDescriptorCallables
 
         callables = generateMapProperty(
             propertyName = Descriptor.CALLABLES,
@@ -853,7 +854,7 @@ internal class RpcStubGenerator(
             callable as ServiceDeclaration.Method
 
             val returnType = when {
-                callable.function.isNonSuspendingWithFlowReturn() -> {
+                callable.function.isNonSuspendingWithFlowReturn(declaration.stubClass.file) -> {
                     (callable.function.returnType as IrSimpleType).arguments.single().typeOrFail
                 }
 
@@ -958,8 +959,8 @@ internal class RpcStubGenerator(
         return irListOf(ctx.irBuiltIns.annotationType, container.annotations)
     }
 
-    private fun IrSimpleFunction.isNonSuspendingWithFlowReturn(): Boolean {
-        return returnType.classOrNull == ctx.flow && !isSuspend
+    private fun IrSimpleFunction.isNonSuspendingWithFlowReturn(from: IrFile): Boolean {
+        return returnType.classOrNull == ctx.flow(from) && !isSuspend
     }
 
     /**
@@ -1115,7 +1116,7 @@ internal class RpcStubGenerator(
     ): IrCallImpl {
         return irMapOf(
             keyType = ctx.irBuiltIns.stringType,
-            valueType = ctx.grpcPlatformMethodDescriptor.starProjectedType,
+            valueType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
                 stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver, codecConfig)
             },
@@ -1138,7 +1139,7 @@ internal class RpcStubGenerator(
             IrCallImplVS(
                 startOffset = UNDEFINED_OFFSET,
                 endOffset = UNDEFINED_OFFSET,
-                type = ctx.grpcPlatformServiceDescriptor.defaultType,
+                type = ctx.grpcPlatformServiceDescriptor(declaration.stubClass.file).defaultType,
                 symbol = ctx.functions.serviceDescriptor,
                 typeArgumentsCount = 0,
                 valueArgumentsCount = 3,
@@ -1206,10 +1207,11 @@ internal class RpcStubGenerator(
         val requestParameterType = callable.arguments.getOrNull(0)?.type ?: ctx.irBuiltIns.unitType
         val responseParameterType = callable.function.returnType
 
-        val requestType: IrType = requestParameterType.unwrapFlow()
-        val responseType: IrType = responseParameterType.unwrapFlow()
+        val requestType: IrType = requestParameterType.unwrapFlow(declaration.stubClass.file)
+        val responseType: IrType = responseParameterType.unwrapFlow(declaration.stubClass.file)
 
-        val methodDescriptorType = ctx.grpcPlatformMethodDescriptor.typeWith(requestType, responseType)
+        val methodDescriptorType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file)
+            .typeWith(requestType, responseType)
 
         return vsApi {
             irCall(
@@ -1237,21 +1239,22 @@ internal class RpcStubGenerator(
                     // responseCodec
                     +irCodecWithConfigCheck(responseType, resolver, codecConfig)
 
+                    val flow = ctx.flow(declaration.stubClass.file)
                     // type
                     +IrGetEnumValueImpl(
                         startOffset = UNDEFINED_OFFSET,
                         endOffset = UNDEFINED_OFFSET,
                         type = ctx.grpcPlatformMethodType.defaultType,
                         symbol = when {
-                            requestParameterType.classOrNull == ctx.flow && responseParameterType.classOrNull == ctx.flow -> {
+                            requestParameterType.classOrNull == flow && responseParameterType.classOrNull == flow -> {
                                 ctx.grpcPlatformMethodTypeBidiStreaming
                             }
 
-                            requestParameterType.classOrNull == ctx.flow && responseParameterType.classOrNull != ctx.flow -> {
+                            requestParameterType.classOrNull == flow && responseParameterType.classOrNull != flow -> {
                                 ctx.grpcPlatformMethodTypeClientStreaming
                             }
 
-                            requestParameterType.classOrNull != ctx.flow && responseParameterType.classOrNull == ctx.flow -> {
+                            requestParameterType.classOrNull != flow && responseParameterType.classOrNull == flow -> {
                                 ctx.grpcPlatformMethodTypeServerStreaming
                             }
 
@@ -1266,21 +1269,21 @@ internal class RpcStubGenerator(
 
                     val idempotentArgument = grpcMethodAnnotation
                         ?.getValueArgument(Name.identifier("idempotent"))
-                    val idempotent = idempotentArgument?.asConstValue(Boolean::class) ?: false
+                    val idempotent = idempotentArgument?.asConstValueVS(Boolean::class) ?: false
 
                     // idempotent
                     +booleanConst(idempotent)
 
                     val safeArgument = grpcMethodAnnotation
                         ?.getValueArgument(Name.identifier("safe"))
-                    val safe = safeArgument?.asConstValue(Boolean::class) ?: false
+                    val safe = safeArgument?.asConstValueVS(Boolean::class) ?: false
 
                     // safe
                     +booleanConst(safe)
 
                     val sampledToLocalTracingArgument = grpcMethodAnnotation
                         ?.getValueArgument(Name.identifier("sampledToLocalTracing"))
-                    val sampledToLocalTracing = sampledToLocalTracingArgument?.asConstValue(Boolean::class) ?: true
+                    val sampledToLocalTracing = sampledToLocalTracingArgument?.asConstValueVS(Boolean::class) ?: true
 
                     // sampledToLocalTracing
                     +booleanConst(sampledToLocalTracing)
@@ -1462,8 +1465,8 @@ internal class RpcStubGenerator(
 
                     if (withSerializableAnnotations) {
                         +irMapOf(
-                            keyType = ctx.kSerializerAnyNullableKClass,
-                            valueType = ctx.kSerializerAnyNullable,
+                            keyType = ctx.kSerializerAnyNullableKClass(declaration.stubClass.file),
+                            valueType = ctx.kSerializerAnyNullable(declaration.stubClass.file),
                             elements = type.annotations
                                 .filter { it.type.isSerializableAnnotation() }
                                 .memoryOptimizedMap {
@@ -1895,8 +1898,8 @@ internal class RpcStubGenerator(
         value = value,
     )
 
-    private fun IrType.unwrapFlow(): IrType {
-        return if (classOrNull == ctx.flow) {
+    private fun IrType.unwrapFlow(from: IrFile): IrType {
+        return if (classOrNull == ctx.flow(from)) {
             (this as IrSimpleType).arguments[0].typeOrFail
         } else {
             this

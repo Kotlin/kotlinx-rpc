@@ -6,17 +6,13 @@ package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
-import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
+import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.isInterface
-import org.jetbrains.kotlin.ir.util.packageFqName
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 internal class RpcIrProtoProcessor(
@@ -42,10 +38,11 @@ internal class RpcIrProtoProcessor(
         val internalFqName = packageFqName.child(Name.identifier(relativeName))
 
         val internalMessage = context.vsApi {
-            referenceClass(
-                context.pluginContext,
-                internalFqName.parent().asString(),
-                internalFqName.shortName().asString()
+            referenceClassVS(
+                context = context.pluginContext,
+                packageName = internalFqName.parent().asString(),
+                name = internalFqName.shortName().asString(),
+                from = message.file,
             )
         }?.owner ?: error(
             "Unable to find internal message class $internalFqName of ${message.fqNameWhenAvailable}"

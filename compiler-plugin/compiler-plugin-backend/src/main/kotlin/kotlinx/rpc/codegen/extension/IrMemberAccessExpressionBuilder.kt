@@ -16,7 +16,7 @@ class IrMemberAccessExpressionData(
     val valueArguments: List<IrExpression>,
 )
 
-class IrMemberAccessExpressionBuilder(private val vsApi: VersionSpecificApi) {
+class IrMemberAccessExpressionBuilder {
     var dispatchReceiver: IrExpression? = null
     var extensionReceiver: IrExpression? = null
 
@@ -56,9 +56,9 @@ class IrMemberAccessExpressionBuilder(private val vsApi: VersionSpecificApi) {
 }
 
 inline fun IrMemberAccessExpression<*>.arguments(vsApi: VersionSpecificApi, builder: IrMemberAccessExpressionBuilder.() -> Unit) {
-    IrMemberAccessExpressionBuilder(vsApi).apply(builder).build().let { data ->
+    IrMemberAccessExpressionBuilder().apply(builder).build().let { data ->
         with(vsApi) {
-            data.buildFor(this@arguments)
+            data.buildForVS(this@arguments)
         }
     }
 }

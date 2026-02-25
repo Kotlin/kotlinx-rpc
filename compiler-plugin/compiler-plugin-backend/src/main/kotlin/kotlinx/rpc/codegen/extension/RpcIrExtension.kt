@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 
 class RpcIrExtension(configuration: CompilerConfiguration) : IrGenerationExtension {
-    private val logger = configuration.get(VersionSpecificApi.INSTANCE.messageCollectorKey, MessageCollector.NONE)
+    private val logger = configuration.get(VersionSpecificApi.INSTANCE.messageCollectorKeyVS, MessageCollector.NONE)
 
     override fun generate(
         moduleFragment: IrModuleFragment,

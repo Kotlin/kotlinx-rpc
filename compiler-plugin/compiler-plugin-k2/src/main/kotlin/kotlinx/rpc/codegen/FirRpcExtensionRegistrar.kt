@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent.Factory 
 
 class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
-        val logger = configuration.get(vsApi { messageCollectorKey }, MessageCollector.NONE)
+        val logger = configuration[vsApi { messageCollectorKey }, MessageCollector.NONE]
 
         +GFactory { FirRpcServiceGenerator(it, logger) }
         +CFactory { FirRpcAdditionalCheckers(it, configuration) }

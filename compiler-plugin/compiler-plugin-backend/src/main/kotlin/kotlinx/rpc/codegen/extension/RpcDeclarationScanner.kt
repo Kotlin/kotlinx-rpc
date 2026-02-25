@@ -13,8 +13,6 @@ import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.getAnnotation
@@ -35,11 +33,11 @@ internal object RpcDeclarationScanner {
 
         val grpcAnnotation = service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
         // if the protoPackage is not set by the annotation, we use the service kotlin package name
-        val protoPackage = ctx.vsApi { grpcAnnotation?.valueArgumentAt(0)?.assertConstString(this) }
+        val protoPackage = ctx.vsApi { grpcAnnotation?.valueArgumentAtVS(0)?.assertConstString(this) }
             ?: service.packageFqName?.asString().orEmpty()
 
         // if the simpleServiceName is set in the @Grpc annotation, we use it instead of the service's class name
-        val simpleName = ctx.vsApi { grpcAnnotation?.valueArgumentAt(1)?.assertConstString(this) }
+        val simpleName = ctx.vsApi { grpcAnnotation?.valueArgumentAtVS(1)?.assertConstString(this) }
             ?.takeIf { it.isNotBlank() }
             ?: service.kotlinFqName.shortName().asString()
 
@@ -110,5 +108,5 @@ private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration,
 }
 
 private fun IrExpression.assertConstString(vsApi: VersionSpecificApi) = with(vsApi) {
-    asConstValue(String::class)
+    asConstValueVS(String::class)
 } ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")

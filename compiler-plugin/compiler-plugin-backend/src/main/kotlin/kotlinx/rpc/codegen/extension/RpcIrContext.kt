@@ -7,11 +7,13 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
+import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrEnumEntrySymbol
 import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.makeNullable
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.functions
@@ -22,6 +24,12 @@ import org.jetbrains.kotlin.platform.jvm.isJvm
 import org.jetbrains.kotlin.platform.konan.isNative
 import org.jetbrains.kotlin.types.Variance
 
+/**
+ * IMPORTANT!!!
+ * Difference between a built-in reference and a regular one:
+ * - Built-in - lib classes (kotlinx.rpc.*) and stdlib
+ * - Regular - user classes (kotlinx.serialization.*, kotlinx.coroutines.*) from other libs
+ */
 internal class RpcIrContext(
     val pluginContext: IrPluginContext,
     val versionSpecificApi: VersionSpecificApi,
@@ -37,63 +45,63 @@ internal class RpcIrContext(
     }
 
     val kTypeClass by lazy {
-        getIrClassSymbol("kotlin.reflect", "KType")
+        referenceIrBuiltinClassSymbol("kotlin.reflect", "KType")
     }
 
-    val flow by lazy {
-        getIrClassSymbol("kotlinx.coroutines.flow", "Flow")
+    fun flow(from: IrFile): IrClassSymbol {
+        return referenceIrClassSymbol("kotlinx.coroutines.flow", "Flow", from)
     }
 
     val pair by lazy {
-        getIrClassSymbol("kotlin", "Pair")
+        referenceIrBuiltinClassSymbol("kotlin", "Pair")
     }
 
     val rpcClient by lazy {
-        getRpcIrClassSymbol("RpcClient")
+        referenceRpcIrClassSymbol("RpcClient")
     }
 
     val rpcCall by lazy {
-        getRpcIrClassSymbol("RpcCall")
+        referenceRpcIrClassSymbol("RpcCall")
     }
 
     val withProtoDescriptor by lazy {
-        getRpcIrClassSymbol("WithProtoDescriptor", "protobuf.internal")
+        referenceRpcIrClassSymbol("WithProtoDescriptor", "protobuf.internal")
     }
 
     val withServiceDescriptor by lazy {
-        getRpcIrClassSymbol("WithServiceDescriptor", "internal")
+        referenceRpcIrClassSymbol("WithServiceDescriptor", "internal")
     }
 
     val rpcServiceDescriptor by lazy {
-        getRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
+        referenceRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
     }
 
     val grpcServiceDescriptor by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
     }
 
     val grpcServiceDelegate by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDelegate")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDelegate")
     }
 
-    val grpcPlatformServiceDescriptor by lazy {
-        if (isJvmTarget()) {
-            getIrClassSymbol("io.grpc", "ServiceDescriptor")
+    fun grpcPlatformServiceDescriptor(from: IrFile): IrClassSymbol {
+        return if (isJvmTarget()) {
+            referenceIrClassSymbol("io.grpc", "ServiceDescriptor", from)
         } else {
-            getIrClassSymbol("kotlinx.rpc.grpc.internal", "ServiceDescriptor")
+            referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.internal", "ServiceDescriptor")
         }
     }
 
-    val grpcPlatformMethodDescriptor by lazy {
-        if (isJvmTarget()) {
-            getIrClassSymbol("io.grpc", "MethodDescriptor")
+    fun grpcPlatformMethodDescriptor(from: IrFile): IrClassSymbol {
+        return if (isJvmTarget()) {
+            referenceIrClassSymbol("io.grpc", "MethodDescriptor", from)
         } else {
-            getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodDescriptor")
+            referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodDescriptor")
         }
     }
 
     val grpcPlatformMethodType by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodType")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodType")
     }
 
     val grpcPlatformMethodTypeUnary by lazy {
@@ -113,46 +121,46 @@ internal class RpcIrContext(
     }
 
     val grpcMessageCodec by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodec")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodec")
     }
 
     val grpcMessageCodecResolver by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodecResolver")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "MessageCodecResolver")
     }
 
     val codecConfig by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.codec", "CodecConfig")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "CodecConfig")
     }
     val configuredMessageCodecDelegate by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.codec.internal", "ConfiguredMessageCodecDelegate")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec.internal", "ConfiguredMessageCodecDelegate")
     }
 
     val withCodecAnnotation by lazy {
-        getIrClassSymbol("kotlinx.rpc.grpc.codec", "WithCodec")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.codec", "WithCodec")
     }
 
     val rpcType by lazy {
-        getRpcIrClassSymbol("RpcType", "descriptor")
+        referenceRpcIrClassSymbol("RpcType", "descriptor")
     }
 
     val rpcTypeDefault by lazy {
-        getRpcIrClassSymbol("RpcTypeDefault", "descriptor")
+        referenceRpcIrClassSymbol("RpcTypeDefault", "descriptor")
     }
 
     val rpcTypeKrpc by lazy {
-        getRpcIrClassSymbol("RpcTypeKrpc", "descriptor")
+        referenceRpcIrClassSymbol("RpcTypeKrpc", "descriptor")
     }
 
     val rpcCallable by lazy {
-        getRpcIrClassSymbol("RpcCallable", "descriptor")
+        referenceRpcIrClassSymbol("RpcCallable", "descriptor")
     }
 
     val rpcCallableDefault by lazy {
-        getRpcIrClassSymbol("RpcCallableDefault", "descriptor")
+        referenceRpcIrClassSymbol("RpcCallableDefault", "descriptor")
     }
 
     private val rpcInvokator by lazy {
-        getRpcIrClassSymbol("RpcInvokator", "descriptor")
+        referenceRpcIrClassSymbol("RpcInvokator", "descriptor")
     }
 
     val rpcInvokatorUnaryResponse by lazy {
@@ -164,27 +172,27 @@ internal class RpcIrContext(
     }
 
     val rpcParameter by lazy {
-        getRpcIrClassSymbol("RpcParameter", "descriptor")
+        referenceRpcIrClassSymbol("RpcParameter", "descriptor")
     }
 
     val rpcParameterDefault by lazy {
-        getRpcIrClassSymbol("RpcParameterDefault", "descriptor")
+        referenceRpcIrClassSymbol("RpcParameterDefault", "descriptor")
     }
 
-    val kSerializer by lazy {
-        getIrClassSymbol("kotlinx.serialization", "KSerializer")
+    fun kSerializer(from: IrFile): IrClassSymbol {
+        return referenceIrClassSymbol("kotlinx.serialization", "KSerializer", from)
     }
 
-    val kSerializerAnyNullable by lazy {
-        kSerializer.typeWith(anyNullable)
+    fun kSerializerAnyNullable(from: IrFile): IrType {
+        return kSerializer(from).typeWith(anyNullable)
     }
 
-    val kSerializerAnyNullableKClass by lazy {
-        irBuiltIns.kClassClass.typeWith(kSerializerAnyNullable)
+    fun kSerializerAnyNullableKClass(from: IrFile): IrType {
+        return irBuiltIns.kClassClass.typeWith(kSerializerAnyNullable(from))
     }
 
     fun isJsTarget(): Boolean {
-        return versionSpecificApi.isJs(pluginContext.platform)
+        return versionSpecificApi.isJsVS(pluginContext.platform)
     }
 
     fun isNativeTarget(): Boolean {
@@ -196,7 +204,7 @@ internal class RpcIrContext(
     }
 
     fun isWasmTarget(): Boolean {
-        return versionSpecificApi.isWasm(pluginContext.platform)
+        return versionSpecificApi.isWasmVS(pluginContext.platform)
     }
 
     val functions = Functions()
@@ -211,15 +219,15 @@ internal class RpcIrContext(
         }
 
         val typeOf by lazy {
-            namedFunction("kotlin.reflect", "typeOf")
+            namedBuiltinFunction("kotlin.reflect", "typeOf")
         }
 
         val emptyArray by lazy {
-            namedFunction("kotlin", "emptyArray")
+            namedBuiltinFunction("kotlin", "emptyArray")
         }
 
         val mapOf by lazy {
-            namedFunction("kotlin.collections", "mapOf") {
+            namedBuiltinFunction("kotlin.collections", "mapOf") {
                 vsApi {
                     it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
                 }
@@ -227,11 +235,11 @@ internal class RpcIrContext(
         }
 
         val emptyList by lazy {
-            namedFunction("kotlin.collections", "emptyList")
+            namedBuiltinFunction("kotlin.collections", "emptyList")
         }
 
         val listOf by lazy {
-            namedFunction("kotlin.collections", "listOf") {
+            namedBuiltinFunction("kotlin.collections", "listOf") {
                 vsApi {
                     it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
                 }
@@ -247,19 +255,19 @@ internal class RpcIrContext(
         }
 
         val emptyMap by lazy {
-            namedFunction("kotlin.collections", "emptyMap")
+            namedBuiltinFunction("kotlin.collections", "emptyMap")
         }
 
         val to by lazy {
-            namedFunction("kotlin", "to")
+            namedBuiltinFunction("kotlin", "to")
         }
 
         val serviceDescriptor by lazy {
-            namedFunction("kotlinx.rpc.grpc.internal", "serviceDescriptor")
+            namedBuiltinFunction("kotlinx.rpc.grpc.internal", "serviceDescriptor")
         }
 
         val methodDescriptor by lazy {
-            namedFunction("kotlinx.rpc.grpc.descriptor", "methodDescriptor")
+            namedBuiltinFunction("kotlinx.rpc.grpc.descriptor", "methodDescriptor")
         }
 
         val grpcServiceDescriptorDelegate by lazy {
@@ -274,12 +282,24 @@ internal class RpcIrContext(
             return owner.functions.single { it.name.asString() == name }
         }
 
-        private fun namedFunction(
+        private fun namedBuiltinFunction(
             packageName: String,
             name: String,
             filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null,
         ): IrSimpleFunctionSymbol {
-            val found = versionSpecificApi.referenceFunctions(pluginContext, packageName, name)
+            val found = versionSpecificApi.referenceBuiltinFunctionsVS(pluginContext, packageName, name)
+
+            return if (filterOverloads == null) found.first() else found.first(filterOverloads)
+        }
+
+        @Suppress("unused")
+        private fun namedFunction(
+            packageName: String,
+            name: String,
+            from: IrFile,
+            filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null,
+        ): IrSimpleFunctionSymbol {
+            val found = versionSpecificApi.referenceFunctionsVS(pluginContext, packageName, name, from)
 
             return if (filterOverloads == null) found.first() else found.first(filterOverloads)
         }
@@ -317,14 +337,23 @@ internal class RpcIrContext(
         return owner.declarations.filterIsInstance<IrEnumEntry>().single { it.name.asString() == name }.symbol
     }
 
-    private fun getRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {
+    private fun referenceRpcIrClassSymbol(name: String, subpackage: String? = null): IrClassSymbol {
         val suffix = subpackage?.let { ".$subpackage" } ?: ""
-        return getIrClassSymbol("kotlinx.rpc$suffix", name)
+        return referenceIrBuiltinClassSymbol("kotlinx.rpc$suffix", name)
     }
 
-    fun getIrClassSymbol(packageName: String, name: String): IrClassSymbol {
-        return versionSpecificApi.referenceClass(pluginContext, packageName, name)
+    fun referenceIrClassSymbol(
+        packageName: String,
+        name: String,
+        from: IrFile,
+    ): IrClassSymbol {
+        return versionSpecificApi.referenceClassVS(pluginContext, packageName, name, from)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
+    }
+
+    fun referenceIrBuiltinClassSymbol(packageName: String, name: String): IrClassSymbol {
+        return versionSpecificApi.referenceBuiltinClassVS(pluginContext, packageName, name)
+            ?: error("Unable to find built-in symbol. Package: $packageName, name: $name")
     }
 
     fun <T> vsApi(body: VersionSpecificApi.() -> T): T {

@@ -49,7 +49,7 @@ internal class ServiceDeclaration(
             val nameArgument = grpcMethodAnnotation?.getValueArgument(Name.identifier("name"))
 
             ctx.vsApi {
-                nameArgument?.asConstValue(String::class)
+                nameArgument?.asConstValueVS(String::class)
                     ?.takeIf { it.isNotBlank() }
                     ?: name
             }

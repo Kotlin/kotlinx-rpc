@@ -43,7 +43,9 @@ object FirGrpcServiceDeclarationChecker {
         val annotation = declaration.getAnnotationByClassId(RpcClassId.grpcAnnotation, context.session)
             ?: error("Unexpected unresolved @Grpc annotation type for declaration: ${declaration.symbol.classId.asSingleFqName()}")
 
-        val protoPackage = annotation.getStringArgument(protoPackageName, context.session).orEmpty()
+        val protoPackage = vsApi {
+            annotation.getStringArgumentVS(protoPackageName, context.session).orEmpty()
+        }
 
         if (protoPackage.isNotEmpty()) {
             if (!protoPackage.matches(packageIdentifierRegex)) {
@@ -103,7 +105,9 @@ object FirGrpcServiceDeclarationChecker {
             val grpcMethodAnnotation = function.getAnnotationByClassId(RpcClassId.grpcMethodAnnotation, context.session)
 
             if (grpcMethodAnnotation != null) {
-                val grpcMethodName = grpcMethodAnnotation.getStringArgument(grpcMethodNameName, context.session).orEmpty()
+                val grpcMethodName = vsApi {
+                    grpcMethodAnnotation.getStringArgumentVS(grpcMethodNameName, context.session).orEmpty()
+                }
 
                 if (grpcMethodName.isNotEmpty()) {
                     if (!grpcMethodName.matches(identifierRegex)) {
@@ -115,8 +119,13 @@ object FirGrpcServiceDeclarationChecker {
                     }
                 }
 
-                val safe = grpcMethodAnnotation.getBooleanArgument(grpcMethodSafeName, context.session) ?: false
-                val idempotent = grpcMethodAnnotation.getBooleanArgument(grpcMethodIdempotentName, context.session) ?: false
+                val safe = vsApi {
+                    grpcMethodAnnotation.getBooleanArgumentVS(grpcMethodSafeName, context.session) ?: false
+                }
+
+                val idempotent = vsApi {
+                    grpcMethodAnnotation.getBooleanArgumentVS(grpcMethodIdempotentName, context.session) ?: false
+                }
 
                 // safe = true, idempotent = true is allowed
                 // safe = false, idempotent = false is allowed
