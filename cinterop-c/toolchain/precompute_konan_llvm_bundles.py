@@ -47,12 +47,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_versions_file(path: Path) -> str | None:
-    """Extract kotlin-lang value from versions-root/libs.versions.toml."""
+def parse_versions_file(path: Path) -> tuple[str | None, str | None]:
+    """Extract kotlin-compiler and kotlin-lang values from versions-root/libs.versions.toml. """
     kotlin_lang: str | None = None
-    # Keep parsing intentionally narrow to avoid requiring a TOML dependency:
-    # this script only needs kotlin-lang from versions-root/libs.versions.toml.
+    kotlin_compiler: str | None = None
     kotlin_lang_re = re.compile(r'^\s*kotlin-lang\s*=\s*"([^"]+)"\s*$')
+    kotlin_compiler_re = re.compile(r'^\s*kotlin-compiler\s*=\s*"([^"]+)"\s*$')
 
     for raw_line in path.read_text(encoding="utf-8").splitlines():
         line = raw_line.split("#", 1)[0].strip()
@@ -62,17 +62,22 @@ def parse_versions_file(path: Path) -> str | None:
         kotlin_lang_match = kotlin_lang_re.match(line)
         if kotlin_lang_match:
             kotlin_lang = kotlin_lang_match.group(1)
-    return kotlin_lang
+            continue
+
+        kotlin_compiler_match = kotlin_compiler_re.match(line)
+        if kotlin_compiler_match:
+            kotlin_compiler = kotlin_compiler_match.group(1)
+
+    return kotlin_lang, kotlin_compiler
 
 
 def resolve_default_kotlin_compiler_version(repo_root: Path) -> str:
     """Resolve the default compiler version, honoring env overrides and project fallback rules."""
     versions_file = repo_root / "versions-root" / "libs.versions.toml"
-    parsed_kotlin_lang = parse_versions_file(versions_file)
+    parsed_kotlin_lang, parsed_kotlin_compiler = parse_versions_file(versions_file)
 
     kotlin_lang = os.getenv("KOTLIN_VERSION") or parsed_kotlin_lang
-    # Ignore kotlin-compiler from TOML and default to kotlin-lang unless explicitly overridden.
-    kotlin_compiler = os.getenv("KOTLIN_COMPILER_VERSION") or kotlin_lang
+    kotlin_compiler = os.getenv("KOTLIN_COMPILER_VERSION") or parsed_kotlin_compiler
 
     if not kotlin_lang:
         raise RuntimeError("Unable to resolve kotlin-lang version")

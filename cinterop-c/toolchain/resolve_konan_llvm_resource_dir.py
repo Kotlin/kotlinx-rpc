@@ -80,14 +80,14 @@ def main() -> int:
     if not isinstance(version_entry, dict):
         fail(
             f"Missing precomputed LLVM mapping for Kotlin compiler version {kotlin_version}. "
-            f"Run ./toolchain/precompute_konan_llvm_bundles.py {kotlin_version} and commit {map_file.name}."
+            f"Run `./toolchain/precompute_konan_llvm_bundles.py {kotlin_version}` and commit {map_file.name}."
         )
 
     bundle_name = version_entry.get(host_tuple)
     if not isinstance(bundle_name, str) or not bundle_name:
         fail(
             f"Mapping for Kotlin compiler version {kotlin_version} does not contain host tuple {host_tuple}. "
-            f"Run ./toolchain/precompute_konan_llvm_bundles.py {kotlin_version} and commit {map_file.name}."
+            f"Run `./toolchain/precompute_konan_llvm_bundles.py {kotlin_version}` and commit {map_file.name}."
         )
 
     bundle_dir = konan_deps / bundle_name
