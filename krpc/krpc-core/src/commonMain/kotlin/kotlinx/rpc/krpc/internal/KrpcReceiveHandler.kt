@@ -36,7 +36,6 @@ internal fun <Message : KrpcMessage> Message.handlerKey(): HandlerKey<Message> {
         is KrpcCallMessage -> HandlerKey.ServiceCall(serviceType, callId)
         is KrpcProtocolMessage -> HandlerKey.Protocol
         is KrpcGenericMessage -> HandlerKey.Generic
-        else -> error("unreachable")
     } as HandlerKey<Message>
 }
 

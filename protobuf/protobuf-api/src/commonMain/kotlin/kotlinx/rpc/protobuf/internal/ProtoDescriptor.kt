@@ -24,9 +24,11 @@ public interface ProtoDescriptor<@GeneratedProtoMessage Message: Any> {
     public val fullName: String
 }
 
-internal inline fun <@GeneratedProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
+@InternalRpcApi
+public inline fun <@GeneratedProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
 
-internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(kType: KType): ProtoDescriptor<T> {
+@InternalRpcApi
+public fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(kType: KType): ProtoDescriptor<T> {
     val classifier = kType.classifier ?: error("Expected denotable type, found $kType")
     val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $kType")
 
@@ -34,7 +36,8 @@ internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(kType: KType): Pr
     return protoDescriptorOf(classifierClass as KClass<T>)
 }
 
-internal fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDescriptor<T> {
+@InternalRpcApi
+public fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(clazz: KClass<T>): ProtoDescriptor<T> {
     val maybeDescriptor = findProtoDescriptorOf(clazz)
         ?: internalRpcError("Unable to find a proto descriptor of the $clazz. " +
             "Check that you have applied the “kotlinx.rpc” plugin to your build module.")
