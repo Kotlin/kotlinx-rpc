@@ -111,6 +111,4 @@ public interface Timestamp {
     * inclusive.
     */
     public val nanos: Int
-
-    public companion object
 }

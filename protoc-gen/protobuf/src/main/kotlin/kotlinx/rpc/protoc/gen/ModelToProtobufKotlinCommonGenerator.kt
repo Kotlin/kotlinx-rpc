@@ -138,8 +138,6 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.enumDeclarations.forEach { enum ->
                 generatePublicEnum(enum)
             }
-
-            clazz("", modifiers = "companion", declarationType = CodeGenerator.DeclarationType.Object)
         }
     }
 

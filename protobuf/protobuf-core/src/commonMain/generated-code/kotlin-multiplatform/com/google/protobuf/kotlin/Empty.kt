@@ -15,6 +15,4 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 *     }
 */
 @GeneratedProtoMessage
-public interface Empty {
-    public companion object
-}
+public interface Empty

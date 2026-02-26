@@ -18,6 +18,7 @@ class FirRpcExtensionRegistrar(private val configuration: CompilerConfiguration)
         val logger = configuration[vsApi { messageCollectorKey }, MessageCollector.NONE]
 
         +GFactory { FirRpcServiceGenerator(it, logger) }
+        +GFactory { FirProtobufMessageGenerator(it, logger) }
         +CFactory { FirRpcAdditionalCheckers(it, configuration) }
         +SCFactory { FirSerializablePropertiesProvider(it) }
 

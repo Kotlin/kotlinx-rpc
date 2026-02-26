@@ -25,3 +25,9 @@ internal object FirRpcServiceStubCompanionObject : GeneratedDeclarationKey() {
         return "FirRpcServiceStubCompanionObject"
     }
 }
+
+internal object FirGeneratedProtoMessageCompanionObject : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirGeneratedProtoMessageCompanionObject"
+    }
+}

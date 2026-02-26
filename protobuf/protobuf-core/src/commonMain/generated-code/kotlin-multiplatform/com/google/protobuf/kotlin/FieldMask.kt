@@ -212,6 +212,4 @@ public interface FieldMask {
     * The set of field mask paths.
     */
     public val paths: List<String>
-
-    public companion object
 }
