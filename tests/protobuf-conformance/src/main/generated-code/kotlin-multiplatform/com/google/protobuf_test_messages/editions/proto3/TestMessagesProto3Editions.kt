@@ -235,8 +235,6 @@ interface TestAllTypesProto3 {
     interface NestedMessage {
         val a: Int
         val corecursive: TestAllTypesProto3
-
-        companion object
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -277,21 +275,15 @@ interface TestAllTypesProto3 {
             val entries: List<AliasedEnum> by lazy { listOf(ALIAS_FOO, ALIAS_BAR, ALIAS_BAZ) }
         }
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface ForeignMessage {
     val c: Int
-
-    companion object
 }
 
 @GeneratedProtoMessage
-interface NullHypothesisProto3 {
-    companion object
-}
+interface NullHypothesisProto3
 
 @GeneratedProtoMessage
 interface EnumOnlyProto3 {
@@ -306,8 +298,6 @@ interface EnumOnlyProto3 {
             val entries: List<Bool> by lazy { listOf(kFalse, kTrue) }
         }
     }
-
-    companion object
 }
 
 sealed class ForeignEnum(open val number: Int) {

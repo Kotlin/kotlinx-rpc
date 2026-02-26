@@ -19,8 +19,6 @@ public interface DoubleValue {
     * The double value.
     */
     public val value: Double
-
-    public companion object
 }
 
 /**
@@ -37,8 +35,6 @@ public interface FloatValue {
     * The float value.
     */
     public val value: Float
-
-    public companion object
 }
 
 /**
@@ -55,8 +51,6 @@ public interface Int64Value {
     * The int64 value.
     */
     public val value: Long
-
-    public companion object
 }
 
 /**
@@ -73,8 +67,6 @@ public interface UInt64Value {
     * The uint64 value.
     */
     public val value: ULong
-
-    public companion object
 }
 
 /**
@@ -91,8 +83,6 @@ public interface Int32Value {
     * The int32 value.
     */
     public val value: Int
-
-    public companion object
 }
 
 /**
@@ -109,8 +99,6 @@ public interface UInt32Value {
     * The uint32 value.
     */
     public val value: UInt
-
-    public companion object
 }
 
 /**
@@ -127,8 +115,6 @@ public interface BoolValue {
     * The bool value.
     */
     public val value: Boolean
-
-    public companion object
 }
 
 /**
@@ -145,8 +131,6 @@ public interface StringValue {
     * The string value.
     */
     public val value: String
-
-    public companion object
 }
 
 /**
@@ -163,6 +147,4 @@ public interface BytesValue {
     * The bytes value.
     */
     public val value: ByteArray
-
-    public companion object
 }

@@ -8,8 +8,6 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 @GeneratedProtoMessage
 interface ComplexMessage {
     val d: Int?
-
-    companion object
 }
 
 @GeneratedProtoMessage
@@ -156,8 +154,6 @@ interface TestAllTypesEdition2023 {
     interface NestedMessage {
         val a: Int?
         val corecursive: TestAllTypesEdition2023
-
-        companion object
     }
 
     /**
@@ -166,8 +162,6 @@ interface TestAllTypesEdition2023 {
     interface GroupLikeType {
         val groupInt32: Int?
         val groupUint32: UInt?
-
-        companion object
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -188,22 +182,16 @@ interface TestAllTypesEdition2023 {
             val entries: List<NestedEnum> by lazy { listOf(NEG, FOO, BAR, BAZ) }
         }
     }
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface ForeignMessageEdition2023 {
     val c: Int?
-
-    companion object
 }
 
 @GeneratedProtoMessage
 interface GroupLikeType {
     val c: Int?
-
-    companion object
 }
 
 sealed class ForeignEnumEdition2023(open val number: Int) {
