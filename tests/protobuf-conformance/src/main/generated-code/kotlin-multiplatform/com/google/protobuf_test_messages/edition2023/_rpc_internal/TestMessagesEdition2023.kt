@@ -51,7 +51,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-class ComplexMessageInternal: ComplexMessage, InternalMessage(fieldsWithPresence = 1) {
+class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val d: Int = 0
     }
@@ -156,7 +156,7 @@ class ComplexMessageInternal: ComplexMessage, InternalMessage(fieldsWithPresence
     companion object
 }
 
-class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(fieldsWithPresence = 24) {
+class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, InternalMessage(fieldsWithPresence = 24) {
     private object PresenceIndices {
         const val optionalInt32: Int = 0
         const val optionalInt64: Int = 1
@@ -988,7 +988,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
         }
     }
 
-    class NestedMessageInternal: TestAllTypesEdition2023.NestedMessage, InternalMessage(fieldsWithPresence = 2) {
+    class NestedMessageInternal: TestAllTypesEdition2023.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val a: Int = 0
             const val corecursive: Int = 1
@@ -2383,7 +2383,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
         companion object
     }
 
-    class GroupLikeTypeInternal: TestAllTypesEdition2023.GroupLikeType, InternalMessage(fieldsWithPresence = 2) {
+    class GroupLikeTypeInternal: TestAllTypesEdition2023.GroupLikeType.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val groupInt32: Int = 0
             const val groupUint32: Int = 1
@@ -2509,7 +2509,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023, InternalMessage(
     companion object
 }
 
-class ForeignMessageEdition2023Internal: ForeignMessageEdition2023, InternalMessage(fieldsWithPresence = 1) {
+class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val c: Int = 0
     }
@@ -2614,7 +2614,7 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023, InternalMess
     companion object
 }
 
-class GroupLikeTypeInternal: GroupLikeType, InternalMessage(fieldsWithPresence = 1) {
+class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val c: Int = 0
     }

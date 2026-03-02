@@ -25,7 +25,7 @@ import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
-public class ApiInternal: Api, InternalMessage(fieldsWithPresence = 1) {
+public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         public const val sourceContext: Int = 0
     }
@@ -161,7 +161,7 @@ public class ApiInternal: Api, InternalMessage(fieldsWithPresence = 1) {
     public companion object
 }
 
-public class MethodInternal: Method, InternalMessage(fieldsWithPresence = 0) {
+public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -279,7 +279,7 @@ public class MethodInternal: Method, InternalMessage(fieldsWithPresence = 0) {
     public companion object
 }
 
-public class MixinInternal: Mixin, InternalMessage(fieldsWithPresence = 0) {
+public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

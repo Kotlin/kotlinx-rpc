@@ -83,7 +83,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWithPresence = 18) {
+class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 18) {
     private object PresenceIndices {
         const val optionalNestedMessage: Int = 0
         const val optionalForeignMessage: Int = 1
@@ -1098,7 +1098,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
         }
     }
 
-    class NestedMessageInternal: TestAllTypesProto3.NestedMessage, InternalMessage(fieldsWithPresence = 1) {
+    class NestedMessageInternal: TestAllTypesProto3.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val corecursive: Int = 0
         }
@@ -2234,7 +2234,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3, InternalMessage(fieldsWith
     companion object
 }
 
-class ForeignMessageInternal: ForeignMessage, InternalMessage(fieldsWithPresence = 0) {
+class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -2321,7 +2321,7 @@ class ForeignMessageInternal: ForeignMessage, InternalMessage(fieldsWithPresence
     companion object
 }
 
-class NullHypothesisProto3Internal: NullHypothesisProto3, InternalMessage(fieldsWithPresence = 0) {
+class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -2403,7 +2403,7 @@ class NullHypothesisProto3Internal: NullHypothesisProto3, InternalMessage(fields
     companion object
 }
 
-class EnumOnlyProto3Internal: EnumOnlyProto3, InternalMessage(fieldsWithPresence = 0) {
+class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 

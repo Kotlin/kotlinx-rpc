@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Timestamp.Companion.invoke(body: TimestampInternal.() -> Unit): Timestamp {
+public operator fun Timestamp.Companion.invoke(body: Timestamp.Builder.() -> Unit): Timestamp {
     val msg = TimestampInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,6 +26,6 @@ public operator fun Timestamp.Companion.invoke(body: TimestampInternal.() -> Uni
 * }
 * ```
 */
-public fun Timestamp.copy(body: TimestampInternal.() -> Unit = {}): Timestamp {
+public fun Timestamp.copy(body: Timestamp.Builder.() -> Unit = {}): Timestamp {
     return this.asInternal().copyInternal(body)
 }

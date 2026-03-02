@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Type.Companion.invoke(body: TypeInternal.() -> Unit): Type {
+public operator fun Type.Companion.invoke(body: Type.Builder.() -> Unit): Type {
     val msg = TypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ public operator fun Type.Companion.invoke(body: TypeInternal.() -> Unit): Type {
 * }
 * ```
 */
-public fun Type.copy(body: TypeInternal.() -> Unit = {}): Type {
+public fun Type.copy(body: Type.Builder.() -> Unit = {}): Type {
     return this.asInternal().copyInternal(body)
 }
 
@@ -43,7 +43,7 @@ public val Type.presence: TypePresence get() = this.asInternal()._presence
 * }
 * ```
 */
-public operator fun Field.Companion.invoke(body: FieldInternal.() -> Unit): Field {
+public operator fun Field.Companion.invoke(body: Field.Builder.() -> Unit): Field {
     val msg = FieldInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -57,7 +57,7 @@ public operator fun Field.Companion.invoke(body: FieldInternal.() -> Unit): Fiel
 * }
 * ```
 */
-public fun Field.copy(body: FieldInternal.() -> Unit = {}): Field {
+public fun Field.copy(body: Field.Builder.() -> Unit = {}): Field {
     return this.asInternal().copyInternal(body)
 }
 
@@ -69,7 +69,7 @@ public fun Field.copy(body: FieldInternal.() -> Unit = {}): Field {
 * }
 * ```
 */
-public operator fun Enum.Companion.invoke(body: EnumInternal.() -> Unit): Enum {
+public operator fun Enum.Companion.invoke(body: Enum.Builder.() -> Unit): Enum {
     val msg = EnumInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -83,7 +83,7 @@ public operator fun Enum.Companion.invoke(body: EnumInternal.() -> Unit): Enum {
 * }
 * ```
 */
-public fun Enum.copy(body: EnumInternal.() -> Unit = {}): Enum {
+public fun Enum.copy(body: Enum.Builder.() -> Unit = {}): Enum {
     return this.asInternal().copyInternal(body)
 }
 
@@ -100,7 +100,7 @@ public val Enum.presence: EnumPresence get() = this.asInternal()._presence
 * }
 * ```
 */
-public operator fun EnumValue.Companion.invoke(body: EnumValueInternal.() -> Unit): EnumValue {
+public operator fun EnumValue.Companion.invoke(body: EnumValue.Builder.() -> Unit): EnumValue {
     val msg = EnumValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -114,7 +114,7 @@ public operator fun EnumValue.Companion.invoke(body: EnumValueInternal.() -> Uni
 * }
 * ```
 */
-public fun EnumValue.copy(body: EnumValueInternal.() -> Unit = {}): EnumValue {
+public fun EnumValue.copy(body: EnumValue.Builder.() -> Unit = {}): EnumValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -126,7 +126,7 @@ public fun EnumValue.copy(body: EnumValueInternal.() -> Unit = {}): EnumValue {
 * }
 * ```
 */
-public operator fun Option.Companion.invoke(body: OptionInternal.() -> Unit): Option {
+public operator fun Option.Companion.invoke(body: Option.Builder.() -> Unit): Option {
     val msg = OptionInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -140,7 +140,7 @@ public operator fun Option.Companion.invoke(body: OptionInternal.() -> Unit): Op
 * }
 * ```
 */
-public fun Option.copy(body: OptionInternal.() -> Unit = {}): Option {
+public fun Option.copy(body: Option.Builder.() -> Unit = {}): Option {
     return this.asInternal().copyInternal(body)
 }
 

@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun DoubleValue.Companion.invoke(body: DoubleValueInternal.() -> Unit): DoubleValue {
+public operator fun DoubleValue.Companion.invoke(body: DoubleValue.Builder.() -> Unit): DoubleValue {
     val msg = DoubleValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ public operator fun DoubleValue.Companion.invoke(body: DoubleValueInternal.() ->
 * }
 * ```
 */
-public fun DoubleValue.copy(body: DoubleValueInternal.() -> Unit = {}): DoubleValue {
+public fun DoubleValue.copy(body: DoubleValue.Builder.() -> Unit = {}): DoubleValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -38,7 +38,7 @@ public fun DoubleValue.copy(body: DoubleValueInternal.() -> Unit = {}): DoubleVa
 * }
 * ```
 */
-public operator fun FloatValue.Companion.invoke(body: FloatValueInternal.() -> Unit): FloatValue {
+public operator fun FloatValue.Companion.invoke(body: FloatValue.Builder.() -> Unit): FloatValue {
     val msg = FloatValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -52,7 +52,7 @@ public operator fun FloatValue.Companion.invoke(body: FloatValueInternal.() -> U
 * }
 * ```
 */
-public fun FloatValue.copy(body: FloatValueInternal.() -> Unit = {}): FloatValue {
+public fun FloatValue.copy(body: FloatValue.Builder.() -> Unit = {}): FloatValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -64,7 +64,7 @@ public fun FloatValue.copy(body: FloatValueInternal.() -> Unit = {}): FloatValue
 * }
 * ```
 */
-public operator fun Int64Value.Companion.invoke(body: Int64ValueInternal.() -> Unit): Int64Value {
+public operator fun Int64Value.Companion.invoke(body: Int64Value.Builder.() -> Unit): Int64Value {
     val msg = Int64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -78,7 +78,7 @@ public operator fun Int64Value.Companion.invoke(body: Int64ValueInternal.() -> U
 * }
 * ```
 */
-public fun Int64Value.copy(body: Int64ValueInternal.() -> Unit = {}): Int64Value {
+public fun Int64Value.copy(body: Int64Value.Builder.() -> Unit = {}): Int64Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -90,7 +90,7 @@ public fun Int64Value.copy(body: Int64ValueInternal.() -> Unit = {}): Int64Value
 * }
 * ```
 */
-public operator fun UInt64Value.Companion.invoke(body: UInt64ValueInternal.() -> Unit): UInt64Value {
+public operator fun UInt64Value.Companion.invoke(body: UInt64Value.Builder.() -> Unit): UInt64Value {
     val msg = UInt64ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -104,7 +104,7 @@ public operator fun UInt64Value.Companion.invoke(body: UInt64ValueInternal.() ->
 * }
 * ```
 */
-public fun UInt64Value.copy(body: UInt64ValueInternal.() -> Unit = {}): UInt64Value {
+public fun UInt64Value.copy(body: UInt64Value.Builder.() -> Unit = {}): UInt64Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -116,7 +116,7 @@ public fun UInt64Value.copy(body: UInt64ValueInternal.() -> Unit = {}): UInt64Va
 * }
 * ```
 */
-public operator fun Int32Value.Companion.invoke(body: Int32ValueInternal.() -> Unit): Int32Value {
+public operator fun Int32Value.Companion.invoke(body: Int32Value.Builder.() -> Unit): Int32Value {
     val msg = Int32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -130,7 +130,7 @@ public operator fun Int32Value.Companion.invoke(body: Int32ValueInternal.() -> U
 * }
 * ```
 */
-public fun Int32Value.copy(body: Int32ValueInternal.() -> Unit = {}): Int32Value {
+public fun Int32Value.copy(body: Int32Value.Builder.() -> Unit = {}): Int32Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -142,7 +142,7 @@ public fun Int32Value.copy(body: Int32ValueInternal.() -> Unit = {}): Int32Value
 * }
 * ```
 */
-public operator fun UInt32Value.Companion.invoke(body: UInt32ValueInternal.() -> Unit): UInt32Value {
+public operator fun UInt32Value.Companion.invoke(body: UInt32Value.Builder.() -> Unit): UInt32Value {
     val msg = UInt32ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -156,7 +156,7 @@ public operator fun UInt32Value.Companion.invoke(body: UInt32ValueInternal.() ->
 * }
 * ```
 */
-public fun UInt32Value.copy(body: UInt32ValueInternal.() -> Unit = {}): UInt32Value {
+public fun UInt32Value.copy(body: UInt32Value.Builder.() -> Unit = {}): UInt32Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -168,7 +168,7 @@ public fun UInt32Value.copy(body: UInt32ValueInternal.() -> Unit = {}): UInt32Va
 * }
 * ```
 */
-public operator fun BoolValue.Companion.invoke(body: BoolValueInternal.() -> Unit): BoolValue {
+public operator fun BoolValue.Companion.invoke(body: BoolValue.Builder.() -> Unit): BoolValue {
     val msg = BoolValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -182,7 +182,7 @@ public operator fun BoolValue.Companion.invoke(body: BoolValueInternal.() -> Uni
 * }
 * ```
 */
-public fun BoolValue.copy(body: BoolValueInternal.() -> Unit = {}): BoolValue {
+public fun BoolValue.copy(body: BoolValue.Builder.() -> Unit = {}): BoolValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -194,7 +194,7 @@ public fun BoolValue.copy(body: BoolValueInternal.() -> Unit = {}): BoolValue {
 * }
 * ```
 */
-public operator fun StringValue.Companion.invoke(body: StringValueInternal.() -> Unit): StringValue {
+public operator fun StringValue.Companion.invoke(body: StringValue.Builder.() -> Unit): StringValue {
     val msg = StringValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -208,7 +208,7 @@ public operator fun StringValue.Companion.invoke(body: StringValueInternal.() ->
 * }
 * ```
 */
-public fun StringValue.copy(body: StringValueInternal.() -> Unit = {}): StringValue {
+public fun StringValue.copy(body: StringValue.Builder.() -> Unit = {}): StringValue {
     return this.asInternal().copyInternal(body)
 }
 
@@ -220,7 +220,7 @@ public fun StringValue.copy(body: StringValueInternal.() -> Unit = {}): StringVa
 * }
 * ```
 */
-public operator fun BytesValue.Companion.invoke(body: BytesValueInternal.() -> Unit): BytesValue {
+public operator fun BytesValue.Companion.invoke(body: BytesValue.Builder.() -> Unit): BytesValue {
     val msg = BytesValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -234,6 +234,6 @@ public operator fun BytesValue.Companion.invoke(body: BytesValueInternal.() -> U
 * }
 * ```
 */
-public fun BytesValue.copy(body: BytesValueInternal.() -> Unit = {}): BytesValue {
+public fun BytesValue.copy(body: BytesValue.Builder.() -> Unit = {}): BytesValue {
     return this.asInternal().copyInternal(body)
 }

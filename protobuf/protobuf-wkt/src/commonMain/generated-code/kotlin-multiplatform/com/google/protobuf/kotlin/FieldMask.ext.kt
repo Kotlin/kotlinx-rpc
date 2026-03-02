@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun FieldMask.Companion.invoke(body: FieldMaskInternal.() -> Unit): FieldMask {
+public operator fun FieldMask.Companion.invoke(body: FieldMask.Builder.() -> Unit): FieldMask {
     val msg = FieldMaskInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,6 +26,6 @@ public operator fun FieldMask.Companion.invoke(body: FieldMaskInternal.() -> Uni
 * }
 * ```
 */
-public fun FieldMask.copy(body: FieldMaskInternal.() -> Unit = {}): FieldMask {
+public fun FieldMask.copy(body: FieldMask.Builder.() -> Unit = {}): FieldMask {
     return this.asInternal().copyInternal(body)
 }

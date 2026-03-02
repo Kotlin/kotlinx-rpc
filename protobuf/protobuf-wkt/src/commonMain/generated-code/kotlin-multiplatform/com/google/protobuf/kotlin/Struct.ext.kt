@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Struct.Companion.invoke(body: StructInternal.() -> Unit): Struct {
+public operator fun Struct.Companion.invoke(body: Struct.Builder.() -> Unit): Struct {
     val msg = StructInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ public operator fun Struct.Companion.invoke(body: StructInternal.() -> Unit): St
 * }
 * ```
 */
-public fun Struct.copy(body: StructInternal.() -> Unit = {}): Struct {
+public fun Struct.copy(body: Struct.Builder.() -> Unit = {}): Struct {
     return this.asInternal().copyInternal(body)
 }
 
@@ -38,7 +38,7 @@ public fun Struct.copy(body: StructInternal.() -> Unit = {}): Struct {
 * }
 * ```
 */
-public operator fun Value.Companion.invoke(body: ValueInternal.() -> Unit): Value {
+public operator fun Value.Companion.invoke(body: Value.Builder.() -> Unit): Value {
     val msg = ValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -52,7 +52,7 @@ public operator fun Value.Companion.invoke(body: ValueInternal.() -> Unit): Valu
 * }
 * ```
 */
-public fun Value.copy(body: ValueInternal.() -> Unit = {}): Value {
+public fun Value.copy(body: Value.Builder.() -> Unit = {}): Value {
     return this.asInternal().copyInternal(body)
 }
 
@@ -64,7 +64,7 @@ public fun Value.copy(body: ValueInternal.() -> Unit = {}): Value {
 * }
 * ```
 */
-public operator fun ListValue.Companion.invoke(body: ListValueInternal.() -> Unit): ListValue {
+public operator fun ListValue.Companion.invoke(body: ListValue.Builder.() -> Unit): ListValue {
     val msg = ListValueInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -78,6 +78,6 @@ public operator fun ListValue.Companion.invoke(body: ListValueInternal.() -> Uni
 * }
 * ```
 */
-public fun ListValue.copy(body: ListValueInternal.() -> Unit = {}): ListValue {
+public fun ListValue.copy(body: ListValue.Builder.() -> Unit = {}): ListValue {
     return this.asInternal().copyInternal(body)
 }

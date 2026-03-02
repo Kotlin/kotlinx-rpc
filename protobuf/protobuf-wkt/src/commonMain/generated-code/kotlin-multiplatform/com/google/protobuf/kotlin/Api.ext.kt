@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Api.Companion.invoke(body: ApiInternal.() -> Unit): Api {
+public operator fun Api.Companion.invoke(body: Api.Builder.() -> Unit): Api {
     val msg = ApiInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ public operator fun Api.Companion.invoke(body: ApiInternal.() -> Unit): Api {
 * }
 * ```
 */
-public fun Api.copy(body: ApiInternal.() -> Unit = {}): Api {
+public fun Api.copy(body: Api.Builder.() -> Unit = {}): Api {
     return this.asInternal().copyInternal(body)
 }
 
@@ -43,7 +43,7 @@ public val Api.presence: ApiPresence get() = this.asInternal()._presence
 * }
 * ```
 */
-public operator fun Method.Companion.invoke(body: MethodInternal.() -> Unit): Method {
+public operator fun Method.Companion.invoke(body: Method.Builder.() -> Unit): Method {
     val msg = MethodInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -57,7 +57,7 @@ public operator fun Method.Companion.invoke(body: MethodInternal.() -> Unit): Me
 * }
 * ```
 */
-public fun Method.copy(body: MethodInternal.() -> Unit = {}): Method {
+public fun Method.copy(body: Method.Builder.() -> Unit = {}): Method {
     return this.asInternal().copyInternal(body)
 }
 
@@ -69,7 +69,7 @@ public fun Method.copy(body: MethodInternal.() -> Unit = {}): Method {
 * }
 * ```
 */
-public operator fun Mixin.Companion.invoke(body: MixinInternal.() -> Unit): Mixin {
+public operator fun Mixin.Companion.invoke(body: Mixin.Builder.() -> Unit): Mixin {
     val msg = MixinInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -83,7 +83,7 @@ public operator fun Mixin.Companion.invoke(body: MixinInternal.() -> Unit): Mixi
 * }
 * ```
 */
-public fun Mixin.copy(body: MixinInternal.() -> Unit = {}): Mixin {
+public fun Mixin.copy(body: Mixin.Builder.() -> Unit = {}): Mixin {
     return this.asInternal().copyInternal(body)
 }
 

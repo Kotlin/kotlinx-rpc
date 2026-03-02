@@ -23,7 +23,7 @@ import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
-public class AnyInternal: Any, InternalMessage(fieldsWithPresence = 0) {
+public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

@@ -25,7 +25,7 @@ import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
-public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
+public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         public const val sourceContext: Int = 0
     }
@@ -161,7 +161,7 @@ public class TypeInternal: Type, InternalMessage(fieldsWithPresence = 1) {
     public companion object
 }
 
-public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
+public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -294,7 +294,7 @@ public class FieldInternal: Field, InternalMessage(fieldsWithPresence = 0) {
     public companion object
 }
 
-public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
+public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         public const val sourceContext: Int = 0
     }
@@ -425,7 +425,7 @@ public class EnumInternal: Enum, InternalMessage(fieldsWithPresence = 1) {
     public companion object
 }
 
-public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 0) {
+public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -523,7 +523,7 @@ public class EnumValueInternal: EnumValue, InternalMessage(fieldsWithPresence = 
     public companion object
 }
 
-public class OptionInternal: Option, InternalMessage(fieldsWithPresence = 1) {
+public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         public const val value: Int = 0
     }

@@ -30,7 +30,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-public class FieldMaskInternal: FieldMask, InternalMessage(fieldsWithPresence = 0) {
+public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

@@ -25,7 +25,7 @@ import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
-class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
+class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -123,7 +123,7 @@ class TestStatusInternal: TestStatus, InternalMessage(fieldsWithPresence = 0) {
     companion object
 }
 
-class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
+class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -210,7 +210,7 @@ class FailureSetInternal: FailureSet, InternalMessage(fieldsWithPresence = 0) {
     companion object
 }
 
-class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWithPresence = 1) {
+class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val jspbEncodingOptions: Int = 0
     }
@@ -370,7 +370,7 @@ class ConformanceRequestInternal: ConformanceRequest, InternalMessage(fieldsWith
     companion object
 }
 
-class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWithPresence = 0) {
+class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -506,7 +506,7 @@ class ConformanceResponseInternal: ConformanceResponse, InternalMessage(fieldsWi
     companion object
 }
 
-class JspbEncodingConfigInternal: JspbEncodingConfig, InternalMessage(fieldsWithPresence = 0) {
+class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 

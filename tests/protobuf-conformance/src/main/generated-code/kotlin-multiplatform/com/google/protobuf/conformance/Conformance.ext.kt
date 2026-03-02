@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-operator fun TestStatus.Companion.invoke(body: TestStatusInternal.() -> Unit): TestStatus {
+operator fun TestStatus.Companion.invoke(body: TestStatus.Builder.() -> Unit): TestStatus {
     val msg = TestStatusInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ operator fun TestStatus.Companion.invoke(body: TestStatusInternal.() -> Unit): T
 * }
 * ```
 */
-fun TestStatus.copy(body: TestStatusInternal.() -> Unit = {}): TestStatus {
+fun TestStatus.copy(body: TestStatus.Builder.() -> Unit = {}): TestStatus {
     return this.asInternal().copyInternal(body)
 }
 
@@ -38,7 +38,7 @@ fun TestStatus.copy(body: TestStatusInternal.() -> Unit = {}): TestStatus {
 * }
 * ```
 */
-operator fun FailureSet.Companion.invoke(body: FailureSetInternal.() -> Unit): FailureSet {
+operator fun FailureSet.Companion.invoke(body: FailureSet.Builder.() -> Unit): FailureSet {
     val msg = FailureSetInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -52,7 +52,7 @@ operator fun FailureSet.Companion.invoke(body: FailureSetInternal.() -> Unit): F
 * }
 * ```
 */
-fun FailureSet.copy(body: FailureSetInternal.() -> Unit = {}): FailureSet {
+fun FailureSet.copy(body: FailureSet.Builder.() -> Unit = {}): FailureSet {
     return this.asInternal().copyInternal(body)
 }
 
@@ -64,7 +64,7 @@ fun FailureSet.copy(body: FailureSetInternal.() -> Unit = {}): FailureSet {
 * }
 * ```
 */
-operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequestInternal.() -> Unit): ConformanceRequest {
+operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequest.Builder.() -> Unit): ConformanceRequest {
     val msg = ConformanceRequestInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -78,7 +78,7 @@ operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequestInterna
 * }
 * ```
 */
-fun ConformanceRequest.copy(body: ConformanceRequestInternal.() -> Unit = {}): ConformanceRequest {
+fun ConformanceRequest.copy(body: ConformanceRequest.Builder.() -> Unit = {}): ConformanceRequest {
     return this.asInternal().copyInternal(body)
 }
 
@@ -95,7 +95,7 @@ val ConformanceRequest.presence: ConformanceRequestPresence get() = this.asInter
 * }
 * ```
 */
-operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponseInternal.() -> Unit): ConformanceResponse {
+operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponse.Builder.() -> Unit): ConformanceResponse {
     val msg = ConformanceResponseInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -109,7 +109,7 @@ operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponseInter
 * }
 * ```
 */
-fun ConformanceResponse.copy(body: ConformanceResponseInternal.() -> Unit = {}): ConformanceResponse {
+fun ConformanceResponse.copy(body: ConformanceResponse.Builder.() -> Unit = {}): ConformanceResponse {
     return this.asInternal().copyInternal(body)
 }
 
@@ -121,7 +121,7 @@ fun ConformanceResponse.copy(body: ConformanceResponseInternal.() -> Unit = {}):
 * }
 * ```
 */
-operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfigInternal.() -> Unit): JspbEncodingConfig {
+operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfig.Builder.() -> Unit): JspbEncodingConfig {
     val msg = JspbEncodingConfigInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -135,7 +135,7 @@ operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfigInterna
 * }
 * ```
 */
-fun JspbEncodingConfig.copy(body: JspbEncodingConfigInternal.() -> Unit = {}): JspbEncodingConfig {
+fun JspbEncodingConfig.copy(body: JspbEncodingConfig.Builder.() -> Unit = {}): JspbEncodingConfig {
     return this.asInternal().copyInternal(body)
 }
 

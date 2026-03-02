@@ -26,7 +26,7 @@ import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
-public class TimestampInternal: Timestamp, InternalMessage(fieldsWithPresence = 0) {
+public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

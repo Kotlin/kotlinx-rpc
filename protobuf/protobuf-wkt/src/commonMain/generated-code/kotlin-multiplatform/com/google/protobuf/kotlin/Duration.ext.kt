@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Duration.Companion.invoke(body: DurationInternal.() -> Unit): Duration {
+public operator fun Duration.Companion.invoke(body: Duration.Builder.() -> Unit): Duration {
     val msg = DurationInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,6 +26,6 @@ public operator fun Duration.Companion.invoke(body: DurationInternal.() -> Unit)
 * }
 * ```
 */
-public fun Duration.copy(body: DurationInternal.() -> Unit = {}): Duration {
+public fun Duration.copy(body: Duration.Builder.() -> Unit = {}): Duration {
     return this.asInternal().copyInternal(body)
 }

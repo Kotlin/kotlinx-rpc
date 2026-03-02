@@ -17,7 +17,7 @@ import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 
-public class EmptyInternal: Empty, InternalMessage(fieldsWithPresence = 0) {
+public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

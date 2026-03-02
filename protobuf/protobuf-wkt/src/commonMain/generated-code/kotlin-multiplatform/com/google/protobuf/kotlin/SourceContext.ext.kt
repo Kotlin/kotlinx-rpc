@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun SourceContext.Companion.invoke(body: SourceContextInternal.() -> Unit): SourceContext {
+public operator fun SourceContext.Companion.invoke(body: SourceContext.Builder.() -> Unit): SourceContext {
     val msg = SourceContextInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,6 +26,6 @@ public operator fun SourceContext.Companion.invoke(body: SourceContextInternal.(
 * }
 * ```
 */
-public fun SourceContext.copy(body: SourceContextInternal.() -> Unit = {}): SourceContext {
+public fun SourceContext.copy(body: SourceContext.Builder.() -> Unit = {}): SourceContext {
     return this.asInternal().copyInternal(body)
 }

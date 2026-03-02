@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-public operator fun Any.Companion.invoke(body: AnyInternal.() -> Unit): Any {
+public operator fun Any.Companion.invoke(body: Any.Builder.() -> Unit): Any {
     val msg = AnyInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,6 +26,6 @@ public operator fun Any.Companion.invoke(body: AnyInternal.() -> Unit): Any {
 * }
 * ```
 */
-public fun Any.copy(body: AnyInternal.() -> Unit = {}): Any {
+public fun Any.copy(body: Any.Builder.() -> Unit = {}): Any {
     return this.asInternal().copyInternal(body)
 }

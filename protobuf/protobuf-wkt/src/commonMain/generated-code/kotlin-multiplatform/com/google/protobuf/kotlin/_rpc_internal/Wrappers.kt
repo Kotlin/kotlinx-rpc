@@ -30,7 +30,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-public class DoubleValueInternal: DoubleValue, InternalMessage(fieldsWithPresence = 0) {
+public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -117,7 +117,7 @@ public class DoubleValueInternal: DoubleValue, InternalMessage(fieldsWithPresenc
     public companion object
 }
 
-public class FloatValueInternal: FloatValue, InternalMessage(fieldsWithPresence = 0) {
+public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -204,7 +204,7 @@ public class FloatValueInternal: FloatValue, InternalMessage(fieldsWithPresence 
     public companion object
 }
 
-public class Int64ValueInternal: Int64Value, InternalMessage(fieldsWithPresence = 0) {
+public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -291,7 +291,7 @@ public class Int64ValueInternal: Int64Value, InternalMessage(fieldsWithPresence 
     public companion object
 }
 
-public class UInt64ValueInternal: UInt64Value, InternalMessage(fieldsWithPresence = 0) {
+public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -378,7 +378,7 @@ public class UInt64ValueInternal: UInt64Value, InternalMessage(fieldsWithPresenc
     public companion object
 }
 
-public class Int32ValueInternal: Int32Value, InternalMessage(fieldsWithPresence = 0) {
+public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -465,7 +465,7 @@ public class Int32ValueInternal: Int32Value, InternalMessage(fieldsWithPresence 
     public companion object
 }
 
-public class UInt32ValueInternal: UInt32Value, InternalMessage(fieldsWithPresence = 0) {
+public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -552,7 +552,7 @@ public class UInt32ValueInternal: UInt32Value, InternalMessage(fieldsWithPresenc
     public companion object
 }
 
-public class BoolValueInternal: BoolValue, InternalMessage(fieldsWithPresence = 0) {
+public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -639,7 +639,7 @@ public class BoolValueInternal: BoolValue, InternalMessage(fieldsWithPresence = 
     public companion object
 }
 
-public class StringValueInternal: StringValue, InternalMessage(fieldsWithPresence = 0) {
+public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -726,7 +726,7 @@ public class StringValueInternal: StringValue, InternalMessage(fieldsWithPresenc
     public companion object
 }
 
-public class BytesValueInternal: BytesValue, InternalMessage(fieldsWithPresence = 0) {
+public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

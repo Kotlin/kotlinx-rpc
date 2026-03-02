@@ -30,7 +30,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
+public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -178,7 +178,7 @@ public class StructInternal: Struct, InternalMessage(fieldsWithPresence = 0) {
     public companion object
 }
 
-public class ValueInternal: Value, InternalMessage(fieldsWithPresence = 0) {
+public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -302,7 +302,7 @@ public class ValueInternal: Value, InternalMessage(fieldsWithPresence = 0) {
     public companion object
 }
 
-public class ListValueInternal: ListValue, InternalMessage(fieldsWithPresence = 0) {
+public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 

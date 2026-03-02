@@ -10,7 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * val message = Empty { }
 * ```
 */
-public operator fun Empty.Companion.invoke(body: EmptyInternal.() -> Unit): Empty {
+public operator fun Empty.Companion.invoke(body: Empty.Builder.() -> Unit): Empty {
     val msg = EmptyInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -22,6 +22,6 @@ public operator fun Empty.Companion.invoke(body: EmptyInternal.() -> Unit): Empt
 * val copy = original.copy()
 * ```
 */
-public fun Empty.copy(body: EmptyInternal.() -> Unit = {}): Empty {
+public fun Empty.copy(body: Empty.Builder.() -> Unit = {}): Empty {
     return this.asInternal().copyInternal(body)
 }
