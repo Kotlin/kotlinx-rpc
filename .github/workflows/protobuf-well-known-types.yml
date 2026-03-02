@@ -18,7 +18,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Run Protobuf Conformance Test Generation
-        run: ./gradlew :protobuf:protobuf-core:bufGenerateCommonMain --info --stacktrace
+        run: ./gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain --info --stacktrace
       - name: Check if Well-Known Types are up-to-date
         run: |
           if [[ -n "$(git status --porcelain | grep protobuf/protobuf-core/)" ]]; then
