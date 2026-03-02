@@ -67,6 +67,22 @@ In the root of the project you should create a `local.properties` file with the 
 sdk.dir=/Users/<user>/Library/Android/sdk
 ```
 
+## YouTrack MCP
+
+The project includes a `.mcp.json` that connects Claude Code to YouTrack via MCP.
+To authenticate, set the `YOUTRACK_TOKEN` environment variable.
+
+1. Go to https://youtrack.jetbrains.com/users/me
+2. Navigate to **Account Security** -> **Tokens** -> **New token...**
+3. Select **YouTrack** as the scope, create the token and copy it
+4. Add to your `.zshrc` (or equivalent):
+
+```bash
+export YOUTRACK_TOKEN="your-token-here"
+```
+
+5. Restart your shell (or `source ~/.zshrc`)
+
 ## Git and GitHub
 
 Make sure your commit signing is set up. Check the
