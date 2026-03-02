@@ -12,6 +12,7 @@ import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
+import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
 import kotlinx.rpc.protoc.gen.core.ScopedFormattedString
 import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.joinToScopedString
@@ -36,8 +37,9 @@ import kotlinx.rpc.protoc.gen.core.wrapIn
 
 class ModelToProtobufKotlinCommonGenerator(
     config: Config,
+    generatedMetadata: GeneratedMetadata,
     model: Model,
-) : AModelToKotlinCommonGenerator(config, model) {
+) : AModelToKotlinCommonGenerator(config, generatedMetadata, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean
@@ -106,6 +108,8 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         }
 
+        generatedMetadata.protoNamesList.add(declaration.name)
+
         clazz(
             name = declaration.name.simpleName,
             comment = declaration.doc,
@@ -145,7 +149,7 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
         val superTypes = buildList {
             if (declaration.isUserFacing) {
-                add(declaration.name.scoped())
+                add(declaration.builderClassName.scoped())
             }
             add("%T(fieldsWithPresence = ${declaration.presenceMaskSize})".scoped(FqName.RpcClasses.InternalMessage))
         }
@@ -503,7 +507,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "copy",
             contextReceiver = declaration.name.scoped(),
-            args = "body: %T.() -> %T = {}".scoped(declaration.internalClassName, FqName.Implicits.Unit),
+            args = "body: %T.() -> %T = {}".scoped(declaration.builderClassName, FqName.Implicits.Unit),
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
                 """
@@ -853,7 +857,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "invoke",
             modifiers = "operator",
-            args = "body: %T.() -> %T".scoped(declaration.internalClassName, FqName.Implicits.Unit),
+            args = "body: %T.() -> %T".scoped(declaration.builderClassName, FqName.Implicits.Unit),
             contextReceiver = declaration.companionName.scoped(),
             returnType = declaration.name.scoped(),
             comment = Comment.leading(

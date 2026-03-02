@@ -241,6 +241,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
     ).also { declaration ->
         nameTable.register { declaration.companionName }
         nameTable.register { declaration.internalClassName }
+        nameTable.register { declaration.builderClassName }
         nameTable.register { declaration.internalCompanionName }
 
         if (declaration.isUserFacing && declaration.hasPresenceFieldsRecursive()) {

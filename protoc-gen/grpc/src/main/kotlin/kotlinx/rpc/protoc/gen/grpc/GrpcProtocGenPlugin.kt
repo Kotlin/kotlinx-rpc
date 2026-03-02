@@ -6,6 +6,7 @@ package kotlinx.rpc.protoc.gen.grpc
 
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
+import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
 import kotlinx.rpc.protoc.gen.core.ProtocGenPlugin
 import kotlinx.rpc.protoc.gen.core.model.Model
 
@@ -13,7 +14,8 @@ object GrpcProtocGenPlugin : ProtocGenPlugin() {
     override fun generateKotlinByModel(
         config: Config,
         model: Model,
+        generatedMetadata: GeneratedMetadata,
     ): List<FileGenerator> {
-        return ModelToGrpcKotlinCommonGenerator(config, model).generateKotlinFiles()
+        return ModelToGrpcKotlinCommonGenerator(config, generatedMetadata, model).generateKotlinFiles()
     }
 }

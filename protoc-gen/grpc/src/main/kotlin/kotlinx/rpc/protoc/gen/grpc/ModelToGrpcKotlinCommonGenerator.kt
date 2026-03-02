@@ -8,6 +8,7 @@ import com.google.protobuf.DescriptorProtos
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Config
+import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.Model
@@ -18,8 +19,9 @@ import kotlinx.rpc.protoc.gen.core.wrapIn
 
 class ModelToGrpcKotlinCommonGenerator(
     config: Config,
+    generatedMetadata: GeneratedMetadata,
     model: Model,
-) : AModelToKotlinCommonGenerator(config, model) {
+) : AModelToKotlinCommonGenerator(config, generatedMetadata, model) {
     override val FileDeclaration.hasPublicGeneratedContent: Boolean get() = serviceDeclarations.isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean get() = false

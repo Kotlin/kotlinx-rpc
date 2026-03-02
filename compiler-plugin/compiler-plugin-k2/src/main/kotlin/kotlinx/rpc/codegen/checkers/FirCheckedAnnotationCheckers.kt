@@ -30,7 +30,6 @@ import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
@@ -277,13 +276,12 @@ object FirCheckedAnnotationHelper {
         }
     }
 
-    @OptIn(SymbolInternals::class)
     fun checkedAnnotations(
         session: FirSession,
         symbol: FirBasedSymbol<*>,
         visited: Set<FirBasedSymbol<*>> = emptySet(),
     ): List<FirClassSymbol<*>> {
-        return symbol.annotations.mapNotNull {
+        return symbol.resolvedAnnotationsWithArguments.mapNotNull {
             vsApi { it.resolvedType.toClassSymbolVS(session) }
         }.mapNotNull { annotation ->
             when {
@@ -327,12 +325,10 @@ object FirCheckedAnnotationHelper {
         }
     }
 
-    @OptIn(SymbolInternals::class)
     private fun FirClassSymbol<*>.checkedAnnotationTarget(session: FirSession): FirClassSymbol<*> {
         val checkForArgument = vsApi {
-            annotations
+            resolvedAnnotationsWithArguments
                 .firstOrNull { it.toAnnotationClassId(session) == RpcClassId.checkedTypeAnnotation }
-                // todo this can throw
                 ?.getKClassArgumentVS(RpcNames.CHECK_FOR_ARGUMENT_NAME, session)
                 ?.toClassSymbolVS(session)
         }
@@ -344,7 +340,6 @@ object FirCheckedAnnotationHelper {
         }
     }
 
-    @OptIn(SymbolInternals::class)
     private fun hasCheckedAnnotation(
         session: FirSession,
         symbol: FirBasedSymbol<*>,
@@ -354,7 +349,7 @@ object FirCheckedAnnotationHelper {
         return when {
             symbol in visited -> false
             symbol.hasAnnotation(annotationId, session) -> true
-            else -> symbol.annotations.any { annotation ->
+            else -> symbol.resolvedAnnotationsWithArguments.any { annotation ->
                 vsApi { annotation.resolvedType.toClassSymbolVS(session) }?.let { annotationSymbol ->
                     when {
                         annotationSymbol.checkedAnnotationTarget(session).classId == annotationId -> true

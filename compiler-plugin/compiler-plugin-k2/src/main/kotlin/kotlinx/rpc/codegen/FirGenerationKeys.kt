@@ -7,6 +7,7 @@ package kotlinx.rpc.codegen
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.name.Name
 
 internal class RpcGeneratedStubKey(
@@ -29,5 +30,22 @@ internal object FirRpcServiceStubCompanionObject : GeneratedDeclarationKey() {
 internal object FirGeneratedProtoMessageCompanionObject : GeneratedDeclarationKey() {
     override fun toString(): String {
         return "FirGeneratedProtoMessageCompanionObject"
+    }
+}
+
+internal class FirGeneratedProtoMessageBuilderKey(
+    val message: FirClassSymbol<*>,
+) : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirGeneratedProtoMessageBuilderKey.${message.classId}"
+    }
+}
+
+internal val FirBasedSymbol<*>.generatedProtoMessageBuilderKey: FirGeneratedProtoMessageBuilderKey? get() =
+    (origin as? FirDeclarationOrigin.Plugin)?.key as? FirGeneratedProtoMessageBuilderKey
+
+internal object FirGeneratedProtoMessageBuilderPropertyKey : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirGeneratedProtoMessageBuilderPropertyKey"
     }
 }
