@@ -23,7 +23,7 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation(projects.protobuf.protobufCore)
+                implementation(projects.protobuf.protobufApi)
             }
         }
 

@@ -16,6 +16,7 @@ const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
 abstract class AModelToKotlinCommonGenerator(
     protected val config: Config,
+    protected val generatedMetadata: GeneratedMetadata,
     protected val model: Model,
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)

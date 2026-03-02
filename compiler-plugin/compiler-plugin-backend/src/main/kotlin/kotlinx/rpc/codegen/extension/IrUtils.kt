@@ -4,20 +4,29 @@
 
 package kotlinx.rpc.codegen.extension
 
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.ir.IrBuiltIns
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
+import org.jetbrains.kotlin.ir.builders.declarations.addConstructor
 import org.jetbrains.kotlin.ir.builders.declarations.addDefaultGetter
 import org.jetbrains.kotlin.ir.builders.declarations.buildField
+import org.jetbrains.kotlin.ir.builders.irBlockBody
+import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
+import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.IrTypeArgument
 import org.jetbrains.kotlin.ir.types.IrTypeProjection
 import org.jetbrains.kotlin.ir.types.SimpleTypeNullability
 import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
+import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.types.Variance
 
@@ -90,3 +99,30 @@ fun <T> List<T>.compactIfPossible(): List<T> =
 
 fun IrFactory.createExpressionBody(expression: IrExpression): IrExpressionBody =
     createExpressionBody(expression.startOffset, expression.endOffset, expression)
+
+fun IrClass.generateCompanionObjectConstructor(pluginContext: IrPluginContext) {
+    // default object constructor
+    addConstructor {
+        name = this@generateCompanionObjectConstructor.name
+        isPrimary = true
+        visibility = DescriptorVisibilities.PRIVATE
+    }.apply {
+        addDefaultConstructor(pluginContext, this)
+    }
+}
+
+// default constructor implementation
+fun IrClass.addDefaultConstructor(pluginContext: IrPluginContext, constructor: IrConstructor) {
+    constructor.body = irBuilder(pluginContext, constructor.symbol).irBlockBody {
+        +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.constructors.single())
+        +IrInstanceInitializerCallImpl(
+            startOffset = startOffset,
+            endOffset = endOffset,
+            classSymbol = this@addDefaultConstructor.symbol,
+            type = context.irBuiltIns.unitType,
+        )
+    }
+}
+
+fun irBuilder(pluginContext: IrPluginContext, symbol: IrSymbol): DeclarationIrBuilder =
+    DeclarationIrBuilder(pluginContext, symbol, symbol.owner.startOffset, symbol.owner.endOffset)

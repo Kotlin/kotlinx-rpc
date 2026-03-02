@@ -1,0 +1,57 @@
+FILE: module_main_protoMessage.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    package test.my_message
+
+    @R|kotlinx/rpc/protobuf/internal/GeneratedProtoMessage|() public abstract interface MyMessage : R|kotlin/Any| {
+        public abstract val field: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
+        public final companion object Companion : R|kotlin/Any| {
+        }
+
+        public abstract interface Builder : R|test/my_message/MyMessage| {
+            public abstract override var field: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        }
+
+    }
+    public final class MyMessageInternal : R|test/my_message/MyMessage.Builder| {
+        public constructor(): R|test/my_message/MyMessageInternal| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override var field: R|kotlin/Int| = Int(1)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<test/my_message/MyMessage>| {
+            private constructor(): R|test/my_message/MyMessageInternal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override val fullName: R|kotlin/String| = String(fullName)
+                public get(): R|kotlin/String|
+
+        }
+
+        public final object MARSHALLER : R|kotlinx/rpc/grpc/marshaller/MessageMarshaller<test/my_message/MyMessage>| {
+            private constructor(): R|test/my_message/MyMessageInternal.MARSHALLER| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override fun encode(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|kotlinx/io/Source| {
+                R|kotlin/TODO|()
+            }
+
+            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|test/my_message/MyMessage| {
+                R|kotlin/TODO|()
+            }
+
+        }
+
+    }
+    public final fun box(): R|kotlin/String| {
+        ^box String(OK)
+    }

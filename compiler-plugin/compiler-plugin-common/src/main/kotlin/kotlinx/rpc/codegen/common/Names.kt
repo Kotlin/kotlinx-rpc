@@ -37,6 +37,12 @@ object ProtoClassId {
 }
 
 object ProtoNames {
+    val MESSAGE_BUILDER_NAME = Name.identifier("Builder")
+
+    fun internalName(messageName: String): String {
+        return messageName + "Internal"
+    }
+
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
     val MARSHALLER_NAME = Name.identifier("MARSHALLER")
 }

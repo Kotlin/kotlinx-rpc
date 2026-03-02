@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-operator fun ComplexMessage.Companion.invoke(body: ComplexMessageInternal.() -> Unit): ComplexMessage {
+operator fun ComplexMessage.Companion.invoke(body: ComplexMessage.Builder.() -> Unit): ComplexMessage {
     val msg = ComplexMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ operator fun ComplexMessage.Companion.invoke(body: ComplexMessageInternal.() -> 
 * }
 * ```
 */
-fun ComplexMessage.copy(body: ComplexMessageInternal.() -> Unit = {}): ComplexMessage {
+fun ComplexMessage.copy(body: ComplexMessage.Builder.() -> Unit = {}): ComplexMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -43,7 +43,7 @@ val ComplexMessage.presence: ComplexMessagePresence get() = this.asInternal()._p
 * }
 * ```
 */
-operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023Internal.() -> Unit): TestAllTypesEdition2023 {
+operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023.Builder.() -> Unit): TestAllTypesEdition2023 {
     val msg = TestAllTypesEdition2023Internal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -57,7 +57,7 @@ operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2
 * }
 * ```
 */
-fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023Internal.() -> Unit = {}): TestAllTypesEdition2023 {
+fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023.Builder.() -> Unit = {}): TestAllTypesEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -74,7 +74,7 @@ val TestAllTypesEdition2023.presence: TestAllTypesEdition2023Presence get() = th
 * }
 * ```
 */
-operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023Internal.() -> Unit): ForeignMessageEdition2023 {
+operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023.Builder.() -> Unit): ForeignMessageEdition2023 {
     val msg = ForeignMessageEdition2023Internal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -88,7 +88,7 @@ operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdit
 * }
 * ```
 */
-fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023Internal.() -> Unit = {}): ForeignMessageEdition2023 {
+fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023.Builder.() -> Unit = {}): ForeignMessageEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -105,7 +105,7 @@ val ForeignMessageEdition2023.presence: ForeignMessageEdition2023Presence get() 
 * }
 * ```
 */
-operator fun GroupLikeType.Companion.invoke(body: GroupLikeTypeInternal.() -> Unit): GroupLikeType {
+operator fun GroupLikeType.Companion.invoke(body: GroupLikeType.Builder.() -> Unit): GroupLikeType {
     val msg = GroupLikeTypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -119,7 +119,7 @@ operator fun GroupLikeType.Companion.invoke(body: GroupLikeTypeInternal.() -> Un
 * }
 * ```
 */
-fun GroupLikeType.copy(body: GroupLikeTypeInternal.() -> Unit = {}): GroupLikeType {
+fun GroupLikeType.copy(body: GroupLikeType.Builder.() -> Unit = {}): GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 
@@ -136,7 +136,7 @@ val GroupLikeType.presence: GroupLikeTypePresence get() = this.asInternal()._pre
 * }
 * ```
 */
-operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit): TestAllTypesEdition2023.NestedMessage {
+operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit): TestAllTypesEdition2023.NestedMessage {
     val msg = TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -150,7 +150,7 @@ operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAl
 * }
 * ```
 */
-fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023Internal.NestedMessageInternal.() -> Unit = {}): TestAllTypesEdition2023.NestedMessage {
+fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit = {}): TestAllTypesEdition2023.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -167,7 +167,7 @@ val TestAllTypesEdition2023.NestedMessage.presence: TestAllTypesEdition2023Prese
 * }
 * ```
 */
-operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
+operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
     val msg = TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -181,7 +181,7 @@ operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAl
 * }
 * ```
 */
-fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023Internal.GroupLikeTypeInternal.() -> Unit = {}): TestAllTypesEdition2023.GroupLikeType {
+fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit = {}): TestAllTypesEdition2023.GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 
