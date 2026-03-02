@@ -45,6 +45,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
   }
 
   @Test
+  @TestMetadata("protoMessage.kt")
+  public void testProtoMessage() {
+    runTest("src/testData/box/protoMessage.kt");
+  }
+
+  @Test
   @TestMetadata("serviceDescriptor.kt")
   public void testServiceDescriptor() {
     runTest("src/testData/box/serviceDescriptor.kt");
