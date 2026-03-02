@@ -51,7 +51,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWithPresence = 58) {
+class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fieldsWithPresence = 58) {
     private object PresenceIndices {
         const val optionalInt32: Int = 0
         const val optionalInt64: Int = 1
@@ -1441,7 +1441,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         }
     }
 
-    class NestedMessageInternal: TestAllTypesProto2.NestedMessage, InternalMessage(fieldsWithPresence = 2) {
+    class NestedMessageInternal: TestAllTypesProto2.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val a: Int = 0
             const val corecursive: Int = 1
@@ -2970,7 +2970,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class DataInternal: TestAllTypesProto2.Data, InternalMessage(fieldsWithPresence = 2) {
+    class DataInternal: TestAllTypesProto2.Data.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val groupInt32: Int = 0
             const val groupUint32: Int = 1
@@ -3060,7 +3060,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class MultiWordGroupFieldInternal: TestAllTypesProto2.MultiWordGroupField, InternalMessage(fieldsWithPresence = 2) {
+    class MultiWordGroupFieldInternal: TestAllTypesProto2.MultiWordGroupField.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val groupInt32: Int = 0
             const val groupUint32: Int = 1
@@ -3150,7 +3150,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class MessageSetCorrectInternal: TestAllTypesProto2.MessageSetCorrect, InternalMessage(fieldsWithPresence = 0) {
+    class MessageSetCorrectInternal: TestAllTypesProto2.MessageSetCorrect.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -3232,7 +3232,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class MessageSetCorrectExtension1Internal: TestAllTypesProto2.MessageSetCorrectExtension1, InternalMessage(fieldsWithPresence = 1) {
+    class MessageSetCorrectExtension1Internal: TestAllTypesProto2.MessageSetCorrectExtension1.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val str: Int = 0
         }
@@ -3337,7 +3337,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class MessageSetCorrectExtension2Internal: TestAllTypesProto2.MessageSetCorrectExtension2, InternalMessage(fieldsWithPresence = 1) {
+    class MessageSetCorrectExtension2Internal: TestAllTypesProto2.MessageSetCorrectExtension2.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val i: Int = 0
         }
@@ -3442,7 +3442,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
         companion object
     }
 
-    class ExtensionWithOneofInternal: TestAllTypesProto2.ExtensionWithOneof, InternalMessage(fieldsWithPresence = 0) {
+    class ExtensionWithOneofInternal: TestAllTypesProto2.ExtensionWithOneof.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -3579,7 +3579,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2, InternalMessage(fieldsWith
     companion object
 }
 
-class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fieldsWithPresence = 1) {
+class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val c: Int = 0
     }
@@ -3684,7 +3684,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2, InternalMessage(fields
     companion object
 }
 
-class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
+class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence = 2) {
     private object PresenceIndices {
         const val groupInt32: Int = 0
         const val groupUint32: Int = 1
@@ -3806,7 +3806,7 @@ class GroupFieldInternal: GroupField, InternalMessage(fieldsWithPresence = 2) {
     companion object
 }
 
-class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fieldsWithPresence = 5) {
+class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMessage(fieldsWithPresence = 5) {
     private object PresenceIndices {
         const val optionalInt32: Int = 0
         const val optionalString: Int = 1
@@ -3945,7 +3945,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
         return copy
     }
 
-    class OptionalGroupInternal: UnknownToTestAllTypes.OptionalGroup, InternalMessage(fieldsWithPresence = 1) {
+    class OptionalGroupInternal: UnknownToTestAllTypes.OptionalGroup.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val a: Int = 0
         }
@@ -4054,7 +4054,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes, InternalMessage(fiel
     companion object
 }
 
-class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fieldsWithPresence = 0) {
+class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -4136,7 +4136,7 @@ class NullHypothesisProto2Internal: NullHypothesisProto2, InternalMessage(fields
     companion object
 }
 
-class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence = 0) {
+class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -4218,7 +4218,7 @@ class EnumOnlyProto2Internal: EnumOnlyProto2, InternalMessage(fieldsWithPresence
     companion object
 }
 
-class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresence = 1) {
+class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWithPresence = 1) {
     private object PresenceIndices {
         const val data: Int = 0
     }
@@ -4323,7 +4323,7 @@ class OneStringProto2Internal: OneStringProto2, InternalMessage(fieldsWithPresen
     companion object
 }
 
-class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPresence = 2) {
+class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fieldsWithPresence = 2) {
     private object PresenceIndices {
         const val inline: Int = 0
         const val concept: Int = 1
@@ -4450,7 +4450,7 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords, InternalMessage(fieldsWithPr
     companion object
 }
 
-class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMessage(fieldsWithPresence = 39) {
+class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, InternalMessage(fieldsWithPresence = 39) {
     private object PresenceIndices {
         const val requiredInt32: Int = 0
         const val requiredInt64: Int = 1
@@ -5132,7 +5132,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         return copy
     }
 
-    class NestedMessageInternal: TestAllRequiredTypesProto2.NestedMessage, InternalMessage(fieldsWithPresence = 3) {
+    class NestedMessageInternal: TestAllRequiredTypesProto2.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 3) {
         private object PresenceIndices {
             const val a: Int = 0
             const val corecursive: Int = 1
@@ -5270,7 +5270,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         companion object
     }
 
-    class DataInternal: TestAllRequiredTypesProto2.Data, InternalMessage(fieldsWithPresence = 2) {
+    class DataInternal: TestAllRequiredTypesProto2.Data.Builder, InternalMessage(fieldsWithPresence = 2) {
         private object PresenceIndices {
             const val groupInt32: Int = 0
             const val groupUint32: Int = 1
@@ -5360,7 +5360,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         companion object
     }
 
-    class MessageSetCorrectInternal: TestAllRequiredTypesProto2.MessageSetCorrect, InternalMessage(fieldsWithPresence = 0) {
+    class MessageSetCorrectInternal: TestAllRequiredTypesProto2.MessageSetCorrect.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -5442,7 +5442,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         companion object
     }
 
-    class MessageSetCorrectExtension1Internal: TestAllRequiredTypesProto2.MessageSetCorrectExtension1, InternalMessage(fieldsWithPresence = 1) {
+    class MessageSetCorrectExtension1Internal: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val str: Int = 0
         }
@@ -5547,7 +5547,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
         companion object
     }
 
-    class MessageSetCorrectExtension2Internal: TestAllRequiredTypesProto2.MessageSetCorrectExtension2, InternalMessage(fieldsWithPresence = 1) {
+    class MessageSetCorrectExtension2Internal: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder, InternalMessage(fieldsWithPresence = 1) {
         private object PresenceIndices {
             const val i: Int = 0
         }
@@ -5688,7 +5688,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2, InternalMe
     companion object
 }
 
-class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence = 0) {
+class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -5772,7 +5772,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         }
     }
 
-    class A1Internal: TestLargeOneof.A1, InternalMessage(fieldsWithPresence = 0) {
+    class A1Internal: TestLargeOneof.A1.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -5854,7 +5854,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         companion object
     }
 
-    class A2Internal: TestLargeOneof.A2, InternalMessage(fieldsWithPresence = 0) {
+    class A2Internal: TestLargeOneof.A2.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -5936,7 +5936,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         companion object
     }
 
-    class A3Internal: TestLargeOneof.A3, InternalMessage(fieldsWithPresence = 0) {
+    class A3Internal: TestLargeOneof.A3.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -6018,7 +6018,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         companion object
     }
 
-    class A4Internal: TestLargeOneof.A4, InternalMessage(fieldsWithPresence = 0) {
+    class A4Internal: TestLargeOneof.A4.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 
@@ -6100,7 +6100,7 @@ class TestLargeOneofInternal: TestLargeOneof, InternalMessage(fieldsWithPresence
         companion object
     }
 
-    class A5Internal: TestLargeOneof.A5, InternalMessage(fieldsWithPresence = 0) {
+    class A5Internal: TestLargeOneof.A5.Builder, InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
 

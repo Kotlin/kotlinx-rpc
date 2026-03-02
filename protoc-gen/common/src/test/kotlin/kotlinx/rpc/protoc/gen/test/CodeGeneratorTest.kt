@@ -137,6 +137,7 @@ class CodeGeneratorTest {
                 generateFileLevelComments = false,
                 indentSize = 4,
                 platform = platform,
+                protoNamesOutput = null,
             ),
             nameTable = nameTable.scoped(packageFqName, mutableSetOf()),
             indent = "",

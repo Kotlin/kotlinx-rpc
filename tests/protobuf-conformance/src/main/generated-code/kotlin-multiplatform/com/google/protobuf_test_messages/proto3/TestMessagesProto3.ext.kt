@@ -12,7 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 * }
 * ```
 */
-operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3Internal.() -> Unit): TestAllTypesProto3 {
+operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3.Builder.() -> Unit): TestAllTypesProto3 {
     val msg = TestAllTypesProto3Internal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -26,7 +26,7 @@ operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3Interna
 * }
 * ```
 */
-fun TestAllTypesProto3.copy(body: TestAllTypesProto3Internal.() -> Unit = {}): TestAllTypesProto3 {
+fun TestAllTypesProto3.copy(body: TestAllTypesProto3.Builder.() -> Unit = {}): TestAllTypesProto3 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -43,7 +43,7 @@ val TestAllTypesProto3.presence: TestAllTypesProto3Presence get() = this.asInter
 * }
 * ```
 */
-operator fun ForeignMessage.Companion.invoke(body: ForeignMessageInternal.() -> Unit): ForeignMessage {
+operator fun ForeignMessage.Companion.invoke(body: ForeignMessage.Builder.() -> Unit): ForeignMessage {
     val msg = ForeignMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -57,7 +57,7 @@ operator fun ForeignMessage.Companion.invoke(body: ForeignMessageInternal.() -> 
 * }
 * ```
 */
-fun ForeignMessage.copy(body: ForeignMessageInternal.() -> Unit = {}): ForeignMessage {
+fun ForeignMessage.copy(body: ForeignMessage.Builder.() -> Unit = {}): ForeignMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -67,7 +67,7 @@ fun ForeignMessage.copy(body: ForeignMessageInternal.() -> Unit = {}): ForeignMe
 * val message = NullHypothesisProto3 { }
 * ```
 */
-operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3Internal.() -> Unit): NullHypothesisProto3 {
+operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Builder.() -> Unit): NullHypothesisProto3 {
     val msg = NullHypothesisProto3Internal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -79,7 +79,7 @@ operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3Int
 * val copy = original.copy()
 * ```
 */
-fun NullHypothesisProto3.copy(body: NullHypothesisProto3Internal.() -> Unit = {}): NullHypothesisProto3 {
+fun NullHypothesisProto3.copy(body: NullHypothesisProto3.Builder.() -> Unit = {}): NullHypothesisProto3 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -89,7 +89,7 @@ fun NullHypothesisProto3.copy(body: NullHypothesisProto3Internal.() -> Unit = {}
 * val message = EnumOnlyProto3 { }
 * ```
 */
-operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3Internal.() -> Unit): EnumOnlyProto3 {
+operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3.Builder.() -> Unit): EnumOnlyProto3 {
     val msg = EnumOnlyProto3Internal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -101,7 +101,7 @@ operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3Internal.() -> 
 * val copy = original.copy()
 * ```
 */
-fun EnumOnlyProto3.copy(body: EnumOnlyProto3Internal.() -> Unit = {}): EnumOnlyProto3 {
+fun EnumOnlyProto3.copy(body: EnumOnlyProto3.Builder.() -> Unit = {}): EnumOnlyProto3 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -113,7 +113,7 @@ fun EnumOnlyProto3.copy(body: EnumOnlyProto3Internal.() -> Unit = {}): EnumOnlyP
 * }
 * ```
 */
-operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllTypesProto3Internal.NestedMessageInternal.() -> Unit): TestAllTypesProto3.NestedMessage {
+operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit): TestAllTypesProto3.NestedMessage {
     val msg = TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
     return msg
@@ -127,7 +127,7 @@ operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllType
 * }
 * ```
 */
-fun TestAllTypesProto3.NestedMessage.copy(body: TestAllTypesProto3Internal.NestedMessageInternal.() -> Unit = {}): TestAllTypesProto3.NestedMessage {
+fun TestAllTypesProto3.NestedMessage.copy(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit = {}): TestAllTypesProto3.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 

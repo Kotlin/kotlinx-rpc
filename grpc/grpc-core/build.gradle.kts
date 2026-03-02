@@ -47,7 +47,7 @@ kotlin {
                 implementation(libs.serialization.json)
 
                 implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
-                implementation(projects.protobuf.protobufCore)
+                implementation(projects.protobuf.protobufApi)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.tests.testProtos)
                 implementation(projects.tests.testUtils)
@@ -91,7 +91,7 @@ kotlin {
         nativeMain {
             dependencies {
                 // required for status.proto
-                implementation(projects.protobuf.protobufCore)
+                implementation(projects.protobuf.protobufApi)
             }
         }
 

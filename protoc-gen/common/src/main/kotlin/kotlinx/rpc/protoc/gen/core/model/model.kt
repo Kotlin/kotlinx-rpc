@@ -62,6 +62,10 @@ data class MessageDeclaration(
             ?: name.suffixed("Internal")
     }
 
+    val builderClassName: FqName.Declaration by lazy {
+        name.nested("Builder")
+    }
+
     val internalCompanionName: FqName.Declaration by lazy { internalClassName.nested("Companion") }
     val presenceIndicesName: FqName.Declaration by lazy { internalClassName.nested("PresenceIndices") }
     val marshallerObjectName: FqName.Declaration by lazy { internalClassName.nested("MARSHALLER") }

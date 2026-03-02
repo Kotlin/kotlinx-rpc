@@ -125,9 +125,6 @@ internal class RpcStubGenerator(
     @Suppress("unused")
     private val logger: MessageCollector,
 ) {
-    private fun irBuilder(symbol: IrSymbol): DeclarationIrBuilder =
-        DeclarationIrBuilder(ctx.pluginContext, symbol, symbol.owner.startOffset, symbol.owner.endOffset)
-
     private var stubClass: IrClass by Delegates.notNull()
     private var stubClassThisReceiver: IrValueParameter by Delegates.notNull()
 
@@ -178,7 +175,7 @@ internal class RpcStubGenerator(
                 type = ctx.rpcClient.defaultType
             }
 
-            addDefaultConstructor(this)
+            addDefaultConstructor(ctx.pluginContext, this)
         }
     }
 
@@ -325,7 +322,7 @@ internal class RpcStubGenerator(
 
             overriddenSymbols = listOf(method.function.symbol)
 
-            body = irBuilder(symbol).irBlockBody {
+            body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
                 if (method.function.isNonSuspendingWithFlowReturn(declaration.stubClass.file)) {
                     +irReturn(
                         irRpcMethodClientCall(
@@ -532,23 +529,12 @@ internal class RpcStubGenerator(
                 if (declaration.isGrpc) ctx.grpcServiceDescriptor.typeWith(declaration.serviceType) else null,
             )
 
-            generateCompanionObjectConstructor()
+            generateCompanionObjectConstructor(ctx.pluginContext)
 
             generateCompanionObjectContent()
 
             addAnyOverrides(ctx.rpcServiceDescriptor.owner)
         } ?: error("Expected companion object to be present")
-    }
-
-    private fun IrClass.generateCompanionObjectConstructor() {
-        // default object constructor
-        addConstructor {
-            name = this@generateCompanionObjectConstructor.name
-            isPrimary = true
-            visibility = DescriptorVisibilities.PRIVATE
-        }.apply {
-            addDefaultConstructor(this)
-        }
     }
 
     private fun IrClass.generateCompanionObjectContent() {
@@ -689,7 +675,7 @@ internal class RpcStubGenerator(
                         type = ctx.arrayOfAnyNullable
                     }
 
-                    body = irBuilder(symbol).irBlockBody {
+                    body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
                         val call = irCall(callable.function).apply {
                             arguments {
                                 dispatchReceiver = irGet(serviceParameter)
@@ -1013,7 +999,7 @@ internal class RpcStubGenerator(
                 type = ctx.rpcClient.defaultType
             }
 
-            body = irBuilder(symbol).irBlockBody {
+            body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
                 +irReturn(
                     irCallConstructor(
                         callee = stubClass.constructors.single().symbol,
@@ -1065,7 +1051,7 @@ internal class RpcStubGenerator(
                 type = ctx.marshallerConfig.defaultType.makeNullable()
             }
 
-            body = irBuilder(symbol).irBlockBody {
+            body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
                 val methodDescriptorMap = irTemporary(
                     value = irMethodDescriptorMap(resolver, marshallerConfig),
                     nameHint = "methodDescriptorMap",
@@ -1552,19 +1538,6 @@ internal class RpcStubGenerator(
         }
     }
 
-    // default constructor implementation
-    private fun IrClass.addDefaultConstructor(constructor: IrConstructor) {
-        constructor.body = irBuilder(constructor.symbol).irBlockBody {
-            +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.constructors.single())
-            +IrInstanceInitializerCallImpl(
-                startOffset = startOffset,
-                endOffset = endOffset,
-                classSymbol = this@addDefaultConstructor.symbol,
-                type = context.irBuiltIns.unitType,
-            )
-        }
-    }
-
     private fun irMapOf(
         keyType: IrType,
         valueType: IrType,
@@ -1781,7 +1754,7 @@ internal class RpcStubGenerator(
                 type = ctx.irBuiltIns.stringType
             }
 
-            body = irBuilder(symbol).irBlockBody {
+            body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
                 +irReturn(
                     irCall(ctx.functions.mapGet.symbol, resultType).apply {
                         vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }

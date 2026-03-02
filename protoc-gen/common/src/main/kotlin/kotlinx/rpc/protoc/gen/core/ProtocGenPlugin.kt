@@ -13,7 +13,10 @@ import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse.Feature
+import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.Model
+import kotlinx.rpc.protoc.gen.core.model.fullNestedNameAsList
+import kotlinx.rpc.protoc.gen.core.model.packageName
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.helpers.NOPLogger
@@ -22,17 +25,23 @@ import java.io.File
 @Volatile
 lateinit var globalLogger: Logger
 
+class GeneratedMetadata {
+    val protoNamesList = mutableListOf<FqName>()
+}
+
 class Config(
     val explicitApiModeEnabled: Boolean,
     val generateComments: Boolean,
     val generateFileLevelComments: Boolean,
     val indentSize: Int,
     val platform: Platform,
+    val protoNamesOutput: String?,
 )
 
 abstract class ProtocGenPlugin {
     companion object {
         private const val DEBUG_OUTPUT_OPTION = "debugOutput"
+        private const val PROTO_NAMES_OUTPUT_OPTION = "protoNamesOutput"
         private const val EXPLICIT_API_MODE_ENABLED_OPTION = "explicitApiModeEnabled"
         private const val GENERATE_COMMENTS_OPTION = "generateComments"
         private const val GENERATE_FILE_LEVEL_COMMENTS_OPTION = "generateFileLevelComments"
@@ -82,16 +91,21 @@ abstract class ProtocGenPlugin {
 
         val platform = parameters[PLATFORM_OPTION]?.takeIf { it.isNotBlank() } ?: "jvm"
 
+        val protoNamesOutput = parameters[PROTO_NAMES_OUTPUT_OPTION]
+
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
             generateComments = generateComments,
             generateFileLevelComments = generateFileLevelComments,
             indentSize = indentSize,
             platform = Platform.fromString(platform),
+            protoNamesOutput = protoNamesOutput,
         )
 
+        val generatedMetadata = GeneratedMetadata()
+
         globalLogger = logger
-        val files = input.runGeneration(config)
+        val files = input.runGeneration(config, generatedMetadata)
 
         return CodeGeneratorResponse.newBuilder()
             .apply {
@@ -109,10 +123,11 @@ abstract class ProtocGenPlugin {
             .build()
     }
 
-    private fun CodeGeneratorRequest.runGeneration(config: Config): List<CodeGeneratorResponse.File?> {
+    private fun CodeGeneratorRequest.runGeneration(config: Config, generatedMetadata: GeneratedMetadata): List<CodeGeneratorResponse.File?> {
         return try {
-            generateKotlinByModel(
+            val files = generateKotlinByModel(
                 config = config,
+                generatedMetadata = generatedMetadata,
                 model = this.toModel(config),
             ).map { file ->
                 CodeGeneratorResponse.File.newBuilder()
@@ -130,6 +145,24 @@ abstract class ProtocGenPlugin {
                     }
                     .build()
             }
+
+            if (config.protoNamesOutput != null) {
+                val protoNames = generatedMetadata.protoNamesList.joinToString(System.lineSeparator()) {
+                    "${it.packageName()} ${it.fullNestedNameAsList().joinToString(".")}"
+                }
+
+                try {
+                    File(config.protoNamesOutput).writeText("""
+# GENERATED METADATA FILE, DO NOT EDIT
+                        
+$protoNames
+                    """.trimIndent())
+                } catch (e: Exception) {
+                    logger.error("Failed to write proto names to file", e)
+                }
+            }
+
+            files
         } finally {
             (logger as ch.qos.logback.classic.Logger).detachAndStopAllAppenders()
         }
@@ -138,5 +171,6 @@ abstract class ProtocGenPlugin {
     protected abstract fun generateKotlinByModel(
         config: Config,
         model: Model,
+        generatedMetadata: GeneratedMetadata,
     ): List<FileGenerator>
 }
