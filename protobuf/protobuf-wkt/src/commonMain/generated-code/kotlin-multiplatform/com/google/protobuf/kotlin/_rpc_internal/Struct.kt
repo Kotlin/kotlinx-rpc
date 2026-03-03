@@ -196,16 +196,28 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public fun Value.Kind.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is Value.Kind.NullValue -> 0
-            is Value.Kind.NumberValue -> 1
-            is Value.Kind.StringValue -> 2
-            is Value.Kind.BoolValue -> 3
-            is Value.Kind.StructValue -> 4
-            is Value.Kind.ListValue -> 5
+        return when (this) {
+            is Value.Kind.NullValue -> hashCode() + 0
+            is Value.Kind.NumberValue -> value.toBits().hashCode() + 1
+            is Value.Kind.StringValue -> hashCode() + 2
+            is Value.Kind.BoolValue -> hashCode() + 3
+            is Value.Kind.StructValue -> hashCode() + 4
+            is Value.Kind.ListValue -> hashCode() + 5
         }
+    }
 
-        return hashCode() + offset
+    public fun oneOfEquals(a: Value.Kind?, b: Value.Kind?): Boolean {
+        if (a === b) return true
+        if (a == null || b == null) return false
+        if (a::class != b::class) return false
+        return when (a) {
+            is Value.Kind.NullValue -> a == b
+            is Value.Kind.NumberValue -> a.value.toBits() == (b as Value.Kind.NumberValue).value.toBits()
+            is Value.Kind.StringValue -> a == b
+            is Value.Kind.BoolValue -> a == b
+            is Value.Kind.StructValue -> a == b
+            is Value.Kind.ListValue -> a == b
+        }
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -214,7 +226,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         if (other == null || this::class != other::class) return false
         other as ValueInternal
         other.checkRequiredFields()
-        if (this.kind != other.kind) return false
+        if (!oneOfEquals(this.kind, other.kind)) return false
         return true
     }
 

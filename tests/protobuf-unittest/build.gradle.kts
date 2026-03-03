@@ -23,6 +23,19 @@ kotlin {
 dependencies {
     implementation(libs.coroutines.core)
     implementation(projects.protobuf.protobufCore)
+
+    testImplementation(libs.kotlin.test.junit5)
+    testImplementation(projects.grpc.grpcMarshaller)
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+// The protoc plugin creates proto processing tasks for all source sets, including test.
+// Declare the missing dependency so the test proto tasks can find the extracted protos.
+tasks.matching { it.name.startsWith("processTest") && it.name.contains("Proto") }.configureEach {
+    dependsOn("extractUnittestProtos")
 }
 
 setupProtobufUnittestProtos()
