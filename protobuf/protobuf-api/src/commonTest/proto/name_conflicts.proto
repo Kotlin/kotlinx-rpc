@@ -122,14 +122,14 @@ message MoreInternalNameConflicts {
     int32 config = 6;
     int32 decoder = 7;
     int32 tag = 8;
-    int32 __result = 9;
+    int32 result = 9;
     int32 elem = 10;
     int32 entry = 11;
     int32 kEntry = 12;
     int32 number = 13;
     int32 offset = 14;
     int32 internalMsg = 15;
-    int32 _unknownFieldsEncoder = 16;
+    int32 unknownFieldsEncoder = 16;
     int32 startGroup = 17;
     int32 builder = 18;
 }

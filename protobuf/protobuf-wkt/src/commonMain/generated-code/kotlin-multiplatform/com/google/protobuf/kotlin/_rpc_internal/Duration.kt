@@ -99,6 +99,7 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
 
         public override fun decode(source: Source, config: MarshallerConfig?): Duration {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = DurationInternal()
                 checkForPlatformDecodeException {
                     DurationInternal.decodeWith(msg, it, config as? ProtobufConfig)

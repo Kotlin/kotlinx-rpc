@@ -1558,6 +1558,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.NestedMessage {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3087,6 +3088,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.Data {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = DataInternal()
                     checkForPlatformDecodeException {
                         DataInternal.decodeWith(msg, it, config as? ProtobufConfig, null)
@@ -3209,6 +3211,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MultiWordGroupField {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MultiWordGroupFieldInternal()
                     checkForPlatformDecodeException {
                         MultiWordGroupFieldInternal.decodeWith(msg, it, config as? ProtobufConfig, null)
@@ -3291,6 +3294,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrect {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectInternal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3396,6 +3400,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrectExtension1 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectExtension1Internal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectExtension1Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3501,6 +3506,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.MessageSetCorrectExtension2 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectExtension2Internal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectExtension2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3602,6 +3608,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2.ExtensionWithOneof {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = ExtensionWithOneofInternal()
                     checkForPlatformDecodeException {
                         ExtensionWithOneofInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3638,6 +3645,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestAllTypesProto2Internal()
                 checkForPlatformDecodeException {
                     TestAllTypesProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3743,6 +3751,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
 
         override fun decode(source: Source, config: MarshallerConfig?): ForeignMessageProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ForeignMessageProto2Internal()
                 checkForPlatformDecodeException {
                     ForeignMessageProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3865,6 +3874,7 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
 
         override fun decode(source: Source, config: MarshallerConfig?): GroupField {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = GroupFieldInternal()
                 checkForPlatformDecodeException {
                     GroupFieldInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -4109,6 +4119,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
             override fun decode(source: Source, config: MarshallerConfig?): UnknownToTestAllTypes.OptionalGroup {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = OptionalGroupInternal()
                     checkForPlatformDecodeException {
                         OptionalGroupInternal.decodeWith(msg, it, config as? ProtobufConfig, null)
@@ -4145,6 +4156,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
         override fun decode(source: Source, config: MarshallerConfig?): UnknownToTestAllTypes {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = UnknownToTestAllTypesInternal()
                 checkForPlatformDecodeException {
                     UnknownToTestAllTypesInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -4227,6 +4239,7 @@ class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessag
 
         override fun decode(source: Source, config: MarshallerConfig?): NullHypothesisProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = NullHypothesisProto2Internal()
                 checkForPlatformDecodeException {
                     NullHypothesisProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -4309,6 +4322,7 @@ class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWith
 
         override fun decode(source: Source, config: MarshallerConfig?): EnumOnlyProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumOnlyProto2Internal()
                 checkForPlatformDecodeException {
                     EnumOnlyProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -4414,6 +4428,7 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
         override fun decode(source: Source, config: MarshallerConfig?): OneStringProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = OneStringProto2Internal()
                 checkForPlatformDecodeException {
                     OneStringProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -4541,6 +4556,7 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
 
         override fun decode(source: Source, config: MarshallerConfig?): ProtoWithKeywords {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ProtoWithKeywordsInternal()
                 checkForPlatformDecodeException {
                     ProtoWithKeywordsInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5361,6 +5377,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.NestedMessage {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5483,6 +5500,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.Data {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = DataInternal()
                     checkForPlatformDecodeException {
                         DataInternal.decodeWith(msg, it, config as? ProtobufConfig, null)
@@ -5565,6 +5583,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrect {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectInternal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5670,6 +5689,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectExtension1Internal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectExtension1Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5775,6 +5795,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = MessageSetCorrectExtension2Internal()
                     checkForPlatformDecodeException {
                         MessageSetCorrectExtension2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5811,6 +5832,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override fun decode(source: Source, config: MarshallerConfig?): TestAllRequiredTypesProto2 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestAllRequiredTypesProto2Internal()
                 checkForPlatformDecodeException {
                     TestAllRequiredTypesProto2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -5977,6 +5999,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
             override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A1 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = A1Internal()
                     checkForPlatformDecodeException {
                         A1Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -6059,6 +6082,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
             override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A2 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = A2Internal()
                     checkForPlatformDecodeException {
                         A2Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -6141,6 +6165,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
             override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A3 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = A3Internal()
                     checkForPlatformDecodeException {
                         A3Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -6223,6 +6248,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
             override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A4 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = A4Internal()
                     checkForPlatformDecodeException {
                         A4Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -6305,6 +6331,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
             override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof.A5 {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = A5Internal()
                     checkForPlatformDecodeException {
                         A5Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -6341,6 +6368,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         override fun decode(source: Source, config: MarshallerConfig?): TestLargeOneof {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestLargeOneofInternal()
                 checkForPlatformDecodeException {
                     TestLargeOneofInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -7743,14 +7771,14 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
                     msg.data = TestAllTypesProto2Internal.DataInternal()
                 }
 
-                TestAllTypesProto2Internal.DataInternal.decodeWith(msg.data.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.data.asInternal()) { msg, decoder -> TestAllTypesProto2Internal.DataInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 204 && tag.wireType == WireType.START_GROUP -> {
                 if (!msg.presenceMask[23]) {
                     msg.multiwordgroupfield = TestAllTypesProto2Internal.MultiWordGroupFieldInternal()
                 }
 
-                TestAllTypesProto2Internal.MultiWordGroupFieldInternal.decodeWith(msg.multiwordgroupfield.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.multiwordgroupfield.asInternal()) { msg, decoder -> TestAllTypesProto2Internal.MultiWordGroupFieldInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 241 && tag.wireType == WireType.VARINT -> {
                 msg.defaultInt32 = decoder.readInt32()
@@ -8769,7 +8797,7 @@ fun UnknownToTestAllTypesInternal.Companion.decodeWith(msg: UnknownToTestAllType
                     msg.optionalgroup = UnknownToTestAllTypesInternal.OptionalGroupInternal()
                 }
 
-                UnknownToTestAllTypesInternal.OptionalGroupInternal.decodeWith(msg.optionalgroup.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.optionalgroup.asInternal()) { msg, decoder -> UnknownToTestAllTypesInternal.OptionalGroupInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 1006 && tag.wireType == WireType.VARINT -> {
                 msg.optionalBool = decoder.readBool()
@@ -9482,7 +9510,7 @@ fun TestAllRequiredTypesProto2Internal.Companion.decodeWith(msg: TestAllRequired
                     msg.data = TestAllRequiredTypesProto2Internal.DataInternal()
                 }
 
-                TestAllRequiredTypesProto2Internal.DataInternal.decodeWith(msg.data.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.data.asInternal()) { msg, decoder -> TestAllRequiredTypesProto2Internal.DataInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 241 && tag.wireType == WireType.VARINT -> {
                 msg.defaultInt32 = decoder.readInt32()

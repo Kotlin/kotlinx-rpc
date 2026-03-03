@@ -10,6 +10,9 @@ import kotlinx.io.Source
 import kotlinx.io.asInputStream
 
 internal class WireDecoderJvm(source: Source) : WireDecoder {
+    override var recursionDepth: Int = 0
+    override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtobufConfig.DEFAULT_RECURSION_LIMIT
+
     // there is no way to omit coping here
     internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 

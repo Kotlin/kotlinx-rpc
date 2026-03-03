@@ -936,6 +936,10 @@ class ModelToProtobufKotlinCommonGenerator(
                 returnType = declaration.name.scoped(),
             ) {
                 scope("%T(source).use".scoped(FqName.RpcClasses.WireDecoder)) {
+                    code(
+                        "(config as? %T)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }"
+                            .scoped(FqName.RpcClasses.ProtobufConfig)
+                    )
                     code("val msg = %T()".scoped(declaration.internalClassName))
                     scope("checkForPlatformDecodeException".scoped(), nlAfterClosed = false) {
                         // if the message declaration is a group, we must pass null as the
@@ -1285,8 +1289,8 @@ class ModelToProtobufKotlinCommonGenerator(
                 val msg = fieldType.dec.value
                 if (msg.isGroup) {
                     code(
-                        msg.internalClassName.scoped().merge(lvalue) { internalClassName, lvalue ->
-                            "$internalClassName.decodeWith($lvalue.asInternal(), decoder, config, tag)"
+                        lvalue.merge(msg.internalClassName.scoped()) { lvalue, internalClassName ->
+                            "decoder.readGroup($lvalue.asInternal()) { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config, tag) }"
                         }
                     )
                 } else {

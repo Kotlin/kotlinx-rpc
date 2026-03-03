@@ -141,6 +141,7 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
 
         public override fun decode(source: Source, config: MarshallerConfig?): Type {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TypeInternal()
                 checkForPlatformDecodeException {
                     TypeInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -274,6 +275,7 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Field {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FieldInternal()
                 checkForPlatformDecodeException {
                     FieldInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -405,6 +407,7 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
 
         public override fun decode(source: Source, config: MarshallerConfig?): Enum {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumInternal()
                 checkForPlatformDecodeException {
                     EnumInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -503,6 +506,7 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
 
         public override fun decode(source: Source, config: MarshallerConfig?): EnumValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumValueInternal()
                 checkForPlatformDecodeException {
                     EnumValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -614,6 +618,7 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Option {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = OptionInternal()
                 checkForPlatformDecodeException {
                     OptionInternal.decodeWith(msg, it, config as? ProtobufConfig)

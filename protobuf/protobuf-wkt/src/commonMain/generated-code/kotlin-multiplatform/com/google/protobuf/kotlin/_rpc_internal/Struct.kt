@@ -158,6 +158,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Struct {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = StructInternal()
                 checkForPlatformDecodeException {
                     StructInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -294,6 +295,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Value {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ValueInternal()
                 checkForPlatformDecodeException {
                     ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -381,6 +383,7 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
 
         public override fun decode(source: Source, config: MarshallerConfig?): ListValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ListValueInternal()
                 checkForPlatformDecodeException {
                     ListValueInternal.decodeWith(msg, it, config as? ProtobufConfig)

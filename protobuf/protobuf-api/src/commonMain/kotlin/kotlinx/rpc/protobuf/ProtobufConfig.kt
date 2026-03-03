@@ -25,10 +25,22 @@ import kotlinx.rpc.grpc.marshaller.MarshallerConfig
  *
  * @property discardUnknownFields When `true`, unknown fields encountered during deserialization
  *   are silently discarded. When `false` (default), unknown fields are preserved.
+ * @property recursionLimit The maximum allowed nesting depth when decoding protobuf messages.
+ *   Messages nested deeper than this limit will cause a [kotlinx.rpc.protobuf.internal.ProtobufDecodingException].
+ *   Defaults to [DEFAULT_RECURSION_LIMIT] (100), matching Google's protobuf default.
  *
  * @see MarshallerConfig
  * @see kotlinx.rpc.grpc.marshaller.marshallerOf
  */
 public class ProtobufConfig(
-    public val discardUnknownFields: Boolean = false
-): MarshallerConfig
+    public val discardUnknownFields: Boolean = false,
+    public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
+): MarshallerConfig {
+    public companion object {
+        /**
+         * The default recursion limit for decoding nested protobuf messages.
+         * Matches the default used by Google's Java protobuf library.
+         */
+        public const val DEFAULT_RECURSION_LIMIT: Int = 100
+    }
+}

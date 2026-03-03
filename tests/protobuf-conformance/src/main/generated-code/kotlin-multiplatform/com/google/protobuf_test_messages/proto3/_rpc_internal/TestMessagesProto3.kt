@@ -1205,6 +1205,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto3.NestedMessage {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2230,6 +2231,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto3 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestAllTypesProto3Internal()
                 checkForPlatformDecodeException {
                     TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2317,6 +2319,7 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
 
         override fun decode(source: Source, config: MarshallerConfig?): ForeignMessage {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ForeignMessageInternal()
                 checkForPlatformDecodeException {
                     ForeignMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2399,6 +2402,7 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
 
         override fun decode(source: Source, config: MarshallerConfig?): NullHypothesisProto3 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = NullHypothesisProto3Internal()
                 checkForPlatformDecodeException {
                     NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2481,6 +2485,7 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
 
         override fun decode(source: Source, config: MarshallerConfig?): EnumOnlyProto3 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumOnlyProto3Internal()
                 checkForPlatformDecodeException {
                     EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
