@@ -159,6 +159,7 @@ interface TestAllTypesEdition2023 {
     /**
     * groups
     */
+    @GeneratedProtoMessage
     interface GroupLikeType {
         val groupInt32: Int?
         val groupUint32: UInt?

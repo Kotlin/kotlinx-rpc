@@ -57,6 +57,7 @@ sealed interface FqName {
         val Any = fq("kotlin", "Any")
         val String = fq("kotlin", "String")
         val Int = fq("kotlin", "Int")
+        val Long = fq("kotlin", "Long")
         val Float = fq("kotlin", "Float")
         val Double = fq("kotlin", "Double")
         val Boolean = fq("kotlin", "Boolean")

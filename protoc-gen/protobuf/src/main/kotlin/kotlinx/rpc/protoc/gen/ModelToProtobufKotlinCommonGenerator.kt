@@ -13,6 +13,7 @@ import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
+import kotlinx.rpc.protoc.gen.core.NameConflictCollector
 import kotlinx.rpc.protoc.gen.core.ScopedFormattedString
 import kotlinx.rpc.protoc.gen.core.fqName
 import kotlinx.rpc.protoc.gen.core.joinToScopedString
@@ -39,7 +40,17 @@ class ModelToProtobufKotlinCommonGenerator(
     config: Config,
     generatedMetadata: GeneratedMetadata,
     model: Model,
-) : AModelToKotlinCommonGenerator(config, generatedMetadata, model) {
+    conflictCollector: NameConflictCollector = NameConflictCollector(),
+) : AModelToKotlinCommonGenerator(config, generatedMetadata, model, conflictCollector) {
+    override val publicGeneratedNames: Set<String> = setOf(
+        // Nested types generated per message
+        "Builder", "Companion", "MARSHALLER", "DESCRIPTOR", "PresenceIndices", "BytesDefaults",
+        // Internal properties that cannot be mangled (referenced by fixed names across generated files)
+        "_size", "_unknownFields", "_presence", "presenceMask",
+        // Public extension functions
+        "copy", "invoke", "presence",
+    )
+
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
         get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean
@@ -279,7 +290,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 internalImports.add(subMsgPkg.importPath("copy"))
                 internalImports.add(subMsgPkg.importPath("checkRequiredFields"))
                 internalImports.add(subMsgPkg.importPath("decodeWith"))
-                internalImports.add(subMsg.internalClassName.fullName())
             }
         }
     }
@@ -402,20 +412,20 @@ class ModelToProtobufKotlinCommonGenerator(
                     if (field.nullable) {
                         code(
                             presenceCheck.wrapIn { presenceCheck ->
-                                "if ($presenceCheck((${field.name} != null && (other.${field.name} == null || !${field.name}!!.contentEquals(other.${field.name}!!))) || ${field.name} == null)) return false"
+                                "if ($presenceCheck((this.${field.name} != null && (other.${field.name} == null || !this.${field.name}!!.contentEquals(other.${field.name}!!))) || this.${field.name} == null)) return false"
                             }
                         )
                     } else {
                         code(
                             presenceCheck.wrapIn { presenceCheck ->
-                                "if ($presenceCheck!${field.name}.contentEquals(other.${field.name})) return false"
+                                "if ($presenceCheck!this.${field.name}.contentEquals(other.${field.name})) return false"
                             }
                         )
                     }
                 } else {
                     code(
                         presenceCheck.wrapIn { presenceCheck ->
-                            "if ($presenceCheck${field.name} != other.${field.name}) return false"
+                            "if (${presenceCheck}this.${field.name} != other.${field.name}) return false"
                         }
                     )
                 }
@@ -429,7 +439,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 -> {
                 code(
                     presenceCheck.wrapIn { presenceCheck ->
-                        "if ($presenceCheck${field.name} != other.${field.name}) return false"
+                        "if (${presenceCheck}this.${field.name} != other.${field.name}) return false"
                     }
                 )
             }
@@ -453,39 +463,40 @@ class ModelToProtobufKotlinCommonGenerator(
             code("checkRequiredFields()".scoped())
             code("val indentString = \" \".repeat(indent)".scoped())
             code("val nextIndentString = \" \".repeat(indent + ${config.indentSize})".scoped())
-            scope("return buildString".scoped()) {
-                code("appendLine(\"%T(\")".scoped(declaration.name))
-                declaration.actualFields.forEach {
-                    val suffix = when (it.type) {
-                        FieldType.IntegralType.BYTES -> {
-                            ".contentToString()"
-                        }
 
-                        is FieldType.Message -> {
-                            ".asInternal().asString(indent = indent + ${config.indentSize})"
-                        }
-
-                        else -> {
-                            ""
-                        }
+            code("val builder = StringBuilder()".scoped())
+            code("builder.appendLine(\"%T(\")".scoped(declaration.name))
+            declaration.actualFields.forEach {
+                val suffix = when (it.type) {
+                    FieldType.IntegralType.BYTES -> {
+                        ".contentToString()"
                     }
 
-                    val valueBuilder: CodeGenerator.() -> Unit = {
-                        code("appendLine(\"\${nextIndentString}${it.name}=\${${it.name}$suffix},\")".scoped())
+                    is FieldType.Message -> {
+                        ".asInternal().asString(indent = indent + ${config.indentSize})"
                     }
 
-                    if (it.presenceIdx != null) {
-                        ifBranch(condition = "presenceMask[${it.presenceIdx}]".scoped(), ifBlock = {
-                            valueBuilder()
-                        }) {
-                            code("appendLine(\"\${nextIndentString}${it.name}=<unset>,\")".scoped())
-                        }
-                    } else {
-                        valueBuilder()
+                    else -> {
+                        ""
                     }
                 }
-                code("append(\"\${indentString})\")".scoped())
+
+                val valueBuilder: CodeGenerator.() -> Unit = {
+                    code("builder.appendLine(\"\${nextIndentString}${it.name}=\${this.${it.name}$suffix},\")".scoped())
+                }
+
+                if (it.presenceIdx != null) {
+                    ifBranch(condition = "presenceMask[${it.presenceIdx}]".scoped(), ifBlock = {
+                        valueBuilder()
+                    }) {
+                        code("builder.appendLine(\"\${nextIndentString}${it.name}=<unset>,\")".scoped())
+                    }
+                } else {
+                    valueBuilder()
+                }
             }
+            code("builder.append(\"\${indentString})\")".scoped())
+            code("return builder.toString()".scoped())
         }
     }
 
@@ -656,7 +667,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
                     property(
-                        name = "has${field.name.capitalize()}",
+                        name = "has${field.rawName.capitalize()}",
                         type = FqName.Implicits.Boolean.scoped(),
                     )
                 }
@@ -700,7 +711,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
                     property(
-                        name = "has${field.name.capitalize()}",
+                        name = "has${field.rawName.capitalize()}",
                         modifiers = "override",
                         type = FqName.Implicits.Boolean.scoped(),
                         propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
@@ -724,7 +735,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val fieldDeclarations = declaration.actualFields.filter { it.presenceIdx != null }
             fieldDeclarations.forEachIndexed { i, field ->
                 property(
-                    field.name,
+                    name = field.name,
                     modifiers = "const",
                     value = field.presenceIdx.toString().scoped(),
                     type = FqName.Implicits.Int.scoped(),
@@ -748,9 +759,13 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             fieldDeclarations.forEachIndexed { i, field ->
                 val value = if (field.dec.hasDefaultValue()) {
-                    val stringValue = (field.dec.defaultValue as ByteString).toString(Charsets.UTF_8)
-                    if (stringValue.isNotEmpty()) {
-                        "\"${stringValue}\".encodeToByteArray()".scoped()
+                    val bytes = field.dec.defaultValue as ByteString
+                    if (bytes.size() > 0) {
+                        val hexBytes = (0 until bytes.size()).joinToString(", ") { idx ->
+                            val b = bytes.byteAt(idx).toInt() and 0xFF
+                            if (b > 0x7F) "0x${"%02X".format(b)}.toByte()" else "0x%02X".format(b)
+                        }
+                        "byteArrayOf($hexBytes)".scoped()
                     } else {
                         FieldType.IntegralType.BYTES.defaultValue
                     }
@@ -900,8 +915,10 @@ class ModelToProtobufKotlinCommonGenerator(
                         // if the startGroup tag is set, we decode the message as an inline group message,
                         // so in case of the tag being null, we know that the payload is malformed
                         scope("startGroup?.let".scoped()) {
-                            code("throw %T(\"Missing END_GROUP tag for field: \${startGroup.fieldNr}.\")"
-                                .scoped(FqName.RpcClasses.ProtobufDecodingException))
+                            code(
+                                "throw %T(\"Missing END_GROUP tag for field: \${startGroup.fieldNr}.\")"
+                                    .scoped(FqName.RpcClasses.ProtobufDecodingException)
+                            )
                         }
                         // if the startGroup is null, we decode the message like a normal non-group message,
                         // so we stop when the tag is null
@@ -1192,18 +1209,17 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         declaration.actualFields.forEach { field ->
-            val fieldName = field.name
             if (field.nullable) {
-                scope("$fieldName?.also".scoped()) {
+                scope("this.${field.name}?.also".scoped()) {
                     generateEncodeFieldValue(field, "it".scoped())
                 }
             } else if (field.dec.hasPresence()) {
                 ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                    generateEncodeFieldValue(field, field.name.scoped())
+                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
                 })
             } else {
                 ifBranch(condition = field.notDefaultCheck(declaration), ifBlock = {
-                    generateEncodeFieldValue(field, field.name.scoped())
+                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
                 })
             }
         }
@@ -1377,7 +1393,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // check submessages
         declaration.actualFields.filter { it.type is FieldType.Message }.forEach { field ->
             ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                code("${field.name}.asInternal().checkRequiredFields()".scoped())
+                code("this.${field.name}.asInternal().checkRequiredFields()".scoped())
             })
         }
 
@@ -1387,7 +1403,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val messageVariants = oneOfType.dec.variants.filter { it.type is FieldType.Message }
             if (messageVariants.isEmpty()) return@forEach
 
-            scope("${field.name}?.also".scoped()) {
+            scope("this.${field.name}?.also".scoped()) {
                 whenBlock {
                     messageVariants.forEach { variant ->
                         val variantClassName = (field.type as FieldType.OneOf).dec.name.nested(variant.name)
@@ -1405,7 +1421,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val listType = field.type as FieldType.List
             if (listType.value !is FieldType.Message) return@forEach
 
-            scope("${field.name}.forEach".scoped()) {
+            scope("this.${field.name}.forEach".scoped()) {
                 code("it.asInternal().checkRequiredFields()".scoped())
             }
         }
@@ -1416,7 +1432,7 @@ class ModelToProtobufKotlinCommonGenerator(
             // we only have to check the value, as the key cannot be a message
             if (mapType.entry.value !is FieldType.Message) return@forEach
 
-            scope("${field.name}.values.forEach".scoped()) {
+            scope("this.${field.name}.values.forEach".scoped()) {
                 code("it.asInternal().checkRequiredFields()".scoped())
             }
         }
@@ -1431,7 +1447,7 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             code("var __result = 0".scoped())
             declaration.actualFields.forEach { field ->
-                val fieldName = field.name
+                val fieldName = "this.${field.name}"
                 if (field.nullable) {
                     scope("$fieldName?.also".scoped()) {
                         generateFieldComputeSizeCall(field, "it".scoped())
@@ -1676,27 +1692,27 @@ class ModelToProtobufKotlinCommonGenerator(
                 val defaultValue = safeDefaultValue(parent)
                 when {
                     fieldType == FieldType.IntegralType.STRING &&
-                            defaultValue == FieldType.IntegralType.STRING.defaultValue -> "$name.isNotEmpty()".scoped()
+                        defaultValue == FieldType.IntegralType.STRING.defaultValue -> "this.$name.isNotEmpty()".scoped()
 
                     fieldType == FieldType.IntegralType.STRING -> defaultValue.wrapIn { defaultValue ->
-                        "!$name.contentEquals($defaultValue)"
+                        "!this.$name.contentEquals($defaultValue)"
                     }
 
                     fieldType == FieldType.IntegralType.BYTES &&
-                            defaultValue == FieldType.IntegralType.BYTES.defaultValue -> "$name.isNotEmpty()".scoped()
+                        defaultValue == FieldType.IntegralType.BYTES.defaultValue -> "this.$name.isNotEmpty()".scoped()
 
                     fieldType == FieldType.IntegralType.BYTES -> {
-                        defaultValue.wrapIn { defaultValue -> "!$name.contentEquals($defaultValue)" }
+                        defaultValue.wrapIn { defaultValue -> "!this.$name.contentEquals($defaultValue)" }
                     }
 
-                    else -> defaultValue.wrapIn { defaultValue -> "$name != $defaultValue" }
+                    else -> defaultValue.wrapIn { defaultValue -> "this.$name != $defaultValue" }
                 }
             }
 
-            is FieldType.List, is FieldType.Map -> "$name.isNotEmpty()".scoped()
+            is FieldType.List, is FieldType.Map -> "this.$name.isNotEmpty()".scoped()
 
             is FieldType.Enum -> {
-                safeDefaultValue(parent).wrapIn { safeDefaultValue -> "$name != $safeDefaultValue" }
+                safeDefaultValue(parent).wrapIn { safeDefaultValue -> "this.$name != $safeDefaultValue" }
             }
 
             is FieldType.Message -> error("Message fields should not be checked for default values.")
@@ -1716,7 +1732,15 @@ class ModelToProtobufKotlinCommonGenerator(
         val value = dec.defaultValue
         return when {
             value is String -> {
-                "\"$value\"".scoped()
+                val escaped = value
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("$", "\\$")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                    .replace("\t", "\\t")
+                    .replace("\u0000", "\\u0000")
+                "\"$escaped\"".scoped()
             }
 
             value is ByteString -> {
@@ -1740,8 +1764,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 value == Float.POSITIVE_INFINITY -> "%T.POSITIVE_INFINITY".scoped(FqName.Implicits.Float)
                 value == Float.NEGATIVE_INFINITY -> "%T.NEGATIVE_INFINITY".scoped(FqName.Implicits.Float)
                 else -> FqName.Implicits.Float.scoped().wrapIn { float ->
+                    val bits = java.lang.Float.floatToRawIntBits(value)
                     // otherwise, .format will fuck around with %T
-                    float + ".fromBits(0x%08X)".format(java.lang.Float.floatToRawIntBits(value))
+                    float + ".fromBits(0x%08X.toInt())".format(bits.toLong() and 0xFFFFFFFFL)
                 }
             }
 
@@ -1754,6 +1779,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     double + ".fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
                 }
             }
+
+            // Long.MIN_VALUE and Int.MIN_VALUE can't be expressed as literals directly
+            // because the compiler parses the minus sign and the number separately.
+            value is Long && value == Long.MIN_VALUE -> "%T.MIN_VALUE".scoped(FqName.Implicits.Long)
+            value is Int && value == Int.MIN_VALUE -> "%T.MIN_VALUE".scoped(FqName.Implicits.Int)
 
             else -> {
                 "${value}${type.scalarDefaultSuffix()}".scoped()

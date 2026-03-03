@@ -52,8 +52,8 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
         if (other == null || this::class != other::class) return false
         other as TimestampInternal
         other.checkRequiredFields()
-        if (seconds != other.seconds) return false
-        if (nanos != other.nanos) return false
+        if (this.seconds != other.seconds) return false
+        if (this.nanos != other.nanos) return false
         return true
     }
 
@@ -65,12 +65,12 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Timestamp(")
-            appendLine("${nextIndentString}seconds=${seconds},")
-            appendLine("${nextIndentString}nanos=${nanos},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Timestamp(")
+        builder.appendLine("${nextIndentString}seconds=${this.seconds},")
+        builder.appendLine("${nextIndentString}nanos=${this.nanos},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -126,12 +126,12 @@ public fun TimestampInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (seconds != 0L) {
-        encoder.writeInt64(fieldNr = 1, value = seconds)
+    if (this.seconds != 0L) {
+        encoder.writeInt64(fieldNr = 1, value = this.seconds)
     }
 
-    if (nanos != 0) {
-        encoder.writeInt32(fieldNr = 2, value = nanos)
+    if (this.nanos != 0) {
+        encoder.writeInt32(fieldNr = 2, value = this.nanos)
     }
 }
 
@@ -167,12 +167,12 @@ public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decode
 
 private fun TimestampInternal.computeSize(): Int {
     var __result = 0
-    if (seconds != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(seconds))
+    if (this.seconds != 0L) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.seconds))
     }
 
-    if (nanos != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(nanos))
+    if (this.nanos != 0) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.nanos))
     }
 
     return __result

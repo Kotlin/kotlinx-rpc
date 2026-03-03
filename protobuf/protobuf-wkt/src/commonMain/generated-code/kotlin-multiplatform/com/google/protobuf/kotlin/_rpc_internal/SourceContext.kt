@@ -46,7 +46,7 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
         if (other == null || this::class != other::class) return false
         other as SourceContextInternal
         other.checkRequiredFields()
-        if (fileName != other.fileName) return false
+        if (this.fileName != other.fileName) return false
         return true
     }
 
@@ -58,11 +58,11 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("SourceContext(")
-            appendLine("${nextIndentString}fileName=${fileName},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("SourceContext(")
+        builder.appendLine("${nextIndentString}fileName=${this.fileName},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -117,8 +117,8 @@ public fun SourceContextInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (fileName.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = fileName)
+    if (this.fileName.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.fileName)
     }
 }
 
@@ -151,8 +151,8 @@ public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal
 
 private fun SourceContextInternal.computeSize(): Int {
     var __result = 0
-    if (fileName.isNotEmpty()) {
-        __result += WireSize.string(fileName).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.fileName.isNotEmpty()) {
+        __result += WireSize.string(this.fileName).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result

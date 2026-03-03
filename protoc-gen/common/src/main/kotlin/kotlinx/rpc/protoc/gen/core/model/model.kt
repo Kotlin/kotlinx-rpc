@@ -128,8 +128,10 @@ data class OneOfDeclaration(
 )
 
 data class FieldDeclaration(
-    // todo usages of that into resolver before interpolation
+    /** The Kotlin-safe name (escaped with backticks if it's a Kotlin keyword). Used in generated code. */
     val name: String,
+    /** The raw proto-derived name (unescaped). Used for derived names like `hasXxx` and display. */
+    val rawName: String,
     val type: FieldType,
     val doc: Comment?,
     val dec: Descriptors.FieldDescriptor,
