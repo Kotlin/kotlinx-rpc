@@ -71,13 +71,13 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
         other as TypeInternal
         other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
-        if (name != other.name) return false
-        if (fields != other.fields) return false
-        if (oneofs != other.oneofs) return false
-        if (options != other.options) return false
-        if (presenceMask[0] && sourceContext != other.sourceContext) return false
-        if (syntax != other.syntax) return false
-        if (edition != other.edition) return false
+        if (this.name != other.name) return false
+        if (this.fields != other.fields) return false
+        if (this.oneofs != other.oneofs) return false
+        if (this.options != other.options) return false
+        if (presenceMask[0] && this.sourceContext != other.sourceContext) return false
+        if (this.syntax != other.syntax) return false
+        if (this.edition != other.edition) return false
         return true
     }
 
@@ -89,22 +89,22 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Type(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}fields=${fields},")
-            appendLine("${nextIndentString}oneofs=${oneofs},")
-            appendLine("${nextIndentString}options=${options},")
-            if (presenceMask[0]) {
-                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}sourceContext=<unset>,")
-            }
-
-            appendLine("${nextIndentString}syntax=${syntax},")
-            appendLine("${nextIndentString}edition=${edition},")
-            append("${indentString})")
+        val builder = StringBuilder()
+        builder.appendLine("Type(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}fields=${this.fields},")
+        builder.appendLine("${nextIndentString}oneofs=${this.oneofs},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        if (presenceMask[0]) {
+            builder.appendLine("${nextIndentString}sourceContext=${this.sourceContext.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}sourceContext=<unset>,")
         }
+
+        builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.appendLine("${nextIndentString}edition=${this.edition},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -203,16 +203,16 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
         if (other == null || this::class != other::class) return false
         other as FieldInternal
         other.checkRequiredFields()
-        if (kind != other.kind) return false
-        if (cardinality != other.cardinality) return false
-        if (number != other.number) return false
-        if (name != other.name) return false
-        if (typeUrl != other.typeUrl) return false
-        if (oneofIndex != other.oneofIndex) return false
-        if (packed != other.packed) return false
-        if (options != other.options) return false
-        if (jsonName != other.jsonName) return false
-        if (defaultValue != other.defaultValue) return false
+        if (this.kind != other.kind) return false
+        if (this.cardinality != other.cardinality) return false
+        if (this.number != other.number) return false
+        if (this.name != other.name) return false
+        if (this.typeUrl != other.typeUrl) return false
+        if (this.oneofIndex != other.oneofIndex) return false
+        if (this.packed != other.packed) return false
+        if (this.options != other.options) return false
+        if (this.jsonName != other.jsonName) return false
+        if (this.defaultValue != other.defaultValue) return false
         return true
     }
 
@@ -224,20 +224,20 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Field(")
-            appendLine("${nextIndentString}kind=${kind},")
-            appendLine("${nextIndentString}cardinality=${cardinality},")
-            appendLine("${nextIndentString}number=${number},")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}typeUrl=${typeUrl},")
-            appendLine("${nextIndentString}oneofIndex=${oneofIndex},")
-            appendLine("${nextIndentString}packed=${packed},")
-            appendLine("${nextIndentString}options=${options},")
-            appendLine("${nextIndentString}jsonName=${jsonName},")
-            appendLine("${nextIndentString}defaultValue=${defaultValue},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Field(")
+        builder.appendLine("${nextIndentString}kind=${this.kind},")
+        builder.appendLine("${nextIndentString}cardinality=${this.cardinality},")
+        builder.appendLine("${nextIndentString}number=${this.number},")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}typeUrl=${this.typeUrl},")
+        builder.appendLine("${nextIndentString}oneofIndex=${this.oneofIndex},")
+        builder.appendLine("${nextIndentString}packed=${this.packed},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        builder.appendLine("${nextIndentString}jsonName=${this.jsonName},")
+        builder.appendLine("${nextIndentString}defaultValue=${this.defaultValue},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -338,12 +338,12 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
         other as EnumInternal
         other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
-        if (name != other.name) return false
-        if (enumvalue != other.enumvalue) return false
-        if (options != other.options) return false
-        if (presenceMask[0] && sourceContext != other.sourceContext) return false
-        if (syntax != other.syntax) return false
-        if (edition != other.edition) return false
+        if (this.name != other.name) return false
+        if (this.enumvalue != other.enumvalue) return false
+        if (this.options != other.options) return false
+        if (presenceMask[0] && this.sourceContext != other.sourceContext) return false
+        if (this.syntax != other.syntax) return false
+        if (this.edition != other.edition) return false
         return true
     }
 
@@ -355,21 +355,21 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Enum(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}enumvalue=${enumvalue},")
-            appendLine("${nextIndentString}options=${options},")
-            if (presenceMask[0]) {
-                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}sourceContext=<unset>,")
-            }
-
-            appendLine("${nextIndentString}syntax=${syntax},")
-            appendLine("${nextIndentString}edition=${edition},")
-            append("${indentString})")
+        val builder = StringBuilder()
+        builder.appendLine("Enum(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}enumvalue=${this.enumvalue},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        if (presenceMask[0]) {
+            builder.appendLine("${nextIndentString}sourceContext=${this.sourceContext.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}sourceContext=<unset>,")
         }
+
+        builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.appendLine("${nextIndentString}edition=${this.edition},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -453,9 +453,9 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
         if (other == null || this::class != other::class) return false
         other as EnumValueInternal
         other.checkRequiredFields()
-        if (name != other.name) return false
-        if (number != other.number) return false
-        if (options != other.options) return false
+        if (this.name != other.name) return false
+        if (this.number != other.number) return false
+        if (this.options != other.options) return false
         return true
     }
 
@@ -467,13 +467,13 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("EnumValue(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}number=${number},")
-            appendLine("${nextIndentString}options=${options},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("EnumValue(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}number=${this.number},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -559,8 +559,8 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
         other as OptionInternal
         other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
-        if (name != other.name) return false
-        if (presenceMask[0] && value != other.value) return false
+        if (this.name != other.name) return false
+        if (presenceMask[0] && this.value != other.value) return false
         return true
     }
 
@@ -572,17 +572,17 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Option(")
-            appendLine("${nextIndentString}name=${name},")
-            if (presenceMask[0]) {
-                appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}value=<unset>,")
-            }
-
-            append("${indentString})")
+        val builder = StringBuilder()
+        builder.appendLine("Option(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        if (presenceMask[0]) {
+            builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}value=<unset>,")
         }
+
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -638,52 +638,52 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 public fun TypeInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        sourceContext.asInternal().checkRequiredFields()
+        this.sourceContext.asInternal().checkRequiredFields()
     }
 
-    fields.forEach {
+    this.fields.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (fields.isNotEmpty()) {
-        fields.forEach {
+    if (this.fields.isNotEmpty()) {
+        this.fields.forEach {
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (oneofs.isNotEmpty()) {
-        oneofs.forEach {
+    if (this.oneofs.isNotEmpty()) {
+        this.oneofs.forEach {
             encoder.writeString(3, it)
         }
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 4, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 5, value = sourceContext.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 5, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        encoder.writeEnum(fieldNr = 6, value = syntax.number)
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        encoder.writeEnum(fieldNr = 6, value = this.syntax.number)
     }
 
-    if (edition.isNotEmpty()) {
-        encoder.writeString(fieldNr = 7, value = edition)
+    if (this.edition.isNotEmpty()) {
+        encoder.writeString(fieldNr = 7, value = this.edition)
     }
 }
 
@@ -743,32 +743,32 @@ public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDec
 
 private fun TypeInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (fields.isNotEmpty()) {
-        __result += fields.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.fields.isNotEmpty()) {
+        __result += this.fields.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (oneofs.isNotEmpty()) {
-        __result += oneofs.sumOf { WireSize.string(it).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.oneofs.isNotEmpty()) {
+        __result += this.oneofs.sumOf { WireSize.string(it).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (presenceMask[0]) {
-        __result += sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.enum(syntax.number))
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
-    if (edition.isNotEmpty()) {
-        __result += WireSize.string(edition).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.edition.isNotEmpty()) {
+        __result += WireSize.string(this.edition).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -782,53 +782,53 @@ public fun Type.asInternal(): TypeInternal {
 @InternalRpcApi
 public fun FieldInternal.checkRequiredFields() {
     // no required fields to check
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (kind != Field.Kind.TYPE_UNKNOWN) {
-        encoder.writeEnum(fieldNr = 1, value = kind.number)
+    if (this.kind != Field.Kind.TYPE_UNKNOWN) {
+        encoder.writeEnum(fieldNr = 1, value = this.kind.number)
     }
 
-    if (cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
-        encoder.writeEnum(fieldNr = 2, value = cardinality.number)
+    if (this.cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
+        encoder.writeEnum(fieldNr = 2, value = this.cardinality.number)
     }
 
-    if (number != 0) {
-        encoder.writeInt32(fieldNr = 3, value = number)
+    if (this.number != 0) {
+        encoder.writeInt32(fieldNr = 3, value = this.number)
     }
 
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 4, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 4, value = this.name)
     }
 
-    if (typeUrl.isNotEmpty()) {
-        encoder.writeString(fieldNr = 6, value = typeUrl)
+    if (this.typeUrl.isNotEmpty()) {
+        encoder.writeString(fieldNr = 6, value = this.typeUrl)
     }
 
-    if (oneofIndex != 0) {
-        encoder.writeInt32(fieldNr = 7, value = oneofIndex)
+    if (this.oneofIndex != 0) {
+        encoder.writeInt32(fieldNr = 7, value = this.oneofIndex)
     }
 
-    if (packed != false) {
-        encoder.writeBool(fieldNr = 8, value = packed)
+    if (this.packed != false) {
+        encoder.writeBool(fieldNr = 8, value = this.packed)
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 9, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (jsonName.isNotEmpty()) {
-        encoder.writeString(fieldNr = 10, value = jsonName)
+    if (this.jsonName.isNotEmpty()) {
+        encoder.writeString(fieldNr = 10, value = this.jsonName)
     }
 
-    if (defaultValue.isNotEmpty()) {
-        encoder.writeString(fieldNr = 11, value = defaultValue)
+    if (this.defaultValue.isNotEmpty()) {
+        encoder.writeString(fieldNr = 11, value = this.defaultValue)
     }
 }
 
@@ -890,44 +890,44 @@ public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireD
 
 private fun FieldInternal.computeSize(): Int {
     var __result = 0
-    if (kind != Field.Kind.TYPE_UNKNOWN) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(kind.number))
+    if (this.kind != Field.Kind.TYPE_UNKNOWN) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(this.kind.number))
     }
 
-    if (cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(cardinality.number))
+    if (this.cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.cardinality.number))
     }
 
-    if (number != 0) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.int32(number))
+    if (this.number != 0) {
+        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.int32(this.number))
     }
 
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (typeUrl.isNotEmpty()) {
-        __result += WireSize.string(typeUrl).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.typeUrl.isNotEmpty()) {
+        __result += WireSize.string(this.typeUrl).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (oneofIndex != 0) {
-        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.int32(oneofIndex))
+    if (this.oneofIndex != 0) {
+        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.int32(this.oneofIndex))
     }
 
-    if (packed != false) {
-        __result += (WireSize.tag(8, WireType.VARINT) + WireSize.bool(packed))
+    if (this.packed != false) {
+        __result += (WireSize.tag(8, WireType.VARINT) + WireSize.bool(this.packed))
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (jsonName.isNotEmpty()) {
-        __result += WireSize.string(jsonName).let { WireSize.tag(10, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.jsonName.isNotEmpty()) {
+        __result += WireSize.string(this.jsonName).let { WireSize.tag(10, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (defaultValue.isNotEmpty()) {
-        __result += WireSize.string(defaultValue).let { WireSize.tag(11, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.defaultValue.isNotEmpty()) {
+        __result += WireSize.string(this.defaultValue).let { WireSize.tag(11, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -942,46 +942,46 @@ public fun Field.asInternal(): FieldInternal {
 public fun EnumInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        sourceContext.asInternal().checkRequiredFields()
+        this.sourceContext.asInternal().checkRequiredFields()
     }
 
-    enumvalue.forEach {
+    this.enumvalue.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (enumvalue.isNotEmpty()) {
-        enumvalue.forEach {
+    if (this.enumvalue.isNotEmpty()) {
+        this.enumvalue.forEach {
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 4, value = sourceContext.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 4, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        encoder.writeEnum(fieldNr = 5, value = syntax.number)
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        encoder.writeEnum(fieldNr = 5, value = this.syntax.number)
     }
 
-    if (edition.isNotEmpty()) {
-        encoder.writeString(fieldNr = 6, value = edition)
+    if (this.edition.isNotEmpty()) {
+        encoder.writeString(fieldNr = 6, value = this.edition)
     }
 }
 
@@ -1037,28 +1037,28 @@ public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDec
 
 private fun EnumInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (enumvalue.isNotEmpty()) {
-        __result += enumvalue.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.enumvalue.isNotEmpty()) {
+        __result += this.enumvalue.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (presenceMask[0]) {
-        __result += sourceContext.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.sourceContext.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.enum(syntax.number))
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
-    if (edition.isNotEmpty()) {
-        __result += WireSize.string(edition).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.edition.isNotEmpty()) {
+        __result += WireSize.string(this.edition).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -1072,23 +1072,23 @@ public fun Enum.asInternal(): EnumInternal {
 @InternalRpcApi
 public fun EnumValueInternal.checkRequiredFields() {
     // no required fields to check
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (number != 0) {
-        encoder.writeInt32(fieldNr = 2, value = number)
+    if (this.number != 0) {
+        encoder.writeInt32(fieldNr = 2, value = this.number)
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
@@ -1131,16 +1131,16 @@ public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decode
 
 private fun EnumValueInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (number != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(number))
+    if (this.number != 0) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.number))
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     return __result
@@ -1155,18 +1155,18 @@ public fun EnumValue.asInternal(): EnumValueInternal {
 public fun OptionInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        value.asInternal().checkRequiredFields()
+        this.value.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
 }
 
@@ -1206,12 +1206,12 @@ public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: Wir
 
 private fun OptionInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result

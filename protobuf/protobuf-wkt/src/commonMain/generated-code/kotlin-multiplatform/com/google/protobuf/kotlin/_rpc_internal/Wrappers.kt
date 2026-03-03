@@ -53,7 +53,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
         if (other == null || this::class != other::class) return false
         other as DoubleValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -65,11 +65,11 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("DoubleValue(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("DoubleValue(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -140,7 +140,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as FloatValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -152,11 +152,11 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("FloatValue(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("FloatValue(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -227,7 +227,7 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as Int64ValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -239,11 +239,11 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Int64Value(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Int64Value(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -314,7 +314,7 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
         if (other == null || this::class != other::class) return false
         other as UInt64ValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -326,11 +326,11 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("UInt64Value(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("UInt64Value(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -401,7 +401,7 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as Int32ValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -413,11 +413,11 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Int32Value(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Int32Value(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -488,7 +488,7 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
         if (other == null || this::class != other::class) return false
         other as UInt32ValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -500,11 +500,11 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("UInt32Value(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("UInt32Value(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -575,7 +575,7 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
         if (other == null || this::class != other::class) return false
         other as BoolValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -587,11 +587,11 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("BoolValue(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("BoolValue(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -662,7 +662,7 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
         if (other == null || this::class != other::class) return false
         other as StringValueInternal
         other.checkRequiredFields()
-        if (value != other.value) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -674,11 +674,11 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("StringValue(")
-            appendLine("${nextIndentString}value=${value},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("StringValue(")
+        builder.appendLine("${nextIndentString}value=${this.value},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -749,7 +749,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as BytesValueInternal
         other.checkRequiredFields()
-        if (!value.contentEquals(other.value)) return false
+        if (!this.value.contentEquals(other.value)) return false
         return true
     }
 
@@ -761,11 +761,11 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("BytesValue(")
-            appendLine("${nextIndentString}value=${value.contentToString()},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("BytesValue(")
+        builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -820,8 +820,8 @@ public fun DoubleValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0.0) {
-        encoder.writeDouble(fieldNr = 1, value = value)
+    if (this.value != 0.0) {
+        encoder.writeDouble(fieldNr = 1, value = this.value)
     }
 }
 
@@ -854,8 +854,8 @@ public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, de
 
 private fun DoubleValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0.0) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.double(value))
+    if (this.value != 0.0) {
+        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.double(this.value))
     }
 
     return __result
@@ -873,8 +873,8 @@ public fun FloatValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0.0f) {
-        encoder.writeFloat(fieldNr = 1, value = value)
+    if (this.value != 0.0f) {
+        encoder.writeFloat(fieldNr = 1, value = this.value)
     }
 }
 
@@ -907,8 +907,8 @@ public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, deco
 
 private fun FloatValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0.0f) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.float(value))
+    if (this.value != 0.0f) {
+        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.float(this.value))
     }
 
     return __result
@@ -926,8 +926,8 @@ public fun Int64ValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0L) {
-        encoder.writeInt64(fieldNr = 1, value = value)
+    if (this.value != 0L) {
+        encoder.writeInt64(fieldNr = 1, value = this.value)
     }
 }
 
@@ -960,8 +960,8 @@ public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, deco
 
 private fun Int64ValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(value))
+    if (this.value != 0L) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.value))
     }
 
     return __result
@@ -979,8 +979,8 @@ public fun UInt64ValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0uL) {
-        encoder.writeUInt64(fieldNr = 1, value = value)
+    if (this.value != 0uL) {
+        encoder.writeUInt64(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1013,8 +1013,8 @@ public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, de
 
 private fun UInt64ValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0uL) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(value))
+    if (this.value != 0uL) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.value))
     }
 
     return __result
@@ -1032,8 +1032,8 @@ public fun Int32ValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0) {
-        encoder.writeInt32(fieldNr = 1, value = value)
+    if (this.value != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1066,8 +1066,8 @@ public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, deco
 
 private fun Int32ValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(value))
+    if (this.value != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.value))
     }
 
     return __result
@@ -1085,8 +1085,8 @@ public fun UInt32ValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != 0u) {
-        encoder.writeUInt32(fieldNr = 1, value = value)
+    if (this.value != 0u) {
+        encoder.writeUInt32(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1119,8 +1119,8 @@ public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, de
 
 private fun UInt32ValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != 0u) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(value))
+    if (this.value != 0u) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.value))
     }
 
     return __result
@@ -1138,8 +1138,8 @@ public fun BoolValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value != false) {
-        encoder.writeBool(fieldNr = 1, value = value)
+    if (this.value != false) {
+        encoder.writeBool(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1172,8 +1172,8 @@ public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decode
 
 private fun BoolValueInternal.computeSize(): Int {
     var __result = 0
-    if (value != false) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(value))
+    if (this.value != false) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.value))
     }
 
     return __result
@@ -1191,8 +1191,8 @@ public fun StringValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = value)
+    if (this.value.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1225,8 +1225,8 @@ public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, de
 
 private fun StringValueInternal.computeSize(): Int {
     var __result = 0
-    if (value.isNotEmpty()) {
-        __result += WireSize.string(value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.value.isNotEmpty()) {
+        __result += WireSize.string(this.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -1244,8 +1244,8 @@ public fun BytesValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (value.isNotEmpty()) {
-        encoder.writeBytes(fieldNr = 1, value = value)
+    if (this.value.isNotEmpty()) {
+        encoder.writeBytes(fieldNr = 1, value = this.value)
     }
 }
 
@@ -1278,8 +1278,8 @@ public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, deco
 
 private fun BytesValueInternal.computeSize(): Int {
     var __result = 0
-    if (value.isNotEmpty()) {
-        __result += WireSize.bytes(value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.value.isNotEmpty()) {
+        __result += WireSize.bytes(this.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result

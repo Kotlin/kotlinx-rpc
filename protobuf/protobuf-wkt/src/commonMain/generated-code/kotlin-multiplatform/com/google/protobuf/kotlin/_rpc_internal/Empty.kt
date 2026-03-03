@@ -49,10 +49,10 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Empty(")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Empty(")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi

@@ -71,13 +71,13 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
         other as ApiInternal
         other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
-        if (name != other.name) return false
-        if (methods != other.methods) return false
-        if (options != other.options) return false
-        if (version != other.version) return false
-        if (presenceMask[0] && sourceContext != other.sourceContext) return false
-        if (mixins != other.mixins) return false
-        if (syntax != other.syntax) return false
+        if (this.name != other.name) return false
+        if (this.methods != other.methods) return false
+        if (this.options != other.options) return false
+        if (this.version != other.version) return false
+        if (presenceMask[0] && this.sourceContext != other.sourceContext) return false
+        if (this.mixins != other.mixins) return false
+        if (this.syntax != other.syntax) return false
         return true
     }
 
@@ -89,22 +89,22 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Api(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}methods=${methods},")
-            appendLine("${nextIndentString}options=${options},")
-            appendLine("${nextIndentString}version=${version},")
-            if (presenceMask[0]) {
-                appendLine("${nextIndentString}sourceContext=${sourceContext.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}sourceContext=<unset>,")
-            }
-
-            appendLine("${nextIndentString}mixins=${mixins},")
-            appendLine("${nextIndentString}syntax=${syntax},")
-            append("${indentString})")
+        val builder = StringBuilder()
+        builder.appendLine("Api(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}methods=${this.methods},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        builder.appendLine("${nextIndentString}version=${this.version},")
+        if (presenceMask[0]) {
+            builder.appendLine("${nextIndentString}sourceContext=${this.sourceContext.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}sourceContext=<unset>,")
         }
+
+        builder.appendLine("${nextIndentString}mixins=${this.mixins},")
+        builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -197,13 +197,13 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         if (other == null || this::class != other::class) return false
         other as MethodInternal
         other.checkRequiredFields()
-        if (name != other.name) return false
-        if (requestTypeUrl != other.requestTypeUrl) return false
-        if (requestStreaming != other.requestStreaming) return false
-        if (responseTypeUrl != other.responseTypeUrl) return false
-        if (responseStreaming != other.responseStreaming) return false
-        if (options != other.options) return false
-        if (syntax != other.syntax) return false
+        if (this.name != other.name) return false
+        if (this.requestTypeUrl != other.requestTypeUrl) return false
+        if (this.requestStreaming != other.requestStreaming) return false
+        if (this.responseTypeUrl != other.responseTypeUrl) return false
+        if (this.responseStreaming != other.responseStreaming) return false
+        if (this.options != other.options) return false
+        if (this.syntax != other.syntax) return false
         return true
     }
 
@@ -215,17 +215,17 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Method(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}requestTypeUrl=${requestTypeUrl},")
-            appendLine("${nextIndentString}requestStreaming=${requestStreaming},")
-            appendLine("${nextIndentString}responseTypeUrl=${responseTypeUrl},")
-            appendLine("${nextIndentString}responseStreaming=${responseStreaming},")
-            appendLine("${nextIndentString}options=${options},")
-            appendLine("${nextIndentString}syntax=${syntax},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Method(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}requestTypeUrl=${this.requestTypeUrl},")
+        builder.appendLine("${nextIndentString}requestStreaming=${this.requestStreaming},")
+        builder.appendLine("${nextIndentString}responseTypeUrl=${this.responseTypeUrl},")
+        builder.appendLine("${nextIndentString}responseStreaming=${this.responseStreaming},")
+        builder.appendLine("${nextIndentString}options=${this.options},")
+        builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -305,8 +305,8 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
         if (other == null || this::class != other::class) return false
         other as MixinInternal
         other.checkRequiredFields()
-        if (name != other.name) return false
-        if (root != other.root) return false
+        if (this.name != other.name) return false
+        if (this.root != other.root) return false
         return true
     }
 
@@ -318,12 +318,12 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Mixin(")
-            appendLine("${nextIndentString}name=${name},")
-            appendLine("${nextIndentString}root=${root},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Mixin(")
+        builder.appendLine("${nextIndentString}name=${this.name},")
+        builder.appendLine("${nextIndentString}root=${this.root},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -376,56 +376,56 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
 public fun ApiInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        sourceContext.asInternal().checkRequiredFields()
+        this.sourceContext.asInternal().checkRequiredFields()
     }
 
-    methods.forEach {
+    this.methods.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    mixins.forEach {
+    this.mixins.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (methods.isNotEmpty()) {
-        methods.forEach {
+    if (this.methods.isNotEmpty()) {
+        this.methods.forEach {
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (version.isNotEmpty()) {
-        encoder.writeString(fieldNr = 4, value = version)
+    if (this.version.isNotEmpty()) {
+        encoder.writeString(fieldNr = 4, value = this.version)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 5, value = sourceContext.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 5, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
     }
 
-    if (mixins.isNotEmpty()) {
-        mixins.forEach {
+    if (this.mixins.isNotEmpty()) {
+        this.mixins.forEach {
             encoder.writeMessage(fieldNr = 6, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        encoder.writeEnum(fieldNr = 7, value = syntax.number)
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 }
 
@@ -486,32 +486,32 @@ public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecod
 
 private fun ApiInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (methods.isNotEmpty()) {
-        __result += methods.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.methods.isNotEmpty()) {
+        __result += this.methods.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (version.isNotEmpty()) {
-        __result += WireSize.string(version).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.version.isNotEmpty()) {
+        __result += WireSize.string(this.version).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (mixins.isNotEmpty()) {
-        __result += mixins.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.mixins.isNotEmpty()) {
+        __result += this.mixins.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(syntax.number))
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
     return __result
@@ -525,41 +525,41 @@ public fun Api.asInternal(): ApiInternal {
 @InternalRpcApi
 public fun MethodInternal.checkRequiredFields() {
     // no required fields to check
-    options.forEach {
+    this.options.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (requestTypeUrl.isNotEmpty()) {
-        encoder.writeString(fieldNr = 2, value = requestTypeUrl)
+    if (this.requestTypeUrl.isNotEmpty()) {
+        encoder.writeString(fieldNr = 2, value = this.requestTypeUrl)
     }
 
-    if (requestStreaming != false) {
-        encoder.writeBool(fieldNr = 3, value = requestStreaming)
+    if (this.requestStreaming != false) {
+        encoder.writeBool(fieldNr = 3, value = this.requestStreaming)
     }
 
-    if (responseTypeUrl.isNotEmpty()) {
-        encoder.writeString(fieldNr = 4, value = responseTypeUrl)
+    if (this.responseTypeUrl.isNotEmpty()) {
+        encoder.writeString(fieldNr = 4, value = this.responseTypeUrl)
     }
 
-    if (responseStreaming != false) {
-        encoder.writeBool(fieldNr = 5, value = responseStreaming)
+    if (this.responseStreaming != false) {
+        encoder.writeBool(fieldNr = 5, value = this.responseStreaming)
     }
 
-    if (options.isNotEmpty()) {
-        options.forEach {
+    if (this.options.isNotEmpty()) {
+        this.options.forEach {
             encoder.writeMessage(fieldNr = 6, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        encoder.writeEnum(fieldNr = 7, value = syntax.number)
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 }
 
@@ -612,32 +612,32 @@ public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: Wir
 
 private fun MethodInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (requestTypeUrl.isNotEmpty()) {
-        __result += WireSize.string(requestTypeUrl).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.requestTypeUrl.isNotEmpty()) {
+        __result += WireSize.string(this.requestTypeUrl).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (requestStreaming != false) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.bool(requestStreaming))
+    if (this.requestStreaming != false) {
+        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.bool(this.requestStreaming))
     }
 
-    if (responseTypeUrl.isNotEmpty()) {
-        __result += WireSize.string(responseTypeUrl).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.responseTypeUrl.isNotEmpty()) {
+        __result += WireSize.string(this.responseTypeUrl).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (responseStreaming != false) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.bool(responseStreaming))
+    if (this.responseStreaming != false) {
+        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.bool(this.responseStreaming))
     }
 
-    if (options.isNotEmpty()) {
-        __result += options.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.options.isNotEmpty()) {
+        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (syntax != Syntax.SYNTAX_PROTO2) {
-        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(syntax.number))
+    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
     return __result
@@ -655,12 +655,12 @@ public fun MixinInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun MixinInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (name.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = name)
+    if (this.name.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (root.isNotEmpty()) {
-        encoder.writeString(fieldNr = 2, value = root)
+    if (this.root.isNotEmpty()) {
+        encoder.writeString(fieldNr = 2, value = this.root)
     }
 }
 
@@ -696,12 +696,12 @@ public fun MixinInternal.Companion.decodeWith(msg: MixinInternal, decoder: WireD
 
 private fun MixinInternal.computeSize(): Int {
     var __result = 0
-    if (name.isNotEmpty()) {
-        __result += WireSize.string(name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.name.isNotEmpty()) {
+        __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (root.isNotEmpty()) {
-        __result += WireSize.string(root).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.root.isNotEmpty()) {
+        __result += WireSize.string(this.root).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result

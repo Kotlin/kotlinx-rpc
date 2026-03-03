@@ -53,7 +53,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         if (other == null || this::class != other::class) return false
         other as StructInternal
         other.checkRequiredFields()
-        if (fields != other.fields) return false
+        if (this.fields != other.fields) return false
         return true
     }
 
@@ -65,11 +65,11 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Struct(")
-            appendLine("${nextIndentString}fields=${fields},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Struct(")
+        builder.appendLine("${nextIndentString}fields=${this.fields},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -112,8 +112,8 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
             other as FieldsEntryInternal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
-            if (key != other.key) return false
-            if (presenceMask[0] && value != other.value) return false
+            if (this.key != other.key) return false
+            if (presenceMask[0] && this.value != other.value) return false
             return true
         }
 
@@ -125,17 +125,17 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("Struct.FieldsEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                if (presenceMask[0]) {
-                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
-                } else {
-                    appendLine("${nextIndentString}value=<unset>,")
-                }
-
-                append("${indentString})")
+            val builder = StringBuilder()
+            builder.appendLine("Struct.FieldsEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            if (presenceMask[0]) {
+                builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}value=<unset>,")
             }
+
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -214,7 +214,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         if (other == null || this::class != other::class) return false
         other as ValueInternal
         other.checkRequiredFields()
-        if (kind != other.kind) return false
+        if (this.kind != other.kind) return false
         return true
     }
 
@@ -226,11 +226,11 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Value(")
-            appendLine("${nextIndentString}kind=${kind},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Value(")
+        builder.appendLine("${nextIndentString}kind=${this.kind},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -325,7 +325,7 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
         if (other == null || this::class != other::class) return false
         other as ListValueInternal
         other.checkRequiredFields()
-        if (values != other.values) return false
+        if (this.values != other.values) return false
         return true
     }
 
@@ -337,11 +337,11 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("ListValue(")
-            appendLine("${nextIndentString}values=${values},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("ListValue(")
+        builder.appendLine("${nextIndentString}values=${this.values},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -392,15 +392,15 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
 @InternalRpcApi
 public fun StructInternal.checkRequiredFields() {
     // no required fields to check
-    fields.values.forEach {
+    this.fields.values.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (fields.isNotEmpty()) {
-        fields.forEach { kEntry ->
+    if (this.fields.isNotEmpty()) {
+        this.fields.forEach { kEntry ->
             StructInternal.FieldsEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -444,7 +444,7 @@ public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: Wir
 
 private fun StructInternal.computeSize(): Int {
     var __result = 0
-    if (fields.isNotEmpty()) {
+    if (this.fields.isNotEmpty()) {
         __result += fields.entries.sumOf { kEntry ->
             StructInternal.FieldsEntryInternal().apply {
                 key = kEntry.key
@@ -465,7 +465,7 @@ public fun Struct.asInternal(): StructInternal {
 @InternalRpcApi
 public fun ValueInternal.checkRequiredFields() {
     // no required fields to check
-    kind?.also {
+    this.kind?.also {
         when {
             it is Value.Kind.StructValue -> {
                 it.value.asInternal().checkRequiredFields()
@@ -479,7 +479,7 @@ public fun ValueInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    kind?.also {
+    this.kind?.also {
         when (val value = it) {
             is Value.Kind.NullValue -> {
                 encoder.writeEnum(fieldNr = 1, value = value.value.number)
@@ -555,7 +555,7 @@ public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireD
 
 private fun ValueInternal.computeSize(): Int {
     var __result = 0
-    kind?.also {
+    this.kind?.also {
         when (val value = it) {
             is Value.Kind.NullValue -> {
                 __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(value.value.number))
@@ -589,15 +589,15 @@ public fun Value.asInternal(): ValueInternal {
 @InternalRpcApi
 public fun ListValueInternal.checkRequiredFields() {
     // no required fields to check
-    values.forEach {
+    this.values.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (values.isNotEmpty()) {
-        values.forEach {
+    if (this.values.isNotEmpty()) {
+        this.values.forEach {
             encoder.writeMessage(fieldNr = 1, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
@@ -634,8 +634,8 @@ public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decode
 
 private fun ListValueInternal.computeSize(): Int {
     var __result = 0
-    if (values.isNotEmpty()) {
-        __result += values.sumOf { it.asInternal()._size.let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.values.isNotEmpty()) {
+        __result += this.values.sumOf { it.asInternal()._size.let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     return __result
@@ -650,18 +650,18 @@ public fun ListValue.asInternal(): ListValueInternal {
 public fun StructInternal.FieldsEntryInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        value.asInternal().checkRequiredFields()
+        this.value.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
 }
 
@@ -701,12 +701,12 @@ public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructIn
 
 private fun StructInternal.FieldsEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
