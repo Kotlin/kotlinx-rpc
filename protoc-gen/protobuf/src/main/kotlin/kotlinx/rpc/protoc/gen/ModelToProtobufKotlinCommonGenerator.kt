@@ -760,9 +760,13 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             fieldDeclarations.forEachIndexed { i, field ->
                 val value = if (field.dec.hasDefaultValue()) {
-                    val stringValue = (field.dec.defaultValue as ByteString).toString(Charsets.UTF_8)
-                    if (stringValue.isNotEmpty()) {
-                        "\"${stringValue}\".encodeToByteArray()".scoped()
+                    val bytes = field.dec.defaultValue as ByteString
+                    if (bytes.size() > 0) {
+                        val hexBytes = (0 until bytes.size()).joinToString(", ") { idx ->
+                            val b = bytes.byteAt(idx).toInt() and 0xFF
+                            if (b > 0x7F) "0x${"%02X".format(b)}.toByte()" else "0x%02X".format(b)
+                        }
+                        "byteArrayOf($hexBytes)".scoped()
                     } else {
                         FieldType.IntegralType.BYTES.defaultValue
                     }
@@ -1729,7 +1733,15 @@ class ModelToProtobufKotlinCommonGenerator(
         val value = dec.defaultValue
         return when {
             value is String -> {
-                "\"$value\"".scoped()
+                val escaped = value
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"")
+                    .replace("$", "\\$")
+                    .replace("\n", "\\n")
+                    .replace("\r", "\\r")
+                    .replace("\t", "\\t")
+                    .replace("\u0000", "\\u0000")
+                "\"$escaped\"".scoped()
             }
 
             value is ByteString -> {
@@ -1753,8 +1765,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 value == Float.POSITIVE_INFINITY -> "%T.POSITIVE_INFINITY".scoped(FqName.Implicits.Float)
                 value == Float.NEGATIVE_INFINITY -> "%T.NEGATIVE_INFINITY".scoped(FqName.Implicits.Float)
                 else -> FqName.Implicits.Float.scoped().wrapIn { float ->
+                    val bits = java.lang.Float.floatToRawIntBits(value)
                     // otherwise, .format will fuck around with %T
-                    float + ".fromBits(0x%08X)".format(java.lang.Float.floatToRawIntBits(value))
+                    float + ".fromBits(0x%08X.toInt())".format(bits.toLong() and 0xFFFFFFFFL)
                 }
             }
 
@@ -1767,6 +1780,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     double + ".fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
                 }
             }
+
+            // Long.MIN_VALUE and Int.MIN_VALUE can't be expressed as literals directly
+            // because the compiler parses the minus sign and the number separately.
+            value is Long && value == Long.MIN_VALUE -> "%T.MIN_VALUE".scoped(FqName.Implicits.Long)
+            value is Int && value == Int.MIN_VALUE -> "%T.MIN_VALUE".scoped(FqName.Implicits.Int)
 
             else -> {
                 "${value}${type.scalarDefaultSuffix()}".scoped()

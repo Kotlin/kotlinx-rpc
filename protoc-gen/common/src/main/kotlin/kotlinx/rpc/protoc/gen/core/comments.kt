@@ -103,5 +103,5 @@ private fun List<String>.protoCommentsToKotlin(): List<String> {
 }
 
 private fun String.protoCommentToKotlin(): List<String> {
-    return split("\n", "\r\n").map { it.trimEnd().removePrefix(" ") }
+    return split("\n", "\r\n").map { it.trimEnd().removePrefix(" ").replace("*/", "&#42;/") }
 }

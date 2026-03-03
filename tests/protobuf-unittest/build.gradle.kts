@@ -45,14 +45,8 @@ sourceSets.main.get().proto {
         "**/unittest_lite_edition_2024.proto", // buf: edition "2024" not yet supported
         // JVM limit:
         "**/unittest_enormous_descriptor.proto", // generated method exceeds 64KB
-        // Pre-existing generator limitations (groups, extensions, advanced proto2 features):
-        "**/unittest.proto",
-        "**/edition_unittest.proto",
-        "**/unittest_optimize_for.proto", // depends on unittest.proto
-        "**/unittest_embed_optimize_for.proto", // depends on unittest_optimize_for.proto
-        "**/unittest_no_field_presence.proto", // depends on unittest.proto
-        "**/unittest_lite_imports_nonlite.proto", // depends on unittest.proto
-        "**/map_unittest.proto", // depends on unittest.proto
+        // Generator limitation: proto3 implicit presence generates nullable types instead of non-nullable
+        "**/unittest_no_field_presence.proto",
     )
 
     plugins.empty()
