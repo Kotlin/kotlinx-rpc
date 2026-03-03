@@ -2,7 +2,9 @@
   <dictionary name="project">
     <words>
       <w>Classlikes</w>
+      <w>Protos</w>
       <w>marshallers</w>
+      <w>protos</w>
       <w>wasm</w>
     </words>
   </dictionary>

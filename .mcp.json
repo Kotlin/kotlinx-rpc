@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "youtrack": {
+      "type": "http",
+      "url": "https://youtrack.jetbrains.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${YOUTRACK_TOKEN}"
+      }
+    }
+  }
+}

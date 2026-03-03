@@ -1736,7 +1736,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             value is Float -> when {
-                value.isNaN() -> FqName.Implicits.Float_Nan.scoped()
+                value.isNaN() -> "%T.NaN".scoped(FqName.Implicits.Float)
                 value == Float.POSITIVE_INFINITY -> "%T.POSITIVE_INFINITY".scoped(FqName.Implicits.Float)
                 value == Float.NEGATIVE_INFINITY -> "%T.NEGATIVE_INFINITY".scoped(FqName.Implicits.Float)
                 else -> FqName.Implicits.Float.scoped().wrapIn { float ->
@@ -1746,7 +1746,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             value is Double -> when {
-                value.isNaN() -> FqName.Implicits.Double_Nan.scoped()
+                value.isNaN() -> "%T.NaN".scoped(FqName.Implicits.Double)
                 value == Double.POSITIVE_INFINITY -> "%T.POSITIVE_INFINITY".scoped(FqName.Implicits.Double)
                 value == Double.NEGATIVE_INFINITY -> "%T.NEGATIVE_INFINITY".scoped(FqName.Implicits.Double)
                 else -> FqName.Implicits.Double.scoped().wrapIn { double ->
