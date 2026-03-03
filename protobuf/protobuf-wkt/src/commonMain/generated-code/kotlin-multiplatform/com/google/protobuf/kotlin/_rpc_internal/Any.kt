@@ -96,6 +96,7 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
 
         public override fun decode(source: Source, config: MarshallerConfig?): Any {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = AnyInternal()
                 checkForPlatformDecodeException {
                     AnyInternal.decodeWith(msg, it, config as? ProtobufConfig)

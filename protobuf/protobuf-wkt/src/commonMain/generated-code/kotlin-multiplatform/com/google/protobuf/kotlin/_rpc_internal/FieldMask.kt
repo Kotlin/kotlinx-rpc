@@ -97,6 +97,7 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
 
         public override fun decode(source: Source, config: MarshallerConfig?): FieldMask {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FieldMaskInternal()
                 checkForPlatformDecodeException {
                     FieldMaskInternal.decodeWith(msg, it, config as? ProtobufConfig)

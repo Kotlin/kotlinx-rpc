@@ -35,6 +35,11 @@ public class ProtobufDecodingException : ProtobufException {
         )
 
         internal fun genericParsingError() = ProtobufDecodingException("Failed to parse the message.")
+
+        internal fun recursionLimitExceeded(limit: Int) = ProtobufDecodingException(
+            "Protocol message had too many levels of nesting. May be malicious. " +
+                "Use ProtobufConfig.recursionLimit to increase the depth limit. Current limit: $limit"
+        )
     }
 }
 
