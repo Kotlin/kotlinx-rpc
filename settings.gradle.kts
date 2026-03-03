@@ -79,6 +79,8 @@ if (!onWindows) {
     include(":tests:protobuf-conformance")
 }
 
+include(":tests:protobuf-unittest")
+
 val kotlinMasterBuild = providers.gradleProperty("kotlinx.rpc.kotlinMasterBuild").orNull == "true"
 
 if (!kotlinMasterBuild) {
