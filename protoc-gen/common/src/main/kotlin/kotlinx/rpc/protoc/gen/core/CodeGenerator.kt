@@ -28,6 +28,7 @@ open class CodeGenerator(
     private var lastIsDeclaration: Boolean = false
     private var needsNewLineAfterDeclaration: Boolean = true
 
+    context(selectedNameTable: ScopedFqNameTable)
     @Suppress("FunctionName")
     private fun _append(
         value: ScopedFormattedString? = null,
@@ -56,7 +57,7 @@ open class CodeGenerator(
             builder.appendLine()
         }
         if (value != null) {
-            builder.append(value.resolve(nameTable))
+            builder.append(value.resolve(selectedNameTable))
         }
         if (newLineAfter) {
             builder.appendLine()
@@ -69,6 +70,7 @@ open class CodeGenerator(
     /**
      * Use [code] for public API
      */
+    context(selectedNameTable: ScopedFqNameTable)
     private fun append(value: ScopedFormattedString) {
         _append(value)
     }
@@ -76,16 +78,28 @@ open class CodeGenerator(
     /**
      * Use [code] for public API
      */
+    context(selectedNameTable: ScopedFqNameTable)
     private fun addLine(value: ScopedFormattedString) {
         _append(value.wrapIn { "$indent$it" }, newLineIfAbsent = true)
     }
 
+    private fun selectNames(
+        selectedNameTable: ScopedFqNameTable? = null,
+        block: context(ScopedFqNameTable) () -> Unit,
+    ) {
+        with(selectedNameTable ?: nameTable, block)
+    }
+
     fun newLine() {
-        _append(newLineBefore = true)
+        selectNames {
+            _append(newLineBefore = true)
+        }
     }
 
     fun blankLine() {
-        _append(newLineBefore = true, newLineAfter = true)
+        selectNames {
+            _append(newLineBefore = true, newLineAfter = true)
+        }
     }
 
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
@@ -101,8 +115,20 @@ open class CodeGenerator(
         scopeNestedClassName: String? = null,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
-        addLine(prefix)
-        scopeWithSuffix(suffix, openingBracket, nlAfterClosed, paramDecl, scopeNestedClassName, block)
+        val nestedNameTable = scopeNestedClassName?.let { nameTable.nested(it) } ?: nameTable
+
+        selectNames(nestedNameTable) {
+            addLine(prefix)
+        }
+
+        scopeWithSuffix(
+            suffix = suffix,
+            openingBracket = openingBracket,
+            nlAfterClosed = nlAfterClosed,
+            paramDeclaration = paramDecl,
+            nestedNameTable = nestedNameTable,
+            block = block,
+        )
     }
 
     fun ifBranch(
@@ -115,10 +141,9 @@ open class CodeGenerator(
             prefix = prefix.merge(condition) { prefix, condition -> "${prefix}if ($condition)" },
             nlAfterClosed = false,
             suffix = if (elseBlock != null) " else".scoped() else ScopedFormattedString.empty,
-            scopeNestedClassName = null,
             block = ifBlock,
         )
-        scopeWithSuffix(scopeNestedClassName = null, block = elseBlock)
+        scopeWithSuffix(block = elseBlock)
     }
 
     fun whileBlock(
@@ -155,7 +180,7 @@ open class CodeGenerator(
         openingBracket: Boolean = true,
         nlAfterClosed: Boolean = true,
         paramDeclaration: ScopedFormattedString = ScopedFormattedString.empty,
-        scopeNestedClassName: String?,
+        nestedNameTable: ScopedFqNameTable? = null,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         if (block == null) {
@@ -169,7 +194,7 @@ open class CodeGenerator(
         val nested = CodeGenerator(
             indent = "$indent$ONE_INDENT",
             config = config,
-            nameTable = scopeNestedClassName?.let { nameTable.nested(it) } ?: nameTable
+            nameTable = nestedNameTable ?: nameTable,
         ).apply(block)
 
         if (nested.isEmpty) {
@@ -179,11 +204,20 @@ open class CodeGenerator(
         }
 
         if (openingBracket) {
-            append(paramDeclaration.wrapIn { if (it.isBlank()) " {" else " { $it" })
+            selectNames(nestedNameTable) {
+                append(paramDeclaration.wrapInIfNotBlankOr(" {") { " { $it" })
+            }
         }
+
         newLine()
-        append(nested.build().trimEnd().scoped())
-        addLine(suffix.wrapIn { "}$it" })
+        selectNames {
+            append(nested.build().trimEnd().scoped())
+        }
+
+        selectNames(nestedNameTable) {
+            addLine(suffix.wrapIn { "}$it" })
+        }
+
         if (nlAfterClosed) {
             newLine()
         }
@@ -196,7 +230,9 @@ open class CodeGenerator(
             error("Code block should not contain newlines. Use multiple invocations of `code` instead.")
         }
 
-        addLine(code)
+        selectNames {
+            addLine(code)
+        }
     }
 
     fun property(
@@ -215,13 +251,15 @@ open class CodeGenerator(
     ) {
         appendComment(comment)
         for (annotation in annotations) {
-            addLine(annotation)
+            selectNames {
+                addLine(annotation)
+            }
         }
         addDeprecation(deprecation)
 
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
-        val contextString = contextReceiver.wrapIn { if (it.isEmpty()) "" else "$it." }
-        val typeString = type.wrapIn { if (it.isEmpty()) "" else ": $it" }
+        val contextString = contextReceiver.wrapInIfNotBlankOr { "$it." }
+        val typeString = type.wrapInIfNotBlankOr { ": $it" }
         val initializer = when (propertyInitializer) {
             PropertyInitializer.GETTER -> " get() = "
             PropertyInitializer.DELEGATE -> " by "
@@ -258,20 +296,23 @@ open class CodeGenerator(
     ) {
         appendComment(comment)
         for (annotation in annotations) {
-            addLine(annotation)
+            selectNames {
+                addLine(annotation)
+            }
         }
         addDeprecation(deprecation)
 
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
-        val contextString = contextReceiver.wrapIn { if (it.isEmpty()) "" else "$it." }
-        val returnTypeString = returnType.wrapIn {
-            if (it.isEmpty() || (returnType.args.size == 1 && (returnType.args[0] as? FqName) == FqName.Implicits.Unit)) {
-                ""
-            } else {
-                ": $it"
-            }
+        val contextString = contextReceiver.wrapInIfNotBlankOr { "$it." }
+        val returnTypeString = if (
+            returnType == ScopedFormattedString.empty ||
+            (returnType.args.size == 1 && (returnType.args[0] as? FqName) == FqName.Implicits.Unit)
+        ) {
+            ScopedFormattedString.empty
+        } else {
+            returnType.wrapIn { ": $it" }
         }
-        val typeParametersString = typeParameters.wrapIn { if (it.isEmpty()) "" else " <$it>" }
+        val typeParametersString = typeParameters.wrapInIfNotBlankOr { " <$it>" }
         scope(
             prefix = typeParametersString.merge(
                 other = contextString,
@@ -354,16 +395,23 @@ open class CodeGenerator(
             "Class name cannot be blank unless it's a companion object"
         }
 
+        val nestedNameTable = nameTable.nested(name.takeIf { it.isNotBlank() } ?: "Companion")
+
         appendComment(comment)
         for (annotation in annotations) {
-            addLine(annotation)
+            selectNames(nestedNameTable) {
+                addLine(annotation)
+            }
         }
         addDeprecation(deprecation)
 
         val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
 
         val firstLine = "$modifiersString${declarationType.strValue}${if (name.isNotEmpty()) " " else ""}$name"
-        addLine(firstLine.scoped())
+
+        selectNames(nestedNameTable) {
+            addLine(firstLine.scoped())
+        }
 
         val shouldPutArgsOnNewLines =
             firstLine.length + constructorArgs.sumOf {
@@ -377,12 +425,12 @@ open class CodeGenerator(
 
                 arg.value.contains("val") || arg.value.contains("var") -> when {
                     modifiers.contains("internal") ||
-                            modifiers.contains("private") ||
-                            arg.value.contains("private ") ||
-                            arg.value.contains("protected ") ||
-                            arg.value.contains("internal ") ||
-                            arg.value.contains("public ") ||
-                            arg.value.contains("override ") -> ""
+                        modifiers.contains("private") ||
+                        arg.value.contains("private ") ||
+                        arg.value.contains("protected ") ||
+                        arg.value.contains("internal ") ||
+                        arg.value.contains("public ") ||
+                        arg.value.contains("override ") -> ""
 
                     else -> "public "
                 }
@@ -396,28 +444,30 @@ open class CodeGenerator(
         val constructorModifiersTransformed = if (constructorModifiers.isEmpty()) "" else
             " ${constructorModifiers.trim()} constructor "
 
-        when {
-            shouldPutArgsOnNewLines && constructorArgsTransformed.isNotEmpty() -> {
-                append(constructorModifiersTransformed.scoped())
-                append("(".scoped())
-                newLine()
-                withNextIndent {
-                    for (arg in constructorArgsTransformed) {
-                        addLine(arg.wrapIn { "$it," })
+        selectNames(nestedNameTable) {
+            when {
+                shouldPutArgsOnNewLines && constructorArgsTransformed.isNotEmpty() -> {
+                    append(constructorModifiersTransformed.scoped())
+                    append("(".scoped())
+                    newLine()
+                    withNextIndent {
+                        for (arg in constructorArgsTransformed) {
+                            addLine(arg.wrapIn { "$it," })
+                        }
                     }
+                    addLine(")".scoped())
                 }
-                addLine(")".scoped())
-            }
 
-            constructorArgsTransformed.isNotEmpty() -> {
-                append(constructorModifiersTransformed.scoped())
-                append("(".scoped())
-                append(constructorArgsTransformed.joinToScopedString(", "))
-                append(")".scoped())
-            }
+                constructorArgsTransformed.isNotEmpty() -> {
+                    append(constructorModifiersTransformed.scoped())
+                    append("(".scoped())
+                    append(constructorArgsTransformed.joinToScopedString(", "))
+                    append(")".scoped())
+                }
 
-            constructorModifiersTransformed.isNotEmpty() -> {
-                append("$constructorModifiersTransformed()".scoped())
+                constructorModifiersTransformed.isNotEmpty() -> {
+                    append("$constructorModifiersTransformed()".scoped())
+                }
             }
         }
 
@@ -427,9 +477,14 @@ open class CodeGenerator(
             ?.wrapIn { ": $it" }
             ?: ScopedFormattedString.empty
 
-        append(superString)
+        selectNames(nestedNameTable) {
+            append(superString)
+        }
 
-        scopeWithSuffix(scopeNestedClassName = name.takeIf { it.isNotBlank() } ?: "Companion", block = block)
+        scopeWithSuffix(
+            nestedNameTable = nestedNameTable,
+            block = block,
+        )
     }
 
     open fun build(): String {
@@ -462,10 +517,13 @@ open class CodeGenerator(
         }
     }
 
-    @Suppress("VerboseNullabilityAndEmptiness")
-    fun appendComment(comment: Comment?, first: Boolean = true, final: Boolean = true) {
+    private fun String.escapeComment(): ScopedFormattedString {
+        return replace("%", "%%").scoped()
+    }
+
+    fun appendComment(comment: Comment?, first: Boolean = true, final: Boolean = true) = selectNames {
         if (!config.generateComments || comment == null || comment.isEmpty()) {
-            return
+            return@selectNames
         }
 
         val leadingDetached = comment.leadingDetached
@@ -473,35 +531,35 @@ open class CodeGenerator(
         val trailing = comment.trailing
 
         if (first) {
-            addLine("/**".scoped())
+            addLine("/**".escapeComment())
         } else {
-            addLine("* ".scoped())
+            addLine("* ".escapeComment())
         }
 
         leadingDetached.forEach {
-            addLine("* $it".scoped())
+            addLine("* $it".escapeComment())
         }
 
         if (leadingDetached.isNotEmpty() && (leading.isNotEmpty() || trailing.isNotEmpty())) {
-            addLine("* ".scoped())
+            addLine("* ".escapeComment())
         }
         leading.forEach {
-            addLine("* $it".scoped())
+            addLine("* $it".escapeComment())
         }
 
         if ((leadingDetached.isNotEmpty() || leading.isNotEmpty()) && trailing.isNotEmpty()) {
-            addLine("* ".scoped())
+            addLine("* ".escapeComment())
         }
         trailing.forEach {
-            addLine("* $it".scoped())
+            addLine("* $it".escapeComment())
         }
 
         if (final) {
-            addLine("*/".scoped())
+            addLine("*/".escapeComment())
         }
     }
 
-    private fun addDeprecation(deprecation: DeprecationLevel?) {
+    private fun addDeprecation(deprecation: DeprecationLevel?) = selectNames {
         if (deprecation != null) {
             val value = if (deprecation != DeprecationLevel.WARNING) {
                 "@%T(\"This declaration is deprecated in .proto file\", %T.$deprecation)"

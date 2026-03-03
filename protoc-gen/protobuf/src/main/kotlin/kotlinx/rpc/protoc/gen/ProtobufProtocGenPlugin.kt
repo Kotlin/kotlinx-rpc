@@ -7,6 +7,7 @@ package kotlinx.rpc.protoc.gen
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
+import kotlinx.rpc.protoc.gen.core.NameConflictCollector
 import kotlinx.rpc.protoc.gen.core.ProtocGenPlugin
 import kotlinx.rpc.protoc.gen.core.model.Model
 
@@ -15,7 +16,9 @@ object ProtobufProtocGenPlugin : ProtocGenPlugin() {
         config: Config,
         model: Model,
         generatedMetadata: GeneratedMetadata,
+        conflictCollector: NameConflictCollector,
     ): List<FileGenerator> {
-        return ModelToProtobufKotlinCommonGenerator(config, generatedMetadata, model).generateKotlinFiles()
+        return ModelToProtobufKotlinCommonGenerator(config, generatedMetadata, model, conflictCollector)
+            .generateKotlinFiles()
     }
 }

@@ -142,7 +142,7 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
 
         is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
-        is Descriptors.EnumValueDescriptor -> FqName.Declaration(name, type.fqName())
+        is Descriptors.EnumValueDescriptor -> FqName.Declaration(KotlinKeywords.escapeIfKeyword(name), type.fqName())
         is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file.fqName())
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
@@ -209,9 +209,11 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         .map { it.toModel(comments, nameTable) }
 
     regularFields = regularFields + oneOfs.map {
+        val escapedName = KotlinKeywords.escapeIfKeyword(it.name.simpleName.decapitalize())
+        val rawName = it.dec.name.simpleProtoNameToKotlinRaw()
         FieldDeclaration(
-            // TODO: Proper handling of this field name
-            name = it.name.simpleName.decapitalize(),
+            name = escapedName,
+            rawName = rawName,
             type = FieldType.OneOf(it),
             doc = it.doc,
             dec = it.variants.first().dec,
@@ -280,8 +282,15 @@ private fun Descriptors.FieldDescriptor.toModel(
     presenceIdx: Int? = null,
 ): FieldDeclaration =
     cached {
+        val rawName = if (realContainingOneof != null) {
+            name.simpleProtoNameToKotlinRaw(firstLetterUpper = true)
+        } else {
+            name.simpleProtoNameToKotlinRaw()
+        }
+
         FieldDeclaration(
             name = fqName().simpleName,
+            rawName = rawName,
             type = modelType(nameTable),
             presenceIdx = presenceIdx,
             doc = comments.get(),
@@ -375,7 +384,7 @@ private fun Descriptors.ServiceDescriptor.toModel(comments: Comments, nameTable:
 private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: FqNameTable): MethodDeclaration =
     cached {
         MethodDeclaration(
-            name = name,
+            name = name.simpleProtoNameToKotlin(),
             inputType = lazy { inputType.toModel(null, nameTable) },
             outputType = lazy { outputType.toModel(null, nameTable) },
             dec = this,
@@ -463,7 +472,7 @@ private fun String.snakeToCamelCase(): String {
     return replace(snakeRegExp) { it.value.last().uppercase() }
 }
 
-private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
+private fun String.simpleProtoNameToKotlinRaw(firstLetterUpper: Boolean = false): String {
     return snakeToCamelCase().run {
         if (firstLetterUpper) {
             replaceFirstChar { it.uppercase() }
@@ -471,4 +480,8 @@ private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): S
             this
         }
     }
+}
+
+private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
+    return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(firstLetterUpper))
 }

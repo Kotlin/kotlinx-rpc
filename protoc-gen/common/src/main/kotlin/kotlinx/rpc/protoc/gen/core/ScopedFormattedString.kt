@@ -135,6 +135,20 @@ fun ScopedFormattedString.wrapIn(block: (String) -> String): ScopedFormattedStri
 }
 
 /**
+ * If this [ScopedFormattedString] is empty (no value and no args), returns [ScopedFormattedString.empty].
+ * Otherwise, transforms the value using [block], using the argument exactly once.
+ *
+ * Use this instead of `wrapIn { if (it.isEmpty()) "" else "$it..." }` to avoid
+ * violating the "use argument exactly once" contract.
+ */
+fun ScopedFormattedString.wrapInIfNotBlankOr(
+    or: String? = null,
+    block: (String) -> String,
+): ScopedFormattedString {
+    return if (this.value.isBlank()) or?.scoped() ?: ScopedFormattedString.empty else wrapIn(block)
+}
+
+/**
  * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT ONLY ONCE
  */
 fun ScopedFormattedString.merge(
