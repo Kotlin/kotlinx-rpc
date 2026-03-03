@@ -103,13 +103,18 @@ abstract class ProtocGenPlugin {
         )
 
         val generatedMetadata = GeneratedMetadata()
+        val conflictCollector = NameConflictCollector()
 
         globalLogger = logger
-        val files = input.runGeneration(config, generatedMetadata)
+        val files = input.runGeneration(config, generatedMetadata, conflictCollector)
 
         return CodeGeneratorResponse.newBuilder()
             .apply {
-                files.forEach(::addFile)
+                if (conflictCollector.hasErrors()) {
+                    error = conflictCollector.formatErrors()
+                } else {
+                    files.forEach(::addFile)
+                }
 
                 val features =
                     Feature.FEATURE_PROTO3_OPTIONAL_VALUE or
@@ -123,12 +128,17 @@ abstract class ProtocGenPlugin {
             .build()
     }
 
-    private fun CodeGeneratorRequest.runGeneration(config: Config, generatedMetadata: GeneratedMetadata): List<CodeGeneratorResponse.File?> {
+    private fun CodeGeneratorRequest.runGeneration(
+        config: Config,
+        generatedMetadata: GeneratedMetadata,
+        conflictCollector: NameConflictCollector,
+    ): List<CodeGeneratorResponse.File?> {
         return try {
             val files = generateKotlinByModel(
                 config = config,
                 generatedMetadata = generatedMetadata,
                 model = this.toModel(config),
+                conflictCollector = conflictCollector,
             ).map { file ->
                 CodeGeneratorResponse.File.newBuilder()
                     .apply {
@@ -172,5 +182,6 @@ $protoNames
         config: Config,
         model: Model,
         generatedMetadata: GeneratedMetadata,
+        conflictCollector: NameConflictCollector,
     ): List<FileGenerator>
 }

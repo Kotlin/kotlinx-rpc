@@ -53,7 +53,7 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
         if (other == null || this::class != other::class) return false
         other as FieldMaskInternal
         other.checkRequiredFields()
-        if (paths != other.paths) return false
+        if (this.paths != other.paths) return false
         return true
     }
 
@@ -65,11 +65,11 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("FieldMask(")
-            appendLine("${nextIndentString}paths=${paths},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("FieldMask(")
+        builder.appendLine("${nextIndentString}paths=${this.paths},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -124,8 +124,8 @@ public fun FieldMaskInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (paths.isNotEmpty()) {
-        paths.forEach {
+    if (this.paths.isNotEmpty()) {
+        this.paths.forEach {
             encoder.writeString(1, it)
         }
     }
@@ -161,8 +161,8 @@ public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decode
 
 private fun FieldMaskInternal.computeSize(): Int {
     var __result = 0
-    if (paths.isNotEmpty()) {
-        __result += paths.sumOf { WireSize.string(it).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.paths.isNotEmpty()) {
+        __result += this.paths.sumOf { WireSize.string(it).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     return __result

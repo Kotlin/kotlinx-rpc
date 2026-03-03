@@ -206,11 +206,13 @@ interface TestAllTypesProto2 {
     /**
     * groups
     */
+    @GeneratedProtoMessage
     interface Data {
         val groupInt32: Int?
         val groupUint32: UInt?
     }
 
+    @GeneratedProtoMessage
     interface MultiWordGroupField {
         val groupInt32: Int?
         val groupUint32: UInt?
@@ -285,6 +287,7 @@ interface UnknownToTestAllTypes {
     val optionalBool: Boolean?
     val repeatedInt32: List<Int>
 
+    @GeneratedProtoMessage
     interface OptionalGroup {
         val a: Int?
     }
@@ -378,6 +381,7 @@ interface TestAllRequiredTypesProto2 {
     /**
     * groups
     */
+    @GeneratedProtoMessage
     interface Data {
         val groupInt32: Int
         val groupUint32: UInt

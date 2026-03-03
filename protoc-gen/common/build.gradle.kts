@@ -5,3 +5,9 @@
 plugins {
     alias(libs.plugins.conventions.protoc.gen)
 }
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+}

@@ -8,6 +8,7 @@ import kotlinx.rpc.protoc.gen.core.model.FieldDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FieldType
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
+import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.fullName
 import kotlinx.rpc.protoc.gen.core.model.packageName
@@ -18,6 +19,7 @@ abstract class AModelToKotlinCommonGenerator(
     protected val config: Config,
     protected val generatedMetadata: GeneratedMetadata,
     protected val model: Model,
+    protected val conflictCollector: NameConflictCollector = NameConflictCollector(),
 ) {
     protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
 
@@ -44,8 +46,47 @@ abstract class AModelToKotlinCommonGenerator(
         }
     }
 
+    /**
+     * Public generated names that cannot be used by proto-supplied names (nested messages, enums, fields).
+     * If a conflict is detected, an error is reported via [conflictCollector].
+     */
+    protected open val publicGeneratedNames: Set<String> = emptySet()
+
     fun generateKotlinFiles(): List<FileGenerator> {
+        if (publicGeneratedNames.isNotEmpty()) {
+            model.files.forEach { file ->
+                file.messageDeclarations.forEach { validateNameConflicts(it, file) }
+            }
+        }
+
+        if (conflictCollector.hasErrors()) {
+            return emptyList()
+        }
+
         return model.files.flatMap { it.generateKotlinFiles() }
+    }
+
+    private fun validateNameConflicts(declaration: MessageDeclaration, file: FileDeclaration) {
+        if (!declaration.isUserFacing) return
+
+        val nestedNames = declaration.nestedDeclarations.map { it.name.simpleName } +
+            declaration.enumDeclarations.map { it.name.simpleName }
+
+        for (name in nestedNames) {
+            if (name in publicGeneratedNames) {
+                conflictCollector.addError(
+                    NameConflictError(
+                        protoFilePath = file.dec.name,
+                        messageName = declaration.name.fullName(),
+                        conflictingProtoName = name,
+                        conflictingGeneratedName = name,
+                        description = "Nested proto type '$name' conflicts with generated '$name' declaration.",
+                    )
+                )
+            }
+        }
+
+        declaration.nestedDeclarations.forEach { validateNameConflicts(it, file) }
     }
 
     private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {

@@ -49,8 +49,8 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         if (other == null || this::class != other::class) return false
         other as AnyInternal
         other.checkRequiredFields()
-        if (typeUrl != other.typeUrl) return false
-        if (!value.contentEquals(other.value)) return false
+        if (this.typeUrl != other.typeUrl) return false
+        if (!this.value.contentEquals(other.value)) return false
         return true
     }
 
@@ -62,12 +62,12 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("Any(")
-            appendLine("${nextIndentString}typeUrl=${typeUrl},")
-            appendLine("${nextIndentString}value=${value.contentToString()},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("Any(")
+        builder.appendLine("${nextIndentString}typeUrl=${this.typeUrl},")
+        builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -123,12 +123,12 @@ public fun AnyInternal.checkRequiredFields() {
 
 @InternalRpcApi
 public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (typeUrl.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = typeUrl)
+    if (this.typeUrl.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.typeUrl)
     }
 
-    if (value.isNotEmpty()) {
-        encoder.writeBytes(fieldNr = 2, value = value)
+    if (this.value.isNotEmpty()) {
+        encoder.writeBytes(fieldNr = 2, value = this.value)
     }
 }
 
@@ -164,12 +164,12 @@ public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecod
 
 private fun AnyInternal.computeSize(): Int {
     var __result = 0
-    if (typeUrl.isNotEmpty()) {
-        __result += WireSize.string(typeUrl).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.typeUrl.isNotEmpty()) {
+        __result += WireSize.string(this.typeUrl).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (value.isNotEmpty()) {
-        __result += WireSize.bytes(value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.value.isNotEmpty()) {
+        __result += WireSize.bytes(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result

@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package name_conflicts;
+
+// Test 1: Fields named as Kotlin hard keywords
+// These must be escaped with backticks in generated code
+message KeywordFields {
+    int32 for = 1;
+    int32 when = 2;
+    int32 class = 3;
+    int32 fun = 4;
+    int32 val = 5;
+    int32 var = 6;
+    int32 if = 7;
+    int32 else = 8;
+    int32 return = 9;
+    int32 while = 10;
+    int32 do = 11;
+    int32 is = 12;
+    int32 in = 13;
+    int32 object = 14;
+    int32 this = 15;
+    int32 super = 16;
+    int32 null = 17;
+    int32 true = 18;
+    int32 false = 19;
+    int32 try = 20;
+    int32 throw = 21;
+    int32 break = 22;
+    int32 continue = 23;
+    int32 as = 24;
+    int32 interface = 25;
+    int32 package = 26;
+    int32 typealias = 27;
+    int32 typeof = 28;
+}
+
+// Test 2: Fields that collide with internal generated variable names
+// These should trigger %N mangling (e.g., copy -> _copy in internal code)
+message InternalNameConflicts {
+    int32 copy = 1;
+    int32 result = 2;
+    string tag = 3;
+    int32 value = 4;
+}
+
+// Fields named 'msg', 'buffer', 'encoder' conflict with function parameters
+// in encodeWith/decodeWith/MARSHALLER. Function parameter names now use %N,
+// so these fields are properly handled via NameScope mangling.
+message FunctionParamConflicts {
+    int32 msg = 1;
+    int32 buffer = 2;
+    int32 encoder = 3;
+}
+
+// Test 3: Keyword fields with presence (proto2-style via optional)
+message KeywordFieldsWithPresence {
+    optional int32 for = 1;
+    optional int32 when = 2;
+    optional string class = 3;
+    optional bool if = 4;
+}
+
+// Test 4: Keyword fields as map keys/values and repeated
+message KeywordCollections {
+    repeated int32 for = 1;
+    map<string, int32> while = 2;
+}
+
+// Test 5: Enum with keyword value names (uppercase - no escaping needed)
+enum KeywordEnum {
+    UNSPECIFIED = 0;
+    FOR = 1;
+    WHEN = 2;
+    CLASS = 3;
+}
+
+// Test 5b: Enum with lowercase names that exactly match Kotlin keywords
+enum LowercaseKeywordEnum {
+    unspecified = 0;
+    object = 1;
+    class = 2;
+    val = 3;
+}
+
+// Test 6: Oneof with keyword variant names
+message KeywordOneof {
+    oneof value {
+        int32 for = 1;
+        string when = 2;
+        bool if = 3;
+    }
+
+    oneof package {
+        int32 while = 4;
+    }
+}
+
+// Test 7: Nested message + keyword field combination
+message NestedWithKeywords {
+    message Inner {
+        int32 for = 1;
+        int32 copy = 2;
+    }
+
+    Inner while = 1;
+    int32 return = 2;
+}
+
+// Test 8: Fields that collide with more internal generated variable names
+// Tests: hashCode's "other"/"result", asString's "indent"/"indentString"/"nextIndentString",
+// copyInternal's "body", encodeWith's "config", decodeWith's "decoder"/"tag",
+// computeSize's "result", map decode's "elem"/"entry"/"kEntry",
+// fromNumber's "number", oneOfHashCode's "offset", MARSHALLER's "internalMsg",
+// and the internal property "unknownFieldsEncoder"
+message MoreInternalNameConflicts {
+    int32 other = 1;
+    int32 indent = 2;
+    string indentString = 3;
+    string nextIndentString = 4;
+    int32 body = 5;
+    int32 config = 6;
+    int32 decoder = 7;
+    int32 tag = 8;
+    int32 __result = 9;
+    int32 elem = 10;
+    int32 entry = 11;
+    int32 kEntry = 12;
+    int32 number = 13;
+    int32 offset = 14;
+    int32 internalMsg = 15;
+    int32 _unknownFieldsEncoder = 16;
+    int32 startGroup = 17;
+    int32 builder = 18;
+}

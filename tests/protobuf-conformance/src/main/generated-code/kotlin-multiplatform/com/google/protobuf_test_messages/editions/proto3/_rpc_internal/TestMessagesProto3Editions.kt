@@ -467,148 +467,148 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         other as TestAllTypesProto3Internal
         other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
-        if (optionalInt32 != other.optionalInt32) return false
-        if (optionalInt64 != other.optionalInt64) return false
-        if (optionalUint32 != other.optionalUint32) return false
-        if (optionalUint64 != other.optionalUint64) return false
-        if (optionalSint32 != other.optionalSint32) return false
-        if (optionalSint64 != other.optionalSint64) return false
-        if (optionalFixed32 != other.optionalFixed32) return false
-        if (optionalFixed64 != other.optionalFixed64) return false
-        if (optionalSfixed32 != other.optionalSfixed32) return false
-        if (optionalSfixed64 != other.optionalSfixed64) return false
-        if (optionalFloat != other.optionalFloat) return false
-        if (optionalDouble != other.optionalDouble) return false
-        if (optionalBool != other.optionalBool) return false
-        if (optionalString != other.optionalString) return false
-        if (!optionalBytes.contentEquals(other.optionalBytes)) return false
-        if (presenceMask[0] && optionalNestedMessage != other.optionalNestedMessage) return false
-        if (presenceMask[1] && optionalForeignMessage != other.optionalForeignMessage) return false
-        if (optionalNestedEnum != other.optionalNestedEnum) return false
-        if (optionalForeignEnum != other.optionalForeignEnum) return false
-        if (optionalAliasedEnum != other.optionalAliasedEnum) return false
-        if (optionalStringPiece != other.optionalStringPiece) return false
-        if (optionalCord != other.optionalCord) return false
-        if (presenceMask[2] && recursiveMessage != other.recursiveMessage) return false
-        if (repeatedInt32 != other.repeatedInt32) return false
-        if (repeatedInt64 != other.repeatedInt64) return false
-        if (repeatedUint32 != other.repeatedUint32) return false
-        if (repeatedUint64 != other.repeatedUint64) return false
-        if (repeatedSint32 != other.repeatedSint32) return false
-        if (repeatedSint64 != other.repeatedSint64) return false
-        if (repeatedFixed32 != other.repeatedFixed32) return false
-        if (repeatedFixed64 != other.repeatedFixed64) return false
-        if (repeatedSfixed32 != other.repeatedSfixed32) return false
-        if (repeatedSfixed64 != other.repeatedSfixed64) return false
-        if (repeatedFloat != other.repeatedFloat) return false
-        if (repeatedDouble != other.repeatedDouble) return false
-        if (repeatedBool != other.repeatedBool) return false
-        if (repeatedString != other.repeatedString) return false
-        if (repeatedBytes != other.repeatedBytes) return false
-        if (repeatedNestedMessage != other.repeatedNestedMessage) return false
-        if (repeatedForeignMessage != other.repeatedForeignMessage) return false
-        if (repeatedNestedEnum != other.repeatedNestedEnum) return false
-        if (repeatedForeignEnum != other.repeatedForeignEnum) return false
-        if (repeatedStringPiece != other.repeatedStringPiece) return false
-        if (repeatedCord != other.repeatedCord) return false
-        if (packedInt32 != other.packedInt32) return false
-        if (packedInt64 != other.packedInt64) return false
-        if (packedUint32 != other.packedUint32) return false
-        if (packedUint64 != other.packedUint64) return false
-        if (packedSint32 != other.packedSint32) return false
-        if (packedSint64 != other.packedSint64) return false
-        if (packedFixed32 != other.packedFixed32) return false
-        if (packedFixed64 != other.packedFixed64) return false
-        if (packedSfixed32 != other.packedSfixed32) return false
-        if (packedSfixed64 != other.packedSfixed64) return false
-        if (packedFloat != other.packedFloat) return false
-        if (packedDouble != other.packedDouble) return false
-        if (packedBool != other.packedBool) return false
-        if (packedNestedEnum != other.packedNestedEnum) return false
-        if (unpackedInt32 != other.unpackedInt32) return false
-        if (unpackedInt64 != other.unpackedInt64) return false
-        if (unpackedUint32 != other.unpackedUint32) return false
-        if (unpackedUint64 != other.unpackedUint64) return false
-        if (unpackedSint32 != other.unpackedSint32) return false
-        if (unpackedSint64 != other.unpackedSint64) return false
-        if (unpackedFixed32 != other.unpackedFixed32) return false
-        if (unpackedFixed64 != other.unpackedFixed64) return false
-        if (unpackedSfixed32 != other.unpackedSfixed32) return false
-        if (unpackedSfixed64 != other.unpackedSfixed64) return false
-        if (unpackedFloat != other.unpackedFloat) return false
-        if (unpackedDouble != other.unpackedDouble) return false
-        if (unpackedBool != other.unpackedBool) return false
-        if (unpackedNestedEnum != other.unpackedNestedEnum) return false
-        if (mapInt32Int32 != other.mapInt32Int32) return false
-        if (mapInt64Int64 != other.mapInt64Int64) return false
-        if (mapUint32Uint32 != other.mapUint32Uint32) return false
-        if (mapUint64Uint64 != other.mapUint64Uint64) return false
-        if (mapSint32Sint32 != other.mapSint32Sint32) return false
-        if (mapSint64Sint64 != other.mapSint64Sint64) return false
-        if (mapFixed32Fixed32 != other.mapFixed32Fixed32) return false
-        if (mapFixed64Fixed64 != other.mapFixed64Fixed64) return false
-        if (mapSfixed32Sfixed32 != other.mapSfixed32Sfixed32) return false
-        if (mapSfixed64Sfixed64 != other.mapSfixed64Sfixed64) return false
-        if (mapInt32Float != other.mapInt32Float) return false
-        if (mapInt32Double != other.mapInt32Double) return false
-        if (mapBoolBool != other.mapBoolBool) return false
-        if (mapStringString != other.mapStringString) return false
-        if (mapStringBytes != other.mapStringBytes) return false
-        if (mapStringNestedMessage != other.mapStringNestedMessage) return false
-        if (mapStringForeignMessage != other.mapStringForeignMessage) return false
-        if (mapStringNestedEnum != other.mapStringNestedEnum) return false
-        if (mapStringForeignEnum != other.mapStringForeignEnum) return false
-        if (presenceMask[3] && optionalBoolWrapper != other.optionalBoolWrapper) return false
-        if (presenceMask[4] && optionalInt32Wrapper != other.optionalInt32Wrapper) return false
-        if (presenceMask[5] && optionalInt64Wrapper != other.optionalInt64Wrapper) return false
-        if (presenceMask[6] && optionalUint32Wrapper != other.optionalUint32Wrapper) return false
-        if (presenceMask[7] && optionalUint64Wrapper != other.optionalUint64Wrapper) return false
-        if (presenceMask[8] && optionalFloatWrapper != other.optionalFloatWrapper) return false
-        if (presenceMask[9] && optionalDoubleWrapper != other.optionalDoubleWrapper) return false
-        if (presenceMask[10] && optionalStringWrapper != other.optionalStringWrapper) return false
-        if (presenceMask[11] && optionalBytesWrapper != other.optionalBytesWrapper) return false
-        if (repeatedBoolWrapper != other.repeatedBoolWrapper) return false
-        if (repeatedInt32Wrapper != other.repeatedInt32Wrapper) return false
-        if (repeatedInt64Wrapper != other.repeatedInt64Wrapper) return false
-        if (repeatedUint32Wrapper != other.repeatedUint32Wrapper) return false
-        if (repeatedUint64Wrapper != other.repeatedUint64Wrapper) return false
-        if (repeatedFloatWrapper != other.repeatedFloatWrapper) return false
-        if (repeatedDoubleWrapper != other.repeatedDoubleWrapper) return false
-        if (repeatedStringWrapper != other.repeatedStringWrapper) return false
-        if (repeatedBytesWrapper != other.repeatedBytesWrapper) return false
-        if (presenceMask[12] && optionalDuration != other.optionalDuration) return false
-        if (presenceMask[13] && optionalTimestamp != other.optionalTimestamp) return false
-        if (presenceMask[14] && optionalFieldMask != other.optionalFieldMask) return false
-        if (presenceMask[15] && optionalStruct != other.optionalStruct) return false
-        if (presenceMask[16] && optionalAny != other.optionalAny) return false
-        if (presenceMask[17] && optionalValue != other.optionalValue) return false
-        if (optionalNullValue != other.optionalNullValue) return false
-        if (repeatedDuration != other.repeatedDuration) return false
-        if (repeatedTimestamp != other.repeatedTimestamp) return false
-        if (repeatedFieldmask != other.repeatedFieldmask) return false
-        if (repeatedStruct != other.repeatedStruct) return false
-        if (repeatedAny != other.repeatedAny) return false
-        if (repeatedValue != other.repeatedValue) return false
-        if (repeatedListValue != other.repeatedListValue) return false
-        if (fieldname1 != other.fieldname1) return false
-        if (fieldName2 != other.fieldName2) return false
-        if (FieldName3 != other.FieldName3) return false
-        if (field_Name4_ != other.field_Name4_) return false
-        if (field0name5 != other.field0name5) return false
-        if (field_0Name6 != other.field_0Name6) return false
-        if (fieldName7 != other.fieldName7) return false
-        if (FieldName8 != other.FieldName8) return false
-        if (field_Name9 != other.field_Name9) return false
-        if (Field_Name10 != other.Field_Name10) return false
-        if (FIELD_NAME11 != other.FIELD_NAME11) return false
-        if (FIELDName12 != other.FIELDName12) return false
-        if (_FieldName13 != other._FieldName13) return false
-        if (__FieldName14 != other.__FieldName14) return false
-        if (field_Name15 != other.field_Name15) return false
-        if (field__Name16 != other.field__Name16) return false
-        if (fieldName17__ != other.fieldName17__) return false
-        if (FieldName18__ != other.FieldName18__) return false
-        if (oneofField != other.oneofField) return false
+        if (this.optionalInt32 != other.optionalInt32) return false
+        if (this.optionalInt64 != other.optionalInt64) return false
+        if (this.optionalUint32 != other.optionalUint32) return false
+        if (this.optionalUint64 != other.optionalUint64) return false
+        if (this.optionalSint32 != other.optionalSint32) return false
+        if (this.optionalSint64 != other.optionalSint64) return false
+        if (this.optionalFixed32 != other.optionalFixed32) return false
+        if (this.optionalFixed64 != other.optionalFixed64) return false
+        if (this.optionalSfixed32 != other.optionalSfixed32) return false
+        if (this.optionalSfixed64 != other.optionalSfixed64) return false
+        if (this.optionalFloat != other.optionalFloat) return false
+        if (this.optionalDouble != other.optionalDouble) return false
+        if (this.optionalBool != other.optionalBool) return false
+        if (this.optionalString != other.optionalString) return false
+        if (!this.optionalBytes.contentEquals(other.optionalBytes)) return false
+        if (presenceMask[0] && this.optionalNestedMessage != other.optionalNestedMessage) return false
+        if (presenceMask[1] && this.optionalForeignMessage != other.optionalForeignMessage) return false
+        if (this.optionalNestedEnum != other.optionalNestedEnum) return false
+        if (this.optionalForeignEnum != other.optionalForeignEnum) return false
+        if (this.optionalAliasedEnum != other.optionalAliasedEnum) return false
+        if (this.optionalStringPiece != other.optionalStringPiece) return false
+        if (this.optionalCord != other.optionalCord) return false
+        if (presenceMask[2] && this.recursiveMessage != other.recursiveMessage) return false
+        if (this.repeatedInt32 != other.repeatedInt32) return false
+        if (this.repeatedInt64 != other.repeatedInt64) return false
+        if (this.repeatedUint32 != other.repeatedUint32) return false
+        if (this.repeatedUint64 != other.repeatedUint64) return false
+        if (this.repeatedSint32 != other.repeatedSint32) return false
+        if (this.repeatedSint64 != other.repeatedSint64) return false
+        if (this.repeatedFixed32 != other.repeatedFixed32) return false
+        if (this.repeatedFixed64 != other.repeatedFixed64) return false
+        if (this.repeatedSfixed32 != other.repeatedSfixed32) return false
+        if (this.repeatedSfixed64 != other.repeatedSfixed64) return false
+        if (this.repeatedFloat != other.repeatedFloat) return false
+        if (this.repeatedDouble != other.repeatedDouble) return false
+        if (this.repeatedBool != other.repeatedBool) return false
+        if (this.repeatedString != other.repeatedString) return false
+        if (this.repeatedBytes != other.repeatedBytes) return false
+        if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
+        if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
+        if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
+        if (this.repeatedForeignEnum != other.repeatedForeignEnum) return false
+        if (this.repeatedStringPiece != other.repeatedStringPiece) return false
+        if (this.repeatedCord != other.repeatedCord) return false
+        if (this.packedInt32 != other.packedInt32) return false
+        if (this.packedInt64 != other.packedInt64) return false
+        if (this.packedUint32 != other.packedUint32) return false
+        if (this.packedUint64 != other.packedUint64) return false
+        if (this.packedSint32 != other.packedSint32) return false
+        if (this.packedSint64 != other.packedSint64) return false
+        if (this.packedFixed32 != other.packedFixed32) return false
+        if (this.packedFixed64 != other.packedFixed64) return false
+        if (this.packedSfixed32 != other.packedSfixed32) return false
+        if (this.packedSfixed64 != other.packedSfixed64) return false
+        if (this.packedFloat != other.packedFloat) return false
+        if (this.packedDouble != other.packedDouble) return false
+        if (this.packedBool != other.packedBool) return false
+        if (this.packedNestedEnum != other.packedNestedEnum) return false
+        if (this.unpackedInt32 != other.unpackedInt32) return false
+        if (this.unpackedInt64 != other.unpackedInt64) return false
+        if (this.unpackedUint32 != other.unpackedUint32) return false
+        if (this.unpackedUint64 != other.unpackedUint64) return false
+        if (this.unpackedSint32 != other.unpackedSint32) return false
+        if (this.unpackedSint64 != other.unpackedSint64) return false
+        if (this.unpackedFixed32 != other.unpackedFixed32) return false
+        if (this.unpackedFixed64 != other.unpackedFixed64) return false
+        if (this.unpackedSfixed32 != other.unpackedSfixed32) return false
+        if (this.unpackedSfixed64 != other.unpackedSfixed64) return false
+        if (this.unpackedFloat != other.unpackedFloat) return false
+        if (this.unpackedDouble != other.unpackedDouble) return false
+        if (this.unpackedBool != other.unpackedBool) return false
+        if (this.unpackedNestedEnum != other.unpackedNestedEnum) return false
+        if (this.mapInt32Int32 != other.mapInt32Int32) return false
+        if (this.mapInt64Int64 != other.mapInt64Int64) return false
+        if (this.mapUint32Uint32 != other.mapUint32Uint32) return false
+        if (this.mapUint64Uint64 != other.mapUint64Uint64) return false
+        if (this.mapSint32Sint32 != other.mapSint32Sint32) return false
+        if (this.mapSint64Sint64 != other.mapSint64Sint64) return false
+        if (this.mapFixed32Fixed32 != other.mapFixed32Fixed32) return false
+        if (this.mapFixed64Fixed64 != other.mapFixed64Fixed64) return false
+        if (this.mapSfixed32Sfixed32 != other.mapSfixed32Sfixed32) return false
+        if (this.mapSfixed64Sfixed64 != other.mapSfixed64Sfixed64) return false
+        if (this.mapInt32Float != other.mapInt32Float) return false
+        if (this.mapInt32Double != other.mapInt32Double) return false
+        if (this.mapBoolBool != other.mapBoolBool) return false
+        if (this.mapStringString != other.mapStringString) return false
+        if (this.mapStringBytes != other.mapStringBytes) return false
+        if (this.mapStringNestedMessage != other.mapStringNestedMessage) return false
+        if (this.mapStringForeignMessage != other.mapStringForeignMessage) return false
+        if (this.mapStringNestedEnum != other.mapStringNestedEnum) return false
+        if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
+        if (presenceMask[3] && this.optionalBoolWrapper != other.optionalBoolWrapper) return false
+        if (presenceMask[4] && this.optionalInt32Wrapper != other.optionalInt32Wrapper) return false
+        if (presenceMask[5] && this.optionalInt64Wrapper != other.optionalInt64Wrapper) return false
+        if (presenceMask[6] && this.optionalUint32Wrapper != other.optionalUint32Wrapper) return false
+        if (presenceMask[7] && this.optionalUint64Wrapper != other.optionalUint64Wrapper) return false
+        if (presenceMask[8] && this.optionalFloatWrapper != other.optionalFloatWrapper) return false
+        if (presenceMask[9] && this.optionalDoubleWrapper != other.optionalDoubleWrapper) return false
+        if (presenceMask[10] && this.optionalStringWrapper != other.optionalStringWrapper) return false
+        if (presenceMask[11] && this.optionalBytesWrapper != other.optionalBytesWrapper) return false
+        if (this.repeatedBoolWrapper != other.repeatedBoolWrapper) return false
+        if (this.repeatedInt32Wrapper != other.repeatedInt32Wrapper) return false
+        if (this.repeatedInt64Wrapper != other.repeatedInt64Wrapper) return false
+        if (this.repeatedUint32Wrapper != other.repeatedUint32Wrapper) return false
+        if (this.repeatedUint64Wrapper != other.repeatedUint64Wrapper) return false
+        if (this.repeatedFloatWrapper != other.repeatedFloatWrapper) return false
+        if (this.repeatedDoubleWrapper != other.repeatedDoubleWrapper) return false
+        if (this.repeatedStringWrapper != other.repeatedStringWrapper) return false
+        if (this.repeatedBytesWrapper != other.repeatedBytesWrapper) return false
+        if (presenceMask[12] && this.optionalDuration != other.optionalDuration) return false
+        if (presenceMask[13] && this.optionalTimestamp != other.optionalTimestamp) return false
+        if (presenceMask[14] && this.optionalFieldMask != other.optionalFieldMask) return false
+        if (presenceMask[15] && this.optionalStruct != other.optionalStruct) return false
+        if (presenceMask[16] && this.optionalAny != other.optionalAny) return false
+        if (presenceMask[17] && this.optionalValue != other.optionalValue) return false
+        if (this.optionalNullValue != other.optionalNullValue) return false
+        if (this.repeatedDuration != other.repeatedDuration) return false
+        if (this.repeatedTimestamp != other.repeatedTimestamp) return false
+        if (this.repeatedFieldmask != other.repeatedFieldmask) return false
+        if (this.repeatedStruct != other.repeatedStruct) return false
+        if (this.repeatedAny != other.repeatedAny) return false
+        if (this.repeatedValue != other.repeatedValue) return false
+        if (this.repeatedListValue != other.repeatedListValue) return false
+        if (this.fieldname1 != other.fieldname1) return false
+        if (this.fieldName2 != other.fieldName2) return false
+        if (this.FieldName3 != other.FieldName3) return false
+        if (this.field_Name4_ != other.field_Name4_) return false
+        if (this.field0name5 != other.field0name5) return false
+        if (this.field_0Name6 != other.field_0Name6) return false
+        if (this.fieldName7 != other.fieldName7) return false
+        if (this.FieldName8 != other.FieldName8) return false
+        if (this.field_Name9 != other.field_Name9) return false
+        if (this.Field_Name10 != other.Field_Name10) return false
+        if (this.FIELD_NAME11 != other.FIELD_NAME11) return false
+        if (this.FIELDName12 != other.FIELDName12) return false
+        if (this._FieldName13 != other._FieldName13) return false
+        if (this.__FieldName14 != other.__FieldName14) return false
+        if (this.field_Name15 != other.field_Name15) return false
+        if (this.field__Name16 != other.field__Name16) return false
+        if (this.fieldName17__ != other.fieldName17__) return false
+        if (this.FieldName18__ != other.FieldName18__) return false
+        if (this.oneofField != other.oneofField) return false
         return true
     }
 
@@ -620,242 +620,242 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("TestAllTypesProto3(")
-            appendLine("${nextIndentString}optionalInt32=${optionalInt32},")
-            appendLine("${nextIndentString}optionalInt64=${optionalInt64},")
-            appendLine("${nextIndentString}optionalUint32=${optionalUint32},")
-            appendLine("${nextIndentString}optionalUint64=${optionalUint64},")
-            appendLine("${nextIndentString}optionalSint32=${optionalSint32},")
-            appendLine("${nextIndentString}optionalSint64=${optionalSint64},")
-            appendLine("${nextIndentString}optionalFixed32=${optionalFixed32},")
-            appendLine("${nextIndentString}optionalFixed64=${optionalFixed64},")
-            appendLine("${nextIndentString}optionalSfixed32=${optionalSfixed32},")
-            appendLine("${nextIndentString}optionalSfixed64=${optionalSfixed64},")
-            appendLine("${nextIndentString}optionalFloat=${optionalFloat},")
-            appendLine("${nextIndentString}optionalDouble=${optionalDouble},")
-            appendLine("${nextIndentString}optionalBool=${optionalBool},")
-            appendLine("${nextIndentString}optionalString=${optionalString},")
-            appendLine("${nextIndentString}optionalBytes=${optionalBytes.contentToString()},")
-            if (presenceMask[0]) {
-                appendLine("${nextIndentString}optionalNestedMessage=${optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalNestedMessage=<unset>,")
-            }
-
-            if (presenceMask[1]) {
-                appendLine("${nextIndentString}optionalForeignMessage=${optionalForeignMessage.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalForeignMessage=<unset>,")
-            }
-
-            appendLine("${nextIndentString}optionalNestedEnum=${optionalNestedEnum},")
-            appendLine("${nextIndentString}optionalForeignEnum=${optionalForeignEnum},")
-            appendLine("${nextIndentString}optionalAliasedEnum=${optionalAliasedEnum},")
-            appendLine("${nextIndentString}optionalStringPiece=${optionalStringPiece},")
-            appendLine("${nextIndentString}optionalCord=${optionalCord},")
-            if (presenceMask[2]) {
-                appendLine("${nextIndentString}recursiveMessage=${recursiveMessage.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}recursiveMessage=<unset>,")
-            }
-
-            appendLine("${nextIndentString}repeatedInt32=${repeatedInt32},")
-            appendLine("${nextIndentString}repeatedInt64=${repeatedInt64},")
-            appendLine("${nextIndentString}repeatedUint32=${repeatedUint32},")
-            appendLine("${nextIndentString}repeatedUint64=${repeatedUint64},")
-            appendLine("${nextIndentString}repeatedSint32=${repeatedSint32},")
-            appendLine("${nextIndentString}repeatedSint64=${repeatedSint64},")
-            appendLine("${nextIndentString}repeatedFixed32=${repeatedFixed32},")
-            appendLine("${nextIndentString}repeatedFixed64=${repeatedFixed64},")
-            appendLine("${nextIndentString}repeatedSfixed32=${repeatedSfixed32},")
-            appendLine("${nextIndentString}repeatedSfixed64=${repeatedSfixed64},")
-            appendLine("${nextIndentString}repeatedFloat=${repeatedFloat},")
-            appendLine("${nextIndentString}repeatedDouble=${repeatedDouble},")
-            appendLine("${nextIndentString}repeatedBool=${repeatedBool},")
-            appendLine("${nextIndentString}repeatedString=${repeatedString},")
-            appendLine("${nextIndentString}repeatedBytes=${repeatedBytes},")
-            appendLine("${nextIndentString}repeatedNestedMessage=${repeatedNestedMessage},")
-            appendLine("${nextIndentString}repeatedForeignMessage=${repeatedForeignMessage},")
-            appendLine("${nextIndentString}repeatedNestedEnum=${repeatedNestedEnum},")
-            appendLine("${nextIndentString}repeatedForeignEnum=${repeatedForeignEnum},")
-            appendLine("${nextIndentString}repeatedStringPiece=${repeatedStringPiece},")
-            appendLine("${nextIndentString}repeatedCord=${repeatedCord},")
-            appendLine("${nextIndentString}packedInt32=${packedInt32},")
-            appendLine("${nextIndentString}packedInt64=${packedInt64},")
-            appendLine("${nextIndentString}packedUint32=${packedUint32},")
-            appendLine("${nextIndentString}packedUint64=${packedUint64},")
-            appendLine("${nextIndentString}packedSint32=${packedSint32},")
-            appendLine("${nextIndentString}packedSint64=${packedSint64},")
-            appendLine("${nextIndentString}packedFixed32=${packedFixed32},")
-            appendLine("${nextIndentString}packedFixed64=${packedFixed64},")
-            appendLine("${nextIndentString}packedSfixed32=${packedSfixed32},")
-            appendLine("${nextIndentString}packedSfixed64=${packedSfixed64},")
-            appendLine("${nextIndentString}packedFloat=${packedFloat},")
-            appendLine("${nextIndentString}packedDouble=${packedDouble},")
-            appendLine("${nextIndentString}packedBool=${packedBool},")
-            appendLine("${nextIndentString}packedNestedEnum=${packedNestedEnum},")
-            appendLine("${nextIndentString}unpackedInt32=${unpackedInt32},")
-            appendLine("${nextIndentString}unpackedInt64=${unpackedInt64},")
-            appendLine("${nextIndentString}unpackedUint32=${unpackedUint32},")
-            appendLine("${nextIndentString}unpackedUint64=${unpackedUint64},")
-            appendLine("${nextIndentString}unpackedSint32=${unpackedSint32},")
-            appendLine("${nextIndentString}unpackedSint64=${unpackedSint64},")
-            appendLine("${nextIndentString}unpackedFixed32=${unpackedFixed32},")
-            appendLine("${nextIndentString}unpackedFixed64=${unpackedFixed64},")
-            appendLine("${nextIndentString}unpackedSfixed32=${unpackedSfixed32},")
-            appendLine("${nextIndentString}unpackedSfixed64=${unpackedSfixed64},")
-            appendLine("${nextIndentString}unpackedFloat=${unpackedFloat},")
-            appendLine("${nextIndentString}unpackedDouble=${unpackedDouble},")
-            appendLine("${nextIndentString}unpackedBool=${unpackedBool},")
-            appendLine("${nextIndentString}unpackedNestedEnum=${unpackedNestedEnum},")
-            appendLine("${nextIndentString}mapInt32Int32=${mapInt32Int32},")
-            appendLine("${nextIndentString}mapInt64Int64=${mapInt64Int64},")
-            appendLine("${nextIndentString}mapUint32Uint32=${mapUint32Uint32},")
-            appendLine("${nextIndentString}mapUint64Uint64=${mapUint64Uint64},")
-            appendLine("${nextIndentString}mapSint32Sint32=${mapSint32Sint32},")
-            appendLine("${nextIndentString}mapSint64Sint64=${mapSint64Sint64},")
-            appendLine("${nextIndentString}mapFixed32Fixed32=${mapFixed32Fixed32},")
-            appendLine("${nextIndentString}mapFixed64Fixed64=${mapFixed64Fixed64},")
-            appendLine("${nextIndentString}mapSfixed32Sfixed32=${mapSfixed32Sfixed32},")
-            appendLine("${nextIndentString}mapSfixed64Sfixed64=${mapSfixed64Sfixed64},")
-            appendLine("${nextIndentString}mapInt32Float=${mapInt32Float},")
-            appendLine("${nextIndentString}mapInt32Double=${mapInt32Double},")
-            appendLine("${nextIndentString}mapBoolBool=${mapBoolBool},")
-            appendLine("${nextIndentString}mapStringString=${mapStringString},")
-            appendLine("${nextIndentString}mapStringBytes=${mapStringBytes},")
-            appendLine("${nextIndentString}mapStringNestedMessage=${mapStringNestedMessage},")
-            appendLine("${nextIndentString}mapStringForeignMessage=${mapStringForeignMessage},")
-            appendLine("${nextIndentString}mapStringNestedEnum=${mapStringNestedEnum},")
-            appendLine("${nextIndentString}mapStringForeignEnum=${mapStringForeignEnum},")
-            if (presenceMask[3]) {
-                appendLine("${nextIndentString}optionalBoolWrapper=${optionalBoolWrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalBoolWrapper=<unset>,")
-            }
-
-            if (presenceMask[4]) {
-                appendLine("${nextIndentString}optionalInt32Wrapper=${optionalInt32Wrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalInt32Wrapper=<unset>,")
-            }
-
-            if (presenceMask[5]) {
-                appendLine("${nextIndentString}optionalInt64Wrapper=${optionalInt64Wrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalInt64Wrapper=<unset>,")
-            }
-
-            if (presenceMask[6]) {
-                appendLine("${nextIndentString}optionalUint32Wrapper=${optionalUint32Wrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalUint32Wrapper=<unset>,")
-            }
-
-            if (presenceMask[7]) {
-                appendLine("${nextIndentString}optionalUint64Wrapper=${optionalUint64Wrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalUint64Wrapper=<unset>,")
-            }
-
-            if (presenceMask[8]) {
-                appendLine("${nextIndentString}optionalFloatWrapper=${optionalFloatWrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalFloatWrapper=<unset>,")
-            }
-
-            if (presenceMask[9]) {
-                appendLine("${nextIndentString}optionalDoubleWrapper=${optionalDoubleWrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalDoubleWrapper=<unset>,")
-            }
-
-            if (presenceMask[10]) {
-                appendLine("${nextIndentString}optionalStringWrapper=${optionalStringWrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalStringWrapper=<unset>,")
-            }
-
-            if (presenceMask[11]) {
-                appendLine("${nextIndentString}optionalBytesWrapper=${optionalBytesWrapper.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalBytesWrapper=<unset>,")
-            }
-
-            appendLine("${nextIndentString}repeatedBoolWrapper=${repeatedBoolWrapper},")
-            appendLine("${nextIndentString}repeatedInt32Wrapper=${repeatedInt32Wrapper},")
-            appendLine("${nextIndentString}repeatedInt64Wrapper=${repeatedInt64Wrapper},")
-            appendLine("${nextIndentString}repeatedUint32Wrapper=${repeatedUint32Wrapper},")
-            appendLine("${nextIndentString}repeatedUint64Wrapper=${repeatedUint64Wrapper},")
-            appendLine("${nextIndentString}repeatedFloatWrapper=${repeatedFloatWrapper},")
-            appendLine("${nextIndentString}repeatedDoubleWrapper=${repeatedDoubleWrapper},")
-            appendLine("${nextIndentString}repeatedStringWrapper=${repeatedStringWrapper},")
-            appendLine("${nextIndentString}repeatedBytesWrapper=${repeatedBytesWrapper},")
-            if (presenceMask[12]) {
-                appendLine("${nextIndentString}optionalDuration=${optionalDuration.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalDuration=<unset>,")
-            }
-
-            if (presenceMask[13]) {
-                appendLine("${nextIndentString}optionalTimestamp=${optionalTimestamp.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalTimestamp=<unset>,")
-            }
-
-            if (presenceMask[14]) {
-                appendLine("${nextIndentString}optionalFieldMask=${optionalFieldMask.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalFieldMask=<unset>,")
-            }
-
-            if (presenceMask[15]) {
-                appendLine("${nextIndentString}optionalStruct=${optionalStruct.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalStruct=<unset>,")
-            }
-
-            if (presenceMask[16]) {
-                appendLine("${nextIndentString}optionalAny=${optionalAny.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalAny=<unset>,")
-            }
-
-            if (presenceMask[17]) {
-                appendLine("${nextIndentString}optionalValue=${optionalValue.asInternal().asString(indent = indent + 4)},")
-            } else {
-                appendLine("${nextIndentString}optionalValue=<unset>,")
-            }
-
-            appendLine("${nextIndentString}optionalNullValue=${optionalNullValue},")
-            appendLine("${nextIndentString}repeatedDuration=${repeatedDuration},")
-            appendLine("${nextIndentString}repeatedTimestamp=${repeatedTimestamp},")
-            appendLine("${nextIndentString}repeatedFieldmask=${repeatedFieldmask},")
-            appendLine("${nextIndentString}repeatedStruct=${repeatedStruct},")
-            appendLine("${nextIndentString}repeatedAny=${repeatedAny},")
-            appendLine("${nextIndentString}repeatedValue=${repeatedValue},")
-            appendLine("${nextIndentString}repeatedListValue=${repeatedListValue},")
-            appendLine("${nextIndentString}fieldname1=${fieldname1},")
-            appendLine("${nextIndentString}fieldName2=${fieldName2},")
-            appendLine("${nextIndentString}FieldName3=${FieldName3},")
-            appendLine("${nextIndentString}field_Name4_=${field_Name4_},")
-            appendLine("${nextIndentString}field0name5=${field0name5},")
-            appendLine("${nextIndentString}field_0Name6=${field_0Name6},")
-            appendLine("${nextIndentString}fieldName7=${fieldName7},")
-            appendLine("${nextIndentString}FieldName8=${FieldName8},")
-            appendLine("${nextIndentString}field_Name9=${field_Name9},")
-            appendLine("${nextIndentString}Field_Name10=${Field_Name10},")
-            appendLine("${nextIndentString}FIELD_NAME11=${FIELD_NAME11},")
-            appendLine("${nextIndentString}FIELDName12=${FIELDName12},")
-            appendLine("${nextIndentString}_FieldName13=${_FieldName13},")
-            appendLine("${nextIndentString}__FieldName14=${__FieldName14},")
-            appendLine("${nextIndentString}field_Name15=${field_Name15},")
-            appendLine("${nextIndentString}field__Name16=${field__Name16},")
-            appendLine("${nextIndentString}fieldName17__=${fieldName17__},")
-            appendLine("${nextIndentString}FieldName18__=${FieldName18__},")
-            appendLine("${nextIndentString}oneofField=${oneofField},")
-            append("${indentString})")
+        val builder = StringBuilder()
+        builder.appendLine("TestAllTypesProto3(")
+        builder.appendLine("${nextIndentString}optionalInt32=${this.optionalInt32},")
+        builder.appendLine("${nextIndentString}optionalInt64=${this.optionalInt64},")
+        builder.appendLine("${nextIndentString}optionalUint32=${this.optionalUint32},")
+        builder.appendLine("${nextIndentString}optionalUint64=${this.optionalUint64},")
+        builder.appendLine("${nextIndentString}optionalSint32=${this.optionalSint32},")
+        builder.appendLine("${nextIndentString}optionalSint64=${this.optionalSint64},")
+        builder.appendLine("${nextIndentString}optionalFixed32=${this.optionalFixed32},")
+        builder.appendLine("${nextIndentString}optionalFixed64=${this.optionalFixed64},")
+        builder.appendLine("${nextIndentString}optionalSfixed32=${this.optionalSfixed32},")
+        builder.appendLine("${nextIndentString}optionalSfixed64=${this.optionalSfixed64},")
+        builder.appendLine("${nextIndentString}optionalFloat=${this.optionalFloat},")
+        builder.appendLine("${nextIndentString}optionalDouble=${this.optionalDouble},")
+        builder.appendLine("${nextIndentString}optionalBool=${this.optionalBool},")
+        builder.appendLine("${nextIndentString}optionalString=${this.optionalString},")
+        builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.contentToString()},")
+        if (presenceMask[0]) {
+            builder.appendLine("${nextIndentString}optionalNestedMessage=${this.optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalNestedMessage=<unset>,")
         }
+
+        if (presenceMask[1]) {
+            builder.appendLine("${nextIndentString}optionalForeignMessage=${this.optionalForeignMessage.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalForeignMessage=<unset>,")
+        }
+
+        builder.appendLine("${nextIndentString}optionalNestedEnum=${this.optionalNestedEnum},")
+        builder.appendLine("${nextIndentString}optionalForeignEnum=${this.optionalForeignEnum},")
+        builder.appendLine("${nextIndentString}optionalAliasedEnum=${this.optionalAliasedEnum},")
+        builder.appendLine("${nextIndentString}optionalStringPiece=${this.optionalStringPiece},")
+        builder.appendLine("${nextIndentString}optionalCord=${this.optionalCord},")
+        if (presenceMask[2]) {
+            builder.appendLine("${nextIndentString}recursiveMessage=${this.recursiveMessage.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}recursiveMessage=<unset>,")
+        }
+
+        builder.appendLine("${nextIndentString}repeatedInt32=${this.repeatedInt32},")
+        builder.appendLine("${nextIndentString}repeatedInt64=${this.repeatedInt64},")
+        builder.appendLine("${nextIndentString}repeatedUint32=${this.repeatedUint32},")
+        builder.appendLine("${nextIndentString}repeatedUint64=${this.repeatedUint64},")
+        builder.appendLine("${nextIndentString}repeatedSint32=${this.repeatedSint32},")
+        builder.appendLine("${nextIndentString}repeatedSint64=${this.repeatedSint64},")
+        builder.appendLine("${nextIndentString}repeatedFixed32=${this.repeatedFixed32},")
+        builder.appendLine("${nextIndentString}repeatedFixed64=${this.repeatedFixed64},")
+        builder.appendLine("${nextIndentString}repeatedSfixed32=${this.repeatedSfixed32},")
+        builder.appendLine("${nextIndentString}repeatedSfixed64=${this.repeatedSfixed64},")
+        builder.appendLine("${nextIndentString}repeatedFloat=${this.repeatedFloat},")
+        builder.appendLine("${nextIndentString}repeatedDouble=${this.repeatedDouble},")
+        builder.appendLine("${nextIndentString}repeatedBool=${this.repeatedBool},")
+        builder.appendLine("${nextIndentString}repeatedString=${this.repeatedString},")
+        builder.appendLine("${nextIndentString}repeatedBytes=${this.repeatedBytes},")
+        builder.appendLine("${nextIndentString}repeatedNestedMessage=${this.repeatedNestedMessage},")
+        builder.appendLine("${nextIndentString}repeatedForeignMessage=${this.repeatedForeignMessage},")
+        builder.appendLine("${nextIndentString}repeatedNestedEnum=${this.repeatedNestedEnum},")
+        builder.appendLine("${nextIndentString}repeatedForeignEnum=${this.repeatedForeignEnum},")
+        builder.appendLine("${nextIndentString}repeatedStringPiece=${this.repeatedStringPiece},")
+        builder.appendLine("${nextIndentString}repeatedCord=${this.repeatedCord},")
+        builder.appendLine("${nextIndentString}packedInt32=${this.packedInt32},")
+        builder.appendLine("${nextIndentString}packedInt64=${this.packedInt64},")
+        builder.appendLine("${nextIndentString}packedUint32=${this.packedUint32},")
+        builder.appendLine("${nextIndentString}packedUint64=${this.packedUint64},")
+        builder.appendLine("${nextIndentString}packedSint32=${this.packedSint32},")
+        builder.appendLine("${nextIndentString}packedSint64=${this.packedSint64},")
+        builder.appendLine("${nextIndentString}packedFixed32=${this.packedFixed32},")
+        builder.appendLine("${nextIndentString}packedFixed64=${this.packedFixed64},")
+        builder.appendLine("${nextIndentString}packedSfixed32=${this.packedSfixed32},")
+        builder.appendLine("${nextIndentString}packedSfixed64=${this.packedSfixed64},")
+        builder.appendLine("${nextIndentString}packedFloat=${this.packedFloat},")
+        builder.appendLine("${nextIndentString}packedDouble=${this.packedDouble},")
+        builder.appendLine("${nextIndentString}packedBool=${this.packedBool},")
+        builder.appendLine("${nextIndentString}packedNestedEnum=${this.packedNestedEnum},")
+        builder.appendLine("${nextIndentString}unpackedInt32=${this.unpackedInt32},")
+        builder.appendLine("${nextIndentString}unpackedInt64=${this.unpackedInt64},")
+        builder.appendLine("${nextIndentString}unpackedUint32=${this.unpackedUint32},")
+        builder.appendLine("${nextIndentString}unpackedUint64=${this.unpackedUint64},")
+        builder.appendLine("${nextIndentString}unpackedSint32=${this.unpackedSint32},")
+        builder.appendLine("${nextIndentString}unpackedSint64=${this.unpackedSint64},")
+        builder.appendLine("${nextIndentString}unpackedFixed32=${this.unpackedFixed32},")
+        builder.appendLine("${nextIndentString}unpackedFixed64=${this.unpackedFixed64},")
+        builder.appendLine("${nextIndentString}unpackedSfixed32=${this.unpackedSfixed32},")
+        builder.appendLine("${nextIndentString}unpackedSfixed64=${this.unpackedSfixed64},")
+        builder.appendLine("${nextIndentString}unpackedFloat=${this.unpackedFloat},")
+        builder.appendLine("${nextIndentString}unpackedDouble=${this.unpackedDouble},")
+        builder.appendLine("${nextIndentString}unpackedBool=${this.unpackedBool},")
+        builder.appendLine("${nextIndentString}unpackedNestedEnum=${this.unpackedNestedEnum},")
+        builder.appendLine("${nextIndentString}mapInt32Int32=${this.mapInt32Int32},")
+        builder.appendLine("${nextIndentString}mapInt64Int64=${this.mapInt64Int64},")
+        builder.appendLine("${nextIndentString}mapUint32Uint32=${this.mapUint32Uint32},")
+        builder.appendLine("${nextIndentString}mapUint64Uint64=${this.mapUint64Uint64},")
+        builder.appendLine("${nextIndentString}mapSint32Sint32=${this.mapSint32Sint32},")
+        builder.appendLine("${nextIndentString}mapSint64Sint64=${this.mapSint64Sint64},")
+        builder.appendLine("${nextIndentString}mapFixed32Fixed32=${this.mapFixed32Fixed32},")
+        builder.appendLine("${nextIndentString}mapFixed64Fixed64=${this.mapFixed64Fixed64},")
+        builder.appendLine("${nextIndentString}mapSfixed32Sfixed32=${this.mapSfixed32Sfixed32},")
+        builder.appendLine("${nextIndentString}mapSfixed64Sfixed64=${this.mapSfixed64Sfixed64},")
+        builder.appendLine("${nextIndentString}mapInt32Float=${this.mapInt32Float},")
+        builder.appendLine("${nextIndentString}mapInt32Double=${this.mapInt32Double},")
+        builder.appendLine("${nextIndentString}mapBoolBool=${this.mapBoolBool},")
+        builder.appendLine("${nextIndentString}mapStringString=${this.mapStringString},")
+        builder.appendLine("${nextIndentString}mapStringBytes=${this.mapStringBytes},")
+        builder.appendLine("${nextIndentString}mapStringNestedMessage=${this.mapStringNestedMessage},")
+        builder.appendLine("${nextIndentString}mapStringForeignMessage=${this.mapStringForeignMessage},")
+        builder.appendLine("${nextIndentString}mapStringNestedEnum=${this.mapStringNestedEnum},")
+        builder.appendLine("${nextIndentString}mapStringForeignEnum=${this.mapStringForeignEnum},")
+        if (presenceMask[3]) {
+            builder.appendLine("${nextIndentString}optionalBoolWrapper=${this.optionalBoolWrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalBoolWrapper=<unset>,")
+        }
+
+        if (presenceMask[4]) {
+            builder.appendLine("${nextIndentString}optionalInt32Wrapper=${this.optionalInt32Wrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalInt32Wrapper=<unset>,")
+        }
+
+        if (presenceMask[5]) {
+            builder.appendLine("${nextIndentString}optionalInt64Wrapper=${this.optionalInt64Wrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalInt64Wrapper=<unset>,")
+        }
+
+        if (presenceMask[6]) {
+            builder.appendLine("${nextIndentString}optionalUint32Wrapper=${this.optionalUint32Wrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalUint32Wrapper=<unset>,")
+        }
+
+        if (presenceMask[7]) {
+            builder.appendLine("${nextIndentString}optionalUint64Wrapper=${this.optionalUint64Wrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalUint64Wrapper=<unset>,")
+        }
+
+        if (presenceMask[8]) {
+            builder.appendLine("${nextIndentString}optionalFloatWrapper=${this.optionalFloatWrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalFloatWrapper=<unset>,")
+        }
+
+        if (presenceMask[9]) {
+            builder.appendLine("${nextIndentString}optionalDoubleWrapper=${this.optionalDoubleWrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalDoubleWrapper=<unset>,")
+        }
+
+        if (presenceMask[10]) {
+            builder.appendLine("${nextIndentString}optionalStringWrapper=${this.optionalStringWrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalStringWrapper=<unset>,")
+        }
+
+        if (presenceMask[11]) {
+            builder.appendLine("${nextIndentString}optionalBytesWrapper=${this.optionalBytesWrapper.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalBytesWrapper=<unset>,")
+        }
+
+        builder.appendLine("${nextIndentString}repeatedBoolWrapper=${this.repeatedBoolWrapper},")
+        builder.appendLine("${nextIndentString}repeatedInt32Wrapper=${this.repeatedInt32Wrapper},")
+        builder.appendLine("${nextIndentString}repeatedInt64Wrapper=${this.repeatedInt64Wrapper},")
+        builder.appendLine("${nextIndentString}repeatedUint32Wrapper=${this.repeatedUint32Wrapper},")
+        builder.appendLine("${nextIndentString}repeatedUint64Wrapper=${this.repeatedUint64Wrapper},")
+        builder.appendLine("${nextIndentString}repeatedFloatWrapper=${this.repeatedFloatWrapper},")
+        builder.appendLine("${nextIndentString}repeatedDoubleWrapper=${this.repeatedDoubleWrapper},")
+        builder.appendLine("${nextIndentString}repeatedStringWrapper=${this.repeatedStringWrapper},")
+        builder.appendLine("${nextIndentString}repeatedBytesWrapper=${this.repeatedBytesWrapper},")
+        if (presenceMask[12]) {
+            builder.appendLine("${nextIndentString}optionalDuration=${this.optionalDuration.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalDuration=<unset>,")
+        }
+
+        if (presenceMask[13]) {
+            builder.appendLine("${nextIndentString}optionalTimestamp=${this.optionalTimestamp.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalTimestamp=<unset>,")
+        }
+
+        if (presenceMask[14]) {
+            builder.appendLine("${nextIndentString}optionalFieldMask=${this.optionalFieldMask.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalFieldMask=<unset>,")
+        }
+
+        if (presenceMask[15]) {
+            builder.appendLine("${nextIndentString}optionalStruct=${this.optionalStruct.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalStruct=<unset>,")
+        }
+
+        if (presenceMask[16]) {
+            builder.appendLine("${nextIndentString}optionalAny=${this.optionalAny.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalAny=<unset>,")
+        }
+
+        if (presenceMask[17]) {
+            builder.appendLine("${nextIndentString}optionalValue=${this.optionalValue.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalValue=<unset>,")
+        }
+
+        builder.appendLine("${nextIndentString}optionalNullValue=${this.optionalNullValue},")
+        builder.appendLine("${nextIndentString}repeatedDuration=${this.repeatedDuration},")
+        builder.appendLine("${nextIndentString}repeatedTimestamp=${this.repeatedTimestamp},")
+        builder.appendLine("${nextIndentString}repeatedFieldmask=${this.repeatedFieldmask},")
+        builder.appendLine("${nextIndentString}repeatedStruct=${this.repeatedStruct},")
+        builder.appendLine("${nextIndentString}repeatedAny=${this.repeatedAny},")
+        builder.appendLine("${nextIndentString}repeatedValue=${this.repeatedValue},")
+        builder.appendLine("${nextIndentString}repeatedListValue=${this.repeatedListValue},")
+        builder.appendLine("${nextIndentString}fieldname1=${this.fieldname1},")
+        builder.appendLine("${nextIndentString}fieldName2=${this.fieldName2},")
+        builder.appendLine("${nextIndentString}FieldName3=${this.FieldName3},")
+        builder.appendLine("${nextIndentString}field_Name4_=${this.field_Name4_},")
+        builder.appendLine("${nextIndentString}field0name5=${this.field0name5},")
+        builder.appendLine("${nextIndentString}field_0Name6=${this.field_0Name6},")
+        builder.appendLine("${nextIndentString}fieldName7=${this.fieldName7},")
+        builder.appendLine("${nextIndentString}FieldName8=${this.FieldName8},")
+        builder.appendLine("${nextIndentString}field_Name9=${this.field_Name9},")
+        builder.appendLine("${nextIndentString}Field_Name10=${this.Field_Name10},")
+        builder.appendLine("${nextIndentString}FIELD_NAME11=${this.FIELD_NAME11},")
+        builder.appendLine("${nextIndentString}FIELDName12=${this.FIELDName12},")
+        builder.appendLine("${nextIndentString}_FieldName13=${this._FieldName13},")
+        builder.appendLine("${nextIndentString}__FieldName14=${this.__FieldName14},")
+        builder.appendLine("${nextIndentString}field_Name15=${this.field_Name15},")
+        builder.appendLine("${nextIndentString}field__Name16=${this.field__Name16},")
+        builder.appendLine("${nextIndentString}fieldName17__=${this.fieldName17__},")
+        builder.appendLine("${nextIndentString}FieldName18__=${this.FieldName18__},")
+        builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -1134,8 +1134,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as NestedMessageInternal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
-            if (a != other.a) return false
-            if (presenceMask[0] && corecursive != other.corecursive) return false
+            if (this.a != other.a) return false
+            if (presenceMask[0] && this.corecursive != other.corecursive) return false
             return true
         }
 
@@ -1147,17 +1147,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.NestedMessage(")
-                appendLine("${nextIndentString}a=${a},")
-                if (presenceMask[0]) {
-                    appendLine("${nextIndentString}corecursive=${corecursive.asInternal().asString(indent = indent + 4)},")
-                } else {
-                    appendLine("${nextIndentString}corecursive=<unset>,")
-                }
-
-                append("${indentString})")
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.NestedMessage(")
+            builder.appendLine("${nextIndentString}a=${this.a},")
+            if (presenceMask[0]) {
+                builder.appendLine("${nextIndentString}corecursive=${this.corecursive.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}corecursive=<unset>,")
             }
+
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1235,8 +1235,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapInt32Int32EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1248,12 +1248,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapInt32Int32Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapInt32Int32Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1286,8 +1286,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapInt64Int64EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1299,12 +1299,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapInt64Int64Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapInt64Int64Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1337,8 +1337,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapUint32Uint32EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1350,12 +1350,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapUint32Uint32Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapUint32Uint32Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1388,8 +1388,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapUint64Uint64EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1401,12 +1401,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapUint64Uint64Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapUint64Uint64Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1439,8 +1439,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapSint32Sint32EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1452,12 +1452,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapSint32Sint32Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapSint32Sint32Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1490,8 +1490,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapSint64Sint64EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1503,12 +1503,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapSint64Sint64Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapSint64Sint64Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1541,8 +1541,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapFixed32Fixed32EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1554,12 +1554,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapFixed32Fixed32Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapFixed32Fixed32Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1592,8 +1592,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapFixed64Fixed64EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1605,12 +1605,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapFixed64Fixed64Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapFixed64Fixed64Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1643,8 +1643,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapSfixed32Sfixed32EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1656,12 +1656,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapSfixed32Sfixed32Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapSfixed32Sfixed32Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1694,8 +1694,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapSfixed64Sfixed64EntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1707,12 +1707,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapSfixed64Sfixed64Entry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapSfixed64Sfixed64Entry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1745,8 +1745,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapInt32FloatEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1758,12 +1758,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapInt32FloatEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapInt32FloatEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1796,8 +1796,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapInt32DoubleEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1809,12 +1809,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapInt32DoubleEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapInt32DoubleEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1847,8 +1847,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapBoolBoolEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1860,12 +1860,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapBoolBoolEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapBoolBoolEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1898,8 +1898,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapStringStringEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -1911,12 +1911,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringStringEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringStringEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -1949,8 +1949,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapStringBytesEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (!value.contentEquals(other.value)) return false
+            if (this.key != other.key) return false
+            if (!this.value.contentEquals(other.value)) return false
             return true
         }
 
@@ -1962,12 +1962,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringBytesEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value.contentToString()},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringBytesEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -2005,8 +2005,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as MapStringNestedMessageEntryInternal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
-            if (key != other.key) return false
-            if (presenceMask[0] && value != other.value) return false
+            if (this.key != other.key) return false
+            if (presenceMask[0] && this.value != other.value) return false
             return true
         }
 
@@ -2018,17 +2018,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringNestedMessageEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                if (presenceMask[0]) {
-                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
-                } else {
-                    appendLine("${nextIndentString}value=<unset>,")
-                }
-
-                append("${indentString})")
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringNestedMessageEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            if (presenceMask[0]) {
+                builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}value=<unset>,")
             }
+
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -2066,8 +2066,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as MapStringForeignMessageEntryInternal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
-            if (key != other.key) return false
-            if (presenceMask[0] && value != other.value) return false
+            if (this.key != other.key) return false
+            if (presenceMask[0] && this.value != other.value) return false
             return true
         }
 
@@ -2079,17 +2079,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringForeignMessageEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                if (presenceMask[0]) {
-                    appendLine("${nextIndentString}value=${value.asInternal().asString(indent = indent + 4)},")
-                } else {
-                    appendLine("${nextIndentString}value=<unset>,")
-                }
-
-                append("${indentString})")
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringForeignMessageEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            if (presenceMask[0]) {
+                builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}value=<unset>,")
             }
+
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -2122,8 +2122,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapStringNestedEnumEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -2135,12 +2135,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringNestedEnumEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringNestedEnumEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -2173,8 +2173,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MapStringForeignEnumEntryInternal
             other.checkRequiredFields()
-            if (key != other.key) return false
-            if (value != other.value) return false
+            if (this.key != other.key) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -2186,12 +2186,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
-            return buildString {
-                appendLine("TestAllTypesProto3.MapStringForeignEnumEntry(")
-                appendLine("${nextIndentString}key=${key},")
-                appendLine("${nextIndentString}value=${value},")
-                append("${indentString})")
-            }
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesProto3.MapStringForeignEnumEntry(")
+            builder.appendLine("${nextIndentString}key=${this.key},")
+            builder.appendLine("${nextIndentString}value=${this.value},")
+            builder.append("${indentString})")
+            return builder.toString()
         }
 
         @InternalRpcApi
@@ -2257,7 +2257,7 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
         if (other == null || this::class != other::class) return false
         other as ForeignMessageInternal
         other.checkRequiredFields()
-        if (c != other.c) return false
+        if (this.c != other.c) return false
         return true
     }
 
@@ -2269,11 +2269,11 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("ForeignMessage(")
-            appendLine("${nextIndentString}c=${c},")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("ForeignMessage(")
+        builder.appendLine("${nextIndentString}c=${this.c},")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -2353,10 +2353,10 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("NullHypothesisProto3(")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("NullHypothesisProto3(")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -2435,10 +2435,10 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
         checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
-        return buildString {
-            appendLine("EnumOnlyProto3(")
-            append("${indentString})")
-        }
+        val builder = StringBuilder()
+        builder.appendLine("EnumOnlyProto3(")
+        builder.append("${indentString})")
+        return builder.toString()
     }
 
     @InternalRpcApi
@@ -2489,78 +2489,78 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
 fun TestAllTypesProto3Internal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        optionalNestedMessage.asInternal().checkRequiredFields()
+        this.optionalNestedMessage.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[1]) {
-        optionalForeignMessage.asInternal().checkRequiredFields()
+        this.optionalForeignMessage.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[2]) {
-        recursiveMessage.asInternal().checkRequiredFields()
+        this.recursiveMessage.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[3]) {
-        optionalBoolWrapper.asInternal().checkRequiredFields()
+        this.optionalBoolWrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[4]) {
-        optionalInt32Wrapper.asInternal().checkRequiredFields()
+        this.optionalInt32Wrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[5]) {
-        optionalInt64Wrapper.asInternal().checkRequiredFields()
+        this.optionalInt64Wrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[6]) {
-        optionalUint32Wrapper.asInternal().checkRequiredFields()
+        this.optionalUint32Wrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[7]) {
-        optionalUint64Wrapper.asInternal().checkRequiredFields()
+        this.optionalUint64Wrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[8]) {
-        optionalFloatWrapper.asInternal().checkRequiredFields()
+        this.optionalFloatWrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[9]) {
-        optionalDoubleWrapper.asInternal().checkRequiredFields()
+        this.optionalDoubleWrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[10]) {
-        optionalStringWrapper.asInternal().checkRequiredFields()
+        this.optionalStringWrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[11]) {
-        optionalBytesWrapper.asInternal().checkRequiredFields()
+        this.optionalBytesWrapper.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[12]) {
-        optionalDuration.asInternal().checkRequiredFields()
+        this.optionalDuration.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[13]) {
-        optionalTimestamp.asInternal().checkRequiredFields()
+        this.optionalTimestamp.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[14]) {
-        optionalFieldMask.asInternal().checkRequiredFields()
+        this.optionalFieldMask.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[15]) {
-        optionalStruct.asInternal().checkRequiredFields()
+        this.optionalStruct.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[16]) {
-        optionalAny.asInternal().checkRequiredFields()
+        this.optionalAny.asInternal().checkRequiredFields()
     }
 
     if (presenceMask[17]) {
-        optionalValue.asInternal().checkRequiredFields()
+        this.optionalValue.asInternal().checkRequiredFields()
     }
 
-    oneofField?.also {
+    this.oneofField?.also {
         when {
             it is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
                 it.value.asInternal().checkRequiredFields()
@@ -2568,419 +2568,419 @@ fun TestAllTypesProto3Internal.checkRequiredFields() {
         }
     }
 
-    repeatedNestedMessage.forEach {
+    this.repeatedNestedMessage.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedForeignMessage.forEach {
+    this.repeatedForeignMessage.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedBoolWrapper.forEach {
+    this.repeatedBoolWrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedInt32Wrapper.forEach {
+    this.repeatedInt32Wrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedInt64Wrapper.forEach {
+    this.repeatedInt64Wrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedUint32Wrapper.forEach {
+    this.repeatedUint32Wrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedUint64Wrapper.forEach {
+    this.repeatedUint64Wrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedFloatWrapper.forEach {
+    this.repeatedFloatWrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedDoubleWrapper.forEach {
+    this.repeatedDoubleWrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedStringWrapper.forEach {
+    this.repeatedStringWrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedBytesWrapper.forEach {
+    this.repeatedBytesWrapper.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedDuration.forEach {
+    this.repeatedDuration.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedTimestamp.forEach {
+    this.repeatedTimestamp.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedFieldmask.forEach {
+    this.repeatedFieldmask.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedStruct.forEach {
+    this.repeatedStruct.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedAny.forEach {
+    this.repeatedAny.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedValue.forEach {
+    this.repeatedValue.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    repeatedListValue.forEach {
+    this.repeatedListValue.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    mapStringNestedMessage.values.forEach {
+    this.mapStringNestedMessage.values.forEach {
         it.asInternal().checkRequiredFields()
     }
 
-    mapStringForeignMessage.values.forEach {
+    this.mapStringForeignMessage.values.forEach {
         it.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (optionalInt32 != 0) {
-        encoder.writeInt32(fieldNr = 1, value = optionalInt32)
+    if (this.optionalInt32 != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.optionalInt32)
     }
 
-    if (optionalInt64 != 0L) {
-        encoder.writeInt64(fieldNr = 2, value = optionalInt64)
+    if (this.optionalInt64 != 0L) {
+        encoder.writeInt64(fieldNr = 2, value = this.optionalInt64)
     }
 
-    if (optionalUint32 != 0u) {
-        encoder.writeUInt32(fieldNr = 3, value = optionalUint32)
+    if (this.optionalUint32 != 0u) {
+        encoder.writeUInt32(fieldNr = 3, value = this.optionalUint32)
     }
 
-    if (optionalUint64 != 0uL) {
-        encoder.writeUInt64(fieldNr = 4, value = optionalUint64)
+    if (this.optionalUint64 != 0uL) {
+        encoder.writeUInt64(fieldNr = 4, value = this.optionalUint64)
     }
 
-    if (optionalSint32 != 0) {
-        encoder.writeSInt32(fieldNr = 5, value = optionalSint32)
+    if (this.optionalSint32 != 0) {
+        encoder.writeSInt32(fieldNr = 5, value = this.optionalSint32)
     }
 
-    if (optionalSint64 != 0L) {
-        encoder.writeSInt64(fieldNr = 6, value = optionalSint64)
+    if (this.optionalSint64 != 0L) {
+        encoder.writeSInt64(fieldNr = 6, value = this.optionalSint64)
     }
 
-    if (optionalFixed32 != 0u) {
-        encoder.writeFixed32(fieldNr = 7, value = optionalFixed32)
+    if (this.optionalFixed32 != 0u) {
+        encoder.writeFixed32(fieldNr = 7, value = this.optionalFixed32)
     }
 
-    if (optionalFixed64 != 0uL) {
-        encoder.writeFixed64(fieldNr = 8, value = optionalFixed64)
+    if (this.optionalFixed64 != 0uL) {
+        encoder.writeFixed64(fieldNr = 8, value = this.optionalFixed64)
     }
 
-    if (optionalSfixed32 != 0) {
-        encoder.writeSFixed32(fieldNr = 9, value = optionalSfixed32)
+    if (this.optionalSfixed32 != 0) {
+        encoder.writeSFixed32(fieldNr = 9, value = this.optionalSfixed32)
     }
 
-    if (optionalSfixed64 != 0L) {
-        encoder.writeSFixed64(fieldNr = 10, value = optionalSfixed64)
+    if (this.optionalSfixed64 != 0L) {
+        encoder.writeSFixed64(fieldNr = 10, value = this.optionalSfixed64)
     }
 
-    if (optionalFloat != 0.0f) {
-        encoder.writeFloat(fieldNr = 11, value = optionalFloat)
+    if (this.optionalFloat != 0.0f) {
+        encoder.writeFloat(fieldNr = 11, value = this.optionalFloat)
     }
 
-    if (optionalDouble != 0.0) {
-        encoder.writeDouble(fieldNr = 12, value = optionalDouble)
+    if (this.optionalDouble != 0.0) {
+        encoder.writeDouble(fieldNr = 12, value = this.optionalDouble)
     }
 
-    if (optionalBool != false) {
-        encoder.writeBool(fieldNr = 13, value = optionalBool)
+    if (this.optionalBool != false) {
+        encoder.writeBool(fieldNr = 13, value = this.optionalBool)
     }
 
-    if (optionalString.isNotEmpty()) {
-        encoder.writeString(fieldNr = 14, value = optionalString)
+    if (this.optionalString.isNotEmpty()) {
+        encoder.writeString(fieldNr = 14, value = this.optionalString)
     }
 
-    if (optionalBytes.isNotEmpty()) {
-        encoder.writeBytes(fieldNr = 15, value = optionalBytes)
+    if (this.optionalBytes.isNotEmpty()) {
+        encoder.writeBytes(fieldNr = 15, value = this.optionalBytes)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 18, value = optionalNestedMessage.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 18, value = this.optionalNestedMessage.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[1]) {
-        encoder.writeMessage(fieldNr = 19, value = optionalForeignMessage.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 19, value = this.optionalForeignMessage.asInternal()) { encodeWith(it, config) }
     }
 
-    if (optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
-        encoder.writeEnum(fieldNr = 21, value = optionalNestedEnum.number)
+    if (this.optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
+        encoder.writeEnum(fieldNr = 21, value = this.optionalNestedEnum.number)
     }
 
-    if (optionalForeignEnum != ForeignEnum.FOREIGN_FOO) {
-        encoder.writeEnum(fieldNr = 22, value = optionalForeignEnum.number)
+    if (this.optionalForeignEnum != ForeignEnum.FOREIGN_FOO) {
+        encoder.writeEnum(fieldNr = 22, value = this.optionalForeignEnum.number)
     }
 
-    if (optionalAliasedEnum != TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
-        encoder.writeEnum(fieldNr = 23, value = optionalAliasedEnum.number)
+    if (this.optionalAliasedEnum != TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
+        encoder.writeEnum(fieldNr = 23, value = this.optionalAliasedEnum.number)
     }
 
-    if (optionalStringPiece.isNotEmpty()) {
-        encoder.writeString(fieldNr = 24, value = optionalStringPiece)
+    if (this.optionalStringPiece.isNotEmpty()) {
+        encoder.writeString(fieldNr = 24, value = this.optionalStringPiece)
     }
 
-    if (optionalCord.isNotEmpty()) {
-        encoder.writeString(fieldNr = 25, value = optionalCord)
+    if (this.optionalCord.isNotEmpty()) {
+        encoder.writeString(fieldNr = 25, value = this.optionalCord)
     }
 
     if (presenceMask[2]) {
-        encoder.writeMessage(fieldNr = 27, value = recursiveMessage.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 27, value = this.recursiveMessage.asInternal()) { encodeWith(it, config) }
     }
 
-    if (repeatedInt32.isNotEmpty()) {
-        encoder.writePackedInt32(fieldNr = 31, value = repeatedInt32, fieldSize = WireSize.packedInt32(repeatedInt32))
+    if (this.repeatedInt32.isNotEmpty()) {
+        encoder.writePackedInt32(fieldNr = 31, value = this.repeatedInt32, fieldSize = WireSize.packedInt32(this.repeatedInt32))
     }
 
-    if (repeatedInt64.isNotEmpty()) {
-        encoder.writePackedInt64(fieldNr = 32, value = repeatedInt64, fieldSize = WireSize.packedInt64(repeatedInt64))
+    if (this.repeatedInt64.isNotEmpty()) {
+        encoder.writePackedInt64(fieldNr = 32, value = this.repeatedInt64, fieldSize = WireSize.packedInt64(this.repeatedInt64))
     }
 
-    if (repeatedUint32.isNotEmpty()) {
-        encoder.writePackedUInt32(fieldNr = 33, value = repeatedUint32, fieldSize = WireSize.packedUInt32(repeatedUint32))
+    if (this.repeatedUint32.isNotEmpty()) {
+        encoder.writePackedUInt32(fieldNr = 33, value = this.repeatedUint32, fieldSize = WireSize.packedUInt32(this.repeatedUint32))
     }
 
-    if (repeatedUint64.isNotEmpty()) {
-        encoder.writePackedUInt64(fieldNr = 34, value = repeatedUint64, fieldSize = WireSize.packedUInt64(repeatedUint64))
+    if (this.repeatedUint64.isNotEmpty()) {
+        encoder.writePackedUInt64(fieldNr = 34, value = this.repeatedUint64, fieldSize = WireSize.packedUInt64(this.repeatedUint64))
     }
 
-    if (repeatedSint32.isNotEmpty()) {
-        encoder.writePackedSInt32(fieldNr = 35, value = repeatedSint32, fieldSize = WireSize.packedSInt32(repeatedSint32))
+    if (this.repeatedSint32.isNotEmpty()) {
+        encoder.writePackedSInt32(fieldNr = 35, value = this.repeatedSint32, fieldSize = WireSize.packedSInt32(this.repeatedSint32))
     }
 
-    if (repeatedSint64.isNotEmpty()) {
-        encoder.writePackedSInt64(fieldNr = 36, value = repeatedSint64, fieldSize = WireSize.packedSInt64(repeatedSint64))
+    if (this.repeatedSint64.isNotEmpty()) {
+        encoder.writePackedSInt64(fieldNr = 36, value = this.repeatedSint64, fieldSize = WireSize.packedSInt64(this.repeatedSint64))
     }
 
-    if (repeatedFixed32.isNotEmpty()) {
-        encoder.writePackedFixed32(fieldNr = 37, value = repeatedFixed32)
+    if (this.repeatedFixed32.isNotEmpty()) {
+        encoder.writePackedFixed32(fieldNr = 37, value = this.repeatedFixed32)
     }
 
-    if (repeatedFixed64.isNotEmpty()) {
-        encoder.writePackedFixed64(fieldNr = 38, value = repeatedFixed64)
+    if (this.repeatedFixed64.isNotEmpty()) {
+        encoder.writePackedFixed64(fieldNr = 38, value = this.repeatedFixed64)
     }
 
-    if (repeatedSfixed32.isNotEmpty()) {
-        encoder.writePackedSFixed32(fieldNr = 39, value = repeatedSfixed32)
+    if (this.repeatedSfixed32.isNotEmpty()) {
+        encoder.writePackedSFixed32(fieldNr = 39, value = this.repeatedSfixed32)
     }
 
-    if (repeatedSfixed64.isNotEmpty()) {
-        encoder.writePackedSFixed64(fieldNr = 40, value = repeatedSfixed64)
+    if (this.repeatedSfixed64.isNotEmpty()) {
+        encoder.writePackedSFixed64(fieldNr = 40, value = this.repeatedSfixed64)
     }
 
-    if (repeatedFloat.isNotEmpty()) {
-        encoder.writePackedFloat(fieldNr = 41, value = repeatedFloat)
+    if (this.repeatedFloat.isNotEmpty()) {
+        encoder.writePackedFloat(fieldNr = 41, value = this.repeatedFloat)
     }
 
-    if (repeatedDouble.isNotEmpty()) {
-        encoder.writePackedDouble(fieldNr = 42, value = repeatedDouble)
+    if (this.repeatedDouble.isNotEmpty()) {
+        encoder.writePackedDouble(fieldNr = 42, value = this.repeatedDouble)
     }
 
-    if (repeatedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 43, value = repeatedBool, fieldSize = WireSize.packedBool(repeatedBool))
+    if (this.repeatedBool.isNotEmpty()) {
+        encoder.writePackedBool(fieldNr = 43, value = this.repeatedBool, fieldSize = WireSize.packedBool(this.repeatedBool))
     }
 
-    if (repeatedString.isNotEmpty()) {
-        repeatedString.forEach {
+    if (this.repeatedString.isNotEmpty()) {
+        this.repeatedString.forEach {
             encoder.writeString(44, it)
         }
     }
 
-    if (repeatedBytes.isNotEmpty()) {
-        repeatedBytes.forEach {
+    if (this.repeatedBytes.isNotEmpty()) {
+        this.repeatedBytes.forEach {
             encoder.writeBytes(45, it)
         }
     }
 
-    if (repeatedNestedMessage.isNotEmpty()) {
-        repeatedNestedMessage.forEach {
+    if (this.repeatedNestedMessage.isNotEmpty()) {
+        this.repeatedNestedMessage.forEach {
             encoder.writeMessage(fieldNr = 48, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedForeignMessage.isNotEmpty()) {
-        repeatedForeignMessage.forEach {
+    if (this.repeatedForeignMessage.isNotEmpty()) {
+        this.repeatedForeignMessage.forEach {
             encoder.writeMessage(fieldNr = 49, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedNestedEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 51, value = repeatedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(repeatedNestedEnum.map { it.number }))
+    if (this.repeatedNestedEnum.isNotEmpty()) {
+        encoder.writePackedEnum(fieldNr = 51, value = this.repeatedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }))
     }
 
-    if (repeatedForeignEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 52, value = repeatedForeignEnum.map { it.number }, fieldSize = WireSize.packedEnum(repeatedForeignEnum.map { it.number }))
+    if (this.repeatedForeignEnum.isNotEmpty()) {
+        encoder.writePackedEnum(fieldNr = 52, value = this.repeatedForeignEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }))
     }
 
-    if (repeatedStringPiece.isNotEmpty()) {
-        repeatedStringPiece.forEach {
+    if (this.repeatedStringPiece.isNotEmpty()) {
+        this.repeatedStringPiece.forEach {
             encoder.writeString(54, it)
         }
     }
 
-    if (repeatedCord.isNotEmpty()) {
-        repeatedCord.forEach {
+    if (this.repeatedCord.isNotEmpty()) {
+        this.repeatedCord.forEach {
             encoder.writeString(55, it)
         }
     }
 
-    if (packedInt32.isNotEmpty()) {
-        encoder.writePackedInt32(fieldNr = 75, value = packedInt32, fieldSize = WireSize.packedInt32(packedInt32))
+    if (this.packedInt32.isNotEmpty()) {
+        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = WireSize.packedInt32(this.packedInt32))
     }
 
-    if (packedInt64.isNotEmpty()) {
-        encoder.writePackedInt64(fieldNr = 76, value = packedInt64, fieldSize = WireSize.packedInt64(packedInt64))
+    if (this.packedInt64.isNotEmpty()) {
+        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = WireSize.packedInt64(this.packedInt64))
     }
 
-    if (packedUint32.isNotEmpty()) {
-        encoder.writePackedUInt32(fieldNr = 77, value = packedUint32, fieldSize = WireSize.packedUInt32(packedUint32))
+    if (this.packedUint32.isNotEmpty()) {
+        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = WireSize.packedUInt32(this.packedUint32))
     }
 
-    if (packedUint64.isNotEmpty()) {
-        encoder.writePackedUInt64(fieldNr = 78, value = packedUint64, fieldSize = WireSize.packedUInt64(packedUint64))
+    if (this.packedUint64.isNotEmpty()) {
+        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = WireSize.packedUInt64(this.packedUint64))
     }
 
-    if (packedSint32.isNotEmpty()) {
-        encoder.writePackedSInt32(fieldNr = 79, value = packedSint32, fieldSize = WireSize.packedSInt32(packedSint32))
+    if (this.packedSint32.isNotEmpty()) {
+        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = WireSize.packedSInt32(this.packedSint32))
     }
 
-    if (packedSint64.isNotEmpty()) {
-        encoder.writePackedSInt64(fieldNr = 80, value = packedSint64, fieldSize = WireSize.packedSInt64(packedSint64))
+    if (this.packedSint64.isNotEmpty()) {
+        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = WireSize.packedSInt64(this.packedSint64))
     }
 
-    if (packedFixed32.isNotEmpty()) {
-        encoder.writePackedFixed32(fieldNr = 81, value = packedFixed32)
+    if (this.packedFixed32.isNotEmpty()) {
+        encoder.writePackedFixed32(fieldNr = 81, value = this.packedFixed32)
     }
 
-    if (packedFixed64.isNotEmpty()) {
-        encoder.writePackedFixed64(fieldNr = 82, value = packedFixed64)
+    if (this.packedFixed64.isNotEmpty()) {
+        encoder.writePackedFixed64(fieldNr = 82, value = this.packedFixed64)
     }
 
-    if (packedSfixed32.isNotEmpty()) {
-        encoder.writePackedSFixed32(fieldNr = 83, value = packedSfixed32)
+    if (this.packedSfixed32.isNotEmpty()) {
+        encoder.writePackedSFixed32(fieldNr = 83, value = this.packedSfixed32)
     }
 
-    if (packedSfixed64.isNotEmpty()) {
-        encoder.writePackedSFixed64(fieldNr = 84, value = packedSfixed64)
+    if (this.packedSfixed64.isNotEmpty()) {
+        encoder.writePackedSFixed64(fieldNr = 84, value = this.packedSfixed64)
     }
 
-    if (packedFloat.isNotEmpty()) {
-        encoder.writePackedFloat(fieldNr = 85, value = packedFloat)
+    if (this.packedFloat.isNotEmpty()) {
+        encoder.writePackedFloat(fieldNr = 85, value = this.packedFloat)
     }
 
-    if (packedDouble.isNotEmpty()) {
-        encoder.writePackedDouble(fieldNr = 86, value = packedDouble)
+    if (this.packedDouble.isNotEmpty()) {
+        encoder.writePackedDouble(fieldNr = 86, value = this.packedDouble)
     }
 
-    if (packedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 87, value = packedBool, fieldSize = WireSize.packedBool(packedBool))
+    if (this.packedBool.isNotEmpty()) {
+        encoder.writePackedBool(fieldNr = 87, value = this.packedBool, fieldSize = WireSize.packedBool(this.packedBool))
     }
 
-    if (packedNestedEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 88, value = packedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(packedNestedEnum.map { it.number }))
+    if (this.packedNestedEnum.isNotEmpty()) {
+        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }))
     }
 
-    if (unpackedInt32.isNotEmpty()) {
-        unpackedInt32.forEach {
+    if (this.unpackedInt32.isNotEmpty()) {
+        this.unpackedInt32.forEach {
             encoder.writeInt32(89, it)
         }
     }
 
-    if (unpackedInt64.isNotEmpty()) {
-        unpackedInt64.forEach {
+    if (this.unpackedInt64.isNotEmpty()) {
+        this.unpackedInt64.forEach {
             encoder.writeInt64(90, it)
         }
     }
 
-    if (unpackedUint32.isNotEmpty()) {
-        unpackedUint32.forEach {
+    if (this.unpackedUint32.isNotEmpty()) {
+        this.unpackedUint32.forEach {
             encoder.writeUInt32(91, it)
         }
     }
 
-    if (unpackedUint64.isNotEmpty()) {
-        unpackedUint64.forEach {
+    if (this.unpackedUint64.isNotEmpty()) {
+        this.unpackedUint64.forEach {
             encoder.writeUInt64(92, it)
         }
     }
 
-    if (unpackedSint32.isNotEmpty()) {
-        unpackedSint32.forEach {
+    if (this.unpackedSint32.isNotEmpty()) {
+        this.unpackedSint32.forEach {
             encoder.writeSInt32(93, it)
         }
     }
 
-    if (unpackedSint64.isNotEmpty()) {
-        unpackedSint64.forEach {
+    if (this.unpackedSint64.isNotEmpty()) {
+        this.unpackedSint64.forEach {
             encoder.writeSInt64(94, it)
         }
     }
 
-    if (unpackedFixed32.isNotEmpty()) {
-        unpackedFixed32.forEach {
+    if (this.unpackedFixed32.isNotEmpty()) {
+        this.unpackedFixed32.forEach {
             encoder.writeFixed32(95, it)
         }
     }
 
-    if (unpackedFixed64.isNotEmpty()) {
-        unpackedFixed64.forEach {
+    if (this.unpackedFixed64.isNotEmpty()) {
+        this.unpackedFixed64.forEach {
             encoder.writeFixed64(96, it)
         }
     }
 
-    if (unpackedSfixed32.isNotEmpty()) {
-        unpackedSfixed32.forEach {
+    if (this.unpackedSfixed32.isNotEmpty()) {
+        this.unpackedSfixed32.forEach {
             encoder.writeSFixed32(97, it)
         }
     }
 
-    if (unpackedSfixed64.isNotEmpty()) {
-        unpackedSfixed64.forEach {
+    if (this.unpackedSfixed64.isNotEmpty()) {
+        this.unpackedSfixed64.forEach {
             encoder.writeSFixed64(98, it)
         }
     }
 
-    if (unpackedFloat.isNotEmpty()) {
-        unpackedFloat.forEach {
+    if (this.unpackedFloat.isNotEmpty()) {
+        this.unpackedFloat.forEach {
             encoder.writeFloat(99, it)
         }
     }
 
-    if (unpackedDouble.isNotEmpty()) {
-        unpackedDouble.forEach {
+    if (this.unpackedDouble.isNotEmpty()) {
+        this.unpackedDouble.forEach {
             encoder.writeDouble(100, it)
         }
     }
 
-    if (unpackedBool.isNotEmpty()) {
-        unpackedBool.forEach {
+    if (this.unpackedBool.isNotEmpty()) {
+        this.unpackedBool.forEach {
             encoder.writeBool(101, it)
         }
     }
 
-    if (unpackedNestedEnum.isNotEmpty()) {
-        unpackedNestedEnum.forEach {
+    if (this.unpackedNestedEnum.isNotEmpty()) {
+        this.unpackedNestedEnum.forEach {
             encoder.writeEnum(102, it.number)
         }
     }
 
-    if (mapInt32Int32.isNotEmpty()) {
-        mapInt32Int32.forEach { kEntry ->
+    if (this.mapInt32Int32.isNotEmpty()) {
+        this.mapInt32Int32.forEach { kEntry ->
             TestAllTypesProto3Internal.MapInt32Int32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -2991,8 +2991,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapInt64Int64.isNotEmpty()) {
-        mapInt64Int64.forEach { kEntry ->
+    if (this.mapInt64Int64.isNotEmpty()) {
+        this.mapInt64Int64.forEach { kEntry ->
             TestAllTypesProto3Internal.MapInt64Int64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3003,8 +3003,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapUint32Uint32.isNotEmpty()) {
-        mapUint32Uint32.forEach { kEntry ->
+    if (this.mapUint32Uint32.isNotEmpty()) {
+        this.mapUint32Uint32.forEach { kEntry ->
             TestAllTypesProto3Internal.MapUint32Uint32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3015,8 +3015,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapUint64Uint64.isNotEmpty()) {
-        mapUint64Uint64.forEach { kEntry ->
+    if (this.mapUint64Uint64.isNotEmpty()) {
+        this.mapUint64Uint64.forEach { kEntry ->
             TestAllTypesProto3Internal.MapUint64Uint64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3027,8 +3027,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapSint32Sint32.isNotEmpty()) {
-        mapSint32Sint32.forEach { kEntry ->
+    if (this.mapSint32Sint32.isNotEmpty()) {
+        this.mapSint32Sint32.forEach { kEntry ->
             TestAllTypesProto3Internal.MapSint32Sint32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3039,8 +3039,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapSint64Sint64.isNotEmpty()) {
-        mapSint64Sint64.forEach { kEntry ->
+    if (this.mapSint64Sint64.isNotEmpty()) {
+        this.mapSint64Sint64.forEach { kEntry ->
             TestAllTypesProto3Internal.MapSint64Sint64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3051,8 +3051,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapFixed32Fixed32.isNotEmpty()) {
-        mapFixed32Fixed32.forEach { kEntry ->
+    if (this.mapFixed32Fixed32.isNotEmpty()) {
+        this.mapFixed32Fixed32.forEach { kEntry ->
             TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3063,8 +3063,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapFixed64Fixed64.isNotEmpty()) {
-        mapFixed64Fixed64.forEach { kEntry ->
+    if (this.mapFixed64Fixed64.isNotEmpty()) {
+        this.mapFixed64Fixed64.forEach { kEntry ->
             TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3075,8 +3075,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapSfixed32Sfixed32.isNotEmpty()) {
-        mapSfixed32Sfixed32.forEach { kEntry ->
+    if (this.mapSfixed32Sfixed32.isNotEmpty()) {
+        this.mapSfixed32Sfixed32.forEach { kEntry ->
             TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3087,8 +3087,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapSfixed64Sfixed64.isNotEmpty()) {
-        mapSfixed64Sfixed64.forEach { kEntry ->
+    if (this.mapSfixed64Sfixed64.isNotEmpty()) {
+        this.mapSfixed64Sfixed64.forEach { kEntry ->
             TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3099,8 +3099,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapInt32Float.isNotEmpty()) {
-        mapInt32Float.forEach { kEntry ->
+    if (this.mapInt32Float.isNotEmpty()) {
+        this.mapInt32Float.forEach { kEntry ->
             TestAllTypesProto3Internal.MapInt32FloatEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3111,8 +3111,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapInt32Double.isNotEmpty()) {
-        mapInt32Double.forEach { kEntry ->
+    if (this.mapInt32Double.isNotEmpty()) {
+        this.mapInt32Double.forEach { kEntry ->
             TestAllTypesProto3Internal.MapInt32DoubleEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3123,8 +3123,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapBoolBool.isNotEmpty()) {
-        mapBoolBool.forEach { kEntry ->
+    if (this.mapBoolBool.isNotEmpty()) {
+        this.mapBoolBool.forEach { kEntry ->
             TestAllTypesProto3Internal.MapBoolBoolEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3135,8 +3135,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringString.isNotEmpty()) {
-        mapStringString.forEach { kEntry ->
+    if (this.mapStringString.isNotEmpty()) {
+        this.mapStringString.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringStringEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3147,8 +3147,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringBytes.isNotEmpty()) {
-        mapStringBytes.forEach { kEntry ->
+    if (this.mapStringBytes.isNotEmpty()) {
+        this.mapStringBytes.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringBytesEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3159,8 +3159,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringNestedMessage.isNotEmpty()) {
-        mapStringNestedMessage.forEach { kEntry ->
+    if (this.mapStringNestedMessage.isNotEmpty()) {
+        this.mapStringNestedMessage.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3171,8 +3171,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringForeignMessage.isNotEmpty()) {
-        mapStringForeignMessage.forEach { kEntry ->
+    if (this.mapStringForeignMessage.isNotEmpty()) {
+        this.mapStringForeignMessage.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3183,8 +3183,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringNestedEnum.isNotEmpty()) {
-        mapStringNestedEnum.forEach { kEntry ->
+    if (this.mapStringNestedEnum.isNotEmpty()) {
+        this.mapStringNestedEnum.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3195,8 +3195,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
         }
     }
 
-    if (mapStringForeignEnum.isNotEmpty()) {
-        mapStringForeignEnum.forEach { kEntry ->
+    if (this.mapStringForeignEnum.isNotEmpty()) {
+        this.mapStringForeignEnum.forEach { kEntry ->
             TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -3208,238 +3208,238 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
     }
 
     if (presenceMask[3]) {
-        encoder.writeMessage(fieldNr = 201, value = optionalBoolWrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 201, value = this.optionalBoolWrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[4]) {
-        encoder.writeMessage(fieldNr = 202, value = optionalInt32Wrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 202, value = this.optionalInt32Wrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[5]) {
-        encoder.writeMessage(fieldNr = 203, value = optionalInt64Wrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 203, value = this.optionalInt64Wrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[6]) {
-        encoder.writeMessage(fieldNr = 204, value = optionalUint32Wrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 204, value = this.optionalUint32Wrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[7]) {
-        encoder.writeMessage(fieldNr = 205, value = optionalUint64Wrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 205, value = this.optionalUint64Wrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[8]) {
-        encoder.writeMessage(fieldNr = 206, value = optionalFloatWrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 206, value = this.optionalFloatWrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[9]) {
-        encoder.writeMessage(fieldNr = 207, value = optionalDoubleWrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 207, value = this.optionalDoubleWrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[10]) {
-        encoder.writeMessage(fieldNr = 208, value = optionalStringWrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 208, value = this.optionalStringWrapper.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[11]) {
-        encoder.writeMessage(fieldNr = 209, value = optionalBytesWrapper.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 209, value = this.optionalBytesWrapper.asInternal()) { encodeWith(it, config) }
     }
 
-    if (repeatedBoolWrapper.isNotEmpty()) {
-        repeatedBoolWrapper.forEach {
+    if (this.repeatedBoolWrapper.isNotEmpty()) {
+        this.repeatedBoolWrapper.forEach {
             encoder.writeMessage(fieldNr = 211, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedInt32Wrapper.isNotEmpty()) {
-        repeatedInt32Wrapper.forEach {
+    if (this.repeatedInt32Wrapper.isNotEmpty()) {
+        this.repeatedInt32Wrapper.forEach {
             encoder.writeMessage(fieldNr = 212, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedInt64Wrapper.isNotEmpty()) {
-        repeatedInt64Wrapper.forEach {
+    if (this.repeatedInt64Wrapper.isNotEmpty()) {
+        this.repeatedInt64Wrapper.forEach {
             encoder.writeMessage(fieldNr = 213, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedUint32Wrapper.isNotEmpty()) {
-        repeatedUint32Wrapper.forEach {
+    if (this.repeatedUint32Wrapper.isNotEmpty()) {
+        this.repeatedUint32Wrapper.forEach {
             encoder.writeMessage(fieldNr = 214, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedUint64Wrapper.isNotEmpty()) {
-        repeatedUint64Wrapper.forEach {
+    if (this.repeatedUint64Wrapper.isNotEmpty()) {
+        this.repeatedUint64Wrapper.forEach {
             encoder.writeMessage(fieldNr = 215, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedFloatWrapper.isNotEmpty()) {
-        repeatedFloatWrapper.forEach {
+    if (this.repeatedFloatWrapper.isNotEmpty()) {
+        this.repeatedFloatWrapper.forEach {
             encoder.writeMessage(fieldNr = 216, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedDoubleWrapper.isNotEmpty()) {
-        repeatedDoubleWrapper.forEach {
+    if (this.repeatedDoubleWrapper.isNotEmpty()) {
+        this.repeatedDoubleWrapper.forEach {
             encoder.writeMessage(fieldNr = 217, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedStringWrapper.isNotEmpty()) {
-        repeatedStringWrapper.forEach {
+    if (this.repeatedStringWrapper.isNotEmpty()) {
+        this.repeatedStringWrapper.forEach {
             encoder.writeMessage(fieldNr = 218, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedBytesWrapper.isNotEmpty()) {
-        repeatedBytesWrapper.forEach {
+    if (this.repeatedBytesWrapper.isNotEmpty()) {
+        this.repeatedBytesWrapper.forEach {
             encoder.writeMessage(fieldNr = 219, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
     if (presenceMask[12]) {
-        encoder.writeMessage(fieldNr = 301, value = optionalDuration.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 301, value = this.optionalDuration.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[13]) {
-        encoder.writeMessage(fieldNr = 302, value = optionalTimestamp.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 302, value = this.optionalTimestamp.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[14]) {
-        encoder.writeMessage(fieldNr = 303, value = optionalFieldMask.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 303, value = this.optionalFieldMask.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[15]) {
-        encoder.writeMessage(fieldNr = 304, value = optionalStruct.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 304, value = this.optionalStruct.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[16]) {
-        encoder.writeMessage(fieldNr = 305, value = optionalAny.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 305, value = this.optionalAny.asInternal()) { encodeWith(it, config) }
     }
 
     if (presenceMask[17]) {
-        encoder.writeMessage(fieldNr = 306, value = optionalValue.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 306, value = this.optionalValue.asInternal()) { encodeWith(it, config) }
     }
 
-    if (optionalNullValue != NullValue.NULL_VALUE) {
-        encoder.writeEnum(fieldNr = 307, value = optionalNullValue.number)
+    if (this.optionalNullValue != NullValue.NULL_VALUE) {
+        encoder.writeEnum(fieldNr = 307, value = this.optionalNullValue.number)
     }
 
-    if (repeatedDuration.isNotEmpty()) {
-        repeatedDuration.forEach {
+    if (this.repeatedDuration.isNotEmpty()) {
+        this.repeatedDuration.forEach {
             encoder.writeMessage(fieldNr = 311, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedTimestamp.isNotEmpty()) {
-        repeatedTimestamp.forEach {
+    if (this.repeatedTimestamp.isNotEmpty()) {
+        this.repeatedTimestamp.forEach {
             encoder.writeMessage(fieldNr = 312, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedFieldmask.isNotEmpty()) {
-        repeatedFieldmask.forEach {
+    if (this.repeatedFieldmask.isNotEmpty()) {
+        this.repeatedFieldmask.forEach {
             encoder.writeMessage(fieldNr = 313, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedStruct.isNotEmpty()) {
-        repeatedStruct.forEach {
+    if (this.repeatedStruct.isNotEmpty()) {
+        this.repeatedStruct.forEach {
             encoder.writeMessage(fieldNr = 324, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedAny.isNotEmpty()) {
-        repeatedAny.forEach {
+    if (this.repeatedAny.isNotEmpty()) {
+        this.repeatedAny.forEach {
             encoder.writeMessage(fieldNr = 315, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedValue.isNotEmpty()) {
-        repeatedValue.forEach {
+    if (this.repeatedValue.isNotEmpty()) {
+        this.repeatedValue.forEach {
             encoder.writeMessage(fieldNr = 316, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (repeatedListValue.isNotEmpty()) {
-        repeatedListValue.forEach {
+    if (this.repeatedListValue.isNotEmpty()) {
+        this.repeatedListValue.forEach {
             encoder.writeMessage(fieldNr = 317, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
-    if (fieldname1 != 0) {
-        encoder.writeInt32(fieldNr = 401, value = fieldname1)
+    if (this.fieldname1 != 0) {
+        encoder.writeInt32(fieldNr = 401, value = this.fieldname1)
     }
 
-    if (fieldName2 != 0) {
-        encoder.writeInt32(fieldNr = 402, value = fieldName2)
+    if (this.fieldName2 != 0) {
+        encoder.writeInt32(fieldNr = 402, value = this.fieldName2)
     }
 
-    if (FieldName3 != 0) {
-        encoder.writeInt32(fieldNr = 403, value = FieldName3)
+    if (this.FieldName3 != 0) {
+        encoder.writeInt32(fieldNr = 403, value = this.FieldName3)
     }
 
-    if (field_Name4_ != 0) {
-        encoder.writeInt32(fieldNr = 404, value = field_Name4_)
+    if (this.field_Name4_ != 0) {
+        encoder.writeInt32(fieldNr = 404, value = this.field_Name4_)
     }
 
-    if (field0name5 != 0) {
-        encoder.writeInt32(fieldNr = 405, value = field0name5)
+    if (this.field0name5 != 0) {
+        encoder.writeInt32(fieldNr = 405, value = this.field0name5)
     }
 
-    if (field_0Name6 != 0) {
-        encoder.writeInt32(fieldNr = 406, value = field_0Name6)
+    if (this.field_0Name6 != 0) {
+        encoder.writeInt32(fieldNr = 406, value = this.field_0Name6)
     }
 
-    if (fieldName7 != 0) {
-        encoder.writeInt32(fieldNr = 407, value = fieldName7)
+    if (this.fieldName7 != 0) {
+        encoder.writeInt32(fieldNr = 407, value = this.fieldName7)
     }
 
-    if (FieldName8 != 0) {
-        encoder.writeInt32(fieldNr = 408, value = FieldName8)
+    if (this.FieldName8 != 0) {
+        encoder.writeInt32(fieldNr = 408, value = this.FieldName8)
     }
 
-    if (field_Name9 != 0) {
-        encoder.writeInt32(fieldNr = 409, value = field_Name9)
+    if (this.field_Name9 != 0) {
+        encoder.writeInt32(fieldNr = 409, value = this.field_Name9)
     }
 
-    if (Field_Name10 != 0) {
-        encoder.writeInt32(fieldNr = 410, value = Field_Name10)
+    if (this.Field_Name10 != 0) {
+        encoder.writeInt32(fieldNr = 410, value = this.Field_Name10)
     }
 
-    if (FIELD_NAME11 != 0) {
-        encoder.writeInt32(fieldNr = 411, value = FIELD_NAME11)
+    if (this.FIELD_NAME11 != 0) {
+        encoder.writeInt32(fieldNr = 411, value = this.FIELD_NAME11)
     }
 
-    if (FIELDName12 != 0) {
-        encoder.writeInt32(fieldNr = 412, value = FIELDName12)
+    if (this.FIELDName12 != 0) {
+        encoder.writeInt32(fieldNr = 412, value = this.FIELDName12)
     }
 
-    if (_FieldName13 != 0) {
-        encoder.writeInt32(fieldNr = 413, value = _FieldName13)
+    if (this._FieldName13 != 0) {
+        encoder.writeInt32(fieldNr = 413, value = this._FieldName13)
     }
 
-    if (__FieldName14 != 0) {
-        encoder.writeInt32(fieldNr = 414, value = __FieldName14)
+    if (this.__FieldName14 != 0) {
+        encoder.writeInt32(fieldNr = 414, value = this.__FieldName14)
     }
 
-    if (field_Name15 != 0) {
-        encoder.writeInt32(fieldNr = 415, value = field_Name15)
+    if (this.field_Name15 != 0) {
+        encoder.writeInt32(fieldNr = 415, value = this.field_Name15)
     }
 
-    if (field__Name16 != 0) {
-        encoder.writeInt32(fieldNr = 416, value = field__Name16)
+    if (this.field__Name16 != 0) {
+        encoder.writeInt32(fieldNr = 416, value = this.field__Name16)
     }
 
-    if (fieldName17__ != 0) {
-        encoder.writeInt32(fieldNr = 417, value = fieldName17__)
+    if (this.fieldName17__ != 0) {
+        encoder.writeInt32(fieldNr = 417, value = this.fieldName17__)
     }
 
-    if (FieldName18__ != 0) {
-        encoder.writeInt32(fieldNr = 418, value = FieldName18__)
+    if (this.FieldName18__ != 0) {
+        encoder.writeInt32(fieldNr = 418, value = this.FieldName18__)
     }
 
-    oneofField?.also {
+    this.oneofField?.also {
         when (val value = it) {
             is TestAllTypesProto3.OneofField.OneofUint32 -> {
                 encoder.writeUInt32(fieldNr = 111, value = value.value)
@@ -4299,295 +4299,295 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
 
 private fun TestAllTypesProto3Internal.computeSize(): Int {
     var __result = 0
-    if (optionalInt32 != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(optionalInt32))
+    if (this.optionalInt32 != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.optionalInt32))
     }
 
-    if (optionalInt64 != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(optionalInt64))
+    if (this.optionalInt64 != 0L) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.optionalInt64))
     }
 
-    if (optionalUint32 != 0u) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(optionalUint32))
+    if (this.optionalUint32 != 0u) {
+        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(this.optionalUint32))
     }
 
-    if (optionalUint64 != 0uL) {
-        __result += (WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(optionalUint64))
+    if (this.optionalUint64 != 0uL) {
+        __result += (WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(this.optionalUint64))
     }
 
-    if (optionalSint32 != 0) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(optionalSint32))
+    if (this.optionalSint32 != 0) {
+        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(this.optionalSint32))
     }
 
-    if (optionalSint64 != 0L) {
-        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(optionalSint64))
+    if (this.optionalSint64 != 0L) {
+        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(this.optionalSint64))
     }
 
-    if (optionalFixed32 != 0u) {
-        __result += (WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(optionalFixed32))
+    if (this.optionalFixed32 != 0u) {
+        __result += (WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(this.optionalFixed32))
     }
 
-    if (optionalFixed64 != 0uL) {
-        __result += (WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(optionalFixed64))
+    if (this.optionalFixed64 != 0uL) {
+        __result += (WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(this.optionalFixed64))
     }
 
-    if (optionalSfixed32 != 0) {
-        __result += (WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(optionalSfixed32))
+    if (this.optionalSfixed32 != 0) {
+        __result += (WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(this.optionalSfixed32))
     }
 
-    if (optionalSfixed64 != 0L) {
-        __result += (WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(optionalSfixed64))
+    if (this.optionalSfixed64 != 0L) {
+        __result += (WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(this.optionalSfixed64))
     }
 
-    if (optionalFloat != 0.0f) {
-        __result += (WireSize.tag(11, WireType.FIXED32) + WireSize.float(optionalFloat))
+    if (this.optionalFloat != 0.0f) {
+        __result += (WireSize.tag(11, WireType.FIXED32) + WireSize.float(this.optionalFloat))
     }
 
-    if (optionalDouble != 0.0) {
-        __result += (WireSize.tag(12, WireType.FIXED64) + WireSize.double(optionalDouble))
+    if (this.optionalDouble != 0.0) {
+        __result += (WireSize.tag(12, WireType.FIXED64) + WireSize.double(this.optionalDouble))
     }
 
-    if (optionalBool != false) {
-        __result += (WireSize.tag(13, WireType.VARINT) + WireSize.bool(optionalBool))
+    if (this.optionalBool != false) {
+        __result += (WireSize.tag(13, WireType.VARINT) + WireSize.bool(this.optionalBool))
     }
 
-    if (optionalString.isNotEmpty()) {
-        __result += WireSize.string(optionalString).let { WireSize.tag(14, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.optionalString.isNotEmpty()) {
+        __result += WireSize.string(this.optionalString).let { WireSize.tag(14, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (optionalBytes.isNotEmpty()) {
-        __result += WireSize.bytes(optionalBytes).let { WireSize.tag(15, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.optionalBytes.isNotEmpty()) {
+        __result += WireSize.bytes(this.optionalBytes).let { WireSize.tag(15, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += optionalNestedMessage.asInternal()._size.let { WireSize.tag(18, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalNestedMessage.asInternal()._size.let { WireSize.tag(18, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[1]) {
-        __result += optionalForeignMessage.asInternal()._size.let { WireSize.tag(19, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalForeignMessage.asInternal()._size.let { WireSize.tag(19, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
-        __result += (WireSize.tag(21, WireType.VARINT) + WireSize.enum(optionalNestedEnum.number))
+    if (this.optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
+        __result += (WireSize.tag(21, WireType.VARINT) + WireSize.enum(this.optionalNestedEnum.number))
     }
 
-    if (optionalForeignEnum != ForeignEnum.FOREIGN_FOO) {
-        __result += (WireSize.tag(22, WireType.VARINT) + WireSize.enum(optionalForeignEnum.number))
+    if (this.optionalForeignEnum != ForeignEnum.FOREIGN_FOO) {
+        __result += (WireSize.tag(22, WireType.VARINT) + WireSize.enum(this.optionalForeignEnum.number))
     }
 
-    if (optionalAliasedEnum != TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
-        __result += (WireSize.tag(23, WireType.VARINT) + WireSize.enum(optionalAliasedEnum.number))
+    if (this.optionalAliasedEnum != TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
+        __result += (WireSize.tag(23, WireType.VARINT) + WireSize.enum(this.optionalAliasedEnum.number))
     }
 
-    if (optionalStringPiece.isNotEmpty()) {
-        __result += WireSize.string(optionalStringPiece).let { WireSize.tag(24, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.optionalStringPiece.isNotEmpty()) {
+        __result += WireSize.string(this.optionalStringPiece).let { WireSize.tag(24, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (optionalCord.isNotEmpty()) {
-        __result += WireSize.string(optionalCord).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.optionalCord.isNotEmpty()) {
+        __result += WireSize.string(this.optionalCord).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[2]) {
-        __result += recursiveMessage.asInternal()._size.let { WireSize.tag(27, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.recursiveMessage.asInternal()._size.let { WireSize.tag(27, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (repeatedInt32.isNotEmpty()) {
-        __result += WireSize.packedInt32(repeatedInt32).let { WireSize.tag(31, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedInt32.isNotEmpty()) {
+        __result += WireSize.packedInt32(this.repeatedInt32).let { WireSize.tag(31, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedInt64.isNotEmpty()) {
-        __result += WireSize.packedInt64(repeatedInt64).let { WireSize.tag(32, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedInt64.isNotEmpty()) {
+        __result += WireSize.packedInt64(this.repeatedInt64).let { WireSize.tag(32, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedUint32.isNotEmpty()) {
-        __result += WireSize.packedUInt32(repeatedUint32).let { WireSize.tag(33, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedUint32.isNotEmpty()) {
+        __result += WireSize.packedUInt32(this.repeatedUint32).let { WireSize.tag(33, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedUint64.isNotEmpty()) {
-        __result += WireSize.packedUInt64(repeatedUint64).let { WireSize.tag(34, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedUint64.isNotEmpty()) {
+        __result += WireSize.packedUInt64(this.repeatedUint64).let { WireSize.tag(34, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedSint32.isNotEmpty()) {
-        __result += WireSize.packedSInt32(repeatedSint32).let { WireSize.tag(35, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedSint32.isNotEmpty()) {
+        __result += WireSize.packedSInt32(this.repeatedSint32).let { WireSize.tag(35, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedSint64.isNotEmpty()) {
-        __result += WireSize.packedSInt64(repeatedSint64).let { WireSize.tag(36, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedSint64.isNotEmpty()) {
+        __result += WireSize.packedSInt64(this.repeatedSint64).let { WireSize.tag(36, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedFixed32.isNotEmpty()) {
-        __result += WireSize.packedFixed32(repeatedFixed32).let { WireSize.tag(37, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.repeatedFixed32.isNotEmpty()) {
+        __result += WireSize.packedFixed32(this.repeatedFixed32).let { WireSize.tag(37, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (repeatedFixed64.isNotEmpty()) {
-        __result += WireSize.packedFixed64(repeatedFixed64).let { WireSize.tag(38, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.repeatedFixed64.isNotEmpty()) {
+        __result += WireSize.packedFixed64(this.repeatedFixed64).let { WireSize.tag(38, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (repeatedSfixed32.isNotEmpty()) {
-        __result += WireSize.packedSFixed32(repeatedSfixed32).let { WireSize.tag(39, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.repeatedSfixed32.isNotEmpty()) {
+        __result += WireSize.packedSFixed32(this.repeatedSfixed32).let { WireSize.tag(39, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (repeatedSfixed64.isNotEmpty()) {
-        __result += WireSize.packedSFixed64(repeatedSfixed64).let { WireSize.tag(40, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.repeatedSfixed64.isNotEmpty()) {
+        __result += WireSize.packedSFixed64(this.repeatedSfixed64).let { WireSize.tag(40, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (repeatedFloat.isNotEmpty()) {
-        __result += WireSize.packedFloat(repeatedFloat).let { WireSize.tag(41, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.repeatedFloat.isNotEmpty()) {
+        __result += WireSize.packedFloat(this.repeatedFloat).let { WireSize.tag(41, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (repeatedDouble.isNotEmpty()) {
-        __result += WireSize.packedDouble(repeatedDouble).let { WireSize.tag(42, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.repeatedDouble.isNotEmpty()) {
+        __result += WireSize.packedDouble(this.repeatedDouble).let { WireSize.tag(42, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (repeatedBool.isNotEmpty()) {
-        __result += WireSize.packedBool(repeatedBool).let { WireSize.tag(43, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedBool.isNotEmpty()) {
+        __result += WireSize.packedBool(this.repeatedBool).let { WireSize.tag(43, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedString.isNotEmpty()) {
-        __result += repeatedString.sumOf { WireSize.string(it).let { WireSize.tag(44, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedString.isNotEmpty()) {
+        __result += this.repeatedString.sumOf { WireSize.string(it).let { WireSize.tag(44, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedBytes.isNotEmpty()) {
-        __result += repeatedBytes.sumOf { WireSize.bytes(it).let { WireSize.tag(45, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedBytes.isNotEmpty()) {
+        __result += this.repeatedBytes.sumOf { WireSize.bytes(it).let { WireSize.tag(45, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedNestedMessage.isNotEmpty()) {
-        __result += repeatedNestedMessage.sumOf { it.asInternal()._size.let { WireSize.tag(48, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedNestedMessage.isNotEmpty()) {
+        __result += this.repeatedNestedMessage.sumOf { it.asInternal()._size.let { WireSize.tag(48, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedForeignMessage.isNotEmpty()) {
-        __result += repeatedForeignMessage.sumOf { it.asInternal()._size.let { WireSize.tag(49, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedForeignMessage.isNotEmpty()) {
+        __result += this.repeatedForeignMessage.sumOf { it.asInternal()._size.let { WireSize.tag(49, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedNestedEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(repeatedNestedEnum.map { it.number }).let { WireSize.tag(51, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedNestedEnum.isNotEmpty()) {
+        __result += WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }).let { WireSize.tag(51, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedForeignEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(repeatedForeignEnum.map { it.number }).let { WireSize.tag(52, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.repeatedForeignEnum.isNotEmpty()) {
+        __result += WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }).let { WireSize.tag(52, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (repeatedStringPiece.isNotEmpty()) {
-        __result += repeatedStringPiece.sumOf { WireSize.string(it).let { WireSize.tag(54, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedStringPiece.isNotEmpty()) {
+        __result += this.repeatedStringPiece.sumOf { WireSize.string(it).let { WireSize.tag(54, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedCord.isNotEmpty()) {
-        __result += repeatedCord.sumOf { WireSize.string(it).let { WireSize.tag(55, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedCord.isNotEmpty()) {
+        __result += this.repeatedCord.sumOf { WireSize.string(it).let { WireSize.tag(55, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (packedInt32.isNotEmpty()) {
-        __result += WireSize.packedInt32(packedInt32).let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedInt32.isNotEmpty()) {
+        __result += WireSize.packedInt32(this.packedInt32).let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedInt64.isNotEmpty()) {
-        __result += WireSize.packedInt64(packedInt64).let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedInt64.isNotEmpty()) {
+        __result += WireSize.packedInt64(this.packedInt64).let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedUint32.isNotEmpty()) {
-        __result += WireSize.packedUInt32(packedUint32).let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedUint32.isNotEmpty()) {
+        __result += WireSize.packedUInt32(this.packedUint32).let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedUint64.isNotEmpty()) {
-        __result += WireSize.packedUInt64(packedUint64).let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedUint64.isNotEmpty()) {
+        __result += WireSize.packedUInt64(this.packedUint64).let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedSint32.isNotEmpty()) {
-        __result += WireSize.packedSInt32(packedSint32).let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedSint32.isNotEmpty()) {
+        __result += WireSize.packedSInt32(this.packedSint32).let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedSint64.isNotEmpty()) {
-        __result += WireSize.packedSInt64(packedSint64).let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedSint64.isNotEmpty()) {
+        __result += WireSize.packedSInt64(this.packedSint64).let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedFixed32.isNotEmpty()) {
-        __result += WireSize.packedFixed32(packedFixed32).let { WireSize.tag(81, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.packedFixed32.isNotEmpty()) {
+        __result += WireSize.packedFixed32(this.packedFixed32).let { WireSize.tag(81, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (packedFixed64.isNotEmpty()) {
-        __result += WireSize.packedFixed64(packedFixed64).let { WireSize.tag(82, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.packedFixed64.isNotEmpty()) {
+        __result += WireSize.packedFixed64(this.packedFixed64).let { WireSize.tag(82, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (packedSfixed32.isNotEmpty()) {
-        __result += WireSize.packedSFixed32(packedSfixed32).let { WireSize.tag(83, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.packedSfixed32.isNotEmpty()) {
+        __result += WireSize.packedSFixed32(this.packedSfixed32).let { WireSize.tag(83, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (packedSfixed64.isNotEmpty()) {
-        __result += WireSize.packedSFixed64(packedSfixed64).let { WireSize.tag(84, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.packedSfixed64.isNotEmpty()) {
+        __result += WireSize.packedSFixed64(this.packedSfixed64).let { WireSize.tag(84, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (packedFloat.isNotEmpty()) {
-        __result += WireSize.packedFloat(packedFloat).let { WireSize.tag(85, WireType.FIXED32) + WireSize.int32(it) + it }
+    if (this.packedFloat.isNotEmpty()) {
+        __result += WireSize.packedFloat(this.packedFloat).let { WireSize.tag(85, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
-    if (packedDouble.isNotEmpty()) {
-        __result += WireSize.packedDouble(packedDouble).let { WireSize.tag(86, WireType.FIXED64) + WireSize.int32(it) + it }
+    if (this.packedDouble.isNotEmpty()) {
+        __result += WireSize.packedDouble(this.packedDouble).let { WireSize.tag(86, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
-    if (packedBool.isNotEmpty()) {
-        __result += WireSize.packedBool(packedBool).let { WireSize.tag(87, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedBool.isNotEmpty()) {
+        __result += WireSize.packedBool(this.packedBool).let { WireSize.tag(87, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (packedNestedEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(packedNestedEnum.map { it.number }).let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
+    if (this.packedNestedEnum.isNotEmpty()) {
+        __result += WireSize.packedEnum(this.packedNestedEnum.map { it.number }).let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
-    if (unpackedInt32.isNotEmpty()) {
-        __result += unpackedInt32.sumOf { WireSize.tag(89, WireType.VARINT) + WireSize.int32(it) }
+    if (this.unpackedInt32.isNotEmpty()) {
+        __result += this.unpackedInt32.sumOf { WireSize.tag(89, WireType.VARINT) + WireSize.int32(it) }
     }
 
-    if (unpackedInt64.isNotEmpty()) {
-        __result += unpackedInt64.sumOf { WireSize.tag(90, WireType.VARINT) + WireSize.int64(it) }
+    if (this.unpackedInt64.isNotEmpty()) {
+        __result += this.unpackedInt64.sumOf { WireSize.tag(90, WireType.VARINT) + WireSize.int64(it) }
     }
 
-    if (unpackedUint32.isNotEmpty()) {
-        __result += unpackedUint32.sumOf { WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(it) }
+    if (this.unpackedUint32.isNotEmpty()) {
+        __result += this.unpackedUint32.sumOf { WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(it) }
     }
 
-    if (unpackedUint64.isNotEmpty()) {
-        __result += unpackedUint64.sumOf { WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(it) }
+    if (this.unpackedUint64.isNotEmpty()) {
+        __result += this.unpackedUint64.sumOf { WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(it) }
     }
 
-    if (unpackedSint32.isNotEmpty()) {
-        __result += unpackedSint32.sumOf { WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(it) }
+    if (this.unpackedSint32.isNotEmpty()) {
+        __result += this.unpackedSint32.sumOf { WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(it) }
     }
 
-    if (unpackedSint64.isNotEmpty()) {
-        __result += unpackedSint64.sumOf { WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(it) }
+    if (this.unpackedSint64.isNotEmpty()) {
+        __result += this.unpackedSint64.sumOf { WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(it) }
     }
 
-    if (unpackedFixed32.isNotEmpty()) {
-        __result += unpackedFixed32.sumOf { WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(it) }
+    if (this.unpackedFixed32.isNotEmpty()) {
+        __result += this.unpackedFixed32.sumOf { WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(it) }
     }
 
-    if (unpackedFixed64.isNotEmpty()) {
-        __result += unpackedFixed64.sumOf { WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(it) }
+    if (this.unpackedFixed64.isNotEmpty()) {
+        __result += this.unpackedFixed64.sumOf { WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(it) }
     }
 
-    if (unpackedSfixed32.isNotEmpty()) {
-        __result += unpackedSfixed32.sumOf { WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(it) }
+    if (this.unpackedSfixed32.isNotEmpty()) {
+        __result += this.unpackedSfixed32.sumOf { WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(it) }
     }
 
-    if (unpackedSfixed64.isNotEmpty()) {
-        __result += unpackedSfixed64.sumOf { WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(it) }
+    if (this.unpackedSfixed64.isNotEmpty()) {
+        __result += this.unpackedSfixed64.sumOf { WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(it) }
     }
 
-    if (unpackedFloat.isNotEmpty()) {
-        __result += unpackedFloat.sumOf { WireSize.tag(99, WireType.FIXED32) + WireSize.float(it) }
+    if (this.unpackedFloat.isNotEmpty()) {
+        __result += this.unpackedFloat.sumOf { WireSize.tag(99, WireType.FIXED32) + WireSize.float(it) }
     }
 
-    if (unpackedDouble.isNotEmpty()) {
-        __result += unpackedDouble.sumOf { WireSize.tag(100, WireType.FIXED64) + WireSize.double(it) }
+    if (this.unpackedDouble.isNotEmpty()) {
+        __result += this.unpackedDouble.sumOf { WireSize.tag(100, WireType.FIXED64) + WireSize.double(it) }
     }
 
-    if (unpackedBool.isNotEmpty()) {
-        __result += unpackedBool.sumOf { WireSize.tag(101, WireType.VARINT) + WireSize.bool(it) }
+    if (this.unpackedBool.isNotEmpty()) {
+        __result += this.unpackedBool.sumOf { WireSize.tag(101, WireType.VARINT) + WireSize.bool(it) }
     }
 
-    if (unpackedNestedEnum.isNotEmpty()) {
-        __result += unpackedNestedEnum.sumOf { WireSize.tag(102, WireType.VARINT) + WireSize.enum(it.number) }
+    if (this.unpackedNestedEnum.isNotEmpty()) {
+        __result += this.unpackedNestedEnum.sumOf { WireSize.tag(102, WireType.VARINT) + WireSize.enum(it.number) }
     }
 
-    if (mapInt32Int32.isNotEmpty()) {
+    if (this.mapInt32Int32.isNotEmpty()) {
         __result += mapInt32Int32.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapInt32Int32EntryInternal().apply {
                 key = kEntry.key
@@ -4597,7 +4597,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapInt64Int64.isNotEmpty()) {
+    if (this.mapInt64Int64.isNotEmpty()) {
         __result += mapInt64Int64.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapInt64Int64EntryInternal().apply {
                 key = kEntry.key
@@ -4607,7 +4607,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapUint32Uint32.isNotEmpty()) {
+    if (this.mapUint32Uint32.isNotEmpty()) {
         __result += mapUint32Uint32.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapUint32Uint32EntryInternal().apply {
                 key = kEntry.key
@@ -4617,7 +4617,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapUint64Uint64.isNotEmpty()) {
+    if (this.mapUint64Uint64.isNotEmpty()) {
         __result += mapUint64Uint64.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapUint64Uint64EntryInternal().apply {
                 key = kEntry.key
@@ -4627,7 +4627,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapSint32Sint32.isNotEmpty()) {
+    if (this.mapSint32Sint32.isNotEmpty()) {
         __result += mapSint32Sint32.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapSint32Sint32EntryInternal().apply {
                 key = kEntry.key
@@ -4637,7 +4637,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapSint64Sint64.isNotEmpty()) {
+    if (this.mapSint64Sint64.isNotEmpty()) {
         __result += mapSint64Sint64.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapSint64Sint64EntryInternal().apply {
                 key = kEntry.key
@@ -4647,7 +4647,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapFixed32Fixed32.isNotEmpty()) {
+    if (this.mapFixed32Fixed32.isNotEmpty()) {
         __result += mapFixed32Fixed32.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal().apply {
                 key = kEntry.key
@@ -4657,7 +4657,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapFixed64Fixed64.isNotEmpty()) {
+    if (this.mapFixed64Fixed64.isNotEmpty()) {
         __result += mapFixed64Fixed64.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal().apply {
                 key = kEntry.key
@@ -4667,7 +4667,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapSfixed32Sfixed32.isNotEmpty()) {
+    if (this.mapSfixed32Sfixed32.isNotEmpty()) {
         __result += mapSfixed32Sfixed32.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal().apply {
                 key = kEntry.key
@@ -4677,7 +4677,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapSfixed64Sfixed64.isNotEmpty()) {
+    if (this.mapSfixed64Sfixed64.isNotEmpty()) {
         __result += mapSfixed64Sfixed64.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal().apply {
                 key = kEntry.key
@@ -4687,7 +4687,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapInt32Float.isNotEmpty()) {
+    if (this.mapInt32Float.isNotEmpty()) {
         __result += mapInt32Float.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapInt32FloatEntryInternal().apply {
                 key = kEntry.key
@@ -4697,7 +4697,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapInt32Double.isNotEmpty()) {
+    if (this.mapInt32Double.isNotEmpty()) {
         __result += mapInt32Double.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapInt32DoubleEntryInternal().apply {
                 key = kEntry.key
@@ -4707,7 +4707,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapBoolBool.isNotEmpty()) {
+    if (this.mapBoolBool.isNotEmpty()) {
         __result += mapBoolBool.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapBoolBoolEntryInternal().apply {
                 key = kEntry.key
@@ -4717,7 +4717,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringString.isNotEmpty()) {
+    if (this.mapStringString.isNotEmpty()) {
         __result += mapStringString.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringStringEntryInternal().apply {
                 key = kEntry.key
@@ -4727,7 +4727,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringBytes.isNotEmpty()) {
+    if (this.mapStringBytes.isNotEmpty()) {
         __result += mapStringBytes.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringBytesEntryInternal().apply {
                 key = kEntry.key
@@ -4737,7 +4737,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringNestedMessage.isNotEmpty()) {
+    if (this.mapStringNestedMessage.isNotEmpty()) {
         __result += mapStringNestedMessage.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal().apply {
                 key = kEntry.key
@@ -4747,7 +4747,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringForeignMessage.isNotEmpty()) {
+    if (this.mapStringForeignMessage.isNotEmpty()) {
         __result += mapStringForeignMessage.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal().apply {
                 key = kEntry.key
@@ -4757,7 +4757,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringNestedEnum.isNotEmpty()) {
+    if (this.mapStringNestedEnum.isNotEmpty()) {
         __result += mapStringNestedEnum.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal().apply {
                 key = kEntry.key
@@ -4767,7 +4767,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (mapStringForeignEnum.isNotEmpty()) {
+    if (this.mapStringForeignEnum.isNotEmpty()) {
         __result += mapStringForeignEnum.entries.sumOf { kEntry ->
             TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal().apply {
                 key = kEntry.key
@@ -4778,206 +4778,206 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (presenceMask[3]) {
-        __result += optionalBoolWrapper.asInternal()._size.let { WireSize.tag(201, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalBoolWrapper.asInternal()._size.let { WireSize.tag(201, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[4]) {
-        __result += optionalInt32Wrapper.asInternal()._size.let { WireSize.tag(202, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalInt32Wrapper.asInternal()._size.let { WireSize.tag(202, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[5]) {
-        __result += optionalInt64Wrapper.asInternal()._size.let { WireSize.tag(203, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalInt64Wrapper.asInternal()._size.let { WireSize.tag(203, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[6]) {
-        __result += optionalUint32Wrapper.asInternal()._size.let { WireSize.tag(204, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalUint32Wrapper.asInternal()._size.let { WireSize.tag(204, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[7]) {
-        __result += optionalUint64Wrapper.asInternal()._size.let { WireSize.tag(205, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalUint64Wrapper.asInternal()._size.let { WireSize.tag(205, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[8]) {
-        __result += optionalFloatWrapper.asInternal()._size.let { WireSize.tag(206, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalFloatWrapper.asInternal()._size.let { WireSize.tag(206, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[9]) {
-        __result += optionalDoubleWrapper.asInternal()._size.let { WireSize.tag(207, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalDoubleWrapper.asInternal()._size.let { WireSize.tag(207, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[10]) {
-        __result += optionalStringWrapper.asInternal()._size.let { WireSize.tag(208, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalStringWrapper.asInternal()._size.let { WireSize.tag(208, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[11]) {
-        __result += optionalBytesWrapper.asInternal()._size.let { WireSize.tag(209, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalBytesWrapper.asInternal()._size.let { WireSize.tag(209, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (repeatedBoolWrapper.isNotEmpty()) {
-        __result += repeatedBoolWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(211, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedBoolWrapper.isNotEmpty()) {
+        __result += this.repeatedBoolWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(211, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedInt32Wrapper.isNotEmpty()) {
-        __result += repeatedInt32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(212, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedInt32Wrapper.isNotEmpty()) {
+        __result += this.repeatedInt32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(212, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedInt64Wrapper.isNotEmpty()) {
-        __result += repeatedInt64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(213, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedInt64Wrapper.isNotEmpty()) {
+        __result += this.repeatedInt64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(213, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedUint32Wrapper.isNotEmpty()) {
-        __result += repeatedUint32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(214, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedUint32Wrapper.isNotEmpty()) {
+        __result += this.repeatedUint32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(214, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedUint64Wrapper.isNotEmpty()) {
-        __result += repeatedUint64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(215, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedUint64Wrapper.isNotEmpty()) {
+        __result += this.repeatedUint64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(215, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedFloatWrapper.isNotEmpty()) {
-        __result += repeatedFloatWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(216, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedFloatWrapper.isNotEmpty()) {
+        __result += this.repeatedFloatWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(216, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedDoubleWrapper.isNotEmpty()) {
-        __result += repeatedDoubleWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(217, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedDoubleWrapper.isNotEmpty()) {
+        __result += this.repeatedDoubleWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(217, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedStringWrapper.isNotEmpty()) {
-        __result += repeatedStringWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(218, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedStringWrapper.isNotEmpty()) {
+        __result += this.repeatedStringWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(218, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedBytesWrapper.isNotEmpty()) {
-        __result += repeatedBytesWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(219, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedBytesWrapper.isNotEmpty()) {
+        __result += this.repeatedBytesWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(219, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (presenceMask[12]) {
-        __result += optionalDuration.asInternal()._size.let { WireSize.tag(301, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalDuration.asInternal()._size.let { WireSize.tag(301, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[13]) {
-        __result += optionalTimestamp.asInternal()._size.let { WireSize.tag(302, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalTimestamp.asInternal()._size.let { WireSize.tag(302, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[14]) {
-        __result += optionalFieldMask.asInternal()._size.let { WireSize.tag(303, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalFieldMask.asInternal()._size.let { WireSize.tag(303, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[15]) {
-        __result += optionalStruct.asInternal()._size.let { WireSize.tag(304, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalStruct.asInternal()._size.let { WireSize.tag(304, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[16]) {
-        __result += optionalAny.asInternal()._size.let { WireSize.tag(305, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalAny.asInternal()._size.let { WireSize.tag(305, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[17]) {
-        __result += optionalValue.asInternal()._size.let { WireSize.tag(306, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.optionalValue.asInternal()._size.let { WireSize.tag(306, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (optionalNullValue != NullValue.NULL_VALUE) {
-        __result += (WireSize.tag(307, WireType.VARINT) + WireSize.enum(optionalNullValue.number))
+    if (this.optionalNullValue != NullValue.NULL_VALUE) {
+        __result += (WireSize.tag(307, WireType.VARINT) + WireSize.enum(this.optionalNullValue.number))
     }
 
-    if (repeatedDuration.isNotEmpty()) {
-        __result += repeatedDuration.sumOf { it.asInternal()._size.let { WireSize.tag(311, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedDuration.isNotEmpty()) {
+        __result += this.repeatedDuration.sumOf { it.asInternal()._size.let { WireSize.tag(311, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedTimestamp.isNotEmpty()) {
-        __result += repeatedTimestamp.sumOf { it.asInternal()._size.let { WireSize.tag(312, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedTimestamp.isNotEmpty()) {
+        __result += this.repeatedTimestamp.sumOf { it.asInternal()._size.let { WireSize.tag(312, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedFieldmask.isNotEmpty()) {
-        __result += repeatedFieldmask.sumOf { it.asInternal()._size.let { WireSize.tag(313, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedFieldmask.isNotEmpty()) {
+        __result += this.repeatedFieldmask.sumOf { it.asInternal()._size.let { WireSize.tag(313, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedStruct.isNotEmpty()) {
-        __result += repeatedStruct.sumOf { it.asInternal()._size.let { WireSize.tag(324, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedStruct.isNotEmpty()) {
+        __result += this.repeatedStruct.sumOf { it.asInternal()._size.let { WireSize.tag(324, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedAny.isNotEmpty()) {
-        __result += repeatedAny.sumOf { it.asInternal()._size.let { WireSize.tag(315, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedAny.isNotEmpty()) {
+        __result += this.repeatedAny.sumOf { it.asInternal()._size.let { WireSize.tag(315, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedValue.isNotEmpty()) {
-        __result += repeatedValue.sumOf { it.asInternal()._size.let { WireSize.tag(316, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedValue.isNotEmpty()) {
+        __result += this.repeatedValue.sumOf { it.asInternal()._size.let { WireSize.tag(316, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (repeatedListValue.isNotEmpty()) {
-        __result += repeatedListValue.sumOf { it.asInternal()._size.let { WireSize.tag(317, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    if (this.repeatedListValue.isNotEmpty()) {
+        __result += this.repeatedListValue.sumOf { it.asInternal()._size.let { WireSize.tag(317, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (fieldname1 != 0) {
-        __result += (WireSize.tag(401, WireType.VARINT) + WireSize.int32(fieldname1))
+    if (this.fieldname1 != 0) {
+        __result += (WireSize.tag(401, WireType.VARINT) + WireSize.int32(this.fieldname1))
     }
 
-    if (fieldName2 != 0) {
-        __result += (WireSize.tag(402, WireType.VARINT) + WireSize.int32(fieldName2))
+    if (this.fieldName2 != 0) {
+        __result += (WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2))
     }
 
-    if (FieldName3 != 0) {
-        __result += (WireSize.tag(403, WireType.VARINT) + WireSize.int32(FieldName3))
+    if (this.FieldName3 != 0) {
+        __result += (WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.FieldName3))
     }
 
-    if (field_Name4_ != 0) {
-        __result += (WireSize.tag(404, WireType.VARINT) + WireSize.int32(field_Name4_))
+    if (this.field_Name4_ != 0) {
+        __result += (WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_))
     }
 
-    if (field0name5 != 0) {
-        __result += (WireSize.tag(405, WireType.VARINT) + WireSize.int32(field0name5))
+    if (this.field0name5 != 0) {
+        __result += (WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5))
     }
 
-    if (field_0Name6 != 0) {
-        __result += (WireSize.tag(406, WireType.VARINT) + WireSize.int32(field_0Name6))
+    if (this.field_0Name6 != 0) {
+        __result += (WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6))
     }
 
-    if (fieldName7 != 0) {
-        __result += (WireSize.tag(407, WireType.VARINT) + WireSize.int32(fieldName7))
+    if (this.fieldName7 != 0) {
+        __result += (WireSize.tag(407, WireType.VARINT) + WireSize.int32(this.fieldName7))
     }
 
-    if (FieldName8 != 0) {
-        __result += (WireSize.tag(408, WireType.VARINT) + WireSize.int32(FieldName8))
+    if (this.FieldName8 != 0) {
+        __result += (WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.FieldName8))
     }
 
-    if (field_Name9 != 0) {
-        __result += (WireSize.tag(409, WireType.VARINT) + WireSize.int32(field_Name9))
+    if (this.field_Name9 != 0) {
+        __result += (WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9))
     }
 
-    if (Field_Name10 != 0) {
-        __result += (WireSize.tag(410, WireType.VARINT) + WireSize.int32(Field_Name10))
+    if (this.Field_Name10 != 0) {
+        __result += (WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.Field_Name10))
     }
 
-    if (FIELD_NAME11 != 0) {
-        __result += (WireSize.tag(411, WireType.VARINT) + WireSize.int32(FIELD_NAME11))
+    if (this.FIELD_NAME11 != 0) {
+        __result += (WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.FIELD_NAME11))
     }
 
-    if (FIELDName12 != 0) {
-        __result += (WireSize.tag(412, WireType.VARINT) + WireSize.int32(FIELDName12))
+    if (this.FIELDName12 != 0) {
+        __result += (WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.FIELDName12))
     }
 
-    if (_FieldName13 != 0) {
-        __result += (WireSize.tag(413, WireType.VARINT) + WireSize.int32(_FieldName13))
+    if (this._FieldName13 != 0) {
+        __result += (WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13))
     }
 
-    if (__FieldName14 != 0) {
-        __result += (WireSize.tag(414, WireType.VARINT) + WireSize.int32(__FieldName14))
+    if (this.__FieldName14 != 0) {
+        __result += (WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14))
     }
 
-    if (field_Name15 != 0) {
-        __result += (WireSize.tag(415, WireType.VARINT) + WireSize.int32(field_Name15))
+    if (this.field_Name15 != 0) {
+        __result += (WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15))
     }
 
-    if (field__Name16 != 0) {
-        __result += (WireSize.tag(416, WireType.VARINT) + WireSize.int32(field__Name16))
+    if (this.field__Name16 != 0) {
+        __result += (WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16))
     }
 
-    if (fieldName17__ != 0) {
-        __result += (WireSize.tag(417, WireType.VARINT) + WireSize.int32(fieldName17__))
+    if (this.fieldName17__ != 0) {
+        __result += (WireSize.tag(417, WireType.VARINT) + WireSize.int32(this.fieldName17__))
     }
 
-    if (FieldName18__ != 0) {
-        __result += (WireSize.tag(418, WireType.VARINT) + WireSize.int32(FieldName18__))
+    if (this.FieldName18__ != 0) {
+        __result += (WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.FieldName18__))
     }
 
-    oneofField?.also {
+    this.oneofField?.also {
         when (val value = it) {
             is TestAllTypesProto3.OneofField.OneofUint32 -> {
                 __result += (WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value))
@@ -5027,8 +5027,8 @@ fun ForeignMessageInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (c != 0) {
-        encoder.writeInt32(fieldNr = 1, value = c)
+    if (this.c != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.c)
     }
 }
 
@@ -5061,8 +5061,8 @@ fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, dec
 
 private fun ForeignMessageInternal.computeSize(): Int {
     var __result = 0
-    if (c != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(c))
+    if (this.c != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.c))
     }
 
     return __result
@@ -5165,18 +5165,18 @@ fun EnumOnlyProto3.asInternal(): EnumOnlyProto3Internal {
 fun TestAllTypesProto3Internal.NestedMessageInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        corecursive.asInternal().checkRequiredFields()
+        this.corecursive.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (a != 0) {
-        encoder.writeInt32(fieldNr = 1, value = a)
+    if (this.a != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.a)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = corecursive.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encodeWith(it, config) }
     }
 }
 
@@ -5216,12 +5216,12 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: T
 
 private fun TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int {
     var __result = 0
-    if (a != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(a))
+    if (this.a != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.a))
     }
 
     if (presenceMask[0]) {
-        __result += corecursive.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.corecursive.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -5239,12 +5239,12 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.checkRequiredFields() 
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0) {
-        encoder.writeInt32(fieldNr = 1, value = key)
+    if (this.key != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0) {
-        encoder.writeInt32(fieldNr = 2, value = value)
+    if (this.value != 0) {
+        encoder.writeInt32(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5280,12 +5280,12 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(m
 
 private fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(key))
+    if (this.key != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
     }
 
-    if (value != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(value))
+    if (this.value != 0) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.value))
     }
 
     return __result
@@ -5303,12 +5303,12 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.checkRequiredFields() 
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0L) {
-        encoder.writeInt64(fieldNr = 1, value = key)
+    if (this.key != 0L) {
+        encoder.writeInt64(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0L) {
-        encoder.writeInt64(fieldNr = 2, value = value)
+    if (this.value != 0L) {
+        encoder.writeInt64(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5344,12 +5344,12 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(m
 
 private fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(key))
+    if (this.key != 0L) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.key))
     }
 
-    if (value != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(value))
+    if (this.value != 0L) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.value))
     }
 
     return __result
@@ -5367,12 +5367,12 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.checkRequiredFields(
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0u) {
-        encoder.writeUInt32(fieldNr = 1, value = key)
+    if (this.key != 0u) {
+        encoder.writeUInt32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0u) {
-        encoder.writeUInt32(fieldNr = 2, value = value)
+    if (this.value != 0u) {
+        encoder.writeUInt32(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5408,12 +5408,12 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith
 
 private fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0u) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(key))
+    if (this.key != 0u) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.key))
     }
 
-    if (value != 0u) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt32(value))
+    if (this.value != 0u) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt32(this.value))
     }
 
     return __result
@@ -5431,12 +5431,12 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.checkRequiredFields(
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0uL) {
-        encoder.writeUInt64(fieldNr = 1, value = key)
+    if (this.key != 0uL) {
+        encoder.writeUInt64(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0uL) {
-        encoder.writeUInt64(fieldNr = 2, value = value)
+    if (this.value != 0uL) {
+        encoder.writeUInt64(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5472,12 +5472,12 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith
 
 private fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0uL) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(key))
+    if (this.key != 0uL) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.key))
     }
 
-    if (value != 0uL) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt64(value))
+    if (this.value != 0uL) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt64(this.value))
     }
 
     return __result
@@ -5495,12 +5495,12 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.checkRequiredFields(
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0) {
-        encoder.writeSInt32(fieldNr = 1, value = key)
+    if (this.key != 0) {
+        encoder.writeSInt32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0) {
-        encoder.writeSInt32(fieldNr = 2, value = value)
+    if (this.value != 0) {
+        encoder.writeSInt32(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5536,12 +5536,12 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith
 
 private fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt32(key))
+    if (this.key != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt32(this.key))
     }
 
-    if (value != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt32(value))
+    if (this.value != 0) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt32(this.value))
     }
 
     return __result
@@ -5559,12 +5559,12 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.checkRequiredFields(
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0L) {
-        encoder.writeSInt64(fieldNr = 1, value = key)
+    if (this.key != 0L) {
+        encoder.writeSInt64(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0L) {
-        encoder.writeSInt64(fieldNr = 2, value = value)
+    if (this.value != 0L) {
+        encoder.writeSInt64(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5600,12 +5600,12 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith
 
 private fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt64(key))
+    if (this.key != 0L) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt64(this.key))
     }
 
-    if (value != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt64(value))
+    if (this.value != 0L) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt64(this.value))
     }
 
     return __result
@@ -5623,12 +5623,12 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.checkRequiredField
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0u) {
-        encoder.writeFixed32(fieldNr = 1, value = key)
+    if (this.key != 0u) {
+        encoder.writeFixed32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0u) {
-        encoder.writeFixed32(fieldNr = 2, value = value)
+    if (this.value != 0u) {
+        encoder.writeFixed32(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5664,12 +5664,12 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWi
 
 private fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0u) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.fixed32(key))
+    if (this.key != 0u) {
+        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.fixed32(this.key))
     }
 
-    if (value != 0u) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.fixed32(value))
+    if (this.value != 0u) {
+        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.fixed32(this.value))
     }
 
     return __result
@@ -5687,12 +5687,12 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.checkRequiredField
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0uL) {
-        encoder.writeFixed64(fieldNr = 1, value = key)
+    if (this.key != 0uL) {
+        encoder.writeFixed64(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0uL) {
-        encoder.writeFixed64(fieldNr = 2, value = value)
+    if (this.value != 0uL) {
+        encoder.writeFixed64(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5728,12 +5728,12 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWi
 
 private fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0uL) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.fixed64(key))
+    if (this.key != 0uL) {
+        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.fixed64(this.key))
     }
 
-    if (value != 0uL) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.fixed64(value))
+    if (this.value != 0uL) {
+        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.fixed64(this.value))
     }
 
     return __result
@@ -5751,12 +5751,12 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.checkRequiredFie
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0) {
-        encoder.writeSFixed32(fieldNr = 1, value = key)
+    if (this.key != 0) {
+        encoder.writeSFixed32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0) {
-        encoder.writeSFixed32(fieldNr = 2, value = value)
+    if (this.value != 0) {
+        encoder.writeSFixed32(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5792,12 +5792,12 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decode
 
 private fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.sFixed32(key))
+    if (this.key != 0) {
+        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.sFixed32(this.key))
     }
 
-    if (value != 0) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.sFixed32(value))
+    if (this.value != 0) {
+        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.sFixed32(this.value))
     }
 
     return __result
@@ -5815,12 +5815,12 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.checkRequiredFie
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0L) {
-        encoder.writeSFixed64(fieldNr = 1, value = key)
+    if (this.key != 0L) {
+        encoder.writeSFixed64(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0L) {
-        encoder.writeSFixed64(fieldNr = 2, value = value)
+    if (this.value != 0L) {
+        encoder.writeSFixed64(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5856,12 +5856,12 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decode
 
 private fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0L) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.sFixed64(key))
+    if (this.key != 0L) {
+        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.sFixed64(this.key))
     }
 
-    if (value != 0L) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.sFixed64(value))
+    if (this.value != 0L) {
+        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.sFixed64(this.value))
     }
 
     return __result
@@ -5879,12 +5879,12 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.checkRequiredFields() 
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0) {
-        encoder.writeInt32(fieldNr = 1, value = key)
+    if (this.key != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0.0f) {
-        encoder.writeFloat(fieldNr = 2, value = value)
+    if (this.value != 0.0f) {
+        encoder.writeFloat(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5920,12 +5920,12 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(m
 
 private fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(key))
+    if (this.key != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
     }
 
-    if (value != 0.0f) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.float(value))
+    if (this.value != 0.0f) {
+        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.float(this.value))
     }
 
     return __result
@@ -5943,12 +5943,12 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.checkRequiredFields()
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != 0) {
-        encoder.writeInt32(fieldNr = 1, value = key)
+    if (this.key != 0) {
+        encoder.writeInt32(fieldNr = 1, value = this.key)
     }
 
-    if (value != 0.0) {
-        encoder.writeDouble(fieldNr = 2, value = value)
+    if (this.value != 0.0) {
+        encoder.writeDouble(fieldNr = 2, value = this.value)
     }
 }
 
@@ -5984,12 +5984,12 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
 
 private fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(key))
+    if (this.key != 0) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
     }
 
-    if (value != 0.0) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.double(value))
+    if (this.value != 0.0) {
+        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.double(this.value))
     }
 
     return __result
@@ -6007,12 +6007,12 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key != false) {
-        encoder.writeBool(fieldNr = 1, value = key)
+    if (this.key != false) {
+        encoder.writeBool(fieldNr = 1, value = this.key)
     }
 
-    if (value != false) {
-        encoder.writeBool(fieldNr = 2, value = value)
+    if (this.value != false) {
+        encoder.writeBool(fieldNr = 2, value = this.value)
     }
 }
 
@@ -6048,12 +6048,12 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg
 
 private fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key != false) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(key))
+    if (this.key != false) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.key))
     }
 
-    if (value != false) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.bool(value))
+    if (this.value != false) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.bool(this.value))
     }
 
     return __result
@@ -6071,12 +6071,12 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.checkRequiredFields(
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (value.isNotEmpty()) {
-        encoder.writeString(fieldNr = 2, value = value)
+    if (this.value.isNotEmpty()) {
+        encoder.writeString(fieldNr = 2, value = this.value)
     }
 }
 
@@ -6112,12 +6112,12 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith
 
 private fun TestAllTypesProto3Internal.MapStringStringEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (value.isNotEmpty()) {
-        __result += WireSize.string(value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.value.isNotEmpty()) {
+        __result += WireSize.string(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -6135,12 +6135,12 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.checkRequiredFields()
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (value.isNotEmpty()) {
-        encoder.writeBytes(fieldNr = 2, value = value)
+    if (this.value.isNotEmpty()) {
+        encoder.writeBytes(fieldNr = 2, value = this.value)
     }
 }
 
@@ -6176,12 +6176,12 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(
 
 private fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (value.isNotEmpty()) {
-        __result += WireSize.bytes(value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.value.isNotEmpty()) {
+        __result += WireSize.bytes(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -6196,18 +6196,18 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.asInternal(): TestAll
 fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        value.asInternal().checkRequiredFields()
+        this.value.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
 }
 
@@ -6247,12 +6247,12 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.dec
 
 private fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -6267,18 +6267,18 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.asInternal():
 fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.checkRequiredFields() {
     // no required fields to check
     if (presenceMask[0]) {
-        value.asInternal().checkRequiredFields()
+        this.value.asInternal().checkRequiredFields()
     }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
     if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = value.asInternal()) { encodeWith(it, config) }
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
 }
 
@@ -6318,12 +6318,12 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.de
 
 private fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[0]) {
-        __result += value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     return __result
@@ -6341,12 +6341,12 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.checkRequiredFie
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (value != TestAllTypesProto3.NestedEnum.FOO) {
-        encoder.writeEnum(fieldNr = 2, value = value.number)
+    if (this.value != TestAllTypesProto3.NestedEnum.FOO) {
+        encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
 }
 
@@ -6382,12 +6382,12 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decode
 
 private fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (value != TestAllTypesProto3.NestedEnum.FOO) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(value.number))
+    if (this.value != TestAllTypesProto3.NestedEnum.FOO) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
     }
 
     return __result
@@ -6405,12 +6405,12 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.checkRequiredFi
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
-    if (key.isNotEmpty()) {
-        encoder.writeString(fieldNr = 1, value = key)
+    if (this.key.isNotEmpty()) {
+        encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (value != ForeignEnum.FOREIGN_FOO) {
-        encoder.writeEnum(fieldNr = 2, value = value.number)
+    if (this.value != ForeignEnum.FOREIGN_FOO) {
+        encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
 }
 
@@ -6446,12 +6446,12 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decod
 
 private fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.computeSize(): Int {
     var __result = 0
-    if (key.isNotEmpty()) {
-        __result += WireSize.string(key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (this.key.isNotEmpty()) {
+        __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (value != ForeignEnum.FOREIGN_FOO) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(value.number))
+    if (this.value != ForeignEnum.FOREIGN_FOO) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
     }
 
     return __result
