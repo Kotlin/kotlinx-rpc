@@ -6,11 +6,8 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
-import kotlinx.rpc.protoc.buf
-import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.kotlinMultiplatform
 import kotlinx.rpc.protoc.proto
-import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.tasks.setupProtobufUnittestProtos
 
@@ -45,10 +42,12 @@ sourceSets.main.get().proto {
         "**/unittest_lite_edition_2024.proto", // buf: edition "2024" not yet supported
         // JVM limit:
         "**/unittest_enormous_descriptor.proto", // generated method exceeds 64KB
-        // Generator limitation: proto3 implicit presence generates nullable types instead of non-nullable
-        "**/unittest_no_field_presence.proto",
     )
 
     plugins.empty()
     plugin(rpc.protoc.get().plugins.kotlinMultiplatform)
+}
+
+rpc.protoc {
+    buf.generate.comments.includeFileLevelComments = false
 }

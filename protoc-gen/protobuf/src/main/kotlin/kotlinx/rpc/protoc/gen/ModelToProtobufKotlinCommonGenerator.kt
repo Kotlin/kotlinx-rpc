@@ -290,7 +290,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 internalImports.add(subMsgPkg.importPath("copy"))
                 internalImports.add(subMsgPkg.importPath("checkRequiredFields"))
                 internalImports.add(subMsgPkg.importPath("decodeWith"))
-                internalImports.add(subMsg.internalClassName.fullName())
             }
         }
     }
