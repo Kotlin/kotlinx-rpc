@@ -387,8 +387,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[7]) (optionalFixed64?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[8]) (optionalSfixed32?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[9]) (optionalSfixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[10]) (optionalFloat?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[11]) (optionalDouble?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[10]) (optionalFloat?.toBits()?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[11]) (optionalDouble?.toBits()?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[14]) (optionalBytes?.contentHashCode() ?: 0) else 0
@@ -413,7 +413,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.hashCode()
+        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -481,8 +481,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
         result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
         result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[34]) defaultFloat.hashCode() else 0
-        result = 31 * result + if (presenceMask[35]) defaultDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) defaultFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
         result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
@@ -510,19 +510,34 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     }
 
     fun TestAllTypesProto2.OneofField.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is TestAllTypesProto2.OneofField.OneofUint32 -> 0
-            is TestAllTypesProto2.OneofField.OneofNestedMessage -> 1
-            is TestAllTypesProto2.OneofField.OneofString -> 2
-            is TestAllTypesProto2.OneofField.OneofBytes -> 3
-            is TestAllTypesProto2.OneofField.OneofBool -> 4
-            is TestAllTypesProto2.OneofField.OneofUint64 -> 5
-            is TestAllTypesProto2.OneofField.OneofFloat -> 6
-            is TestAllTypesProto2.OneofField.OneofDouble -> 7
-            is TestAllTypesProto2.OneofField.OneofEnum -> 8
+        return when (this) {
+            is TestAllTypesProto2.OneofField.OneofUint32 -> hashCode() + 0
+            is TestAllTypesProto2.OneofField.OneofNestedMessage -> hashCode() + 1
+            is TestAllTypesProto2.OneofField.OneofString -> hashCode() + 2
+            is TestAllTypesProto2.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesProto2.OneofField.OneofBool -> hashCode() + 4
+            is TestAllTypesProto2.OneofField.OneofUint64 -> hashCode() + 5
+            is TestAllTypesProto2.OneofField.OneofFloat -> value.toBits().hashCode() + 6
+            is TestAllTypesProto2.OneofField.OneofDouble -> value.toBits().hashCode() + 7
+            is TestAllTypesProto2.OneofField.OneofEnum -> hashCode() + 8
         }
+    }
 
-        return hashCode() + offset
+    fun oneOfEquals(a: TestAllTypesProto2.OneofField?, b: TestAllTypesProto2.OneofField?): Boolean {
+        if (a === b) return true
+        if (a == null || b == null) return false
+        if (a::class != b::class) return false
+        return when (a) {
+            is TestAllTypesProto2.OneofField.OneofUint32 -> a == b
+            is TestAllTypesProto2.OneofField.OneofNestedMessage -> a == b
+            is TestAllTypesProto2.OneofField.OneofString -> a == b
+            is TestAllTypesProto2.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesProto2.OneofField.OneofBytes).value)
+            is TestAllTypesProto2.OneofField.OneofBool -> a == b
+            is TestAllTypesProto2.OneofField.OneofUint64 -> a == b
+            is TestAllTypesProto2.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto2.OneofField.OneofFloat).value.toBits()
+            is TestAllTypesProto2.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesProto2.OneofField.OneofDouble).value.toBits()
+            is TestAllTypesProto2.OneofField.OneofEnum -> a == b
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -542,8 +557,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[7] && this.optionalFixed64 != other.optionalFixed64) return false
         if (presenceMask[8] && this.optionalSfixed32 != other.optionalSfixed32) return false
         if (presenceMask[9] && this.optionalSfixed64 != other.optionalSfixed64) return false
-        if (presenceMask[10] && this.optionalFloat != other.optionalFloat) return false
-        if (presenceMask[11] && this.optionalDouble != other.optionalDouble) return false
+        if (presenceMask[10] && this.optionalFloat?.toBits() != other.optionalFloat?.toBits()) return false
+        if (presenceMask[11] && this.optionalDouble?.toBits() != other.optionalDouble?.toBits()) return false
         if (presenceMask[12] && this.optionalBool != other.optionalBool) return false
         if (presenceMask[13] && this.optionalString != other.optionalString) return false
         if (presenceMask[14] && ((this.optionalBytes != null && (other.optionalBytes == null || !this.optionalBytes!!.contentEquals(other.optionalBytes!!))) || this.optionalBytes == null)) return false
@@ -568,7 +583,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if (this.repeatedBytes != other.repeatedBytes) return false
+        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -636,8 +651,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[31] && this.defaultFixed64 != other.defaultFixed64) return false
         if (presenceMask[32] && this.defaultSfixed32 != other.defaultSfixed32) return false
         if (presenceMask[33] && this.defaultSfixed64 != other.defaultSfixed64) return false
-        if (presenceMask[34] && this.defaultFloat != other.defaultFloat) return false
-        if (presenceMask[35] && this.defaultDouble != other.defaultDouble) return false
+        if (presenceMask[34] && this.defaultFloat.toBits() != other.defaultFloat.toBits()) return false
+        if (presenceMask[35] && this.defaultDouble.toBits() != other.defaultDouble.toBits()) return false
         if (presenceMask[36] && this.defaultBool != other.defaultBool) return false
         if (presenceMask[37] && this.defaultString != other.defaultString) return false
         if (presenceMask[38] && !this.defaultBytes.contentEquals(other.defaultBytes)) return false
@@ -660,7 +675,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[55] && this.fieldName17__ != other.fieldName17__) return false
         if (presenceMask[56] && this.FieldName18__ != other.FieldName18__) return false
         if (presenceMask[57] && this.messageSetCorrect != other.messageSetCorrect) return false
-        if (this.oneofField != other.oneofField) return false
+        if (!oneOfEquals(this.oneofField, other.oneofField)) return false
         return true
     }
 
@@ -2321,7 +2336,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
             return result
         }
 
@@ -2333,7 +2348,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && this.value != other.value) return false
+            if (presenceMask[1] && this.value.toBits() != other.value.toBits()) return false
             return true
         }
 
@@ -2388,7 +2403,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
             return result
         }
 
@@ -2400,7 +2415,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && this.value != other.value) return false
+            if (presenceMask[1] && this.value.toBits() != other.value.toBits()) return false
             return true
         }
 
@@ -4735,8 +4750,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         result = 31 * result + if (presenceMask[7]) requiredFixed64.hashCode() else 0
         result = 31 * result + if (presenceMask[8]) requiredSfixed32.hashCode() else 0
         result = 31 * result + if (presenceMask[9]) requiredSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[10]) requiredFloat.hashCode() else 0
-        result = 31 * result + if (presenceMask[11]) requiredDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[10]) requiredFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[11]) requiredDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[12]) requiredBool.hashCode() else 0
         result = 31 * result + if (presenceMask[13]) requiredString.hashCode() else 0
         result = 31 * result + if (presenceMask[14]) requiredBytes.contentHashCode() else 0
@@ -4759,8 +4774,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
         result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
         result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[34]) defaultFloat.hashCode() else 0
-        result = 31 * result + if (presenceMask[35]) defaultDouble.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) defaultFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
         result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
@@ -4784,8 +4799,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         if (presenceMask[7] && this.requiredFixed64 != other.requiredFixed64) return false
         if (presenceMask[8] && this.requiredSfixed32 != other.requiredSfixed32) return false
         if (presenceMask[9] && this.requiredSfixed64 != other.requiredSfixed64) return false
-        if (presenceMask[10] && this.requiredFloat != other.requiredFloat) return false
-        if (presenceMask[11] && this.requiredDouble != other.requiredDouble) return false
+        if (presenceMask[10] && this.requiredFloat.toBits() != other.requiredFloat.toBits()) return false
+        if (presenceMask[11] && this.requiredDouble.toBits() != other.requiredDouble.toBits()) return false
         if (presenceMask[12] && this.requiredBool != other.requiredBool) return false
         if (presenceMask[13] && this.requiredString != other.requiredString) return false
         if (presenceMask[14] && !this.requiredBytes.contentEquals(other.requiredBytes)) return false
@@ -4808,8 +4823,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         if (presenceMask[31] && this.defaultFixed64 != other.defaultFixed64) return false
         if (presenceMask[32] && this.defaultSfixed32 != other.defaultSfixed32) return false
         if (presenceMask[33] && this.defaultSfixed64 != other.defaultSfixed64) return false
-        if (presenceMask[34] && this.defaultFloat != other.defaultFloat) return false
-        if (presenceMask[35] && this.defaultDouble != other.defaultDouble) return false
+        if (presenceMask[34] && this.defaultFloat.toBits() != other.defaultFloat.toBits()) return false
+        if (presenceMask[35] && this.defaultDouble.toBits() != other.defaultDouble.toBits()) return false
         if (presenceMask[36] && this.defaultBool != other.defaultBool) return false
         if (presenceMask[37] && this.defaultString != other.defaultString) return false
         if (presenceMask[38] && !this.defaultBytes.contentEquals(other.defaultBytes)) return false
