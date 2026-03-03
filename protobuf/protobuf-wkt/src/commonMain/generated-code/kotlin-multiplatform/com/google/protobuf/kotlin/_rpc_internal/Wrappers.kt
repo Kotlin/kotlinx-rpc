@@ -44,7 +44,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        return value.toBits().hashCode()
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -53,7 +53,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
         if (other == null || this::class != other::class) return false
         other as DoubleValueInternal
         other.checkRequiredFields()
-        if (this.value != other.value) return false
+        if (this.value.toBits() != other.value.toBits()) return false
         return true
     }
 
@@ -131,7 +131,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return value.hashCode()
+        return value.toBits().hashCode()
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -140,7 +140,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as FloatValueInternal
         other.checkRequiredFields()
-        if (this.value != other.value) return false
+        if (this.value.toBits() != other.value.toBits()) return false
         return true
     }
 

@@ -20,7 +20,6 @@
 package proto2_unittest
 
 import kotlinx.rpc.grpc.marshaller.marshallerOf
-import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -60,7 +59,6 @@ class MessageTest {
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/MessageTest.java#testNegative0FloatingPointEquality
-    @Disabled("Generated equals() does not distinguish -0.0f from +0.0f")
     @Test
     fun testNegative0FloatingPointEquality() {
         // -0.0 should not equal +0.0 in message equality

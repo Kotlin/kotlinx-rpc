@@ -330,6 +330,14 @@ class ModelToProtobufKotlinCommonGenerator(
                         if (nullable) "(${name}?.contentHashCode() ?: 0)" else "${name}.contentHashCode()"
                     }
 
+                    FieldType.IntegralType.FLOAT -> {
+                        if (nullable) "(${name}?.toBits()?.hashCode() ?: 0)" else "${name}.toBits().hashCode()"
+                    }
+
+                    FieldType.IntegralType.DOUBLE -> {
+                        if (nullable) "(${name}?.toBits()?.hashCode() ?: 0)" else "${name}.toBits().hashCode()"
+                    }
+
                     else -> {
                         if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
                     }
@@ -340,7 +348,15 @@ class ModelToProtobufKotlinCommonGenerator(
                 if (nullable) "(${name}?.oneOfHashCode() ?: 0)" else "${name}.oneOfHashCode() + "
             }
 
-            is FieldType.Message, is FieldType.Enum, is FieldType.List, is FieldType.Map -> {
+            is FieldType.List -> {
+                if (t.value == FieldType.IntegralType.BYTES) {
+                    "${name}.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }"
+                } else {
+                    if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+                }
+            }
+
+            is FieldType.Message, is FieldType.Enum, is FieldType.Map -> {
                 if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
             }
         }.let {
@@ -354,18 +370,66 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateOneOfHashCode(declaration: MessageDeclaration) {
         declaration.oneOfDeclarations.forEach { oneOf ->
+            val hasBytesVariant = oneOf.variants.any { it.type == FieldType.IntegralType.BYTES }
+            val hasFloatVariant = oneOf.variants.any {
+                it.type == FieldType.IntegralType.FLOAT || it.type == FieldType.IntegralType.DOUBLE
+            }
             function(
                 name = "oneOfHashCode",
                 returnType = FqName.Implicits.Int.scoped(),
                 contextReceiver = oneOf.name.scoped(),
             ) {
-                whenBlock(prefix = "val offset = ".scoped(), condition = "this".scoped()) {
-                    oneOf.variants.forEachIndexed { index, variant ->
-                        val variantName = "%T.${variant.name}".scoped(oneOf.name)
-                        code(variantName.wrapIn { "is $it -> $index" })
+                if (hasBytesVariant || hasFloatVariant) {
+                    // Generate a when expression that handles ByteArray/Float/Double variants specially
+                    whenBlock(prefix = "return ".scoped(), condition = "this".scoped()) {
+                        oneOf.variants.forEachIndexed { index, variant ->
+                            val variantName = "%T.${variant.name}".scoped(oneOf.name)
+                            val hashExpr = when (variant.type) {
+                                FieldType.IntegralType.BYTES -> "value.contentHashCode()"
+                                FieldType.IntegralType.FLOAT -> "value.toBits().hashCode()"
+                                FieldType.IntegralType.DOUBLE -> "value.toBits().hashCode()"
+                                else -> "hashCode()"
+                            }
+                            code(variantName.wrapIn { "is $it -> $hashExpr + $index" })
+                        }
+                    }
+                } else {
+                    whenBlock(prefix = "val offset = ".scoped(), condition = "this".scoped()) {
+                        oneOf.variants.forEachIndexed { index, variant ->
+                            val variantName = "%T.${variant.name}".scoped(oneOf.name)
+                            code(variantName.wrapIn { "is $it -> $index" })
+                        }
+                    }
+                    code("return hashCode() + offset".scoped())
+                }
+            }
+
+            if (hasBytesVariant || hasFloatVariant) {
+                // Generate a custom oneOfEquals for byte/float/double-aware comparison
+                function(
+                    name = "oneOfEquals",
+                    args = "a: %T?, b: %T?".scoped(oneOf.name, oneOf.name),
+                    returnType = FqName.Implicits.Boolean.scoped(),
+                ) {
+                    code("if (a === b) return true".scoped())
+                    code("if (a == null || b == null) return false".scoped())
+                    code("if (a::class != b::class) return false".scoped())
+                    whenBlock(prefix = "return ".scoped(), condition = "a".scoped()) {
+                        oneOf.variants.forEach { variant ->
+                            val variantFqName = oneOf.name.nested(variant.name)
+                            when (variant.type) {
+                                FieldType.IntegralType.BYTES ->
+                                    code("is %T -> a.value.contentEquals((b as %T).value)".scoped(variantFqName, variantFqName))
+                                FieldType.IntegralType.FLOAT ->
+                                    code("is %T -> a.value.toBits() == (b as %T).value.toBits()".scoped(variantFqName, variantFqName))
+                                FieldType.IntegralType.DOUBLE ->
+                                    code("is %T -> a.value.toBits() == (b as %T).value.toBits()".scoped(variantFqName, variantFqName))
+                                else ->
+                                    code("is %T -> a == b".scoped(variantFqName))
+                            }
+                        }
                     }
                 }
-                code("return hashCode() + offset".scoped())
             }
         }
     }
@@ -408,20 +472,78 @@ class ModelToProtobufKotlinCommonGenerator(
     ) {
         when (val t = field.type) {
             is FieldType.IntegralType -> {
-                if (t == FieldType.IntegralType.BYTES) {
-                    if (field.nullable) {
+                when (t) {
+                    FieldType.IntegralType.BYTES -> {
+                        if (field.nullable) {
+                            code(
+                                presenceCheck.wrapIn { presenceCheck ->
+                                    "if ($presenceCheck((this.${field.name} != null && (other.${field.name} == null || !this.${field.name}!!.contentEquals(other.${field.name}!!))) || this.${field.name} == null)) return false"
+                                }
+                            )
+                        } else {
+                            code(
+                                presenceCheck.wrapIn { presenceCheck ->
+                                    "if ($presenceCheck!this.${field.name}.contentEquals(other.${field.name})) return false"
+                                }
+                            )
+                        }
+                    }
+
+                    FieldType.IntegralType.FLOAT -> {
                         code(
                             presenceCheck.wrapIn { presenceCheck ->
-                                "if ($presenceCheck((this.${field.name} != null && (other.${field.name} == null || !this.${field.name}!!.contentEquals(other.${field.name}!!))) || this.${field.name} == null)) return false"
-                            }
-                        )
-                    } else {
-                        code(
-                            presenceCheck.wrapIn { presenceCheck ->
-                                "if ($presenceCheck!this.${field.name}.contentEquals(other.${field.name})) return false"
+                                "if (${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() != other.${field.name}${if (field.nullable) "?" else ""}.toBits()) return false"
                             }
                         )
                     }
+
+                    FieldType.IntegralType.DOUBLE -> {
+                        code(
+                            presenceCheck.wrapIn { presenceCheck ->
+                                "if (${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() != other.${field.name}${if (field.nullable) "?" else ""}.toBits()) return false"
+                            }
+                        )
+                    }
+
+                    else -> {
+                        code(
+                            presenceCheck.wrapIn { presenceCheck ->
+                                "if (${presenceCheck}this.${field.name} != other.${field.name}) return false"
+                            }
+                        )
+                    }
+                }
+            }
+
+            is FieldType.List -> {
+                if (t.value == FieldType.IntegralType.BYTES) {
+                    // List<ByteArray> needs element-wise contentEquals
+                    code(
+                        presenceCheck.wrapIn { presenceCheck ->
+                            "if (${presenceCheck}(this.${field.name}.size != other.${field.name}.size || !this.${field.name}.zip(other.${field.name}).all { (a, b) -> a.contentEquals(b) })) return false"
+                        }
+                    )
+                } else {
+                    code(
+                        presenceCheck.wrapIn { presenceCheck ->
+                            "if (${presenceCheck}this.${field.name} != other.${field.name}) return false"
+                        }
+                    )
+                }
+            }
+
+            is FieldType.OneOf -> {
+                val hasBytesOrFloatVariant = t.dec.variants.any {
+                    it.type == FieldType.IntegralType.BYTES ||
+                        it.type == FieldType.IntegralType.FLOAT ||
+                        it.type == FieldType.IntegralType.DOUBLE
+                }
+                if (hasBytesOrFloatVariant) {
+                    code(
+                        presenceCheck.wrapIn { presenceCheck ->
+                            "if (${presenceCheck}!oneOfEquals(this.${field.name}, other.${field.name})) return false"
+                        }
+                    )
                 } else {
                     code(
                         presenceCheck.wrapIn { presenceCheck ->
@@ -433,8 +555,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Message,
             is FieldType.Enum,
-            is FieldType.OneOf,
-            is FieldType.List,
             is FieldType.Map,
                 -> {
                 code(

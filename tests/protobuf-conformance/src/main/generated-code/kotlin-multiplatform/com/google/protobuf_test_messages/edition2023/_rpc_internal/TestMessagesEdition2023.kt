@@ -350,8 +350,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + if (presenceMask[7]) (optionalFixed64?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[8]) (optionalSfixed32?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[9]) (optionalSfixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[10]) (optionalFloat?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[11]) (optionalDouble?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[10]) (optionalFloat?.toBits()?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[11]) (optionalDouble?.toBits()?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[14]) (optionalBytes?.contentHashCode() ?: 0) else 0
@@ -376,7 +376,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.hashCode()
+        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -437,19 +437,34 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     }
 
     fun TestAllTypesEdition2023.OneofField.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> 0
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> 1
-            is TestAllTypesEdition2023.OneofField.OneofString -> 2
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> 3
-            is TestAllTypesEdition2023.OneofField.OneofBool -> 4
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> 5
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> 6
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> 7
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> 8
+        return when (this) {
+            is TestAllTypesEdition2023.OneofField.OneofUint32 -> hashCode() + 0
+            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> hashCode() + 1
+            is TestAllTypesEdition2023.OneofField.OneofString -> hashCode() + 2
+            is TestAllTypesEdition2023.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesEdition2023.OneofField.OneofBool -> hashCode() + 4
+            is TestAllTypesEdition2023.OneofField.OneofUint64 -> hashCode() + 5
+            is TestAllTypesEdition2023.OneofField.OneofFloat -> value.toBits().hashCode() + 6
+            is TestAllTypesEdition2023.OneofField.OneofDouble -> value.toBits().hashCode() + 7
+            is TestAllTypesEdition2023.OneofField.OneofEnum -> hashCode() + 8
         }
+    }
 
-        return hashCode() + offset
+    fun oneOfEquals(a: TestAllTypesEdition2023.OneofField?, b: TestAllTypesEdition2023.OneofField?): Boolean {
+        if (a === b) return true
+        if (a == null || b == null) return false
+        if (a::class != b::class) return false
+        return when (a) {
+            is TestAllTypesEdition2023.OneofField.OneofUint32 -> a == b
+            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> a == b
+            is TestAllTypesEdition2023.OneofField.OneofString -> a == b
+            is TestAllTypesEdition2023.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesEdition2023.OneofField.OneofBytes).value)
+            is TestAllTypesEdition2023.OneofField.OneofBool -> a == b
+            is TestAllTypesEdition2023.OneofField.OneofUint64 -> a == b
+            is TestAllTypesEdition2023.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesEdition2023.OneofField.OneofFloat).value.toBits()
+            is TestAllTypesEdition2023.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesEdition2023.OneofField.OneofDouble).value.toBits()
+            is TestAllTypesEdition2023.OneofField.OneofEnum -> a == b
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -469,8 +484,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (presenceMask[7] && this.optionalFixed64 != other.optionalFixed64) return false
         if (presenceMask[8] && this.optionalSfixed32 != other.optionalSfixed32) return false
         if (presenceMask[9] && this.optionalSfixed64 != other.optionalSfixed64) return false
-        if (presenceMask[10] && this.optionalFloat != other.optionalFloat) return false
-        if (presenceMask[11] && this.optionalDouble != other.optionalDouble) return false
+        if (presenceMask[10] && this.optionalFloat?.toBits() != other.optionalFloat?.toBits()) return false
+        if (presenceMask[11] && this.optionalDouble?.toBits() != other.optionalDouble?.toBits()) return false
         if (presenceMask[12] && this.optionalBool != other.optionalBool) return false
         if (presenceMask[13] && this.optionalString != other.optionalString) return false
         if (presenceMask[14] && ((this.optionalBytes != null && (other.optionalBytes == null || !this.optionalBytes!!.contentEquals(other.optionalBytes!!))) || this.optionalBytes == null)) return false
@@ -495,7 +510,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if (this.repeatedBytes != other.repeatedBytes) return false
+        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -551,7 +566,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
         if (presenceMask[22] && this.groupliketype != other.groupliketype) return false
         if (presenceMask[23] && this.delimitedField != other.delimitedField) return false
-        if (this.oneofField != other.oneofField) return false
+        if (!oneOfEquals(this.oneofField, other.oneofField)) return false
         return true
     }
 
@@ -1801,7 +1816,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
             return result
         }
 
@@ -1813,7 +1828,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && this.value != other.value) return false
+            if (presenceMask[1] && this.value.toBits() != other.value.toBits()) return false
             return true
         }
 
@@ -1868,7 +1883,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
             return result
         }
 
@@ -1880,7 +1895,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && this.value != other.value) return false
+            if (presenceMask[1] && this.value.toBits() != other.value.toBits()) return false
             return true
         }
 

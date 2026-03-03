@@ -308,8 +308,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + optionalFixed64.hashCode()
         result = 31 * result + optionalSfixed32.hashCode()
         result = 31 * result + optionalSfixed64.hashCode()
-        result = 31 * result + optionalFloat.hashCode()
-        result = 31 * result + optionalDouble.hashCode()
+        result = 31 * result + optionalFloat.toBits().hashCode()
+        result = 31 * result + optionalDouble.toBits().hashCode()
         result = 31 * result + optionalBool.hashCode()
         result = 31 * result + optionalString.hashCode()
         result = 31 * result + optionalBytes.contentHashCode()
@@ -335,7 +335,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.hashCode()
+        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -444,20 +444,36 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     fun TestAllTypesProto3.OneofField.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> 0
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> 1
-            is TestAllTypesProto3.OneofField.OneofString -> 2
-            is TestAllTypesProto3.OneofField.OneofBytes -> 3
-            is TestAllTypesProto3.OneofField.OneofBool -> 4
-            is TestAllTypesProto3.OneofField.OneofUint64 -> 5
-            is TestAllTypesProto3.OneofField.OneofFloat -> 6
-            is TestAllTypesProto3.OneofField.OneofDouble -> 7
-            is TestAllTypesProto3.OneofField.OneofEnum -> 8
-            is TestAllTypesProto3.OneofField.OneofNullValue -> 9
+        return when (this) {
+            is TestAllTypesProto3.OneofField.OneofUint32 -> hashCode() + 0
+            is TestAllTypesProto3.OneofField.OneofNestedMessage -> hashCode() + 1
+            is TestAllTypesProto3.OneofField.OneofString -> hashCode() + 2
+            is TestAllTypesProto3.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesProto3.OneofField.OneofBool -> hashCode() + 4
+            is TestAllTypesProto3.OneofField.OneofUint64 -> hashCode() + 5
+            is TestAllTypesProto3.OneofField.OneofFloat -> value.toBits().hashCode() + 6
+            is TestAllTypesProto3.OneofField.OneofDouble -> value.toBits().hashCode() + 7
+            is TestAllTypesProto3.OneofField.OneofEnum -> hashCode() + 8
+            is TestAllTypesProto3.OneofField.OneofNullValue -> hashCode() + 9
         }
+    }
 
-        return hashCode() + offset
+    fun oneOfEquals(a: TestAllTypesProto3.OneofField?, b: TestAllTypesProto3.OneofField?): Boolean {
+        if (a === b) return true
+        if (a == null || b == null) return false
+        if (a::class != b::class) return false
+        return when (a) {
+            is TestAllTypesProto3.OneofField.OneofUint32 -> a == b
+            is TestAllTypesProto3.OneofField.OneofNestedMessage -> a == b
+            is TestAllTypesProto3.OneofField.OneofString -> a == b
+            is TestAllTypesProto3.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesProto3.OneofField.OneofBytes).value)
+            is TestAllTypesProto3.OneofField.OneofBool -> a == b
+            is TestAllTypesProto3.OneofField.OneofUint64 -> a == b
+            is TestAllTypesProto3.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofFloat).value.toBits()
+            is TestAllTypesProto3.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofDouble).value.toBits()
+            is TestAllTypesProto3.OneofField.OneofEnum -> a == b
+            is TestAllTypesProto3.OneofField.OneofNullValue -> a == b
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -477,8 +493,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.optionalFixed64 != other.optionalFixed64) return false
         if (this.optionalSfixed32 != other.optionalSfixed32) return false
         if (this.optionalSfixed64 != other.optionalSfixed64) return false
-        if (this.optionalFloat != other.optionalFloat) return false
-        if (this.optionalDouble != other.optionalDouble) return false
+        if (this.optionalFloat.toBits() != other.optionalFloat.toBits()) return false
+        if (this.optionalDouble.toBits() != other.optionalDouble.toBits()) return false
         if (this.optionalBool != other.optionalBool) return false
         if (this.optionalString != other.optionalString) return false
         if (!this.optionalBytes.contentEquals(other.optionalBytes)) return false
@@ -504,7 +520,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if (this.repeatedBytes != other.repeatedBytes) return false
+        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -608,7 +624,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.field__Name16 != other.field__Name16) return false
         if (this.fieldName17__ != other.fieldName17__) return false
         if (this.FieldName18__ != other.FieldName18__) return false
-        if (this.oneofField != other.oneofField) return false
+        if (!oneOfEquals(this.oneofField, other.oneofField)) return false
         return true
     }
 
@@ -1735,7 +1751,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
-            result = 31 * result + value.hashCode()
+            result = 31 * result + value.toBits().hashCode()
             return result
         }
 
@@ -1746,7 +1762,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as MapInt32FloatEntryInternal
             other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
+            if (this.value.toBits() != other.value.toBits()) return false
             return true
         }
 
@@ -1786,7 +1802,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
-            result = 31 * result + value.hashCode()
+            result = 31 * result + value.toBits().hashCode()
             return result
         }
 
@@ -1797,7 +1813,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as MapInt32DoubleEntryInternal
             other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
+            if (this.value.toBits() != other.value.toBits()) return false
             return true
         }
 

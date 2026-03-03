@@ -23,7 +23,6 @@ import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.invoke
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import proto2_unittest.TestAllTypes.NestedEnum
-import org.junit.jupiter.api.Disabled
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -48,7 +47,6 @@ class GeneratedMessageTest {
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testUsingBuilderMultipleTimes
-    @Disabled("ByteArray fields use reference equality in generated equals(), causing message equality to fail")
     @Test
     fun testUsingBuilderMultipleTimes() {
         // In our API, each TestAllTypes { ... } call creates an independent message
@@ -83,7 +81,6 @@ class GeneratedMessageTest {
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testDefaults
-    @Disabled("TestExtremeDefaultValues default value generation issue")
     @Test
     fun testDefaults() {
         val message = TestAllTypes {}
@@ -92,8 +89,9 @@ class GeneratedMessageTest {
         // Verify extreme default values
         val extremeDefaults = TestExtremeDefaultValues {}
 
+        // Proto: "\0\001\a\b\f\n\r\t\v\\\'\"\xfe"
         assertByteArrayEquals(
-            byteArrayOf(0, 1, 7, 8, 12, 10, 13, 9, 92, 39, 34, 0xFE.toByte()),
+            byteArrayOf(0, 1, 7, 8, 12, 10, 13, 9, 11, 92, 39, 34, 0xFE.toByte()),
             extremeDefaults.escapedBytes,
         )
         assertEquals(0xFFFFFFFFu, extremeDefaults.largeUint32)
@@ -342,7 +340,6 @@ class GeneratedMessageTest {
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java
-    @Disabled("ByteArray fields use reference equality in generated equals(), causing message equality to fail")
     @Test
     fun testEquality() {
         val msg1 = TestUtil.getAllSet()
@@ -353,7 +350,6 @@ class GeneratedMessageTest {
         assertNotEquals(msg1, msg3)
     }
 
-    @Disabled("ByteArray fields use reference equality in generated hashCode(), causing mismatch")
     @Test
     fun testHashCode() {
         val msg1 = TestUtil.getAllSet()
@@ -406,7 +402,6 @@ class GeneratedMessageTest {
         assertTrue(withField.presence.hasOptionalInt32)
     }
 
-    @Disabled("ByteArray fields use reference equality in generated equals(), causing copy equality to fail")
     @Test
     fun testCopyPreservesAllFields() {
         val original = TestUtil.getAllSet()
