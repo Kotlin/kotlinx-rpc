@@ -446,4 +446,14 @@ class ProtosTest {
             (decoded.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value
         )
     }
+
+    @Test
+    fun testGroupAsStandalone() {
+        val standaloneGroup = WithGroups.FirstGroup {
+            value = 42u
+        }
+
+        val decoded = encodeDecode(standaloneGroup, marshallerOf<WithGroups.FirstGroup>())
+        assertEquals(standaloneGroup.value, decoded.value)
+    }
 }
