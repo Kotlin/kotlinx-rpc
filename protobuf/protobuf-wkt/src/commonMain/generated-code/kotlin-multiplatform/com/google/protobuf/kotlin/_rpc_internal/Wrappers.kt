@@ -97,6 +97,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
         public override fun decode(source: Source, config: MarshallerConfig?): DoubleValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = DoubleValueInternal()
                 checkForPlatformDecodeException {
                     DoubleValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -184,6 +185,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
 
         public override fun decode(source: Source, config: MarshallerConfig?): FloatValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FloatValueInternal()
                 checkForPlatformDecodeException {
                     FloatValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -271,6 +273,7 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
 
         public override fun decode(source: Source, config: MarshallerConfig?): Int64Value {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = Int64ValueInternal()
                 checkForPlatformDecodeException {
                     Int64ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -358,6 +361,7 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
 
         public override fun decode(source: Source, config: MarshallerConfig?): UInt64Value {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = UInt64ValueInternal()
                 checkForPlatformDecodeException {
                     UInt64ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -445,6 +449,7 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
 
         public override fun decode(source: Source, config: MarshallerConfig?): Int32Value {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = Int32ValueInternal()
                 checkForPlatformDecodeException {
                     Int32ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -532,6 +537,7 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
 
         public override fun decode(source: Source, config: MarshallerConfig?): UInt32Value {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = UInt32ValueInternal()
                 checkForPlatformDecodeException {
                     UInt32ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -619,6 +625,7 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
 
         public override fun decode(source: Source, config: MarshallerConfig?): BoolValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = BoolValueInternal()
                 checkForPlatformDecodeException {
                     BoolValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -706,6 +713,7 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
 
         public override fun decode(source: Source, config: MarshallerConfig?): StringValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = StringValueInternal()
                 checkForPlatformDecodeException {
                     StringValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -793,6 +801,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
 
         public override fun decode(source: Source, config: MarshallerConfig?): BytesValue {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = BytesValueInternal()
                 checkForPlatformDecodeException {
                     BytesValueInternal.decodeWith(msg, it, config as? ProtobufConfig)

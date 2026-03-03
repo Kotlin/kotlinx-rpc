@@ -99,6 +99,7 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
 
         public override fun decode(source: Source, config: MarshallerConfig?): Timestamp {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TimestampInternal()
                 checkForPlatformDecodeException {
                     TimestampInternal.decodeWith(msg, it, config as? ProtobufConfig)

@@ -136,6 +136,7 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
 
         override fun decode(source: Source, config: MarshallerConfig?): ComplexMessage {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ComplexMessageInternal()
                 checkForPlatformDecodeException {
                     ComplexMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -1105,6 +1106,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesEdition2023.NestedMessage {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2500,6 +2502,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
             override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesEdition2023.GroupLikeType {
                 WireDecoder(source).use {
+                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = GroupLikeTypeInternal()
                     checkForPlatformDecodeException {
                         GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtobufConfig, null)
@@ -2536,6 +2539,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesEdition2023 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestAllTypesEdition2023Internal()
                 checkForPlatformDecodeException {
                     TestAllTypesEdition2023Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2641,6 +2645,7 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
 
         override fun decode(source: Source, config: MarshallerConfig?): ForeignMessageEdition2023 {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ForeignMessageEdition2023Internal()
                 checkForPlatformDecodeException {
                     ForeignMessageEdition2023Internal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -2746,6 +2751,7 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
 
         override fun decode(source: Source, config: MarshallerConfig?): GroupLikeType {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = GroupLikeTypeInternal()
                 checkForPlatformDecodeException {
                     GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -3991,14 +3997,14 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                     msg.groupliketype = TestAllTypesEdition2023Internal.GroupLikeTypeInternal()
                 }
 
-                TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.groupliketype.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.groupliketype.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 202 && tag.wireType == WireType.START_GROUP -> {
                 if (!msg.presenceMask[23]) {
                     msg.delimitedField = TestAllTypesEdition2023Internal.GroupLikeTypeInternal()
                 }
 
-                TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg.delimitedField.asInternal(), decoder, config, tag)
+                decoder.readGroup(msg.delimitedField.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
             }
             tag.fieldNr == 111 && tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesEdition2023.OneofField.OneofUint32(decoder.readUInt32())

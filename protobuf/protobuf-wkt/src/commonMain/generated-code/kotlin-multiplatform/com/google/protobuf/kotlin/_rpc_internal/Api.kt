@@ -141,6 +141,7 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
 
         public override fun decode(source: Source, config: MarshallerConfig?): Api {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ApiInternal()
                 checkForPlatformDecodeException {
                     ApiInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -259,6 +260,7 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Method {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = MethodInternal()
                 checkForPlatformDecodeException {
                     MethodInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -352,6 +354,7 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Mixin {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = MixinInternal()
                 checkForPlatformDecodeException {
                     MixinInternal.decodeWith(msg, it, config as? ProtobufConfig)

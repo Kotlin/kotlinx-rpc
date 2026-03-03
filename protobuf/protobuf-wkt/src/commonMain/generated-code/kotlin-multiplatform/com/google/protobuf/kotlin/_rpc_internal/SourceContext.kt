@@ -90,6 +90,7 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
 
         public override fun decode(source: Source, config: MarshallerConfig?): SourceContext {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = SourceContextInternal()
                 checkForPlatformDecodeException {
                     SourceContextInternal.decodeWith(msg, it, config as? ProtobufConfig)

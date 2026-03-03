@@ -103,6 +103,7 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
 
         override fun decode(source: Source, config: MarshallerConfig?): TestStatus {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestStatusInternal()
                 checkForPlatformDecodeException {
                     TestStatusInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -190,6 +191,7 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 
         override fun decode(source: Source, config: MarshallerConfig?): FailureSet {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FailureSetInternal()
                 checkForPlatformDecodeException {
                     FailureSetInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -360,6 +362,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: MarshallerConfig?): ConformanceRequest {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceRequestInternal()
                 checkForPlatformDecodeException {
                     ConformanceRequestInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -511,6 +514,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
         override fun decode(source: Source, config: MarshallerConfig?): ConformanceResponse {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceResponseInternal()
                 checkForPlatformDecodeException {
                     ConformanceResponseInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -598,6 +602,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: MarshallerConfig?): JspbEncodingConfig {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = JspbEncodingConfigInternal()
                 checkForPlatformDecodeException {
                     JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtobufConfig)

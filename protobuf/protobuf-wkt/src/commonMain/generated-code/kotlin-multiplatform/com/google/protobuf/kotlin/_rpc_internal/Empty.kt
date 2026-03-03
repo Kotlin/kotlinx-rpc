@@ -79,6 +79,7 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
 
         public override fun decode(source: Source, config: MarshallerConfig?): Empty {
             WireDecoder(source).use {
+                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EmptyInternal()
                 checkForPlatformDecodeException {
                     EmptyInternal.decodeWith(msg, it, config as? ProtobufConfig)

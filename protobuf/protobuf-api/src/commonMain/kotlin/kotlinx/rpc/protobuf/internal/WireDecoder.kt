@@ -44,6 +44,17 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 @InternalRpcApi
 public interface WireDecoder : AutoCloseable {
     /**
+     * The current recursion depth during message decoding.
+     */
+    public var recursionDepth: Int
+
+    /**
+     * The maximum allowed recursion depth during message decoding.
+     * Defaults to [kotlinx.rpc.protobuf.ProtobufConfig.DEFAULT_RECURSION_LIMIT].
+     */
+    public var recursionLimit: Int
+
+    /**
      * When the read tag is null, it indicates EOF and the parser may stop at this point.
      */
     public fun readTag(): KTag?
@@ -80,6 +91,10 @@ public interface WireDecoder : AutoCloseable {
     public fun readPackedEnum(): List<Int>
 
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
+        if (recursionDepth >= recursionLimit) {
+            throw ProtobufDecodingException.recursionLimitExceeded(recursionLimit)
+        }
+        recursionDepth++
         val len = readInt32()
         if (len < 0) throw ProtobufDecodingException.negativeSize()
         val limit = pushLimit(len)
@@ -87,8 +102,17 @@ public interface WireDecoder : AutoCloseable {
         if (bytesUntilLimit() != 0) {
             throw ProtobufDecodingException.truncatedMessage()
         }
-
         popLimit(limit)
+        recursionDepth--
+    }
+
+    public fun <T : InternalMessage> readGroup(msg: T, decoder: (T, WireDecoder) -> Unit) {
+        if (recursionDepth >= recursionLimit) {
+            throw ProtobufDecodingException.recursionLimitExceeded(recursionLimit)
+        }
+        recursionDepth++
+        decoder(msg, this)
+        recursionDepth--
     }
 
     public fun skipUnknownField(tag: KTag) {
