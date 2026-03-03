@@ -770,8 +770,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMarshallerObject(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
-        // the MARSHALLER object is not necessary for groups, as they are inlined messages
-        // if (declaration.isGroup) return
 
         clazz(
             name = declaration.marshallerObjectName.simpleName,
