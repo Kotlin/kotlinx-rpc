@@ -172,6 +172,19 @@ class ProtobufSizeCalculationTest {
         )
     }
 
+    @Test
+    fun testGroupExtensionSizeIsCorrect() {
+        assertExtensionBaseSizeMatchesEncoding(
+            message = ExtensionBase {
+                testgroup = TestGroup {
+                    int32 = 123
+                    string = "group-string"
+                }
+            },
+            label = "group extension",
+        )
+    }
+
     private fun assertExtensionBaseSizeMatchesEncoding(message: ExtensionBase, label: String) {
         val internalMessage = message.asInternal()
         val declaredSize = internalMessage._size

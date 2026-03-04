@@ -52,19 +52,19 @@ class ModelToProtobufKotlinCommonGenerator(
     )
 
     override val FileDeclaration.hasPublicGeneratedContent: Boolean
-        get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty()
+        get() = enumDeclarations.isNotEmpty() || messageDeclarations.isNotEmpty() || hasExtensionGroupMessages()
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean
         get() = hasPublicGeneratedContent || allExtensions().isNotEmpty()
     override val FileDeclaration.hasInternalGeneratedContent: Boolean
         get() = hasPublicGeneratedContent || allExtensions().isNotEmpty()
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
-        fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
+        fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { generatePublicMessage(it) }
         fileDeclaration.enumDeclarations.forEach { generatePublicEnum(it) }
     }
 
     override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
-        generateExtensionMessageEntities(fileDeclaration.messageDeclarations)
+        generateExtensionMessageEntities(fileDeclaration.messageDeclarationsWithExtensionGroups())
 
         val allExtensions = fileDeclaration.extensions + fileDeclaration.allNestedExtensions()
         allExtensions.forEach { extension ->
@@ -73,10 +73,11 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
-        generateInternalMessageEntities(fileDeclaration.messageDeclarations)
+        generateInternalMessageEntities(fileDeclaration.messageDeclarationsWithExtensionGroups())
 
         val allEnums =
-            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations.flatMap { it.allEnumsRecursively() }
+            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarationsWithExtensionGroups()
+                .flatMap { it.enumDeclarations + it.allNestedRecursively().flatMap(MessageDeclaration::enumDeclarations) }
         allEnums.forEach { enum ->
             generateInternalEnumConstructor(enum)
         }
@@ -2256,26 +2257,33 @@ class ModelToProtobufKotlinCommonGenerator(
         type: FieldType.Message,
     ) {
         val message = type.dec.value
-        val decodeWith = if (message.isGroup) {
-            "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config, null) }".scoped(
-                message.internalClassName,
+        if (message.isGroup) {
+            functionCall(
+                function = "%T.group".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+                namedArgs = field.baseExtensionDescriptorArgs() + listOf(
+                    "valueType" to "%T::class".scoped(message.name),
+                    "default" to "{ %T() }".scoped(message.internalClassName),
+                    "asInternal" to "{ it.asInternal() }".scoped(),
+                    "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
+                    "decodeWith" to "{ value, decoder, config, startGroup -> %T.decodeWith(value.asInternal(), decoder, config, startGroup) }".scoped(
+                        message.internalClassName,
+                    ),
+                ),
             )
         } else {
-            "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config) }".scoped(
-                message.internalClassName,
+            functionCall(
+                function = "%T.message".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+                namedArgs = field.baseExtensionDescriptorArgs() + listOf(
+                    "valueType" to "%T::class".scoped(message.name),
+                    "default" to "{ %T() }".scoped(message.internalClassName),
+                    "asInternal" to "{ it.asInternal() }".scoped(),
+                    "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
+                    "decodeWith" to "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config) }".scoped(
+                        message.internalClassName,
+                    ),
+                ),
             )
         }
-
-        functionCall(
-            function = "%T.message".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
-            namedArgs = field.baseExtensionDescriptorArgs() + listOf(
-                "valueType" to "%T::class".scoped(message.name),
-                "default" to "{ %T() }".scoped(message.internalClassName),
-                "asInternal" to "{ it.asInternal() }".scoped(),
-                "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
-                "decodeWith" to decodeWith,
-            ),
-        )
     }
 
     private fun CodeGenerator.generateRepeatedExtensionDescriptor(
@@ -2336,9 +2344,6 @@ private fun EnumDeclaration.extensionDefaultValue(field: FieldDeclaration): FqNa
     }
 }
 
-private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =
-    enumDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allEnumsRecursively)
-
 private fun MessageDeclaration.allNestedRecursively(): List<MessageDeclaration> =
     nestedDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allNestedRecursively)
 
@@ -2348,6 +2353,17 @@ private fun FileDeclaration.allExtensions(): List<FieldDeclaration> =
 private fun FileDeclaration.allNestedExtensions(): List<FieldDeclaration> =
     (messageDeclarations + messageDeclarations.flatMap(MessageDeclaration::allNestedRecursively))
         .flatMap { it.extensions }
+
+private fun FileDeclaration.messageDeclarationsWithExtensionGroups(): List<MessageDeclaration> {
+    val extensionGroups = allExtensions()
+        .mapNotNull { (it.type as? FieldType.Message)?.dec?.value }
+        .filter { it.isGroup }
+        .distinctBy { it.name }
+    return (messageDeclarations + extensionGroups).distinctBy { it.name }
+}
+
+private fun FileDeclaration.hasExtensionGroupMessages(): Boolean =
+    allExtensions().any { (it.type as? FieldType.Message)?.dec?.value?.isGroup == true }
 
 private fun FileDeclaration.asDeclName() = name.replace(".", "")
 private fun FqName.asDeclName() = toString().replace(".", "")

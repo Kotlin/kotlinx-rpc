@@ -469,6 +469,51 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             }
         )
 
+        // TODO: Annotate V with @GeneratedProtoMessage
+        public fun <@GeneratedProtoMessage T : Any, V : Any> group(
+            fieldNumber: Int,
+            name: String,
+            extendee: KClass<T>,
+            valueType: KClass<V>,
+            default: () -> V,
+            asInternal: (V) -> InternalMessage,
+            encodeWith: (V, WireEncoder, ProtobufConfig?) -> Unit,
+            decodeWith: (V, WireDecoder, ProtobufConfig?, KTag?) -> Unit,
+        ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
+            fieldNumber = fieldNumber,
+            name = name,
+            wireType = WireType.START_GROUP,
+            messageType = extendee,
+            valueType = valueType,
+            isRepeated = false,
+            isPacked = false,
+            defaultValue = lazy { default() },
+            size = { fieldNr, value ->
+                val groupSize = asInternal(value.encodingCast(valueType))._size
+                WireSize.tag(fieldNr, WireType.START_GROUP) +
+                    groupSize +
+                    WireSize.tag(fieldNr, WireType.END_GROUP)
+            },
+            encode = { enc, fieldNr, value, config ->
+                val value = value.encodingCast(valueType)
+                val internal = asInternal(value)
+                enc.writeGroupMessage(fieldNr, internal) { encodeWith(value, it, config) }
+            },
+            decode = { currentMessage, dec, config ->
+                val msg = currentMessage?.let { valueType.cast(it) } ?: run { default() }
+                val internal = asInternal(msg)
+                val startGroup = KTag(fieldNumber, WireType.START_GROUP)
+                dec.readGroup(internal) { _, decoder ->
+                    decodeWith(msg, decoder, config, startGroup)
+                }
+                msg
+            },
+            copy = {
+                @Suppress("UNCHECKED_CAST")
+                asInternal(it.encodingCast(valueType)).copyInternal() as V
+            }
+        )
+
         public fun <@GeneratedProtoMessage T : Any, E : Any> repeated(
             elementDescriptor: InternalExtensionDescriptor<T, E>,
             defaultValue: () -> List<E> = { emptyList() },

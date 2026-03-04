@@ -248,6 +248,24 @@ class ProtoExtensionTest {
     }
 
     @Test
+    fun `test generated group extension decoding`() {
+        val message = ExtensionBase {
+            testgroup = TestGroup {
+                int32 = 123
+                string = "group-string"
+            }
+        }
+
+        val encoded = marshallerOf<ExtensionBase>().encode(message)
+        val registry = buildProtoExtensionRegistry {
+            +ExtensionBase.testgroup
+        }
+        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+
+        assertEquals(message.testgroup, decoded.testgroup)
+    }
+
+    @Test
     fun `test generated packed extension decoding`() {
         val message = ExtensionBase {
             repeatedInt32 = listOf(1, 2, 3)

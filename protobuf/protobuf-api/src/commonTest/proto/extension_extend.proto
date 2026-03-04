@@ -34,3 +34,10 @@ extend ExtensionBase {
   repeated AllPrimitives repeatedMsg = 16;
   repeated ExtensionBase repeatedSubExt = 17;
 }
+
+extend ExtensionBase {
+  optional group TestGroup = 19 {
+    optional int32 int32 = 1;
+    optional string string = 2;
+  }
+}
