@@ -141,7 +141,7 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

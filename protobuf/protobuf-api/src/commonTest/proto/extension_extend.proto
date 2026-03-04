@@ -13,9 +13,13 @@ extend ExtensionBase {
   optional MyEnum enum = 11;
 }
 
-//extend ExtensionBase {
-//  optional AllPrimitives msg = 12;
-//}
+extend ExtensionBase {
+  optional AllPrimitives msg = 12;
+}
+
+extend ExtensionBase {
+  optional ExtensionBase subExt = 13;
+}
 
 //extend ExtensionBase {
 //  repeated group Test = 12 {

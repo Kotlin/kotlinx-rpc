@@ -64,6 +64,14 @@ public abstract class InternalMessage(
         }
     }
 
+    public fun extensionsSize(): Int {
+        var result = 0
+        _extensions.forEach { (key, value) ->
+            result += value.descriptor.size(key, value.value)
+        }
+        return result
+    }
+
     protected fun copyExtensionsFrom(other: InternalMessage) {
         // we don't have to copy the value's themself, as they
         other._extensions.forEach { (key, value) ->

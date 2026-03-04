@@ -144,7 +144,7 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtobufCon
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

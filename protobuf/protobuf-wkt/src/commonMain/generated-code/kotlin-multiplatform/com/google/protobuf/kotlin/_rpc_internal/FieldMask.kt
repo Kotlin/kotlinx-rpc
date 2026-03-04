@@ -141,7 +141,7 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

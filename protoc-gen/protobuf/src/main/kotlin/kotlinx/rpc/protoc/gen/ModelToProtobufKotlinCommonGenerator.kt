@@ -895,7 +895,7 @@ class ModelToProtobufKotlinCommonGenerator(
         var value = "asInternal().getExtensionValue(%T.$name)".scoped(fileDeclaration.internalExtensionDescriptorObject)
         if (!declaration.nullable) {
             // if the field is non-nullable, e.g. a message, we fallback to the defined default value
-            value = "%T.$name.defaultValue!!".scoped(fileDeclaration.internalExtensionDescriptorObject)
+            value = "%T.$name.defaultValue.value".scoped(fileDeclaration.internalExtensionDescriptorObject)
                 .merge(value) { default, value ->
                     "$value ?: $default"
                 }
@@ -945,7 +945,7 @@ class ModelToProtobufKotlinCommonGenerator(
             type = declaration.typeFqName(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
-            value = "asInternal().getExtensionValue(%T.$name)".scoped(fileDeclaration.internalExtensionDescriptorObject),
+            value = "(this as %T).$name".scoped(extendee.name),
             setter = "asInternal().setExtensionValue(%T.$name, value)".scoped(fileDeclaration.internalExtensionDescriptorObject),
         )
     }
@@ -1212,9 +1212,8 @@ class ModelToProtobufKotlinCommonGenerator(
                         if (declaration.extensionRanges.isNotEmpty()) {
                             code("val extension = knownExtensions[tag.fieldNr] as? %T".scoped(FqName.RpcClasses.InternalExtensionDescriptor))
                             ifBranch(condition = "extension != null && tag.wireType == extension.wireType".scoped(), ifBlock = {
-                                // TODO: if it is a message, we must fetch the current value and pass it
-                                //    so we can merge those values (if they come in different batches)
-                                code("msg._extensions[tag.fieldNr] = %T(extension.decode(null, decoder), extension)".scoped(FqName.RpcClasses.ExtensionValue))
+                                code("val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value".scoped())
+                                code("msg._extensions[tag.fieldNr] = %T(extension.decode(currentExtension, decoder, config), extension)".scoped(FqName.RpcClasses.ExtensionValue))
                                 code("continue // with next tag".scoped())
                             })
                         }
@@ -1507,7 +1506,7 @@ class ModelToProtobufKotlinCommonGenerator(
         scope("_extensions.forEach".scoped(), paramDecl = "(key, value) ->".scoped()) {
             scope("value.descriptor.let".scoped(), paramDecl = "descriptor ->".scoped()) {
                 internalImports.add("kotlin.reflect.cast")
-                code("descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))".scoped())
+                code("descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)".scoped())
             }
         }
 
@@ -1750,6 +1749,11 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
             }
+
+            if (declaration.mayHaveExtensions) {
+                code("__result += extensionsSize()".scoped())
+            }
+
             code("return __result".scoped())
         }
     }
@@ -2189,7 +2193,7 @@ class ModelToProtobufKotlinCommonGenerator(
             extensions.forEach { extension ->
                 val messageName = extension.containingType.value.name
                 val typeNonNull = extension.typeFqNameNonNullable()
-                property(
+                complexProperty(
                     // extensions fields must be unique per package, so the name is enough
                     name = extension.name,
                     // ExtensionDescriptor<$messageName, $typeNonNull>
@@ -2197,36 +2201,92 @@ class ModelToProtobufKotlinCommonGenerator(
                         FqName.RpcClasses.InternalExtensionDescriptor,
                         messageName,
                     ).merge(typeNonNull) { first, typeNonNull -> "$first $typeNonNull>" },
-                    value = extension.generateExtensionValue(),
-                )
+                ) {
+                    generateExtensionDescriptor(extension)
+                }
             }
         }
     }
 
-    private fun FieldDeclaration.generateExtensionValue(): ScopedFormattedString {
-        val extendee = containingType.value.name
-        return when (val type = type) {
-            is FieldType.IntegralType -> {
-                val funcName = type.name.lowercase()
-                "%T.$funcName($number, \"$name\", %T::class)".scoped(
-                    FqName.RpcClasses.InternalExtensionDescriptor,
-                    extendee
-                )
-            }
-            is FieldType.Enum -> {
-                val typeFq = type.dec.value.name
-                "%T.enum($number, \"$name\", %T::class, %T::class, { it.number }, { %T.fromNumber(it) })".scoped(
-                    FqName.RpcClasses.InternalExtensionDescriptor, extendee, typeFq, typeFq
-                )
-            }
-            is FieldType.Message -> {
-                "// TODO".scoped()
-            }
+    private fun CodeGenerator.generateExtensionDescriptor(field: FieldDeclaration) {
+        when (val type = field.type) {
+            is FieldType.IntegralType -> generateScalarExtensionDescriptor(field, type)
+            is FieldType.Enum -> generateEnumExtensionDescriptor(field, type)
+            is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
             is FieldType.OneOf -> TODO()
             is FieldType.List -> TODO()
             is FieldType.Map -> TODO()
         }
     }
+
+    private fun CodeGenerator.generateScalarExtensionDescriptor(
+        field: FieldDeclaration,
+        type: FieldType.IntegralType,
+    ) {
+        functionCall(
+            function = "%T.${type.name.lowercase()}".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+            namedArgs = field.baseExtensionDescriptorArgs(),
+        )
+    }
+
+    private fun CodeGenerator.generateEnumExtensionDescriptor(
+        field: FieldDeclaration,
+        type: FieldType.Enum,
+    ) {
+        val enumDeclaration = type.dec.value
+        val enumType = enumDeclaration.name
+        val defaultValue = enumDeclaration.generatedValueName(field.dec.defaultValue as Descriptors.EnumValueDescriptor)
+        functionCall(
+            function = "%T.enum".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+            namedArgs = field.baseExtensionDescriptorArgs() + listOf(
+                "valueType" to "%T::class".scoped(enumType),
+                "encodeValue" to "{ it.number }".scoped(),
+                "decodeValue" to "{ %T.fromNumber(it) }".scoped(enumType),
+                "defaultValue" to "{ %T }".scoped(defaultValue),
+            ),
+        )
+    }
+
+    private fun CodeGenerator.generateMessageExtensionDescriptor(
+        field: FieldDeclaration,
+        type: FieldType.Message,
+    ) {
+        val message = type.dec.value
+        val decodeWith = if (message.isGroup) {
+            "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config, null) }".scoped(
+                message.internalClassName,
+            )
+        } else {
+            "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config) }".scoped(
+                message.internalClassName,
+            )
+        }
+
+        functionCall(
+            function = "%T.message".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+            namedArgs = field.baseExtensionDescriptorArgs() + listOf(
+                "valueType" to "%T::class".scoped(message.name),
+                "default" to "{ %T() }".scoped(message.internalClassName),
+                "asInternal" to "{ it.asInternal() }".scoped(),
+                "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
+                "decodeWith" to decodeWith,
+            ),
+        )
+    }
+}
+
+private fun FieldDeclaration.baseExtensionDescriptorArgs(): List<Pair<String, ScopedFormattedString>> {
+    return listOf(
+        "fieldNumber" to number.toString().scoped(),
+        "name" to "\"$name\"".scoped(),
+        "extendee" to "%T::class".scoped(containingType.value.name),
+    )
+}
+
+private fun EnumDeclaration.generatedValueName(descriptor: Descriptors.EnumValueDescriptor): FqName {
+    originalEntries.firstOrNull { it.dec == descriptor }?.let { return it.name }
+    aliases.firstOrNull { it.dec == descriptor }?.let { return it.name }
+    error("Missing generated enum value for ${descriptor.fullName}")
 }
 
 private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =

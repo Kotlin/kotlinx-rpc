@@ -731,7 +731,7 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -883,7 +883,7 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1043,7 +1043,7 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1159,7 +1159,7 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1242,7 +1242,7 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

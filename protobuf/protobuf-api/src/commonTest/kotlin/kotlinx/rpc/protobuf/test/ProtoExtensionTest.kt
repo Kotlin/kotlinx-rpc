@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.buildProtoExtensionRegistry
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.string
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -16,6 +17,16 @@ class ProtoExtensionTest {
     private fun completeMessage() = ExtensionBase {
         int32 = 42
         enum = MyEnum.THREE
+        msg = AllPrimitives {
+            int32 = 123
+            string = "test"
+        }
+        subExt = ExtensionBase {
+            enum = MyEnum.ONE
+            msg = AllPrimitives {
+                bytes = byteArrayOf(1, 2, 3)
+            }
+        }
     }
 
     @Test
@@ -122,6 +133,8 @@ class ProtoExtensionTest {
         val registry = buildProtoExtensionRegistry {
             +ExtensionBase.int32
             +ExtensionBase.enum
+            +ExtensionBase.msg
+            +ExtensionBase.subExt
         }
         val config = ProtobufConfig(extensionRegistry = registry)
         val extensionCodec = marshallerOf<ExtensionBase>(config)
@@ -130,6 +143,31 @@ class ProtoExtensionTest {
         assertEquals(message, decoded)
         assertEquals(message.int32, decoded.int32)
         assertEquals(message.enum, decoded.enum)
+        assertEquals(message.msg, decoded.msg)
+        assertEquals(byteArrayOf(1, 2, 3), decoded.subExt.msg.bytes)
+    }
+
+    @Test
+    fun `test nested extension message decoding minimal`() {
+        val message = ExtensionBase {
+            subExt = ExtensionBase {
+                int32 = 123
+            }
+        }
+
+        val plainCodec = marshallerOf<ExtensionBase>()
+        val encoded = plainCodec.encode(message)
+
+        val registry = buildProtoExtensionRegistry {
+            +ExtensionBase.int32
+            +ExtensionBase.subExt
+        }
+        val config = ProtobufConfig(extensionRegistry = registry)
+        val extensionCodec = marshallerOf<ExtensionBase>(config)
+
+        val decoded = extensionCodec.decode(encoded)
+        assertEquals(message, decoded)
+        assertEquals(123, decoded.subExt.int32)
     }
 
     @Test

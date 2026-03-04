@@ -899,7 +899,7 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -959,7 +959,7 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1019,7 +1019,7 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1079,7 +1079,7 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1139,7 +1139,7 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1199,7 +1199,7 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1259,7 +1259,7 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1319,7 +1319,7 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -1379,7 +1379,7 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

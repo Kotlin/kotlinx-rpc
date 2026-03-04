@@ -132,7 +132,7 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: Protob
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }

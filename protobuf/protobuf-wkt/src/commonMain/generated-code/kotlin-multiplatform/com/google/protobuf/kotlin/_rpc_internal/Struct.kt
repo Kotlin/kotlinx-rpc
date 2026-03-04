@@ -456,7 +456,7 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -554,7 +554,7 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -661,7 +661,7 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
@@ -730,7 +730,7 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
 
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
-            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value))
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
 }
