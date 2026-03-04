@@ -2214,7 +2214,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.Enum -> generateEnumExtensionDescriptor(field, type)
             is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
             is FieldType.OneOf -> TODO()
-            is FieldType.List -> TODO()
+            is FieldType.List -> generateRepeatedExtensionDescriptor(field, type)
             is FieldType.Map -> TODO()
         }
     }
@@ -2235,7 +2235,7 @@ class ModelToProtobufKotlinCommonGenerator(
     ) {
         val enumDeclaration = type.dec.value
         val enumType = enumDeclaration.name
-        val defaultValue = enumDeclaration.generatedValueName(field.dec.defaultValue as Descriptors.EnumValueDescriptor)
+        val defaultValue = enumDeclaration.extensionDefaultValue(field)
         functionCall(
             function = "%T.enum".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
             namedArgs = field.baseExtensionDescriptorArgs() + listOf(
@@ -2273,6 +2273,34 @@ class ModelToProtobufKotlinCommonGenerator(
             ),
         )
     }
+
+    private fun CodeGenerator.generateRepeatedExtensionDescriptor(
+        field: FieldDeclaration,
+        type: FieldType.List,
+    ) {
+        functionCall(
+            function = "%T.repeated".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+            namedArgBlocks = listOf(
+                "elementDescriptor" to {
+                    generateNonRepeatedExtensionDescriptor(field, type.value)
+                },
+            ),
+        )
+    }
+
+    private fun CodeGenerator.generateNonRepeatedExtensionDescriptor(
+        field: FieldDeclaration,
+        type: FieldType,
+    ) {
+        when (type) {
+            is FieldType.IntegralType -> generateScalarExtensionDescriptor(field, type)
+            is FieldType.Enum -> generateEnumExtensionDescriptor(field, type)
+            is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
+            is FieldType.List -> error("Nested repeated extensions are not supported: ${field.name}")
+            is FieldType.Map -> error("Map extensions are not supported: ${field.name}")
+            is FieldType.OneOf -> error("OneOf extensions are not supported: ${field.name}")
+        }
+    }
 }
 
 private fun FieldDeclaration.baseExtensionDescriptorArgs(): List<Pair<String, ScopedFormattedString>> {
@@ -2287,6 +2315,15 @@ private fun EnumDeclaration.generatedValueName(descriptor: Descriptors.EnumValue
     originalEntries.firstOrNull { it.dec == descriptor }?.let { return it.name }
     aliases.firstOrNull { it.dec == descriptor }?.let { return it.name }
     error("Missing generated enum value for ${descriptor.fullName}")
+}
+
+private fun EnumDeclaration.extensionDefaultValue(field: FieldDeclaration): FqName {
+    val descriptorDefault = field.dec.defaultValue as? Descriptors.EnumValueDescriptor
+    return if (descriptorDefault != null) {
+        generatedValueName(descriptorDefault)
+    } else {
+        defaultEntry().name
+    }
 }
 
 private fun MessageDeclaration.allEnumsRecursively(): List<EnumDeclaration> =

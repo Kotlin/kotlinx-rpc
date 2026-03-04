@@ -7,15 +7,16 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.buildProtoExtensionRegistry
-import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.string
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 class ProtoExtensionTest {
-
     private fun completeMessage() = ExtensionBase {
         int32 = 42
+        string = "string field"
         enum = MyEnum.THREE
         msg = AllPrimitives {
             int32 = 123
@@ -27,6 +28,16 @@ class ProtoExtensionTest {
                 bytes = byteArrayOf(1, 2, 3)
             }
         }
+        repeatedInt32 = listOf(1, 2, 3)
+        repeatedEnum = listOf(MyEnum.ONE, MyEnum.THREE)
+        repeatedMsg = listOf(
+            AllPrimitives {
+                int32 = 1
+            },
+            AllPrimitives {
+                string = "two"
+            },
+        )
     }
 
     @Test
@@ -62,6 +73,9 @@ class ProtoExtensionTest {
 
         assertEquals(42, message.int32)
         assertEquals(MyEnum.THREE, message.enum)
+        assertEquals(listOf(1, 2, 3), message.repeatedInt32)
+        assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), message.repeatedEnum)
+        assertEquals(2, message.repeatedMsg.size)
     }
 
     @Test
@@ -132,19 +146,26 @@ class ProtoExtensionTest {
 
         val registry = buildProtoExtensionRegistry {
             +ExtensionBase.int32
+            +ExtensionBase.string
             +ExtensionBase.enum
             +ExtensionBase.msg
             +ExtensionBase.subExt
+            +ExtensionBase.repeatedInt32
+            +ExtensionBase.repeatedEnum
+            +ExtensionBase.repeatedMsg
         }
         val config = ProtobufConfig(extensionRegistry = registry)
         val extensionCodec = marshallerOf<ExtensionBase>(config)
 
         val decoded = extensionCodec.decode(encoded)
-        assertEquals(message, decoded)
         assertEquals(message.int32, decoded.int32)
         assertEquals(message.enum, decoded.enum)
         assertEquals(message.msg, decoded.msg)
-        assertEquals(byteArrayOf(1, 2, 3), decoded.subExt.msg.bytes)
+        assertContentEquals(byteArrayOf(1, 2, 3), decoded.subExt.msg.bytes)
+        assertEquals(message.repeatedInt32, decoded.repeatedInt32)
+        assertEquals(message.repeatedEnum, decoded.repeatedEnum)
+        assertEquals(message.repeatedMsg, decoded.repeatedMsg)
+        assertEquals(message, decoded)
     }
 
     @Test
@@ -178,5 +199,75 @@ class ProtoExtensionTest {
         val decoded = codec.decode(encoded)
         // equals to extension message without any extension fields set
         assertEquals(ExtensionBase { }, decoded)
+    }
+
+    @Test
+    fun `test generated repeated extension decoding`() {
+        val message = ExtensionBase {
+            repeatedInt32 = listOf(1, 2, 3)
+            repeatedEnum = listOf(MyEnum.ONE, MyEnum.THREE)
+            repeatedMsg = listOf(
+                AllPrimitives {
+                    int32 = 1
+                },
+                AllPrimitives {
+                    string = "two"
+                },
+            )
+            repeatedSubExt = listOf(
+                ExtensionBase {
+                    subExt = ExtensionBase {
+                        msg = AllPrimitives {
+                            bytes = byteArrayOf(1, 2, 3)
+                        }
+                    }
+                },
+                ExtensionBase {
+                    string = "some string field"
+                },
+            )
+        }
+
+        val encoded = marshallerOf<ExtensionBase>().encode(message)
+        val registry = buildProtoExtensionRegistry {
+            +ExtensionBase.string
+            +ExtensionBase.msg
+            +ExtensionBase.subExt
+            +ExtensionBase.repeatedInt32
+            +ExtensionBase.repeatedEnum
+            +ExtensionBase.repeatedMsg
+            +ExtensionBase.repeatedSubExt
+        }
+        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+
+        assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
+        assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
+        assertEquals(message.repeatedMsg, decoded.repeatedMsg)
+        assertEquals(message.repeatedSubExt, decoded.repeatedSubExt)
+    }
+
+    @Test
+    fun `test repeated scalar extension decoding`() {
+
+        val repeatedInt32 = InternalExtensionDescriptor.repeated(
+            elementDescriptor = InternalExtensionDescriptor.int32(
+                fieldNumber = 98,
+                name = "repeatedInt32",
+                extendee = ExtensionBase::class,
+            ),
+        )
+
+        val message = ExtensionBaseInternal().apply {
+            setExtensionValue(repeatedInt32, listOf(1, 2, 3))
+        }
+
+        val encoded = ExtensionBaseInternal.MARSHALLER.encode(message)
+
+        val registry = buildProtoExtensionRegistry {
+            register(repeatedInt32)
+        }
+        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+
+        assertEquals(listOf(1, 2, 3), decoded.asInternal().getExtensionValue(repeatedInt32))
     }
 }

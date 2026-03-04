@@ -261,6 +261,46 @@ open class CodeGenerator(
         }
     }
 
+    @JvmName("functionCallBlockArgs")
+    fun functionCall(
+        function: ScopedFormattedString,
+        namedArgBlocks: List<Pair<String, CodeGenerator.() -> Unit>>,
+    ) {
+        if (namedArgBlocks.isEmpty()) {
+            code(function.wrapIn { "$it()" })
+            return
+        }
+
+        selectNames {
+            addLine(function.wrapIn { "$it(" })
+        }
+
+        withNextIndent {
+            for ((name, valueBuilder) in namedArgBlocks) {
+                selectNames {
+                    addLine("$name =".scoped())
+                }
+
+                val nested = CodeGenerator(
+                    indent = "$indent$ONE_INDENT",
+                    config = config,
+                    nameTable = nameTable,
+                ).apply(valueBuilder)
+
+                if (!nested.isEmpty) {
+                    newLine()
+                    selectNames {
+                        append((nested.build().trimEnd() + ",").scoped())
+                    }
+                }
+            }
+        }
+
+        selectNames {
+            addLine(")".scoped())
+        }
+    }
+
     fun property(
         name: String,
         comment: Comment? = null,

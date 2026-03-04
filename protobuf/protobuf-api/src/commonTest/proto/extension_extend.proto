@@ -7,6 +7,7 @@ import "all_primitives.proto";
 
 extend ExtensionBase {
   optional int32 int32 = 10;
+  optional string string = 18;
 }
 
 extend ExtensionBase {
@@ -20,6 +21,20 @@ extend ExtensionBase {
 extend ExtensionBase {
   optional ExtensionBase subExt = 13;
 }
+
+extend ExtensionBase {
+  repeated int32 repeatedInt32 = 14;
+}
+
+extend ExtensionBase {
+  repeated MyEnum repeatedEnum = 15;
+}
+
+extend ExtensionBase {
+  repeated AllPrimitives repeatedMsg = 16;
+  repeated ExtensionBase repeatedSubExt = 17;
+}
+
 
 //extend ExtensionBase {
 //  repeated group Test = 12 {

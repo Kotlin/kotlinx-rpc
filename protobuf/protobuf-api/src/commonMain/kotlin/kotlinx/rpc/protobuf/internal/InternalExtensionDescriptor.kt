@@ -407,6 +407,45 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             }
         )
 
+        public fun <@GeneratedProtoMessage T : Any, E : Any> repeated(
+            elementDescriptor: InternalExtensionDescriptor<T, E>,
+            defaultValue: () -> List<E> = { emptyList() },
+        ): InternalExtensionDescriptor<T, List<E>> {
+            @Suppress("UNCHECKED_CAST")
+            val listType = List::class as KClass<List<E>>
+
+            return InternalExtensionDescriptor(
+                fieldNumber = elementDescriptor.fieldNumber,
+                name = elementDescriptor.name,
+                wireType = elementDescriptor.wireType,
+                messageType = elementDescriptor.messageType,
+                valueType = listType,
+                isRepeated = true,
+                isPacked = false,
+                defaultValue = lazy(defaultValue),
+                size = { _, value ->
+                    // Non-packed repeated extensions write one field occurrence per element.
+                    listType.cast(value).sumOf { rawElement ->
+                        elementDescriptor.size(elementDescriptor.fieldNumber, rawElement)
+                    }
+                },
+                encode = { enc, _, value, config ->
+                    listType.cast(value).forEach { rawElement ->
+                        elementDescriptor.encode(enc, elementDescriptor.fieldNumber, rawElement, config)
+                    }
+                },
+                decode = { currentValue, dec, config ->
+                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
+                    result += elementDescriptor.decode(null, dec, config)
+                    result
+                },
+                copy = { value ->
+                    listType.cast(value).map { rawElement ->
+                        elementDescriptor.copy(rawElement)
+                    }
+                },
+            )
+        }
     }
 }
 
