@@ -384,9 +384,11 @@ abstract class GrpcBaseTest : BaseTest() {
                 },
                 generatedFiles = generateFor.flatMap {
                     val ktFile = "${it.capital}.kt"
+                    val ktExtFile = "${it.capital}.ext.kt"
 
                     listOf(
                         Path(ktFile),
+                        Path(ktExtFile),
                         Path(RPC_INTERNAL, ktFile),
                     )
                 },

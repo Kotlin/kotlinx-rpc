@@ -150,12 +150,12 @@ plugins:
   - local: some
     out: myPlugin
     opt:
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: some2
     out: myPlugin2
     opt:
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-kotlin-multiplatform]
     out: kotlin-multiplatform
@@ -164,7 +164,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
@@ -173,7 +173,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
   - directory: proto
@@ -243,7 +243,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
     out: grpc-kotlin-multiplatform
@@ -252,14 +252,14 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [path, to, protoc-gen-myplugin.exe]
     out: myPlugin
     opt:
       - hello=world
       - foo=bar
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
     strategy: all
     include_imports: true
@@ -272,7 +272,7 @@ plugins:
     out: myRemotePlugin
     opt:
       - hello=world
-      - explicitApiModeEnabled=true
+      - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
       - only=in main
 inputs:

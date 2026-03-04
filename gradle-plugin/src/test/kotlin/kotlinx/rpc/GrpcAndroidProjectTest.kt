@@ -39,8 +39,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
@@ -83,8 +85,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Test.entries - extraTasks.toSet() - sourceSet,
@@ -126,8 +130,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
