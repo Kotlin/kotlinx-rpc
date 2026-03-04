@@ -17,6 +17,7 @@ kotlin {
             dependencies {
                 api(projects.protobuf.protobufApi)
                 api(projects.protobuf.protobufWkt)
+                api(projects.grpc.grpcMarshaller)
             }
         }
     }
