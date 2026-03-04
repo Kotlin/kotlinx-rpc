@@ -26,7 +26,7 @@ internal interface BackgroundTaskParameters : BuildServiceParameters {
     /** Full command with arguments for a single background process. */
     val command: org.gradle.api.provider.ListProperty<String>
     val workingDir: Property<String>
-    val readyString: Property<String?>
+    val readyString: Property<String>
     val readyTimeoutSec: Property<Int>
 }
 
