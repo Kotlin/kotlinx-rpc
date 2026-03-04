@@ -42,6 +42,7 @@ public abstract class InternalMessage(
     }
 
     protected fun extensionsEqual(other: InternalMessage): Boolean {
+        if (_extensions.size != other._extensions.size) return false
         _extensions.entries.forEach { (key, value) ->
             val otherValue = other._extensions[key] ?: return false
             if (value.value != otherValue.value) return false

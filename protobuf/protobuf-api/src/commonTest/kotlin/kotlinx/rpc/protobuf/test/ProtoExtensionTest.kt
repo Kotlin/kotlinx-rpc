@@ -87,6 +87,7 @@ class ProtoExtensionTest {
         val message2 = ExtensionBase {  }
 
         assertNotEquals(message1, message2)
+        assertNotEquals(message2, message1)
     }
 
     @Test
@@ -95,6 +96,19 @@ class ProtoExtensionTest {
         val message2 = message1.copy {  }
 
         assertEquals(message1, message2)
+        assertEquals(message2, message1)
+    }
+
+    @Test
+    fun `test extension message copy not-equal`() {
+        val message1 = completeMessage()
+        val message2 = message1.copy {
+            enum = MyEnum.TWO
+        }
+
+        assertNotEquals(message1, message2)
+        assertNotEquals(message2, message1)
+        assertEquals(MyEnum.TWO, message2.enum)
     }
 
     @Test
