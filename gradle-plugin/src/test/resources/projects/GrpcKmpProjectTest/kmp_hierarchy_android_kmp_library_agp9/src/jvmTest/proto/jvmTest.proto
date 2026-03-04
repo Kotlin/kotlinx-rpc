@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-message JvmTest {
-  string content = 1;
-}
