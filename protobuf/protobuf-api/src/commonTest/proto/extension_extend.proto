@@ -23,21 +23,14 @@ extend ExtensionBase {
 }
 
 extend ExtensionBase {
-  repeated int32 repeatedInt32 = 14;
+  repeated int32 repeatedInt32 = 14 [packed = true];
 }
 
 extend ExtensionBase {
-  repeated MyEnum repeatedEnum = 15;
+  repeated MyEnum repeatedEnum = 15 [packed = true];
 }
 
 extend ExtensionBase {
   repeated AllPrimitives repeatedMsg = 16;
   repeated ExtensionBase repeatedSubExt = 17;
 }
-
-
-//extend ExtensionBase {
-//  repeated group Test = 12 {
-//    optional int32 int = 1;
-//  }
-//}

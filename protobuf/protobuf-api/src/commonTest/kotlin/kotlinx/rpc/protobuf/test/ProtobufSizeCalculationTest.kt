@@ -135,6 +135,43 @@ class ProtobufSizeCalculationTest {
         )
     }
 
+    @Test
+    fun testPackedRepeatedInt32ExtensionSizeIsCorrect() {
+        assertExtensionBaseSizeMatchesEncoding(
+            message = ExtensionBase {
+                repeatedInt32 = listOf(1, 2, 3)
+            },
+            label = "packed repeated int32 extension",
+        )
+    }
+
+    @Test
+    fun testPackedRepeatedEnumExtensionSizeIsCorrect() {
+        assertExtensionBaseSizeMatchesEncoding(
+            message = ExtensionBase {
+                repeatedEnum = listOf(MyEnum.ONE, MyEnum.THREE)
+            },
+            label = "packed repeated enum extension",
+        )
+    }
+
+    @Test
+    fun testRepeatedMessageExtensionSizeIsCorrect() {
+        assertExtensionBaseSizeMatchesEncoding(
+            message = ExtensionBase {
+                repeatedMsg = listOf(
+                    AllPrimitives {
+                        int32 = 1
+                    },
+                    AllPrimitives {
+                        string = "two"
+                    },
+                )
+            },
+            label = "repeated message extension",
+        )
+    }
+
     private fun assertExtensionBaseSizeMatchesEncoding(message: ExtensionBase, label: String) {
         val internalMessage = message.asInternal()
         val declaredSize = internalMessage._size
@@ -149,7 +186,6 @@ class ProtobufSizeCalculationTest {
         )
     }
 
-    // TODO: Add extension size tests for list-typed extensions once extension descriptor generation supports FieldType.List.
     // TODO: Add extension size tests for map-typed extensions once extension descriptor generation supports FieldType.Map.
     // TODO: Add extension size tests for oneof-typed extensions if/when extension descriptor generation supports FieldType.OneOf.
 }

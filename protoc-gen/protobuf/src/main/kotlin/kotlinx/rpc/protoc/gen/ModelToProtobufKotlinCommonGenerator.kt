@@ -1211,9 +1211,13 @@ class ModelToProtobufKotlinCommonGenerator(
                         // check if it is an extension
                         if (declaration.extensionRanges.isNotEmpty()) {
                             code("val extension = knownExtensions[tag.fieldNr] as? %T".scoped(FqName.RpcClasses.InternalExtensionDescriptor))
-                            ifBranch(condition = "extension != null && tag.wireType == extension.wireType".scoped(), ifBlock = {
+                            ifBranch(condition = "extension != null && tag.wireType in extension.acceptedWireTypes".scoped(), ifBlock = {
                                 code("val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value".scoped())
-                                code("msg._extensions[tag.fieldNr] = %T(extension.decode(currentExtension, decoder, config), extension)".scoped(FqName.RpcClasses.ExtensionValue))
+                                code(
+                                    "val decodedExtension = if (extension.isPacked && tag.wireType == %T) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)"
+                                        .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
+                                )
+                                code("msg._extensions[tag.fieldNr] = %T(decodedExtension, extension)".scoped(FqName.RpcClasses.ExtensionValue))
                                 code("continue // with next tag".scoped())
                             })
                         }
@@ -2278,8 +2282,14 @@ class ModelToProtobufKotlinCommonGenerator(
         field: FieldDeclaration,
         type: FieldType.List,
     ) {
+        val function = when {
+            field.dec.isPacked && type.value.isPackable -> "%T.packedRepeated".scoped(FqName.RpcClasses.InternalExtensionDescriptor)
+            field.dec.isPacked -> error("Packed extensions are not supported for ${field.name}: ${type.value}")
+            else -> "%T.repeated".scoped(FqName.RpcClasses.InternalExtensionDescriptor)
+        }
+
         functionCall(
-            function = "%T.repeated".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
+            function = function,
             namedArgBlocks = listOf(
                 "elementDescriptor" to {
                     generateNonRepeatedExtensionDescriptor(field, type.value)

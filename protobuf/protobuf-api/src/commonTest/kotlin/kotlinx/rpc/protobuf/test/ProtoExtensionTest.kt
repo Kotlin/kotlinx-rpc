@@ -4,10 +4,11 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.buildProtoExtensionRegistry
-import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
+import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -247,27 +248,44 @@ class ProtoExtensionTest {
     }
 
     @Test
-    fun `test repeated scalar extension decoding`() {
-
-        val repeatedInt32 = InternalExtensionDescriptor.repeated(
-            elementDescriptor = InternalExtensionDescriptor.int32(
-                fieldNumber = 98,
-                name = "repeatedInt32",
-                extendee = ExtensionBase::class,
-            ),
-        )
-
-        val message = ExtensionBaseInternal().apply {
-            setExtensionValue(repeatedInt32, listOf(1, 2, 3))
+    fun `test generated packed extension decoding`() {
+        val message = ExtensionBase {
+            repeatedInt32 = listOf(1, 2, 3)
+            repeatedEnum = listOf(MyEnum.ONE, MyEnum.THREE)
         }
 
-        val encoded = ExtensionBaseInternal.MARSHALLER.encode(message)
+        val encoded = marshallerOf<ExtensionBase>().encode(message)
 
         val registry = buildProtoExtensionRegistry {
-            register(repeatedInt32)
+            +ExtensionBase.repeatedInt32
+            +ExtensionBase.repeatedEnum
         }
         val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
 
-        assertEquals(listOf(1, 2, 3), decoded.asInternal().getExtensionValue(repeatedInt32))
+        assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
+        assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
+    }
+
+    @Test
+    fun `test generated packed extension decodes unpacked wire format`() {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+
+        listOf(1, 2, 3).forEach { value ->
+            encoder.writeInt32(ExtensionBase.repeatedInt32.fieldNumber, value)
+        }
+        listOf(MyEnum.ONE, MyEnum.THREE).forEach { value ->
+            encoder.writeEnum(ExtensionBase.repeatedEnum.fieldNumber, value.number)
+        }
+        encoder.flush()
+
+        val registry = buildProtoExtensionRegistry {
+            +ExtensionBase.repeatedInt32
+            +ExtensionBase.repeatedEnum
+        }
+        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(buffer)
+
+        assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
+        assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
     }
 }
