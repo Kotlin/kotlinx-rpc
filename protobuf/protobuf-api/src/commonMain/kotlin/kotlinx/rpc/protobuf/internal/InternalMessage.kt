@@ -24,7 +24,7 @@ public abstract class InternalMessage(
     @Suppress("PropertyName")
     public abstract val _unknownFields: Buffer
 
-    internal abstract fun copyInternal(): InternalMessage
+    public abstract fun copyInternal(): InternalMessage
 
     public fun <V: Any> getExtensionValue(descriptor: InternalExtensionDescriptor<*, V>): V? {
         val value = _extensions[descriptor.fieldNumber] ?: return null

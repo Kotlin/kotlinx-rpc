@@ -633,9 +633,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     else -> {
                         ""
                     }
-                    if (declaration.mayHaveExtensions) {
-                        code("appendExtensions(nextIndentString)".scoped())
-                    }
                 }
 
                 val valueBuilder: CodeGenerator.() -> Unit = {
@@ -651,6 +648,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 } else {
                     valueBuilder()
                 }
+            }
+            if (declaration.mayHaveExtensions) {
+                code("builder.appendExtensions(nextIndentString)".scoped())
             }
             code("builder.append(\"\${indentString})\")".scoped())
             code("return builder.toString()".scoped())
@@ -941,12 +941,12 @@ class ModelToProtobufKotlinCommonGenerator(
 
         property(
             name = name,
-            contextReceiver = extendee.internalClassName.scoped(),
+            contextReceiver = extendee.builderClassName.scoped(),
             type = declaration.typeFqName(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
-            value = "getExtensionValue(%T.$name)".scoped(fileDeclaration.internalExtensionDescriptorObject),
-            setter = "setExtensionValue(%T.$name, value)".scoped(fileDeclaration.internalExtensionDescriptorObject),
+            value = "asInternal().getExtensionValue(%T.$name)".scoped(fileDeclaration.internalExtensionDescriptorObject),
+            setter = "asInternal().setExtensionValue(%T.$name, value)".scoped(fileDeclaration.internalExtensionDescriptorObject),
         )
     }
 

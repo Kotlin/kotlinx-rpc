@@ -281,13 +281,15 @@ open class CodeGenerator(
                 block = block,
             )
         } else {
-            addLine(contextString.merge(typeString) { contextString, typeString ->
-                "${modifiersString}$varString $contextString$name$typeString"
-            })
-            withNextIndent {
-                addLine(value.wrapIn { "get() = $it" })
-                addLine(setter.wrapIn { "set(value) { $it }" })
-                newLine()
+            selectNames {
+                addLine(contextString.merge(typeString) { contextString, typeString ->
+                    "${modifiersString}$varString $contextString$name$typeString"
+                })
+                withNextIndent {
+                    addLine(value.wrapIn { "get() = $it" })
+                    addLine(setter.wrapIn { "set(value) { $it }" })
+                    newLine()
+                }
             }
         }
 
