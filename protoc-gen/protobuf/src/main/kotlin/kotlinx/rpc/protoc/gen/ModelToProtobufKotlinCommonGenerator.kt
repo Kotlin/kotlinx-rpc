@@ -2261,9 +2261,9 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.IntegralType -> generateScalarExtensionDescriptor(field, type)
             is FieldType.Enum -> generateEnumExtensionDescriptor(field, type)
             is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
-            is FieldType.OneOf -> TODO()
             is FieldType.List -> generateRepeatedExtensionDescriptor(field, type)
-            is FieldType.Map -> TODO()
+            is FieldType.Map -> error("Extensions can't be of type Map")
+            is FieldType.OneOf -> error("Extensions can't be of type OneOf")
         }
     }
 
