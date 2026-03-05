@@ -78,7 +78,7 @@ data class MessageDeclaration(
     val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
 
     fun hasPresenceFieldsRecursive(): Boolean {
-        return hasPresenceFields || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
+        return hasPresenceFields || mayHaveExtensions || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
     }
 
     fun nonDefaultByteFields(): List<FieldDeclaration> {

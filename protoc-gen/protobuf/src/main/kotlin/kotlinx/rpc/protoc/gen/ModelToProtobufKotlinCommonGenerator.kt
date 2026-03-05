@@ -863,7 +863,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generatePublicPresenceGetter(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
-        if (!declaration.hasPresenceFields) return
+        if (!declaration.hasPresenceFields && !declaration.mayHaveExtensions) return
 
         property(
             name = "presence",
@@ -969,7 +969,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateInternalPresenceObjectProperty(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
-        if (!declaration.hasPresenceFields) return
+        if (!declaration.hasPresenceFields && !declaration.mayHaveExtensions) return
 
         property(
             name = "_presence",
