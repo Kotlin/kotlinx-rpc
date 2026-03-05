@@ -31,7 +31,7 @@ dokka {
 
     val globalRootDir: String by project.extra
 
-    val pagesDirectory = kotlin.io.path.Path(globalRootDir)
+    val pagesDirectory = java.nio.file.Path.of(globalRootDir)
         .resolve("docs")
         .resolve("pages")
 
@@ -46,7 +46,7 @@ dokka {
     }
 
     dokkaPublications.html {
-        outputDirectory = dokkaVersionsDirectory
+        outputDirectory.set(dokkaVersionsDirectory)
     }
 
     tasks.dokkaGenerate {

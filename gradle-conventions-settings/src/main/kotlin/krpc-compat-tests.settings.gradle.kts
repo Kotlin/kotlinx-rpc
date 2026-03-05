@@ -27,6 +27,12 @@ val globalRootDirValue: String = extra["globalRootDir"] as? String
 
 val globalRootDir: java.nio.file.Path = java.nio.file.Path.of(globalRootDirValue)
 
+// When applied from gradle-conventions-settings' own settings.gradle.kts (to build itself),
+// the settings root differs from the global root. In that context include() would resolve
+// project paths relative to the wrong directory, which Gradle 9+ rejects.
+val isMainBuild = settings.rootDir.toPath().toAbsolutePath().normalize() ==
+    globalRootDir.toAbsolutePath().normalize()
+
 val compatDir: java.nio.file.Path = globalRootDir
     .resolve("tests")
     .resolve("krpc-protocol-compatibility-tests")
@@ -64,7 +70,9 @@ versionDirs.forEach { (dir, version) ->
     )
 
     logger.debug("Generating {}", globalRootDir.relativize(buildFile))
-    include(":tests:krpc-protocol-compatibility-tests:$dir")
+    if (isMainBuild) {
+        include(":tests:krpc-protocol-compatibility-tests:$dir")
+    }
 }
 
 val testApiBuildFile: java.nio.file.Path = compatDir

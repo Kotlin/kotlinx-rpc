@@ -152,7 +152,7 @@ private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String)
     return "CLib${buildTargetName.capitalized()}_$targetName"
 }
 
-private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task?>
+private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task>
     get() = named("downloadKotlinNativeDistribution")
 
 private fun TaskContainer.registerBuildClibTask(
