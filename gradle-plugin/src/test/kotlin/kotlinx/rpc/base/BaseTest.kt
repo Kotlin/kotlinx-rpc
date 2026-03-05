@@ -54,7 +54,11 @@ internal fun VersionsEnv.versionsWhereAndroidKmpLibExist(): Boolean {
     return androidSemver.isAtLeast(8, 10, 0)
 }
 
+internal val VersionsEnv.isAgp9: Boolean
+    get() = androidSemver.isAtLeast(9, 0, 0)
+
 private val GradleVersions = listOf(
+    VersionsEnv("9.3.1", "2.2.21", "9.1.0"),
     VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
     VersionsEnv("8.14.1", "2.2.0", "8.10.0"),
     VersionsEnv("8.8", "2.1.0", "8.4.0"),
@@ -140,6 +144,18 @@ abstract class BaseTest {
             .replace("<kotlin-version>", versions.kotlin)
             .replace("<rpc-version>", RPC_VERSION)
             .replace("<android-version>", versions.android)
+
+        // AGP 9.x requires compileSdk >= 35
+        if (versions.isAgp9) {
+            projectDir.toFile().walkTopDown()
+                .filter { it.extension == "kts" }
+                .forEach { file ->
+                    val content = file.readText()
+                    if ("compileSdk = 34" in content) {
+                        file.writeText(content.replace("compileSdk = 34", "compileSdk = 35"))
+                    }
+                }
+        }
 
         buildScriptFile.readLines().filter {
             it.startsWith("// include:")

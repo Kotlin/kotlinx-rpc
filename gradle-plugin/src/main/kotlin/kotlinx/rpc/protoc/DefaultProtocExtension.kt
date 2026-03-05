@@ -5,8 +5,8 @@
 package kotlinx.rpc.protoc
 
 import com.android.build.api.dsl.AndroidSourceSet
+import com.android.build.api.dsl.TestedExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.BaseExtension
 import kotlinx.rpc.buf.BufExtension
 import kotlinx.rpc.buf.configureBufExecutable
 import kotlinx.rpc.buf.tasks.BufExecTask
@@ -25,6 +25,7 @@ import kotlinx.rpc.protoc.android.dependencySourceSets
 import kotlinx.rpc.protoc.android.kotlinProxyFromAndroidOriginSourceSetName
 import kotlinx.rpc.util.AndroidComponents
 import kotlinx.rpc.util.KotlinPluginId
+import kotlinx.rpc.util.androidCommonExtension
 import kotlinx.rpc.util.ensureDirectoryExists
 import kotlinx.rpc.util.hasAndroidKmpLibrary
 import kotlinx.rpc.util.hasLegacyAndroid
@@ -340,22 +341,37 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         project.withLegacyAndroid {
-            // android + kotlin is always done in withKotlin above
-            languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
-                // todo fails with
-                //
-                // Caused by: org.gradle.internal.typeconversion.UnsupportedNotationException:
-                // Cannot convert the provided notation to a File: [].
-                // The following types/formats are supported:
-                //   - A String or CharSequence path, for example 'src/main/java' or '/usr/include'.
-                //   - A String or CharSequence URI, for example 'file:/usr/include'.
-                //   - A File instance.
-                //   - A Path instance.
-                //   - A Directory instance.
-                //   - A RegularFile instance.
-                //   - A URI or URL instance of file.
-                //   - A TextResource instance.
-//                sourceSet.java.srcDir(javaOutputs)
+            // When KGP is applied, android + kotlin source wiring is done in withKotlin above.
+            // When KGP is NOT applied (AGP 9.0+ with built-in Kotlin), wire the generated sources
+            // directly to AndroidSourceSet.kotlin/java.
+            // AGP 9.0 disallows Provider instances on the SourceSet API,
+            // so we pass File instances and wire task dependencies explicitly.
+            // Deferred to afterEvaluate because configureTasks can be called from onVariants
+            // (before the plugin set is finalized).
+            if (project.kotlinPluginId == null) {
+                project.afterEvaluate {
+                    languageSets.filterIsInstance<AndroidSourceSet>().forEach { sourceSet ->
+                        sourceSet.kotlin.srcDirs(*kotlinOutputs.get().toTypedArray())
+                        sourceSet.java.srcDirs(*javaOutputs.get().toTypedArray())
+                    }
+
+                    // Wire compile task dependency explicitly since srcDir(File) doesn't carry it.
+                    // Compile task names: compileDebugKotlin, compileDebugUnitTestKotlin, etc.
+                    val props = protoSourceSet.androidProperties.orNull ?: return@afterEvaluate
+                    val variantCapital = props.variant
+                        ?.replaceFirstChar { it.uppercase() }
+                        ?: return@afterEvaluate
+
+                    val compileTaskName = when {
+                        props.isUnitTest -> "compile${variantCapital}UnitTestKotlin"
+                        props.isInstrumentedTest -> "compile${variantCapital}AndroidTestKotlin"
+                        else -> "compile${variantCapital}Kotlin"
+                    }
+
+                    tasks.matching { it.name == compileTaskName }.configureEach {
+                        dependsOn(bufGenerateTask)
+                    }
+                }
             }
         }
     }
@@ -570,6 +586,20 @@ private fun Project.configurePlatformOptions() {
         return
     }
 
+    // AGP 9.0+ with built-in Kotlin (no KGP applied) - treat as Android
+    if (kotlinPluginId == null) {
+        if (hasLegacyAndroid) {
+            protoSourceSets.all {
+                if (this !is DefaultProtoSourceSet) {
+                    return@all
+                }
+
+                platformOption.set(PlatformOption.ANDROID)
+            }
+        }
+        return
+    }
+
     project.the<KotlinMultiplatformExtension>()
         .targets.all {
             val target = this
@@ -599,9 +629,12 @@ private fun updatePlatform(protoSourceSet: DefaultProtoSourceSet, target: Kotlin
 
         is KotlinNativeTarget -> PlatformOption.NATIVE
         else -> when {
-            // otherwise fails IDEA import with NoClassDefFoundError
-            target::class.simpleName == "KotlinMultiplatformAndroidTarget" || target::class.supertypes.any {
-                (it.classifier as? KClass<*>)?.simpleName == "KotlinMultiplatformAndroidTarget"
+            // com.android.kotlin.multiplatform.library creates targets that may not extend
+            // KotlinAndroidTarget directly. Check class name and supertypes by simpleName
+            // to avoid NoClassDefFoundError during IDEA import.
+            target::class.simpleName?.contains("Android") == true || target::class.supertypes.any {
+                val name = (it.classifier as? KClass<*>)?.simpleName
+                name == "KotlinMultiplatformAndroidTarget" || name == "KotlinAndroidTarget"
             } -> PlatformOption.ANDROID
 
             else -> PlatformOption.COMMON
@@ -671,9 +704,8 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
     androidTestRoot?.extendsFrom(testFixturesRoot ?: mainRoot)
     testFixturesRoot?.importsFrom(mainRoot)
 
-    val extension = project.the<BaseExtension>()
+    val testBuildType = (project.androidCommonExtension as? TestedExtension)?.testBuildType
     onVariants { variant: Variant ->
-        val testBuildType = extension.testBuildType
         rootSourceSets.forEach { (rootName) ->
             // testFixtures don't have variants
             if (rootName == LegacyAndroidRootSourceSets.TestFixtures) {
@@ -695,7 +727,7 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
             val variantSourceSetName = dependencySourceSetNames.lastOrNull()
                 ?: throw GradleException("No source sets found for variant ${variant.name}")
 
-            val variantProtoSourceSet = project.protoSourceSets.getByName(variantSourceSetName)
+            val variantProtoSourceSet = project.protoSourceSets.findByName(variantSourceSetName)
                     as? DefaultProtoSourceSet ?: return@forEach
 
             val proxyNames = mutableListOf<String>()
