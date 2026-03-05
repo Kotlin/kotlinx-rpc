@@ -28,6 +28,9 @@ import kotlinx.rpc.grpc.marshaller.MarshallerConfig
  * @property recursionLimit The maximum allowed nesting depth when decoding protobuf messages.
  *   Messages nested deeper than this limit will cause a [kotlinx.rpc.protobuf.internal.ProtobufDecodingException].
  *   Defaults to [DEFAULT_RECURSION_LIMIT] (100), matching Google's protobuf default.
+ * @property extensionRegistry Registry of known protobuf extensions used during decoding.
+ *   If set, extension fields matching registered descriptors are decoded.
+ *   If `null` (default), extension fields are treated as unknown fields.
  *
  * @see MarshallerConfig
  * @see kotlinx.rpc.grpc.marshaller.marshallerOf
