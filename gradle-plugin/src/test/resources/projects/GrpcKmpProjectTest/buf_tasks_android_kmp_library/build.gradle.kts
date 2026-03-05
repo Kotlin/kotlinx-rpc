@@ -19,6 +19,10 @@ plugins {
 kotlin {
     jvm()
     macosArm64()
+    androidLibrary {
+        namespace = "com.example.namespace"
+        compileSdk = 34
+    }
 }
 
 public abstract class BufLintTask @Inject constructor(properties: ProtoTask.Properties) : BufExecTask(properties) {

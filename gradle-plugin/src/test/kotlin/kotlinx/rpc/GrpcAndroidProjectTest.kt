@@ -7,6 +7,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.base.isAgp9
 import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
@@ -18,15 +19,38 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     override val type: Type = Type.Android
 
     @TestFactory
-    fun `Minimal gRPC Configuration`() = minimalGrpcConfiguration()
+    fun `Minimal gRPC Configuration`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        minimalGrpcConfigurationBody()
+    }
 
     @TestFactory
-    fun `Minimal gRPC Configuration Library`() = minimalGrpcConfiguration()
+    fun `Minimal gRPC Configuration No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        minimalGrpcConfigurationBody()
+    }
 
     @TestFactory
-    fun `Minimal gRPC Configuration Dynamic Feature`() = minimalGrpcConfiguration()
+    fun `Minimal gRPC Configuration Library`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        minimalGrpcConfigurationBody()
+    }
 
-    private fun minimalGrpcConfiguration() = runGrpcTest {
+    @TestFactory
+    fun `Minimal gRPC Configuration Library No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        minimalGrpcConfigurationBody()
+    }
+
+    // com.android.dynamic-feature is removed in AGP 9.0
+    @TestFactory
+    fun `Minimal gRPC Configuration Dynamic Feature`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        minimalGrpcConfigurationBody()
+    }
+
+    // com.android.test is removed in AGP 9.0
+    @TestFactory
+    fun `Minimal gRPC Configuration Test`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        minimalGrpcConfigurationTestBody()
+    }
+
+    private fun GrpcTestEnv.minimalGrpcConfigurationBody() {
         fun runForSetOnlyMain(sourceSet: SSets, vararg extraTasks: SSetsAndroid) {
             val result = runForSet(sourceSet)
 
@@ -39,8 +63,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
@@ -69,8 +95,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
         runForSetOnlyTest(SSetsAndroid.Default.androidTestDebug, SSetsAndroid.Default.debug)
     }
 
-    @TestFactory
-    fun `Minimal gRPC Configuration Test`() = runGrpcTest {
+    private fun GrpcTestEnv.minimalGrpcConfigurationTestBody() {
         fun runForSetOnlyMain(sourceSet: SSets, vararg extraTasks: SSetsAndroid) {
             val result = runForSet(sourceSet)
 
@@ -83,8 +108,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Test.entries - extraTasks.toSet() - sourceSet,
@@ -101,7 +128,16 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Test-Only Sources`() = runGrpcTest {
+    fun `Test-Only Sources`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        testOnlySourcesBody()
+    }
+
+    @TestFactory
+    fun `Test-Only Sources No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        testOnlySourcesBody()
+    }
+
+    private fun GrpcTestEnv.testOnlySourcesBody() {
         fun runForSetOnlyMain(sourceSet: SSets, vararg extraTasks: SSetsAndroid) {
             val result = runForSet(sourceSet)
 
@@ -126,8 +162,10 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 importProtoFiles = emptyList(),
                 generatedFiles = listOf(
                     Path("Some.kt"),
+                    Path("Some.ext.kt"),
                     Path(RPC_INTERNAL, "Some.kt"),
                     Path("ok", "Ok.kt"),
+                    Path("ok", "Ok.ext.kt"),
                     Path("ok", RPC_INTERNAL, "Ok.kt"),
                 ),
                 notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
@@ -142,7 +180,18 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `All Default Source Sets`() = runGrpcTest {
+    fun `All Default Source Sets`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        allDefaultSourceSetsBody()
+    }
+
+    @TestFactory
+    fun `All Default Source Sets No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        // AGP 9.0 built-in Kotlin only creates unit test compilation for testBuildType (debug),
+        // so testRelease has no compile task, and we skip it here.
+        allDefaultSourceSetsBody(includeTestRelease = false)
+    }
+
+    private fun GrpcTestEnv.allDefaultSourceSetsBody(includeTestRelease: Boolean = true) {
         runAndCheckFiles(
             SSetsAndroid.Default.debug,
             extended = listOf(SSetsAndroid.Default.main),
@@ -160,15 +209,17 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
                 SSetsAndroid.Default.testFixturesDebug,
             )
         )
-        runAndCheckFiles(
-            SSetsAndroid.Default.testRelease,
-            SSetsAndroid.Default.release, SSetsAndroid.Default.main,
-            extended = listOf(
-                SSetsAndroid.Default.test,
-                SSetsAndroid.Default.testFixtures,
-                SSetsAndroid.Default.testFixturesRelease,
+        if (includeTestRelease) {
+            runAndCheckFiles(
+                SSetsAndroid.Default.testRelease,
+                SSetsAndroid.Default.release, SSetsAndroid.Default.main,
+                extended = listOf(
+                    SSetsAndroid.Default.test,
+                    SSetsAndroid.Default.testFixtures,
+                    SSetsAndroid.Default.testFixturesRelease,
+                )
             )
-        )
+        }
         runAndCheckFiles(
             SSetsAndroid.Default.androidTestDebug,
             SSetsAndroid.Default.debug, SSetsAndroid.Default.main,
@@ -181,14 +232,33 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `No gRPC`() = runGrpcTest {
+    fun `No gRPC`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
         SSetsAndroid.Default.entries.forEach {
             runNonExistentTasksForSourceSet(it)
         }
     }
 
     @TestFactory
-    fun `Proto Tasks Are Cached Properly`() = runGrpcTest {
+    fun `No gRPC No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        SSetsAndroid.Default.entries.forEach {
+            runNonExistentTasksForSourceSet(it)
+        }
+    }
+
+    @TestFactory
+    fun `Proto Tasks Are Cached Properly`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        protoTasksAreCachedProperlyBody()
+    }
+
+    @TestFactory
+    fun `Proto Tasks Are Cached Properly No KGP`() = runGrpcTest(
+        versionsPredicate = { isAgp9 },
+    ) {
+        protoTasksAreCachedProperlyBody()
+    }
+
+    @Suppress("detekt.LongMethod")
+    private fun GrpcTestEnv.protoTasksAreCachedProperlyBody() {
         val firstRunDebug = runForSet(SSetsAndroid.Default.debug)
 
         firstRunDebug.assertOutcomes(
@@ -343,18 +413,34 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Android Platform Option`() = runGrpcTest {
+    fun `Android Platform Option`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
         runPlatformOptionTest(SSetsAndroid.Default.debug, PlatformOption.ANDROID)
         runPlatformOptionTest(SSetsAndroid.Default.testDebug, PlatformOption.ANDROID)
     }
 
     @TestFactory
-    fun `Buf Tasks Default`() = runGrpcTest {
+    fun `Android Platform Option No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        runPlatformOptionTest(SSetsAndroid.Default.debug, PlatformOption.ANDROID)
+        runPlatformOptionTest(SSetsAndroid.Default.testDebug, PlatformOption.ANDROID)
+    }
+
+    @TestFactory
+    fun `Buf Tasks Default`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
         runGradle("test_tasks", "--no-configuration-cache")
     }
 
     @TestFactory
-    fun `Buf Tasks Extended`() = runGrpcTest {
+    fun `Buf Tasks Default No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Tasks Extended`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Tasks Extended No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
         runGradle("test_tasks", "--no-configuration-cache")
     }
 }

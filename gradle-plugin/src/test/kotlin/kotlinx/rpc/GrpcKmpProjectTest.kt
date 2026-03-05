@@ -7,6 +7,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.base.isAgp9
 import kotlinx.rpc.base.versionsWhereAndroidKmpLibExist
 import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
@@ -51,6 +52,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             importProtoFiles = emptyList(),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             importGeneratedFiles = emptyList()
@@ -67,6 +69,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -84,10 +87,12 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Other.kt"),
+                Path("Other.ext.kt"),
                 Path(RPC_INTERNAL, "Other.kt"),
             ),
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -116,6 +121,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -326,7 +332,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `KMP Hierarchy Legacy Android`() = runGrpcTest {
+    fun `KMP Hierarchy Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
         runAndCheckFiles(
             SSetsKmp.LegacyAndroid.commonMain,
         )
@@ -409,7 +417,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `KMP Hierarchy Legacy Android Not Wired`() = runGrpcTest {
+    fun `KMP Hierarchy Legacy Android Not Wired`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
         runAndCheckFiles(
             SSetsKmp.LegacyAndroid.commonMain,
         )
@@ -1168,7 +1178,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Proto Tasks Are Cached Properly Legacy Android`() = runGrpcTest {
+    fun `Proto Tasks Are Cached Properly Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
         val firstRunCommonMain = runForSet(SSetsKmp.LegacyAndroid.commonMain)
 
         firstRunCommonMain.assertOutcomes(
@@ -1496,7 +1508,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Platform Options Legacy Android`() = runGrpcTest {
+    fun `Platform Options Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
         runPlatformOptionTest(SSetsKmp.LegacyAndroid.commonMain, PlatformOption.COMMON)
         runPlatformOptionTest(SSetsKmp.LegacyAndroid.jvmMain, PlatformOption.JVM)
         runPlatformOptionTest(SSetsKmp.LegacyAndroid.androidDebug, PlatformOption.ANDROID)
@@ -1521,7 +1535,9 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Buf Tasks Legacy Android`() = runGrpcTest {
+    fun `Buf Tasks Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
         runGradle("test_tasks", "--no-configuration-cache")
     }
 }

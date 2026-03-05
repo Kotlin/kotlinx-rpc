@@ -12,7 +12,6 @@ import com.android.build.api.variant.DynamicFeatureAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.TestAndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -88,10 +87,14 @@ internal fun Project.withLegacyAndroid(action: LegacyAndroidApplied.() -> Unit) 
 
 internal class LegacyAndroidApplied(val project: Project, val id: String)
 
+@Suppress("UNCHECKED_CAST")
+internal val Project.androidCommonExtension: CommonExtension<*, *, *, *, *, *>
+    get() = extensions.getByName("android") as CommonExtension<*, *, *, *, *, *>
+
 internal fun LegacyAndroidApplied.withAndroidSourceSets(
     action: (NamedDomainObjectContainer<out AndroidSourceSet>) -> Unit,
 ) {
-    action(project.the<BaseExtension>().sourceSets)
+    action(project.androidCommonExtension.sourceSets)
 }
 
 internal typealias AndroidComponents = AndroidComponentsExtension<out CommonExtension<*, *, *, *, *, *>, *, out Variant>
