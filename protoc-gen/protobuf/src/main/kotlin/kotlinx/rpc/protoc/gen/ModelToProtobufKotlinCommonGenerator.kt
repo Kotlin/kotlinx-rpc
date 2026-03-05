@@ -940,7 +940,7 @@ class ModelToProtobufKotlinCommonGenerator(
             type = declaration.typeFqName(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
-            value = "(this as %T).$name".scoped(extendee.name),
+            value = value,
             setter = "asInternal().setExtensionValue(".scoped()
                 .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef, value)" },
         )
