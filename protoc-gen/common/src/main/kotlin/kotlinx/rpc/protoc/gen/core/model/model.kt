@@ -156,6 +156,9 @@ data class FieldDeclaration(
     val presenceIdx: Int? = null,
     // the message of the field (also for extension fields)
     val containingType: Lazy<MessageDeclaration>,
+    // fully-qualified symbol of the generated internal extension descriptor property
+    // (null for non-extension fields)
+    val extensionDescriptorName: FqName.Declaration? = null,
 ) {
     val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
@@ -192,4 +195,3 @@ data class MethodDeclaration(
     val doc: Comment?,
     val deprecated: Boolean,
 )
-

@@ -66,9 +66,14 @@ class ModelToProtobufKotlinCommonGenerator(
     override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
         generateExtensionMessageEntities(fileDeclaration.messageDeclarationsWithExtensionGroups())
 
-        val allExtensions = fileDeclaration.extensions + fileDeclaration.allNestedExtensions()
-        allExtensions.forEach { extension ->
-            generateProtoExtensionProperty(extension, fileDeclaration)
+        // Keep file-level extensions in top-level scope.
+        fileDeclaration.extensions.forEach { extension ->
+            generateProtoExtensionProperty(extension)
+        }
+
+        // Message-scoped extensions are emitted in namespace objects.
+        fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { message ->
+            generateMessageExtensionNamespace(message)
         }
     }
 
@@ -875,28 +880,19 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
-    //var ExtensionBase.test: Int?
-    //    get() {
-    //        val extension = checkNotNull(ExtensionBaseInternal.KNOWN_EXTENSIONS[1]) { "Extension not registered yet." }
-    //        check(extension == ExtensionExtendExtensions.extensionBaseTest) { "Wrong extension." }
-    //        val value = asInternal()._extensions[1] ?: return null
-    //        check(value.descriptor == extension) { "Wrong extension." }
-    //        return value.value as Int?
-    //    }
-    //    set(value) {
-    //        if (value == null) { return }
-    //        val extension = checkNotNull(ExtensionBaseInternal.KNOWN_EXTENSIONS[1]) { "Extension not registered yet." }
-    //        check(extension == ExtensionExtendExtensions.extensionBaseTest) { "Wrong extension." }
-    //        asInternal()._extensions[1] = ExtensionValue(value, extension)
-    //    }
-    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, fileDeclaration: FileDeclaration) {
+    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration) {
         val name = declaration.name
         val extendee = declaration.containingType.value
+        val descriptorRef = "%T".scoped(requireNotNull(declaration.extensionDescriptorName) {
+            "Missing extension descriptor name for ${declaration.name}"
+        })
 
-        var value = "asInternal().getExtensionValue(%T.$name)".scoped(fileDeclaration.internalExtensionDescriptorObject)
+        var value = "asInternal().getExtensionValue(".scoped()
+            .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef)" }
         if (!declaration.nullable) {
             // if the field is non-nullable, e.g. a message, we fallback to the defined default value
-            value = "%T.$name.defaultValue.value".scoped(fileDeclaration.internalExtensionDescriptorObject)
+            val default = descriptorRef.wrapIn { descriptorRef -> "$descriptorRef.defaultValue.value" }
+            value = default
                 .merge(value) { default, value ->
                     "$value ?: $default"
                 }
@@ -909,7 +905,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = extendee.name.scoped(),
             type = declaration.typeFqName(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            value = value
+            value = value,
         )
 
         // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get()
@@ -924,7 +920,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 "$first, $second>"
             },
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            value = "%T.$name".scoped(fileDeclaration.internalExtensionDescriptorObject)
+            value = descriptorRef
         )
 
         // val MyMessage.hasMyExtensionField: Boolean get()
@@ -934,10 +930,8 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = extendee.presenceInterfaceName.scoped(),
             type = FqName.Implicits.Boolean.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            value = "(this as %T).hasExtension(%T.$name)".scoped(
-                FqName.RpcClasses.InternalPresenceObject,
-                fileDeclaration.internalExtensionDescriptorObject,
-            )
+            value = "(this as %T).hasExtension(".scoped(FqName.RpcClasses.InternalPresenceObject)
+                .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef)" }
         )
 
         property(
@@ -947,8 +941,30 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
             value = "(this as %T).$name".scoped(extendee.name),
-            setter = "asInternal().setExtensionValue(%T.$name, value)".scoped(fileDeclaration.internalExtensionDescriptorObject),
+            setter = "asInternal().setExtensionValue(".scoped()
+                .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef, value)" },
         )
+    }
+
+    private fun CodeGenerator.generateMessageExtensionNamespace(
+        declaration: MessageDeclaration,
+    ) {
+        val hasOwnExtensions = declaration.extensions.isNotEmpty()
+        val nestedWithExtensions = declaration.nestedDeclarations.filter { it.hasExtensionsRecursively() }
+        if (!hasOwnExtensions && nestedWithExtensions.isEmpty()) return
+
+        clazz(
+            name = declaration.name.simpleName + "Extensions",
+            declarationType = CodeGenerator.DeclarationType.Object,
+        ) {
+            declaration.extensions.forEach { extension ->
+                generateProtoExtensionProperty(extension)
+            }
+
+            nestedWithExtensions.forEach { nested ->
+                generateMessageExtensionNamespace(nested)
+            }
+        }
     }
 
     private fun CodeGenerator.generateInternalPresenceObjectProperty(declaration: MessageDeclaration) {
@@ -2195,21 +2211,48 @@ class ModelToProtobufKotlinCommonGenerator(
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object,
         ) {
-            extensions.forEach { extension ->
-                val messageName = extension.containingType.value.name
-                val typeNonNull = extension.typeFqNameNonNullable()
-                complexProperty(
-                    // extensions fields must be unique per package, so the name is enough
-                    name = extension.name,
-                    // ExtensionDescriptor<$messageName, $typeNonNull>
-                    type = "%T<%T, ".scoped(
-                        FqName.RpcClasses.InternalExtensionDescriptor,
-                        messageName,
-                    ).merge(typeNonNull) { first, typeNonNull -> "$first $typeNonNull>" },
-                ) {
-                    generateExtensionDescriptor(extension)
-                }
+            fileDeclaration.extensions.forEach { extension ->
+                emitExtensionDescriptorProperty(extension)
             }
+
+            fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { message ->
+                emitMessageScopedExtensionDescriptors(message)
+            }
+        }
+    }
+
+    private fun CodeGenerator.emitMessageScopedExtensionDescriptors(message: MessageDeclaration) {
+        val nestedWithExtensions = message.nestedDeclarations.filter { it.hasExtensionsRecursively() }
+        if (message.extensions.isEmpty() && nestedWithExtensions.isEmpty()) return
+
+        clazz(
+            name = message.name.simpleName,
+            declarationType = CodeGenerator.DeclarationType.Object,
+        ) {
+            message.extensions.forEach { extension ->
+                emitExtensionDescriptorProperty(extension)
+            }
+
+            nestedWithExtensions.forEach { nested ->
+                emitMessageScopedExtensionDescriptors(nested)
+            }
+        }
+    }
+
+    private fun CodeGenerator.emitExtensionDescriptorProperty(extension: FieldDeclaration) {
+        val descriptorName = requireNotNull(extension.extensionDescriptorName) {
+            "Missing extension descriptor name for ${extension.name}"
+        }.simpleName
+        val messageName = extension.containingType.value.name
+        val typeNonNull = extension.typeFqNameNonNullable()
+        complexProperty(
+            name = descriptorName,
+            type = "%T<%T, ".scoped(
+                FqName.RpcClasses.InternalExtensionDescriptor,
+                messageName,
+            ).merge(typeNonNull) { first, typeNonNull -> "$first $typeNonNull>" },
+        ) {
+            generateExtensionDescriptor(extension)
         }
     }
 
@@ -2347,6 +2390,9 @@ private fun EnumDeclaration.extensionDefaultValue(field: FieldDeclaration): FqNa
 private fun MessageDeclaration.allNestedRecursively(): List<MessageDeclaration> =
     nestedDeclarations + nestedDeclarations.flatMap(MessageDeclaration::allNestedRecursively)
 
+private fun MessageDeclaration.hasExtensionsRecursively(): Boolean =
+    extensions.isNotEmpty() || nestedDeclarations.any { it.hasExtensionsRecursively() }
+
 private fun FileDeclaration.allExtensions(): List<FieldDeclaration> =
     extensions + allNestedExtensions()
 
@@ -2356,14 +2402,23 @@ private fun FileDeclaration.allNestedExtensions(): List<FieldDeclaration> =
 
 private fun FileDeclaration.messageDeclarationsWithExtensionGroups(): List<MessageDeclaration> {
     val extensionGroups = allExtensions()
-        .mapNotNull { (it.type as? FieldType.Message)?.dec?.value }
-        .filter { it.isGroup }
+        .flatMap { field ->
+            buildList {
+                val extendee = field.containingType.value
+                if (extendee.isGroup) add(extendee)
+
+                val fieldTypeMessage = (field.type as? FieldType.Message)?.dec?.value
+                if (fieldTypeMessage != null && fieldTypeMessage.isGroup) add(fieldTypeMessage)
+            }
+        }
         .distinctBy { it.name }
     return (messageDeclarations + extensionGroups).distinctBy { it.name }
 }
 
 private fun FileDeclaration.hasExtensionGroupMessages(): Boolean =
-    allExtensions().any { (it.type as? FieldType.Message)?.dec?.value?.isGroup == true }
+    allExtensions().any { field ->
+        field.containingType.value.isGroup || ((field.type as? FieldType.Message)?.dec?.value?.isGroup == true)
+    }
 
 private fun FileDeclaration.asDeclName() = name.replace(".", "")
 private fun FqName.asDeclName() = toString().replace(".", "")

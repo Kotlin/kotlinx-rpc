@@ -6,10 +6,12 @@ import "enum.proto";
 import "all_primitives.proto";
 
 extend ExtensionBase {
+  // Some comment on an extension field
   optional int32 int32 = 10;
   optional string string = 18;
 }
 
+// Some comment on an extension group
 extend ExtensionBase {
   optional MyEnum enum = 11;
 }
@@ -39,5 +41,23 @@ extend ExtensionBase {
   optional group TestGroup = 19 {
     optional int32 int32 = 1;
     optional string string = 2;
+  }
+}
+
+extend ExtensionBase {
+  optional string conflicting = 20;
+}
+
+message MessageScoped {
+  optional int32 field = 1;
+
+  extend ExtensionBase {
+    optional int32 conflicting = 21;
+  }
+
+  message MoreNested {
+    extend ExtensionBase {
+      optional int32 conflicting = 22;
+    }
   }
 }

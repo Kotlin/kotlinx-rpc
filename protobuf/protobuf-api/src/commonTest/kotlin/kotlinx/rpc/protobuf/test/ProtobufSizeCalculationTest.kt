@@ -185,6 +185,24 @@ class ProtobufSizeCalculationTest {
         )
     }
 
+    @Test
+    fun testNestedDefinedExtensionSizeIsCorrect() {
+        val message = ExtensionBase {
+            conflicting = "apfelstrudel"
+            with(MessageScopedExtensions) {
+                conflicting = 121
+                with(MessageScopedExtensions.MoreNestedExtensions) {
+                    conflicting = 122
+                }
+            }
+        }
+
+        assertExtensionBaseSizeMatchesEncoding(
+            message = message,
+            label = "nested-defined conflicting extensions",
+        )
+    }
+
     private fun assertExtensionBaseSizeMatchesEncoding(message: ExtensionBase, label: String) {
         val internalMessage = message.asInternal()
         val declaredSize = internalMessage._size

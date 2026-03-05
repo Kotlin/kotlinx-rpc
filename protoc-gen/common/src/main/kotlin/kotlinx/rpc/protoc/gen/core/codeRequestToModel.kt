@@ -196,10 +196,7 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         ),
         deprecated = options.deprecated,
         dec = this,
-        internalExtensionDescriptorObject = FqName.Declaration(
-            simpleName = protoFileNameToKotlinName() + "KtExtensions",
-            parent = ktPackage
-        )
+        internalExtensionDescriptorObject = internalExtensionDescriptorObjectName(),
     ).also {
         nameTable.register { it.internalExtensionDescriptorObject }
     }
@@ -231,7 +228,8 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
             doc = it.doc,
             dec = it.variants.first().dec,
             deprecated = options.deprecated,
-            containingType = lazy { modelCache[containingType]!! as MessageDeclaration }
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
+            extensionDescriptorName = null,
         )
     }
 
@@ -311,8 +309,11 @@ private fun Descriptors.FieldDescriptor.toModel(
             doc = comments.get(),
             dec = this,
             deprecated = options.deprecated,
-            containingType = lazy { modelCache[containingType]!! as MessageDeclaration }
-        )
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
+            extensionDescriptorName = extensionDescriptorName(),
+        ).apply {
+            extensionDescriptorName?.let { nameTable.register(it) }
+        }
     }
 
 private fun Descriptors.OneofDescriptor.toModel(
@@ -470,6 +471,26 @@ private fun Descriptors.FileDescriptor.kotlinPackage(): String {
 
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {
     return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
+}
+
+private fun Descriptors.FileDescriptor.internalExtensionDescriptorObjectName(): FqName.Declaration {
+    val ktPackage = FqName.Package.fromString(kotlinPackage())
+    return FqName.Declaration(
+        simpleName = protoFileNameToKotlinName() + "KtExtensions",
+        parent = ktPackage,
+    )
+}
+
+private fun Descriptors.FieldDescriptor.extensionDescriptorName(): FqName.Declaration? {
+    if (!isExtension) return null
+
+    var parent: FqName = file.internalExtensionDescriptorObjectName()
+    val scopeChain = generateSequence(extensionScope) { it.containingType }.toList().asReversed()
+    scopeChain.forEach { scope ->
+        parent = FqName.Declaration(scope.fqName().simpleName, parent)
+    }
+
+    return FqName.Declaration(fqName().simpleName, parent)
 }
 
 private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): String {

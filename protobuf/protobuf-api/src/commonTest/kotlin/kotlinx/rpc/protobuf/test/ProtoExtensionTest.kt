@@ -306,4 +306,37 @@ class ProtoExtensionTest {
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
     }
+
+    @Test
+    fun `test nested extension definitions getter setter and decoding`() {
+        val message = ExtensionBase {
+            conflicting = "apfelstrudel"
+            with(MessageScopedExtensions) {
+                conflicting = 121
+                with(MessageScopedExtensions.MoreNestedExtensions) {
+                    conflicting = 122
+                }
+            }
+        }
+
+        val encoded = marshallerOf<ExtensionBase>().encode(message)
+        val registry = buildProtoExtensionRegistry {
+            +ExtensionBase.conflicting
+            with(MessageScopedExtensions) {
+                +ExtensionBase.conflicting
+                with(MessageScopedExtensions.MoreNestedExtensions) {
+                    +ExtensionBase.conflicting
+                }
+            }
+        }
+        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+
+        assertEquals("apfelstrudel", decoded.conflicting)
+        with(MessageScopedExtensions) {
+            assertEquals(121, decoded.conflicting)
+            with(MessageScopedExtensions.MoreNestedExtensions) {
+                assertEquals(122, decoded.conflicting)
+            }
+        }
+    }
 }
