@@ -125,7 +125,7 @@ public open class ProtocPlugin internal constructor(
      *
      * @see <a href="https://buf.build/docs/configuration/v2/buf-gen-yaml/#strategy">Buf documentation - strategy</a>
      */
-    public val strategy: Property<Strategy?> = project.objects.property<Strategy?>().convention(null)
+    public val strategy: Property<Strategy> = project.objects.property<Strategy>()
 
     /**
      * Whether to include imports except for Well-Known Types.
@@ -137,7 +137,7 @@ public open class ProtocPlugin internal constructor(
      *     Buf documentation - include_imports
      * </a>
      */
-    public val includeImports: Property<Boolean?> = project.objects.property<Boolean?>().convention(null)
+    public val includeImports: Property<Boolean> = project.objects.property<Boolean>()
 
     /**
      * Whether to include Well-Known Types.
@@ -149,7 +149,7 @@ public open class ProtocPlugin internal constructor(
      *     Buf documentation - include_wkt
      * </a>
      */
-    public val includeWkt: Property<Boolean?> = project.objects.property<Boolean?>().convention(null)
+    public val includeWkt: Property<Boolean> = project.objects.property<Boolean>()
 
     /**
      * Include only the specified types when generating with this plugin.

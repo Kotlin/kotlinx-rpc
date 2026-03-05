@@ -114,11 +114,11 @@ public abstract class BufGenerateTask @Inject internal constructor(
             buildList {
                 add("--output"); add(outputDirectory.get().absolutePath)
 
-                if (includeImports.get() || includeWkt.get()) {
+                if (includeImports.getOrElse(false) || includeWkt.getOrElse(false)) {
                     add("--include-imports")
                 }
 
-                if (includeWkt.get()) {
+                if (includeWkt.getOrElse(false)) {
                     add("--include-wkt")
                 }
 

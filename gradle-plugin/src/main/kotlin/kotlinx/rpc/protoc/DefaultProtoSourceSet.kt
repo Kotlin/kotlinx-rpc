@@ -126,7 +126,7 @@ internal open class DefaultProtoSourceSet(
 
     // Collection of AndroidSourceSet, KotlinSourceSet, SourceSet (java) associated with this proto source set
     val languageSourceSets: ListProperty<Any> = project.objects.listProperty<Any>()
-    val generateTask: Property<BufGenerateTask?> = project.objects.property<BufGenerateTask?>()
+    val generateTask: Property<BufGenerateTask> = project.objects.property<BufGenerateTask>()
 
     // source set that is associated with com.android.(application|library|test|dynamic-feature) plugin
     //
@@ -146,7 +146,7 @@ internal open class DefaultProtoSourceSet(
     val androidDependencies: SetProperty<DefaultProtoSourceSet> = project.objects.setProperty()
 
     // only set for variant.name sourceSets
-    val androidProperties: Property<ProtoTask.AndroidProperties?> = project.objects.property()
+    val androidProperties: Property<ProtoTask.AndroidProperties> = project.objects.property()
 
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
@@ -223,7 +223,7 @@ internal open class DefaultProtoSourceSet(
         sourceDirectorySet.forEach(action)
     }
 
-    override fun spliterator(): Spliterator<File?> {
+    override fun spliterator(): Spliterator<File> {
         return sourceDirectorySet.spliterator()
     }
 }
