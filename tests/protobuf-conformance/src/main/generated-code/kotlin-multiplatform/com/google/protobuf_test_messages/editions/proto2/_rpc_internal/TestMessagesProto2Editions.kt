@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.editions.proto2
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -8,7 +9,10 @@ import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.internal.ExtensionValue
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
@@ -256,8 +260,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var messageSetCorrect: TestAllTypesProto2.MessageSetCorrect by MsgFieldDelegate(PresenceIndices.messageSetCorrect) { MessageSetCorrectInternal() }
     override var oneofField: TestAllTypesProto2.OneofField? = null
 
+    private val _owner: TestAllTypesProto2Internal = this
+
     @InternalRpcApi
-    val _presence: TestAllTypesProto2Presence = object : TestAllTypesProto2Presence {
+    val _presence: TestAllTypesProto2Presence = object : TestAllTypesProto2Presence, InternalPresenceObject {
+        override val _message: TestAllTypesProto2Internal get() = _owner
+
         override val hasOptionalInt32: Boolean get() = presenceMask[0]
 
         override val hasOptionalInt64: Boolean get() = presenceMask[1]
@@ -506,6 +514,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[56]) (FieldName18__?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[57]) messageSetCorrect.hashCode() else 0
         result = 31 * result + (oneofField?.oneOfHashCode() ?: 0)
+        result = 31 * result + extensionsHashCode()
         return result
     }
 
@@ -676,6 +685,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[56] && this.FieldName18__ != other.FieldName18__) return false
         if (presenceMask[57] && this.messageSetCorrect != other.messageSetCorrect) return false
         if (!oneOfEquals(this.oneofField, other.oneofField)) return false
+        if (!extensionsEqual(other)) return false
         return true
     }
 
@@ -1108,8 +1118,13 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
+        builder.appendExtensions(nextIndentString)
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): TestAllTypesProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -1418,6 +1433,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         copy.oneofField = this.oneofField?.oneOfCopy()
+        copy.copyExtensionsFrom(this)
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -1474,8 +1490,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
         override var corecursive: TestAllTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto2Internal() }
 
+        private val _owner: NestedMessageInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto2Presence.NestedMessage = object : TestAllTypesProto2Presence.NestedMessage {
+        val _presence: TestAllTypesProto2Presence.NestedMessage = object : TestAllTypesProto2Presence.NestedMessage, InternalPresenceObject {
+            override val _message: NestedMessageInternal get() = _owner
+
             override val hasA: Boolean get() = presenceMask[0]
 
             override val hasCorecursive: Boolean get() = presenceMask[1]
@@ -1524,6 +1544,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): NestedMessageInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -1597,6 +1621,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
+        private val _owner: MapInt32Int32EntryInternal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1642,6 +1668,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32Int32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1663,6 +1693,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapInt64Int64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1709,6 +1741,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt64Int64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1730,6 +1766,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
+
+        private val _owner: MapUint32Uint32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1776,6 +1814,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapUint32Uint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1797,6 +1839,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        private val _owner: MapUint64Uint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1843,6 +1887,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapUint64Uint64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1864,6 +1912,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
+
+        private val _owner: MapSint32Sint32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1910,6 +1960,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSint32Sint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1931,6 +1985,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapSint64Sint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1977,6 +2033,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSint64Sint64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1998,6 +2058,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
+
+        private val _owner: MapFixed32Fixed32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2044,6 +2106,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapFixed32Fixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2065,6 +2131,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        private val _owner: MapFixed64Fixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2111,6 +2179,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapFixed64Fixed64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2132,6 +2204,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
+
+        private val _owner: MapSfixed32Sfixed32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2178,6 +2252,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSfixed32Sfixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2199,6 +2277,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapSfixed64Sfixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2245,6 +2325,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSfixed64Sfixed64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2266,6 +2350,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
+
+        private val _owner: MapInt32BoolEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2312,6 +2398,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32BoolEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2333,6 +2423,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
+
+        private val _owner: MapInt32FloatEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2379,6 +2471,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32FloatEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2400,6 +2496,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
+
+        private val _owner: MapInt32DoubleEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2446,6 +2544,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32DoubleEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2467,6 +2569,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
+
+        private val _owner: MapInt32NestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2513,6 +2617,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32NestedMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2534,6 +2642,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
+
+        private val _owner: MapBoolBoolEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2580,6 +2690,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapBoolBoolEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2601,6 +2715,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
+
+        private val _owner: MapStringStringEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2647,6 +2763,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringStringEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2668,6 +2788,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
+
+        private val _owner: MapStringBytesEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2714,6 +2836,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringBytesEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2735,6 +2861,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
+
+        private val _owner: MapStringNestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2781,6 +2909,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2802,6 +2934,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageProto2Internal() }
+
+        private val _owner: MapStringForeignMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2848,6 +2982,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringForeignMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2869,6 +3007,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesProto2.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { TestAllTypesProto2.NestedEnum.FOO }
+
+        private val _owner: MapStringNestedEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2915,6 +3055,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedEnumEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2936,6 +3080,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignEnumProto2 by MsgFieldDelegate(PresenceIndices.value) { ForeignEnumProto2.FOREIGN_FOO }
+
+        private val _owner: MapStringForeignEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2982,6 +3128,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringForeignEnumEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -3004,8 +3154,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
 
+        private val _owner: DataInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto2Presence.Data = object : TestAllTypesProto2Presence.Data {
+        val _presence: TestAllTypesProto2Presence.Data = object : TestAllTypesProto2Presence.Data, InternalPresenceObject {
+            override val _message: DataInternal get() = _owner
+
             override val hasGroupInt32: Boolean get() = presenceMask[0]
 
             override val hasGroupUint32: Boolean get() = presenceMask[1]
@@ -3054,6 +3208,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): DataInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -3127,8 +3285,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
 
+        private val _owner: MultiWordGroupFieldInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto2Presence.MultiWordGroupField = object : TestAllTypesProto2Presence.MultiWordGroupField {
+        val _presence: TestAllTypesProto2Presence.MultiWordGroupField = object : TestAllTypesProto2Presence.MultiWordGroupField, InternalPresenceObject {
+            override val _message: MultiWordGroupFieldInternal get() = _owner
+
             override val hasGroupInt32: Boolean get() = presenceMask[0]
 
             override val hasGroupUint32: Boolean get() = presenceMask[1]
@@ -3177,6 +3339,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MultiWordGroupFieldInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -3242,9 +3408,18 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: MessageSetCorrectInternal = this
+
+        @InternalRpcApi
+        val _presence: TestAllTypesProto2Presence.MessageSetCorrect = object : TestAllTypesProto2Presence.MessageSetCorrect, InternalPresenceObject {
+            override val _message: MessageSetCorrectInternal get() = _owner
+        }
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            result = 31 * result + extensionsHashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -3253,6 +3428,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MessageSetCorrectInternal
             other.checkRequiredFields()
+            if (!extensionsEqual(other)) return false
             return true
         }
 
@@ -3266,13 +3442,19 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto2.MessageSetCorrect(")
+            builder.appendExtensions(nextIndentString)
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
         fun copyInternal(body: MessageSetCorrectInternal.() -> Unit): MessageSetCorrectInternal {
             val copy = MessageSetCorrectInternal()
+            copy.copyExtensionsFrom(this)
             copy.apply(body)
             this._unknownFields.copyTo(copy._unknownFields)
             return copy
@@ -3331,14 +3513,19 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override var str: String? by MsgFieldDelegate(PresenceIndices.str) { null }
 
+        private val _owner: MessageSetCorrectExtension1Internal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto2Presence.MessageSetCorrectExtension1 = object : TestAllTypesProto2Presence.MessageSetCorrectExtension1 {
+        val _presence: TestAllTypesProto2Presence.MessageSetCorrectExtension1 = object : TestAllTypesProto2Presence.MessageSetCorrectExtension1, InternalPresenceObject {
+            override val _message: MessageSetCorrectExtension1Internal get() = _owner
+
             override val hasStr: Boolean get() = presenceMask[0]
         }
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            return if (presenceMask[0]) (str?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (str?.hashCode() ?: 0) else 0
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -3370,6 +3557,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectExtension1Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -3437,14 +3628,19 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override var i: Int? by MsgFieldDelegate(PresenceIndices.i) { null }
 
+        private val _owner: MessageSetCorrectExtension2Internal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto2Presence.MessageSetCorrectExtension2 = object : TestAllTypesProto2Presence.MessageSetCorrectExtension2 {
+        val _presence: TestAllTypesProto2Presence.MessageSetCorrectExtension2 = object : TestAllTypesProto2Presence.MessageSetCorrectExtension2, InternalPresenceObject {
+            override val _message: MessageSetCorrectExtension2Internal get() = _owner
+
             override val hasI: Boolean get() = presenceMask[0]
         }
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            return if (presenceMask[0]) (i?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (i?.hashCode() ?: 0) else 0
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -3476,6 +3672,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectExtension2Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -3539,9 +3739,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override var oneofField: TestAllTypesProto2.ExtensionWithOneof.OneofField? = null
 
+        private val _owner: ExtensionWithOneofInternal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return (oneofField?.oneOfHashCode() ?: 0)
+            var result = (oneofField?.oneOfHashCode() ?: 0)
+            return result
         }
 
         fun TestAllTypesProto2.ExtensionWithOneof.OneofField.oneOfHashCode(): Int {
@@ -3576,6 +3779,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): ExtensionWithOneofInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -3682,14 +3889,19 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 
+    private val _owner: ForeignMessageProto2Internal = this
+
     @InternalRpcApi
-    val _presence: ForeignMessageProto2Presence = object : ForeignMessageProto2Presence {
+    val _presence: ForeignMessageProto2Presence = object : ForeignMessageProto2Presence, InternalPresenceObject {
+        override val _message: ForeignMessageProto2Internal get() = _owner
+
         override val hasC: Boolean get() = presenceMask[0]
     }
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -3721,6 +3933,10 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ForeignMessageProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -3790,8 +4006,12 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
     override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
     override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
 
+    private val _owner: GroupFieldInternal = this
+
     @InternalRpcApi
-    val _presence: GroupFieldPresence = object : GroupFieldPresence {
+    val _presence: GroupFieldPresence = object : GroupFieldPresence, InternalPresenceObject {
+        override val _message: GroupFieldInternal get() = _owner
+
         override val hasGroupInt32: Boolean get() = presenceMask[0]
 
         override val hasGroupUint32: Boolean get() = presenceMask[1]
@@ -3840,6 +4060,10 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): GroupFieldInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -3920,8 +4144,12 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
     override var optionalBool: Boolean? by MsgFieldDelegate(PresenceIndices.optionalBool) { null }
     override var repeatedInt32: List<Int> by MsgFieldDelegate { mutableListOf() }
 
+    private val _owner: UnknownToTestAllTypesInternal = this
+
     @InternalRpcApi
-    val _presence: UnknownToTestAllTypesPresence = object : UnknownToTestAllTypesPresence {
+    val _presence: UnknownToTestAllTypesPresence = object : UnknownToTestAllTypesPresence, InternalPresenceObject {
+        override val _message: UnknownToTestAllTypesInternal get() = _owner
+
         override val hasOptionalInt32: Boolean get() = presenceMask[0]
 
         override val hasOptionalString: Boolean get() = presenceMask[1]
@@ -4005,6 +4233,10 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
         return builder.toString()
     }
 
+    override fun copyInternal(): UnknownToTestAllTypesInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     fun copyInternal(body: UnknownToTestAllTypesInternal.() -> Unit): UnknownToTestAllTypesInternal {
         val copy = UnknownToTestAllTypesInternal()
@@ -4050,14 +4282,19 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
 
+        private val _owner: OptionalGroupInternal = this
+
         @InternalRpcApi
-        val _presence: UnknownToTestAllTypesPresence.OptionalGroup = object : UnknownToTestAllTypesPresence.OptionalGroup {
+        val _presence: UnknownToTestAllTypesPresence.OptionalGroup = object : UnknownToTestAllTypesPresence.OptionalGroup, InternalPresenceObject {
+            override val _message: OptionalGroupInternal get() = _owner
+
             override val hasA: Boolean get() = presenceMask[0]
         }
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            return if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -4089,6 +4326,10 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): OptionalGroupInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -4187,9 +4428,12 @@ class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessag
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    private val _owner: NullHypothesisProto2Internal = this
+
     override fun hashCode(): Int {
         checkRequiredFields()
-        return this::class.hashCode()
+        var result = this::class.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -4213,6 +4457,10 @@ class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessag
         builder.appendLine("NullHypothesisProto2(")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): NullHypothesisProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -4270,9 +4518,12 @@ class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWith
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
+    private val _owner: EnumOnlyProto2Internal = this
+
     override fun hashCode(): Int {
         checkRequiredFields()
-        return this::class.hashCode()
+        var result = this::class.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -4296,6 +4547,10 @@ class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWith
         builder.appendLine("EnumOnlyProto2(")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): EnumOnlyProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -4359,14 +4614,19 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
     override var data: String? by MsgFieldDelegate(PresenceIndices.data) { null }
 
+    private val _owner: OneStringProto2Internal = this
+
     @InternalRpcApi
-    val _presence: OneStringProto2Presence = object : OneStringProto2Presence {
+    val _presence: OneStringProto2Presence = object : OneStringProto2Presence, InternalPresenceObject {
+        override val _message: OneStringProto2Internal get() = _owner
+
         override val hasData: Boolean get() = presenceMask[0]
     }
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return if (presenceMask[0]) (data?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (data?.hashCode() ?: 0) else 0
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -4398,6 +4658,10 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): OneStringProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -4468,8 +4732,12 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
     override var concept: String? by MsgFieldDelegate(PresenceIndices.concept) { null }
     override var requires: List<String> by MsgFieldDelegate { mutableListOf() }
 
+    private val _owner: ProtoWithKeywordsInternal = this
+
     @InternalRpcApi
-    val _presence: ProtoWithKeywordsPresence = object : ProtoWithKeywordsPresence {
+    val _presence: ProtoWithKeywordsPresence = object : ProtoWithKeywordsPresence, InternalPresenceObject {
+        override val _message: ProtoWithKeywordsInternal get() = _owner
+
         override val hasInline: Boolean get() = presenceMask[0]
 
         override val hasConcept: Boolean get() = presenceMask[1]
@@ -4521,6 +4789,10 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
         builder.appendLine("${nextIndentString}requires=${this.requires},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ProtoWithKeywordsInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -4673,8 +4945,12 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
 
+    private val _owner: TestAllRequiredTypesProto2Internal = this
+
     @InternalRpcApi
-    val _presence: TestAllRequiredTypesProto2Presence = object : TestAllRequiredTypesProto2Presence {
+    val _presence: TestAllRequiredTypesProto2Presence = object : TestAllRequiredTypesProto2Presence, InternalPresenceObject {
+        override val _message: TestAllRequiredTypesProto2Internal get() = _owner
+
         override val hasRequiredInt32: Boolean get() = presenceMask[0]
 
         override val hasRequiredInt64: Boolean get() = presenceMask[1]
@@ -4795,6 +5071,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
         result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
+        result = 31 * result + extensionsHashCode()
         return result
     }
 
@@ -4844,6 +5121,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         if (presenceMask[36] && this.defaultBool != other.defaultBool) return false
         if (presenceMask[37] && this.defaultString != other.defaultString) return false
         if (presenceMask[38] && !this.defaultBytes.contentEquals(other.defaultBytes)) return false
+        if (!extensionsEqual(other)) return false
         return true
     }
 
@@ -5091,8 +5369,13 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             builder.appendLine("${nextIndentString}defaultBytes=<unset>,")
         }
 
+        builder.appendExtensions(nextIndentString)
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): TestAllRequiredTypesProto2Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -5254,6 +5537,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             copy.defaultBytes = this.defaultBytes.copyOf()
         }
 
+        copy.copyExtensionsFrom(this)
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -5279,8 +5563,12 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         override var corecursive: TestAllRequiredTypesProto2 by MsgFieldDelegate(PresenceIndices.corecursive) { TestAllRequiredTypesProto2Internal() }
         override var optionalCorecursive: TestAllRequiredTypesProto2 by MsgFieldDelegate(PresenceIndices.optionalCorecursive) { TestAllRequiredTypesProto2Internal() }
 
+        private val _owner: NestedMessageInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllRequiredTypesProto2Presence.NestedMessage = object : TestAllRequiredTypesProto2Presence.NestedMessage {
+        val _presence: TestAllRequiredTypesProto2Presence.NestedMessage = object : TestAllRequiredTypesProto2Presence.NestedMessage, InternalPresenceObject {
+            override val _message: NestedMessageInternal get() = _owner
+
             override val hasA: Boolean get() = presenceMask[0]
 
             override val hasCorecursive: Boolean get() = presenceMask[1]
@@ -5339,6 +5627,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): NestedMessageInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -5416,8 +5708,12 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         override var groupInt32: Int by MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupUint32: UInt by MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
 
+        private val _owner: DataInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllRequiredTypesProto2Presence.Data = object : TestAllRequiredTypesProto2Presence.Data {
+        val _presence: TestAllRequiredTypesProto2Presence.Data = object : TestAllRequiredTypesProto2Presence.Data, InternalPresenceObject {
+            override val _message: DataInternal get() = _owner
+
             override val hasGroupInt32: Boolean get() = presenceMask[0]
 
             override val hasGroupUint32: Boolean get() = presenceMask[1]
@@ -5466,6 +5762,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): DataInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -5531,9 +5831,18 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: MessageSetCorrectInternal = this
+
+        @InternalRpcApi
+        val _presence: TestAllRequiredTypesProto2Presence.MessageSetCorrect = object : TestAllRequiredTypesProto2Presence.MessageSetCorrect, InternalPresenceObject {
+            override val _message: MessageSetCorrectInternal get() = _owner
+        }
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            result = 31 * result + extensionsHashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -5542,6 +5851,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             if (other == null || this::class != other::class) return false
             other as MessageSetCorrectInternal
             other.checkRequiredFields()
+            if (!extensionsEqual(other)) return false
             return true
         }
 
@@ -5555,13 +5865,19 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("TestAllRequiredTypesProto2.MessageSetCorrect(")
+            builder.appendExtensions(nextIndentString)
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
         fun copyInternal(body: MessageSetCorrectInternal.() -> Unit): MessageSetCorrectInternal {
             val copy = MessageSetCorrectInternal()
+            copy.copyExtensionsFrom(this)
             copy.apply(body)
             this._unknownFields.copyTo(copy._unknownFields)
             return copy
@@ -5620,14 +5936,19 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override var str: String by MsgFieldDelegate(PresenceIndices.str) { "" }
 
+        private val _owner: MessageSetCorrectExtension1Internal = this
+
         @InternalRpcApi
-        val _presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 = object : TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 {
+        val _presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 = object : TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1, InternalPresenceObject {
+            override val _message: MessageSetCorrectExtension1Internal get() = _owner
+
             override val hasStr: Boolean get() = presenceMask[0]
         }
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            return if (presenceMask[0]) str.hashCode() else 0
+            var result = if (presenceMask[0]) str.hashCode() else 0
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -5659,6 +5980,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectExtension1Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -5726,14 +6051,19 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override var i: Int by MsgFieldDelegate(PresenceIndices.i) { 0 }
 
+        private val _owner: MessageSetCorrectExtension2Internal = this
+
         @InternalRpcApi
-        val _presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 = object : TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 {
+        val _presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 = object : TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2, InternalPresenceObject {
+            override val _message: MessageSetCorrectExtension2Internal get() = _owner
+
             override val hasI: Boolean get() = presenceMask[0]
         }
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            return if (presenceMask[0]) i.hashCode() else 0
+            var result = if (presenceMask[0]) i.hashCode() else 0
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -5765,6 +6095,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MessageSetCorrectExtension2Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -5865,9 +6199,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
     override var largeOneof: TestLargeOneof.LargeOneof? = null
 
+    private val _owner: TestLargeOneofInternal = this
+
     override fun hashCode(): Int {
         checkRequiredFields()
-        return (largeOneof?.oneOfHashCode() ?: 0)
+        var result = (largeOneof?.oneOfHashCode() ?: 0)
+        return result
     }
 
     fun TestLargeOneof.LargeOneof.oneOfHashCode(): Int {
@@ -5905,6 +6242,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         builder.appendLine("${nextIndentString}largeOneof=${this.largeOneof},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): TestLargeOneofInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -5947,9 +6288,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: A1Internal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -5973,6 +6317,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
             builder.appendLine("TestLargeOneof.A1(")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): A1Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -6030,9 +6378,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: A2Internal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -6056,6 +6407,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
             builder.appendLine("TestLargeOneof.A2(")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): A2Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -6113,9 +6468,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: A3Internal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -6139,6 +6497,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
             builder.appendLine("TestLargeOneof.A3(")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): A3Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -6196,9 +6558,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: A4Internal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -6222,6 +6587,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
             builder.appendLine("TestLargeOneof.A4(")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): A4Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -6279,9 +6648,12 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
+        private val _owner: A5Internal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
-            return this::class.hashCode()
+            var result = this::class.hashCode()
+            return result
         }
 
         override fun equals(other: Any?): Boolean {
@@ -6305,6 +6677,10 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
             builder.appendLine("TestLargeOneof.A5(")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): A5Internal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -7228,10 +7604,17 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: Protobuf
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -7918,6 +8301,14 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
                 msg.oneofField = TestAllTypesProto2.OneofField.OneofEnum(TestAllTypesProto2.NestedEnum.fromNumber(decoder.readEnum()))
             }
             else -> {
+                val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
+                if (extension != null && tag.wireType in extension.acceptedWireTypes) {
+                    val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
+                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
+                    continue // with next tag
+                }
+
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
@@ -8608,6 +8999,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
         }
     }
 
+    __result += extensionsSize()
     return __result
 }
 
@@ -8626,10 +9018,17 @@ fun ForeignMessageProto2Internal.encodeWith(encoder: WireEncoder, config: Protob
     this.c?.also {
         encoder.writeInt32(fieldNr = 1, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ForeignMessageProto2Internal.Companion.decodeWith(msg: ForeignMessageProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ForeignMessageProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -8683,10 +9082,17 @@ fun GroupFieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
     this.groupUint32?.also {
         encoder.writeUInt32(fieldNr = 123, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun GroupFieldInternal.Companion.decodeWith(msg: GroupFieldInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(GroupField::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -8772,10 +9178,17 @@ fun UnknownToTestAllTypesInternal.encodeWith(encoder: WireEncoder, config: Proto
             encoder.writeInt32(1011, it)
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun UnknownToTestAllTypesInternal.Companion.decodeWith(msg: UnknownToTestAllTypesInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(UnknownToTestAllTypes::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -8874,6 +9287,7 @@ fun NullHypothesisProto2Internal.encodeWith(encoder: WireEncoder, config: Protob
 
 @InternalRpcApi
 fun NullHypothesisProto2Internal.Companion.decodeWith(msg: NullHypothesisProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(NullHypothesisProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -8918,6 +9332,7 @@ fun EnumOnlyProto2Internal.encodeWith(encoder: WireEncoder, config: ProtobufConf
 
 @InternalRpcApi
 fun EnumOnlyProto2Internal.Companion.decodeWith(msg: EnumOnlyProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(EnumOnlyProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -8960,10 +9375,17 @@ fun OneStringProto2Internal.encodeWith(encoder: WireEncoder, config: ProtobufCon
     this.data?.also {
         encoder.writeString(fieldNr = 1, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun OneStringProto2Internal.Companion.decodeWith(msg: OneStringProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(OneStringProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -9023,10 +9445,17 @@ fun ProtoWithKeywordsInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
             encoder.writeString(3, it)
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ProtoWithKeywordsInternal.Companion.decodeWith(msg: ProtoWithKeywordsInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ProtoWithKeywords::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -9413,10 +9842,17 @@ fun TestAllRequiredTypesProto2Internal.encodeWith(encoder: WireEncoder, config: 
     if (presenceMask[38]) {
         encoder.writeBytes(fieldNr = 255, value = this.defaultBytes)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.Companion.decodeWith(msg: TestAllRequiredTypesProto2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllRequiredTypesProto2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -9558,6 +9994,14 @@ fun TestAllRequiredTypesProto2Internal.Companion.decodeWith(msg: TestAllRequired
                 msg.defaultBytes = decoder.readBytes()
             }
             else -> {
+                val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
+                if (extension != null && tag.wireType in extension.acceptedWireTypes) {
+                    val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
+                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
+                    continue // with next tag
+                }
+
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
@@ -9734,6 +10178,7 @@ private fun TestAllRequiredTypesProto2Internal.computeSize(): Int {
         __result += WireSize.bytes(this.defaultBytes).let { WireSize.tag(255, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += extensionsSize()
     return __result
 }
 
@@ -9787,10 +10232,17 @@ fun TestLargeOneofInternal.encodeWith(encoder: WireEncoder, config: ProtobufConf
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestLargeOneofInternal.Companion.decodeWith(msg: TestLargeOneofInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -9895,10 +10347,17 @@ fun TestAllTypesProto2Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto2Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2.NestedMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -9962,6 +10421,12 @@ fun TestAllTypesProto2Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
 
     if (presenceMask[1]) {
         encoder.writeInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10027,6 +10492,12 @@ fun TestAllTypesProto2Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
     if (presenceMask[1]) {
         encoder.writeInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10090,6 +10561,12 @@ fun TestAllTypesProto2Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
 
     if (presenceMask[1]) {
         encoder.writeUInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10155,6 +10632,12 @@ fun TestAllTypesProto2Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
     if (presenceMask[1]) {
         encoder.writeUInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10218,6 +10701,12 @@ fun TestAllTypesProto2Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
 
     if (presenceMask[1]) {
         encoder.writeSInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10283,6 +10772,12 @@ fun TestAllTypesProto2Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
     if (presenceMask[1]) {
         encoder.writeSInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10346,6 +10841,12 @@ fun TestAllTypesProto2Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
 
     if (presenceMask[1]) {
         encoder.writeFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10411,6 +10912,12 @@ fun TestAllTypesProto2Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
     if (presenceMask[1]) {
         encoder.writeFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10474,6 +10981,12 @@ fun TestAllTypesProto2Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
 
     if (presenceMask[1]) {
         encoder.writeSFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10539,6 +11052,12 @@ fun TestAllTypesProto2Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
     if (presenceMask[1]) {
         encoder.writeSFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10602,6 +11121,12 @@ fun TestAllTypesProto2Internal.MapInt32BoolEntryInternal.encodeWith(encoder: Wir
 
     if (presenceMask[1]) {
         encoder.writeBool(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10667,6 +11192,12 @@ fun TestAllTypesProto2Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
     if (presenceMask[1]) {
         encoder.writeFloat(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10730,6 +11261,12 @@ fun TestAllTypesProto2Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
 
     if (presenceMask[1]) {
         encoder.writeDouble(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10797,6 +11334,12 @@ fun TestAllTypesProto2Internal.MapInt32NestedMessageEntryInternal.encodeWith(enc
 
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -10866,6 +11409,12 @@ fun TestAllTypesProto2Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
     if (presenceMask[1]) {
         encoder.writeBool(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10930,6 +11479,12 @@ fun TestAllTypesProto2Internal.MapStringStringEntryInternal.encodeWith(encoder: 
     if (presenceMask[1]) {
         encoder.writeString(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -10993,6 +11548,12 @@ fun TestAllTypesProto2Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
 
     if (presenceMask[1]) {
         encoder.writeBytes(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -11060,6 +11621,12 @@ fun TestAllTypesProto2Internal.MapStringNestedMessageEntryInternal.encodeWith(en
 
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -11132,6 +11699,12 @@ fun TestAllTypesProto2Internal.MapStringForeignMessageEntryInternal.encodeWith(e
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -11200,6 +11773,12 @@ fun TestAllTypesProto2Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
     if (presenceMask[1]) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -11264,6 +11843,12 @@ fun TestAllTypesProto2Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
     if (presenceMask[1]) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -11327,6 +11912,12 @@ fun TestAllTypesProto2Internal.DataInternal.encodeWith(encoder: WireEncoder, con
 
     this.groupUint32?.also {
         encoder.writeUInt32(fieldNr = 203, value = it)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -11403,6 +11994,12 @@ fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.encodeWith(encoder: W
     this.groupUint32?.also {
         encoder.writeUInt32(fieldNr = 206, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -11476,10 +12073,19 @@ fun TestAllTypesProto2Internal.MessageSetCorrectInternal.encodeWith(encoder: Wir
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectInternal.Companion.decodeWith(msg: TestAllTypesProto2Internal.MessageSetCorrectInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2.MessageSetCorrect::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             else -> {
+                val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
+                if (extension != null && tag.wireType in extension.acceptedWireTypes) {
+                    val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
+                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
+                    continue // with next tag
+                }
+
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
@@ -11500,6 +12106,7 @@ fun TestAllTypesProto2Internal.MessageSetCorrectInternal.Companion.decodeWith(ms
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectInternal.computeSize(): Int {
     var __result = 0
+    __result += extensionsSize()
     return __result
 }
 
@@ -11518,10 +12125,17 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.encodeWith(en
     this.str?.also {
         encoder.writeString(fieldNr = 25, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.Companion.decodeWith(msg: TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2.MessageSetCorrectExtension1::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -11571,10 +12185,17 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.encodeWith(en
     this.i?.also {
         encoder.writeInt32(fieldNr = 9, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.Companion.decodeWith(msg: TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2.MessageSetCorrectExtension2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -11631,10 +12252,17 @@ fun TestAllTypesProto2Internal.ExtensionWithOneofInternal.encodeWith(encoder: Wi
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.ExtensionWithOneofInternal.Companion.decodeWith(msg: TestAllTypesProto2Internal.ExtensionWithOneofInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesProto2.ExtensionWithOneof::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -11693,6 +12321,12 @@ fun UnknownToTestAllTypesInternal.OptionalGroupInternal.checkRequiredFields() {
 fun UnknownToTestAllTypesInternal.OptionalGroupInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     this.a?.also {
         encoder.writeInt32(fieldNr = 1, value = it)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -11780,10 +12414,17 @@ fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.encodeWith(encoder:
     if (presenceMask[2]) {
         encoder.writeMessage(fieldNr = 3, value = this.optionalCorecursive.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllRequiredTypesProto2Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllRequiredTypesProto2.NestedMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -11865,6 +12506,12 @@ fun TestAllRequiredTypesProto2Internal.DataInternal.encodeWith(encoder: WireEnco
     if (presenceMask[1]) {
         encoder.writeUInt32(fieldNr = 203, value = this.groupUint32)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -11938,10 +12585,19 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.encodeWith(enco
 
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.Companion.decodeWith(msg: TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllRequiredTypesProto2.MessageSetCorrect::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             else -> {
+                val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
+                if (extension != null && tag.wireType in extension.acceptedWireTypes) {
+                    val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
+                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
+                    continue // with next tag
+                }
+
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
@@ -11962,6 +12618,7 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.Companion.decod
 
 private fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.computeSize(): Int {
     var __result = 0
+    __result += extensionsSize()
     return __result
 }
 
@@ -11982,10 +12639,17 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.encod
     if (presenceMask[0]) {
         encoder.writeString(fieldNr = 25, value = this.str)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.Companion.decodeWith(msg: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllRequiredTypesProto2.MessageSetCorrectExtension1::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12037,10 +12701,17 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.encod
     if (presenceMask[0]) {
         encoder.writeInt32(fieldNr = 9, value = this.i)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.Companion.decodeWith(msg: TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllRequiredTypesProto2.MessageSetCorrectExtension2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12092,6 +12763,7 @@ fun TestLargeOneofInternal.A1Internal.encodeWith(encoder: WireEncoder, config: P
 
 @InternalRpcApi
 fun TestLargeOneofInternal.A1Internal.Companion.decodeWith(msg: TestLargeOneofInternal.A1Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof.A1::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12136,6 +12808,7 @@ fun TestLargeOneofInternal.A2Internal.encodeWith(encoder: WireEncoder, config: P
 
 @InternalRpcApi
 fun TestLargeOneofInternal.A2Internal.Companion.decodeWith(msg: TestLargeOneofInternal.A2Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof.A2::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12180,6 +12853,7 @@ fun TestLargeOneofInternal.A3Internal.encodeWith(encoder: WireEncoder, config: P
 
 @InternalRpcApi
 fun TestLargeOneofInternal.A3Internal.Companion.decodeWith(msg: TestLargeOneofInternal.A3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof.A3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12224,6 +12898,7 @@ fun TestLargeOneofInternal.A4Internal.encodeWith(encoder: WireEncoder, config: P
 
 @InternalRpcApi
 fun TestLargeOneofInternal.A4Internal.Companion.decodeWith(msg: TestLargeOneofInternal.A4Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof.A4::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12268,6 +12943,7 @@ fun TestLargeOneofInternal.A5Internal.encodeWith(encoder: WireEncoder, config: P
 
 @InternalRpcApi
 fun TestLargeOneofInternal.A5Internal.Companion.decodeWith(msg: TestLargeOneofInternal.A5Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestLargeOneof.A5::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -12371,6 +13047,102 @@ fun TestAllRequiredTypesProto2.NestedEnum.Companion.fromNumber(number: Int): Tes
         }
         else -> {
             TestAllRequiredTypesProto2.NestedEnum.UNRECOGNIZED(number)
+        }
+    }
+}
+
+@InternalRpcApi
+object TestMessagesProto2EditionsKtExtensions {
+    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  Int> =
+        InternalExtensionDescriptor.int32(
+            fieldNumber = 120,
+            name = "extensionInt32",
+            extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
+        )
+
+    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  GroupField> =
+        InternalExtensionDescriptor.message(
+            fieldNumber = 121,
+            name = "groupfield",
+            extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
+            valueType = GroupField::class,
+            default = { GroupFieldInternal() },
+            asInternal = { it.asInternal() },
+            encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+            decodeWith = { value, decoder, config -> GroupFieldInternal.decodeWith(value.asInternal(), decoder, config) },
+        )
+
+    object TestAllTypesProto2 {
+        object MessageSetCorrectExtension1 {
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> =
+                InternalExtensionDescriptor.message(
+                    fieldNumber = 1547769,
+                    name = "messageSetExtension",
+                    extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
+                    valueType = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1::class,
+                    default = { TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal() },
+                    asInternal = { it.asInternal() },
+                    encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+                    decodeWith = { value, decoder, config -> TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.decodeWith(value.asInternal(), decoder, config) },
+                )
+        }
+
+        object MessageSetCorrectExtension2 {
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> =
+                InternalExtensionDescriptor.message(
+                    fieldNumber = 4135312,
+                    name = "messageSetExtension",
+                    extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
+                    valueType = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2::class,
+                    default = { TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal() },
+                    asInternal = { it.asInternal() },
+                    encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+                    decodeWith = { value, decoder, config -> TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.decodeWith(value.asInternal(), decoder, config) },
+                )
+        }
+
+        object ExtensionWithOneof {
+            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof> =
+                InternalExtensionDescriptor.message(
+                    fieldNumber = 123456789,
+                    name = "extensionWithOneof",
+                    extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
+                    valueType = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof::class,
+                    default = { TestAllTypesProto2Internal.ExtensionWithOneofInternal() },
+                    asInternal = { it.asInternal() },
+                    encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+                    decodeWith = { value, decoder, config -> TestAllTypesProto2Internal.ExtensionWithOneofInternal.decodeWith(value.asInternal(), decoder, config) },
+                )
+        }
+    }
+
+    object TestAllRequiredTypesProto2 {
+        object MessageSetCorrectExtension1 {
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> =
+                InternalExtensionDescriptor.message(
+                    fieldNumber = 1547769,
+                    name = "messageSetExtension",
+                    extendee = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,
+                    valueType = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1::class,
+                    default = { TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal() },
+                    asInternal = { it.asInternal() },
+                    encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+                    decodeWith = { value, decoder, config -> TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.decodeWith(value.asInternal(), decoder, config) },
+                )
+        }
+
+        object MessageSetCorrectExtension2 {
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> =
+                InternalExtensionDescriptor.message(
+                    fieldNumber = 4135312,
+                    name = "messageSetExtension",
+                    extendee = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,
+                    valueType = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2::class,
+                    default = { TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal() },
+                    asInternal = { it.asInternal() },
+                    encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+                    decodeWith = { value, decoder, config -> TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.decodeWith(value.asInternal(), decoder, config) },
+                )
         }
     }
 }

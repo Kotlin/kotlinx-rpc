@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.edition2023
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -8,7 +9,10 @@ import kotlinx.rpc.grpc.marshaller.MessageMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.internal.ExtensionValue
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
@@ -67,14 +71,19 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
 
     override var d: Int? by MsgFieldDelegate(PresenceIndices.d) { null }
 
+    private val _owner: ComplexMessageInternal = this
+
     @InternalRpcApi
-    val _presence: ComplexMessagePresence = object : ComplexMessagePresence {
+    val _presence: ComplexMessagePresence = object : ComplexMessagePresence, InternalPresenceObject {
+        override val _message: ComplexMessageInternal get() = _owner
+
         override val hasD: Boolean get() = presenceMask[0]
     }
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return if (presenceMask[0]) (d?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (d?.hashCode() ?: 0) else 0
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -106,6 +115,10 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ComplexMessageInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -288,8 +301,12 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     override var delimitedField: TestAllTypesEdition2023.GroupLikeType by MsgFieldDelegate(PresenceIndices.delimitedField) { GroupLikeTypeInternal() }
     override var oneofField: TestAllTypesEdition2023.OneofField? = null
 
+    private val _owner: TestAllTypesEdition2023Internal = this
+
     @InternalRpcApi
-    val _presence: TestAllTypesEdition2023Presence = object : TestAllTypesEdition2023Presence {
+    val _presence: TestAllTypesEdition2023Presence = object : TestAllTypesEdition2023Presence, InternalPresenceObject {
+        override val _message: TestAllTypesEdition2023Internal get() = _owner
+
         override val hasOptionalInt32: Boolean get() = presenceMask[0]
 
         override val hasOptionalInt64: Boolean get() = presenceMask[1]
@@ -434,6 +451,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + if (presenceMask[22]) groupliketype.hashCode() else 0
         result = 31 * result + if (presenceMask[23]) delimitedField.hashCode() else 0
         result = 31 * result + (oneofField?.oneOfHashCode() ?: 0)
+        result = 31 * result + extensionsHashCode()
         return result
     }
 
@@ -568,6 +586,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (presenceMask[22] && this.groupliketype != other.groupliketype) return false
         if (presenceMask[23] && this.delimitedField != other.delimitedField) return false
         if (!oneOfEquals(this.oneofField, other.oneofField)) return false
+        if (!extensionsEqual(other)) return false
         return true
     }
 
@@ -794,8 +813,13 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
+        builder.appendExtensions(nextIndentString)
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): TestAllTypesEdition2023Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -966,6 +990,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         copy.oneofField = this.oneofField?.oneOfCopy()
+        copy.copyExtensionsFrom(this)
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -1022,8 +1047,12 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         override var a: Int? by MsgFieldDelegate(PresenceIndices.a) { null }
         override var corecursive: TestAllTypesEdition2023 by MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesEdition2023Internal() }
 
+        private val _owner: NestedMessageInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesEdition2023Presence.NestedMessage = object : TestAllTypesEdition2023Presence.NestedMessage {
+        val _presence: TestAllTypesEdition2023Presence.NestedMessage = object : TestAllTypesEdition2023Presence.NestedMessage, InternalPresenceObject {
+            override val _message: NestedMessageInternal get() = _owner
+
             override val hasA: Boolean get() = presenceMask[0]
 
             override val hasCorecursive: Boolean get() = presenceMask[1]
@@ -1072,6 +1101,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): NestedMessageInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -1145,6 +1178,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
+        private val _owner: MapInt32Int32EntryInternal = this
+
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1190,6 +1225,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32Int32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1211,6 +1250,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapInt64Int64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1257,6 +1298,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt64Int64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1278,6 +1323,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
+
+        private val _owner: MapUint32Uint32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1324,6 +1371,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapUint32Uint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1345,6 +1396,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        private val _owner: MapUint64Uint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1391,6 +1444,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapUint64Uint64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1412,6 +1469,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
+
+        private val _owner: MapSint32Sint32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1458,6 +1517,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSint32Sint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1479,6 +1542,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapSint64Sint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1525,6 +1590,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSint64Sint64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1546,6 +1615,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
+
+        private val _owner: MapFixed32Fixed32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1592,6 +1663,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapFixed32Fixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1613,6 +1688,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
+
+        private val _owner: MapFixed64Fixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1659,6 +1736,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapFixed64Fixed64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1680,6 +1761,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
+
+        private val _owner: MapSfixed32Sfixed32EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1726,6 +1809,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSfixed32Sfixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1747,6 +1834,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
+
+        private val _owner: MapSfixed64Sfixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1793,6 +1882,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSfixed64Sfixed64EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1814,6 +1907,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
+
+        private val _owner: MapInt32FloatEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1860,6 +1955,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32FloatEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1881,6 +1980,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
+
+        private val _owner: MapInt32DoubleEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1927,6 +2028,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32DoubleEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1948,6 +2053,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
+
+        private val _owner: MapBoolBoolEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1994,6 +2101,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapBoolBoolEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2015,6 +2126,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
+
+        private val _owner: MapStringStringEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2061,6 +2174,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringStringEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2082,6 +2199,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
+
+        private val _owner: MapStringBytesEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2128,6 +2247,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringBytesEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2149,6 +2272,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesEdition2023.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
+
+        private val _owner: MapStringNestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2195,6 +2320,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2216,6 +2345,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignMessageEdition2023 by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageEdition2023Internal() }
+
+        private val _owner: MapStringForeignMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2262,6 +2393,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringForeignMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2283,6 +2418,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesEdition2023.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { TestAllTypesEdition2023.NestedEnum.FOO }
+
+        private val _owner: MapStringNestedEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2329,6 +2466,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedEnumEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2350,6 +2491,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignEnumEdition2023 by MsgFieldDelegate(PresenceIndices.value) { ForeignEnumEdition2023.FOREIGN_FOO }
+
+        private val _owner: MapStringForeignEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2396,6 +2539,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringForeignEnumEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2418,8 +2565,12 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         override var groupInt32: Int? by MsgFieldDelegate(PresenceIndices.groupInt32) { null }
         override var groupUint32: UInt? by MsgFieldDelegate(PresenceIndices.groupUint32) { null }
 
+        private val _owner: GroupLikeTypeInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesEdition2023Presence.GroupLikeType = object : TestAllTypesEdition2023Presence.GroupLikeType {
+        val _presence: TestAllTypesEdition2023Presence.GroupLikeType = object : TestAllTypesEdition2023Presence.GroupLikeType, InternalPresenceObject {
+            override val _message: GroupLikeTypeInternal get() = _owner
+
             override val hasGroupInt32: Boolean get() = presenceMask[0]
 
             override val hasGroupUint32: Boolean get() = presenceMask[1]
@@ -2468,6 +2619,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): GroupLikeTypeInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -2576,14 +2731,19 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 
+    private val _owner: ForeignMessageEdition2023Internal = this
+
     @InternalRpcApi
-    val _presence: ForeignMessageEdition2023Presence = object : ForeignMessageEdition2023Presence {
+    val _presence: ForeignMessageEdition2023Presence = object : ForeignMessageEdition2023Presence, InternalPresenceObject {
+        override val _message: ForeignMessageEdition2023Internal get() = _owner
+
         override val hasC: Boolean get() = presenceMask[0]
     }
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2615,6 +2775,10 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ForeignMessageEdition2023Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -2682,14 +2846,19 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
 
     override var c: Int? by MsgFieldDelegate(PresenceIndices.c) { null }
 
+    private val _owner: GroupLikeTypeInternal = this
+
     @InternalRpcApi
-    val _presence: GroupLikeTypePresence = object : GroupLikeTypePresence {
+    val _presence: GroupLikeTypePresence = object : GroupLikeTypePresence, InternalPresenceObject {
+        override val _message: GroupLikeTypeInternal get() = _owner
+
         override val hasC: Boolean get() = presenceMask[0]
     }
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2721,6 +2890,10 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): GroupLikeTypeInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -2782,10 +2955,17 @@ fun ComplexMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConf
     this.d?.also {
         encoder.writeInt32(fieldNr = 1, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ComplexMessageInternal.Companion.decodeWith(msg: ComplexMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ComplexMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -3466,10 +3646,17 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesEdition2023::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -4038,6 +4225,14 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                 msg.oneofField = TestAllTypesEdition2023.OneofField.OneofEnum(TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum()))
             }
             else -> {
+                val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
+                if (extension != null && tag.wireType in extension.acceptedWireTypes) {
+                    val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
+                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
+                    continue // with next tag
+                }
+
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
                 }
@@ -4572,6 +4767,7 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
         }
     }
 
+    __result += extensionsSize()
     return __result
 }
 
@@ -4590,10 +4786,17 @@ fun ForeignMessageEdition2023Internal.encodeWith(encoder: WireEncoder, config: P
     this.c?.also {
         encoder.writeInt32(fieldNr = 1, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ForeignMessageEdition2023Internal.Companion.decodeWith(msg: ForeignMessageEdition2023Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ForeignMessageEdition2023::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -4643,10 +4846,17 @@ fun GroupLikeTypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
     this.c?.also {
         encoder.writeInt32(fieldNr = 1, value = it)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun GroupLikeTypeInternal.Companion.decodeWith(msg: GroupLikeTypeInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(GroupLikeType::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -4703,10 +4913,17 @@ fun TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(encoder: Wi
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestAllTypesEdition2023.NestedMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -4770,6 +4987,12 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(encode
 
     if (presenceMask[1]) {
         encoder.writeInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -4835,6 +5058,12 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(encode
     if (presenceMask[1]) {
         encoder.writeInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -4898,6 +5127,12 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(enco
 
     if (presenceMask[1]) {
         encoder.writeUInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -4963,6 +5198,12 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(enco
     if (presenceMask[1]) {
         encoder.writeUInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5026,6 +5267,12 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(enco
 
     if (presenceMask[1]) {
         encoder.writeSInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5091,6 +5338,12 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(enco
     if (presenceMask[1]) {
         encoder.writeSInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5154,6 +5407,12 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(en
 
     if (presenceMask[1]) {
         encoder.writeFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5219,6 +5478,12 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(en
     if (presenceMask[1]) {
         encoder.writeFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5282,6 +5547,12 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(
 
     if (presenceMask[1]) {
         encoder.writeSFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5347,6 +5618,12 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(
     if (presenceMask[1]) {
         encoder.writeSFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5410,6 +5687,12 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(encode
 
     if (presenceMask[1]) {
         encoder.writeFloat(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5475,6 +5758,12 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(encod
     if (presenceMask[1]) {
         encoder.writeDouble(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5538,6 +5827,12 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(encoder:
 
     if (presenceMask[1]) {
         encoder.writeBool(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5603,6 +5898,12 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(enco
     if (presenceMask[1]) {
         encoder.writeString(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5666,6 +5967,12 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(encod
 
     if (presenceMask[1]) {
         encoder.writeBytes(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5733,6 +6040,12 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWi
 
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5805,6 +6118,12 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeW
     if (presenceMask[1]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5873,6 +6192,12 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(
     if (presenceMask[1]) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5937,6 +6262,12 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith
     if (presenceMask[1]) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -6000,6 +6331,12 @@ fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(encoder: Wi
 
     this.groupUint32?.also {
         encoder.writeUInt32(fieldNr = 203, value = it)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -6099,4 +6436,38 @@ fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAl
             TestAllTypesEdition2023.NestedEnum.UNRECOGNIZED(number)
         }
     }
+}
+
+@InternalRpcApi
+object TestMessagesEdition2023KtExtensions {
+    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> =
+        InternalExtensionDescriptor.int32(
+            fieldNumber = 120,
+            name = "extensionInt32",
+            extendee = TestAllTypesEdition2023::class,
+        )
+
+    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =
+        InternalExtensionDescriptor.message(
+            fieldNumber = 121,
+            name = "groupliketype",
+            extendee = TestAllTypesEdition2023::class,
+            valueType = GroupLikeType::class,
+            default = { GroupLikeTypeInternal() },
+            asInternal = { it.asInternal() },
+            encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+            decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
+        )
+
+    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =
+        InternalExtensionDescriptor.message(
+            fieldNumber = 122,
+            name = "delimitedExt",
+            extendee = TestAllTypesEdition2023::class,
+            valueType = GroupLikeType::class,
+            default = { GroupLikeTypeInternal() },
+            asInternal = { it.asInternal() },
+            encodeWith = { value, encoder, config -> value.asInternal().encodeWith(encoder, config) },
+            decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
+        )
 }
