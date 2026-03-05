@@ -13,23 +13,38 @@ import kotlin.reflect.safeCast
 
 @InternalRpcApi
 public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> private constructor(
+    // Used by ProtoExtensionRegistry to index descriptors by extendee message type.
     public override val messageType: KClass<T>,
+    // Needed for runtime casts when values are stored in erased Any slots.
     public val valueType: KClass<V>,
+    // Protobuf field number used for extension lookup and wire encoding.
     public override val fieldNumber: Int,
+    // Human-readable/debug name (used in toString rendering of extension values).
     public val name: String,
+    // Canonical wire type for this extension in non-packed form.
     public val wireType: WireType,
+    // Accepts alternative wire representations (e.g., packed/unpacked compatibility).
     public val acceptedWireTypes: Set<WireType> = setOf(wireType),
-    public val isRepeated: Boolean,
-    public val isPacked: Boolean,
+    // Default value exposed by generated extension getters when extension is unset.
     public val defaultValue: Lazy<V>,
+    // Computes encoded size for value currently stored in the extension map.
     public val size: (Int, Any) -> Int,
+    // Encodes value currently stored in the extension map.
     public val encode: (WireEncoder, Int, Any, ProtobufConfig?) -> Unit,
+    // Decodes one field occurrence from wire format.
     public val decode: (Any?, WireDecoder, ProtobufConfig?) -> V,
+    // Optional packed decoder for repeated packable extensions.
     public val decodePacked: ((Any?, WireDecoder, ProtobufConfig?) -> V)? = null,
+    // Deep-copy strategy used by InternalMessage.copyExtensionsFrom.
     public val copy: (Any) -> V,
-    public val encodePacked: ((WireEncoder, Int, List<V>) -> Unit)? = null,
-    public val decodePackedValues: ((WireDecoder) -> List<V>)? = null,
+    // Helper used by packedRepeated(...) to emit packed payloads for element descriptors.
+    private val encodePacked: ((WireEncoder, Int, List<V>) -> Unit)? = null,
+    // Helper used by packedRepeated(...) to decode packed element payloads.
+    private val decodePackedValues: ((WireDecoder) -> List<V>)? = null,
 ): ProtoExtensionDescriptor<T, V> {
+    // Packed-ness is fully determined by whether a packed decoder exists.
+    public val isPacked: Boolean get() = decodePacked != null
+
     public companion object {
 
         public fun <@GeneratedProtoMessage T : Any> bool(
@@ -43,8 +58,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = Boolean::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.bool(value.encodingCast<Boolean>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeBool(fieldNr, value.encodingCast<Boolean>()) },
@@ -68,8 +81,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = Int::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int32(value.encodingCast<Int>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeInt32(fieldNr, value.encodingCast<Int>()) },
@@ -93,8 +104,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = Long::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int64(value.encodingCast<Long>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeInt64(fieldNr, value.encodingCast<Long>()) },
@@ -118,8 +127,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = UInt::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt32(value.encodingCast<UInt>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeUInt32(fieldNr, value.encodingCast<UInt>()) },
@@ -143,8 +150,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = ULong::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt64(value.encodingCast<ULong>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeUInt64(fieldNr, value.encodingCast<ULong>()) },
@@ -168,8 +173,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = Int::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt32(value.encodingCast<Int>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeSInt32(fieldNr, value.encodingCast<Int>()) },
@@ -193,8 +196,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = Long::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt64(value.encodingCast<Long>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeSInt64(fieldNr, value.encodingCast<Long>()) },
@@ -218,8 +219,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.FIXED32,
             messageType = extendee,
             valueType = UInt::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.fixed32(value.encodingCast<UInt>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeFixed32(fieldNr, value.encodingCast<UInt>()) },
@@ -240,8 +239,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.FIXED64,
             messageType = extendee,
             valueType = ULong::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.fixed64(value.encodingCast<ULong>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeFixed64(fieldNr, value.encodingCast<ULong>()) },
@@ -262,8 +259,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.FIXED32,
             messageType = extendee,
             valueType = Int::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.sFixed32(value.encodingCast<Int>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeSFixed32(fieldNr, value.encodingCast<Int>()) },
@@ -284,8 +279,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.FIXED64,
             messageType = extendee,
             valueType = Long::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.sFixed64(value.encodingCast<Long>()) },
             encode = { enc, fieldNr, value, _ -> enc.writeSFixed64(fieldNr, value.encodingCast<Long>()) },
@@ -305,8 +298,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             name = name,
             wireType = WireType.FIXED32,
             messageType = extendee,
-            isRepeated = false,
-            isPacked = false,
             valueType = Float::class,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.float(value.encodingCast<Float>()) },
@@ -327,8 +318,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             name = name,
             wireType = WireType.FIXED64,
             messageType = extendee,
-            isRepeated = false,
-            isPacked = false,
             valueType = Double::class,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.double(value.encodingCast<Double>()) },
@@ -350,8 +339,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.LENGTH_DELIMITED,
             messageType = extendee,
             valueType = ByteArray::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value ->
                 val bytes = value.encodingCast<ByteArray>()
@@ -373,8 +360,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.LENGTH_DELIMITED,
             messageType = extendee,
             valueType = String::class,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value ->
                 val string = value.encodingCast<String>()
@@ -400,8 +385,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.VARINT,
             messageType = extendee,
             valueType = valueType,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { defaultValue() },
             size = { fieldNr, value ->
                 WireSize.tag(fieldNr, WireType.VARINT) + WireSize.enum(encodeValue(value.encodingCast(valueType)))
@@ -427,7 +410,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
         )
 
-        // TODO: Annotate V with @GeneratedProtoMessage
         public fun <@GeneratedProtoMessage T : Any, V : Any> message(
             fieldNumber: Int,
             name: String,
@@ -443,8 +425,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.LENGTH_DELIMITED,
             messageType = extendee,
             valueType = valueType,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { default() },
             size = { fieldNr, value ->
                 val size = asInternal(value.encodingCast(valueType))._size
@@ -469,7 +449,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             }
         )
 
-        // TODO: Annotate V with @GeneratedProtoMessage
         public fun <@GeneratedProtoMessage T : Any, V : Any> group(
             fieldNumber: Int,
             name: String,
@@ -485,8 +464,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             wireType = WireType.START_GROUP,
             messageType = extendee,
             valueType = valueType,
-            isRepeated = false,
-            isPacked = false,
             defaultValue = lazy { default() },
             size = { fieldNr, value ->
                 val groupSize = asInternal(value.encodingCast(valueType))._size
@@ -527,8 +504,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 wireType = elementDescriptor.wireType,
                 messageType = elementDescriptor.messageType,
                 valueType = listType,
-                isRepeated = true,
-                isPacked = false,
                 defaultValue = lazy(defaultValue),
                 size = { _, value ->
                     // Non-packed repeated extensions write one field occurrence per element.
@@ -576,8 +551,6 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 acceptedWireTypes = setOf(WireType.LENGTH_DELIMITED, elementDescriptor.wireType),
                 messageType = elementDescriptor.messageType,
                 valueType = listType,
-                isRepeated = true,
-                isPacked = true,
                 defaultValue = lazy(defaultValue),
                 size = { _, value ->
                     val elements = listType.cast(value)

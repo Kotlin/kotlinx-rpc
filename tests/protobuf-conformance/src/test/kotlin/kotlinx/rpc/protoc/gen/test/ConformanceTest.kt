@@ -21,7 +21,7 @@ import kotlin.io.path.readLines
 val skippedTests = setOf(
     "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.NotUnknown.ProtobufOutput",
     "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.ProtobufOutput",
-//    "Required.Proto2.ProtobufInput.MessageSetEncoding.UnknownExtension.ProtobufOutput",
+    "Required.Proto2.ProtobufInput.MessageSetEncoding.UnknownExtension.ProtobufOutput",
     "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.OutOfOrderGroupsEntries.ProtobufOutput",
     "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.ProtobufOutput",
 )

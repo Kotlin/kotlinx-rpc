@@ -1231,7 +1231,7 @@ class ModelToProtobufKotlinCommonGenerator(
                             ifBranch(condition = "extension != null && tag.wireType in extension.acceptedWireTypes".scoped(), ifBlock = {
                                 code("val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value".scoped())
                                 code(
-                                    "val decodedExtension = if (extension.isPacked && tag.wireType == %T) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)"
+                                    "val decodedExtension = if (extension.decodePacked != null && tag.wireType == %T) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)"
                                         .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
                                 )
                                 code("msg._extensions[tag.fieldNr] = %T(decodedExtension, extension)".scoped(FqName.RpcClasses.ExtensionValue))
