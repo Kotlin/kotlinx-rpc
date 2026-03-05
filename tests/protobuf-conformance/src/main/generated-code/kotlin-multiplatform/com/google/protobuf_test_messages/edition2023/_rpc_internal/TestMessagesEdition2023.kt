@@ -4228,7 +4228,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
                 if (extension != null && tag.wireType in extension.acceptedWireTypes) {
                     val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
-                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    val decodedExtension = if (extension.decodePacked != null && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
                     msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
                     continue // with next tag
                 }

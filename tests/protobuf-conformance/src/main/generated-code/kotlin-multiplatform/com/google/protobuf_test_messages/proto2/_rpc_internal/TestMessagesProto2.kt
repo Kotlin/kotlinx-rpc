@@ -8304,7 +8304,7 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
                 if (extension != null && tag.wireType in extension.acceptedWireTypes) {
                     val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
-                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    val decodedExtension = if (extension.decodePacked != null && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
                     msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
                     continue // with next tag
                 }
@@ -9997,7 +9997,7 @@ fun TestAllRequiredTypesProto2Internal.Companion.decodeWith(msg: TestAllRequired
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
                 if (extension != null && tag.wireType in extension.acceptedWireTypes) {
                     val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
-                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    val decodedExtension = if (extension.decodePacked != null && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
                     msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
                     continue // with next tag
                 }
@@ -12081,7 +12081,7 @@ fun TestAllTypesProto2Internal.MessageSetCorrectInternal.Companion.decodeWith(ms
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
                 if (extension != null && tag.wireType in extension.acceptedWireTypes) {
                     val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
-                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    val decodedExtension = if (extension.decodePacked != null && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
                     msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
                     continue // with next tag
                 }
@@ -12593,7 +12593,7 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.Companion.decod
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
                 if (extension != null && tag.wireType in extension.acceptedWireTypes) {
                     val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value
-                    val decodedExtension = if (extension.isPacked && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked!!(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
+                    val decodedExtension = if (extension.decodePacked != null && tag.wireType == WireType.LENGTH_DELIMITED) extension.decodePacked(currentExtension, decoder, config) else extension.decode(currentExtension, decoder, config)
                     msg._extensions[tag.fieldNr] = ExtensionValue(decodedExtension, extension)
                     continue // with next tag
                 }
