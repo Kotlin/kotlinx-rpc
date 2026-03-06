@@ -7,7 +7,7 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
-import kotlinx.rpc.protobuf.buildProtoExtensionRegistry
+import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -43,7 +43,7 @@ class ProtoExtensionTest {
 
     @Test
     fun `test extension registry - register single extension`() {
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             register(ExtensionBase.int32)
         }
 
@@ -54,11 +54,11 @@ class ProtoExtensionTest {
 
     @Test
     fun `test extension registry - register all extensions from other registry`() {
-        val other = buildProtoExtensionRegistry {
+        val other = ProtoExtensionRegistry {
             register(ExtensionBase.int32)
             register(ExtensionBase.enum)
         }
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             registerAll(other)
         }
 
@@ -145,7 +145,7 @@ class ProtoExtensionTest {
         val plainCodec = marshallerOf<ExtensionBase>()
         val encoded = plainCodec.encode(message)
 
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.int32
             +ExtensionBase.string
             +ExtensionBase.enum
@@ -180,7 +180,7 @@ class ProtoExtensionTest {
         val plainCodec = marshallerOf<ExtensionBase>()
         val encoded = plainCodec.encode(message)
 
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.int32
             +ExtensionBase.subExt
         }
@@ -230,7 +230,7 @@ class ProtoExtensionTest {
         }
 
         val encoded = marshallerOf<ExtensionBase>().encode(message)
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.string
             +ExtensionBase.msg
             +ExtensionBase.subExt
@@ -254,15 +254,27 @@ class ProtoExtensionTest {
                 int32 = 123
                 string = "group-string"
             }
+            with(MessageScopedExtensions) {
+                testgroup = MessageScoped.TestGroup {
+                    int32 = 456
+                }
+            }
         }
 
         val encoded = marshallerOf<ExtensionBase>().encode(message)
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.testgroup
+            with(MessageScopedExtensions) {
+                +ExtensionBase.testgroup
+            }
         }
         val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
 
         assertEquals(message.testgroup, decoded.testgroup)
+        with(MessageScopedExtensions) {
+            assertEquals(message.testgroup, decoded.testgroup)
+            assertEquals(MessageScoped.TestGroup { int32 = 456 }, decoded.testgroup)
+        }
     }
 
     @Test
@@ -274,7 +286,7 @@ class ProtoExtensionTest {
 
         val encoded = marshallerOf<ExtensionBase>().encode(message)
 
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
@@ -297,7 +309,7 @@ class ProtoExtensionTest {
         }
         encoder.flush()
 
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
@@ -320,7 +332,7 @@ class ProtoExtensionTest {
         }
 
         val encoded = marshallerOf<ExtensionBase>().encode(message)
-        val registry = buildProtoExtensionRegistry {
+        val registry = ProtoExtensionRegistry {
             +ExtensionBase.conflicting
             with(MessageScopedExtensions) {
                 +ExtensionBase.conflicting

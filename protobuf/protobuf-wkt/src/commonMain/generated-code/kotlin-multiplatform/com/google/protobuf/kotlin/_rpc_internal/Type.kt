@@ -193,8 +193,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     public override var jsonName: String by MsgFieldDelegate { "" }
     public override var defaultValue: String by MsgFieldDelegate { "" }
 
-    private val _owner: FieldInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = kind.hashCode()
@@ -465,8 +463,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     public override var name: String by MsgFieldDelegate { "" }
     public override var number: Int by MsgFieldDelegate { 0 }
     public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
-
-    private val _owner: EnumValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()

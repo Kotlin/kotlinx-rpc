@@ -37,8 +37,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     public override var typeUrl: String by MsgFieldDelegate { "" }
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
 
-    private val _owner: AnyInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = typeUrl.hashCode()

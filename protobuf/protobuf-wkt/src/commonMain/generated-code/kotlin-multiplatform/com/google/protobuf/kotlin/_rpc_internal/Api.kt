@@ -190,8 +190,6 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
     public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
 
-    private val _owner: MethodInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = name.hashCode()
@@ -309,8 +307,6 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
 
     public override var name: String by MsgFieldDelegate { "" }
     public override var root: String by MsgFieldDelegate { "" }
-
-    private val _owner: MixinInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()

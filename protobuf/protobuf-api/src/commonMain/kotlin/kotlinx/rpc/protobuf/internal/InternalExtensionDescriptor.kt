@@ -12,41 +12,47 @@ import kotlin.reflect.cast
 import kotlin.reflect.safeCast
 
 @InternalRpcApi
+/**
+ * Internal runtime descriptor for a protobuf extension field.
+ */
 public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> private constructor(
-    // Used by ProtoExtensionRegistry to index descriptors by extendee message type.
+    /** Extendee message type used by [kotlinx.rpc.protobuf.ProtoExtensionRegistry] lookup. */
     public override val messageType: KClass<T>,
-    // Needed for runtime casts when values are stored in erased Any slots.
+    /** Runtime value type used for safe casts from erased `Any` slots. */
     public val valueType: KClass<V>,
-    // Protobuf field number used for extension lookup and wire encoding.
+    /** Protobuf field number of this extension. */
     public override val fieldNumber: Int,
-    // Human-readable/debug name (used in toString rendering of extension values).
+    /** Human-readable extension name used in debug/string rendering. */
     public val name: String,
-    // Canonical wire type for this extension in non-packed form.
+    /** Canonical wire type for non-packed encoding. */
     public val wireType: WireType,
-    // Accepts alternative wire representations (e.g., packed/unpacked compatibility).
+    /** Accepted wire types during decode (supports packed/unpacked compatibility). */
     public val acceptedWireTypes: Set<WireType> = setOf(wireType),
-    // Default value exposed by generated extension getters when extension is unset.
+    /** Lazy default value returned by generated extension getters when unset. */
     public val defaultValue: Lazy<V>,
-    // Computes encoded size for value currently stored in the extension map.
-    public val size: (Int, Any) -> Int,
-    // Encodes value currently stored in the extension map.
-    public val encode: (WireEncoder, Int, Any, ProtobufConfig?) -> Unit,
-    // Decodes one field occurrence from wire format.
-    public val decode: (Any?, WireDecoder, ProtobufConfig?) -> V,
-    // Optional packed decoder for repeated packable extensions.
-    public val decodePacked: ((Any?, WireDecoder, ProtobufConfig?) -> V)? = null,
-    // Deep-copy strategy used by InternalMessage.copyExtensionsFrom.
-    public val copy: (Any) -> V,
-    // Helper used by packedRepeated(...) to emit packed payloads for element descriptors.
-    private val encodePacked: ((WireEncoder, Int, List<V>) -> Unit)? = null,
-    // Helper used by packedRepeated(...) to decode packed element payloads.
-    private val decodePackedValues: ((WireDecoder) -> List<V>)? = null,
+    /** Computes encoded size of the stored extension value, including the tag and potentially length */
+    public val size: (fieldNumber: Int, value: Any) -> Int,
+    /** Encodes the stored extension value to wire format. */
+    public val encode: (encoder: WireEncoder, fieldNumber: Int, value: Any, config: ProtobufConfig?) -> Unit,
+    /** Decodes one extension field occurrence from wire format.
+     *
+     * @param currentValue The current value of the extension, or `null` if the field is unset.
+     *                     This is necessary for messages that are send in multiple batches and not at ones.
+     */
+    public val decode: (currentValue: Any?, decoder: WireDecoder, config: ProtobufConfig?) -> V,
+    /** Optional packed decoder for repeated packable extensions. */
+    public val decodePacked: ((currentValue: Any?, decoder: WireDecoder, config: ProtobufConfig?) -> V)? = null,
+    /** Deep-copy strategy used when copying extension maps between messages. */
+    public val copy: (value: Any) -> V,
+    /** Packed payload encoder used by `packedRepeated(...)` element descriptors. */
+    private val encodePacked: ((encoder: WireEncoder, fieldNumber: Int, value: List<V>) -> Unit)? = null,
+    /** Packed payload decoder used by `packedRepeated(...)` element descriptors. */
+    private val decodePackedValues: ((decoder: WireDecoder) -> List<V>)? = null,
 ): ProtoExtensionDescriptor<T, V> {
     // Packed-ness is fully determined by whether a packed decoder exists.
     public val isPacked: Boolean get() = decodePacked != null
 
     public companion object {
-
         public fun <@GeneratedProtoMessage T : Any> bool(
             fieldNumber: Int,
             name: String,
@@ -572,12 +578,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     }
                 },
                 decode = { currentValue, dec, config ->
-                    val result = currentValue?.let { listType.cast(it).toMutableList() } ?: defaultValue().toMutableList()
+                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
                     result += elementDescriptor.decode(null, dec, config)
                     result
                 },
                 decodePacked = { currentValue, dec, _ ->
-                    val result = currentValue?.let { listType.cast(it).toMutableList() } ?: defaultValue().toMutableList()
+                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
                     result += decodePackedValues(dec)
                     result
                 },

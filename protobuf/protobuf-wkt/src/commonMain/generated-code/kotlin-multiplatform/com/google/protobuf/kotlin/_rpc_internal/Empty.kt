@@ -27,8 +27,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    private val _owner: EmptyInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = this::class.hashCode()

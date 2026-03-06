@@ -36,8 +36,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
 
     public override var fileName: String by MsgFieldDelegate { "" }
 
-    private val _owner: SourceContextInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = fileName.hashCode()

@@ -73,7 +73,6 @@ public abstract class InternalMessage(
     }
 
     protected fun copyExtensionsFrom(other: InternalMessage) {
-        // we don't have to copy the value's themself, as they
         other._extensions.forEach { (key, value) ->
             val descriptor = value.descriptor
             val castedValue = descriptor.valueType.cast(value.value)

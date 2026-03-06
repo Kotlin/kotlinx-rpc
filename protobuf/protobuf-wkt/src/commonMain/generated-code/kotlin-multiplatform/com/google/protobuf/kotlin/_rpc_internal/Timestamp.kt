@@ -40,8 +40,6 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
     public override var seconds: Long by MsgFieldDelegate { 0L }
     public override var nanos: Int by MsgFieldDelegate { 0 }
 
-    private val _owner: TimestampInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = seconds.hashCode()

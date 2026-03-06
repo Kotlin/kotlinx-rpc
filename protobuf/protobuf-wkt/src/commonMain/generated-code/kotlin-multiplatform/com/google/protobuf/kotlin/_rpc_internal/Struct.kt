@@ -43,8 +43,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
     public override var fields: Map<String, Value> by MsgFieldDelegate { mutableMapOf() }
 
-    private val _owner: StructInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = fields.hashCode()
@@ -105,8 +103,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
         public var key: String by MsgFieldDelegate { "" }
         public var value: Value by MsgFieldDelegate(PresenceIndices.value) { ValueInternal() }
-
-        private val _owner: FieldsEntryInternal = this
 
         public override fun hashCode(): Int {
             checkRequiredFields()
@@ -204,8 +200,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var kind: Value.Kind? = null
-
-    private val _owner: ValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -348,8 +342,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var values: List<Value> by MsgFieldDelegate { mutableListOf() }
-
-    private val _owner: ListValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()

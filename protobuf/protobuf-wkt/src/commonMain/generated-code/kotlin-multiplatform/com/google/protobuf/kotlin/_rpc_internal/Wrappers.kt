@@ -43,8 +43,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
     public override var value: Double by MsgFieldDelegate { 0.0 }
 
-    private val _owner: DoubleValueInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = value.toBits().hashCode()
@@ -137,8 +135,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var value: Float by MsgFieldDelegate { 0.0f }
-
-    private val _owner: FloatValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -233,8 +229,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
 
     public override var value: Long by MsgFieldDelegate { 0L }
 
-    private val _owner: Int64ValueInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = value.hashCode()
@@ -327,8 +321,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var value: ULong by MsgFieldDelegate { 0uL }
-
-    private val _owner: UInt64ValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -423,8 +415,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
 
     public override var value: Int by MsgFieldDelegate { 0 }
 
-    private val _owner: Int32ValueInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = value.hashCode()
@@ -517,8 +507,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var value: UInt by MsgFieldDelegate { 0u }
-
-    private val _owner: UInt32ValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -613,8 +601,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
 
     public override var value: Boolean by MsgFieldDelegate { false }
 
-    private val _owner: BoolValueInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = value.hashCode()
@@ -708,8 +694,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
 
     public override var value: String by MsgFieldDelegate { "" }
 
-    private val _owner: StringValueInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = value.hashCode()
@@ -802,8 +786,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
-
-    private val _owner: BytesValueInternal = this
 
     public override fun hashCode(): Int {
         checkRequiredFields()

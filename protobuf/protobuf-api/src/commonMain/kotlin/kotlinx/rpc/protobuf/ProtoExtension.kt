@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  * Protobuf extension descriptor.
  *
  * This interface is not meant to be implemented by users.
- * But is used by the protoc compiler plugin to generate extension descriptors.
+ * But is used by the protoc plugin to generate extension descriptors.
  */
 @SubclassOptInRequired
 public interface ProtoExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> {
@@ -27,12 +27,12 @@ public interface ProtoExtensionDescriptor<@GeneratedProtoMessage T : Any, V : An
  *
  * Example:
  * ```
- * val registry = buildProtoExtensionRegistry {
+ * val registry = ProtoExtensionRegistry {
  *     +MyMessage.myExtension
  * }
  * ```
  */
-public fun buildProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> Unit): ProtoExtensionRegistry {
+public fun ProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> Unit): ProtoExtensionRegistry {
     return ProtoExtensionRegistry().also {
         it.newBuilder().apply(builder)
     }
@@ -41,15 +41,15 @@ public fun buildProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.(
 /**
  * Runtime registry of known extension descriptors.
  *
- * The registry can be attached to a [ProtobufConfig] to enable extension parsing.
+ * The registry can be passed to a [ProtobufConfig] to enable extension parsing.
  * During decoding, the protobuf runtime looks up extension descriptors by
  * `(message type, field number)` and delegates parsing to the matching descriptor.
  *
- * A registry can be created using [buildProtoExtensionRegistry].
+ * A registry can be created using [ProtoExtensionRegistry].
  *
  * Example:
  * ```
- * val registry = buildProtoExtensionRegistry {
+ * val registry = ProtoExtensionRegistry {
  *     +MyFileExtensions.myExtension
  *     +MyFileExtensions.anotherExtension
  * }

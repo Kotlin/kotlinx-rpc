@@ -60,4 +60,10 @@ message MessageScoped {
       optional int32 conflicting = 22;
     }
   }
+
+  extend ExtensionBase {
+    optional group TestGroup = 23 {
+      optional int32 int32 = 1;
+    }
+  }
 }

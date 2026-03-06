@@ -43,8 +43,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
 
     public override var paths: List<String> by MsgFieldDelegate { mutableListOf() }
 
-    private val _owner: FieldMaskInternal = this
-
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = paths.hashCode()

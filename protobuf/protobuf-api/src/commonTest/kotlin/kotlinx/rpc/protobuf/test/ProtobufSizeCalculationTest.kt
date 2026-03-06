@@ -126,7 +126,7 @@ class ProtobufSizeCalculationTest {
     @Test
     fun testLengthDelimitedScalarExtensionSizeIsCorrect() {
         val message = ExtensionBaseInternal().apply {
-            setExtensionValue(stringExtension, "hello")
+            setExtensionValue(stringExtension, "hello".repeat(200))
         }
 
         assertExtensionBaseSizeMatchesEncoding(
@@ -216,7 +216,4 @@ class ProtobufSizeCalculationTest {
             "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) for $label. Actual bytes: ${bytes.toHexString()}"
         )
     }
-
-    // TODO: Add extension size tests for map-typed extensions once extension descriptor generation supports FieldType.Map.
-    // TODO: Add extension size tests for oneof-typed extensions if/when extension descriptor generation supports FieldType.OneOf.
 }

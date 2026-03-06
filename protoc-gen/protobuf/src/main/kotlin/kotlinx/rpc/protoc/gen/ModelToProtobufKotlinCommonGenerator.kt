@@ -46,7 +46,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // Nested types generated per message
         "Builder", "Companion", "MARSHALLER", "DESCRIPTOR", "PresenceIndices", "BytesDefaults",
         // Internal properties that cannot be mangled (referenced by fixed names across generated files)
-        "_size", "_unknownFields", "_presence", "presenceMask",
+        "_size", "_unknownFields", "_presence", "presenceMask", "_extensions",
         // Public extension functions
         "copy", "invoke", "presence",
     )
@@ -59,12 +59,12 @@ class ModelToProtobufKotlinCommonGenerator(
         get() = hasPublicGeneratedContent || allExtensions().isNotEmpty()
 
     override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
-        fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { generatePublicMessage(it) }
+        fileDeclaration.messageDeclarations.forEach { generatePublicMessage(it) }
         fileDeclaration.enumDeclarations.forEach { generatePublicEnum(it) }
     }
 
     override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {
-        generateExtensionMessageEntities(fileDeclaration.messageDeclarationsWithExtensionGroups())
+        generateExtensionMessageEntities(fileDeclaration.messageDeclarations)
 
         // Keep file-level extensions in top-level scope.
         fileDeclaration.extensions.forEach { extension ->
@@ -72,16 +72,16 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         // Message-scoped extensions are emitted in namespace objects.
-        fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { message ->
+        fileDeclaration.messageDeclarations.forEach { message ->
             generateMessageExtensionNamespace(message)
         }
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
-        generateInternalMessageEntities(fileDeclaration.messageDeclarationsWithExtensionGroups())
+        generateInternalMessageEntities(fileDeclaration.messageDeclarations)
 
         val allEnums =
-            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarationsWithExtensionGroups()
+            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations
                 .flatMap { it.enumDeclarations + it.allNestedRecursively().flatMap(MessageDeclaration::enumDeclarations) }
         allEnums.forEach { enum ->
             generateInternalEnumConstructor(enum)
@@ -263,19 +263,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
                 )
             }
-
-            // this property is required to implement the InternalPresenceObject interface
-            // for every possible case: if we have a nested message type with the same name
-            // like MyClass1Internal.StringInternal.StringInternal, we cannot use "this@StringInternal"
-            // as it is ambiguous.
-            // to workaround this, we add the "_owner" property to the internal message, that can be
-            // used by the presence object to reference its message.
-            property(
-                name = "_owner",
-                modifiers = "private",
-                type = declaration.internalClassName.scoped(),
-                value = "this".scoped(),
-            )
 
             generateInternalPresenceObjectProperty(declaration)
             generateHashCode(declaration)
@@ -704,6 +691,10 @@ class ModelToProtobufKotlinCommonGenerator(
             if (declaration.isUserFacing) {
                 code("return copyInternal { }".scoped())
             } else {
+                // this is a map-entry, so copy on this internal message (solely used for encoding and decoding)
+                // is never going to be copied, as it is never part of an actual message.
+                // this is because during decoding, a Proto map entry (this message) is transformed into
+                // a Kotlin map entry.
                 code("return this".scoped())
             }
         }
@@ -883,23 +874,22 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration) {
         val name = declaration.name
         val extendee = declaration.containingType.value
-        val descriptorRef = "%T".scoped(requireNotNull(declaration.extensionDescriptorName) {
+        val descriptorRef = requireNotNull(declaration.extensionDescriptorName) {
             "Missing extension descriptor name for ${declaration.name}"
-        })
+        }
 
-        var value = "asInternal().getExtensionValue(".scoped()
-            .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef)" }
+        var value = "asInternal().getExtensionValue(%T)".scoped(descriptorRef)
         if (!declaration.nullable) {
             // if the field is non-nullable, e.g. a message, we fallback to the defined default value
-            val default = descriptorRef.wrapIn { descriptorRef -> "$descriptorRef.defaultValue.value" }
-            value = default
-                .merge(value) { default, value ->
+            val default = "%T.defaultValue.value".scoped(descriptorRef)
+            value = value
+                .merge(default) { value, default ->
                     "$value ?: $default"
                 }
         }
 
-        // val MyMessage.myExtensionField: FieldType? get()
-        //  = asInternal().getExtensionValue(MyProtoFileKtExtensions.myExtensionField)
+        // val MyMessage.myExtensionField: FieldType? get() =
+        //  asInternal().getExtensionValue(MyProtoFileKtExtensions.myExtensionField)
         property(
             name = name,
             contextReceiver = extendee.name.scoped(),
@@ -908,8 +898,8 @@ class ModelToProtobufKotlinCommonGenerator(
             value = value,
         )
 
-        // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get()
-        //  = MyProtoFileKtExtensions.myExtensionField
+        // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get() =
+        //  MyProtoFileKtExtensions.myExtensionField
         property(
             name = name,
             contextReceiver = "%T.Companion".scoped(extendee.name),
@@ -920,18 +910,20 @@ class ModelToProtobufKotlinCommonGenerator(
                 "$first, $second>"
             },
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            value = descriptorRef
+            value = descriptorRef.scoped()
         )
 
-        // val MyMessage.hasMyExtensionField: Boolean get()
-        //  = (this as InternalPresenceObject).hasExtension(MyProtoFileKtExtensions.int32)
+        // val MyMessage.hasMyExtensionField: Boolean get() =
+        //  (this as InternalPresenceObject).hasExtension(MyProtoFileKtExtensions.int32)
         property(
             name = "has" + name.capitalize(),
             contextReceiver = extendee.presenceInterfaceName.scoped(),
             type = FqName.Implicits.Boolean.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
-            value = "(this as %T).hasExtension(".scoped(FqName.RpcClasses.InternalPresenceObject)
-                .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef)" }
+            value = "(this as %T).hasExtension(%T)".scoped(
+                FqName.RpcClasses.InternalPresenceObject,
+                descriptorRef
+            )
         )
 
         property(
@@ -941,8 +933,7 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
             value = value,
-            setter = "asInternal().setExtensionValue(".scoped()
-                .merge(descriptorRef) { prefix, descriptorRef -> "$prefix$descriptorRef, value)" },
+            setter = "asInternal().setExtensionValue(%T, value)".scoped(descriptorRef)
         )
     }
 
@@ -970,6 +961,19 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalPresenceObjectProperty(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
         if (!declaration.hasPresenceFields && !declaration.mayHaveExtensions) return
+
+        // this property is required to implement the InternalPresenceObject interface
+        // for every possible case: if we have a nested message type with the same name
+        // like MyClass1Internal.StringInternal.StringInternal, we cannot use "this@StringInternal"
+        // as it is ambiguous.
+        // to workaround this, we add the "_owner" property to the internal message, that can be
+        // used by the presence object to reference its message.
+        property(
+            name = "_owner",
+            modifiers = "private",
+            type = declaration.internalClassName.scoped(),
+            value = "this".scoped(),
+        )
 
         property(
             name = "_presence",
@@ -1975,9 +1979,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.Map -> TODO()
-            is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
             is FieldType.Message -> variable.wrapIn { variable -> "$variable.asInternal()._size" }
+            is FieldType.Map -> error("Map fields have no direct valueSizeCall")
+            is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
         }
     }
 
@@ -2215,7 +2219,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 emitExtensionDescriptorProperty(extension)
             }
 
-            fileDeclaration.messageDeclarationsWithExtensionGroups().forEach { message ->
+            fileDeclaration.messageDeclarations.forEach { message ->
                 emitMessageScopedExtensionDescriptors(message)
             }
         }
@@ -2400,21 +2404,12 @@ private fun FileDeclaration.allNestedExtensions(): List<FieldDeclaration> =
     (messageDeclarations + messageDeclarations.flatMap(MessageDeclaration::allNestedRecursively))
         .flatMap { it.extensions }
 
-private fun FileDeclaration.messageDeclarationsWithExtensionGroups(): List<MessageDeclaration> {
-    val extensionGroups = allExtensions()
-        .flatMap { field ->
-            buildList {
-                val extendee = field.containingType.value
-                if (extendee.isGroup) add(extendee)
-
-                val fieldTypeMessage = (field.type as? FieldType.Message)?.dec?.value
-                if (fieldTypeMessage != null && fieldTypeMessage.isGroup) add(fieldTypeMessage)
-            }
-        }
-        .distinctBy { it.name }
-    return (messageDeclarations + extensionGroups).distinctBy { it.name }
-}
-
+/**
+ * Indicates whether this file contains extension declarations that reference group messages.
+ *
+ * This is used to keep generation enabled even when the file has no regular message declarations,
+ * but still requires generated types because extensions involve groups.
+ */
 private fun FileDeclaration.hasExtensionGroupMessages(): Boolean =
     allExtensions().any { field ->
         field.containingType.value.isGroup || ((field.type as? FieldType.Message)?.dec?.value?.isGroup == true)
