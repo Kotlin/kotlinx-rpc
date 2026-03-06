@@ -78,7 +78,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -90,7 +89,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
                     EmptyInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -117,7 +115,6 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 
 @InternalRpcApi
 public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Empty::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -138,10 +135,14 @@ public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireD
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun EmptyInternal.computeSize(): Int {
     var __result = 0
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

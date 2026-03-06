@@ -70,6 +70,8 @@ extern "C" {
     bool pw_encoder_write_float_no_tag(pw_encoder_t *self, float value);
     bool pw_encoder_write_double_no_tag(pw_encoder_t *self, double value);
 
+    bool pw_encoder_write_raw_bytes(pw_encoder_t *self, const void *data, int size);
+
     //// WIRE DECODER ////
 
     typedef struct pw_decoder pw_decoder_t;

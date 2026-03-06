@@ -98,7 +98,6 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -110,7 +109,6 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
                     DurationInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -145,11 +143,12 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtobufCon
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Duration::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -176,6 +175,9 @@ public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder:
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun DurationInternal.computeSize(): Int {
@@ -188,6 +190,7 @@ private fun DurationInternal.computeSize(): Int {
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.nanos))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

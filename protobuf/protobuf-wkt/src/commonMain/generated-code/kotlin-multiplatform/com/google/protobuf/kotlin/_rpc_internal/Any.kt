@@ -95,7 +95,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -107,7 +106,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
                     AnyInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -142,11 +140,12 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Any::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -173,6 +172,9 @@ public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecod
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun AnyInternal.computeSize(): Int {
@@ -185,6 +187,7 @@ private fun AnyInternal.computeSize(): Int {
         __result += WireSize.bytes(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

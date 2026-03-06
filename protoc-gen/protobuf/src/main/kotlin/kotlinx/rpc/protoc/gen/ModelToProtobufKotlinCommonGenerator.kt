@@ -1086,7 +1086,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     code("internalMsg.encodeWith(encoder, config as? %T)".scoped(FqName.RpcClasses.ProtobufConfig))
                 }
                 code("encoder.flush()".scoped())
-                code("internalMsg._unknownFields.copyTo(buffer)".scoped())
                 code("return buffer".scoped())
             }
 
@@ -1114,7 +1113,6 @@ class ModelToProtobufKotlinCommonGenerator(
                         )
                     }
                     code("msg.checkRequiredFields()".scoped())
-                    code("msg._unknownFieldsEncoder?.flush()".scoped())
                     code("return msg".scoped())
                 }
             }
@@ -1194,7 +1192,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.internalCompanionName.scoped(),
             returnType = FqName.Implicits.Unit.scoped(),
         ) {
-            if (!declaration.isGroup && declaration.isUserFacing) {
+            if (!declaration.isGroup && declaration.hasExtensionRange) {
                 code("val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(%T::class) ?: emptyMap()"
                     .scoped(declaration.name))
             }
@@ -1273,6 +1271,10 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
             }
+
+            // we must flush the encoder and "delete" it
+            code("msg._unknownFieldsEncoder?.flush()".scoped())
+            code("msg._unknownFieldsEncoder = null".scoped())
 
             // TODO: Make lists and maps immutable (KRPC-190)
         }
@@ -1535,6 +1537,9 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
 
+        // encode all unknown fields
+        code("encoder.writeRawBytes(_unknownFields)".scoped())
+
     }
 
     private fun CodeGenerator.generateEncodeFieldValue(
@@ -1778,6 +1783,8 @@ class ModelToProtobufKotlinCommonGenerator(
             if (declaration.hasExtensionRange) {
                 code("__result += extensionsSize()".scoped())
             }
+
+            code("__result += _unknownFields.size.toInt()".scoped())
 
             code("return __result".scoped())
         }

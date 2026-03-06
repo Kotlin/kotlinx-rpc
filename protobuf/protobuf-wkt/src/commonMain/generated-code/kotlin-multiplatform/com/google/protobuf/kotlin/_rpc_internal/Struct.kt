@@ -162,7 +162,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -174,7 +173,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
                     StructInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -304,7 +302,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -316,7 +313,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
                     ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -397,7 +393,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -409,7 +404,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
                     ListValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -451,11 +445,12 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Struct::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -482,6 +477,9 @@ public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: Wir
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun StructInternal.computeSize(): Int {
@@ -496,6 +494,7 @@ private fun StructInternal.computeSize(): Int {
         }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -549,11 +548,12 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -600,6 +600,9 @@ public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireD
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ValueInternal.computeSize(): Int {
@@ -627,6 +630,7 @@ private fun ValueInternal.computeSize(): Int {
         }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -656,11 +660,12 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ListValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -686,6 +691,9 @@ public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ListValueInternal.computeSize(): Int {
@@ -694,6 +702,7 @@ private fun ListValueInternal.computeSize(): Int {
         __result += this.values.sumOf { it.asInternal()._size.let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -725,6 +734,8 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -759,6 +770,9 @@ public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructIn
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun StructInternal.FieldsEntryInternal.computeSize(): Int {
@@ -771,6 +785,7 @@ private fun StructInternal.FieldsEntryInternal.computeSize(): Int {
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

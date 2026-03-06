@@ -98,7 +98,6 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -110,7 +109,6 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
                     TimestampInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -145,11 +143,12 @@ public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Timestamp::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -176,6 +175,9 @@ public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TimestampInternal.computeSize(): Int {
@@ -188,6 +190,7 @@ private fun TimestampInternal.computeSize(): Int {
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.nanos))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

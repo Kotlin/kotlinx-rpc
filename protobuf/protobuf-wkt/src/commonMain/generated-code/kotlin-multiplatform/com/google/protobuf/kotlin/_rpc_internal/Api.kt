@@ -145,7 +145,6 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -157,7 +156,6 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
                     ApiInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -268,7 +266,6 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -280,7 +277,6 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
                     MethodInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -366,7 +362,6 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -378,7 +373,6 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
                     MixinInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -454,11 +448,12 @@ public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Api::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -510,6 +505,9 @@ public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecod
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ApiInternal.computeSize(): Int {
@@ -542,6 +540,7 @@ private fun ApiInternal.computeSize(): Int {
         __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -595,11 +594,12 @@ public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Method::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -643,6 +643,9 @@ public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: Wir
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun MethodInternal.computeSize(): Int {
@@ -675,6 +678,7 @@ private fun MethodInternal.computeSize(): Int {
         __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -703,11 +707,12 @@ public fun MixinInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun MixinInternal.Companion.decodeWith(msg: MixinInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Mixin::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -734,6 +739,9 @@ public fun MixinInternal.Companion.decodeWith(msg: MixinInternal, decoder: WireD
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun MixinInternal.computeSize(): Int {
@@ -746,6 +754,7 @@ private fun MixinInternal.computeSize(): Int {
         __result += WireSize.string(this.root).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

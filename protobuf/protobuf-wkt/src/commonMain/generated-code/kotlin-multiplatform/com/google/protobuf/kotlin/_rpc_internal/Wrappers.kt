@@ -97,7 +97,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -109,7 +108,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
                     DoubleValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -190,7 +188,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -202,7 +199,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
                     FloatValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -283,7 +279,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -295,7 +290,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
                     Int64ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -376,7 +370,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -388,7 +381,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
                     UInt64ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -469,7 +461,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -481,7 +472,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
                     Int32ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -562,7 +552,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -574,7 +563,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
                     UInt32ValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -655,7 +643,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -667,7 +654,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
                     BoolValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -748,7 +734,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -760,7 +745,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
                     StringValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -841,7 +825,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -853,7 +836,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
                     BytesValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -884,11 +866,12 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(DoubleValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -912,6 +895,9 @@ public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, de
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun DoubleValueInternal.computeSize(): Int {
@@ -920,6 +906,7 @@ private fun DoubleValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.double(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -944,11 +931,12 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FloatValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -972,6 +960,9 @@ public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, deco
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun FloatValueInternal.computeSize(): Int {
@@ -980,6 +971,7 @@ private fun FloatValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.float(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1004,11 +996,12 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Int64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1032,6 +1025,9 @@ public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, deco
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun Int64ValueInternal.computeSize(): Int {
@@ -1040,6 +1036,7 @@ private fun Int64ValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1064,11 +1061,12 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(UInt64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1092,6 +1090,9 @@ public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, de
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun UInt64ValueInternal.computeSize(): Int {
@@ -1100,6 +1101,7 @@ private fun UInt64ValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1124,11 +1126,12 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Int32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1152,6 +1155,9 @@ public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, deco
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun Int32ValueInternal.computeSize(): Int {
@@ -1160,6 +1166,7 @@ private fun Int32ValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1184,11 +1191,12 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(UInt32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1212,6 +1220,9 @@ public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, de
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun UInt32ValueInternal.computeSize(): Int {
@@ -1220,6 +1231,7 @@ private fun UInt32ValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1244,11 +1256,12 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(BoolValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1272,6 +1285,9 @@ public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun BoolValueInternal.computeSize(): Int {
@@ -1280,6 +1296,7 @@ private fun BoolValueInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1304,11 +1321,12 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(StringValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1332,6 +1350,9 @@ public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, de
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun StringValueInternal.computeSize(): Int {
@@ -1340,6 +1361,7 @@ private fun StringValueInternal.computeSize(): Int {
         __result += WireSize.string(this.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1364,11 +1386,12 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(BytesValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1392,6 +1415,9 @@ public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, deco
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun BytesValueInternal.computeSize(): Int {
@@ -1400,6 +1426,7 @@ private fun BytesValueInternal.computeSize(): Int {
         __result += WireSize.bytes(this.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

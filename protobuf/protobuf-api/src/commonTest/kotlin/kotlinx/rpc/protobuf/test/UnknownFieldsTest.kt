@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
+import kotlinx.io.InternalIoApi
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.ProtobufConfig
@@ -434,6 +435,35 @@ class UnknownFieldsTest {
         // the buffers should be identical
         assertEquals(originalBytes.size, reencodedBytes.size, "Buffer sizes should match")
         assertTrue(originalBytes.contentEquals(reencodedBytes), "Buffers should be identical")
+    }
+
+    @OptIn(ExperimentalStdlibApi::class, InternalIoApi::class)
+    @Test
+    fun `test unknown fields - nested unknown fields`() {
+        val all = UnknownFieldsAll {
+            nested = UnknownFieldsAll {
+                field1 = 123
+                stringMissing = "nested string"
+            }
+        }
+
+        val subset = send(all)
+        assertEquals(all.nested.field1, subset.nested.field1)
+        val unknownFields = subset.asInternal()._unknownFields
+        assertEquals(unknownFields.size, 0L)
+        val unknownFieldsNested = subset.nested.asInternal()._unknownFields
+        assertTrue(unknownFieldsNested.size != 0L)
+
+        val encodedSubset = marshallerOf<UnknownFieldsSubset>().encode(subset)
+
+        val unknownNestedFieldsHex = unknownFieldsNested.copy().readByteArray().toHexString()
+        val encodedSubsetHex = encodedSubset.buffer.copy().readByteArray().toHexString()
+        assertTrue(encodedSubsetHex.endsWith(unknownNestedFieldsHex),
+            "Encoded subset should end with nested unknown fields")
+
+        val all2 = marshallerOf<UnknownFieldsAll>().decode(encodedSubset)
+        assertEquals(all, all2)
+        assertEquals(all2.nested.stringMissing, "nested string")
     }
 
 }

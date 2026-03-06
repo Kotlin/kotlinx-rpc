@@ -37,6 +37,7 @@ import libprotowire.pw_encoder_write_int32
 import libprotowire.pw_encoder_write_int32_no_tag
 import libprotowire.pw_encoder_write_int64
 import libprotowire.pw_encoder_write_int64_no_tag
+import libprotowire.pw_encoder_write_raw_bytes
 import libprotowire.pw_encoder_write_sfixed32
 import libprotowire.pw_encoder_write_sfixed32_no_tag
 import libprotowire.pw_encoder_write_sfixed64
@@ -230,6 +231,13 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         pw_encoder_write_tag(raw, fieldNr, WireType.START_GROUP.ordinal)
         value.encode(this)
         pw_encoder_write_tag(raw, fieldNr, WireType.END_GROUP.ordinal)
+    }
+
+    override fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int) {
+        require(offset >= 0 && offset + length <= bytes.size) { "Invalid offset or length" }
+        bytes.usePinned { pinned ->
+            pw_encoder_write_raw_bytes(raw, pinned.addressOf(offset), length)
+        }
     }
 }
 
