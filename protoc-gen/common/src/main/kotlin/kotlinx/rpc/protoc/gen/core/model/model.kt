@@ -78,7 +78,7 @@ data class MessageDeclaration(
     val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
 
     fun hasPresenceFieldsRecursive(): Boolean {
-        return hasPresenceFields || mayHaveExtensions || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
+        return hasPresenceFields || hasExtensionRange || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
     }
 
     fun nonDefaultByteFields(): List<FieldDeclaration> {
@@ -94,7 +94,7 @@ data class MessageDeclaration(
         dec.toProto().extensionRangeList.map { it.start..it.end }
     }
 
-    val mayHaveExtensions: Boolean by lazy {
+    val hasExtensionRange: Boolean by lazy {
         extensionRanges.isNotEmpty()
     }
 

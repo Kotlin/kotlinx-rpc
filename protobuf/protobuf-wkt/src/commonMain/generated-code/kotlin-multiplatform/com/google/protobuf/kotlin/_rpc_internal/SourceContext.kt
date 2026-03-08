@@ -137,7 +137,7 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: Protob
 
 @InternalRpcApi
 public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(SourceContext::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(SourceContext::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

@@ -146,7 +146,7 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 
 @InternalRpcApi
 public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Any::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Any::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

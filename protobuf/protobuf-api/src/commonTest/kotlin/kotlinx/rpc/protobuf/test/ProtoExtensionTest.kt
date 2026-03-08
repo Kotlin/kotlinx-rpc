@@ -47,7 +47,7 @@ class ProtoExtensionTest {
             register(ExtensionBase.int32)
         }
 
-        val extensions = registry.allExtensionsForMessage(ExtensionBase::class)
+        val extensions = registry.getAllExtensionsForMessage(ExtensionBase::class)
         assertEquals(1, extensions.size)
         assertEquals(10, extensions[10]?.fieldNumber)
     }
@@ -62,7 +62,7 @@ class ProtoExtensionTest {
             registerAll(other)
         }
 
-        val extensions = registry.allExtensionsForMessage(ExtensionBase::class)
+        val extensions = registry.getAllExtensionsForMessage(ExtensionBase::class)
         assertEquals(ExtensionBase.int32, extensions[10])
         assertEquals(ExtensionBase.enum, extensions[11])
     }

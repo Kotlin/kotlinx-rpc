@@ -888,7 +888,7 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(DoubleValue::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(DoubleValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -948,7 +948,7 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
 @InternalRpcApi
 public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(FloatValue::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FloatValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1008,7 +1008,7 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
 @InternalRpcApi
 public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Int64Value::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Int64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1068,7 +1068,7 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(UInt64Value::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(UInt64Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1128,7 +1128,7 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
 @InternalRpcApi
 public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(Int32Value::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Int32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1188,7 +1188,7 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(UInt32Value::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(UInt32Value::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1248,7 +1248,7 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 
 @InternalRpcApi
 public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(BoolValue::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(BoolValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1308,7 +1308,7 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(StringValue::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(StringValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1368,7 +1368,7 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufC
 
 @InternalRpcApi
 public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(BytesValue::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(BytesValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

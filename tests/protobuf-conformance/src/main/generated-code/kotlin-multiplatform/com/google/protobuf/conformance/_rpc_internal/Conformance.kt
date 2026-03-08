@@ -688,7 +688,7 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 
 @InternalRpcApi
 fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(TestStatus::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestStatus::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -767,7 +767,7 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 
 @InternalRpcApi
 fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(FailureSet::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FailureSet::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -865,7 +865,7 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ConformanceRequest::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceRequest::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1014,7 +1014,7 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: Protobu
 
 @InternalRpcApi
 fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(ConformanceResponse::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceResponse::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1126,7 +1126,7 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 
 @InternalRpcApi
 fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.allExtensionsForMessage(JspbEncodingConfig::class) ?: emptyMap()
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(JspbEncodingConfig::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

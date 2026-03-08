@@ -58,7 +58,7 @@ class CodeGeneratorTest {
                     "@%T(%T::class)".scoped(FqName.Implicits.OptIn, FqName.Annotations.ExperimentalRpcApi),
                 ),
             ) {
-                property(
+                this.property(
                     name = "myProperty",
                     type = "%T".scoped(myClassName),
                 )
@@ -117,9 +117,9 @@ class CodeGeneratorTest {
     }
 
     @Test
-    fun testComplexProperty() = codeGeneratorTest {
+    fun testProperty() = codeGeneratorTest {
         val (imports, generated) = generate {
-            complexProperty(
+            property(
                 name = "value",
                 type = FqName.Implicits.String.scoped(),
             ) {
@@ -131,8 +131,7 @@ class CodeGeneratorTest {
 
         assertEquals(
             """
-            val value: String =
-                buildString {
+            val value: String = buildString {
                     append("hello")
                 }
             """.trimIndent(),
@@ -145,7 +144,7 @@ class CodeGeneratorTest {
     fun testFunctionCall() = codeGeneratorTest {
         val (imports, generated) = generate {
             functionCall(
-                name = "createValue".scoped(),
+                function = "createValue".scoped(),
                 namedArgs = listOf(
                     "first" to "1".scoped(),
                     "second" to "\"two\"".scoped(),

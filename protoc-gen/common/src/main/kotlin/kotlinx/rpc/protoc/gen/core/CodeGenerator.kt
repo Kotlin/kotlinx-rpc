@@ -363,7 +363,7 @@ open class CodeGenerator(
         this.needsNewLineAfterDeclaration = needsNewLineAfterDeclaration
     }
 
-    fun complexProperty(
+    fun property(
         name: String,
         comment: Comment? = null,
         modifiers: String = "",
@@ -371,6 +371,7 @@ open class CodeGenerator(
         annotations: List<ScopedFormattedString> = emptyList(),
         deprecation: DeprecationLevel? = null,
         type: ScopedFormattedString,
+        valueOnNewLine: Boolean = false,
         needsNewLineAfterDeclaration: Boolean = true,
         initializer: CodeGenerator.() -> Unit,
     ) {
@@ -387,8 +388,11 @@ open class CodeGenerator(
         val typeString = type.wrapInIfNotBlankOr { ": $it" }
 
         selectNames {
+            if (valueOnNewLine) {
+                newLine()
+            }
             addLine(contextString.merge(typeString) { contextString, typeString ->
-                "${modifiersString}val $contextString$name$typeString ="
+                "${modifiersString}val $contextString$name$typeString = "
             })
         }
 
@@ -399,9 +403,12 @@ open class CodeGenerator(
         ).apply(initializer)
 
         if (!nested.isEmpty) {
-            newLine()
+            var valueString = nested.build().trimEnd()
+            if (!valueOnNewLine) {
+                valueString = valueString.trimStart()
+            }
             selectNames {
-                append(nested.build().trimEnd().scoped())
+                append(valueString.scoped())
             }
         }
 

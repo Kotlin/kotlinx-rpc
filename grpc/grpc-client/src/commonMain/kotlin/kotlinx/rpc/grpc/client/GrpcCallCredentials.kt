@@ -23,7 +23,7 @@ import kotlinx.rpc.grpc.plus
  * ```kotlin
  * class BearerTokenCredentials(private val token: String) : GrpcCallCredentials {
  *     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
- *         return buildGrpcMetadata {
+ *         return GrpcMetadata {
  *             append("Authorization", "Bearer $token")
  *         }
  *     }
@@ -43,7 +43,7 @@ import kotlinx.rpc.grpc.plus
  *             else -> "default"
  *         }
  *         val token = fetchTokenWithScope(scope)
- *         return buildGrpcMetadata {
+ *         return GrpcMetadata {
  *             append("Authorization", "Bearer $token")
  *         }
  *     }
@@ -91,7 +91,7 @@ public interface GrpcCallCredentials {
      * Simple bearer token:
      * ```kotlin
      * override suspend fun Context.getRequestMetadata(): GrpcMetadata {
-     *     return buildGrpcMetadata {
+     *     return GrpcMetadata {
      *         append("Authorization", "Bearer $token")
      *     }
      * }
@@ -106,7 +106,7 @@ public interface GrpcCallCredentials {
      *         throw StatusException(Status(StatusCode.UNAUTHENTICATED, "Token refresh failed"))
      *     }
      *
-     *     return buildGrpcMetadata {
+     *     return GrpcMetadata {
      *         append("Authorization", "Bearer $token")
      *     }
      * }
