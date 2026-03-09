@@ -437,7 +437,6 @@ class UnknownFieldsTest {
         assertTrue(originalBytes.contentEquals(reencodedBytes), "Buffers should be identical")
     }
 
-    @OptIn(ExperimentalStdlibApi::class, InternalIoApi::class)
     @Test
     fun `test unknown fields - nested unknown fields`() {
         val all = UnknownFieldsAll {

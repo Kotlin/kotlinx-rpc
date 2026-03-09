@@ -24,7 +24,7 @@ import kotlinx.io.unsafe.UnsafeBufferOperations
  * segments.
  */
 @OptIn(InternalIoApi::class, UnsafeIoApi::class)
-internal inline fun Buffer.readFully(handler: (bytes: ByteArray, startIdx: Int, endIndexExclusive: Int) -> Unit) {
+internal inline fun Buffer.readFully(handler: (bytes: ByteArray, startIndex: Int, endIndexExclusive: Int) -> Unit) {
     while (!this.exhausted()) {
         UnsafeBufferOperations.readFromHead(this) { array, start, endIndexExclusive ->
             handler(array, start, endIndexExclusive)
