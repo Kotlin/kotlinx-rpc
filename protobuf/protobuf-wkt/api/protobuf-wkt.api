@@ -18,6 +18,8 @@ public final class com/google/protobuf/kotlin/AnyInternal : kotlinx/rpc/protobuf
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/AnyInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/AnyInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getTypeUrl ()Ljava/lang/String;
 	public fun getValue ()[B
@@ -77,6 +79,8 @@ public final class com/google/protobuf/kotlin/ApiInternal : kotlinx/rpc/protobuf
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ApiInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ApiInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getMethods ()Ljava/util/List;
 	public fun getMixins ()Ljava/util/List;
@@ -130,6 +134,8 @@ public final class com/google/protobuf/kotlin/BoolValueInternal : kotlinx/rpc/pr
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/BoolValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/BoolValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()Z
 	public fun hashCode ()I
@@ -154,6 +160,8 @@ public final class com/google/protobuf/kotlin/BytesValueInternal : kotlinx/rpc/p
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/BytesValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/BytesValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()[B
 	public fun hashCode ()I
@@ -178,6 +186,8 @@ public final class com/google/protobuf/kotlin/DoubleValueInternal : kotlinx/rpc/
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/DoubleValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/DoubleValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()D
 	public fun hashCode ()I
@@ -205,6 +215,8 @@ public final class com/google/protobuf/kotlin/DurationInternal : kotlinx/rpc/pro
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/DurationInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/DurationInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getNanos ()I
 	public fun getSeconds ()J
@@ -239,6 +251,8 @@ public final class com/google/protobuf/kotlin/EmptyInternal : kotlinx/rpc/protob
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EmptyInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EmptyInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -282,6 +296,8 @@ public final class com/google/protobuf/kotlin/EnumInternal : kotlinx/rpc/protobu
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getEdition ()Ljava/lang/String;
 	public fun getEnumvalue ()Ljava/util/List;
@@ -326,6 +342,8 @@ public final class com/google/protobuf/kotlin/EnumValueInternal : kotlinx/rpc/pr
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getName ()Ljava/lang/String;
 	public fun getNumber ()I
@@ -584,6 +602,8 @@ public final class com/google/protobuf/kotlin/FieldInternal : kotlinx/rpc/protob
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getCardinality ()Lcom/google/protobuf/kotlin/Field$Cardinality;
 	public fun getDefaultValue ()Ljava/lang/String;
@@ -626,6 +646,8 @@ public final class com/google/protobuf/kotlin/FieldMaskInternal : kotlinx/rpc/pr
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldMaskInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldMaskInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getPaths ()Ljava/util/List;
 	public fun hashCode ()I
@@ -656,6 +678,8 @@ public final class com/google/protobuf/kotlin/FloatValueInternal : kotlinx/rpc/p
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FloatValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FloatValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()F
 	public fun hashCode ()I
@@ -680,6 +704,8 @@ public final class com/google/protobuf/kotlin/Int32ValueInternal : kotlinx/rpc/p
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/Int32ValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/Int32ValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()I
 	public fun hashCode ()I
@@ -704,6 +730,8 @@ public final class com/google/protobuf/kotlin/Int64ValueInternal : kotlinx/rpc/p
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/Int64ValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/Int64ValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()J
 	public fun hashCode ()I
@@ -728,6 +756,8 @@ public final class com/google/protobuf/kotlin/ListValueInternal : kotlinx/rpc/pr
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ListValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ListValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValues ()Ljava/util/List;
 	public fun hashCode ()I
@@ -770,6 +800,8 @@ public final class com/google/protobuf/kotlin/MethodInternal : kotlinx/rpc/proto
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/MethodInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/MethodInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getName ()Ljava/lang/String;
 	public fun getOptions ()Ljava/util/List;
@@ -809,6 +841,8 @@ public final class com/google/protobuf/kotlin/MixinInternal : kotlinx/rpc/protob
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/MixinInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/MixinInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getName ()Ljava/lang/String;
 	public fun getRoot ()Ljava/lang/String;
@@ -866,6 +900,8 @@ public final class com/google/protobuf/kotlin/OptionInternal : kotlinx/rpc/proto
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/OptionInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/OptionInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getName ()Ljava/lang/String;
 	public fun getValue ()Lcom/google/protobuf/kotlin/Any;
@@ -896,6 +932,8 @@ public final class com/google/protobuf/kotlin/SourceContextInternal : kotlinx/rp
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/SourceContextInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/SourceContextInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getFileName ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -926,6 +964,8 @@ public final class com/google/protobuf/kotlin/StringValueInternal : kotlinx/rpc/
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/StringValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/StringValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -950,6 +990,8 @@ public final class com/google/protobuf/kotlin/StructInternal : kotlinx/rpc/proto
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/StructInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/StructInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getFields ()Ljava/util/Map;
 	public fun hashCode ()I
@@ -961,6 +1003,8 @@ public final class com/google/protobuf/kotlin/StructInternal$FieldsEntryInternal
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/StructInternal$FieldsEntryInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/StructInternal$FieldsEntryInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getKey ()Ljava/lang/String;
 	public final fun getValue ()Lcom/google/protobuf/kotlin/Value;
@@ -1044,6 +1088,8 @@ public final class com/google/protobuf/kotlin/TimestampInternal : kotlinx/rpc/pr
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/TimestampInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/TimestampInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getNanos ()I
 	public fun getSeconds ()J
@@ -1099,6 +1145,8 @@ public final class com/google/protobuf/kotlin/TypeInternal : kotlinx/rpc/protobu
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/TypeInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/TypeInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getEdition ()Ljava/lang/String;
 	public fun getFields ()Ljava/util/List;
@@ -1160,6 +1208,8 @@ public final class com/google/protobuf/kotlin/UInt32ValueInternal : kotlinx/rpc/
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/UInt32ValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/UInt32ValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue-pVg5ArA ()I
 	public fun hashCode ()I
@@ -1184,6 +1234,8 @@ public final class com/google/protobuf/kotlin/UInt64ValueInternal : kotlinx/rpc/
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/UInt64ValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/UInt64ValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getValue-s-VKNKU ()J
 	public fun hashCode ()I
@@ -1295,6 +1347,8 @@ public final class com/google/protobuf/kotlin/ValueInternal : kotlinx/rpc/protob
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
 	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ValueInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ValueInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getKind ()Lcom/google/protobuf/kotlin/Value$Kind;
 	public fun hashCode ()I

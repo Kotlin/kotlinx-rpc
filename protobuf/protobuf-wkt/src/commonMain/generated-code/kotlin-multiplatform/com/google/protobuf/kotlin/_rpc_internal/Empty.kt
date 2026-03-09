@@ -4,11 +4,11 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -70,24 +70,24 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Empty> {
-        public override fun encode(value: Empty, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Empty> {
+        public override fun encode(value: Empty, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Empty {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Empty {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EmptyInternal()
                 checkForPlatformDecodeException {
-                    EmptyInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    EmptyInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -110,7 +110,7 @@ public fun EmptyInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     // no fields to encode
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
@@ -122,7 +122,7 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 }
 
 @InternalRpcApi
-public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

@@ -2,13 +2,34 @@ public final class kotlinx/rpc/protobuf/ProtoConfig : kotlinx/rpc/grpc/marshalle
 	public static final field Companion Lkotlinx/rpc/protobuf/ProtoConfig$Companion;
 	public static final field DEFAULT_RECURSION_LIMIT I
 	public fun <init> ()V
-	public fun <init> (ZI)V
-	public synthetic fun <init> (ZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZILkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
+	public synthetic fun <init> (ZILkotlinx/rpc/protobuf/ProtoExtensionRegistry;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDiscardUnknownFields ()Z
+	public final fun getExtensionRegistry ()Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;
 	public final fun getRecursionLimit ()I
 }
 
 public final class kotlinx/rpc/protobuf/ProtoConfig$Companion {
+}
+
+public abstract interface class kotlinx/rpc/protobuf/ProtoExtensionDescriptor {
+	public abstract fun getFieldNumber ()I
+	public abstract fun getMessageType ()Lkotlin/reflect/KClass;
+}
+
+public final class kotlinx/rpc/protobuf/ProtoExtensionKt {
+	public static final fun ProtoExtensionRegistry (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;
+}
+
+public final class kotlinx/rpc/protobuf/ProtoExtensionRegistry {
+	public final fun getAllExtensionsForMessage (Lkotlin/reflect/KClass;)Ljava/util/Map;
+}
+
+public final class kotlinx/rpc/protobuf/ProtoExtensionRegistry$Builder {
+	public fun <init> (Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
+	public final fun register (Lkotlinx/rpc/protobuf/ProtoExtensionDescriptor;)V
+	public final fun registerAll (Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
+	public final fun unaryPlus (Lkotlinx/rpc/protobuf/ProtoExtensionDescriptor;)V
 }
 
 public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException : kotlinx/rpc/protobuf/internal/ProtobufException {

@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.safeCast
@@ -33,15 +33,15 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     /** Computes encoded size of the stored extension value, including the tag and potentially length */
     public val size: (fieldNumber: Int, value: Any) -> Int,
     /** Encodes the stored extension value to wire format. */
-    public val encode: (encoder: WireEncoder, fieldNumber: Int, value: Any, config: ProtobufConfig?) -> Unit,
+    public val encode: (encoder: WireEncoder, fieldNumber: Int, value: Any, config: ProtoConfig?) -> Unit,
     /** Decodes one extension field occurrence from wire format.
      *
      * @param currentValue The current value of the extension, or `null` if the field is unset.
      *                     This is necessary for messages that are send in multiple batches and not at ones.
      */
-    public val decode: (currentValue: Any?, decoder: WireDecoder, config: ProtobufConfig?) -> V,
+    public val decode: (currentValue: Any?, decoder: WireDecoder, config: ProtoConfig?) -> V,
     /** Optional packed decoder for repeated packable extensions. */
-    public val decodePacked: ((currentValue: Any?, decoder: WireDecoder, config: ProtobufConfig?) -> V)? = null,
+    public val decodePacked: ((currentValue: Any?, decoder: WireDecoder, config: ProtoConfig?) -> V)? = null,
     /** Deep-copy strategy used when copying extension maps between messages. */
     public val copy: (value: Any) -> V,
     /** Packed payload encoder used by `packedRepeated(...)` element descriptors. */
@@ -52,6 +52,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     // Packed-ness is fully determined by whether a packed decoder exists.
     public val isPacked: Boolean get() = decodePacked != null
 
+    @InternalRpcApi
     public companion object {
         public fun <@GeneratedProtoMessage T : Any> bool(
             fieldNumber: Int,
@@ -423,8 +424,8 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             valueType: KClass<V>,
             default: () -> V,
             asInternal: (V) -> InternalMessage,
-            encodeWith: (V, WireEncoder, ProtobufConfig?) -> Unit,
-            decodeWith: (V, WireDecoder, ProtobufConfig?) -> Unit
+            encodeWith: (V, WireEncoder, ProtoConfig?) -> Unit,
+            decodeWith: (V, WireDecoder, ProtoConfig?) -> Unit
         ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
@@ -462,8 +463,8 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             valueType: KClass<V>,
             default: () -> V,
             asInternal: (V) -> InternalMessage,
-            encodeWith: (V, WireEncoder, ProtobufConfig?) -> Unit,
-            decodeWith: (V, WireDecoder, ProtobufConfig?, KTag?) -> Unit,
+            encodeWith: (V, WireEncoder, ProtoConfig?) -> Unit,
+            decodeWith: (V, WireDecoder, ProtoConfig?, KTag?) -> Unit,
         ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,

@@ -6,6 +6,13 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:protobuf-api>
+abstract interface <#A: kotlin/Any, #B: kotlin/Any> kotlinx.rpc.protobuf/ProtoExtensionDescriptor { // kotlinx.rpc.protobuf/ProtoExtensionDescriptor|null[0]
+    abstract val fieldNumber // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.fieldNumber|{}fieldNumber[0]
+        abstract fun <get-fieldNumber>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.fieldNumber.<get-fieldNumber>|<get-fieldNumber>(){}[0]
+    abstract val messageType // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.messageType|{}messageType[0]
+        abstract fun <get-messageType>(): kotlin.reflect/KClass<#A> // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.messageType.<get-messageType>|<get-messageType>(){}[0]
+}
+
 final class kotlinx.rpc.protobuf.internal/ProtobufDecodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufDecodingException|null[0]
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 
@@ -17,10 +24,12 @@ final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rp
 }
 
 final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig { // kotlinx.rpc.protobuf/ProtoConfig|null[0]
-    constructor <init>(kotlin/Boolean = ..., kotlin/Int = ...) // kotlinx.rpc.protobuf/ProtoConfig.<init>|<init>(kotlin.Boolean;kotlin.Int){}[0]
+    constructor <init>(kotlin/Boolean = ..., kotlin/Int = ..., kotlinx.rpc.protobuf/ProtoExtensionRegistry? = ...) // kotlinx.rpc.protobuf/ProtoConfig.<init>|<init>(kotlin.Boolean;kotlin.Int;kotlinx.rpc.protobuf.ProtoExtensionRegistry?){}[0]
 
     final val discardUnknownFields // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields|{}discardUnknownFields[0]
         final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
+    final val extensionRegistry // kotlinx.rpc.protobuf/ProtoConfig.extensionRegistry|{}extensionRegistry[0]
+        final fun <get-extensionRegistry>(): kotlinx.rpc.protobuf/ProtoExtensionRegistry? // kotlinx.rpc.protobuf/ProtoConfig.extensionRegistry.<get-extensionRegistry>|<get-extensionRegistry>(){}[0]
     final val recursionLimit // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit|{}recursionLimit[0]
         final fun <get-recursionLimit>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit.<get-recursionLimit>|<get-recursionLimit>(){}[0]
 
@@ -30,9 +39,22 @@ final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcM
     }
 }
 
+final class kotlinx.rpc.protobuf/ProtoExtensionRegistry { // kotlinx.rpc.protobuf/ProtoExtensionRegistry|null[0]
+    final fun <#A1: kotlin/Any> getAllExtensionsForMessage(kotlin.reflect/KClass<#A1>): kotlin.collections/Map<kotlin/Int, kotlinx.rpc.protobuf/ProtoExtensionDescriptor<#A1, *>> // kotlinx.rpc.protobuf/ProtoExtensionRegistry.getAllExtensionsForMessage|getAllExtensionsForMessage(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
+
+    final inner class Builder { // kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder|null[0]
+        constructor <init>() // kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder.<init>|<init>(){}[0]
+
+        final fun (kotlinx.rpc.protobuf/ProtoExtensionDescriptor<*, *>).unaryPlus() // kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder.unaryPlus|unaryPlus@kotlinx.rpc.protobuf.ProtoExtensionDescriptor<*,*>(){}[0]
+        final fun register(kotlinx.rpc.protobuf/ProtoExtensionDescriptor<*, *>) // kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder.register|register(kotlinx.rpc.protobuf.ProtoExtensionDescriptor<*,*>){}[0]
+        final fun registerAll(kotlinx.rpc.protobuf/ProtoExtensionRegistry) // kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder.registerAll|registerAll(kotlinx.rpc.protobuf.ProtoExtensionRegistry){}[0]
+    }
+}
+
 sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf.internal/ProtobufException|null[0]
 
 final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.io/Source): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.io.Source){}[0]
 final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
+final fun kotlinx.rpc.protobuf/ProtoExtensionRegistry(kotlin/Function1<kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoExtensionRegistry // kotlinx.rpc.protobuf/ProtoExtensionRegistry|ProtoExtensionRegistry(kotlin.Function1<kotlinx.rpc.protobuf.ProtoExtensionRegistry.Builder,kotlin.Unit>){}[0]
 final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException|checkForPlatformDecodeException(kotlin.Function0<kotlin.Unit>){}[0]
 final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException|checkForPlatformEncodeException(kotlin.Function0<kotlin.Unit>){}[0]

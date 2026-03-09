@@ -17,7 +17,7 @@ public final class kotlinx/rpc/grpc/GrpcMetadataKey {
 }
 
 public final class kotlinx/rpc/grpc/GrpcMetadataKt {
-	public static final fun buildGrpcMetadata (Lkotlin/jvm/functions/Function1;)Lio/grpc/Metadata;
+	public static final fun GrpcMetadata (Lkotlin/jvm/functions/Function1;)Lio/grpc/Metadata;
 	public static final fun copy (Lio/grpc/Metadata;)Lio/grpc/Metadata;
 	public static final fun plus (Lio/grpc/Metadata;Lio/grpc/Metadata;)Lio/grpc/Metadata;
 	public static final fun plusAssign (Lio/grpc/Metadata;Lio/grpc/Metadata;)V

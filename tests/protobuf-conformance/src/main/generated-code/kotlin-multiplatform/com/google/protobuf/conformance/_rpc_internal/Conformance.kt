@@ -4,8 +4,8 @@ package com.google.protobuf.conformance
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -111,7 +111,7 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
                 (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestStatusInternal()
                 checkForPlatformDecodeException {
-                    TestStatusInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    TestStatusInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -199,10 +199,10 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 
         override fun decode(source: Source, config: GrpcMarshallerConfig?): FailureSet {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FailureSetInternal()
                 checkForPlatformDecodeException {
-                    FailureSetInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    FailureSetInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -368,7 +368,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
@@ -376,10 +376,10 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceRequest {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceRequestInternal()
                 checkForPlatformDecodeException {
-                    ConformanceRequestInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    ConformanceRequestInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -531,10 +531,10 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
         override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceResponse {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceResponseInternal()
                 checkForPlatformDecodeException {
-                    ConformanceResponseInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    ConformanceResponseInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -614,7 +614,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
@@ -622,10 +622,10 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
 
         override fun decode(source: Source, config: GrpcMarshallerConfig?): JspbEncodingConfig {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = JspbEncodingConfigInternal()
                 checkForPlatformDecodeException {
-                    JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -648,7 +648,7 @@ fun TestStatusInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
@@ -671,7 +671,7 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 }
 
 @InternalRpcApi
-fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -738,7 +738,7 @@ fun FailureSetInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.test.isNotEmpty()) {
         this.test.forEach {
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
@@ -755,7 +755,7 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
 }
 
 @InternalRpcApi
-fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -858,7 +858,7 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -969,7 +969,7 @@ fun ConformanceResponseInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     this.result?.also {
         when (val value = it) {
             is ConformanceResponse.Result.ParseError -> {
@@ -1012,7 +1012,7 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: Protobu
 }
 
 @InternalRpcApi
-fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1114,7 +1114,7 @@ fun JspbEncodingConfigInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.useJspbArrayAnyFormat != false) {
         encoder.writeBool(fieldNr = 1, value = this.useJspbArrayAnyFormat)
     }
@@ -1129,7 +1129,7 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: Protobuf
 }
 
 @InternalRpcApi
-fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

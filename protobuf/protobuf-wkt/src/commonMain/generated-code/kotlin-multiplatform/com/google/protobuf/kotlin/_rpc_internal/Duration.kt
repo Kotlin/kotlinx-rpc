@@ -4,11 +4,11 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
@@ -89,24 +89,24 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Duration> {
-        public override fun encode(value: Duration, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Duration> {
+        public override fun encode(value: Duration, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Duration {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Duration {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = DurationInternal()
                 checkForPlatformDecodeException {
-                    DurationInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    DurationInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -129,7 +129,7 @@ public fun DurationInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.seconds != 0L) {
         encoder.writeInt64(fieldNr = 1, value = this.seconds)
     }
@@ -148,7 +148,7 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtobufCon
 }
 
 @InternalRpcApi
-public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.marshallerOf
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlin.test.Test
@@ -155,7 +155,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedEnum
             +ExtensionBase.repeatedMsg
         }
-        val config = ProtobufConfig(extensionRegistry = registry)
+        val config = ProtoConfig(extensionRegistry = registry)
         val extensionCodec = marshallerOf<ExtensionBase>(config)
 
         val decoded = extensionCodec.decode(encoded)
@@ -184,7 +184,7 @@ class ProtoExtensionTest {
             +ExtensionBase.int32
             +ExtensionBase.subExt
         }
-        val config = ProtobufConfig(extensionRegistry = registry)
+        val config = ProtoConfig(extensionRegistry = registry)
         val extensionCodec = marshallerOf<ExtensionBase>(config)
 
         val decoded = extensionCodec.decode(encoded)
@@ -239,7 +239,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedMsg
             +ExtensionBase.repeatedSubExt
         }
-        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = marshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -268,7 +268,7 @@ class ProtoExtensionTest {
                 +ExtensionBase.testgroup
             }
         }
-        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = marshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
 
         assertEquals(message.testgroup, decoded.testgroup)
         with(MessageScopedExtensions) {
@@ -290,7 +290,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = marshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -313,7 +313,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(buffer)
+        val decoded = marshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(buffer)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -341,7 +341,7 @@ class ProtoExtensionTest {
                 }
             }
         }
-        val decoded = marshallerOf<ExtensionBase>(ProtobufConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = marshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
 
         assertEquals("apfelstrudel", decoded.conflicting)
         with(MessageScopedExtensions) {

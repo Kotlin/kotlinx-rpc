@@ -815,6 +815,7 @@ final class com.google.protobuf.kotlin/AnyInternal : com.google.protobuf.kotlin/
         final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/AnyInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/AnyInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/AnyInternal // com.google.protobuf.kotlin/AnyInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/AnyInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/AnyInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/AnyInternal.toString|toString(){}[0]
@@ -846,6 +847,7 @@ final class com.google.protobuf.kotlin/ApiInternal : com.google.protobuf.kotlin/
         final fun <set-version>(kotlin/String) // com.google.protobuf.kotlin/ApiInternal.version.<set-version>|<set-version>(kotlin.String){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ApiInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/ApiInternal // com.google.protobuf.kotlin/ApiInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ApiInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ApiInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/ApiInternal.toString|toString(){}[0]
@@ -859,6 +861,7 @@ final class com.google.protobuf.kotlin/BoolValueInternal : com.google.protobuf.k
         final fun <set-value>(kotlin/Boolean) // com.google.protobuf.kotlin/BoolValueInternal.value.<set-value>|<set-value>(kotlin.Boolean){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/BoolValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/BoolValueInternal // com.google.protobuf.kotlin/BoolValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/BoolValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/BoolValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/BoolValueInternal.toString|toString(){}[0]
@@ -872,6 +875,7 @@ final class com.google.protobuf.kotlin/BytesValueInternal : com.google.protobuf.
         final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/BytesValueInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/BytesValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/BytesValueInternal // com.google.protobuf.kotlin/BytesValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/BytesValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/BytesValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/BytesValueInternal.toString|toString(){}[0]
@@ -885,6 +889,7 @@ final class com.google.protobuf.kotlin/DoubleValueInternal : com.google.protobuf
         final fun <set-value>(kotlin/Double) // com.google.protobuf.kotlin/DoubleValueInternal.value.<set-value>|<set-value>(kotlin.Double){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/DoubleValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/DoubleValueInternal // com.google.protobuf.kotlin/DoubleValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/DoubleValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/DoubleValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/DoubleValueInternal.toString|toString(){}[0]
@@ -901,6 +906,7 @@ final class com.google.protobuf.kotlin/DurationInternal : com.google.protobuf.ko
         final fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/DurationInternal.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/DurationInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/DurationInternal // com.google.protobuf.kotlin/DurationInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/DurationInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/DurationInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/DurationInternal.toString|toString(){}[0]
@@ -910,6 +916,7 @@ final class com.google.protobuf.kotlin/EmptyInternal : com.google.protobuf.kotli
     constructor <init>() // com.google.protobuf.kotlin/EmptyInternal.<init>|<init>(){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EmptyInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/EmptyInternal // com.google.protobuf.kotlin/EmptyInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EmptyInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EmptyInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/EmptyInternal.toString|toString(){}[0]
@@ -938,6 +945,7 @@ final class com.google.protobuf.kotlin/EnumInternal : com.google.protobuf.kotlin
         final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/EnumInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EnumInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/EnumInternal // com.google.protobuf.kotlin/EnumInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EnumInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EnumInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/EnumInternal.toString|toString(){}[0]
@@ -957,6 +965,7 @@ final class com.google.protobuf.kotlin/EnumValueInternal : com.google.protobuf.k
         final fun <set-options>(kotlin.collections/List<com.google.protobuf.kotlin/Option>) // com.google.protobuf.kotlin/EnumValueInternal.options.<set-options>|<set-options>(kotlin.collections.List<com.google.protobuf.kotlin.Option>){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/EnumValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/EnumValueInternal // com.google.protobuf.kotlin/EnumValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/EnumValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/EnumValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/EnumValueInternal.toString|toString(){}[0]
@@ -997,6 +1006,7 @@ final class com.google.protobuf.kotlin/FieldInternal : com.google.protobuf.kotli
         final fun <set-typeUrl>(kotlin/String) // com.google.protobuf.kotlin/FieldInternal.typeUrl.<set-typeUrl>|<set-typeUrl>(kotlin.String){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FieldInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/FieldInternal // com.google.protobuf.kotlin/FieldInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldInternal.toString|toString(){}[0]
@@ -1010,6 +1020,7 @@ final class com.google.protobuf.kotlin/FieldMaskInternal : com.google.protobuf.k
         final fun <set-paths>(kotlin.collections/List<kotlin/String>) // com.google.protobuf.kotlin/FieldMaskInternal.paths.<set-paths>|<set-paths>(kotlin.collections.List<kotlin.String>){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FieldMaskInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/FieldMaskInternal // com.google.protobuf.kotlin/FieldMaskInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldMaskInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldMaskInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldMaskInternal.toString|toString(){}[0]
@@ -1023,6 +1034,7 @@ final class com.google.protobuf.kotlin/FloatValueInternal : com.google.protobuf.
         final fun <set-value>(kotlin/Float) // com.google.protobuf.kotlin/FloatValueInternal.value.<set-value>|<set-value>(kotlin.Float){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/FloatValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/FloatValueInternal // com.google.protobuf.kotlin/FloatValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FloatValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FloatValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/FloatValueInternal.toString|toString(){}[0]
@@ -1036,6 +1048,7 @@ final class com.google.protobuf.kotlin/Int32ValueInternal : com.google.protobuf.
         final fun <set-value>(kotlin/Int) // com.google.protobuf.kotlin/Int32ValueInternal.value.<set-value>|<set-value>(kotlin.Int){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/Int32ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/Int32ValueInternal // com.google.protobuf.kotlin/Int32ValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Int32ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Int32ValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/Int32ValueInternal.toString|toString(){}[0]
@@ -1049,6 +1062,7 @@ final class com.google.protobuf.kotlin/Int64ValueInternal : com.google.protobuf.
         final fun <set-value>(kotlin/Long) // com.google.protobuf.kotlin/Int64ValueInternal.value.<set-value>|<set-value>(kotlin.Long){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/Int64ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/Int64ValueInternal // com.google.protobuf.kotlin/Int64ValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Int64ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Int64ValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/Int64ValueInternal.toString|toString(){}[0]
@@ -1062,6 +1076,7 @@ final class com.google.protobuf.kotlin/ListValueInternal : com.google.protobuf.k
         final fun <set-values>(kotlin.collections/List<com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/ListValueInternal.values.<set-values>|<set-values>(kotlin.collections.List<com.google.protobuf.kotlin.Value>){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ListValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/ListValueInternal // com.google.protobuf.kotlin/ListValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ListValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ListValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/ListValueInternal.toString|toString(){}[0]
@@ -1093,6 +1108,7 @@ final class com.google.protobuf.kotlin/MethodInternal : com.google.protobuf.kotl
         final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/MethodInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/MethodInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/MethodInternal // com.google.protobuf.kotlin/MethodInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/MethodInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/MethodInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/MethodInternal.toString|toString(){}[0]
@@ -1109,6 +1125,7 @@ final class com.google.protobuf.kotlin/MixinInternal : com.google.protobuf.kotli
         final fun <set-root>(kotlin/String) // com.google.protobuf.kotlin/MixinInternal.root.<set-root>|<set-root>(kotlin.String){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/MixinInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/MixinInternal // com.google.protobuf.kotlin/MixinInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/MixinInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/MixinInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/MixinInternal.toString|toString(){}[0]
@@ -1125,6 +1142,7 @@ final class com.google.protobuf.kotlin/OptionInternal : com.google.protobuf.kotl
         final fun <set-value>(com.google.protobuf.kotlin/Any) // com.google.protobuf.kotlin/OptionInternal.value.<set-value>|<set-value>(com.google.protobuf.kotlin.Any){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/OptionInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/OptionInternal // com.google.protobuf.kotlin/OptionInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/OptionInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/OptionInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/OptionInternal.toString|toString(){}[0]
@@ -1138,6 +1156,7 @@ final class com.google.protobuf.kotlin/SourceContextInternal : com.google.protob
         final fun <set-fileName>(kotlin/String) // com.google.protobuf.kotlin/SourceContextInternal.fileName.<set-fileName>|<set-fileName>(kotlin.String){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/SourceContextInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/SourceContextInternal // com.google.protobuf.kotlin/SourceContextInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/SourceContextInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/SourceContextInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/SourceContextInternal.toString|toString(){}[0]
@@ -1151,6 +1170,7 @@ final class com.google.protobuf.kotlin/StringValueInternal : com.google.protobuf
         final fun <set-value>(kotlin/String) // com.google.protobuf.kotlin/StringValueInternal.value.<set-value>|<set-value>(kotlin.String){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StringValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/StringValueInternal // com.google.protobuf.kotlin/StringValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StringValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StringValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/StringValueInternal.toString|toString(){}[0]
@@ -1164,6 +1184,7 @@ final class com.google.protobuf.kotlin/StructInternal : com.google.protobuf.kotl
         final fun <set-fields>(kotlin.collections/Map<kotlin/String, com.google.protobuf.kotlin/Value>) // com.google.protobuf.kotlin/StructInternal.fields.<set-fields>|<set-fields>(kotlin.collections.Map<kotlin.String,com.google.protobuf.kotlin.Value>){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StructInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/StructInternal // com.google.protobuf.kotlin/StructInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StructInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StructInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/StructInternal.toString|toString(){}[0]
@@ -1179,6 +1200,7 @@ final class com.google.protobuf.kotlin/StructInternal : com.google.protobuf.kotl
             final fun <set-value>(com.google.protobuf.kotlin/Value) // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.value.<set-value>|<set-value>(com.google.protobuf.kotlin.Value){}[0]
 
         final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.asString|asString(kotlin.Int){}[0]
+        final fun copyInternal(): com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.copyInternal|copyInternal(){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.google.protobuf.kotlin/StructInternal.FieldsEntryInternal.toString|toString(){}[0]
@@ -1196,6 +1218,7 @@ final class com.google.protobuf.kotlin/TimestampInternal : com.google.protobuf.k
         final fun <set-seconds>(kotlin/Long) // com.google.protobuf.kotlin/TimestampInternal.seconds.<set-seconds>|<set-seconds>(kotlin.Long){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/TimestampInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/TimestampInternal // com.google.protobuf.kotlin/TimestampInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/TimestampInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/TimestampInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/TimestampInternal.toString|toString(){}[0]
@@ -1227,6 +1250,7 @@ final class com.google.protobuf.kotlin/TypeInternal : com.google.protobuf.kotlin
         final fun <set-syntax>(com.google.protobuf.kotlin/Syntax) // com.google.protobuf.kotlin/TypeInternal.syntax.<set-syntax>|<set-syntax>(com.google.protobuf.kotlin.Syntax){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/TypeInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/TypeInternal // com.google.protobuf.kotlin/TypeInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/TypeInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/TypeInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/TypeInternal.toString|toString(){}[0]
@@ -1240,6 +1264,7 @@ final class com.google.protobuf.kotlin/UInt32ValueInternal : com.google.protobuf
         final fun <set-value>(kotlin/UInt) // com.google.protobuf.kotlin/UInt32ValueInternal.value.<set-value>|<set-value>(kotlin.UInt){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/UInt32ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/UInt32ValueInternal // com.google.protobuf.kotlin/UInt32ValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/UInt32ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/UInt32ValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/UInt32ValueInternal.toString|toString(){}[0]
@@ -1253,6 +1278,7 @@ final class com.google.protobuf.kotlin/UInt64ValueInternal : com.google.protobuf
         final fun <set-value>(kotlin/ULong) // com.google.protobuf.kotlin/UInt64ValueInternal.value.<set-value>|<set-value>(kotlin.ULong){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/UInt64ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/UInt64ValueInternal // com.google.protobuf.kotlin/UInt64ValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/UInt64ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/UInt64ValueInternal.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/UInt64ValueInternal.toString|toString(){}[0]
@@ -1267,6 +1293,7 @@ final class com.google.protobuf.kotlin/ValueInternal : com.google.protobuf.kotli
 
     final fun (com.google.protobuf.kotlin/Value.Kind).oneOfHashCode(): kotlin/Int // com.google.protobuf.kotlin/ValueInternal.oneOfHashCode|oneOfHashCode@com.google.protobuf.kotlin.Value.Kind(){}[0]
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ValueInternal.asString|asString(kotlin.Int){}[0]
+    final fun copyInternal(): com.google.protobuf.kotlin/ValueInternal // com.google.protobuf.kotlin/ValueInternal.copyInternal|copyInternal(){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ValueInternal.hashCode|hashCode(){}[0]
     final fun oneOfEquals(com.google.protobuf.kotlin/Value.Kind?, com.google.protobuf.kotlin/Value.Kind?): kotlin/Boolean // com.google.protobuf.kotlin/ValueInternal.oneOfEquals|oneOfEquals(com.google.protobuf.kotlin.Value.Kind?;com.google.protobuf.kotlin.Value.Kind?){}[0]
