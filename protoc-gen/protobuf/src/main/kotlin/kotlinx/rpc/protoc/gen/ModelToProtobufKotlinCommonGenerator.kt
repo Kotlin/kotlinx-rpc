@@ -139,7 +139,7 @@ class ModelToProtobufKotlinCommonGenerator(
             deprecation = if (declaration.deprecated) DeprecationLevel.WARNING else null,
         ) {
             declaration.actualFields.forEachIndexed { i, field ->
-                this.property(
+                property(
                     name = field.name,
                     comment = field.doc,
                     type = field.typeFqName(),
@@ -184,7 +184,7 @@ class ModelToProtobufKotlinCommonGenerator(
             generatePresenceIndicesObject(declaration)
             generateBytesDefaultsObject(declaration)
 
-            this.property(
+            property(
                 name = "_size",
                 modifiers = "override",
                 annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
@@ -196,7 +196,7 @@ class ModelToProtobufKotlinCommonGenerator(
             // unknown fields are currently not stored in a map like structure, but directly in binary form
             // within a buffer.
             // creating a Buffer object is inexpensive as there is no dynamic allocation involved.
-            this.property(
+            property(
                 name = "_unknownFields",
                 modifiers = "override",
                 annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
@@ -207,7 +207,7 @@ class ModelToProtobufKotlinCommonGenerator(
             // by setting the encoder to null, we avoid unnecessary creation of the WireEncoder
             // if there is no unknown field. by checking if it is null, we can also check if there
             // was any unknown field after decoding (for flushing).
-            this.property(
+            property(
                 name = "_unknownFieldsEncoder",
                 modifiers = "internal",
                 isVar = true,
@@ -249,7 +249,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
 
-                this.property(
+                property(
                     name = field.name,
                     modifiers = override,
                     value = value,
@@ -839,7 +839,7 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
-                    this.property(
+                    property(
                         name = "has${field.rawName.capitalize()}",
                         type = FqName.Implicits.Boolean.scoped(),
                     )
@@ -856,7 +856,7 @@ class ModelToProtobufKotlinCommonGenerator(
         if (!declaration.isUserFacing) return
         if (!declaration.hasPresenceFields && !declaration.hasExtensionRange) return
 
-        this@generatePublicPresenceGetter.property(
+        property(
             name = "presence",
             type = declaration.presenceInterfaceName.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
@@ -890,7 +890,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // val MyMessage.myExtensionField: FieldType? get() =
         //  asInternal().getExtensionValue(MyProtoFileKtExtensions.myExtensionField)
-        this@generateProtoExtensionProperty.property(
+        property(
             name = name,
             contextReceiver = extendee.name.scoped(),
             type = declaration.typeFqName(),
@@ -900,7 +900,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get() =
         //  MyProtoFileKtExtensions.myExtensionField
-        this@generateProtoExtensionProperty.property(
+        property(
             name = name,
             contextReceiver = "%T.Companion".scoped(extendee.name),
             type = "%T<%T".scoped(
@@ -915,7 +915,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // val MyMessage.hasMyExtensionField: Boolean get() =
         //  (this as InternalPresenceObject).hasExtension(MyProtoFileKtExtensions.int32)
-        this@generateProtoExtensionProperty.property(
+        property(
             name = "has" + name.capitalize(),
             contextReceiver = extendee.presenceInterfaceName.scoped(),
             type = FqName.Implicits.Boolean.scoped(),
@@ -926,7 +926,7 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         )
 
-        this@generateProtoExtensionProperty.property(
+        property(
             name = name,
             contextReceiver = extendee.builderClassName.scoped(),
             type = declaration.typeFqName(),
@@ -1015,7 +1015,7 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             val fieldDeclarations = declaration.actualFields.filter { it.presenceIdx != null }
             fieldDeclarations.forEachIndexed { i, field ->
-                this.property(
+                property(
                     name = field.name,
                     modifiers = "const",
                     value = field.presenceIdx.toString().scoped(),
@@ -1054,7 +1054,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     FieldType.IntegralType.BYTES.defaultValue
                 }
 
-                this.property(
+                property(
                     name = field.name,
                     value = value,
                     type = FqName.Implicits.ByteArray.scoped(),
@@ -1133,7 +1133,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Object,
             superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.ProtoDescriptor, declaration.name)),
         ) {
-            this.property(
+            property(
                 name = "fullName",
                 modifiers = "override",
                 type = FqName.Implicits.String.scoped(),
@@ -2185,7 +2185,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             clazz("", modifiers = "companion", declarationType = CodeGenerator.DeclarationType.Object) {
                 declaration.aliases.forEach { alias: EnumDeclaration.Alias ->
-                    this.property(
+                    property(
                         name = alias.name.simpleName,
                         comment = alias.doc,
                         type = declaration.name.scoped(),
@@ -2196,7 +2196,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
 
                 val entryNamesSorted = entriesSorted.map { it.name.scoped() }.joinToScopedString(", ")
-                this.property(
+                property(
                     name = "entries",
                     type = "%T<%T>".scoped(FqName.Implicits.List, declaration.name),
                     propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,

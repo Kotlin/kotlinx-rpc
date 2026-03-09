@@ -11,10 +11,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.safeCast
 
-@InternalRpcApi
 /**
  * Internal runtime descriptor for a protobuf extension field.
  */
+@InternalRpcApi
 public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> private constructor(
     /** Extendee message type used by [kotlinx.rpc.protobuf.ProtoExtensionRegistry] lookup. */
     public override val messageType: KClass<T>,
