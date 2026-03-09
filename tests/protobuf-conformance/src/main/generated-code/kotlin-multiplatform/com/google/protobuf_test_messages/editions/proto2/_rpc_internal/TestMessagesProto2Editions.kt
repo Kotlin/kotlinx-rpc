@@ -1621,8 +1621,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapInt32Int32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1693,8 +1691,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapInt64Int64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1767,8 +1763,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
-        private val _owner: MapUint32Uint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1839,8 +1833,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
-
-        private val _owner: MapUint64Uint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1913,8 +1905,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapSint32Sint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1985,8 +1975,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapSint64Sint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2059,8 +2047,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
-        private val _owner: MapFixed32Fixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2131,8 +2117,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
-
-        private val _owner: MapFixed64Fixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2205,8 +2189,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapSfixed32Sfixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2277,8 +2259,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapSfixed64Sfixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2351,8 +2331,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
 
-        private val _owner: MapInt32BoolEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2423,8 +2401,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
-
-        private val _owner: MapInt32FloatEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2497,8 +2473,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
 
-        private val _owner: MapInt32DoubleEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2569,8 +2543,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
-
-        private val _owner: MapInt32NestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2643,8 +2615,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
 
-        private val _owner: MapBoolBoolEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2715,8 +2685,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
-
-        private val _owner: MapStringStringEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2789,8 +2757,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
 
-        private val _owner: MapStringBytesEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2861,8 +2827,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
-
-        private val _owner: MapStringNestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2935,8 +2899,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageProto2Internal() }
 
-        private val _owner: MapStringForeignMessageEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -3008,8 +2970,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesProto2.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { TestAllTypesProto2.NestedEnum.FOO }
 
-        private val _owner: MapStringNestedEnumEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -3080,8 +3040,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignEnumProto2 by MsgFieldDelegate(PresenceIndices.value) { ForeignEnumProto2.FOREIGN_FOO }
-
-        private val _owner: MapStringForeignEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -3738,8 +3696,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override var oneofField: TestAllTypesProto2.ExtensionWithOneof.OneofField? = null
-
-        private val _owner: ExtensionWithOneofInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -4428,8 +4384,6 @@ class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessag
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    private val _owner: NullHypothesisProto2Internal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = this::class.hashCode()
@@ -4517,8 +4471,6 @@ class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWith
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
-
-    private val _owner: EnumOnlyProto2Internal = this
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -6199,8 +6151,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
     override var largeOneof: TestLargeOneof.LargeOneof? = null
 
-    private val _owner: TestLargeOneofInternal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = (largeOneof?.oneOfHashCode() ?: 0)
@@ -6287,8 +6237,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
-
-        private val _owner: A1Internal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -6378,8 +6326,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        private val _owner: A2Internal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = this::class.hashCode()
@@ -6467,8 +6413,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
-
-        private val _owner: A3Internal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -6558,8 +6502,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        private val _owner: A4Internal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = this::class.hashCode()
@@ -6647,8 +6589,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
-
-        private val _owner: A5Internal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -13053,15 +12993,14 @@ fun TestAllRequiredTypesProto2.NestedEnum.Companion.fromNumber(number: Int): Tes
 
 @InternalRpcApi
 object TestMessagesProto2EditionsKtExtensions {
-    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  Int> =
-        InternalExtensionDescriptor.int32(
+
+    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  Int> =         InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
         )
 
-    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  GroupField> =
-        InternalExtensionDescriptor.message(
+    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  GroupField> =         InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupfield",
             extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
@@ -13074,8 +13013,8 @@ object TestMessagesProto2EditionsKtExtensions {
 
     object TestAllTypesProto2 {
         object MessageSetCorrectExtension1 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> =
-                InternalExtensionDescriptor.message(
+
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> =                 InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13088,8 +13027,8 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> =
-                InternalExtensionDescriptor.message(
+
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> =                 InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13102,8 +13041,8 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object ExtensionWithOneof {
-            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof> =
-                InternalExtensionDescriptor.message(
+
+            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof> =                 InternalExtensionDescriptor.message(
                     fieldNumber = 123456789,
                     name = "extensionWithOneof",
                     extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13118,8 +13057,8 @@ object TestMessagesProto2EditionsKtExtensions {
 
     object TestAllRequiredTypesProto2 {
         object MessageSetCorrectExtension1 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> =
-                InternalExtensionDescriptor.message(
+
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> =                 InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,
@@ -13132,8 +13071,8 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> =
-                InternalExtensionDescriptor.message(
+
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> =                 InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,

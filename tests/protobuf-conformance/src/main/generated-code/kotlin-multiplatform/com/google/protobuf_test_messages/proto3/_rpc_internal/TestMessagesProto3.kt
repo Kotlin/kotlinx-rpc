@@ -1257,8 +1257,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
 
-        private val _owner: MapInt32Int32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1313,8 +1311,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
-
-        private val _owner: MapInt64Int64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1371,8 +1367,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
 
-        private val _owner: MapUint32Uint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1427,8 +1421,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
-
-        private val _owner: MapUint64Uint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1485,8 +1477,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
 
-        private val _owner: MapSint32Sint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1541,8 +1531,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
-
-        private val _owner: MapSint64Sint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1599,8 +1587,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: UInt by MsgFieldDelegate { 0u }
         var value: UInt by MsgFieldDelegate { 0u }
 
-        private val _owner: MapFixed32Fixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1655,8 +1641,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: ULong by MsgFieldDelegate { 0uL }
         var value: ULong by MsgFieldDelegate { 0uL }
-
-        private val _owner: MapFixed64Fixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1713,8 +1697,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate { 0 }
         var value: Int by MsgFieldDelegate { 0 }
 
-        private val _owner: MapSfixed32Sfixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1769,8 +1751,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: Long by MsgFieldDelegate { 0L }
         var value: Long by MsgFieldDelegate { 0L }
-
-        private val _owner: MapSfixed64Sfixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1827,8 +1807,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: Int by MsgFieldDelegate { 0 }
         var value: Float by MsgFieldDelegate { 0.0f }
 
-        private val _owner: MapInt32FloatEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1883,8 +1861,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: Int by MsgFieldDelegate { 0 }
         var value: Double by MsgFieldDelegate { 0.0 }
-
-        private val _owner: MapInt32DoubleEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1941,8 +1917,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: Boolean by MsgFieldDelegate { false }
         var value: Boolean by MsgFieldDelegate { false }
 
-        private val _owner: MapBoolBoolEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -1998,8 +1972,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate { "" }
         var value: String by MsgFieldDelegate { "" }
 
-        private val _owner: MapStringStringEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -2054,8 +2026,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate { "" }
         var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
-
-        private val _owner: MapStringBytesEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2115,8 +2085,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate { "" }
         var value: TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
-
-        private val _owner: MapStringNestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2183,8 +2151,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate { "" }
         var value: ForeignMessage by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageInternal() }
 
-        private val _owner: MapStringForeignMessageEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -2246,8 +2212,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var key: String by MsgFieldDelegate { "" }
         var value: TestAllTypesProto3.NestedEnum by MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
 
-        private val _owner: MapStringNestedEnumEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
@@ -2302,8 +2266,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
         var key: String by MsgFieldDelegate { "" }
         var value: ForeignEnum by MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
-
-        private val _owner: MapStringForeignEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2396,8 +2358,6 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
 
     override var c: Int by MsgFieldDelegate { 0 }
 
-    private val _owner: ForeignMessageInternal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = c.hashCode()
@@ -2489,8 +2449,6 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    private val _owner: NullHypothesisProto3Internal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = this::class.hashCode()
@@ -2578,8 +2536,6 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
-
-    private val _owner: EnumOnlyProto3Internal = this
 
     override fun hashCode(): Int {
         checkRequiredFields()

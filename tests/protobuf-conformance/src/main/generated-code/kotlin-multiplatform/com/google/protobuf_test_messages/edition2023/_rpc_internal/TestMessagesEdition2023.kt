@@ -1178,8 +1178,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapInt32Int32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1250,8 +1248,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapInt64Int64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1324,8 +1320,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
-        private val _owner: MapUint32Uint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1396,8 +1390,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
-
-        private val _owner: MapUint64Uint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1470,8 +1462,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapSint32Sint32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1542,8 +1532,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapSint64Sint64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1616,8 +1604,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: UInt by MsgFieldDelegate(PresenceIndices.key) { 0u }
         var value: UInt by MsgFieldDelegate(PresenceIndices.value) { 0u }
 
-        private val _owner: MapFixed32Fixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1688,8 +1674,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: ULong by MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var value: ULong by MsgFieldDelegate(PresenceIndices.value) { 0uL }
-
-        private val _owner: MapFixed64Fixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1762,8 +1746,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Int by MsgFieldDelegate(PresenceIndices.value) { 0 }
 
-        private val _owner: MapSfixed32Sfixed32EntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1834,8 +1816,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Long by MsgFieldDelegate(PresenceIndices.key) { 0L }
         var value: Long by MsgFieldDelegate(PresenceIndices.value) { 0L }
-
-        private val _owner: MapSfixed64Sfixed64EntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1908,8 +1888,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Float by MsgFieldDelegate(PresenceIndices.value) { 0.0f }
 
-        private val _owner: MapInt32FloatEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -1980,8 +1958,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: Int by MsgFieldDelegate(PresenceIndices.key) { 0 }
         var value: Double by MsgFieldDelegate(PresenceIndices.value) { 0.0 }
-
-        private val _owner: MapInt32DoubleEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2054,8 +2030,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: Boolean by MsgFieldDelegate(PresenceIndices.key) { false }
         var value: Boolean by MsgFieldDelegate(PresenceIndices.value) { false }
 
-        private val _owner: MapBoolBoolEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2126,8 +2100,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: String by MsgFieldDelegate(PresenceIndices.value) { "" }
-
-        private val _owner: MapStringStringEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2200,8 +2172,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
 
-        private val _owner: MapStringBytesEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2272,8 +2242,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesEdition2023.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
-
-        private val _owner: MapStringNestedMessageEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2346,8 +2314,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignMessageEdition2023 by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageEdition2023Internal() }
 
-        private val _owner: MapStringForeignMessageEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2419,8 +2385,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: TestAllTypesEdition2023.NestedEnum by MsgFieldDelegate(PresenceIndices.value) { TestAllTypesEdition2023.NestedEnum.FOO }
 
-        private val _owner: MapStringNestedEnumEntryInternal = this
-
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
@@ -2491,8 +2455,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
         var value: ForeignEnumEdition2023 by MsgFieldDelegate(PresenceIndices.value) { ForeignEnumEdition2023.FOREIGN_FOO }
-
-        private val _owner: MapStringForeignEnumEntryInternal = this
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -6440,15 +6402,14 @@ fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAl
 
 @InternalRpcApi
 object TestMessagesEdition2023KtExtensions {
-    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> =
-        InternalExtensionDescriptor.int32(
+
+    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> =         InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =
-        InternalExtensionDescriptor.message(
+    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =         InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupliketype",
             extendee = TestAllTypesEdition2023::class,
@@ -6459,8 +6420,7 @@ object TestMessagesEdition2023KtExtensions {
             decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
         )
 
-    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =
-        InternalExtensionDescriptor.message(
+    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =         InternalExtensionDescriptor.message(
             fieldNumber = 122,
             name = "delimitedExt",
             extendee = TestAllTypesEdition2023::class,

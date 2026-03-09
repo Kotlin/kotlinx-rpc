@@ -41,8 +41,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     override var failureMessage: String by MsgFieldDelegate { "" }
     override var matchedName: String by MsgFieldDelegate { "" }
 
-    private val _owner: TestStatusInternal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = name.hashCode()
@@ -143,8 +141,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var test: List<TestStatus> by MsgFieldDelegate { mutableListOf() }
-
-    private val _owner: FailureSetInternal = this
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -418,8 +414,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     override var result: ConformanceResponse.Result? = null
 
-    private val _owner: ConformanceResponseInternal = this
-
     override fun hashCode(): Int {
         checkRequiredFields()
         var result = (result?.oneOfHashCode() ?: 0)
@@ -576,8 +570,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate { false }
-
-    private val _owner: JspbEncodingConfigInternal = this
 
     override fun hashCode(): Int {
         checkRequiredFields()
