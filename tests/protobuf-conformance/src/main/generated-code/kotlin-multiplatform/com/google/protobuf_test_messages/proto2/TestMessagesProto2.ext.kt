@@ -3,6 +3,8 @@ package com.google.protobuf_test_messages.proto2
 
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
 * Constructs a new message.
@@ -407,6 +409,11 @@ fun TestAllTypesProto2.MessageSetCorrect.copy(body: TestAllTypesProto2.MessageSe
 }
 
 /**
+* Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect] instance.
+*/
+val TestAllTypesProto2.MessageSetCorrect.presence: TestAllTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
+
+/**
 * Constructs a new message.
 * ```
 * val message = MessageSetCorrectExtension1 {
@@ -608,6 +615,11 @@ operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(body:
 fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrect {
     return this.asInternal().copyInternal(body)
 }
+
+/**
+* Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect] instance.
+*/
+val TestAllRequiredTypesProto2.MessageSetCorrect.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
 
 /**
 * Constructs a new message.
@@ -932,6 +944,8 @@ interface TestAllTypesProto2Presence {
         val hasGroupUint32: Boolean
     }
 
+    interface MessageSetCorrect
+
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.presence] extension property.
@@ -1114,6 +1128,8 @@ interface TestAllRequiredTypesProto2Presence {
         val hasGroupUint32: Boolean
     }
 
+    interface MessageSetCorrect
+
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence] extension property.
@@ -1128,5 +1144,89 @@ interface TestAllRequiredTypesProto2Presence {
     */
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
+    }
+}
+
+val TestAllTypesProto2.extensionInt32: Int? get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.extensionInt32)
+
+val TestAllTypesProto2.Companion.extensionInt32: ProtoExtensionDescriptor<TestAllTypesProto2, Int> get() = TestMessagesProto2KtExtensions.extensionInt32
+
+val TestAllTypesProto2Presence.hasExtensionInt32: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.extensionInt32)
+
+var TestAllTypesProto2.Builder.extensionInt32: Int?
+    get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.extensionInt32)
+    set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.extensionInt32, value) }
+
+val TestAllTypesProto2.groupfield: GroupField get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.groupfield) ?: TestMessagesProto2KtExtensions.groupfield.defaultValue.value
+
+val TestAllTypesProto2.Companion.groupfield: ProtoExtensionDescriptor<TestAllTypesProto2, GroupField> get() = TestMessagesProto2KtExtensions.groupfield
+
+val TestAllTypesProto2Presence.hasGroupfield: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.groupfield)
+
+var TestAllTypesProto2.Builder.groupfield: GroupField
+    get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.groupfield) ?: TestMessagesProto2KtExtensions.groupfield.defaultValue.value
+    set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.groupfield, value) }
+
+object TestAllTypesProto2Extensions {
+    object MessageSetCorrectExtension1Extensions {
+        val TestAllTypesProto2.MessageSetCorrect.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension1 get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
+
+        val TestAllTypesProto2.MessageSetCorrect.Companion.messageSetExtension: ProtoExtensionDescriptor<TestAllTypesProto2.MessageSetCorrect, TestAllTypesProto2.MessageSetCorrectExtension1> get() = TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+
+        val TestAllTypesProto2Presence.MessageSetCorrect.hasMessageSetExtension: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension)
+
+        var TestAllTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension1
+            get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
+            set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension, value) }
+    }
+
+    object MessageSetCorrectExtension2Extensions {
+        val TestAllTypesProto2.MessageSetCorrect.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension2 get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
+
+        val TestAllTypesProto2.MessageSetCorrect.Companion.messageSetExtension: ProtoExtensionDescriptor<TestAllTypesProto2.MessageSetCorrect, TestAllTypesProto2.MessageSetCorrectExtension2> get() = TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+
+        val TestAllTypesProto2Presence.MessageSetCorrect.hasMessageSetExtension: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension)
+
+        var TestAllTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension2
+            get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
+            set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension, value) }
+    }
+
+    object ExtensionWithOneofExtensions {
+        val TestAllTypesProto2.MessageSetCorrect.extensionWithOneof: TestAllTypesProto2.ExtensionWithOneof get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof.defaultValue.value
+
+        val TestAllTypesProto2.MessageSetCorrect.Companion.extensionWithOneof: ProtoExtensionDescriptor<TestAllTypesProto2.MessageSetCorrect, TestAllTypesProto2.ExtensionWithOneof> get() = TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof
+
+        val TestAllTypesProto2Presence.MessageSetCorrect.hasExtensionWithOneof: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof)
+
+        var TestAllTypesProto2.MessageSetCorrect.Builder.extensionWithOneof: TestAllTypesProto2.ExtensionWithOneof
+            get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof) ?: TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof.defaultValue.value
+            set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof, value) }
+    }
+}
+
+object TestAllRequiredTypesProto2Extensions {
+    object MessageSetCorrectExtension1Extensions {
+        val TestAllRequiredTypesProto2.MessageSetCorrect.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension1 get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
+
+        val TestAllRequiredTypesProto2.MessageSetCorrect.Companion.messageSetExtension: ProtoExtensionDescriptor<TestAllRequiredTypesProto2.MessageSetCorrect, TestAllRequiredTypesProto2.MessageSetCorrectExtension1> get() = TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+
+        val TestAllRequiredTypesProto2Presence.MessageSetCorrect.hasMessageSetExtension: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension)
+
+        var TestAllRequiredTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension1
+            get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
+            set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension, value) }
+    }
+
+    object MessageSetCorrectExtension2Extensions {
+        val TestAllRequiredTypesProto2.MessageSetCorrect.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension2 get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
+
+        val TestAllRequiredTypesProto2.MessageSetCorrect.Companion.messageSetExtension: ProtoExtensionDescriptor<TestAllRequiredTypesProto2.MessageSetCorrect, TestAllRequiredTypesProto2.MessageSetCorrectExtension2> get() = TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+
+        val TestAllRequiredTypesProto2Presence.MessageSetCorrect.hasMessageSetExtension: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension)
+
+        var TestAllRequiredTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension2
+            get() = asInternal().getExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
+            set(value) { asInternal().setExtensionValue(TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension, value) }
     }
 }

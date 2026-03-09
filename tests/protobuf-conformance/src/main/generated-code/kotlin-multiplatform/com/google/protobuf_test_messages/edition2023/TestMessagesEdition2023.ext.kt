@@ -3,6 +3,8 @@ package com.google.protobuf_test_messages.edition2023
 
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
 * Constructs a new message.
@@ -287,3 +289,34 @@ interface ForeignMessageEdition2023Presence {
 interface GroupLikeTypePresence {
     val hasC: Boolean
 }
+
+val TestAllTypesEdition2023.extensionInt32: Int? get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32)
+
+val TestAllTypesEdition2023.Companion.extensionInt32: ProtoExtensionDescriptor<TestAllTypesEdition2023, Int> get() = TestMessagesEdition2023KtExtensions.extensionInt32
+
+val TestAllTypesEdition2023Presence.hasExtensionInt32: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesEdition2023KtExtensions.extensionInt32)
+
+var TestAllTypesEdition2023.Builder.extensionInt32: Int?
+    get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32)
+    set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32, value) }
+
+val TestAllTypesEdition2023.groupliketype: GroupLikeType get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype) ?: TestMessagesEdition2023KtExtensions.groupliketype.defaultValue.value
+
+val TestAllTypesEdition2023.Companion.groupliketype: ProtoExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> get() = TestMessagesEdition2023KtExtensions.groupliketype
+
+val TestAllTypesEdition2023Presence.hasGroupliketype: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesEdition2023KtExtensions.groupliketype)
+
+var TestAllTypesEdition2023.Builder.groupliketype: GroupLikeType
+    get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype) ?: TestMessagesEdition2023KtExtensions.groupliketype.defaultValue.value
+    set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype, value) }
+
+val TestAllTypesEdition2023.delimitedExt: GroupLikeType get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt) ?: TestMessagesEdition2023KtExtensions.delimitedExt.defaultValue.value
+
+val TestAllTypesEdition2023.Companion.delimitedExt: ProtoExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> get() = TestMessagesEdition2023KtExtensions.delimitedExt
+
+val TestAllTypesEdition2023Presence.hasDelimitedExt: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesEdition2023KtExtensions.delimitedExt)
+
+var TestAllTypesEdition2023.Builder.delimitedExt: GroupLikeType
+    get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt) ?: TestMessagesEdition2023KtExtensions.delimitedExt.defaultValue.value
+    set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt, value) }
+

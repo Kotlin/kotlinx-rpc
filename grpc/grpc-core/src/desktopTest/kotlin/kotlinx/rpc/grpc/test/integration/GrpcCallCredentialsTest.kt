@@ -9,7 +9,6 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.StatusCode
 import kotlinx.rpc.grpc.append
-import kotlinx.rpc.grpc.buildGrpcMetadata
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials.Context
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -23,8 +22,6 @@ import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
-import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
@@ -250,7 +247,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
                     // block indefinitely to simulate a slow call credential.
                     // this works even in a runTest coroutine dispatcher
                     CompletableDeferred<Unit>().await()
-                    return buildGrpcMetadata {
+                    return GrpcMetadata {
                         append("Authentication", "Bearer token")
                     }
                 } catch (err: CancellationException) {
@@ -285,7 +282,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         val someCredentials = object : PlaintextCallCredentials() {
             override suspend fun Context.getRequestMetadata(): GrpcMetadata {
                 calledCredentialHandler = true
-                return buildGrpcMetadata { }
+                return GrpcMetadata { }
             }
         }
         assertGrpcFailure(StatusCode.UNAVAILABLE) {
@@ -307,7 +304,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         val someCredentials = object : PlaintextCallCredentials() {
             override suspend fun Context.getRequestMetadata(): GrpcMetadata {
                 calledCredentialHandler = true
-                return buildGrpcMetadata { }
+                return GrpcMetadata { }
             }
         }
         assertGrpcFailure(StatusCode.UNAVAILABLE) {
@@ -347,7 +344,7 @@ class NoTLSBearerTokenCredentials(
     val token: String = "token"
 ) : PlaintextCallCredentials() {
     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
-        return buildGrpcMetadata {
+        return GrpcMetadata {
             // potentially fetching the token from a secure storage
             append("Authorization", "Bearer $token")
         }
@@ -356,7 +353,7 @@ class NoTLSBearerTokenCredentials(
 
 class TlsBearerTokenCredentials : GrpcCallCredentials {
     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
-        return buildGrpcMetadata {
+        return GrpcMetadata {
             append("Authorization", "Bearer token")
         }
     }

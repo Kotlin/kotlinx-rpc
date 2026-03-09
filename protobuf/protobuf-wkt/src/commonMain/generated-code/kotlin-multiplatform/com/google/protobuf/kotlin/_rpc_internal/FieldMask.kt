@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -44,7 +45,8 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return paths.hashCode()
+        var result = paths.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -70,6 +72,10 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
         builder.appendLine("${nextIndentString}paths=${this.paths},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): FieldMaskInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -130,10 +136,17 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             encoder.writeString(1, it)
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FieldMask::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

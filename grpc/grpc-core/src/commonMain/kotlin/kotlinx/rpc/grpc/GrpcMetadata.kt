@@ -38,7 +38,7 @@ import kotlinx.rpc.grpc.marshaller.MessageMarshaller
  *
  * ## Example usage
  * ```kotlin
- * val metadata = GrpcMetadata().apply {
+ * val metadata = GrpcMetadata {
  *    append("custom-header", "value1")
  *    append("custom-header", "value2")
  *    appendBinary("custom-header-bin", byteArrayOf(1, 2, 3))
@@ -59,7 +59,7 @@ public expect class GrpcMetadata constructor()
  *              The lambda operates on the metadata instance being built.
  * @return The configured [GrpcMetadata] instance.
  */
-public fun buildGrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMetadata().apply(block)
+public fun GrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMetadata().apply(block)
 
 /**
  * A typed key for metadata entries that uses a [MessageMarshaller] to encode and decode values.

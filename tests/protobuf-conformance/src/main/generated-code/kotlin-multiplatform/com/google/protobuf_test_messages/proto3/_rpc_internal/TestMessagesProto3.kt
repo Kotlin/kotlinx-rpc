@@ -34,6 +34,7 @@ import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.UInt64ValueInternal
 import com.google.protobuf.kotlin.Value
 import com.google.protobuf.kotlin.ValueInternal
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -42,6 +43,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -257,8 +259,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var FieldName18__: Int by MsgFieldDelegate { 0 }
     override var oneofField: TestAllTypesProto3.OneofField? = null
 
+    private val _owner: TestAllTypesProto3Internal = this
+
     @InternalRpcApi
-    val _presence: TestAllTypesProto3Presence = object : TestAllTypesProto3Presence {
+    val _presence: TestAllTypesProto3Presence = object : TestAllTypesProto3Presence, InternalPresenceObject {
+        override val _message: TestAllTypesProto3Internal get() = _owner
+
         override val hasOptionalNestedMessage: Boolean get() = presenceMask[0]
 
         override val hasOptionalForeignMessage: Boolean get() = presenceMask[1]
@@ -874,6 +880,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         return builder.toString()
     }
 
+    override fun copyInternal(): TestAllTypesProto3Internal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     fun copyInternal(body: TestAllTypesProto3Internal.() -> Unit): TestAllTypesProto3Internal {
         val copy = TestAllTypesProto3Internal()
@@ -1131,8 +1141,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override var a: Int by MsgFieldDelegate { 0 }
         override var corecursive: TestAllTypesProto3 by MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto3Internal() }
 
+        private val _owner: NestedMessageInternal = this
+
         @InternalRpcApi
-        val _presence: TestAllTypesProto3Presence.NestedMessage = object : TestAllTypesProto3Presence.NestedMessage {
+        val _presence: TestAllTypesProto3Presence.NestedMessage = object : TestAllTypesProto3Presence.NestedMessage, InternalPresenceObject {
+            override val _message: NestedMessageInternal get() = _owner
+
             override val hasCorecursive: Boolean get() = presenceMask[0]
         }
 
@@ -1174,6 +1188,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): NestedMessageInternal {
+            return copyInternal { }
         }
 
         @InternalRpcApi
@@ -1273,6 +1291,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32Int32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1322,6 +1344,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapInt64Int64EntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1375,6 +1401,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapUint32Uint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1424,6 +1454,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapUint64Uint64EntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1477,6 +1511,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSint32Sint32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1526,6 +1564,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapSint64Sint64EntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1579,6 +1621,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapFixed32Fixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1628,6 +1674,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapFixed64Fixed64EntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1681,6 +1731,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapSfixed32Sfixed32EntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1730,6 +1784,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapSfixed64Sfixed64EntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1783,6 +1841,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapInt32FloatEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1832,6 +1894,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapInt32DoubleEntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -1885,6 +1951,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapBoolBoolEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1936,6 +2006,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringStringEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -1985,6 +2059,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapStringBytesEntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -2048,6 +2126,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2109,6 +2191,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringForeignMessageEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2160,6 +2246,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             return builder.toString()
         }
 
+        override fun copyInternal(): MapStringNestedEnumEntryInternal {
+            return this
+        }
+
         @InternalRpcApi
         companion object
     }
@@ -2209,6 +2299,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}value=${this.value},")
             builder.append("${indentString})")
             return builder.toString()
+        }
+
+        override fun copyInternal(): MapStringForeignEnumEntryInternal {
+            return this
         }
 
         @InternalRpcApi
@@ -2266,7 +2360,8 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return c.hashCode()
+        var result = c.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2292,6 +2387,10 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
         builder.appendLine("${nextIndentString}c=${this.c},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ForeignMessageInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -2352,7 +2451,8 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return this::class.hashCode()
+        var result = this::class.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2376,6 +2476,10 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
         builder.appendLine("NullHypothesisProto3(")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): NullHypothesisProto3Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -2435,7 +2539,8 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return this::class.hashCode()
+        var result = this::class.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -2459,6 +2564,10 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
         builder.appendLine("EnumOnlyProto3(")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): EnumOnlyProto3Internal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -3494,10 +3603,17 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5051,10 +5167,17 @@ fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConf
     if (this.c != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.c)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ForeignMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5106,6 +5229,7 @@ fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: Protob
 
 @InternalRpcApi
 fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(NullHypothesisProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5150,6 +5274,7 @@ fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConf
 
 @InternalRpcApi
 fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(EnumOnlyProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5199,10 +5324,17 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
     if (presenceMask[0]) {
         encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesProto3.NestedMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5266,6 +5398,12 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
 
     if (this.value != 0) {
         encoder.writeInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5331,6 +5469,12 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
     if (this.value != 0L) {
         encoder.writeInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5394,6 +5538,12 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
 
     if (this.value != 0u) {
         encoder.writeUInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5459,6 +5609,12 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
     if (this.value != 0uL) {
         encoder.writeUInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5522,6 +5678,12 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
 
     if (this.value != 0) {
         encoder.writeSInt32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5587,6 +5749,12 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
     if (this.value != 0L) {
         encoder.writeSInt64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5650,6 +5818,12 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
 
     if (this.value != 0u) {
         encoder.writeFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5715,6 +5889,12 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
     if (this.value != 0uL) {
         encoder.writeFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5778,6 +5958,12 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
 
     if (this.value != 0) {
         encoder.writeSFixed32(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5843,6 +6029,12 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
     if (this.value != 0L) {
         encoder.writeSFixed64(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -5906,6 +6098,12 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
 
     if (this.value != 0.0f) {
         encoder.writeFloat(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -5971,6 +6169,12 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
     if (this.value != 0.0) {
         encoder.writeDouble(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -6034,6 +6238,12 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
 
     if (this.value != false) {
         encoder.writeBool(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -6099,6 +6309,12 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: 
     if (this.value.isNotEmpty()) {
         encoder.writeString(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -6162,6 +6378,12 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
 
     if (this.value.isNotEmpty()) {
         encoder.writeBytes(fieldNr = 2, value = this.value)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -6229,6 +6451,12 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(en
 
     if (presenceMask[0]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 
@@ -6301,6 +6529,12 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(e
     if (presenceMask[0]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -6369,6 +6603,12 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
     if (this.value != TestAllTypesProto3.NestedEnum.FOO) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
@@ -6432,6 +6672,12 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
 
     if (this.value != ForeignEnum.FOREIGN_FOO) {
         encoder.writeEnum(fieldNr = 2, value = this.value.number)
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
     }
 }
 

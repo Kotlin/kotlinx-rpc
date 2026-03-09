@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.conformance
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -9,6 +10,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -76,6 +78,10 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
         return builder.toString()
     }
 
+    override fun copyInternal(): TestStatusInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     fun copyInternal(body: TestStatusInternal.() -> Unit): TestStatusInternal {
         val copy = TestStatusInternal()
@@ -138,7 +144,8 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return test.hashCode()
+        var result = test.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -164,6 +171,10 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
         builder.appendLine("${nextIndentString}test=${this.test},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): FailureSetInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -233,8 +244,12 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     override var printUnknownFields: Boolean by MsgFieldDelegate { false }
     override var payload: ConformanceRequest.Payload? = null
 
+    private val _owner: ConformanceRequestInternal = this
+
     @InternalRpcApi
-    val _presence: ConformanceRequestPresence = object : ConformanceRequestPresence {
+    val _presence: ConformanceRequestPresence = object : ConformanceRequestPresence, InternalPresenceObject {
+        override val _message: ConformanceRequestInternal get() = _owner
+
         override val hasJspbEncodingOptions: Boolean get() = presenceMask[0]
     }
 
@@ -309,6 +324,10 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}payload=${this.payload},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ConformanceRequestInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -397,7 +416,8 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return (result?.oneOfHashCode() ?: 0)
+        var result = (result?.oneOfHashCode() ?: 0)
+        return result
     }
 
     fun ConformanceResponse.Result.oneOfHashCode(): Int {
@@ -454,6 +474,10 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         builder.appendLine("${nextIndentString}result=${this.result},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): ConformanceResponseInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -549,7 +573,8 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        return useJspbArrayAnyFormat.hashCode()
+        var result = useJspbArrayAnyFormat.hashCode()
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -575,6 +600,10 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}useJspbArrayAnyFormat=${this.useJspbArrayAnyFormat},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    override fun copyInternal(): JspbEncodingConfigInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -641,10 +670,17 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
     if (this.matchedName.isNotEmpty()) {
         encoder.writeString(fieldNr = 3, value = this.matchedName)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestStatus::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -713,10 +749,17 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
             encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FailureSet::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -804,10 +847,17 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceRequest::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -946,10 +996,17 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: Protobu
             }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceResponse::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1051,10 +1108,17 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: Protobuf
     if (this.useJspbArrayAnyFormat != false) {
         encoder.writeBool(fieldNr = 1, value = this.useJspbArrayAnyFormat)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(JspbEncodingConfig::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

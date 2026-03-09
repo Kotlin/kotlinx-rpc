@@ -21,9 +21,14 @@ data class FileDeclaration(
     val messageDeclarations: List<MessageDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val serviceDeclarations: List<ServiceDeclaration>,
+    val extensions: List<FieldDeclaration>,
     val doc: List<Comment>,
     val dec: Descriptors.FileDescriptor,
     val deprecated: Boolean,
+
+    // the object that stores internal extension descriptors for
+    // extensions registered in this proto file
+    val internalExtensionDescriptorObject: FqName.Declaration,
 )
 
 data class MessageDeclaration(
@@ -33,6 +38,7 @@ data class MessageDeclaration(
     val oneOfDeclarations: List<OneOfDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val nestedDeclarations: List<MessageDeclaration>,
+    val extensions: List<FieldDeclaration>,
     val doc: Comment?,
     val dec: Descriptors.Descriptor,
     val deprecated: Boolean,
@@ -72,7 +78,7 @@ data class MessageDeclaration(
     val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
 
     fun hasPresenceFieldsRecursive(): Boolean {
-        return hasPresenceFields || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
+        return hasPresenceFields || hasExtensionRange || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
     }
 
     fun nonDefaultByteFields(): List<FieldDeclaration> {
@@ -83,6 +89,15 @@ data class MessageDeclaration(
                         !(it.dec.defaultValue as ByteString).isEmpty
             }
     }
+
+    val extensionRanges: List<IntRange> by lazy {
+        dec.toProto().extensionRangeList.map { it.start..it.end }
+    }
+
+    val hasExtensionRange: Boolean by lazy {
+        extensionRanges.isNotEmpty()
+    }
+
 }
 
 data class EnumDeclaration(
@@ -139,6 +154,11 @@ data class FieldDeclaration(
     // defines the index in the presenceMask of the Message.
     // this cannot be the number, as only fields with hasPresence == true are part of the presenceMask
     val presenceIdx: Int? = null,
+    // the message of the field (also for extension fields)
+    val containingType: Lazy<MessageDeclaration>,
+    // fully-qualified symbol of the generated internal extension descriptor property
+    // (null for non-extension fields)
+    val extensionDescriptorName: FqName.Declaration? = null,
 ) {
     val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
@@ -155,6 +175,8 @@ data class FieldDeclaration(
             )
             || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number
+
+    val isExtension = dec.isExtension
 }
 
 data class ServiceDeclaration(
@@ -173,4 +195,3 @@ data class MethodDeclaration(
     val doc: Comment?,
     val deprecated: Boolean,
 )
-
