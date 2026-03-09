@@ -9188,6 +9188,13 @@ fun NullHypothesisProto2Internal.checkRequiredFields() {
 @InternalRpcApi
 fun NullHypothesisProto2Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -9236,6 +9243,13 @@ fun EnumOnlyProto2Internal.checkRequiredFields() {
 @InternalRpcApi
 fun EnumOnlyProto2Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -12144,6 +12158,13 @@ fun TestAllTypesProto2Internal.MessageSetCorrectInternal.checkRequiredFields() {
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -12692,6 +12713,13 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.checkRequiredFi
 @InternalRpcApi
 fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -12884,6 +12912,13 @@ fun TestLargeOneofInternal.A1Internal.checkRequiredFields() {
 @InternalRpcApi
 fun TestLargeOneofInternal.A1Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -12932,6 +12967,13 @@ fun TestLargeOneofInternal.A2Internal.checkRequiredFields() {
 @InternalRpcApi
 fun TestLargeOneofInternal.A2Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -12980,6 +13022,13 @@ fun TestLargeOneofInternal.A3Internal.checkRequiredFields() {
 @InternalRpcApi
 fun TestLargeOneofInternal.A3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -13028,6 +13077,13 @@ fun TestLargeOneofInternal.A4Internal.checkRequiredFields() {
 @InternalRpcApi
 fun TestLargeOneofInternal.A4Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -13076,6 +13132,13 @@ fun TestLargeOneofInternal.A5Internal.checkRequiredFields() {
 @InternalRpcApi
 fun TestLargeOneofInternal.A5Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi

@@ -198,7 +198,7 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
 
     override fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int) {
         require(offset >= 0 && offset + length <= bytes.size) { "Invalid offset or length" }
-        codedOutputStream.writeRawBytes(bytes, offset, length - offset)
+        codedOutputStream.writeRawBytes(bytes, offset, length)
     }
 
     private inline fun <T> writePackedInternal(

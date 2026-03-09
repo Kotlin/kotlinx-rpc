@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -111,6 +112,13 @@ public fun EmptyInternal.checkRequiredFields() {
 @InternalRpcApi
 public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi

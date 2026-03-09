@@ -5225,6 +5225,13 @@ fun NullHypothesisProto3Internal.checkRequiredFields() {
 @InternalRpcApi
 fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5273,6 +5280,13 @@ fun EnumOnlyProto3Internal.checkRequiredFields() {
 @InternalRpcApi
 fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi

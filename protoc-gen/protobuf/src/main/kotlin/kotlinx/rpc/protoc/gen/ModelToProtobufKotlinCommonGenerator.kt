@@ -1510,22 +1510,21 @@ class ModelToProtobufKotlinCommonGenerator(
     ) {
         if (declaration.actualFields.isEmpty()) {
             code("// no fields to encode".scoped())
-            return@function
-        }
-
-        declaration.actualFields.forEach { field ->
-            if (field.nullable) {
-                scope("this.${field.name}?.also".scoped()) {
-                    generateEncodeFieldValue(field, "it".scoped())
+        } else {
+            declaration.actualFields.forEach { field ->
+                if (field.nullable) {
+                    scope("this.${field.name}?.also".scoped()) {
+                        generateEncodeFieldValue(field, "it".scoped())
+                    }
+                } else if (field.dec.hasPresence()) {
+                    ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
+                        generateEncodeFieldValue(field, "this.${field.name}".scoped())
+                    })
+                } else {
+                    ifBranch(condition = field.notDefaultCheck(declaration), ifBlock = {
+                        generateEncodeFieldValue(field, "this.${field.name}".scoped())
+                    })
                 }
-            } else if (field.dec.hasPresence()) {
-                ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
-                })
-            } else {
-                ifBranch(condition = field.notDefaultCheck(declaration), ifBlock = {
-                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
-                })
             }
         }
 
