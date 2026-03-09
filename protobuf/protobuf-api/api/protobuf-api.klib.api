@@ -16,11 +16,18 @@ final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rp
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 }
 
-final class kotlinx.rpc.protobuf/ProtobufConfig : kotlinx.rpc.grpc.marshaller/MarshallerConfig { // kotlinx.rpc.protobuf/ProtobufConfig|null[0]
-    constructor <init>(kotlin/Boolean = ...) // kotlinx.rpc.protobuf/ProtobufConfig.<init>|<init>(kotlin.Boolean){}[0]
+final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig { // kotlinx.rpc.protobuf/ProtoConfig|null[0]
+    constructor <init>(kotlin/Boolean = ..., kotlin/Int = ...) // kotlinx.rpc.protobuf/ProtoConfig.<init>|<init>(kotlin.Boolean;kotlin.Int){}[0]
 
-    final val discardUnknownFields // kotlinx.rpc.protobuf/ProtobufConfig.discardUnknownFields|{}discardUnknownFields[0]
-        final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtobufConfig.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
+    final val discardUnknownFields // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields|{}discardUnknownFields[0]
+        final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
+    final val recursionLimit // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit|{}recursionLimit[0]
+        final fun <get-recursionLimit>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit.<get-recursionLimit>|<get-recursionLimit>(){}[0]
+
+    final object Companion { // kotlinx.rpc.protobuf/ProtoConfig.Companion|null[0]
+        final const val DEFAULT_RECURSION_LIMIT // kotlinx.rpc.protobuf/ProtoConfig.Companion.DEFAULT_RECURSION_LIMIT|{}DEFAULT_RECURSION_LIMIT[0]
+            final fun <get-DEFAULT_RECURSION_LIMIT>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.Companion.DEFAULT_RECURSION_LIMIT.<get-DEFAULT_RECURSION_LIMIT>|<get-DEFAULT_RECURSION_LIMIT>(){}[0]
+    }
 }
 
 sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf.internal/ProtobufException|null[0]

@@ -16,7 +16,7 @@ private val excludedProjects = setOf(
     "krpc-protocol-compatibility-tests",
     "compiler-plugin-tests",
     "protobuf-conformance",
-    "protobuf-plugin",
+    "protobuf-unittest",
     "grpc-test-server",
     "test-protos",
 )

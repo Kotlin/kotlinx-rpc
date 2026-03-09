@@ -1,8 +1,14 @@
-public final class kotlinx/rpc/protobuf/ProtobufConfig : kotlinx/rpc/grpc/marshaller/MarshallerConfig {
+public final class kotlinx/rpc/protobuf/ProtoConfig : kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig {
+	public static final field Companion Lkotlinx/rpc/protobuf/ProtoConfig$Companion;
+	public static final field DEFAULT_RECURSION_LIMIT I
 	public fun <init> ()V
-	public fun <init> (Z)V
-	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (ZI)V
+	public synthetic fun <init> (ZIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDiscardUnknownFields ()Z
+	public final fun getRecursionLimit ()I
+}
+
+public final class kotlinx/rpc/protobuf/ProtoConfig$Companion {
 }
 
 public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException : kotlinx/rpc/protobuf/internal/ProtobufException {

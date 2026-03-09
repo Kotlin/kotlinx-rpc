@@ -13,7 +13,7 @@ public final class kotlinx/rpc/grpc/GrpcCompression$None : kotlinx/rpc/grpc/Grpc
 }
 
 public final class kotlinx/rpc/grpc/GrpcMetadataKey {
-	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/grpc/marshaller/MessageMarshaller;)V
+	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;)V
 }
 
 public final class kotlinx/rpc/grpc/GrpcMetadataKt {
@@ -49,50 +49,50 @@ public final class kotlinx/rpc/grpc/GrpcMetadata_jvmKt {
 	public static final fun removeBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)Z
 }
 
-public final class kotlinx/rpc/grpc/StatusCode : java/lang/Enum {
-	public static final field ABORTED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/StatusCode;
-	public static final field CANCELLED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field DATA_LOSS Lkotlinx/rpc/grpc/StatusCode;
-	public static final field DEADLINE_EXCEEDED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field FAILED_PRECONDITION Lkotlinx/rpc/grpc/StatusCode;
-	public static final field INTERNAL Lkotlinx/rpc/grpc/StatusCode;
-	public static final field INVALID_ARGUMENT Lkotlinx/rpc/grpc/StatusCode;
-	public static final field NOT_FOUND Lkotlinx/rpc/grpc/StatusCode;
-	public static final field OK Lkotlinx/rpc/grpc/StatusCode;
-	public static final field OUT_OF_RANGE Lkotlinx/rpc/grpc/StatusCode;
-	public static final field PERMISSION_DENIED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field RESOURCE_EXHAUSTED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field UNAUTHENTICATED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/StatusCode;
-	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/StatusCode;
-	public static final field UNKNOWN Lkotlinx/rpc/grpc/StatusCode;
+public final class kotlinx/rpc/grpc/GrpcStatusCode : java/lang/Enum {
+	public static final field ABORTED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field ALREADY_EXISTS Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field CANCELLED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field DATA_LOSS Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field DEADLINE_EXCEEDED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field FAILED_PRECONDITION Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field INTERNAL Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field INVALID_ARGUMENT Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field NOT_FOUND Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field OK Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field OUT_OF_RANGE Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field PERMISSION_DENIED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field RESOURCE_EXHAUSTED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field UNAUTHENTICATED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field UNAVAILABLE Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field UNIMPLEMENTED Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static final field UNKNOWN Lkotlinx/rpc/grpc/GrpcStatusCode;
 	public final fun asException (Ljava/lang/String;Lio/grpc/Metadata;)Lio/grpc/StatusException;
-	public static synthetic fun asException$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Lio/grpc/Metadata;ILjava/lang/Object;)Lio/grpc/StatusException;
+	public static synthetic fun asException$default (Lkotlinx/rpc/grpc/GrpcStatusCode;Ljava/lang/String;Lio/grpc/Metadata;ILjava/lang/Object;)Lio/grpc/StatusException;
 	public final fun asStatus (Ljava/lang/String;)Lio/grpc/Status;
-	public static synthetic fun asStatus$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;ILjava/lang/Object;)Lio/grpc/Status;
+	public static synthetic fun asStatus$default (Lkotlinx/rpc/grpc/GrpcStatusCode;Ljava/lang/String;ILjava/lang/Object;)Lio/grpc/Status;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getValue ()I
 	public final fun getValueAscii ()[B
-	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/StatusCode;
-	public static fun values ()[Lkotlinx/rpc/grpc/StatusCode;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/GrpcStatusCode;
+	public static fun values ()[Lkotlinx/rpc/grpc/GrpcStatusCode;
 }
 
-public final class kotlinx/rpc/grpc/StatusExceptionKt {
+public final class kotlinx/rpc/grpc/GrpcStatusExceptionKt {
 	public static final fun getStatus (Lio/grpc/StatusException;)Lio/grpc/Status;
 	public static final fun getTrailers (Lio/grpc/StatusException;)Lio/grpc/Metadata;
 }
 
-public final class kotlinx/rpc/grpc/StatusKt {
+public final class kotlinx/rpc/grpc/GrpcStatusKt {
 	public static final fun asException (Lio/grpc/Status;Lio/grpc/Metadata;)Lio/grpc/StatusException;
 	public static synthetic fun asException$default (Lio/grpc/Status;Lio/grpc/Metadata;ILjava/lang/Object;)Lio/grpc/StatusException;
 	public static final fun getDescription (Lio/grpc/Status;)Ljava/lang/String;
 }
 
-public final class kotlinx/rpc/grpc/Status_jvmKt {
-	public static final fun Status (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;)Lio/grpc/Status;
-	public static synthetic fun Status$default (Lkotlinx/rpc/grpc/StatusCode;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lio/grpc/Status;
-	public static final fun getStatusCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/StatusCode;
+public final class kotlinx/rpc/grpc/GrpcStatus_jvmKt {
+	public static final fun GrpcStatus (Lkotlinx/rpc/grpc/GrpcStatusCode;Ljava/lang/String;Ljava/lang/Throwable;)Lio/grpc/Status;
+	public static synthetic fun GrpcStatus$default (Lkotlinx/rpc/grpc/GrpcStatusCode;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lio/grpc/Status;
+	public static final fun getStatusCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/GrpcStatusCode;
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc : java/lang/annotation/Annotation {
@@ -107,18 +107,18 @@ public abstract interface annotation class kotlinx/rpc/grpc/annotations/Grpc$Met
 	public abstract fun sampledToLocalTracing ()Z
 }
 
-public final class kotlinx/rpc/grpc/descriptor/MethodDescriptor_jvmKt {
-	public static final fun getMethodType (Lio/grpc/MethodDescriptor;)Lkotlinx/rpc/grpc/descriptor/MethodType;
+public final class kotlinx/rpc/grpc/descriptor/GrpcMethodDescriptor_jvmKt {
+	public static final fun getMethodType (Lio/grpc/MethodDescriptor;)Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
 }
 
-public final class kotlinx/rpc/grpc/descriptor/MethodType : java/lang/Enum {
-	public static final field BIDI_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
-	public static final field CLIENT_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
-	public static final field SERVER_STREAMING Lkotlinx/rpc/grpc/descriptor/MethodType;
-	public static final field UNARY Lkotlinx/rpc/grpc/descriptor/MethodType;
-	public static final field UNKNOWN Lkotlinx/rpc/grpc/descriptor/MethodType;
+public final class kotlinx/rpc/grpc/descriptor/GrpcMethodType : java/lang/Enum {
+	public static final field BIDI_STREAMING Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
+	public static final field CLIENT_STREAMING Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
+	public static final field SERVER_STREAMING Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
+	public static final field UNARY Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
+	public static final field UNKNOWN Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/descriptor/MethodType;
-	public static fun values ()[Lkotlinx/rpc/grpc/descriptor/MethodType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
+	public static fun values ()[Lkotlinx/rpc/grpc/descriptor/GrpcMethodType;
 }
 

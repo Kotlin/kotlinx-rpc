@@ -1,57 +1,23 @@
 public final class kotlinx/rpc/grpc/server/CredentialsKt {
-	public static final fun TlsServerCredentials (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
-	public static synthetic fun TlsServerCredentials$default (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/grpc/ServerCredentials;
+	public static final fun GrpcTlsServerCredentials (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
+	public static synthetic fun GrpcTlsServerCredentials$default (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lio/grpc/ServerCredentials;
 }
 
-public final class kotlinx/rpc/grpc/server/GrpcServer : kotlinx/rpc/RpcServer, kotlinx/rpc/grpc/server/Server {
-	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun deregisterService (Lkotlin/reflect/KClass;)V
-	public fun getPort ()I
-	public fun isShutdown ()Z
-	public fun isTerminated ()Z
-	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
-	public fun shutdown ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/server/Server;
-	public fun shutdownNow ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public synthetic fun shutdownNow ()Lkotlinx/rpc/grpc/server/Server;
-	public fun start ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public synthetic fun start ()Lkotlinx/rpc/grpc/server/Server;
-}
-
-public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
-	public final fun getCredentials ()Lio/grpc/ServerCredentials;
-	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
-	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;
-	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;
-	public final fun intercept ([Lkotlinx/rpc/grpc/server/ServerInterceptor;)V
-	public final fun services (Lkotlin/jvm/functions/Function1;)V
-	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
-	public final fun setFallbackHandlerRegistry (Lio/grpc/HandlerRegistry;)V
-	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/MarshallerConfig;)V
-	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;)V
-	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
-}
-
-public final class kotlinx/rpc/grpc/server/GrpcServerKt {
-	public static final fun GrpcServer (ILkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/server/GrpcServer;
-	public static synthetic fun GrpcServer$default (ILkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/server/GrpcServer;
-}
-
-public abstract interface class kotlinx/rpc/grpc/server/Server {
+public abstract interface class kotlinx/rpc/grpc/server/GrpcServer : kotlinx/rpc/RpcServer {
 	public abstract fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun getPort ()I
 	public abstract fun isShutdown ()Z
 	public abstract fun isTerminated ()Z
-	public abstract fun shutdown ()Lkotlinx/rpc/grpc/server/Server;
-	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/server/Server;
-	public abstract fun start ()Lkotlinx/rpc/grpc/server/Server;
+	public abstract fun shutdown ()Lkotlinx/rpc/grpc/server/GrpcServer;
+	public abstract fun shutdownNow ()Lkotlinx/rpc/grpc/server/GrpcServer;
+	public abstract fun start ()Lkotlinx/rpc/grpc/server/GrpcServer;
 }
 
-public final class kotlinx/rpc/grpc/server/Server$DefaultImpls {
-	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/server/Server;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+public final class kotlinx/rpc/grpc/server/GrpcServer$DefaultImpls {
+	public static synthetic fun awaitTermination-VtjQ1oo$default (Lkotlinx/rpc/grpc/server/GrpcServer;JLkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
-public abstract interface class kotlinx/rpc/grpc/server/ServerCallScope {
+public abstract interface class kotlinx/rpc/grpc/server/GrpcServerCallScope {
 	public abstract fun close (Lio/grpc/Status;Lio/grpc/Metadata;)Ljava/lang/Void;
 	public abstract fun getContext ()Lio/grpc/Context;
 	public abstract fun getMethod ()Lio/grpc/MethodDescriptor;
@@ -63,26 +29,60 @@ public abstract interface class kotlinx/rpc/grpc/server/ServerCallScope {
 	public abstract fun proceedUnmodified (Lkotlinx/coroutines/flow/FlowCollector;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public final class kotlinx/rpc/grpc/server/ServerCallScope$DefaultImpls {
-	public static synthetic fun close$default (Lkotlinx/rpc/grpc/server/ServerCallScope;Lio/grpc/Status;Lio/grpc/Metadata;ILjava/lang/Object;)Ljava/lang/Void;
-	public static fun proceedUnmodified (Lkotlinx/rpc/grpc/server/ServerCallScope;Lkotlinx/coroutines/flow/FlowCollector;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+public final class kotlinx/rpc/grpc/server/GrpcServerCallScope$DefaultImpls {
+	public static synthetic fun close$default (Lkotlinx/rpc/grpc/server/GrpcServerCallScope;Lio/grpc/Status;Lio/grpc/Metadata;ILjava/lang/Object;)Ljava/lang/Void;
+	public static fun proceedUnmodified (Lkotlinx/rpc/grpc/server/GrpcServerCallScope;Lkotlinx/coroutines/flow/FlowCollector;Lkotlinx/coroutines/flow/Flow;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
-public abstract interface class kotlinx/rpc/grpc/server/ServerInterceptor {
-	public abstract fun intercept (Lkotlinx/rpc/grpc/server/ServerCallScope;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
+public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
+	public final fun getCredentials ()Lio/grpc/ServerCredentials;
+	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
+	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
+	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
+	public final fun intercept ([Lkotlinx/rpc/grpc/server/GrpcServerInterceptor;)V
+	public final fun services (Lkotlin/jvm/functions/Function1;)V
+	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
+	public final fun setFallbackHandlerRegistry (Lio/grpc/HandlerRegistry;)V
+	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
+	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
+	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
 }
 
-public final class kotlinx/rpc/grpc/server/TlsClientAuth : java/lang/Enum {
-	public static final field NONE Lkotlinx/rpc/grpc/server/TlsClientAuth;
-	public static final field OPTIONAL Lkotlinx/rpc/grpc/server/TlsClientAuth;
-	public static final field REQUIRE Lkotlinx/rpc/grpc/server/TlsClientAuth;
+public abstract interface class kotlinx/rpc/grpc/server/GrpcServerInterceptor {
+	public abstract fun intercept (Lkotlinx/rpc/grpc/server/GrpcServerCallScope;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class kotlinx/rpc/grpc/server/GrpcServerKt {
+	public static final fun GrpcServer (ILkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/server/GrpcServer;
+	public static synthetic fun GrpcServer$default (ILkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/server/GrpcServer;
+}
+
+public final class kotlinx/rpc/grpc/server/GrpcTlsClientAuth : java/lang/Enum {
+	public static final field NONE Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
+	public static final field OPTIONAL Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
+	public static final field REQUIRE Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/server/TlsClientAuth;
-	public static fun values ()[Lkotlinx/rpc/grpc/server/TlsClientAuth;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
+	public static fun values ()[Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
 }
 
-public abstract interface class kotlinx/rpc/grpc/server/TlsServerCredentialsBuilder {
-	public abstract fun clientAuth (Lkotlinx/rpc/grpc/server/TlsClientAuth;)Lkotlinx/rpc/grpc/server/TlsServerCredentialsBuilder;
-	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/server/TlsServerCredentialsBuilder;
+public abstract interface class kotlinx/rpc/grpc/server/GrpcTlsServerCredentialsBuilder {
+	public abstract fun clientAuth (Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;)Lkotlinx/rpc/grpc/server/GrpcTlsServerCredentialsBuilder;
+	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/server/GrpcTlsServerCredentialsBuilder;
+}
+
+public final class kotlinx/rpc/grpc/server/internal/GrpcServerImpl : kotlinx/rpc/grpc/server/GrpcServer {
+	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public fun deregisterService (Lkotlin/reflect/KClass;)V
+	public fun getPort ()I
+	public fun isShutdown ()Z
+	public fun isTerminated ()Z
+	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/server/GrpcServer;
+	public fun shutdown ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
+	public synthetic fun shutdownNow ()Lkotlinx/rpc/grpc/server/GrpcServer;
+	public fun shutdownNow ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
+	public synthetic fun start ()Lkotlinx/rpc/grpc/server/GrpcServer;
+	public fun start ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
 }
 

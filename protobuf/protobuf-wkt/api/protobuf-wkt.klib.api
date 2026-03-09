@@ -1269,6 +1269,7 @@ final class com.google.protobuf.kotlin/ValueInternal : com.google.protobuf.kotli
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/ValueInternal.asString|asString(kotlin.Int){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/ValueInternal.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/ValueInternal.hashCode|hashCode(){}[0]
+    final fun oneOfEquals(com.google.protobuf.kotlin/Value.Kind?, com.google.protobuf.kotlin/Value.Kind?): kotlin/Boolean // com.google.protobuf.kotlin/ValueInternal.oneOfEquals|oneOfEquals(com.google.protobuf.kotlin.Value.Kind?;com.google.protobuf.kotlin.Value.Kind?){}[0]
     final fun toString(): kotlin/String // com.google.protobuf.kotlin/ValueInternal.toString|toString(){}[0]
 }
 

@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
-import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
 import kotlinx.rpc.grpc.server.createInsecureServerCredentials
@@ -19,7 +18,7 @@ public actual abstract class ServerBuilder<T : ServerBuilder<T>> {
 
     public actual abstract fun fallbackHandlerRegistry(registry: GrpcHandlerRegistry?): T
 
-    public abstract fun build(): GrpcServer
+    public abstract fun build(): PlatformServer
 }
 
 private class NativeServerBuilder(
@@ -65,5 +64,4 @@ private object DefaultFallbackRegistry : GrpcHandlerRegistry() {
     ): ServerMethodDefinition<*, *>? {
         return null
     }
-
 }

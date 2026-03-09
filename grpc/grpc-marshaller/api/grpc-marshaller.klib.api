@@ -6,29 +6,33 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:grpc-marshaller>
-open annotation class kotlinx.rpc.grpc.marshaller/WithMarshaller : kotlin/Annotation { // kotlinx.rpc.grpc.marshaller/WithMarshaller|null[0]
-    constructor <init>(kotlin.reflect/KClass<out kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>>) // kotlinx.rpc.grpc.marshaller/WithMarshaller.<init>|<init>(kotlin.reflect.KClass<out|kotlinx.rpc.grpc.marshaller.MessageMarshaller<*>>){}[0]
-
-    final val marshaller // kotlinx.rpc.grpc.marshaller/WithMarshaller.marshaller|{}marshaller[0]
-        final fun <get-marshaller>(): kotlin.reflect/KClass<out kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>> // kotlinx.rpc.grpc.marshaller/WithMarshaller.marshaller.<get-marshaller>|<get-marshaller>(){}[0]
+open annotation class kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller : kotlin/Annotation { // kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.marshaller/HasWithGrpcMarshaller.<init>|<init>(){}[0]
 }
 
-abstract fun interface kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver { // kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver|null[0]
-    abstract fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>? // kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
+open annotation class kotlinx.rpc.grpc.marshaller/WithGrpcMarshaller : kotlin/Annotation { // kotlinx.rpc.grpc.marshaller/WithGrpcMarshaller|null[0]
+    constructor <init>(kotlin.reflect/KClass<out kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>>) // kotlinx.rpc.grpc.marshaller/WithGrpcMarshaller.<init>|<init>(kotlin.reflect.KClass<out|kotlinx.rpc.grpc.marshaller.GrpcMarshaller<*>>){}[0]
+
+    final val marshaller // kotlinx.rpc.grpc.marshaller/WithGrpcMarshaller.marshaller|{}marshaller[0]
+        final fun <get-marshaller>(): kotlin.reflect/KClass<out kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>> // kotlinx.rpc.grpc.marshaller/WithGrpcMarshaller.marshaller.<get-marshaller>|<get-marshaller>(){}[0]
 }
 
-abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/MessageMarshaller { // kotlinx.rpc.grpc.marshaller/MessageMarshaller|null[0]
-    abstract fun decode(kotlinx.io/Source, kotlinx.rpc.grpc.marshaller/MarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/MessageMarshaller.decode|decode(kotlinx.io.Source;kotlinx.rpc.grpc.marshaller.MarshallerConfig?){}[0]
-    abstract fun encode(#A, kotlinx.rpc.grpc.marshaller/MarshallerConfig? = ...): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/MessageMarshaller.encode|encode(1:0;kotlinx.rpc.grpc.marshaller.MarshallerConfig?){}[0]
+abstract fun interface kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver|null[0]
+    abstract fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>? // kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
 }
 
-abstract interface kotlinx.rpc.grpc.marshaller/MarshallerConfig // kotlinx.rpc.grpc.marshaller/MarshallerConfig|null[0]
-
-final object kotlinx.rpc.grpc.marshaller/EmptyMessageMarshallerResolver : kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver { // kotlinx.rpc.grpc.marshaller/EmptyMessageMarshallerResolver|null[0]
-    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>? // kotlinx.rpc.grpc.marshaller/EmptyMessageMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
+abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/GrpcMarshaller { // kotlinx.rpc.grpc.marshaller/GrpcMarshaller|null[0]
+    abstract fun decode(kotlinx.io/Source, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.decode|decode(kotlinx.io.Source;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    abstract fun encode(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.encode|encode(1:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
 }
 
-final fun (kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver).kotlinx.rpc.grpc.marshaller/plus(kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver): kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver // kotlinx.rpc.grpc.marshaller/plus|plus@kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver(kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver){}[0]
-final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlin.reflect/KClass<#A>, kotlinx.rpc.grpc.marshaller/MarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlin.reflect.KClass<0:0>;kotlinx.rpc.grpc.marshaller.MarshallerConfig?){0§<kotlin.Any>}[0]
-final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlin.reflect/KType, kotlinx.rpc.grpc.marshaller/MarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlin.reflect.KType;kotlinx.rpc.grpc.marshaller.MarshallerConfig?){0§<kotlin.Any>}[0]
-final inline fun <#A: reified kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlinx.rpc.grpc.marshaller/MarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/MessageMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlinx.rpc.grpc.marshaller.MarshallerConfig?){0§<kotlin.Any>}[0]
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig // kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig|null[0]
+
+final object kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver : kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver|null[0]
+    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>? // kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
+}
+
+final fun (kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver).kotlinx.rpc.grpc.marshaller/plus(kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver): kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver // kotlinx.rpc.grpc.marshaller/plus|plus@kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver(kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver){}[0]
+final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlin.reflect/KClass<#A>, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlin.reflect.KClass<0:0>;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlin.reflect/KType, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlin.reflect.KType;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]
+final inline fun <#A: reified kotlin/Any> kotlinx.rpc.grpc.marshaller/marshallerOf(kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/marshallerOf|marshallerOf(kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]

@@ -1298,6 +1298,7 @@ public final class com/google/protobuf/kotlin/ValueInternal : kotlinx/rpc/protob
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getKind ()Lcom/google/protobuf/kotlin/Value$Kind;
 	public fun hashCode ()I
+	public final fun oneOfEquals (Lcom/google/protobuf/kotlin/Value$Kind;Lcom/google/protobuf/kotlin/Value$Kind;)Z
 	public final fun oneOfHashCode (Lcom/google/protobuf/kotlin/Value$Kind;)I
 	public fun setKind (Lcom/google/protobuf/kotlin/Value$Kind;)V
 	public fun toString ()Ljava/lang/String;
