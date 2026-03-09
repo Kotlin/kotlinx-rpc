@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.client.ClientCallScope
-import kotlinx.rpc.grpc.client.ClientInterceptor
+import kotlinx.rpc.grpc.client.GrpcClientCallScope
+import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse
@@ -50,7 +50,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `throw during onHeader - should fail with status exception containing the thrown exception`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 onHeaders {
                     throw IllegalStateException("Failing in onHeader")
@@ -60,14 +60,14 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Failing in onHeader", error.cause?.message)
     }
 
     @Test
     fun `throw during onClose - should fail with status exception containing the thrown exception`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 onClose { _, _ ->
                     throw IllegalStateException("Failing in onClose")
@@ -77,21 +77,21 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Failing in onClose", error.cause?.message)
     }
 
     @Test
     fun `cancel in intercept - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 cancel("Canceling in interceptor", IllegalStateException("Cancellation cause"))
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in interceptor")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -99,7 +99,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel in request flow - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 proceed(it.map {
                     val msg = it as EchoRequest
@@ -112,7 +112,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in request flow")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -120,7 +120,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel in response flow - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 flow {
                     proceed(it).collect { resp ->
@@ -135,7 +135,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in response flow")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -143,7 +143,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel onHeaders - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 this.onHeaders {
                     cancel("Canceling in headers", IllegalStateException("Cancellation cause"))
@@ -153,7 +153,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in headers")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -161,7 +161,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel onClose - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 this.onClose { _, _ ->
                     cancel("Canceling in onClose", IllegalStateException("Cancellation cause"))
@@ -170,7 +170,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             }
             runGrpcTest(clientInterceptors = interceptor, test = ::bidiStream)
         }
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "Canceling in onClose")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -178,7 +178,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel in two interceptors - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor1 = interceptor {
                 onClose { _, _ -> cancel("[1] Canceling in onClose", IllegalStateException("Cancellation cause")) }
                 proceed(it)
@@ -190,7 +190,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor1 + interceptor2, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "[1] Canceling in onClose")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -198,7 +198,7 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `cancel in two interceptors withing response stream - should fail with cancellation`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor1 = interceptor {
                 proceed(it).map {
                     val msg = it as EchoResponse
@@ -221,7 +221,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             runGrpcTest(clientInterceptors = interceptor1 + interceptor2, test = ::bidiStream)
         }
 
-        assertEquals(StatusCode.CANCELLED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.CANCELLED, error.getStatus().statusCode)
         assertContains(error.message!!, "[2] Canceling in response flow")
         assertIs<IllegalStateException>(error.cause)
         assertEquals("Cancellation cause", error.cause?.message)
@@ -338,14 +338,14 @@ class ClientInterceptorTest : GrpcTestBase() {
 }
 
 private fun interceptor(
-    block: ClientCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
-): List<ClientInterceptor> {
-    return listOf(object : ClientInterceptor {
+    block: GrpcClientCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
+): List<GrpcClientInterceptor> {
+    return listOf(object : GrpcClientInterceptor {
         @Suppress("UNCHECKED_CAST")
-        override fun <Req, Resp> ClientCallScope<Req, Resp>.intercept(
+        override fun <Req, Resp> GrpcClientCallScope<Req, Resp>.intercept(
             request: Flow<Req>,
         ): Flow<Resp> {
-            with(this as ClientCallScope<Any, Any>) {
+            with(this as GrpcClientCallScope<Any, Any>) {
                 return block(request as Flow<Any>) as Flow<Resp>
             }
         }

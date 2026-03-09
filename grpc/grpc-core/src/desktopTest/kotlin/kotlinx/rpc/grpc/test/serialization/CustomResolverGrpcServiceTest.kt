@@ -13,22 +13,22 @@ import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.WithMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-@WithMarshaller(CustomResolverMessage.Companion::class)
+@WithGrpcMarshaller(CustomResolverMessage.Companion::class)
 class CustomResolverMessage(val value: String) {
-    companion object Companion : MessageMarshaller<CustomResolverMessage> {
-        override fun encode(value: CustomResolverMessage, config: MarshallerConfig?): Source {
+    companion object Companion : GrpcMarshaller<CustomResolverMessage> {
+        override fun encode(value: CustomResolverMessage, config: GrpcMarshallerConfig?): Source {
             return Buffer().apply { writeString(value.value) }
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): CustomResolverMessage {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): CustomResolverMessage {
             return CustomResolverMessage(source.readString())
         }
     }
@@ -129,7 +129,7 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
     }
 
     companion object {
-        private val simpleResolver = MessageMarshallerResolver { kType ->
+        private val simpleResolver = GrpcMarshallerResolver { kType ->
             when (kType.classifier) {
                 Unit::class -> unitMarshaller
                 String::class -> stringMarshaller
@@ -137,22 +137,22 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
             }
         }
 
-        val stringMarshaller = object : MessageMarshaller<String> {
-            override fun encode(value: String, config: MarshallerConfig?): Source {
+        val stringMarshaller = object : GrpcMarshaller<String> {
+            override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(source: Source, config: MarshallerConfig?): String {
+            override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
                 return source.readString()
             }
         }
 
-        val unitMarshaller = object : MessageMarshaller<Unit> {
-            override fun encode(value: Unit, config: MarshallerConfig?): Source {
+        val unitMarshaller = object : GrpcMarshaller<Unit> {
+            override fun encode(value: Unit, config: GrpcMarshallerConfig?): Source {
                 return Buffer()
             }
 
-            override fun decode(stream: Source, config: MarshallerConfig?) {
+            override fun decode(stream: Source, config: GrpcMarshallerConfig?) {
                 check(stream.exhausted())
             }
         }

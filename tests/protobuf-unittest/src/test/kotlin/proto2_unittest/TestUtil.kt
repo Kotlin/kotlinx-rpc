@@ -581,7 +581,7 @@ object TestUtil {
         assertEquals(ForeignEnum.FOREIGN_BAZ, message.unpackedEnum[1])
     }
 
-    fun <M> encodeDecode(msg: M, marshaller: kotlinx.rpc.grpc.marshaller.MessageMarshaller<M>): M {
+    fun <M> encodeDecode(msg: M, marshaller: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<M>): M {
         val source = marshaller.encode(msg)
         return marshaller.decode(source)
     }

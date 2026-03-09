@@ -7,8 +7,8 @@ package kotlinx.rpc.grpc.test.raw
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
@@ -32,7 +32,7 @@ class RawClientTest {
     @Test
     fun unaryEchoTest() = runTest(
         methodName = "UnaryEcho",
-        type = MethodType.UNARY,
+        type = GrpcMethodType.UNARY,
     ) { client, descriptor ->
         val response = client.unaryRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         assertEquals("Eccchhooo", response.message)
@@ -41,7 +41,7 @@ class RawClientTest {
     @Test
     fun serverStreamingEchoTest() = runTest(
         methodName = "ServerStreamingEcho",
-        type = MethodType.SERVER_STREAMING,
+        type = GrpcMethodType.SERVER_STREAMING,
     ) { client, descriptor ->
         val response = client.serverStreamingRpc(descriptor, EchoRequest { message = "Eccchhooo" })
         var i = 0
@@ -54,7 +54,7 @@ class RawClientTest {
     @Test
     fun clientStreamingEchoTest() = runTest(
         methodName = "ClientStreamingEcho",
-        type = MethodType.CLIENT_STREAMING,
+        type = GrpcMethodType.CLIENT_STREAMING,
     ) { client, descriptor ->
         val response = client.clientStreamingRpc(descriptor, flow {
             repeat(5) {
@@ -69,7 +69,7 @@ class RawClientTest {
     @Test
     fun bidirectionalStreamingEchoTest() = runTest(
         methodName = "BidirectionalStreamingEcho",
-        type = MethodType.BIDI_STREAMING,
+        type = GrpcMethodType.BIDI_STREAMING,
     ) { client, descriptor ->
         val response = client.bidirectionalStreamingRpc(descriptor, flow {
             repeat(5) {
@@ -87,8 +87,8 @@ class RawClientTest {
 
     fun runTest(
         methodName: String,
-        type: MethodType,
-        block: suspend (GrpcClient, MethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
+        type: GrpcMethodType,
+        block: suspend (GrpcClient, GrpcMethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
         val client = GrpcClient("localhost:50051") {
             credentials = plaintext()

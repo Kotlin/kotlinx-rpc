@@ -8,7 +8,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.InternalIoApi
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.marshallerOf
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.submsg.Other
 import test.submsg.asInternal
@@ -44,7 +44,7 @@ class UnknownFieldsTest {
         }
 
         val encoded = marshallerOf<UnknownFieldsAll>().encode(all)
-        val discardMarshaller = marshallerOf<UnknownFieldsSubset>(ProtobufConfig(discardUnknownFields = true))
+        val discardMarshaller = marshallerOf<UnknownFieldsSubset>(ProtoConfig(discardUnknownFields = true))
 
         val subsetDiscarded = discardMarshaller.decode(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)

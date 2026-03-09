@@ -9,90 +9,90 @@
 @file:OptIn(kotlinx.rpc.internal.utils.ExperimentalRpcApi::class)
 
 import kotlinx.rpc.grpc.marshaller.marshallerOf
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.WithMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.io.Source
 
-@WithMarshaller(TestMarshaller::class)
+@WithGrpcMarshaller(TestMarshaller::class)
 open class Test
 
-@WithMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller::class<!>)
+@WithGrpcMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller::class<!>)
 class Test1
 
-@WithMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller::class<!>)
+@WithGrpcMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller::class<!>)
 class Test2 : Test()
 
-object TestMarshaller : MessageMarshaller<Test> {
-    override fun encode(value: Test, config: MarshallerConfig?): Source {
+object TestMarshaller : GrpcMarshaller<Test> {
+    override fun encode(value: Test, config: GrpcMarshallerConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Test {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test {
         error("Not implemented")
     }
 }
 
-@WithMarshaller(<!NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION!>TestMarshaller3::class<!>)
+@WithGrpcMarshaller(<!NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION!>TestMarshaller3::class<!>)
 class Test3
 
-class TestMarshaller3 : MessageMarshaller<Test3> {
-    override fun encode(value: Test3, config: MarshallerConfig?): Source {
+class TestMarshaller3 : GrpcMarshaller<Test3> {
+    override fun encode(value: Test3, config: GrpcMarshallerConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Test3 {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test3 {
         error("Not implemented")
     }
 }
 
-@WithMarshaller(TestMarshaller4::class)
+@WithGrpcMarshaller(TestMarshaller4::class)
 class Test4
 
 object TestMarshaller4 : ATestMarshaller4(), Whatever
 
 interface Whatever
 
-abstract class ATestMarshaller4 : MessageMarshaller<Test4> {
-    override fun encode(value: Test4, config: MarshallerConfig?): Source {
+abstract class ATestMarshaller4 : GrpcMarshaller<Test4> {
+    override fun encode(value: Test4, config: GrpcMarshallerConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Test4 {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test4 {
         error("Not implemented")
     }
 }
 
-@WithMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller4::class<!>)
+@WithGrpcMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller4::class<!>)
 class Test5
 
-interface CustomMarshaller1<A> : MessageMarshaller<A>
-interface CustomMarshaller2<B> : MessageMarshaller<B>
+interface CustomMarshaller1<A> : GrpcMarshaller<A>
+interface CustomMarshaller2<B> : GrpcMarshaller<B>
 interface CustomMarshaller3<C> : CustomMarshaller2<C>
 interface CustomMarshaller4<D> : CustomMarshaller3<D>, CustomMarshaller1<D>
 
-@WithMarshaller(TestMarshaller8::class)
+@WithGrpcMarshaller(TestMarshaller8::class)
 class Test8
 
 object TestMarshaller8 : CustomMarshaller4<Test8> {
-    override fun encode(value: Test8, config: MarshallerConfig?): Source {
+    override fun encode(value: Test8, config: GrpcMarshallerConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Test8 {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test8 {
         error("Not implemented")
     }
 }
 
-@WithMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller9::class<!>)
+@WithGrpcMarshaller(<!MARSHALLER_TYPE_MISMATCH!>TestMarshaller9::class<!>)
 class Test9
 
 object TestMarshaller9 : CustomMarshaller4<Test8> {
-    override fun encode(value: Test8, config: MarshallerConfig?): Source {
+    override fun encode(value: Test8, config: GrpcMarshallerConfig?): Source {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Test8 {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test8 {
         error("Not implemented")
     }
 }

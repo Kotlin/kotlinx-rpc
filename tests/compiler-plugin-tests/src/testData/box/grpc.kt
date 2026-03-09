@@ -13,18 +13,18 @@ import kotlinx.rpc.codegen.test.grpcDelegate
 import kotlinx.rpc.codegen.test.checkMethod
 import kotlinx.rpc.codegen.test.Message
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.WithMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 
-@WithMarshaller(Custom.Companion::class)
+@WithGrpcMarshaller(Custom.Companion::class)
 class Custom(val content: String) {
-    companion object : MessageMarshaller<Custom> {
-        override fun encode(value: Custom, config: MarshallerConfig?): Source {
+    companion object : GrpcMarshaller<Custom> {
+        override fun encode(value: Custom, config: GrpcMarshallerConfig?): Source {
             TODO("Not yet implemented")
         }
 
-        override fun decode(stream: Source, config: MarshallerConfig?): Custom {
+        override fun decode(stream: Source, config: GrpcMarshallerConfig?): Custom {
             TODO("Not yet implemented")
         }
     }

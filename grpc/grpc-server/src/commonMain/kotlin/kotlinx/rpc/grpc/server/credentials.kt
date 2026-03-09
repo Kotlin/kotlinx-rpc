@@ -4,26 +4,27 @@
 
 package kotlinx.rpc.grpc.server
 
-public expect abstract class ServerCredentials
+public expect abstract class GrpcServerCredentials
 
-public expect class InsecureServerCredentials : ServerCredentials
+public expect class GrpcInsecureServerCredentials : GrpcServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
-internal expect fun createInsecureServerCredentials(): ServerCredentials
+internal expect fun createInsecureServerCredentials(): GrpcServerCredentials
 
-public expect class TlsServerCredentials : ServerCredentials
+public expect class GrpcTlsServerCredentials : GrpcServerCredentials
 
-public fun TlsServerCredentials(
+@Suppress("FunctionName")
+public fun GrpcTlsServerCredentials(
     certChain: String,
     privateKey: String,
-    configure: TlsServerCredentialsBuilder.() -> Unit = {},
-): ServerCredentials {
-    val builder = TlsServerCredentialsBuilder(certChain, privateKey)
+    configure: GrpcTlsServerCredentialsBuilder.() -> Unit = {},
+): GrpcServerCredentials {
+    val builder = GrpcTlsServerCredentialsBuilder(certChain, privateKey)
     builder.configure()
     return builder.build()
 }
 
-public enum class TlsClientAuth {
+public enum class GrpcTlsClientAuth {
     /** Clients will not present any identity.  */
     NONE,
 
@@ -42,14 +43,14 @@ public enum class TlsClientAuth {
     REQUIRE
 }
 
-public interface TlsServerCredentialsBuilder {
-    public fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder
-    public fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder
+public interface GrpcTlsServerCredentialsBuilder {
+    public fun trustManager(rootCertsPem: String): GrpcTlsServerCredentialsBuilder
+    public fun clientAuth(clientAuth: GrpcTlsClientAuth): GrpcTlsServerCredentialsBuilder
 }
 
-internal expect fun TlsServerCredentialsBuilder(
+internal expect fun GrpcTlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): TlsServerCredentialsBuilder
+): GrpcTlsServerCredentialsBuilder
 
-internal expect fun TlsServerCredentialsBuilder.build(): ServerCredentials
+internal expect fun GrpcTlsServerCredentialsBuilder.build(): GrpcServerCredentials

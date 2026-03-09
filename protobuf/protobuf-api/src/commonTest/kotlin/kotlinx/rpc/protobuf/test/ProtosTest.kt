@@ -11,7 +11,7 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
@@ -39,7 +39,7 @@ class ProtosTest {
 
     private fun <M> encodeDecode(
         msg: M,
-        marshaller: MessageMarshaller<M>,
+        marshaller: GrpcMarshaller<M>,
     ): M {
         val source = marshaller.encode(msg)
         return marshaller.decode(source)

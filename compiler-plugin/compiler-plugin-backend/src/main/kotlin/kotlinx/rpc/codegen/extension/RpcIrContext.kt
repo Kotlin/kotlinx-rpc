@@ -95,12 +95,12 @@ internal class RpcIrContext(
         return if (isJvmTarget()) {
             referenceIrClassSymbol("io.grpc", "MethodDescriptor", from)
         } else {
-            referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodDescriptor")
+            referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcMethodDescriptor")
         }
     }
 
     val grpcPlatformMethodType by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "MethodType")
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcMethodType")
     }
 
     val grpcPlatformMethodTypeUnary by lazy {
@@ -119,23 +119,24 @@ internal class RpcIrContext(
         grpcPlatformMethodType.enumEntry("BIDI_STREAMING")
     }
 
-    val grpcMessageMarshaller by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MessageMarshaller")
+    val grpcMarshaller by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "GrpcMarshaller")
     }
 
-    val grpcMessageMarshallerResolver by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MessageMarshallerResolver")
+    val grpcGrpcMarshallerResolver by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "GrpcMarshallerResolver")
     }
 
-    val marshallerConfig by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "MarshallerConfig")
-    }
-    val configuredMessageMarshallerDelegate by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller.internal", "ConfiguredMessageMarshallerDelegate")
+    val grpcMarshallerConfig by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "GrpcMarshallerConfig")
     }
 
-    val withMarshallerAnnotation by lazy {
-        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "WithMarshaller")
+    val configuredGrpcMarshallerDelegate by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller.internal", "ConfiguredGrpcMarshallerDelegate")
+    }
+
+    val withGrpcMarshallerAnnotation by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "WithGrpcMarshaller")
     }
 
     val rpcType by lazy {
@@ -261,8 +262,8 @@ internal class RpcIrContext(
             grpcServiceDescriptor.namedFunction("delegate")
         }
 
-        val grpcMessageMarshallerResolverResolveOrNull by lazy {
-            grpcMessageMarshallerResolver.namedFunction("resolveOrNull")
+        val grpcGrpcMarshallerResolverResolveOrNull by lazy {
+            grpcGrpcMarshallerResolver.namedFunction("resolveOrNull")
         }
 
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {

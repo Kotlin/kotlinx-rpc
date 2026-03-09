@@ -18,7 +18,7 @@ object FirRpcPredicates {
     }
 
     internal val withMarshaller = DeclarationPredicate.create {
-        annotated(RpcClassId.withMarshallerAnnotation.asSingleFqName())
+        annotated(RpcClassId.withGrpcMarshallerAnnotation.asSingleFqName())
     }
 
     internal val checkedAnnotationMeta = DeclarationPredicate.create {

@@ -4,13 +4,15 @@
 
 package kotlinx.rpc.grpc
 
-public actual class StatusException : Exception {
-    private val status: Status
+import kotlinx.rpc.internal.utils.InternalRpcApi
+
+public actual class GrpcStatusException : Exception {
+    private val status: GrpcStatus
     private val trailers: GrpcMetadata?
 
-    public actual constructor(status: Status) : this(status, null)
+    public actual constructor(status: GrpcStatus) : this(status, null)
 
-    public actual constructor(status: Status, trailers: GrpcMetadata?) : super(
+    public actual constructor(status: GrpcStatus, trailers: GrpcMetadata?) : super(
         "${status.statusCode}: ${status.getDescription()}",
         status.getCause()
     ) {
@@ -18,16 +20,17 @@ public actual class StatusException : Exception {
         this.trailers = trailers
     }
 
-    internal actual fun getStatus(): Status = status
+    internal actual fun getStatus(): GrpcStatus = status
 
     internal actual fun getTrailers(): GrpcMetadata? = trailers
 }
 
+@InternalRpcApi
 public actual class StatusRuntimeException : RuntimeException {
-    private val status: Status
+    private val status: GrpcStatus
     private val trailers: GrpcMetadata?
 
-    internal actual constructor(status: Status, trailers: GrpcMetadata?) : super(
+    internal actual constructor(status: GrpcStatus, trailers: GrpcMetadata?) : super(
         "${status.statusCode}: ${status.getDescription()}",
         status.getCause()
     ) {
@@ -35,7 +38,7 @@ public actual class StatusRuntimeException : RuntimeException {
         this.trailers = trailers
     }
 
-    internal actual fun getStatus(): Status = status
+    internal actual fun getStatus(): GrpcStatus = status
 
     internal actual fun getTrailers(): GrpcMetadata? = trailers
 }

@@ -19,8 +19,8 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_metadata
@@ -35,7 +35,7 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-public actual class GrpcMetadataKey<T> actual constructor(name: String, public val marshaller: MessageMarshaller<T>) {
+public actual class GrpcMetadataKey<T> actual constructor(name: String, public val marshaller: GrpcMarshaller<T>) {
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
@@ -310,22 +310,22 @@ private fun <T> GrpcMetadataKey<T>.validateName() {
     }
 }
 
-private val AsciiMarshaller = object : MessageMarshaller<String> {
-    override fun encode(value: String, config: MarshallerConfig?): Source = Buffer().apply {
+private val AsciiMarshaller = object : GrpcMarshaller<String> {
+    override fun encode(value: String, config: GrpcMarshallerConfig?): Source = Buffer().apply {
         write(value.toAsciiBytes())
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): String = source.use { buffer ->
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): String = source.use { buffer ->
         buffer.readByteArray().toAsciiString()
     }
 }
 
-private val BinaryMarshaller = object : MessageMarshaller<ByteArray> {
-    override fun encode(value: ByteArray, config: MarshallerConfig?): Source = Buffer().apply {
+private val BinaryMarshaller = object : GrpcMarshaller<ByteArray> {
+    override fun encode(value: ByteArray, config: GrpcMarshallerConfig?): Source = Buffer().apply {
         write(value)
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): ByteArray = source.readByteArray()
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): ByteArray = source.readByteArray()
 }
 
 private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiMarshaller)

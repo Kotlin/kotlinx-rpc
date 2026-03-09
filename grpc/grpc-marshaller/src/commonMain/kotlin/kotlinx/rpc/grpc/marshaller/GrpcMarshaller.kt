@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.marshaller
@@ -10,33 +10,33 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public fun interface MessageMarshallerResolver {
-    public fun resolveOrNull(kType: KType): MessageMarshaller<*>?
+public fun interface GrpcMarshallerResolver {
+    public fun resolveOrNull(kType: KType): GrpcMarshaller<*>?
 }
 
 @ExperimentalRpcApi
-public object EmptyMessageMarshallerResolver : MessageMarshallerResolver {
-    override fun resolveOrNull(kType: KType): MessageMarshaller<*>? {
+public object GrpcEmptyMarshallerResolver : GrpcMarshallerResolver {
+    override fun resolveOrNull(kType: KType): GrpcMarshaller<*>? {
         return null
     }
 }
 
 @ExperimentalRpcApi
-public operator fun MessageMarshallerResolver.plus(other: MessageMarshallerResolver): MessageMarshallerResolver {
-    return MessageMarshallerResolver { kType ->
+public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): GrpcMarshallerResolver {
+    return GrpcMarshallerResolver { kType ->
         this.resolveOrNull(kType) ?: other.resolveOrNull(kType)
     }
 }
 
 /**
- * A marker interface for configurations passed to [MessageMarshaller]s during encoding and decoding operations.
+ * A marker interface for configurations passed to [GrpcMarshaller]s during encoding and decoding operations.
  *
  * Implementations of this interface can provide marshaller-specific configuration options that control
  * the behavior of message serialization and deserialization. Each marshaller implementation may support
- * different configuration options by defining its own [MarshallerConfig] subtype.
+ * different configuration options by defining its own [GrpcMarshallerConfig] subtype.
  *
  * Configuration can be passed to marshallers in two ways:
- * - Per-operation: directly to [MessageMarshaller.encode] and [MessageMarshaller.decode] methods
+ * - Per-operation: directly to [GrpcMarshaller.encode] and [GrpcMarshaller.decode] methods
  * - As default: when retrieving a marshaller using [marshallerOf], which wraps the marshaller to use the config by default
  *
  * Example:
@@ -51,21 +51,21 @@ public operator fun MessageMarshallerResolver.plus(other: MessageMarshallerResol
  * ```
  *
  *
- * @see MessageMarshaller
+ * @see GrpcMarshaller
  * @see marshallerOf
  */
 @ExperimentalRpcApi
-public interface MarshallerConfig
+public interface GrpcMarshallerConfig
 
 @ExperimentalRpcApi
-public interface MessageMarshaller<T> {
-    public fun encode(value: T, config: MarshallerConfig? = null): Source
-    public fun decode(source: Source, config: MarshallerConfig? = null): T
+public interface GrpcMarshaller<T> {
+    public fun encode(value: T, config: GrpcMarshallerConfig? = null): Source
+    public fun decode(source: Source, config: GrpcMarshallerConfig? = null): T
 }
 
 @InternalRpcApi
-public object ThrowingMessageMarshallerResolver : MessageMarshallerResolver {
-    override fun resolveOrNull(kType: KType): MessageMarshaller<*> {
+public object ThrowingGrpcMarshallerResolver : GrpcMarshallerResolver {
+    override fun resolveOrNull(kType: KType): GrpcMarshaller<*> {
         error("No marshaller found for type $kType")
     }
 }

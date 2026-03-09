@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -13,7 +13,7 @@ public actual typealias ServiceDescriptor = io.grpc.ServiceDescriptor
 @InternalRpcApi
 public actual fun serviceDescriptor(
     name: String,
-    methods: Collection<MethodDescriptor<*, *>>,
+    methods: Collection<GrpcMethodDescriptor<*, *>>,
     schemaDescriptor: Any?,
 ): ServiceDescriptor {
     return io.grpc.ServiceDescriptor.newBuilder(name)

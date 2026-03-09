@@ -4,14 +4,14 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-public actual class MethodDescriptor<Request, Response> internal constructor(
+public actual class GrpcMethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
-    public val requestMarshaller: MessageMarshaller<Request>,
-    public val responseMarshaller: MessageMarshaller<Response>,
-    public val methodType: MethodType,
+    public val requestMarshaller: GrpcMarshaller<Request>,
+    public val responseMarshaller: GrpcMarshaller<Response>,
+    public val methodType: GrpcMethodType,
     private val schemaDescriptor: Any?,
     private val idempotent: Boolean,
     private val safe: Boolean,
@@ -45,21 +45,21 @@ public actual class MethodDescriptor<Request, Response> internal constructor(
     }
 }
 
-public actual val MethodDescriptor<*, *>.methodType: MethodType
+public actual val GrpcMethodDescriptor<*, *>.methodType: GrpcMethodType
     get() = this.methodType
 
 @InternalRpcApi
 public actual fun <Request, Response> methodDescriptor(
     fullMethodName: String,
-    requestMarshaller: MessageMarshaller<Request>,
-    responseMarshaller: MessageMarshaller<Response>,
-    type: MethodType,
+    requestMarshaller: GrpcMarshaller<Request>,
+    responseMarshaller: GrpcMarshaller<Response>,
+    type: GrpcMethodType,
     schemaDescriptor: Any?,
     idempotent: Boolean,
     safe: Boolean,
     sampledToLocalTracing: Boolean,
-): MethodDescriptor<Request, Response> {
-    return MethodDescriptor(
+): GrpcMethodDescriptor<Request, Response> {
+    return GrpcMethodDescriptor(
         fullMethodName = fullMethodName,
         requestMarshaller = requestMarshaller,
         responseMarshaller = responseMarshaller,

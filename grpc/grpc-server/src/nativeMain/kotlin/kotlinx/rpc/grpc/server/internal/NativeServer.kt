@@ -21,10 +21,10 @@ import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
-import kotlinx.rpc.grpc.server.HandlerRegistry
-import kotlinx.rpc.grpc.server.Server
-import kotlinx.rpc.grpc.server.ServerCredentials
-import kotlinx.rpc.grpc.server.ServerServiceDefinition
+import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerCredentials
+import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
 import libkgrpc.grpc_server_add_http2_port
 import libkgrpc.grpc_server_cancel_all_calls
 import libkgrpc.grpc_server_create
@@ -45,10 +45,10 @@ internal class NativeServer(
     override val port: Int,
     // we must reference them, otherwise the credentials are getting garbage collected
     @Suppress("Redundant")
-    private val credentials: ServerCredentials,
-    services: List<ServerServiceDefinition>,
-    val fallbackRegistry: HandlerRegistry,
-) : Server {
+    private val credentials: GrpcServerCredentials,
+    services: List<GrpcServerServiceDefinition>,
+    val fallbackRegistry: GrpcHandlerRegistry,
+) : PlatformServer {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
     @Suppress("unused")
@@ -79,7 +79,7 @@ internal class NativeServer(
     override val isTerminated: Boolean
         get() = isTerminatedInternal.isCompleted
 
-    override fun start(): Server {
+    override fun start(): PlatformServer {
         check(!started) { internalError("Server already started") }
         started = true
         grpc_server_start(raw)
@@ -94,7 +94,7 @@ internal class NativeServer(
         rt.close()
     }
 
-    override fun shutdown(): Server {
+    override fun shutdown(): PlatformServer {
         if (!isShutdownInternal.compareAndSet(expect = false, update = true)) {
             // shutdown only once
             return this
@@ -109,13 +109,13 @@ internal class NativeServer(
         return this
     }
 
-    override fun shutdownNow(): Server {
+    override fun shutdownNow(): PlatformServer {
         shutdown()
         grpc_server_cancel_all_calls(raw)
         return this
     }
 
-    override suspend fun awaitTermination(duration: Duration): Server {
+    override suspend fun awaitTermination(duration: Duration): PlatformServer {
         withTimeoutOrNull(duration) {
             isTerminatedInternal.await()
         }
@@ -125,7 +125,7 @@ internal class NativeServer(
     /**
      * Registers a list of server service definitions with the server.
      */
-    private fun registerServices(services: List<ServerServiceDefinition>) {
+    private fun registerServices(services: List<GrpcServerServiceDefinition>) {
         check(!started) { internalError("Server already started") }
 
         services.flatMap { it.getMethods() }.forEach {
@@ -226,5 +226,3 @@ private class RegisteredCallAllocationCtx(
     cq: CompletionQueue,
     val method: ServerMethodDefinition<*, *>,
 ) : CallAllocationCtx(server, cq)
-
-

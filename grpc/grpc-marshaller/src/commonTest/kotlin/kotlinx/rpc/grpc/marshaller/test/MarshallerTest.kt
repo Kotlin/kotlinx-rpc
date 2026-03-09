@@ -8,31 +8,31 @@ import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlinx.io.writeString
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.WithMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.marshallerOf
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
-@WithMarshaller(MyMessageMarshaller::class)
+@WithGrpcMarshaller(MyGrpcMarshaller::class)
 data class MyMessage(
     val value: String
 )
 
-class MyMarshallerConfig(
+class MyGrpcMarshallerConfig(
     val appendHello: Boolean
-): MarshallerConfig
+): GrpcMarshallerConfig
 
-object MyMessageMarshaller: MessageMarshaller<MyMessage> {
-    override fun encode(value: MyMessage, config: MarshallerConfig?): Source = Buffer().apply {
-        val appendHello = (config as? MyMarshallerConfig)?.appendHello ?: false
+object MyGrpcMarshaller: GrpcMarshaller<MyMessage> {
+    override fun encode(value: MyMessage, config: GrpcMarshallerConfig?): Source = Buffer().apply {
+        val appendHello = (config as? MyGrpcMarshallerConfig)?.appendHello ?: false
         writeString(value.value + if (appendHello) "Hello" else "")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): MyMessage {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage {
         return MyMessage(source.readString())
     }
 }
@@ -51,7 +51,7 @@ class MarshallerTest {
     @Test
     fun `test custom marshaller with default config`() {
         val msg = MyMessage("test")
-        val config = MyMarshallerConfig(true)
+        val config = MyGrpcMarshallerConfig(true)
 
         val firstEncoded = marshallerOf<MyMessage>(config).encode(msg)
         val secondEncoded = marshallerOf<MyMessage>().encode(msg)
@@ -66,10 +66,10 @@ class MarshallerTest {
     @Test
     fun `test custom marshaller with overwritten config`() {
         val msg = MyMessage("test")
-        val config = MyMarshallerConfig(true)
+        val config = MyGrpcMarshallerConfig(true)
 
         val marshaller = marshallerOf<MyMessage>(config)
-        val firstEncoded = marshaller.encode(msg, MyMarshallerConfig(false))
+        val firstEncoded = marshaller.encode(msg, MyGrpcMarshallerConfig(false))
         val secondEncoded = marshaller.encode(msg)
 
         val firstDecoded = marshaller.decode(firstEncoded)

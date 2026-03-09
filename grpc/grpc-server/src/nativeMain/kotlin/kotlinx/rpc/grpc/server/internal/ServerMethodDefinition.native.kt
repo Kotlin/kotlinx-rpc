@@ -4,15 +4,15 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public actual class ServerMethodDefinition<Request, Response> internal constructor(
-    private val methodDescriptor: MethodDescriptor<Request, Response>,
+    private val methodDescriptor: GrpcMethodDescriptor<Request, Response>,
     private val serverCallHandler: ServerCallHandler<Request, Response>,
 ) {
-    public actual fun getMethodDescriptor(): MethodDescriptor<Request, Response> {
+    public actual fun getMethodDescriptor(): GrpcMethodDescriptor<Request, Response> {
         return methodDescriptor
     }
 
@@ -22,7 +22,7 @@ public actual class ServerMethodDefinition<Request, Response> internal construct
 }
 
 public actual fun <Request, Response> serverMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,
 ): ServerMethodDefinition<Request, Response> {
     return ServerMethodDefinition(descriptor, handler)

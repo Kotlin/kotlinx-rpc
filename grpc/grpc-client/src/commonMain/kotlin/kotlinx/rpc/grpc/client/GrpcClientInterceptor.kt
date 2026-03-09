@@ -6,12 +6,11 @@ package kotlinx.rpc.grpc.client
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.client.GrpcCallOptions
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 
 /**
- * The scope of a single outgoing gRPC client call observed by a [ClientInterceptor].
+ * The scope of a single outgoing gRPC client call observed by a [GrpcClientInterceptor].
  *
  * An interceptor receives this scope instance for every call and can:
  * - Inspect the RPC [method] being invoked.
@@ -23,8 +22,8 @@ import kotlinx.rpc.grpc.descriptor.MethodDescriptor
  * - Transform the response by modifying the returned [Flow].
  *
  * ```kt
- *  val interceptor = object : ClientInterceptor {
- *      override fun <Request, Response> ClientCallScope<Request, Response>.intercept(
+ *  val interceptor = object : GrpcClientInterceptor {
+ *      override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
  *          request: Flow<Request>
  *      ): Flow<Response> {
  *          // Example: add a header before proceeding
@@ -47,9 +46,9 @@ import kotlinx.rpc.grpc.descriptor.MethodDescriptor
  * @param Request the request message type of the RPC.
  * @param Response the response message type of the RPC.
  */
-public interface ClientCallScope<Request, Response> {
+public interface GrpcClientCallScope<Request, Response> {
     /** Descriptor of the RPC method (name, marshalling, type) being invoked. */
-    public val method: MethodDescriptor<Request, Response>
+    public val method: GrpcMethodDescriptor<Request, Response>
 
     /**
      * Outgoing request headers for this call.
@@ -77,13 +76,13 @@ public interface ClientCallScope<Request, Response> {
      * Register a callback invoked when the call completes, successfully or not.
      * The final `status` and trailing `responseTrailers` are provided.
      */
-    public fun onClose(block: (status: Status, responseTrailers: GrpcMetadata) -> Unit)
+    public fun onClose(block: (status: GrpcStatus, responseTrailers: GrpcMetadata) -> Unit)
 
     /**
      * Cancel the call locally, providing a human-readable [message] and an optional [cause].
      * This method won't return and abort all further processing.
      *
-     * We made cancel throw a [kotlinx.rpc.grpc.StatusException] instead of returning, so control flow is explicit and
+     * We made cancel throw a [kotlinx.rpc.grpc.GrpcStatusException] instead of returning, so control flow is explicit and
      * race conditions between interceptors and the transport layer are avoided.
      */
     public fun cancel(message: String, cause: Throwable? = null): Nothing
@@ -107,8 +106,8 @@ public interface ClientCallScope<Request, Response> {
  * Client-side interceptor for gRPC calls.
  *
  * Implementations can observe and modify client calls in a structured way. The primary entry point is the
- * [intercept] extension function on [ClientCallScope], which receives the inbound request [Flow] and must
- * call [ClientCallScope.proceed] to forward the call.
+ * [intercept] extension function on [GrpcClientCallScope], which receives the inbound request [Flow] and must
+ * call [GrpcClientCallScope.proceed] to forward the call.
  *
  * Common use-cases include:
  * - Adding authentication or custom headers.
@@ -116,20 +115,20 @@ public interface ClientCallScope<Request, Response> {
  * - Observing headers/trailers and final status.
  * - Transforming request/response flows (e.g., mapping, buffering, throttling).
  */
-public interface ClientInterceptor {
+public interface GrpcClientInterceptor {
     /**
      * Intercept a client call.
      *
      * You can:
-     * - Inspect [ClientCallScope.method] and [ClientCallScope.callOptions].
-     * - Read or populate [ClientCallScope.requestHeaders].
-     * - Register [ClientCallScope.onHeaders] and [ClientCallScope.onClose] callbacks.
+     * - Inspect [GrpcClientCallScope.method] and [GrpcClientCallScope.callOptions].
+     * - Read or populate [GrpcClientCallScope.requestHeaders].
+     * - Register [GrpcClientCallScope.onHeaders] and [GrpcClientCallScope.onClose] callbacks.
      * - Transform the [request] flow or wrap the resulting response flow.
      *
-     * IMPORTANT: [ClientCallScope.proceed] must eventually be called to actually execute the RPC and obtain
-     * the response [Flow]. If [ClientCallScope.proceed] is omitted, the call will not reach the server.
+     * IMPORTANT: [GrpcClientCallScope.proceed] must eventually be called to actually execute the RPC and obtain
+     * the response [Flow]. If [GrpcClientCallScope.proceed] is omitted, the call will not reach the server.
      */
-    public fun <Request, Response> ClientCallScope<Request, Response>.intercept(
+    public fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
         request: Flow<Request>,
     ): Flow<Response>
 

@@ -71,8 +71,6 @@ public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): Grpc
  */
 public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClientCredentials = this + other
 
-
-
 /**
  * Plaintext credentials with no transport security.
  *
@@ -141,7 +139,9 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
  * @see GrpcTlsClientCredentialsBuilder
  * @see GrpcInsecureClientCredentials
  */
-public class GrpcTlsClientCredentials(internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}) : GrpcClientCredentials
+public class GrpcTlsClientCredentials(
+    internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}
+) : GrpcClientCredentials
 
 /**
  * Builder for configuring [GrpcTlsClientCredentials].
@@ -224,7 +224,7 @@ internal val GrpcClientCredentials.realClientCredentials
  * Returns the potential [GrpcCallCredentials] in case of a [GrpcCombinedClientCredentials].
  */
 internal val GrpcClientCredentials.realCallCredentials
-    get() = if (this is GrpcCombinedClientCredentials) callCredentials else EmptyCallCredentials
+    get() = if (this is GrpcCombinedClientCredentials) callCredentials else GrpcEmptyCallCredentials
 
 /**
  * Combines a [GrpcClientCredentials] with a [GrpcCallCredentials], which can be expected by the
@@ -233,10 +233,13 @@ internal val GrpcClientCredentials.realCallCredentials
 internal class GrpcCombinedClientCredentials private constructor(
     internal val clientCredentials: GrpcClientCredentials,
     internal val callCredentials: GrpcCallCredentials,
-): GrpcClientCredentials {
+) : GrpcClientCredentials {
 
     companion object {
-        internal fun create(clientCredentials: GrpcClientCredentials, callCredentials: GrpcCallCredentials): GrpcCombinedClientCredentials {
+        internal fun create(
+            clientCredentials: GrpcClientCredentials,
+            callCredentials: GrpcCallCredentials
+        ): GrpcCombinedClientCredentials {
             // flat nested combined credentials
             return GrpcCombinedClientCredentials(
                 clientCredentials.realClientCredentials,

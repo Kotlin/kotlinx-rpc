@@ -4,16 +4,16 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public expect class ServerMethodDefinition<Request, Response> {
-    public fun getMethodDescriptor(): MethodDescriptor<Request, Response>
+    public fun getMethodDescriptor(): GrpcMethodDescriptor<Request, Response>
     public fun getServerCallHandler(): ServerCallHandler<Request, Response>
 }
 
 public expect fun <Request, Response> serverMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,
 ): ServerMethodDefinition<Request, Response>

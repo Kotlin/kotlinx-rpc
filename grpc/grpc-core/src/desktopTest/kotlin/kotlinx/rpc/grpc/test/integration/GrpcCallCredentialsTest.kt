@@ -7,7 +7,7 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallCredentials.Context
@@ -15,7 +15,7 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
-import kotlinx.rpc.grpc.server.TlsServerCredentials
+import kotlinx.rpc.grpc.server.GrpcTlsServerCredentials
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
@@ -104,7 +104,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test plaintext call credentials - should fail`() {
-        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
+        assertGrpcFailure(GrpcStatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + TlsBearerTokenCredentials()
@@ -116,7 +116,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test tls call credentials - should succeed`() {
-        val serverTls = TlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
+        val serverTls = GrpcTlsServerCredentials(SERVER_CERT_PEM, SERVER_KEY_PEM)
         val clientTls = GrpcTlsClientCredentials { trustManager(SERVER_CERT_PEM) }
         val clientCombined = clientTls + TlsBearerTokenCredentials()
 
@@ -139,7 +139,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test throw status exception - should fail with status`() {
-        assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials()
@@ -151,7 +151,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test throw exception - should fail`() {
-        assertGrpcFailure(StatusCode.UNAVAILABLE, "This is my custom exception") {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials(IllegalStateException("This is my custom exception"))
@@ -181,7 +181,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test interceptor call credentials without TLS - should fail`() {
-        assertGrpcFailure(StatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
+        assertGrpcFailure(GrpcStatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
         runGrpcTest(
             clientInterceptors = clientInterceptor {
                 callOptions.callCredentials += TlsBearerTokenCredentials()
@@ -259,7 +259,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
             override val requiresTransportSecurity: Boolean
                 get() = false
         }
-        assertGrpcFailure(StatusCode.DEADLINE_EXCEEDED) {
+        assertGrpcFailure(GrpcStatusCode.DEADLINE_EXCEEDED) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + slowCredentials
@@ -285,7 +285,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
                 return GrpcMetadata { }
             }
         }
-        assertGrpcFailure(StatusCode.UNAVAILABLE) {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + someCredentials + ThrowingCallCredentials()
@@ -307,7 +307,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
                 return GrpcMetadata { }
             }
         }
-        assertGrpcFailure(StatusCode.UNAVAILABLE) {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials() + someCredentials
@@ -333,7 +333,7 @@ abstract class PlaintextCallCredentials : GrpcCallCredentials {
 }
 
 class ThrowingCallCredentials(
-    private val exception: Throwable = StatusCode.UNIMPLEMENTED.asException("This is my custom exception")
+    private val exception: Throwable = GrpcStatusCode.UNIMPLEMENTED.asException("This is my custom exception")
 ) : PlaintextCallCredentials() {
     override suspend fun Context.getRequestMetadata(): GrpcMetadata {
         throw exception

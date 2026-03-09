@@ -157,24 +157,24 @@ class FirGrpcServiceDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind
     //##csm /FirGrpcServiceDeclarationCheckerVS_context
 }
 
-class FirWithMarshallerDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    //##csm FirWithMarshallerDeclarationChecker_context
+class FirWithGrpcMarshallerDeclarationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
+    //##csm FirWithGrpcMarshallerDeclarationChecker_context
     //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
-        FirWithMarshallerDeclarationChecker.check(declaration, context, reporter)
+        FirWithGrpcMarshallerDeclarationChecker.check(declaration, context, reporter)
     }
     //##csm /specific
     //##csm default
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        FirWithMarshallerDeclarationChecker.check(declaration, context, reporter)
+        FirWithGrpcMarshallerDeclarationChecker.check(declaration, context, reporter)
     }
     //##csm /default
-    //##csm /FirWithMarshallerDeclarationChecker_context
+    //##csm /FirWithGrpcMarshallerDeclarationChecker_context
 }
 
 class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind.Common) {
-    //##csm FirWithMarshallerDeclarationChecker_context
+    //##csm FirWithGrpcMarshallerDeclarationChecker_context
     //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
     override fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
@@ -186,6 +186,6 @@ class FirProtoMessageAnnotationCheckerVS : FirRegularClassChecker(MppCheckerKind
         FirProtoMessageAnnotationChecker.check(declaration, context, reporter)
     }
     //##csm /default
-    //##csm /FirWithMarshallerDeclarationChecker_context
+    //##csm /FirWithGrpcMarshallerDeclarationChecker_context
 }
 

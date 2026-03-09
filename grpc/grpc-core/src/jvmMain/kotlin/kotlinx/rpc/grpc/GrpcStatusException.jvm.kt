@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.grpc
 
-public actual typealias StatusException = io.grpc.StatusException
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
+public actual typealias GrpcStatusException = io.grpc.StatusException
+
+@InternalRpcApi
 public actual typealias StatusRuntimeException = io.grpc.StatusRuntimeException

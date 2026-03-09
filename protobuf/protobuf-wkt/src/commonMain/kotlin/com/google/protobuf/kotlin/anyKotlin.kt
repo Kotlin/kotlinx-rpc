@@ -33,7 +33,7 @@ import kotlin.reflect.KType
  * @see pack
  * @see unpack
  */
-public inline fun <@GeneratedProtoMessage reified T: kotlin.Any> Any.contains(): Boolean = this.contains(T::class)
+public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.contains(): Boolean = this.contains(T::class)
 
 /**
  * Checks if this [Any] message contains a message of the specified [messageClass] type.
@@ -56,7 +56,7 @@ public inline fun <@GeneratedProtoMessage reified T: kotlin.Any> Any.contains():
  * @see pack
  * @see unpack
  */
-public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KClass<T>): Boolean {
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.contains(messageClass: KClass<T>): Boolean {
     val fullName = protoDescriptorOf(messageClass).fullName
     return typeUrl.endsWith("/$fullName")
 }
@@ -82,7 +82,7 @@ public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KCl
  * @see pack
  * @see unpack
  */
-public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageType: KType): Boolean {
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.contains(messageType: KType): Boolean {
     val fullName = protoDescriptorOf<T>(messageType).fullName
     return typeUrl.endsWith("/$fullName")
 }

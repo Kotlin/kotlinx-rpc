@@ -101,7 +101,7 @@ object FirProtoMessageAnnotationChecker {
                 .findObject(context.session, ProtoNames.DESCRIPTOR_NAME, ProtoClassId.protoDescriptor)
 
             val marshallerObject = internalDeclaration
-                .findObject(context.session, ProtoNames.MARSHALLER_NAME, RpcClassId.messageMarshaller)
+                .findObject(context.session, ProtoNames.MARSHALLER_NAME, RpcClassId.grpcMarshaller)
 
             if (descriptorObject == null || marshallerObject == null) {
                 reportNonGeneratedMessage()

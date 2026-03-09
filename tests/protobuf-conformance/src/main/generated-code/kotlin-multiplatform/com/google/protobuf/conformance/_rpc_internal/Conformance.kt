@@ -4,11 +4,11 @@ package com.google.protobuf.conformance
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -94,21 +94,21 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<TestStatus> {
-        override fun encode(value: TestStatus, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<TestStatus> {
+        override fun encode(value: TestStatus, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): TestStatus {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestStatus {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestStatusInternal()
                 checkForPlatformDecodeException {
                     TestStatusInternal.decodeWith(msg, it, config as? ProtobufConfig)
@@ -185,19 +185,19 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<FailureSet> {
-        override fun encode(value: FailureSet, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<FailureSet> {
+        override fun encode(value: FailureSet, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): FailureSet {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): FailureSet {
             WireDecoder(source).use {
                 (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FailureSetInternal()
@@ -362,8 +362,8 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<ConformanceRequest> {
-        override fun encode(value: ConformanceRequest, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<ConformanceRequest> {
+        override fun encode(value: ConformanceRequest, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -374,7 +374,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): ConformanceRequest {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceRequest {
             WireDecoder(source).use {
                 (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceRequestInternal()
@@ -517,19 +517,19 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<ConformanceResponse> {
-        override fun encode(value: ConformanceResponse, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<ConformanceResponse> {
+        override fun encode(value: ConformanceResponse, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): ConformanceResponse {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceResponse {
             WireDecoder(source).use {
                 (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ConformanceResponseInternal()
@@ -608,8 +608,8 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<JspbEncodingConfig> {
-        override fun encode(value: JspbEncodingConfig, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<JspbEncodingConfig> {
+        override fun encode(value: JspbEncodingConfig, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
@@ -620,7 +620,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): JspbEncodingConfig {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): JspbEncodingConfig {
             WireDecoder(source).use {
                 (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = JspbEncodingConfigInternal()
@@ -810,7 +810,7 @@ fun ConformanceRequestInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.requestedOutputFormat != WireFormat.UNSPECIFIED) {
         encoder.writeEnum(fieldNr = 3, value = this.requestedOutputFormat.number)
     }

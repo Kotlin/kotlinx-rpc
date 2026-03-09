@@ -8,11 +8,10 @@ import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-public actual class ServerServiceDefinition internal constructor(
+public actual class GrpcServerServiceDefinition internal constructor(
     private val serviceDescriptor: ServiceDescriptor,
     private val methods: Map<String, ServerMethodDefinition<*, *>>,
 ) {
-
     internal constructor(serviceDescriptor: ServiceDescriptor, methods: Collection<ServerMethodDefinition<*, *>>) :
             this(serviceDescriptor, methods.associateBy { it.getMethodDescriptor().getFullMethodName() })
 
@@ -21,13 +20,12 @@ public actual class ServerServiceDefinition internal constructor(
     public actual fun getMethods(): Collection<ServerMethodDefinition<*, *>> = methods.values
 
     public actual fun getMethod(methodName: String): ServerMethodDefinition<*, *>? = methods[methodName]
-
 }
 
 @InternalRpcApi
 public actual fun serverServiceDefinition(
     serviceDescriptor: ServiceDescriptor,
     methods: Collection<ServerMethodDefinition<*, *>>,
-): ServerServiceDefinition {
-    return ServerServiceDefinition(serviceDescriptor, methods)
+): GrpcServerServiceDefinition {
+    return GrpcServerServiceDefinition(serviceDescriptor, methods)
 }

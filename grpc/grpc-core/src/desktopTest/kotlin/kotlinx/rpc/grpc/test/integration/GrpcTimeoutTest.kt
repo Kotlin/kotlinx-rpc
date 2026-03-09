@@ -5,8 +5,8 @@
 package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
@@ -29,7 +29,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
 
     @Test
     fun `test timeout causes DEADLINE_EXCEEDED when call exceeds timeout`() {
-        val exc = assertFailsWith<StatusException> {
+        val exc = assertFailsWith<GrpcStatusException> {
             runGrpcTest(
                 clientInterceptors = clientInterceptor {
                     callOptions.timeout = 500.milliseconds
@@ -41,7 +41,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
                 it.withService<EchoService>().UnaryEcho(request)
             }
         }
-        assertEquals(StatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
     }
 
     @Test
@@ -76,7 +76,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
 
     @Test
     fun `test timeout set to very short milliseconds triggers immediately`() {
-        val exc = assertFailsWith<StatusException> {
+        val exc = assertFailsWith<GrpcStatusException> {
             runGrpcTest(
                 clientInterceptors = clientInterceptor {
                     callOptions.timeout = 1.milliseconds
@@ -87,6 +87,6 @@ class GrpcTimeoutTest : GrpcTestBase() {
                 it.withService<EchoService>().UnaryEcho(request)
             }
         }
-        assertEquals(StatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
     }
 }

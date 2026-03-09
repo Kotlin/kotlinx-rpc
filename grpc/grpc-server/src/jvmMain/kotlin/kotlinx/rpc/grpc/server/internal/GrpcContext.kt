@@ -6,11 +6,10 @@ package kotlinx.rpc.grpc.server.internal
 
 import io.grpc.Context
 import kotlinx.coroutines.ThreadContextElement
-import kotlinx.rpc.grpc.server.internal.CurrentGrpcContext
-import kotlinx.rpc.grpc.server.internal.GrpcContext
-import kotlinx.rpc.grpc.server.internal.GrpcContextElement
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
+@InternalRpcApi
 public actual typealias GrpcContext = Context
 
 internal actual val CurrentGrpcContext: GrpcContext

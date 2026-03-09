@@ -5,7 +5,7 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.rpc.grpc.client.GrpcCallOptions
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
@@ -14,7 +14,7 @@ public expect abstract class GrpcChannel
 
 @InternalRpcApi
 public expect fun <RequestT, ResponseT> GrpcChannel.createCall(
-    methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
+    methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,
     coroutineContext: CoroutineContext,
 ): ClientCall<RequestT, ResponseT>

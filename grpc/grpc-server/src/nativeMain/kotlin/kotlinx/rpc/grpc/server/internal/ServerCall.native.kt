@@ -5,8 +5,8 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -22,7 +22,7 @@ public actual abstract class ServerCall<Request, Response> {
     public actual abstract fun request(numMessages: Int)
     public actual abstract fun sendHeaders(headers: GrpcMetadata)
     public actual abstract fun sendMessage(message: Response)
-    public actual abstract fun close(status: Status, trailers: GrpcMetadata)
+    public actual abstract fun close(status: GrpcStatus, trailers: GrpcMetadata)
 
     public actual open fun isReady(): Boolean {
         // Default implementation returns true - subclasses can override if they need flow control
@@ -30,7 +30,7 @@ public actual abstract class ServerCall<Request, Response> {
     }
 
     public actual abstract fun isCancelled(): Boolean
-    public actual abstract fun getMethodDescriptor(): MethodDescriptor<Request, Response>
+    public actual abstract fun getMethodDescriptor(): GrpcMethodDescriptor<Request, Response>
 
     @InternalRpcApi
     public actual abstract class Listener<Request> {

@@ -42,7 +42,7 @@ internal class ProtoDescriptorGenerator(
 
     fun generate() {
         addWithProtoDescriptorAnnotation()
-        addWithMarshallerAnnotation()
+        addWithGrpcMarshallerAnnotation()
 
         declaration.message.companionObject()?.apply {
             generateCompanionObjectConstructor(ctx.pluginContext)
@@ -64,17 +64,17 @@ internal class ProtoDescriptorGenerator(
     }
 
     /**
-     * Add the @WithMarshaller annotation to the message interface.
-     * This is used by `marshallerOf()` to get the MessageMarshaller object.
+     * Add the @WithGrpcMarshaller annotation to the message interface.
+     * This is used by `marshallerOf()` to get the GrpcMarshaller object.
      * The java implementation uses reflection to find the descriptor object.
      *
      * ```
-     * @WithMarshaller(MyMessageInternal.MARSHALLER::class)
+     * @WithGrpcMarshaller(MyMessageInternal.MARSHALLER::class)
      * interface MyMessage {}
      * ```
      */
-    private fun addWithMarshallerAnnotation() {
-        addWithSomethingAnnotation(ctx.withMarshallerAnnotation, ProtoDeclaration::marshaller)
+    private fun addWithGrpcMarshallerAnnotation() {
+        addWithSomethingAnnotation(ctx.withGrpcMarshallerAnnotation, ProtoDeclaration::marshaller)
     }
 
     /**
