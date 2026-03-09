@@ -79,7 +79,6 @@ sealed interface FqName {
         val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoMessage")
     }
 
-    @Suppress("unused")
     object RpcClasses {
         val InternalMessage = fqDec("kotlinx.rpc.protobuf.internal", "InternalMessage")
         val InternalPresenceObject = fqDec("kotlinx.rpc.protobuf.internal", "InternalPresenceObject")
@@ -103,6 +102,85 @@ sealed interface FqName {
         val WireType_FIXED32 = WireType.nested("FIXED32")
         val WireType_START_GROUP = WireType.nested("START_GROUP")
         val WireType_FIXED64 = WireType.nested("FIXED64")
+    }
+
+    object Wkt {
+        private const val PKG = "com.google.protobuf.kotlin"
+
+        // any.proto
+        val Any = fqDec(PKG, "Any")
+
+        // api.proto
+        val Api = fqDec(PKG, "Api")
+        val Method = fqDec(PKG, "Method")
+        val Mixin = fqDec(PKG, "Mixin")
+
+        // duration.proto
+        val Duration = fqDec(PKG, "Duration")
+
+        // empty.proto
+        val Empty = fqDec(PKG, "Empty")
+
+        // field_mask.proto
+        val FieldMask = fqDec(PKG, "FieldMask")
+
+        // source_context.proto
+        val SourceContext = fqDec(PKG, "SourceContext")
+
+        // struct.proto
+        val Struct = fqDec(PKG, "Struct")
+        val Value = fqDec(PKG, "Value")
+        val ListValue = fqDec(PKG, "ListValue")
+        val NullValue = fqDec(PKG, "NullValue")
+
+        // timestamp.proto
+        val Timestamp = fqDec(PKG, "Timestamp")
+
+        // type.proto
+        val Type = fqDec(PKG, "Type")
+        val Field = fqDec(PKG, "Field")
+        val Enum = fqDec(PKG, "Enum")
+        val EnumValue = fqDec(PKG, "EnumValue")
+        val Option = fqDec(PKG, "Option")
+        val Syntax = fqDec(PKG, "Syntax")
+
+        // wrappers.proto
+        val DoubleValue = fqDec(PKG, "DoubleValue")
+        val FloatValue = fqDec(PKG, "FloatValue")
+        val Int64Value = fqDec(PKG, "Int64Value")
+        val UInt64Value = fqDec(PKG, "UInt64Value")
+        val Int32Value = fqDec(PKG, "Int32Value")
+        val UInt32Value = fqDec(PKG, "UInt32Value")
+        val BoolValue = fqDec(PKG, "BoolValue")
+        val StringValue = fqDec(PKG, "StringValue")
+        val BytesValue = fqDec(PKG, "BytesValue")
+
+        // descriptor.proto
+        val FileDescriptorSet = fqDec(PKG, "FileDescriptorSet")
+        val FileDescriptorProto = fqDec(PKG, "FileDescriptorProto")
+        val DescriptorProto = fqDec(PKG, "DescriptorProto")
+        val ExtensionRangeOptions = fqDec(PKG, "ExtensionRangeOptions")
+        val FieldDescriptorProto = fqDec(PKG, "FieldDescriptorProto")
+        val OneofDescriptorProto = fqDec(PKG, "OneofDescriptorProto")
+        val EnumDescriptorProto = fqDec(PKG, "EnumDescriptorProto")
+        val EnumValueDescriptorProto = fqDec(PKG, "EnumValueDescriptorProto")
+        val ServiceDescriptorProto = fqDec(PKG, "ServiceDescriptorProto")
+        val MethodDescriptorProto = fqDec(PKG, "MethodDescriptorProto")
+        val FileOptions = fqDec(PKG, "FileOptions")
+        val MessageOptions = fqDec(PKG, "MessageOptions")
+        val FieldOptions = fqDec(PKG, "FieldOptions")
+        val OneofOptions = fqDec(PKG, "OneofOptions")
+        val EnumOptions = fqDec(PKG, "EnumOptions")
+        val EnumValueOptions = fqDec(PKG, "EnumValueOptions")
+        val ServiceOptions = fqDec(PKG, "ServiceOptions")
+        val MethodOptions = fqDec(PKG, "MethodOptions")
+        val UninterpretedOption = fqDec(PKG, "UninterpretedOption")
+        val FeatureSet = fqDec(PKG, "FeatureSet")
+        val FeatureSetDefaults = fqDec(PKG, "FeatureSetDefaults")
+        val SourceCodeInfo = fqDec(PKG, "SourceCodeInfo")
+        val GeneratedCodeInfo = fqDec(PKG, "GeneratedCodeInfo")
+        val Edition = fqDec(PKG, "Edition")
+        val SymbolVisibility = fqDec(PKG, "SymbolVisibility")
     }
 
     object KotlinLibs {

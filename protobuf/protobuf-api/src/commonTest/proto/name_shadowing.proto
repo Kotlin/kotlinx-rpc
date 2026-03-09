@@ -2,6 +2,14 @@ syntax = "proto3";
 
 package name_shadowing;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
 // Shadow Kotlin built-in types
 message String {
   string value = 1;
@@ -119,4 +127,161 @@ message MyClass2 {
 
   string primitive = 1;
   Int.String nested = 2;
+}
+
+// Shadow WKT types (google.protobuf well-known types)
+message Timestamp {
+  int64 seconds = 1;
+  string label = 2;
+}
+
+message Duration {
+  int64 millis = 1;
+  Timestamp start = 2;
+}
+
+message Any {
+  string type_url = 1;
+  Duration duration = 2;
+}
+
+message Empty {
+  string placeholder = 1;
+}
+
+message FieldMask {
+  repeated string paths = 1;
+  Timestamp created_at = 2;
+}
+
+message Value {
+  string data = 1;
+  Any any_value = 2;
+}
+
+message Struct {
+  map<string, Value> fields = 1;
+  Empty empty = 2;
+}
+
+// Shadow WKT wrapper types
+message BoolValue {
+  bool value = 1;
+}
+
+message StringValue {
+  string value = 1;
+  Timestamp ts = 2;
+}
+
+// Shadow WKT descriptor types
+message FieldOptions {
+  bool deprecated = 1;
+  StringValue default_value = 2;
+}
+
+message DescriptorProto {
+  string name = 1;
+  FieldOptions options = 2;
+}
+
+// Complex nesting with WKT-shadowed types
+message WktNesting {
+  Timestamp ts = 1;
+  Duration dur = 2;
+  Any any = 3;
+
+  message Nested {
+    Empty empty = 1;
+    Struct struct = 2;
+    Value value = 3;
+
+    message DeeplyNested {
+      FieldMask mask = 1;
+      BoolValue flag = 2;
+      DescriptorProto descriptor = 3;
+    }
+
+    DeeplyNested deep = 4;
+  }
+
+  Nested nested = 4;
+  repeated Value values = 5;
+  map<string, Any> any_map = 6;
+}
+
+// Oneof with WKT-shadowed types
+message WktOneof {
+  oneof content {
+    Timestamp timestamp = 1;
+    Duration duration = 2;
+    Any any = 3;
+    Empty empty = 4;
+    Value value = 5;
+    Struct struct = 6;
+  }
+}
+
+// Mix local shadowed types with actual WKT types
+message MixedWktAndLocal {
+  // Local shadowed types
+  Timestamp local_ts = 1;
+  Duration local_dur = 2;
+  Any local_any = 3;
+  Empty local_empty = 4;
+  Value local_value = 5;
+  Struct local_struct = 6;
+  BoolValue local_bool = 7;
+  StringValue local_string_value = 8;
+
+  // Actual WKT types from google.protobuf
+  google.protobuf.Timestamp wkt_ts = 11;
+  google.protobuf.Duration wkt_dur = 12;
+  google.protobuf.Any wkt_any = 13;
+  google.protobuf.Empty wkt_empty = 14;
+  google.protobuf.Value wkt_value = 15;
+  google.protobuf.Struct wkt_struct = 16;
+  google.protobuf.BoolValue wkt_bool = 17;
+  google.protobuf.StringValue wkt_string_value = 18;
+  google.protobuf.FieldMask wkt_field_mask = 19;
+}
+
+// Nesting that mixes local and WKT types at different levels
+message MixedNesting {
+  Timestamp local_ts = 1;
+  google.protobuf.Timestamp wkt_ts = 2;
+
+  message Inner {
+    Duration local_dur = 1;
+    google.protobuf.Duration wkt_dur = 2;
+    Any local_any = 3;
+    google.protobuf.Any wkt_any = 4;
+
+    message DeepInner {
+      StringValue local_sv = 1;
+      google.protobuf.StringValue wkt_sv = 2;
+      FieldMask local_mask = 3;
+      google.protobuf.FieldMask wkt_mask = 4;
+    }
+
+    DeepInner deep = 5;
+  }
+
+  Inner inner = 3;
+  repeated google.protobuf.Timestamp wkt_ts_list = 4;
+  repeated Timestamp local_ts_list = 5;
+  map<string, google.protobuf.Any> wkt_any_map = 6;
+  map<string, Any> local_any_map = 7;
+}
+
+// Oneof mixing local and WKT types
+message MixedOneof {
+  oneof content {
+    Timestamp local_ts = 1;
+    google.protobuf.Timestamp wkt_ts = 2;
+    Duration local_dur = 3;
+    google.protobuf.Duration wkt_dur = 4;
+    Any local_any = 5;
+    google.protobuf.Any wkt_any = 6;
+  }
 }

@@ -34,6 +34,10 @@ import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.UInt64ValueInternal
 import com.google.protobuf.kotlin.Value
 import com.google.protobuf.kotlin.ValueInternal
+import com.google.protobuf.kotlin.asInternal
+import com.google.protobuf.kotlin.checkRequiredFields
+import com.google.protobuf.kotlin.copy
+import com.google.protobuf.kotlin.decodeWith
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source

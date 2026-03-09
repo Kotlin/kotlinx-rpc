@@ -68,7 +68,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // Keep file-level extensions in top-level scope.
         fileDeclaration.extensions.forEach { extension ->
-            generateProtoExtensionProperty(extension)
+            generateProtoExtensionProperty(extension, fileDeclaration.packageName)
         }
 
         // Message-scoped extensions are emitted in namespace objects.
@@ -80,9 +80,11 @@ class ModelToProtobufKotlinCommonGenerator(
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
         generateInternalMessageEntities(fileDeclaration.messageDeclarations)
 
-        val allEnums =
-            fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations
-                .flatMap { it.enumDeclarations + it.allNestedRecursively().flatMap(MessageDeclaration::enumDeclarations) }
+        val allEnums = fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations
+            .flatMap {
+                it.enumDeclarations + it.allNestedRecursively().flatMap(MessageDeclaration::enumDeclarations)
+            }
+
         allEnums.forEach { enum ->
             generateInternalEnumConstructor(enum)
         }
@@ -278,7 +280,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             generateMarshallerObject(declaration)
             generateDescriptorObject(declaration)
-            generateCompanionObject(declaration)
+            generateCompanionObject()
         }
     }
 
@@ -292,7 +294,7 @@ class ModelToProtobufKotlinCommonGenerator(
             val subMsgPkg = subMsg.name.packageName()
             // if the subMsg is part of some other package and not a well-known type,
             // we import all necessary functions
-            if (subMsgPkg != pkg && subMsgPkg.fullName() != "com.google.protobuf.kotlin") {
+            if (subMsgPkg != pkg) {
                 internalImports.add(subMsgPkg.importPath("asInternal"))
                 internalImports.add(subMsgPkg.importPath("copy"))
                 internalImports.add(subMsgPkg.importPath("checkRequiredFields"))
@@ -301,7 +303,7 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateCompanionObject(declaration: MessageDeclaration) {
+    private fun CodeGenerator.generateCompanionObject() {
         clazz(
             name = "",
             modifiers = "companion",
@@ -871,7 +873,7 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
-    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration) {
+    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, packageName: FqName.Package) {
         val name = declaration.name
         val extendee = declaration.containingType.value
         val descriptorRef = requireNotNull(declaration.extensionDescriptorName) {
@@ -897,6 +899,11 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             value = value,
         )
+
+        val extendeePackage = extendee.name.packageName()
+        if (extendeePackage != packageName) {
+            extImports.add(extendeePackage.importPath("asInternal"))
+        }
 
         // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get() =
         //  MyProtoFileKtExtensions.myExtensionField
@@ -949,7 +956,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Object,
         ) {
             declaration.extensions.forEach { extension ->
-                generateProtoExtensionProperty(extension)
+                generateProtoExtensionProperty(extension, declaration.name.packageName())
             }
 
             nestedWithExtensions.forEach { nested ->
@@ -1795,7 +1802,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // we generate the asInternal extension even for non-user-facing message classes (map entry)
         // to avoid edge-cases when generating other code that uses the asInternal() extension.
         function(
-            "asInternal",
+            name = "asInternal",
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             contextReceiver = ctxReceiver.scoped(),
             returnType = declaration.internalClassName.scoped(),
@@ -2421,8 +2428,5 @@ private fun FileDeclaration.hasExtensionGroupMessages(): Boolean =
     allExtensions().any { field ->
         field.containingType.value.isGroup || ((field.type as? FieldType.Message)?.dec?.value?.isGroup == true)
     }
-
-private fun FileDeclaration.asDeclName() = name.replace(".", "")
-private fun FqName.asDeclName() = toString().replace(".", "")
 
 private fun String.capitalize(): String = replaceFirstChar { it.uppercase() }
