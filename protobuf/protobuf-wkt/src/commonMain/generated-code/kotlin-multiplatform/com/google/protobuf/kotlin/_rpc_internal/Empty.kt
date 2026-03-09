@@ -29,7 +29,8 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return this::class.hashCode()
+        var result = this::class.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -53,6 +54,10 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
         builder.appendLine("Empty(")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): EmptyInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -112,6 +117,7 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 
 @InternalRpcApi
 public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Empty::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

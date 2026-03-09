@@ -58,7 +58,7 @@ class CodeGeneratorTest {
                     "@%T(%T::class)".scoped(FqName.Implicits.OptIn, FqName.Annotations.ExperimentalRpcApi),
                 ),
             ) {
-                property(
+                this.property(
                     name = "myProperty",
                     type = "%T".scoped(myClassName),
                 )
@@ -114,6 +114,54 @@ class CodeGeneratorTest {
         )
 
         assertEquals(emptySet(), imports)
+    }
+
+    @Test
+    fun testProperty() = codeGeneratorTest {
+        val (imports, generated) = generate {
+            property(
+                name = "value",
+                type = FqName.Implicits.String.scoped(),
+            ) {
+                scope(prefix = "buildString".scoped()) {
+                    code("append(\"hello\")".scoped())
+                }
+            }
+        }
+
+        assertEquals(
+            """
+            val value: String = buildString {
+                    append("hello")
+                }
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertTrue { imports.isEmpty() }
+    }
+
+    @Test
+    fun testFunctionCall() = codeGeneratorTest {
+        val (imports, generated) = generate {
+            functionCall(
+                function = "createValue".scoped(),
+                namedArgs = listOf(
+                    "first" to "1".scoped(),
+                    "second" to "\"two\"".scoped(),
+                ),
+            )
+        }
+
+        assertEquals(
+            """
+            createValue(
+                first = 1,
+                second = "two",
+            )
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertTrue { imports.isEmpty() }
     }
 
     private class Env(

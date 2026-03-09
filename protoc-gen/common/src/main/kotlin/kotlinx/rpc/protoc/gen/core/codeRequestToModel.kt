@@ -59,7 +59,11 @@ fun CodeGeneratorRequest.toModel(config: Config): Model {
 private fun initNameTable(nameTable: FqNameTable) {
     nameTable.registerAll(
         FqName.RpcClasses.InternalMessage,
+        FqName.RpcClasses.InternalPresenceObject,
         FqName.RpcClasses.ProtoDescriptor,
+        FqName.RpcClasses.ProtoExtensionDescriptor,
+        FqName.RpcClasses.InternalExtensionDescriptor,
+        FqName.RpcClasses.ExtensionValue,
         FqName.RpcClasses.WireEncoder,
         FqName.RpcClasses.WireDecoder,
         FqName.RpcClasses.MsgFieldDelegate,
@@ -170,9 +174,11 @@ private inline fun <D, reified T> D.cached(crossinline block: (D) -> T): T
 private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDeclaration = cached {
     val comments = Comments(extractComments(), ObjectPath.empty)
 
+    val ktPackage = FqName.Package.fromString(kotlinPackage())
+
     FileDeclaration(
         name = kotlinFileName(),
-        packageName = FqName.Package.fromString(kotlinPackage()),
+        packageName = ktPackage,
         dependencies = dependencies.map { it.toModel(nameTable) },
         messageDeclarations = messageTypes.map {
             it.toModel(
@@ -182,6 +188,7 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         },
         enumDeclarations = enumTypes.map { it.toModel(comments + Paths.enumCommentPath + it.index, nameTable) },
         serviceDeclarations = services.map { it.toModel(comments + Paths.serviceCommentPath + it.index, nameTable) },
+        extensions = extensions.map { it.toModel(comments + Paths.extensionCommentPath + it.index, nameTable) },
         doc = listOfNotNull(
             (comments + Paths.syntaxCommentPath).get(),
             (comments + Paths.editionsCommentPath).get(),
@@ -189,7 +196,10 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
         ),
         deprecated = options.deprecated,
         dec = this,
-    )
+        internalExtensionDescriptorObject = internalExtensionDescriptorObjectName(),
+    ).also {
+        nameTable.register { it.internalExtensionDescriptorObject }
+    }
 }
 
 private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {
@@ -218,6 +228,8 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
             doc = it.doc,
             dec = it.variants.first().dec,
             deprecated = options.deprecated,
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
+            extensionDescriptorName = null,
         )
     }
 
@@ -234,6 +246,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
                 nameTable = nameTable,
             )
         },
+        extensions = extensions.map { it.toModel(comments + Paths.messageExtensionCommentPath + it.index, nameTable) },
         doc = comments.get(),
         dec = this,
         deprecated = options.deprecated,
@@ -296,7 +309,11 @@ private fun Descriptors.FieldDescriptor.toModel(
             doc = comments.get(),
             dec = this,
             deprecated = options.deprecated,
-        )
+            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
+            extensionDescriptorName = extensionDescriptorName(),
+        ).apply {
+            extensionDescriptorName?.let { nameTable.register(it) }
+        }
     }
 
 private fun Descriptors.OneofDescriptor.toModel(
@@ -454,6 +471,26 @@ private fun Descriptors.FileDescriptor.kotlinPackage(): String {
 
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {
     return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
+}
+
+private fun Descriptors.FileDescriptor.internalExtensionDescriptorObjectName(): FqName.Declaration {
+    val ktPackage = FqName.Package.fromString(kotlinPackage())
+    return FqName.Declaration(
+        simpleName = protoFileNameToKotlinName() + "KtExtensions",
+        parent = ktPackage,
+    )
+}
+
+private fun Descriptors.FieldDescriptor.extensionDescriptorName(): FqName.Declaration? {
+    if (!isExtension) return null
+
+    var parent: FqName = file.internalExtensionDescriptorObjectName()
+    val scopeChain = generateSequence(extensionScope) { it.containingType }.toList().asReversed()
+    scopeChain.forEach { scope ->
+        parent = FqName.Declaration(scope.fqName().simpleName, parent)
+    }
+
+    return FqName.Declaration(fqName().simpleName, parent)
 }
 
 private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): String {

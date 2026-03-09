@@ -235,6 +235,72 @@ open class CodeGenerator(
         }
     }
 
+    fun functionCall(
+        function: ScopedFormattedString,
+        namedArgs: List<Pair<String, ScopedFormattedString>> = emptyList(),
+    ) {
+        if (namedArgs.isEmpty()) {
+            code(function.wrapIn { "$it()" })
+            return
+        }
+
+        selectNames {
+            addLine(function.wrapIn { "$it(" })
+        }
+
+        withNextIndent {
+            for ((name, value) in namedArgs) {
+                selectNames {
+                    addLine(value.wrapIn { "$name = $it," })
+                }
+            }
+        }
+
+        selectNames {
+            addLine(")".scoped())
+        }
+    }
+
+    @JvmName("functionCallBlockArgs")
+    fun functionCall(
+        function: ScopedFormattedString,
+        namedArgBlocks: List<Pair<String, CodeGenerator.() -> Unit>>,
+    ) {
+        if (namedArgBlocks.isEmpty()) {
+            code(function.wrapIn { "$it()" })
+            return
+        }
+
+        selectNames {
+            addLine(function.wrapIn { "$it(" })
+        }
+
+        withNextIndent {
+            for ((name, valueBuilder) in namedArgBlocks) {
+                selectNames {
+                    addLine("$name =".scoped())
+                }
+
+                val nested = CodeGenerator(
+                    indent = "$indent$ONE_INDENT",
+                    config = config,
+                    nameTable = nameTable,
+                ).apply(valueBuilder)
+
+                if (!nested.isEmpty) {
+                    newLine()
+                    selectNames {
+                        append((nested.build().trimEnd() + ",").scoped())
+                    }
+                }
+            }
+        }
+
+        selectNames {
+            addLine(")".scoped())
+        }
+    }
+
     fun property(
         name: String,
         comment: Comment? = null,
@@ -245,10 +311,15 @@ open class CodeGenerator(
         type: ScopedFormattedString,
         propertyInitializer: PropertyInitializer = PropertyInitializer.PLAIN,
         value: ScopedFormattedString = ScopedFormattedString.empty,
+        setter: ScopedFormattedString = ScopedFormattedString.empty,
         isVar: Boolean = false,
         needsNewLineAfterDeclaration: Boolean = true,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
+        require((isVar && propertyInitializer == PropertyInitializer.GETTER) == (setter != ScopedFormattedString.empty)) {
+            "If property is mutable, with a PropertyInitializer.GETTER, it should have a setter as well"
+        }
+
         appendComment(comment)
         for (annotation in annotations) {
             selectNames {
@@ -267,13 +338,82 @@ open class CodeGenerator(
         }.takeIf { value.value.isNotEmpty() } ?: ""
         val varString = if (isVar) "var" else "val"
 
-        scope(
-            prefix = contextString.merge(typeString, value) { contextString, typeString, value ->
-                "${modifiersString}$varString $contextString$name$typeString$initializer$value"
-            },
-            scopeNestedClassName = null,
-            block = block,
-        )
+        if (setter.value.isEmpty()) {
+            scope(
+                prefix = contextString.merge(typeString, value) { contextString, typeString, value ->
+                    "${modifiersString}$varString $contextString$name$typeString$initializer$value"
+                },
+                scopeNestedClassName = null,
+                block = block,
+            )
+        } else {
+            selectNames {
+                addLine(contextString.merge(typeString) { contextString, typeString ->
+                    "${modifiersString}$varString $contextString$name$typeString"
+                })
+                withNextIndent {
+                    addLine(value.wrapIn { "get() = $it" })
+                    addLine(setter.wrapIn { "set(value) { $it }" })
+                    newLine()
+                    newLine()
+                }
+            }
+        }
+
+        this.needsNewLineAfterDeclaration = needsNewLineAfterDeclaration
+    }
+
+    fun property(
+        name: String,
+        comment: Comment? = null,
+        modifiers: String = "",
+        contextReceiver: ScopedFormattedString = ScopedFormattedString.empty,
+        annotations: List<ScopedFormattedString> = emptyList(),
+        deprecation: DeprecationLevel? = null,
+        type: ScopedFormattedString,
+        valueOnNewLine: Boolean = false,
+        needsNewLineAfterDeclaration: Boolean = true,
+        initializer: CodeGenerator.() -> Unit,
+    ) {
+        appendComment(comment)
+        for (annotation in annotations) {
+            selectNames {
+                addLine(annotation)
+            }
+        }
+        addDeprecation(deprecation)
+
+        val modifiersString = (if (modifiers.isEmpty()) "" else "$modifiers ").withVisibility()
+        val contextString = contextReceiver.wrapInIfNotBlankOr { "$it." }
+        val typeString = type.wrapInIfNotBlankOr { ": $it" }
+
+        selectNames {
+            if (valueOnNewLine) {
+                newLine()
+            }
+            addLine(contextString.merge(typeString) { contextString, typeString ->
+                "${modifiersString}val $contextString$name$typeString = "
+            })
+        }
+
+        val nested = CodeGenerator(
+            indent = "$indent$ONE_INDENT",
+            config = config,
+            nameTable = nameTable,
+        ).apply(initializer)
+
+        if (!nested.isEmpty) {
+            var valueString = nested.build().trimEnd()
+            if (!valueOnNewLine) {
+                valueString = valueString.trimStart()
+            }
+            selectNames {
+                append(valueString.scoped())
+            }
+        }
+
+        newLine()
+        lastIsDeclaration = true
 
         this.needsNewLineAfterDeclaration = needsNewLineAfterDeclaration
     }

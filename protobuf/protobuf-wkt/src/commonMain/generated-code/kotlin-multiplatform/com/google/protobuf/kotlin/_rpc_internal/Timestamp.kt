@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -73,6 +74,10 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
         return builder.toString()
     }
 
+    public override fun copyInternal(): TimestampInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     public fun copyInternal(body: TimestampInternal.() -> Unit): TimestampInternal {
         val copy = TimestampInternal()
@@ -134,10 +139,17 @@ public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
     if (this.nanos != 0) {
         encoder.writeInt32(fieldNr = 2, value = this.nanos)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Timestamp::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

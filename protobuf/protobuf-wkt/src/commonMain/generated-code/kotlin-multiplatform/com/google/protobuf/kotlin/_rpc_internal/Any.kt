@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -70,6 +71,10 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         return builder.toString()
     }
 
+    public override fun copyInternal(): AnyInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     public fun copyInternal(body: AnyInternal.() -> Unit): AnyInternal {
         val copy = AnyInternal()
@@ -131,10 +136,17 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
     if (this.value.isNotEmpty()) {
         encoder.writeBytes(fieldNr = 2, value = this.value)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Any::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -9,6 +10,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -47,8 +49,12 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
 
+    private val _owner: TypeInternal = this
+
     @InternalRpcApi
-    public val _presence: TypePresence = object : TypePresence {
+    public val _presence: TypePresence = object : TypePresence, InternalPresenceObject {
+        public override val _message: TypeInternal get() = _owner
+
         public override val hasSourceContext: Boolean get() = presenceMask[0]
     }
 
@@ -105,6 +111,10 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
         builder.appendLine("${nextIndentString}edition=${this.edition},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): TypeInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -241,6 +251,10 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
         return builder.toString()
     }
 
+    public override fun copyInternal(): FieldInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     public fun copyInternal(body: FieldInternal.() -> Unit): FieldInternal {
         val copy = FieldInternal()
@@ -317,8 +331,12 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
     public override var edition: String by MsgFieldDelegate { "" }
 
+    private val _owner: EnumInternal = this
+
     @InternalRpcApi
-    public val _presence: EnumPresence = object : EnumPresence {
+    public val _presence: EnumPresence = object : EnumPresence, InternalPresenceObject {
+        public override val _message: EnumInternal get() = _owner
+
         public override val hasSourceContext: Boolean get() = presenceMask[0]
     }
 
@@ -372,6 +390,10 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
         builder.appendLine("${nextIndentString}edition=${this.edition},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): EnumInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -479,6 +501,10 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
         return builder.toString()
     }
 
+    public override fun copyInternal(): EnumValueInternal {
+        return copyInternal { }
+    }
+
     @InternalRpcApi
     public fun copyInternal(body: EnumValueInternal.() -> Unit): EnumValueInternal {
         val copy = EnumValueInternal()
@@ -544,8 +570,12 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     public override var name: String by MsgFieldDelegate { "" }
     public override var value: Any by MsgFieldDelegate(PresenceIndices.value) { AnyInternal() }
 
+    private val _owner: OptionInternal = this
+
     @InternalRpcApi
-    public val _presence: OptionPresence = object : OptionPresence {
+    public val _presence: OptionPresence = object : OptionPresence, InternalPresenceObject {
+        public override val _message: OptionInternal get() = _owner
+
         public override val hasValue: Boolean get() = presenceMask[0]
     }
 
@@ -587,6 +617,10 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): OptionInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -690,10 +724,17 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
     if (this.edition.isNotEmpty()) {
         encoder.writeString(fieldNr = 7, value = this.edition)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Type::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -835,10 +876,17 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
     if (this.defaultValue.isNotEmpty()) {
         encoder.writeString(fieldNr = 11, value = this.defaultValue)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Field::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -988,10 +1036,17 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
     if (this.edition.isNotEmpty()) {
         encoder.writeString(fieldNr = 6, value = this.edition)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Enum::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1097,10 +1152,17 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(EnumValue::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1173,10 +1235,17 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
     if (presenceMask[0]) {
         encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(Option::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

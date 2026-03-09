@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.grpc.marshaller.MarshallerConfig
@@ -37,7 +38,8 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        return fileName.hashCode()
+        var result = fileName.hashCode()
+        return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
@@ -63,6 +65,10 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
         builder.appendLine("${nextIndentString}fileName=${this.fileName},")
         builder.append("${indentString})")
         return builder.toString()
+    }
+
+    public override fun copyInternal(): SourceContextInternal {
+        return copyInternal { }
     }
 
     @InternalRpcApi
@@ -121,10 +127,17 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: Protob
     if (this.fileName.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.fileName)
     }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
 }
 
 @InternalRpcApi
 public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(SourceContext::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

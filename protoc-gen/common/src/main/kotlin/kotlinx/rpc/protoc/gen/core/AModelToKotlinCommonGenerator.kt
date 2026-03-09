@@ -162,6 +162,13 @@ abstract class AModelToKotlinCommonGenerator(
     }
 
     protected fun FieldDeclaration.typeFqName(): ScopedFormattedString {
+        return typeFqNameNonNullable().withNullability(nullable)
+    }
+
+    /**
+     * Same as [typeFqName] but always non-nullable, even if the field is nullable.
+     */
+    protected fun FieldDeclaration.typeFqNameNonNullable(): ScopedFormattedString {
         return when (type) {
             is FieldType.Message -> {
                 type.dec.value.name.scoped()
@@ -204,7 +211,7 @@ abstract class AModelToKotlinCommonGenerator(
 
                 "%T<%T, %T>".scoped(FqName.Implicits.Map, fqKey, fqValue)
             }
-        }.withNullability(nullable)
+        }
     }
 
     protected fun ScopedFormattedString.wrapInFlowIf(condition: Boolean): ScopedFormattedString {
