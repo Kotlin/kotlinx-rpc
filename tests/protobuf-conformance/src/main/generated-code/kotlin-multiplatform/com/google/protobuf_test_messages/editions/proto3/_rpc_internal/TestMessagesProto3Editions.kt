@@ -1217,7 +1217,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                     internalMsg.encodeWith(encoder, config as? ProtobufConfig)
                 }
                 encoder.flush()
-                internalMsg._unknownFields.copyTo(buffer)
                 return buffer
             }
 
@@ -1229,7 +1228,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
                     }
                     msg.checkRequiredFields()
-                    msg._unknownFieldsEncoder?.flush()
                     return msg
                 }
             }
@@ -2319,7 +2317,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -2331,7 +2328,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                     TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2412,7 +2408,6 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -2424,7 +2419,6 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
                     ForeignMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2500,7 +2494,6 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -2512,7 +2505,6 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
                     NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -2588,7 +2580,6 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -2600,7 +2591,6 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
                     EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -3609,11 +3599,12 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -4432,6 +4423,9 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.computeSize(): Int {
@@ -5149,6 +5143,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5173,11 +5168,12 @@ fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ForeignMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5201,6 +5197,9 @@ fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, dec
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ForeignMessageInternal.computeSize(): Int {
@@ -5209,6 +5208,7 @@ private fun ForeignMessageInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.c))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5225,11 +5225,17 @@ fun NullHypothesisProto3Internal.checkRequiredFields() {
 @InternalRpcApi
 fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(NullHypothesisProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5250,10 +5256,14 @@ fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3I
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun NullHypothesisProto3Internal.computeSize(): Int {
     var __result = 0
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5270,11 +5280,17 @@ fun EnumOnlyProto3Internal.checkRequiredFields() {
 @InternalRpcApi
 fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
     // no fields to encode
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(EnumOnlyProto3::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5295,10 +5311,14 @@ fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, dec
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumOnlyProto3Internal.computeSize(): Int {
     var __result = 0
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5330,11 +5350,12 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesProto3.NestedMessage::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5365,6 +5386,9 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: T
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int {
@@ -5377,6 +5401,7 @@ private fun TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int 
         __result += this.corecursive.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5405,6 +5430,8 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5435,6 +5462,9 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(m
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize(): Int {
@@ -5447,6 +5477,7 @@ private fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize():
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5475,6 +5506,8 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5505,6 +5538,9 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(m
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize(): Int {
@@ -5517,6 +5553,7 @@ private fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize():
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5545,6 +5582,8 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5575,6 +5614,9 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
@@ -5587,6 +5629,7 @@ private fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5615,6 +5658,8 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5645,6 +5690,9 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
@@ -5657,6 +5705,7 @@ private fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5685,6 +5734,8 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5715,6 +5766,9 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
@@ -5727,6 +5781,7 @@ private fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5755,6 +5810,8 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5785,6 +5842,9 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
@@ -5797,6 +5857,7 @@ private fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5825,6 +5886,8 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5855,6 +5918,9 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWi
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
@@ -5867,6 +5933,7 @@ private fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSiz
         __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.fixed32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5895,6 +5962,8 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5925,6 +5994,9 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWi
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
@@ -5937,6 +6009,7 @@ private fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSiz
         __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.fixed64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -5965,6 +6038,8 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -5995,6 +6070,9 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
@@ -6007,6 +6085,7 @@ private fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeS
         __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.sFixed32(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6035,6 +6114,8 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6065,6 +6146,9 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
@@ -6077,6 +6161,7 @@ private fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeS
         __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.sFixed64(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6105,6 +6190,8 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6135,6 +6222,9 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(m
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize(): Int {
@@ -6147,6 +6237,7 @@ private fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize():
         __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.float(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6175,6 +6266,8 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6205,6 +6298,9 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
@@ -6217,6 +6313,7 @@ private fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.computeSize()
         __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.double(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6245,6 +6342,8 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6275,6 +6374,9 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): Int {
@@ -6287,6 +6389,7 @@ private fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): I
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.bool(this.value))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6315,6 +6418,8 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: 
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6345,6 +6450,9 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringStringEntryInternal.computeSize(): Int {
@@ -6357,6 +6465,7 @@ private fun TestAllTypesProto3Internal.MapStringStringEntryInternal.computeSize(
         __result += WireSize.string(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6385,6 +6494,8 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6415,6 +6526,9 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.computeSize(): Int {
@@ -6427,6 +6541,7 @@ private fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.computeSize()
         __result += WireSize.bytes(this.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6458,6 +6573,8 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(en
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6492,6 +6609,9 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.dec
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.computeSize(): Int {
@@ -6504,6 +6624,7 @@ private fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.compu
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6535,6 +6656,8 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(e
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6569,6 +6692,9 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.de
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.computeSize(): Int {
@@ -6581,6 +6707,7 @@ private fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.comp
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6609,6 +6736,8 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6639,6 +6768,9 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeSize(): Int {
@@ -6651,6 +6783,7 @@ private fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeS
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -6679,6 +6812,8 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
@@ -6709,6 +6844,9 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decod
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.computeSize(): Int {
@@ -6721,6 +6859,7 @@ private fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.compute
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.Buffer
 import kotlinx.io.Sink
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -67,6 +68,21 @@ public interface WireEncoder {
         encode: T.(WireEncoder) -> Unit,
     )
 
+    public fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int)
+
+    /**
+     * Writes all bytes of the [buffer].
+     * The [buffer] is not consumed by this method.
+     */
+    public fun writeRawBytes(buffer: Buffer) {
+        if (buffer.size == 0L) return
+        // this copy is not a copy of the actual bytes but just a sharedCopy of the segment descriptors
+        val sharedCopy = buffer.copy()
+        // pass all segments to the native byte encoder
+        sharedCopy.readFully { bytes, startIdx, endIndexExclusive ->
+            writeRawBytes(bytes, startIdx, endIndexExclusive - startIdx)
+        }
+    }
 }
 
 /**

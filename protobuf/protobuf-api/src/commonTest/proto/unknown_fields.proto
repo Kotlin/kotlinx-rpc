@@ -51,9 +51,12 @@ message UnknownFieldsAll {
     AllPrimitives oneofMessage = 32;
     MyEnum oneofEnum = 33;
   }
+
+  optional UnknownFieldsAll nested = 35;
 }
 
 // Message with only a subset of fields - most will be unknown when deserializing UnknownFieldsAll
 message UnknownFieldsSubset {
   optional int32 field1 = 1;
+  optional UnknownFieldsSubset nested = 35;
 }

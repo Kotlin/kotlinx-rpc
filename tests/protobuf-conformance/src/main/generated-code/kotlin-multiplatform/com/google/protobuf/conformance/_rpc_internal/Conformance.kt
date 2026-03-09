@@ -103,7 +103,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -115,7 +114,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
                     TestStatusInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -196,7 +194,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -208,7 +205,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
                     FailureSetInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -375,7 +371,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -387,7 +382,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
                     ConformanceRequestInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -532,7 +526,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -544,7 +537,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
                     ConformanceResponseInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -625,7 +617,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -637,7 +628,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
                     JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -676,11 +666,12 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestStatus::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -710,6 +701,9 @@ fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: Wi
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun TestStatusInternal.computeSize(): Int {
@@ -726,6 +720,7 @@ private fun TestStatusInternal.computeSize(): Int {
         __result += WireSize.string(this.matchedName).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -755,11 +750,12 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?)
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FailureSet::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -785,6 +781,9 @@ fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: Wi
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun FailureSetInternal.computeSize(): Int {
@@ -793,6 +792,7 @@ private fun FailureSetInternal.computeSize(): Int {
         __result += this.test.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -853,11 +853,12 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceRequest::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -909,6 +910,9 @@ fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInter
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceRequestInternal.computeSize(): Int {
@@ -950,6 +954,7 @@ private fun ConformanceRequestInternal.computeSize(): Int {
         }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1002,11 +1007,12 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: Protobu
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(ConformanceResponse::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1054,6 +1060,9 @@ fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInt
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceResponseInternal.computeSize(): Int {
@@ -1090,6 +1099,7 @@ private fun ConformanceResponseInternal.computeSize(): Int {
         }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 
@@ -1114,11 +1124,12 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: Protobuf
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(JspbEncodingConfig::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1142,6 +1153,9 @@ fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInter
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun JspbEncodingConfigInternal.computeSize(): Int {
@@ -1150,6 +1164,7 @@ private fun JspbEncodingConfigInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.useJspbArrayAnyFormat))
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

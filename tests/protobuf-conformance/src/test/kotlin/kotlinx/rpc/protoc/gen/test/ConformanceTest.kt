@@ -17,15 +17,6 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.readLines
 
-// TODO: Remove set of skipped tests once we support the required features. (KRPC-246)
-val skippedTests = setOf(
-    "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.NotUnknown.ProtobufOutput",
-    "Recommended.Proto2.ProtobufInput.ValidMessageSetEncoding.SubmessageEncoding.ProtobufOutput",
-    "Required.Proto2.ProtobufInput.MessageSetEncoding.UnknownExtension.ProtobufOutput",
-    "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.OutOfOrderGroupsEntries.ProtobufOutput",
-    "Required.Proto2.ProtobufInput.ValidMessageSetEncoding.ProtobufOutput",
-)
-
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 class ConformanceTest {
     @TestFactory
@@ -87,8 +78,6 @@ class ConformanceTest {
             .map { it to (it.substringAfter('#', missingDelimiterValue = "").trim()) }
             .map { (line, msg) -> line.substringBefore('#').trim() to msg }
             .filter { (name, _) -> includeTest(name) }
-            // remove skipped tests
-            .filter { (name, _) -> name !in skippedTests }
             .toMap()
 
         val passed = baseline - fails.keys
