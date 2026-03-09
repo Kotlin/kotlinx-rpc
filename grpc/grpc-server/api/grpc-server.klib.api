@@ -77,22 +77,6 @@ abstract class kotlinx.rpc.grpc.server/GrpcHandlerRegistry { // kotlinx.rpc.grpc
 
 abstract class kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcServerCredentials|null[0]
 
-final class kotlinx.rpc.grpc.server.internal/GrpcServerImpl : kotlinx.rpc.grpc.server/GrpcServer { // kotlinx.rpc.grpc.server.internal/GrpcServerImpl|null[0]
-    final val isShutdown // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.isShutdown|{}isShutdown[0]
-        final fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
-    final val isTerminated // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.isTerminated|{}isTerminated[0]
-        final fun <get-isTerminated>(): kotlin/Boolean // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.isTerminated.<get-isTerminated>|<get-isTerminated>(){}[0]
-    final val port // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.port|{}port[0]
-        final fun <get-port>(): kotlin/Int // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.port.<get-port>|<get-port>(){}[0]
-
-    final fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
-    final fun shutdown(): kotlinx.rpc.grpc.server.internal/GrpcServerImpl // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.shutdown|shutdown(){}[0]
-    final fun shutdownNow(): kotlinx.rpc.grpc.server.internal/GrpcServerImpl // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.shutdownNow|shutdownNow(){}[0]
-    final fun start(): kotlinx.rpc.grpc.server.internal/GrpcServerImpl // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.start|start(){}[0]
-    final suspend fun awaitTermination(kotlin.time/Duration): kotlinx.rpc.grpc.server.internal/GrpcServerImpl // kotlinx.rpc.grpc.server.internal/GrpcServerImpl.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
-}
-
 final class kotlinx.rpc.grpc.server/GrpcInsecureServerCredentials : kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcInsecureServerCredentials|null[0]
 
 final class kotlinx.rpc.grpc.server/GrpcServerConfiguration { // kotlinx.rpc.grpc.server/GrpcServerConfiguration|null[0]

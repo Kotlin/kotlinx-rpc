@@ -71,18 +71,3 @@ public abstract interface class kotlinx/rpc/grpc/server/GrpcTlsServerCredentials
 	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/server/GrpcTlsServerCredentialsBuilder;
 }
 
-public final class kotlinx/rpc/grpc/server/internal/GrpcServerImpl : kotlinx/rpc/grpc/server/GrpcServer {
-	public fun awaitTermination-VtjQ1oo (JLkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public fun deregisterService (Lkotlin/reflect/KClass;)V
-	public fun getPort ()I
-	public fun isShutdown ()Z
-	public fun isTerminated ()Z
-	public fun registerService (Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function0;)V
-	public synthetic fun shutdown ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public fun shutdown ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
-	public synthetic fun shutdownNow ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public fun shutdownNow ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
-	public synthetic fun start ()Lkotlinx/rpc/grpc/server/GrpcServer;
-	public fun start ()Lkotlinx/rpc/grpc/server/internal/GrpcServerImpl;
-}
-

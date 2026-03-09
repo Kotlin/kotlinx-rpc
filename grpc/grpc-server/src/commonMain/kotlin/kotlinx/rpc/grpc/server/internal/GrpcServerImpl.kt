@@ -30,6 +30,7 @@ import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.serverServiceDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -52,6 +53,7 @@ private typealias ResponseType = Any
  * during message serialization and deserialization.
  * @param parentContext
  */
+@InternalRpcApi
 public class GrpcServerImpl internal constructor(
     override val port: Int,
     private val serverBuilder: ServerBuilder<*>,

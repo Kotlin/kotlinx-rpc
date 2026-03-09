@@ -123,7 +123,7 @@ internal class RpcIrContext(
         referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "GrpcMarshaller")
     }
 
-    val grpcGrpcMarshallerResolver by lazy {
+    val grpcMarshallerResolver by lazy {
         referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "GrpcMarshallerResolver")
     }
 
@@ -262,8 +262,8 @@ internal class RpcIrContext(
             grpcServiceDescriptor.namedFunction("delegate")
         }
 
-        val grpcGrpcMarshallerResolverResolveOrNull by lazy {
-            grpcGrpcMarshallerResolver.namedFunction("resolveOrNull")
+        val grpcMarshallerResolverResolveOrNull by lazy {
+            grpcMarshallerResolver.namedFunction("resolveOrNull")
         }
 
         private fun IrClassSymbol.namedFunction(name: String): IrSimpleFunction {

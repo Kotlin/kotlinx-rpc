@@ -11,7 +11,7 @@ import kotlinx.io.writeString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,8 +43,8 @@ class MarshallerTest {
     @Test
     fun `test custom marshaller`() {
         val msg = MyMessage("test")
-        val encoded = marshallerOf<MyMessage>(typeOf<MyMessage>()).encode(msg)
-        val decoded = marshallerOf<MyMessage>().decode(encoded)
+        val encoded = grpcMarshallerOf<MyMessage>(typeOf<MyMessage>()).encode(msg)
+        val decoded = grpcMarshallerOf<MyMessage>().decode(encoded)
         assertEquals(msg, decoded)
     }
 
@@ -53,11 +53,11 @@ class MarshallerTest {
         val msg = MyMessage("test")
         val config = MyGrpcMarshallerConfig(true)
 
-        val firstEncoded = marshallerOf<MyMessage>(config).encode(msg)
-        val secondEncoded = marshallerOf<MyMessage>().encode(msg)
+        val firstEncoded = grpcMarshallerOf<MyMessage>(config).encode(msg)
+        val secondEncoded = grpcMarshallerOf<MyMessage>().encode(msg)
 
-        val firstDecoded = marshallerOf<MyMessage>().decode(firstEncoded)
-        val secondDecoded = marshallerOf<MyMessage>().decode(secondEncoded)
+        val firstDecoded = grpcMarshallerOf<MyMessage>().decode(firstEncoded)
+        val secondDecoded = grpcMarshallerOf<MyMessage>().decode(secondEncoded)
 
         assertEquals(msg.value + "Hello", firstDecoded.value)
         assertEquals(msg, secondDecoded)
@@ -68,7 +68,7 @@ class MarshallerTest {
         val msg = MyMessage("test")
         val config = MyGrpcMarshallerConfig(true)
 
-        val marshaller = marshallerOf<MyMessage>(config)
+        val marshaller = grpcMarshallerOf<MyMessage>(config)
         val firstEncoded = marshaller.encode(msg, MyGrpcMarshallerConfig(false))
         val secondEncoded = marshaller.encode(msg)
 

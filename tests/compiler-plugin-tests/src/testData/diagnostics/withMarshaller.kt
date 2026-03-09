@@ -8,7 +8,7 @@
 
 @file:OptIn(kotlinx.rpc.internal.utils.ExperimentalRpcApi::class)
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -98,9 +98,9 @@ object TestMarshaller9 : CustomMarshaller4<Test8> {
 }
 
 class Test10
-val testMarshaller10 = marshallerOf<<!CHECKED_ANNOTATION_VIOLATION!>Test10<!>>()
+val testMarshaller10 = grpcMarshallerOf<<!CHECKED_ANNOTATION_VIOLATION!>Test10<!>>()
 
-val testMarshaller = marshallerOf<Test>()
+val testMarshaller = grpcMarshallerOf<Test>()
 
 /* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classDeclaration, classReference, functionDeclaration,
 interfaceDeclaration, nullableType, objectDeclaration, override, stringLiteral, typeParameter */

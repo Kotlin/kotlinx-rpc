@@ -32,9 +32,9 @@ public abstract interface annotation class kotlinx/rpc/grpc/marshaller/WithGrpcM
 }
 
 public final class kotlinx/rpc/grpc/marshaller/WithGrpcMarshallerKt {
-	public static final fun marshallerOf (Lkotlin/reflect/KClass;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
-	public static final fun marshallerOf (Lkotlin/reflect/KType;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
-	public static synthetic fun marshallerOf$default (Lkotlin/reflect/KClass;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
-	public static synthetic fun marshallerOf$default (Lkotlin/reflect/KType;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
+	public static final fun grpcMarshallerOf (Lkotlin/reflect/KClass;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
+	public static final fun grpcMarshallerOf (Lkotlin/reflect/KType;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
+	public static synthetic fun grpcMarshallerOf$default (Lkotlin/reflect/KClass;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
+	public static synthetic fun grpcMarshallerOf$default (Lkotlin/reflect/KType;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
 }
 

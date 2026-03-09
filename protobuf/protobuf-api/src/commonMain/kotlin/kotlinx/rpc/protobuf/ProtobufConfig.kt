@@ -17,7 +17,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
  * ```kotlin
  * // Create a marshaller with custom config
  * val config = ProtoConfig(discardUnknownFields = true)
- * val myMarshaller = marshallerOf<MyMessage>(config)
+ * val myMarshaller = grpcMarshallerOf<MyMessage>(config)
  *
  * // Or pass config per-operation
  * val decoded = marshaller.decode(stream, config)
@@ -33,7 +33,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
  *   If `null` (default), extension fields are treated as unknown fields.
  *
  * @see GrpcMarshallerConfig
- * @see kotlinx.rpc.grpc.marshaller.marshallerOf
+ * @see kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
  */
 // TODO make DSL KRPC-264
 public class ProtoConfig(

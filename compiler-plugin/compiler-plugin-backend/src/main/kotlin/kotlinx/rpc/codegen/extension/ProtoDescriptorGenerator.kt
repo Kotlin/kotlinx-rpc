@@ -65,7 +65,7 @@ internal class ProtoDescriptorGenerator(
 
     /**
      * Add the @WithGrpcMarshaller annotation to the message interface.
-     * This is used by `marshallerOf()` to get the GrpcMarshaller object.
+     * This is used by `grpcMarshallerOf()` to get the GrpcMarshaller object.
      * The java implementation uses reflection to find the descriptor object.
      *
      * ```

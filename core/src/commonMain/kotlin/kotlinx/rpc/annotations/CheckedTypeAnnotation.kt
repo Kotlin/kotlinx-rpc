@@ -60,7 +60,7 @@ public annotation class CheckedTypeAnnotation(
      * @WithGrpcMarshaller(GrpcMarshaller::class)
      * class Message
      *
-     * fun <reified @HasWithGrpcMarshaller T : Any> marshallerOf(): T { ... }
+     * fun <reified @HasWithGrpcMarshaller T : Any> grpcMarshallerOf(): T { ... }
      * ```
      */
     val checkFor: KClass<*> = CheckedTypeAnnotation::class

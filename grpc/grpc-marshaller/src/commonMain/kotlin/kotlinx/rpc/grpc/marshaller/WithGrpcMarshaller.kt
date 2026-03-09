@@ -26,7 +26,7 @@ import kotlin.reflect.KType
  * class ChatEntry(...)
  * object ChatEntryMarshaller : GrpcMarshaller<ChatEntry> { ... }
  *
- * val marshaller = marshallerOf<ChatEntry>()
+ * val marshaller = grpcMarshallerOf<ChatEntry>()
  * ```
  *
  * *Note:* The referenced [GrpcMarshaller] must be an object.
@@ -45,18 +45,18 @@ public expect annotation class WithGrpcMarshaller(val marshaller: KClass<out Grp
  *
  * Example
  * ```
- * fun marshallerOf<@HasWithGrpcMarshaller T: Any>() { ... }
+ * fun grpcMarshallerOf<@HasWithGrpcMarshaller T: Any>() { ... }
  *
  * @WithGrpcMarshaller(ChatEntryMarshaller::class)
  * class ChatEntry(...)
  *
- * marshallerOf<ChatEntry>() // OK
- * marshallerOf<Int>() // Error
+ * grpcMarshallerOf<ChatEntry>() // OK
+ * grpcMarshallerOf<Int>() // Error
  * ```
  *
  * @see CheckedTypeAnnotation
  * @see WithGrpcMarshaller
- * @see marshallerOf
+ * @see grpcMarshallerOf
  */
 @CheckedTypeAnnotation(WithGrpcMarshaller::class)
 @Target(AnnotationTarget.TYPE_PARAMETER, AnnotationTarget.CLASS)
@@ -73,7 +73,7 @@ public annotation class HasWithGrpcMarshaller
  *
  * Example:
  * ```kotlin
- * val chatMarshaller = marshallerOf<ChatEntry>()
+ * val chatMarshaller = grpcMarshallerOf<ChatEntry>()
  * val encoded = chatMarshaller.encode(chatEntry)
  * val decoded = chatMarshaller.decode(buffer)
  * ```
@@ -86,8 +86,8 @@ public annotation class HasWithGrpcMarshaller
  * @see GrpcMarshaller
  * @see GrpcMarshallerConfig
  */
-public inline fun <@HasWithGrpcMarshaller reified T : Any> marshallerOf(config: GrpcMarshallerConfig? = null): GrpcMarshaller<T> {
-    return marshallerOf(T::class, config)
+public inline fun <@HasWithGrpcMarshaller reified T : Any> grpcMarshallerOf(config: GrpcMarshallerConfig? = null): GrpcMarshaller<T> {
+    return grpcMarshallerOf(T::class, config)
 }
 
 /**
@@ -102,7 +102,7 @@ public inline fun <@HasWithGrpcMarshaller reified T : Any> marshallerOf(config: 
  *
  * Example:
  * ```kotlin
- * val chatMarshaller = marshallerOf<ChatEntry>(typeOf<ChatEntry>())
+ * val chatMarshaller = grpcMarshallerOf<ChatEntry>(typeOf<ChatEntry>())
  * val encoded = chatMarshaller.encode(chatEntry)
  * val decoded = chatMarshaller.decode(buffer)
  * ```
@@ -117,7 +117,7 @@ public inline fun <@HasWithGrpcMarshaller reified T : Any> marshallerOf(config: 
  * @see GrpcMarshaller
  * @see GrpcMarshallerConfig
  */
-public fun <@HasWithGrpcMarshaller T : Any> marshallerOf(
+public fun <@HasWithGrpcMarshaller T : Any> grpcMarshallerOf(
     messageType: KType,
     config: GrpcMarshallerConfig? = null
 ): GrpcMarshaller<T> {
@@ -125,7 +125,7 @@ public fun <@HasWithGrpcMarshaller T : Any> marshallerOf(
     val classifierClass = classifier as? KClass<*> ?: error("Expected class type, found $messageType")
 
     @Suppress("UNCHECKED_CAST")
-    return marshallerOf(classifierClass as KClass<T>, config)
+    return grpcMarshallerOf(classifierClass as KClass<T>, config)
 }
 
 /**
@@ -139,7 +139,7 @@ public fun <@HasWithGrpcMarshaller T : Any> marshallerOf(
  *
  * Example:
  * ```kotlin
- * val chatMarshaller = marshallerOf(ChatEntry::class)
+ * val chatMarshaller = grpcMarshallerOf(ChatEntry::class)
  * val encoded = chatMarshaller.encode(chatEntry)
  * val decoded = chatMarshaller.decode(buffer)
  * ```
@@ -153,7 +153,7 @@ public fun <@HasWithGrpcMarshaller T : Any> marshallerOf(
  * @see GrpcMarshaller
  * @see GrpcMarshallerConfig
  */
-public fun <@HasWithGrpcMarshaller T : Any> marshallerOf(
+public fun <@HasWithGrpcMarshaller T : Any> grpcMarshallerOf(
     messageClass: KClass<T>,
     config: GrpcMarshallerConfig? = null
 ): GrpcMarshaller<T> {

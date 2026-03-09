@@ -14,7 +14,7 @@
 
 package proto2_unittest
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -25,7 +25,7 @@ class ParserTest {
     @Test
     fun testNormalMessage() {
         val message = TestUtil.getAllSet()
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllFieldsSet(decoded)
     }
@@ -34,7 +34,7 @@ class ParserTest {
     @Test
     fun testParsePacked() {
         val packed = TestUtil.getPackedSet()
-        val marshaller = marshallerOf<TestPackedTypes>()
+        val marshaller = grpcMarshallerOf<TestPackedTypes>()
         val decoded = TestUtil.encodeDecode(packed, marshaller)
         TestUtil.assertPackedFieldsSet(decoded)
     }
@@ -45,8 +45,8 @@ class ParserTest {
         // Encode a full message, then decode as an empty message type.
         // All fields should be treated as unknown and the bytes should round-trip.
         val message = TestUtil.getAllSet()
-        val marshaller = marshallerOf<TestAllTypes>()
-        val emptyMarshaller = marshallerOf<TestEmptyMessage>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
+        val emptyMarshaller = grpcMarshallerOf<TestEmptyMessage>()
 
         val encoded = marshaller.encode(message)
         val empty = emptyMarshaller.decode(encoded)
@@ -61,7 +61,7 @@ class ParserTest {
 
     @Test
     fun testParseEmptyMessage() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val msg = TestAllTypes {}
         val decoded = TestUtil.encodeDecode(msg, marshaller)
         assertNull(decoded.optionalInt32)
@@ -70,7 +70,7 @@ class ParserTest {
 
     @Test
     fun testParsePartialMessage() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val msg = TestAllTypes {
             optionalInt32 = 42
             optionalString = "hello"
@@ -83,7 +83,7 @@ class ParserTest {
 
     @Test
     fun testParsePackedRoundTrip() {
-        val marshaller = marshallerOf<TestPackedTypes>()
+        val marshaller = grpcMarshallerOf<TestPackedTypes>()
 
         val packed = TestPackedTypes {
             packedInt32 = listOf(1, 2, 3)
@@ -98,7 +98,7 @@ class ParserTest {
 
     @Test
     fun testNestedMessageParsing() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val msg = TestAllTypes {
             optionalNestedMessage = TestAllTypes.NestedMessage { bb = 42 }

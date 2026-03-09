@@ -140,7 +140,7 @@ FILE: module_main_withMarshaller.kt
         }
 
     }
-    public final val testMarshaller10: R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test10>| = R|kotlinx/rpc/grpc/marshaller/marshallerOf|<R|Test10|>()
+    public final val testMarshaller10: R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test10>| = R|kotlinx/rpc/grpc/marshaller/grpcMarshallerOf|<R|Test10|>()
         public get(): R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test10>|
-    public final val testMarshaller: R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test>| = R|kotlinx/rpc/grpc/marshaller/marshallerOf|<R|Test|>()
+    public final val testMarshaller: R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test>| = R|kotlinx/rpc/grpc/marshaller/grpcMarshallerOf|<R|Test|>()
         public get(): R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<Test>|

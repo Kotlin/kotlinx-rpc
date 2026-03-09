@@ -1038,7 +1038,7 @@ internal class RpcStubGenerator(
 
             val resolver = addValueParameter {
                 name = Name.identifier("resolver")
-                type = ctx.grpcGrpcMarshallerResolver.defaultType
+                type = ctx.grpcMarshallerResolver.defaultType
             }
 
             val marshallerConfig = addValueParameter {
@@ -1343,7 +1343,7 @@ internal class RpcStubGenerator(
             val marshallerCall = vsApi {
                 irCall(
                     type = marshallerType.makeNullable(),
-                    callee = ctx.functions.grpcGrpcMarshallerResolverResolveOrNull.symbol,
+                    callee = ctx.functions.grpcMarshallerResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
                 )
             }.apply {

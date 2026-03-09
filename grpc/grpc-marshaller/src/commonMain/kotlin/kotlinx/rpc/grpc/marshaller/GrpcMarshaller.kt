@@ -37,22 +37,22 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  *
  * Configuration can be passed to marshallers in two ways:
  * - Per-operation: directly to [GrpcMarshaller.encode] and [GrpcMarshaller.decode] methods
- * - As default: when retrieving a marshaller using [marshallerOf], which wraps the marshaller to use the config by default
+ * - As default: when retrieving a marshaller using [grpcMarshallerOf], which wraps the marshaller to use the config by default
  *
  * Example:
  * ```kotlin
  * // Per-operation config
- * val marshaller = marshallerOf<MyProtoMessage>()
+ * val marshaller = grpcMarshallerOf<MyProtoMessage>()
  * val encoded = marshaller.encode(message, ProtoConfig(discardUnknownFields = true))
  *
  * // Default config
- * val marshallerWithConfig = marshallerOf<MyProtoMessage>(ProtoConfig(discardUnknownFields = true))
+ * val marshallerWithConfig = grpcMarshallerOf<MyProtoMessage>(ProtoConfig(discardUnknownFields = true))
  * val encoded = marshallerWithConfig.encode(message) // uses the default config
  * ```
  *
  *
  * @see GrpcMarshaller
- * @see marshallerOf
+ * @see grpcMarshallerOf
  */
 @ExperimentalRpcApi
 public interface GrpcMarshallerConfig
