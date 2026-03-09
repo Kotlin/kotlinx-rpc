@@ -1086,7 +1086,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     code("internalMsg.encodeWith(encoder, config as? %T)".scoped(FqName.RpcClasses.ProtobufConfig))
                 }
                 code("encoder.flush()".scoped())
-                code("internalMsg._unknownFields.copyTo(buffer)".scoped())
                 code("return buffer".scoped())
             }
 
@@ -1114,7 +1113,6 @@ class ModelToProtobufKotlinCommonGenerator(
                         )
                     }
                     code("msg.checkRequiredFields()".scoped())
-                    code("msg._unknownFieldsEncoder?.flush()".scoped())
                     code("return msg".scoped())
                 }
             }
@@ -1194,7 +1192,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.internalCompanionName.scoped(),
             returnType = FqName.Implicits.Unit.scoped(),
         ) {
-            if (!declaration.isGroup && declaration.isUserFacing) {
+            if (!declaration.isGroup && declaration.hasExtensionRange) {
                 code("val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(%T::class) ?: emptyMap()"
                     .scoped(declaration.name))
             }
@@ -1273,6 +1271,10 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
                 }
             }
+
+            // we must flush the encoder and "delete" it
+            code("msg._unknownFieldsEncoder?.flush()".scoped())
+            code("msg._unknownFieldsEncoder = null".scoped())
 
             // TODO: Make lists and maps immutable (KRPC-190)
         }
@@ -1508,22 +1510,21 @@ class ModelToProtobufKotlinCommonGenerator(
     ) {
         if (declaration.actualFields.isEmpty()) {
             code("// no fields to encode".scoped())
-            return@function
-        }
-
-        declaration.actualFields.forEach { field ->
-            if (field.nullable) {
-                scope("this.${field.name}?.also".scoped()) {
-                    generateEncodeFieldValue(field, "it".scoped())
+        } else {
+            declaration.actualFields.forEach { field ->
+                if (field.nullable) {
+                    scope("this.${field.name}?.also".scoped()) {
+                        generateEncodeFieldValue(field, "it".scoped())
+                    }
+                } else if (field.dec.hasPresence()) {
+                    ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
+                        generateEncodeFieldValue(field, "this.${field.name}".scoped())
+                    })
+                } else {
+                    ifBranch(condition = field.notDefaultCheck(declaration), ifBlock = {
+                        generateEncodeFieldValue(field, "this.${field.name}".scoped())
+                    })
                 }
-            } else if (field.dec.hasPresence()) {
-                ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
-                })
-            } else {
-                ifBranch(condition = field.notDefaultCheck(declaration), ifBlock = {
-                    generateEncodeFieldValue(field, "this.${field.name}".scoped())
-                })
             }
         }
 
@@ -1534,6 +1535,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 code("descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)".scoped())
             }
         }
+
+        // encode all unknown fields
+        code("encoder.writeRawBytes(_unknownFields)".scoped())
 
     }
 
@@ -1778,6 +1782,8 @@ class ModelToProtobufKotlinCommonGenerator(
             if (declaration.hasExtensionRange) {
                 code("__result += extensionsSize()".scoped())
             }
+
+            code("__result += _unknownFields.size.toInt()".scoped())
 
             code("return __result".scoped())
         }

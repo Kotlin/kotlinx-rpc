@@ -90,7 +90,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -102,7 +101,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
                     SourceContextInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -133,11 +131,12 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: Protob
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(SourceContext::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -161,6 +160,9 @@ public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun SourceContextInternal.computeSize(): Int {
@@ -169,6 +171,7 @@ private fun SourceContextInternal.computeSize(): Int {
         __result += WireSize.string(this.fileName).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

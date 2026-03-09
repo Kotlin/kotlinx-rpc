@@ -97,7 +97,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
                 internalMsg.encodeWith(encoder, config as? ProtobufConfig)
             }
             encoder.flush()
-            internalMsg._unknownFields.copyTo(buffer)
             return buffer
         }
 
@@ -109,7 +108,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
                     FieldMaskInternal.decodeWith(msg, it, config as? ProtobufConfig)
                 }
                 msg.checkRequiredFields()
-                msg._unknownFieldsEncoder?.flush()
                 return msg
             }
         }
@@ -142,11 +140,12 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
         }
     }
+
+    encoder.writeRawBytes(_unknownFields)
 }
 
 @InternalRpcApi
 public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtobufConfig?) {
-    val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(FieldMask::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -171,6 +170,9 @@ public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decode
             }
         }
     }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
 }
 
 private fun FieldMaskInternal.computeSize(): Int {
@@ -179,6 +181,7 @@ private fun FieldMaskInternal.computeSize(): Int {
         __result += this.paths.sumOf { WireSize.string(it).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
+    __result += _unknownFields.size.toInt()
     return __result
 }
 

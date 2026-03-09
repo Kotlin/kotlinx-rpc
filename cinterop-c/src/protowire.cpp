@@ -210,6 +210,10 @@ extern "C" {
     WRITE_FIELD_NO_TAG( double, Double, double)
     WRITE_FIELD_NO_TAG( enum, Enum, int)
 
+    bool pw_encoder_write_raw_bytes(pw_encoder_t *self, const void *data, int size) {
+        self->codedOutputStream.WriteRawMaybeAliased(data, size);
+        return check(self);
+    }
 
     /// DECODER IMPLEMENTATION ///
 
