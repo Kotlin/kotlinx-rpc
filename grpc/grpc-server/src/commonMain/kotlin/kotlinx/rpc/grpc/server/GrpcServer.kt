@@ -4,204 +4,91 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.descriptor.RpcCallable
-import kotlinx.rpc.descriptor.flowInvokator
-import kotlinx.rpc.descriptor.serviceDescriptorOf
-import kotlinx.rpc.descriptor.unaryInvokator
-import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.ThrowingMessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.plus
-import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
-import kotlinx.rpc.grpc.descriptor.methodType
-import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
-import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
-import kotlinx.rpc.grpc.server.internal.unaryServerMethodDefinition
-import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.server.internal.GrpcServerImpl
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.reflect.KClass
 import kotlin.time.Duration
 
-private typealias RequestServer = Any
-private typealias ResponseServer = Any
-
 /**
- * GrpcServer is an implementation of both [RpcServer] and [Server] interfaces,
- * providing the ability to host gRPC services.
- *
- * @property port Specifies the port used by the server to listen for incoming connections.
- * @param serverBuilder exposes platform-specific Server builder.
- * @param interceptors a list of interceptors that will be applied to all incoming gRPC calls
- * @param messageMarshallerResolver a custom [MessageMarshallerResolver] that will be used to resolve message marshallers
- * @param marshallerConfig default [MarshallerConfig] that will be passed applied to all used message resolvers
- * during message serialization and deserialization.
- * @param parentContext
+ * Server for listening for and dispatching incoming calls.
+ * It is not expected to be implemented by application code or interceptors.
  */
-public class GrpcServer internal constructor(
-    override val port: Int,
-    private val serverBuilder: ServerBuilder<*>,
-    private val interceptors: List<ServerInterceptor>,
-    messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver,
-    private val marshallerConfig: MarshallerConfig? = null,
-    parentContext: CoroutineContext = EmptyCoroutineContext,
-) : RpcServer, Server {
-    private val internalContext = SupervisorJob(parentContext[Job])
-    private val internalScope = CoroutineScope(parentContext + internalContext)
+public interface GrpcServer : RpcServer {
+    /**
+     * Returns the port number the server is listening on.
+     * This can return -1 if there is no actual port or the result otherwise doesn't make sense.
+     * The result is undefined after the server is terminated.
+     * If there are multiple possible ports, this will return one arbitrarily.
+     * Implementations are encouraged to return the same port on each call.
+     *
+     * @throws [IllegalStateException] – if the server has not yet been started.
+     */
+    public val port: Int
 
-    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingMessageMarshallerResolver
+    /**
+     * Returns whether the server is shutdown.
+     * Shutdown servers reject any new calls but may still have some calls being processed.
+     */
+    public val isShutdown: Boolean
 
-    private var isBuilt = false
-    private lateinit var internalServer: Server
+    /**
+     * Returns whether the server is terminated.
+     * Terminated servers have no running calls and relevant resources released (like TCP connections).
+     */
+    public val isTerminated: Boolean
 
-    private val registry: MutableHandlerRegistry by lazy {
-        MutableHandlerRegistry().apply { this@GrpcServer.serverBuilder.fallbackHandlerRegistry(this) }
-    }
+    /**
+     * Bind and start the server.
+     * After this call returns, clients may begin connecting to the listening socket(s).
+     * @return `this`
+     * @throws IllegalStateException if already started or shut down
+     * @throws IOException if unable to bind
+     */
+    // TODO, What is IOException in KMP? KRPC-163
+    public fun start(): GrpcServer
 
-    private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, ServerServiceDefinition>()
+    /**
+     * Initiates an orderly shutdown in which preexisting calls continue but new calls are rejected.
+     * After this call returns, this server has released the listening socket(s) and may be reused by
+     * another server.
+     *
+     * Note that this method will not wait for preexisting calls to finish before returning.
+     * [awaitTermination] needs to be called to wait for existing calls to finish.
+     *
+     * Calling this method before [start] will shut down and terminate the server like
+     * normal, but prevents starting the server in the future.
+     *
+     * @return `this`
+     */
+    public fun shutdown(): GrpcServer
 
-    override fun <@Grpc Service : Any> registerService(
-        serviceKClass: KClass<Service>,
-        serviceFactory: () -> Service,
-    ) {
-        val service = serviceFactory()
+    /**
+     * Initiates a forceful shutdown in which preexisting and new calls are rejected. Although
+     * forceful, the shutdown process is still not instantaneous; [isTerminated] will likely
+     * return `false` immediately after this method returns. After this call returns, this
+     * server has released the listening socket(s) and may be reused by another server.
+     *
+     * Calling this method before [start] will shut down and terminate the server like
+     * normal, but prevents starting the server in the future.
+     *
+     * @return `this`
+     */
+    public fun shutdownNow(): GrpcServer
 
-        val definition: ServerServiceDefinition = getDefinition(service, serviceKClass)
-
-        if (isBuilt) {
-            registry.addService(definition)
-        } else {
-            this@GrpcServer.serverBuilder.addService(definition)
-        }
-    }
-
-    override fun <Service : Any> deregisterService(serviceKClass: KClass<Service>) {
-        localRegistry.remove(serviceKClass)?.let {
-            registry.removeService(it)
-        }
-    }
-
-    private fun <@Grpc Service : Any> getDefinition(
-        service: Service,
-        serviceKClass: KClass<Service>,
-    ): ServerServiceDefinition {
-        @Suppress("UNCHECKED_CAST")
-        val descriptor = serviceDescriptorOf(serviceKClass) as? GrpcServiceDescriptor<Service>
-            ?: error("Service $serviceKClass is not a gRPC service")
-
-        val delegate = descriptor.delegate(messageMarshallerResolver, marshallerConfig)
-
-        val methods = descriptor.callables.values.map {
-            @Suppress("UNCHECKED_CAST")
-            val methodDescriptor = delegate.getMethodDescriptor(it.name)
-                    as? MethodDescriptor<RequestServer, ResponseServer>
-                ?: error("Expected a gRPC method descriptor")
-
-            // TODO: support per service and per method interceptors (KRPC-222)
-            it.toDefinitionOn(methodDescriptor, service, interceptors)
-        }
-
-        return serverServiceDefinition(delegate.serviceDescriptor, methods)
-    }
-
-    private fun <@Grpc Service : Any> RpcCallable<Service>.toDefinitionOn(
-        descriptor: MethodDescriptor<RequestServer, ResponseServer>,
-        service: Service,
-        interceptors: List<ServerInterceptor>,
-    ): ServerMethodDefinition<RequestServer, ResponseServer> {
-        return when (descriptor.methodType) {
-            MethodType.UNARY -> {
-                internalScope.unaryServerMethodDefinition(descriptor, returnType.kType, interceptors) { request ->
-                    unaryInvokator.call(service, arrayOf(request)) as ResponseServer
-                }
-            }
-
-            MethodType.CLIENT_STREAMING -> {
-                internalScope.clientStreamingServerMethodDefinition(
-                    descriptor,
-                    returnType.kType,
-                    interceptors
-                ) { requests ->
-                    unaryInvokator.call(service, arrayOf(requests)) as ResponseServer
-                }
-            }
-
-            MethodType.SERVER_STREAMING -> {
-                internalScope.serverStreamingServerMethodDefinition(
-                    descriptor, returnType.kType, interceptors
-                ) { request ->
-                    @Suppress("UNCHECKED_CAST")
-                    flowInvokator.call(service, arrayOf(request)) as Flow<ResponseServer>
-                }
-            }
-
-            MethodType.BIDI_STREAMING -> {
-                internalScope.bidiStreamingServerMethodDefinition(
-                    descriptor,
-                    returnType.kType,
-                    interceptors
-                ) { requests ->
-                    @Suppress("UNCHECKED_CAST")
-                    flowInvokator.call(service, arrayOf(requests)) as Flow<ResponseServer>
-                }
-            }
-
-            MethodType.UNKNOWN -> {
-                error("Unsupported method type ${descriptor.methodType} for ${descriptor.getFullMethodName()}")
-            }
-        }
-    }
-
-    private val buildLock = atomic(false)
-
-    internal fun build() {
-        if (buildLock.compareAndSet(expect = false, update = true)) {
-            internalServer = Server(this@GrpcServer.serverBuilder)
-            isBuilt = true
-        }
-    }
-
-    override val isShutdown: Boolean
-        get() = internalServer.isShutdown
-
-    override val isTerminated: Boolean
-        get() = internalServer.isTerminated
-
-    override fun start(): GrpcServer {
-        internalServer.start()
-        return this
-    }
-
-    override fun shutdown(): GrpcServer {
-        internalContext.cancel("Shutting down server")
-        internalServer.shutdown()
-        return this
-    }
-
-    override fun shutdownNow(): GrpcServer {
-        internalContext.cancel("Shutting down server now")
-        internalServer.shutdownNow()
-        return this
-    }
-
-    override suspend fun awaitTermination(duration: Duration): GrpcServer {
-        internalContext.join()
-        internalServer.awaitTermination(duration)
-        return this
-    }
+    /**
+     * Waits for the server to become terminated, giving up if the timeout is reached.
+     *
+     * Calling this method before [start] or [shutdown] is permitted and doesn't
+     * change its behavior.
+     *
+     * @return `this`
+     */
+    public suspend fun awaitTermination(duration: Duration = Duration.INFINITE): GrpcServer
 }
 
 /**
@@ -241,7 +128,8 @@ public fun GrpcServer(
     val serverBuilder = ServerBuilder(port, config.credentials).apply {
         config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
     }
-    return GrpcServer(
+
+    return GrpcServerImpl(
         port = port,
         serverBuilder = serverBuilder,
         interceptors = config.interceptors,
@@ -260,43 +148,41 @@ public fun GrpcServer(
  * security credentials, server-side interceptors, and service registration.
  */
 public class GrpcServerConfiguration internal constructor() {
-
-    internal val interceptors: MutableList<ServerInterceptor> = mutableListOf()
+    internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
-
 
     /**
      * Sets the credentials to be used by the gRPC server for secure communication.
      *
      * By default, the server does not have any credentials configured and the communication is plaintext.
-     * To set up transport-layer security provide a [TlsServerCredentials] by constructing it with the
+     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
      * [tls] function.
      *
-     * @see TlsServerCredentials
+     * @see GrpcTlsServerCredentials
      * @see tls
      */
-    public var credentials: ServerCredentials? = null
+    public var credentials: GrpcServerCredentials? = null
 
     /**
-     * Sets a custom [MessageMarshallerResolver] to be used by the gRPC server for resolving the appropriate
+     * Sets a custom [GrpcMarshallerResolver] to be used by the gRPC server for resolving the appropriate
      * marshaller for message serialization and deserialization.
      *
-     * When not explicitly set, a default [EmptyMessageMarshallerResolver] is used, which may not perform
+     * When not explicitly set, a default [GrpcEmptyMarshallerResolver] is used, which may not perform
      * any specific resolution.
-     * Provide a custom [MessageMarshallerResolver] to resolve marshallers based on the message's `KType`.
+     * Provide a custom [GrpcMarshallerResolver] to resolve marshallers based on the message's `KType`.
      */
-    public var messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver
+    public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
-    public var marshallerConfig: MarshallerConfig? = null
+    public var marshallerConfig: GrpcMarshallerConfig? = null
 
     /**
-     * Sets a custom [HandlerRegistry] to be used by the gRPC server for resolving service implementations
+     * Sets a custom [GrpcHandlerRegistry] to be used by the gRPC server for resolving service implementations
      * that were not registered before via the [services] configuration block.
      *
      * If not set, unknown services not registered will cause a `UNIMPLEMENTED` status
      * to be returned to the client.
      */
-    public var fallbackHandlerRegistry: HandlerRegistry? = null
+    public var fallbackHandlerRegistry: GrpcHandlerRegistry? = null
 
     /**
      * Registers one or more server-side interceptors for the gRPC server.
@@ -306,10 +192,10 @@ public class GrpcServerConfiguration internal constructor() {
      * They are commonly used to implement cross-cutting concerns like
      * authentication, logging, metrics, or custom request/response transformations.
      *
-     * @param interceptors One or more instances of [ServerInterceptor] to be applied to incoming calls.
-     * @see ServerInterceptor
+     * @param interceptors One or more instances of [GrpcServerInterceptor] to be applied to incoming calls.
+     * @see GrpcServerInterceptor
      */
-    public fun intercept(vararg interceptors: ServerInterceptor) {
+    public fun intercept(vararg interceptors: GrpcServerInterceptor) {
         this.interceptors.addAll(interceptors)
     }
 
@@ -341,9 +227,9 @@ public class GrpcServerConfiguration internal constructor() {
      *
      * @param certificateChain A string representing the PEM-encoded certificate chain for the server.
      * @param privateKey A string representing the PKCS#8 formatted private key corresponding to the certificate.
-     * @param configure A lambda to further customize the [TlsServerCredentialsBuilder], enabling configurations
+     * @param configure A lambda to further customize the [GrpcTlsServerCredentialsBuilder], enabling configurations
      *                  like setting trusted root certificates or enabling client authentication.
-     * @return An instance of [ServerCredentials] representing the configured TLS credentials that must be passed
+     * @return An instance of [GrpcServerCredentials] representing the configured TLS credentials that must be passed
      * to [credentials].
      *
      * @see credentials
@@ -351,7 +237,6 @@ public class GrpcServerConfiguration internal constructor() {
     public fun tls(
         certificateChain: String,
         privateKey: String,
-        configure: TlsServerCredentialsBuilder.() -> Unit,
-    ): ServerCredentials =
-        TlsServerCredentials(certificateChain, privateKey, configure)
+        configure: GrpcTlsServerCredentialsBuilder.() -> Unit,
+    ): GrpcServerCredentials = GrpcTlsServerCredentials(certificateChain, privateKey, configure)
 }

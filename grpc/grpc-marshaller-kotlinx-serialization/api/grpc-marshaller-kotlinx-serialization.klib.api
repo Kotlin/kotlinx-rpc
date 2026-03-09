@@ -6,10 +6,10 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:grpc-marshaller-kotlinx-serialization>
-final class kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver : kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver { // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver|null[0]
-    constructor <init>(kotlinx.serialization/SerialFormat) // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver.<init>|<init>(kotlinx.serialization.SerialFormat){}[0]
+final class kotlinx.rpc.grpc.marshaller.kotlinx.serialization/GrpcKotlinxSerializationMarshallerResolver : kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/GrpcKotlinxSerializationMarshallerResolver|null[0]
+    constructor <init>(kotlinx.serialization/SerialFormat) // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/GrpcKotlinxSerializationMarshallerResolver.<init>|<init>(kotlinx.serialization.SerialFormat){}[0]
 
-    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/MessageMarshaller<*>? // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/KotlinxSerializationMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
+    final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>? // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/GrpcKotlinxSerializationMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
 }
 
-final fun (kotlinx.serialization/SerialFormat).kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver(): kotlinx.rpc.grpc.marshaller/MessageMarshallerResolver // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver|asMarshallerResolver@kotlinx.serialization.SerialFormat(){}[0]
+final fun (kotlinx.serialization/SerialFormat).kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver(): kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver // kotlinx.rpc.grpc.marshaller.kotlinx.serialization/asMarshallerResolver|asMarshallerResolver@kotlinx.serialization.SerialFormat(){}[0]

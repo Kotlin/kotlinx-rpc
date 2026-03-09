@@ -4,11 +4,11 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
@@ -81,24 +81,24 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<SourceContext> {
-        public override fun encode(value: SourceContext, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<SourceContext> {
+        public override fun encode(value: SourceContext, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): SourceContext {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): SourceContext {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = SourceContextInternal()
                 checkForPlatformDecodeException {
-                    SourceContextInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    SourceContextInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -121,7 +121,7 @@ public fun SourceContextInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.fileName.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.fileName)
     }
@@ -136,7 +136,7 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: Protob
 }
 
 @InternalRpcApi
-public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

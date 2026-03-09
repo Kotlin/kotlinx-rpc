@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.marshaller.kotlinx.serialization
@@ -9,9 +9,9 @@ import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.io.readString
 import kotlinx.io.writeString
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.KSerializer
@@ -21,8 +21,8 @@ import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public class KotlinxSerializationMarshallerResolver(private val serialFormat: SerialFormat) : MessageMarshallerResolver {
-    override fun resolveOrNull(kType: KType): MessageMarshaller<*>? {
+public class GrpcKotlinxSerializationMarshallerResolver(private val serialFormat: SerialFormat) : GrpcMarshallerResolver {
+    override fun resolveOrNull(kType: KType): GrpcMarshaller<*>? {
         val serializer = serialFormat.serializersModule.serializerOrNull(kType) ?: return null
 
         return KotlinxSerializationMarshaller(serializer, serialFormat)
@@ -30,14 +30,14 @@ public class KotlinxSerializationMarshallerResolver(private val serialFormat: Se
 }
 
 @ExperimentalRpcApi
-public fun SerialFormat.asMarshallerResolver(): MessageMarshallerResolver =
-    KotlinxSerializationMarshallerResolver(this)
+public fun SerialFormat.asMarshallerResolver(): GrpcMarshallerResolver =
+    GrpcKotlinxSerializationMarshallerResolver(this)
 
 private class KotlinxSerializationMarshaller<T>(
     private val serializer: KSerializer<T>,
     private val serialFormat: SerialFormat,
-) : MessageMarshaller<T> {
-    override fun encode(value: T, config: MarshallerConfig?): Source {
+) : GrpcMarshaller<T> {
+    override fun encode(value: T, config: GrpcMarshallerConfig?): Source {
         return when (serialFormat) {
             is StringFormat -> {
                 val stringValue = serialFormat.encodeToString(serializer, value)
@@ -59,7 +59,7 @@ private class KotlinxSerializationMarshaller<T>(
         }
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): T {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): T {
         return when (serialFormat) {
             is StringFormat -> {
                 serialFormat.decodeFromString(serializer, source.readString())

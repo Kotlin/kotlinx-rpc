@@ -23,11 +23,11 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.destroyEntries
@@ -64,7 +64,7 @@ internal class NativeServerCall<Request, Response>(
     constructor(
         raw: CPointer<grpc_call>,
         cq: CompletionQueue,
-        methodDescriptor: MethodDescriptor<Request, Response>,
+        methodDescriptor: GrpcMethodDescriptor<Request, Response>,
     ) : this(raw, cq) {
         setMethodDescriptor(methodDescriptor)
     }
@@ -75,7 +75,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
     private val listener = DeferredCallListener<Request>()
-    private var methodDescriptor: MethodDescriptor<Request, Response>? = null
+    private var methodDescriptor: GrpcMethodDescriptor<Request, Response>? = null
     private val callbackMutex = ReentrantLock()
     private var initialized = false
     private var cancelled = false
@@ -101,7 +101,7 @@ internal class NativeServerCall<Request, Response>(
      * Sets the method descriptor for this call.
      * It must be set before invoking [ServerCallHandler.startCall].
      */
-    fun setMethodDescriptor(methodDescriptor: MethodDescriptor<Request, Response>) {
+    fun setMethodDescriptor(methodDescriptor: GrpcMethodDescriptor<Request, Response>) {
         this.methodDescriptor = methodDescriptor
     }
 
@@ -234,7 +234,7 @@ internal class NativeServerCall<Request, Response>(
             val buf = recvPtr.value
             if (buf == null) {
                 // end-of-stream observed. for UNARY, absence of any request is a protocol violation.
-                if (methodDescriptor.methodType == MethodType.UNARY && !receivedFirstMessage) {
+                if (methodDescriptor.methodType == GrpcMethodType.UNARY && !receivedFirstMessage) {
                     cancel(
                         grpc_status_code.GRPC_STATUS_INTERNAL,
                         "Unary call half-closed before receiving a request message"
@@ -310,7 +310,7 @@ internal class NativeServerCall<Request, Response>(
     }
 
     @OptIn(UnsafeNumber::class)
-    override fun close(status: Status, trailers: GrpcMetadata) {
+    override fun close(status: GrpcStatus, trailers: GrpcMetadata) {
         check(initialized) { internalError("Call not initialized") }
 
         val arena = Arena()
@@ -353,7 +353,7 @@ internal class NativeServerCall<Request, Response>(
         return cancelled
     }
 
-    override fun getMethodDescriptor(): MethodDescriptor<Request, Response> {
+    override fun getMethodDescriptor(): GrpcMethodDescriptor<Request, Response> {
         val methodDescriptor = checkNotNull(methodDescriptor) { internalError("Method descriptor not set") }
         return methodDescriptor
     }
@@ -365,15 +365,15 @@ internal class NativeServerCall<Request, Response>(
         } catch (e: Throwable) {
             // TODO: Log internal error as warning
             val status = when (e) {
-                is StatusException -> e.status
-                else -> Status(
-                    StatusCode.INTERNAL,
+                is GrpcStatusException -> e.status
+                else -> GrpcStatus(
+                    GrpcStatusCode.INTERNAL,
                     description = "Internal error, so canceling the stream",
                     cause = e
                 )
             }
             cancel(status.statusCode.toRaw(), status.getDescription() ?: "Unknown error")
-            throw StatusException(status, trailers = null)
+            throw GrpcStatusException(status, trailers = null)
         }
     }
 }

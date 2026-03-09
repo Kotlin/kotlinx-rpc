@@ -16,7 +16,7 @@ import kotlin.native.ref.createCleaner
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     override var recursionDepth: Int = 0
-    override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtobufConfig.DEFAULT_RECURSION_LIMIT
+    override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
 
     // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
     // without copying it to an intermediate byte array.

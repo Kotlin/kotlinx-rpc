@@ -17,19 +17,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.StatusRuntimeException
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.Ready
 import kotlinx.rpc.grpc.internal.singleOrStatusFlow
 import kotlinx.rpc.grpc.merge
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerInterceptor
+import kotlinx.rpc.grpc.server.GrpcServerCallScope
+import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.trailers
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -38,13 +38,13 @@ import kotlin.reflect.typeOf
 
 @InternalRpcApi
 public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: suspend (request: Request) -> Response,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.methodType
-    require(type == MethodType.UNARY) {
+    require(type == GrpcMethodType.UNARY) {
         "Expected a unary method descriptor but got $descriptor"
     }
 
@@ -57,13 +57,13 @@ public fun <Request, Response> CoroutineScope.unaryServerMethodDefinition(
 
 @InternalRpcApi
 public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: suspend (requests: Flow<Request>) -> Response,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.methodType
-    require(type == MethodType.CLIENT_STREAMING) {
+    require(type == GrpcMethodType.CLIENT_STREAMING) {
         "Expected a client streaming method descriptor but got $descriptor"
     }
 
@@ -77,13 +77,13 @@ public fun <Request, Response> CoroutineScope.clientStreamingServerMethodDefinit
 
 @InternalRpcApi
 public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: (request: Request) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.methodType
-    require(type == MethodType.SERVER_STREAMING) {
+    require(type == GrpcMethodType.SERVER_STREAMING) {
         "Expected a server streaming method descriptor but got $descriptor"
     }
 
@@ -102,13 +102,13 @@ public fun <Request, Response> CoroutineScope.serverStreamingServerMethodDefinit
 
 @InternalRpcApi
 public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: (requests: Flow<Request>) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> {
     val type = descriptor.methodType
-    check(type == MethodType.BIDI_STREAMING) {
+    check(type == GrpcMethodType.BIDI_STREAMING) {
         "Expected a bidi streaming method descriptor but got $descriptor"
     }
 
@@ -116,17 +116,17 @@ public fun <Request, Response> CoroutineScope.bidiStreamingServerMethodDefinitio
 }
 
 private fun <Request, Response> CoroutineScope.serverMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
 ): ServerMethodDefinition<Request, Response> =
     serverMethodDefinition(descriptor, serverCallHandler(descriptor, responseKType, interceptors, implementation))
 
 private fun <Request, Response> CoroutineScope.serverCallHandler(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
 ): ServerCallHandler<Request, Response> =
     ServerCallHandler { call, headers ->
@@ -134,10 +134,10 @@ private fun <Request, Response> CoroutineScope.serverCallHandler(
     }
 
 private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     handler: ServerCall<Request, Response>,
     responseKType: KType,
-    interceptors: List<ServerInterceptor>,
+    interceptors: List<GrpcServerInterceptor>,
     implementation: (Flow<Request>) -> Flow<Response>,
     requestHeaders: GrpcMetadata,
 ): ServerCall.Listener<Request> {
@@ -206,18 +206,18 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }
 
         val closeStatus = when (failure) {
-            null -> Status(StatusCode.OK)
-            is CancellationException -> Status(StatusCode.CANCELLED, cause = failure)
-            is StatusException -> failure.status
+            null -> GrpcStatus(GrpcStatusCode.OK)
+            is CancellationException -> GrpcStatus(GrpcStatusCode.CANCELLED, cause = failure)
+            is GrpcStatusException -> failure.status
             is StatusRuntimeException -> failure.status
-            else -> Status(StatusCode.UNKNOWN, cause = failure)
+            else -> GrpcStatus(GrpcStatusCode.UNKNOWN, cause = failure)
         }
 
         val trailers = serverCallScope.responseTrailers
 
         // we merge the failure trailers with the user-defined trailers
         when (failure) {
-            is StatusException -> failure.trailers
+            is GrpcStatusException -> failure.trailers
             is StatusRuntimeException -> failure.trailers
             else -> null
         }?.let { trailers.merge(it) }
@@ -239,8 +239,8 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                 state.isReceiving = result.isSuccess
                 result.onFailure { ex ->
                     if (ex !is CancellationException) {
-                        throw StatusException(
-                            Status(StatusCode.INTERNAL, "onMessage should never be called until requests is ready"),
+                        throw GrpcStatusException(
+                            GrpcStatus(GrpcStatusCode.INTERNAL, "onMessage should never be called until requests is ready"),
                         )
                     }
                 }
@@ -272,28 +272,28 @@ private val unitKType = typeOf<Unit>()
 
 
 private class ServerCallScopeImpl<Request, Response>(
-    override val method: MethodDescriptor<Request, Response>,
-    val interceptors: List<ServerInterceptor>,
+    override val method: GrpcMethodDescriptor<Request, Response>,
+    val interceptors: List<GrpcServerInterceptor>,
     val implementation: (Flow<Request>) -> Flow<Response>,
     override val requestHeaders: GrpcMetadata,
     val serverCall: ServerCall<Request, Response>,
     override val context: GrpcContext,
-) : ServerCallScope<Request, Response> {
+) : GrpcServerCallScope<Request, Response> {
 
     override val responseHeaders: GrpcMetadata = GrpcMetadata()
     override val responseTrailers: GrpcMetadata = GrpcMetadata()
 
     // keeps track of already processed interceptors
     var interceptorIndex = 0
-    val onCloseFuture = CallbackFuture<Pair<Status, GrpcMetadata>>()
+    val onCloseFuture = CallbackFuture<Pair<GrpcStatus, GrpcMetadata>>()
 
-    override fun onClose(block: (Status, GrpcMetadata) -> Unit) {
+    override fun onClose(block: (GrpcStatus, GrpcMetadata) -> Unit) {
         onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
-    override fun close(status: Status, trailers: GrpcMetadata): Nothing {
+    override fun close(status: GrpcStatus, trailers: GrpcMetadata): Nothing {
         // this will be cached by the rpcImpl() runCatching{} and turns it into a close()
-        throw StatusException(status, trailers)
+        throw GrpcStatusException(status, trailers)
     }
 
     override fun proceed(request: Flow<Request>): Flow<Response> {

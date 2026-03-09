@@ -7,7 +7,7 @@ package kotlinx.rpc.grpc.client.internal
 import io.grpc.ClientCall
 import io.grpc.Metadata
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -17,7 +17,7 @@ public actual typealias ClientCall<Request, Response> = ClientCall<Request, Resp
 public actual inline fun <Message> clientCallListener(
     crossinline onHeaders: (headers: GrpcMetadata) -> Unit,
     crossinline onMessage: (message: Message) -> Unit,
-    crossinline onClose: (status: Status, trailers: GrpcMetadata) -> Unit,
+    crossinline onClose: (status: GrpcStatus, trailers: GrpcMetadata) -> Unit,
     crossinline onReady: () -> Unit,
 ): ClientCall.Listener<Message> {
     return object : ClientCall.Listener<Message>() {
@@ -29,7 +29,7 @@ public actual inline fun <Message> clientCallListener(
             onMessage(message)
         }
 
-        override fun onClose(status: Status, trailers: Metadata) {
+        override fun onClose(status: GrpcStatus, trailers: Metadata) {
             onClose(status, trailers)
         }
 

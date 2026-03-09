@@ -25,11 +25,11 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.append
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.destroyEntries
@@ -38,7 +38,7 @@ import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.GrpcCompression
-import kotlinx.rpc.grpc.client.EmptyCallCredentials
+import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.createRaw
 import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
@@ -70,7 +70,7 @@ import kotlin.native.ref.createCleaner
 internal class NativeClientCall<Request, Response>(
     private val cq: CompletionQueue,
     internal val raw: CPointer<grpc_call>,
-    private val methodDescriptor: MethodDescriptor<Request, Response>,
+    private val methodDescriptor: GrpcMethodDescriptor<Request, Response>,
     private val callOptions: GrpcCallOptions,
     private val callJob: CompletableJob,
     private val coroutineContext: CoroutineContext,
@@ -82,7 +82,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     private val rawCallCredentials = callOptions.callCredentials.let {
-        if (it is EmptyCallCredentials) null else it.createRaw(coroutineContext)
+        if (it is GrpcEmptyCallCredentials) null else it.createRaw(coroutineContext)
     }
 
     @Suppress("unused")
@@ -119,7 +119,7 @@ internal class NativeClientCall<Request, Response>(
 
     // holds the received status information returned by the RECV_STATUS_ON_CLIENT batch.
     // if null, the call is still in progress. otherwise, the call can be closed as soon as inFlight is 0.
-    private val closeInfo = atomic<Pair<Status, GrpcMetadata>?>(null)
+    private val closeInfo = atomic<Pair<GrpcStatus, GrpcMetadata>?>(null)
 
     // we currently don't buffer messages, so after one `sendMessage` call, ready turns false. (KRPC-192)
     private val ready = atomic(true)
@@ -170,7 +170,7 @@ internal class NativeClientCall<Request, Response>(
      * Sets the [closeInfo] and calls [tryToCloseCall].
      * This is called as soon as the RECV_STATUS_ON_CLIENT batch (started with [startRecvStatus]) finished.
      */
-    private fun markClosePending(status: Status, trailers: GrpcMetadata) {
+    private fun markClosePending(status: GrpcStatus, trailers: GrpcMetadata) {
         closeInfo.compareAndSet(null, Pair(status, trailers))
         tryToCloseCall()
     }
@@ -292,7 +292,7 @@ internal class NativeClientCall<Request, Response>(
                 callResult.future.onComplete {
                     val details = statusDetails.toByteArray().toKString()
                     val kStatusCode = statusCode.value.toKotlin()
-                    val status = Status(kStatusCode, details, null)
+                    val status = GrpcStatus(kStatusCode, details, null)
                     val trailers = GrpcMetadata(trailingMetadata)
 
                     // cleanup
@@ -310,14 +310,14 @@ internal class NativeClientCall<Request, Response>(
 
             BatchResult.CQShutdown -> {
                 arena.clear()
-                markClosePending(Status(StatusCode.UNAVAILABLE, "Channel shutdown"), GrpcMetadata())
+                markClosePending(GrpcStatus(GrpcStatusCode.UNAVAILABLE, "Channel shutdown"), GrpcMetadata())
                 return false
             }
 
             is BatchResult.SubmitError -> {
                 arena.clear()
                 markClosePending(
-                    Status(StatusCode.INTERNAL, "Failed to start call: ${callResult.error}"),
+                    GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to start call: ${callResult.error}"),
                     GrpcMetadata()
                 )
                 return false
@@ -419,7 +419,7 @@ internal class NativeClientCall<Request, Response>(
 
     override fun cancel(message: String?, cause: Throwable?) {
         cancelled = true
-        val status = Status(StatusCode.CANCELLED, message ?: "Call cancelled", cause)
+        val status = GrpcStatus(GrpcStatusCode.CANCELLED, message ?: "Call cancelled", cause)
         // user side cancellation must always win over any other status (even if the call is already completed).
         // this will also preserve the cancellation cause, which cannot be passed to the grpc-core.
         closeInfo.value = Pair(status, GrpcMetadata())
@@ -432,7 +432,7 @@ internal class NativeClientCall<Request, Response>(
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
         val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
         if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
-            markClosePending(Status(StatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcMetadata())
+            markClosePending(GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcMetadata())
         }
     }
 

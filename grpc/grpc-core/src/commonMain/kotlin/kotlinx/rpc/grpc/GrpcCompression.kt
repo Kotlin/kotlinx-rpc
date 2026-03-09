@@ -17,14 +17,12 @@ package kotlinx.rpc.grpc
  *
  * @property name The compression algorithm identifier sent in the `grpc-encoding` header.
  *
- * @see kotlinx.rpc.grpc.client.GrpcCallOptions.compression
  * @see GrpcCompression.None
  * @see GrpcCompression.Gzip
  */
 @OptIn(ExperimentalSubclassOptIn::class)
 @SubclassOptInRequired
 public interface GrpcCompression {
-
     /**
      * The name of the compression algorithm as it appears in the `grpc-encoding` header.
      */

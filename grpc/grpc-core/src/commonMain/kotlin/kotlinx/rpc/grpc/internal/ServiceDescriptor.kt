@@ -4,19 +4,19 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public expect class ServiceDescriptor {
     public fun getName(): String
-    public fun getMethods(): Collection<MethodDescriptor<*, *>>
+    public fun getMethods(): Collection<GrpcMethodDescriptor<*, *>>
     public fun getSchemaDescriptor(): Any?
 }
 
 @InternalRpcApi
 public expect fun serviceDescriptor(
     name: String,
-    methods: Collection<MethodDescriptor<*, *>>,
+    methods: Collection<GrpcMethodDescriptor<*, *>>,
     schemaDescriptor: Any? = null,
 ): ServiceDescriptor

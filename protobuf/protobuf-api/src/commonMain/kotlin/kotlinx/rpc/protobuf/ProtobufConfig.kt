@@ -4,20 +4,20 @@
 
 package kotlinx.rpc.protobuf
 
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 
 /**
  * Configuration options for Protobuf message encoding and decoding.
  *
- * This class implements [MarshallerConfig] to provide Protobuf-specific configuration that controls
+ * This class implements [GrpcMarshallerConfig] to provide Protobuf-specific configuration that controls
  * how messages are serialized and deserialized when using Protobuf marshallers generated from
  * `.proto` files using `kotlinx-rpc`.
  *
  * Example:
  * ```kotlin
  * // Create a marshaller with custom config
- * val config = ProtobufConfig(discardUnknownFields = true)
- * val myMarshaller = marshallerOf<MyMessage>(config)
+ * val config = ProtoConfig(discardUnknownFields = true)
+ * val myMarshaller = grpcMarshallerOf<MyMessage>(config)
  *
  * // Or pass config per-operation
  * val decoded = marshaller.decode(stream, config)
@@ -32,14 +32,15 @@ import kotlinx.rpc.grpc.marshaller.MarshallerConfig
  *   If set, extension fields matching registered descriptors are decoded.
  *   If `null` (default), extension fields are treated as unknown fields.
  *
- * @see MarshallerConfig
- * @see kotlinx.rpc.grpc.marshaller.marshallerOf
+ * @see GrpcMarshallerConfig
+ * @see kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
  */
-public class ProtobufConfig(
+// TODO make DSL KRPC-264
+public class ProtoConfig(
     public val discardUnknownFields: Boolean = false,
     public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
     public val extensionRegistry: ProtoExtensionRegistry? = null
-): MarshallerConfig {
+) : GrpcMarshallerConfig {
     public companion object {
         /**
          * The default recursion limit for decoding nested protobuf messages.

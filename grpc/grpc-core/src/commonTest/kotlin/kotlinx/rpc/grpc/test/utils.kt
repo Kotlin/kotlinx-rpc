@@ -4,15 +4,15 @@
 
 package kotlinx.rpc.grpc.test
 
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-fun assertGrpcFailure(statusCode: StatusCode, message: String? = null, block: () -> Unit) {
-    val exc = assertFailsWith<StatusException>(message) { block() }
+fun assertGrpcFailure(statusCode: GrpcStatusCode, message: String? = null, block: () -> Unit) {
+    val exc = assertFailsWith<GrpcStatusException>(message) { block() }
     assertEquals(statusCode, exc.getStatus().statusCode)
     if (message != null) {
         assertContains(exc.getStatus().getDescription() ?: "", message)

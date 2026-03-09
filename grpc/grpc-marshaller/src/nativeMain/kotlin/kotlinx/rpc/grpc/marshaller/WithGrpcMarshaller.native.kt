@@ -8,17 +8,11 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlin.reflect.AssociatedObjectKey
 import kotlin.reflect.ExperimentalAssociatedObjects
 import kotlin.reflect.KClass
-import kotlin.reflect.findAssociatedObject
 
 @ExperimentalRpcApi
 @AssociatedObjectKey
 @OptIn(ExperimentalAssociatedObjects::class)
 @Target(allowedTargets = [AnnotationTarget.CLASS])
-public actual annotation class WithMarshaller actual constructor(
-    actual val marshaller: KClass<out MessageMarshaller<*>>
+public actual annotation class WithGrpcMarshaller actual constructor(
+    actual val marshaller: KClass<out GrpcMarshaller<*>>
 )
-
-@OptIn(ExperimentalAssociatedObjects::class)
-internal actual fun <T : Any> resolveMarshaller(kClass: KClass<T>): Any? {
-    return kClass.findAssociatedObject<WithMarshaller>()
-}

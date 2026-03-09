@@ -6,7 +6,7 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Enum
 import kotlinx.rpc.grpc.test.UnknownFieldsAll
@@ -14,7 +14,7 @@ import kotlinx.rpc.grpc.test.UnknownFieldsSubset
 import kotlinx.rpc.grpc.test.asInternal
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.presence
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -60,7 +60,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test protobuf discardUnknownFields marshaller config in server config`() = runGrpcTest(
-        serverConfiguration = { marshallerConfig = ProtobufConfig(discardUnknownFields = true) }
+        serverConfiguration = { marshallerConfig = ProtoConfig(discardUnknownFields = true) }
     ) { client ->
         val service = client.withService<ClientTestService>()
         val message = unknownFieldsAllMessage
@@ -88,7 +88,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test protobuf discardUnknownFields marshaller config in client config`() = runGrpcTest(
-        clientConfiguration = { marshallerConfig = ProtobufConfig(discardUnknownFields = true) }
+        clientConfiguration = { marshallerConfig = ProtoConfig(discardUnknownFields = true) }
     ) { client ->
         val service = client.withService<ClientTestService>()
         val message = unknownFieldsAllMessage
@@ -109,7 +109,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
         assertTrue(response.asInternal()._unknownFields.size > 0)
 
         // encode and decode as UnknownFieldsAll
-        val marshaller = marshallerOf<UnknownFieldsAll>()
+        val marshaller = grpcMarshallerOf<UnknownFieldsAll>()
         val decoded = marshaller.decode(marshaller.encode(message))
         // should have preserved all fields
         assertEquals(message, decoded)

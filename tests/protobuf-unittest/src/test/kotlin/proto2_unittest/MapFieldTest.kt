@@ -49,7 +49,7 @@
 
 package proto2_unittest
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -75,7 +75,7 @@ class MapFieldTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/MapTest.java#testSerializeAndParse
     @Test
     fun testMapRoundTrip() {
-        val marshaller = marshallerOf<TestMap>()
+        val marshaller = grpcMarshallerOf<TestMap>()
 
         val msg = TestMap {
             mapInt32Int32 = mapOf(1 to 10, 2 to 20)
@@ -109,7 +109,7 @@ class MapFieldTest {
 
     @Test
     fun testMapWithMessageValues() {
-        val marshaller = marshallerOf<TestMap>()
+        val marshaller = grpcMarshallerOf<TestMap>()
 
         val nested1 = ForeignMessage { c = 42 }
         val nested2 = ForeignMessage { c = 99 }
@@ -132,7 +132,7 @@ class MapFieldTest {
 
     @Test
     fun testMapWithUnsignedKeys() {
-        val marshaller = marshallerOf<TestMap>()
+        val marshaller = grpcMarshallerOf<TestMap>()
 
         val msg = TestMap {
             mapUint32Uint32 = mapOf(1u to 10u, 2u to 20u)
@@ -152,7 +152,7 @@ class MapFieldTest {
 
     @Test
     fun testMapWithSignedKeys() {
-        val marshaller = marshallerOf<TestMap>()
+        val marshaller = grpcMarshallerOf<TestMap>()
 
         val msg = TestMap {
             mapSint32Sint32 = mapOf(1 to -1, -2 to 2)
@@ -173,7 +173,7 @@ class MapFieldTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/MapForProto2Test.java - testSameTypeMaps
     @Test
     fun testSameTypeMap() {
-        val marshaller = marshallerOf<TestSameTypeMap>()
+        val marshaller = grpcMarshallerOf<TestSameTypeMap>()
 
         val msg = TestSameTypeMap {
             map1 = mapOf(1 to 10, 2 to 20)
@@ -216,7 +216,7 @@ class MapFieldTest {
 
     @Test
     fun testMapSubmessageRoundTrip() {
-        val marshaller = marshallerOf<TestMapSubmessage>()
+        val marshaller = grpcMarshallerOf<TestMapSubmessage>()
 
         val inner = TestMap {
             mapInt32Int32 = mapOf(1 to 2)

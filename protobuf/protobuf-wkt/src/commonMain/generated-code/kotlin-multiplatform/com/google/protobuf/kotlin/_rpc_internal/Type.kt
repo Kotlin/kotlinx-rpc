@@ -4,11 +4,11 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -136,24 +136,24 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Type> {
-        public override fun encode(value: Type, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Type> {
+        public override fun encode(value: Type, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Type {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Type {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TypeInternal()
                 checkForPlatformDecodeException {
-                    TypeInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    TypeInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -272,24 +272,24 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Field> {
-        public override fun encode(value: Field, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Field> {
+        public override fun encode(value: Field, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Field {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Field {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FieldInternal()
                 checkForPlatformDecodeException {
-                    FieldInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    FieldInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -410,24 +410,24 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Enum> {
-        public override fun encode(value: Enum, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Enum> {
+        public override fun encode(value: Enum, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Enum {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Enum {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumInternal()
                 checkForPlatformDecodeException {
-                    EnumInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    EnumInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -511,24 +511,24 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<EnumValue> {
-        public override fun encode(value: EnumValue, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<EnumValue> {
+        public override fun encode(value: EnumValue, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): EnumValue {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): EnumValue {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumValueInternal()
                 checkForPlatformDecodeException {
-                    EnumValueInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    EnumValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -629,24 +629,24 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<Option> {
-        public override fun encode(value: Option, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<Option> {
+        public override fun encode(value: Option, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): Option {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Option {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = OptionInternal()
                 checkForPlatformDecodeException {
-                    OptionInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    OptionInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -680,7 +680,7 @@ public fun TypeInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
@@ -725,7 +725,7 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
 }
 
 @InternalRpcApi
-public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -829,7 +829,7 @@ public fun FieldInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.kind != Field.Kind.TYPE_UNKNOWN) {
         encoder.writeEnum(fieldNr = 1, value = this.kind.number)
     }
@@ -882,7 +882,7 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig
 }
 
 @InternalRpcApi
-public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1008,7 +1008,7 @@ public fun EnumInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
@@ -1047,7 +1047,7 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?
 }
 
 @InternalRpcApi
-public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1143,7 +1143,7 @@ public fun EnumValueInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
@@ -1168,7 +1168,7 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 }
 
 @InternalRpcApi
-public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -1237,7 +1237,7 @@ public fun OptionInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
@@ -1256,7 +1256,7 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfi
 }
 
 @InternalRpcApi
-public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

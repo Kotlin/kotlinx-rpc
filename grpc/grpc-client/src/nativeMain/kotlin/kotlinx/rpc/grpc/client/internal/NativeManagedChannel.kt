@@ -29,7 +29,7 @@ import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.createRaw
 import kotlinx.rpc.grpc.client.rawDeadline
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
@@ -169,7 +169,7 @@ internal class NativeManagedChannel(
     }
 
     override fun <RequestT, ResponseT> newCall(
-        methodDescriptor: MethodDescriptor<RequestT, ResponseT>,
+        methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
         callOptions: GrpcCallOptions,
         coroutineContext: CoroutineContext
     ): ClientCall<RequestT, ResponseT> {

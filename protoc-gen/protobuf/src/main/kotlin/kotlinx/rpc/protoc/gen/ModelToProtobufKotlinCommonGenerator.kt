@@ -1071,19 +1071,19 @@ class ModelToProtobufKotlinCommonGenerator(
             name = declaration.marshallerObjectName.simpleName,
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object,
-            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.MessageMarshaller, declaration.name)),
+            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.GrpcMarshaller, declaration.name)),
         ) {
             function(
                 name = "encode",
                 modifiers = "override",
-                args = "value: %T, config: %T?".scoped(declaration.name, FqName.RpcClasses.MarshallerConfig),
+                args = "value: %T, config: %T?".scoped(declaration.name, FqName.RpcClasses.GrpcMarshallerConfig),
                 returnType = FqName.KotlinLibs.Source.scoped(),
             ) {
                 code("val buffer = %T()".scoped(FqName.KotlinLibs.Buffer))
                 code("val encoder = %T(buffer)".scoped(FqName.RpcClasses.WireEncoder))
                 code("val internalMsg = value.asInternal()".scoped())
                 scope("checkForPlatformEncodeException".scoped(), nlAfterClosed = false) {
-                    code("internalMsg.encodeWith(encoder, config as? %T)".scoped(FqName.RpcClasses.ProtobufConfig))
+                    code("internalMsg.encodeWith(encoder, config as? %T)".scoped(FqName.RpcClasses.ProtoConfig))
                 }
                 code("encoder.flush()".scoped())
                 code("return buffer".scoped())
@@ -1092,13 +1092,13 @@ class ModelToProtobufKotlinCommonGenerator(
             function(
                 name = "decode",
                 modifiers = "override",
-                args = "source: %T, config: %T?".scoped(FqName.KotlinLibs.Source, FqName.RpcClasses.MarshallerConfig),
+                args = "source: %T, config: %T?".scoped(FqName.KotlinLibs.Source, FqName.RpcClasses.GrpcMarshallerConfig),
                 returnType = declaration.name.scoped(),
             ) {
                 scope("%T(source).use".scoped(FqName.RpcClasses.WireDecoder)) {
                     code(
                         "(config as? %T)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }"
-                            .scoped(FqName.RpcClasses.ProtobufConfig)
+                            .scoped(FqName.RpcClasses.ProtoConfig)
                     )
                     code("val msg = %T()".scoped(declaration.internalClassName))
                     scope("checkForPlatformDecodeException".scoped(), nlAfterClosed = false) {
@@ -1108,7 +1108,7 @@ class ModelToProtobufKotlinCommonGenerator(
                         code(
                             "%T.decodeWith(msg, it, config as? %T$groupExtraArg)".scoped(
                                 declaration.internalClassName,
-                                FqName.RpcClasses.ProtobufConfig,
+                                FqName.RpcClasses.ProtoConfig,
                             )
                         )
                     }
@@ -1173,7 +1173,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) {
         var args = "msg: %T, decoder: %T, config: %T?"
-            .scoped(declaration.internalClassName, FqName.RpcClasses.WireDecoder, FqName.RpcClasses.ProtobufConfig)
+            .scoped(declaration.internalClassName, FqName.RpcClasses.WireDecoder, FqName.RpcClasses.ProtoConfig)
 
         if (declaration.isGroup) {
             // if the message is a group message, the decoder accepts an optional startGroup tag, which indicates
@@ -1504,7 +1504,7 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-        args = "encoder: %T, config: %T?".scoped(FqName.RpcClasses.WireEncoder, FqName.RpcClasses.ProtobufConfig),
+        args = "encoder: %T, config: %T?".scoped(FqName.RpcClasses.WireEncoder, FqName.RpcClasses.ProtoConfig),
         contextReceiver = declaration.internalClassName.scoped(),
         returnType = FqName.Implicits.Unit.scoped(),
     ) {

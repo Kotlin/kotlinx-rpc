@@ -7,8 +7,14 @@ package com.google.protobuf.kotlin
 import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Converts this Protobuf [Duration] to a Kotlin [kotlin.time.Duration].
+ */
 public fun Duration.toKotlinDuration(): kotlin.time.Duration = seconds.seconds + nanos.nanoseconds
 
+/**
+ * Converts this Kotlin [kotlin.time.Duration] to a Protobuf [Duration].
+ */
 public fun kotlin.time.Duration.toProtobufDuration(): Duration = Duration {
     seconds = this@toProtobufDuration.inWholeSeconds
     nanos = (this@toProtobufDuration.inWholeNanoseconds - seconds.seconds.inWholeNanoseconds).toInt()

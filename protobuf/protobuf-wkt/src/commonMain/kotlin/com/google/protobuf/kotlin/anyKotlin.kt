@@ -6,7 +6,7 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.protoDescriptorOf
@@ -33,7 +33,7 @@ import kotlin.reflect.KType
  * @see pack
  * @see unpack
  */
-public inline fun <@GeneratedProtoMessage reified T: kotlin.Any> Any.contains(): Boolean = this.contains(T::class)
+public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.contains(): Boolean = this.contains(T::class)
 
 /**
  * Checks if this [Any] message contains a message of the specified [messageClass] type.
@@ -56,7 +56,7 @@ public inline fun <@GeneratedProtoMessage reified T: kotlin.Any> Any.contains():
  * @see pack
  * @see unpack
  */
-public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KClass<T>): Boolean {
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.contains(messageClass: KClass<T>): Boolean {
     val fullName = protoDescriptorOf(messageClass).fullName
     return typeUrl.endsWith("/$fullName")
 }
@@ -82,7 +82,7 @@ public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageClass: KCl
  * @see pack
  * @see unpack
  */
-public fun <@GeneratedProtoMessage T: kotlin.Any> Any.contains(messageType: KType): Boolean {
+public fun <@GeneratedProtoMessage T : kotlin.Any> Any.contains(messageType: KType): Boolean {
     val fullName = protoDescriptorOf<T>(messageType).fullName
     return typeUrl.endsWith("/$fullName")
 }
@@ -136,7 +136,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
 ): Any {
     val descriptor = protoDescriptorOf(valueClass)
     val typeUrl = "$urlPrefix/${descriptor.fullName}"
-    val encoded = marshallerOf(valueClass)
+    val encoded = grpcMarshallerOf(valueClass)
         .encode(value)
 
     return Any {
@@ -196,7 +196,7 @@ public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpack(): 
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
     require(contains(kClass)) { "Cannot unpack Any message of type $typeUrl to ${kClass.qualifiedName}" }
     val source = Buffer().apply { write(value) }
-    return marshallerOf(kClass).decode(source)
+    return grpcMarshallerOf(kClass).decode(source)
 }
 
 /**
@@ -224,7 +224,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>)
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kType: KType): T {
     require(contains<T>(kType)) { "Cannot unpack Any message of type $typeUrl to ${kType.classifier}" }
     val source = Buffer().apply { write(value) }
-    return marshallerOf<T>(kType).decode(source)
+    return grpcMarshallerOf<T>(kType).decode(source)
 }
 
 

@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.grpc
 
-public actual class Status internal constructor(
+public actual class GrpcStatus internal constructor(
     private val description: String?,
-    internal val statusCode: StatusCode,
+    internal val statusCode: GrpcStatusCode,
     private val cause: Throwable?,
 ) {
     public actual fun getDescription(): String? = description
@@ -14,15 +14,15 @@ public actual class Status internal constructor(
     public actual fun getCause(): Throwable? = cause
 
     override fun toString(): String {
-        return "Status(description=$description, statusCode=$statusCode, cause=$cause)"
+        return "GrpcStatus(description=$description, statusCode=$statusCode, cause=$cause)"
     }
 }
 
-public actual val Status.statusCode: StatusCode
+public actual val GrpcStatus.statusCode: GrpcStatusCode
     get() = this.statusCode
 
-public actual fun Status(
-    code: StatusCode,
+public actual fun GrpcStatus(
+    code: GrpcStatusCode,
     description: String?,
     cause: Throwable?,
-): Status = Status(description, code, cause)
+): GrpcStatus = GrpcStatus(description, code, cause)

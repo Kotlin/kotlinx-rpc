@@ -9,12 +9,10 @@ package kotlinx.rpc.grpc.client
 import cnames.structs.grpc_call_credentials
 import kotlinx.cinterop.*
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
@@ -22,7 +20,6 @@ import kotlinx.rpc.grpc.statusCode
 import libkgrpc.*
 import platform.posix.size_tVar
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 // Stable reference holder for Kotlin objects
 private class CredentialsPluginState(
@@ -88,7 +85,7 @@ private fun getMetadataCallback(
                 kotlinContext.getRequestMetadata()
             }
             notifyResult(metadata, grpc_status_code.GRPC_STATUS_OK, null)
-        } catch (e: StatusException) {
+        } catch (e: GrpcStatusException) {
             notifyResult(metadata, e.status.statusCode.toRaw(), e.message)
         } catch (e: CancellationException) {
             notifyResult(metadata, grpc_status_code.GRPC_STATUS_CANCELLED, e.message)

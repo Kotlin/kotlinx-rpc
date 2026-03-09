@@ -4,55 +4,52 @@
 
 package kotlinx.rpc.grpc.server
 
+public actual typealias GrpcServerCredentials = io.grpc.ServerCredentials
 
-public actual typealias ServerCredentials = io.grpc.ServerCredentials
+public actual typealias GrpcInsecureServerCredentials = io.grpc.InsecureServerCredentials
 
-public actual typealias InsecureServerCredentials = io.grpc.InsecureServerCredentials
-
-public actual typealias TlsServerCredentials = io.grpc.TlsServerCredentials
-
+public actual typealias GrpcTlsServerCredentials = io.grpc.TlsServerCredentials
 
 // we need a wrapper for InsecureChannelCredentials as our constructor would conflict with the private
 // java constructor.
-internal actual fun createInsecureServerCredentials(): ServerCredentials {
-    return InsecureServerCredentials.create()
+internal actual fun createInsecureServerCredentials(): GrpcServerCredentials {
+    return GrpcInsecureServerCredentials.create()
 }
 
-internal actual fun TlsServerCredentialsBuilder(
+internal actual fun GrpcTlsServerCredentialsBuilder(
     certChain: String,
     privateKey: String,
-): TlsServerCredentialsBuilder = JvmTlsServerCredentialBuilder(certChain, privateKey)
+): GrpcTlsServerCredentialsBuilder = JvmTlsServerCredentialBuilder(certChain, privateKey)
 
-internal actual fun TlsServerCredentialsBuilder.build(): ServerCredentials {
+internal actual fun GrpcTlsServerCredentialsBuilder.build(): GrpcServerCredentials {
     return (this as JvmTlsServerCredentialBuilder).build()
 }
 
-private class JvmTlsServerCredentialBuilder(certChain: String, privateKey: String) : TlsServerCredentialsBuilder {
-    private var sb = TlsServerCredentials.newBuilder()
+private class JvmTlsServerCredentialBuilder(certChain: String, privateKey: String) : GrpcTlsServerCredentialsBuilder {
+    private var sb = GrpcTlsServerCredentials.newBuilder()
 
     init {
         sb.keyManager(certChain.byteInputStream(), privateKey.byteInputStream())
     }
 
-    override fun trustManager(rootCertsPem: String): TlsServerCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsServerCredentialsBuilder {
         sb.trustManager(rootCertsPem.byteInputStream())
         return this
     }
 
-    override fun clientAuth(clientAuth: TlsClientAuth): TlsServerCredentialsBuilder {
+    override fun clientAuth(clientAuth: GrpcTlsClientAuth): GrpcTlsServerCredentialsBuilder {
         sb.clientAuth(clientAuth.toJava())
         return this
     }
 
 
-    fun build(): ServerCredentials {
+    fun build(): GrpcServerCredentials {
         return sb.build()
     }
 }
 
-
-private fun TlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = when (this) {
-    TlsClientAuth.NONE -> io.grpc.TlsServerCredentials.ClientAuth.NONE
-    TlsClientAuth.OPTIONAL -> io.grpc.TlsServerCredentials.ClientAuth.OPTIONAL
-    TlsClientAuth.REQUIRE -> io.grpc.TlsServerCredentials.ClientAuth.REQUIRE
+private fun GrpcTlsClientAuth.toJava(): io.grpc.TlsServerCredentials.ClientAuth = when (this) {
+    GrpcTlsClientAuth.NONE -> io.grpc.TlsServerCredentials.ClientAuth.NONE
+    GrpcTlsClientAuth.OPTIONAL -> io.grpc.TlsServerCredentials.ClientAuth.OPTIONAL
+    GrpcTlsClientAuth.REQUIRE -> io.grpc.TlsServerCredentials.ClientAuth.REQUIRE
 }

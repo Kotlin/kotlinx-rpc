@@ -9,7 +9,7 @@ package kotlinx.rpc.grpc
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
- * Defines the status of an operation by providing a standard [StatusCode] in conjunction with an
+ * Defines the status of an operation by providing a standard [GrpcStatusCode] in conjunction with an
  * optional descriptive message.
  *
  * For clients, every remote call will return a status on completion.
@@ -17,7 +17,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * status may be propagated to blocking stubs as a [RuntimeException] or to a listener as an
  * explicit parameter.
  *
- * Similarly, servers can report a status by throwing [StatusException]
+ * Similarly, servers can report a status by throwing [GrpcStatusException]
  * or by passing the status to a callback.
  *
  * Utility functions are provided to convert a status to an exception and to extract them
@@ -27,41 +27,41 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * can be found at
  * [doc/statuscodes.md](https://github.com/grpc/grpc/blob/master/doc/statuscodes.md)
  */
-public expect class Status {
+public expect class GrpcStatus {
     internal fun getDescription(): String?
     internal fun getCause(): Throwable?
 }
 
 /**
- * Creates a [Status] with the specified [code], optional [description], and [cause].
+ * Creates a [GrpcStatus] with the specified [code], optional [description], and [cause].
  */
-public expect fun Status(code: StatusCode, description: String? = null, cause: Throwable? = null): Status
+public expect fun GrpcStatus(code: GrpcStatusCode, description: String? = null, cause: Throwable? = null): GrpcStatus
 
 /**
  * The status code of this status.
  */
-public expect val Status.statusCode: StatusCode
+public expect val GrpcStatus.statusCode: GrpcStatusCode
 
 /**
  * The description of this status, or null if not present.
  */
-public val Status.description: String? get() = getDescription()
+public val GrpcStatus.description: String? get() = getDescription()
 
 // this is currently @InternalRpcApi as it's behavior would be inconsistent between JVM and Native.
 @InternalRpcApi
-public val Status.cause: Throwable? get() = getCause()
+public val GrpcStatus.cause: Throwable? get() = getCause()
 
 /**
- * Converts this status to a [StatusException] with optional [trailers].
+ * Converts this status to a [GrpcStatusException] with optional [trailers].
  */
-public fun Status.asException(trailers: GrpcMetadata? = null): StatusException {
-    return StatusException(this, trailers)
+public fun GrpcStatus.asException(trailers: GrpcMetadata? = null): GrpcStatusException {
+    return GrpcStatusException(this, trailers)
 }
 
 /**
  * Standard gRPC status codes.
  */
-public enum class StatusCode(public val value: Int) {
+public enum class GrpcStatusCode(public val value: Int) {
     OK(0),
     CANCELLED(1),
     UNKNOWN(2),
@@ -86,17 +86,16 @@ public enum class StatusCode(public val value: Int) {
     public val valueAscii: ByteArray = value.toString().encodeToByteArray()
 
     /**
-     * Converts this status code to a [Status] with an optional [description].
+     * Converts this status code to a [GrpcStatus] with an optional [description].
      */
-    public fun asStatus(description: String? = null): Status {
-        return Status(this, description)
+    public fun asStatus(description: String? = null): GrpcStatus {
+        return GrpcStatus(this, description)
     }
 
     /**
-     * Converts this status code to a [StatusException] with optional [description] and [trailers].
+     * Converts this status code to a [GrpcStatusException] with optional [description] and [trailers].
      */
-    public fun asException(description: String? = null, trailers: GrpcMetadata? = null): StatusException {
-        return StatusException(Status(this, description), trailers)
+    public fun asException(description: String? = null, trailers: GrpcMetadata? = null): GrpcStatusException {
+        return GrpcStatusException(GrpcStatus(this, description), trailers)
     }
 }
-

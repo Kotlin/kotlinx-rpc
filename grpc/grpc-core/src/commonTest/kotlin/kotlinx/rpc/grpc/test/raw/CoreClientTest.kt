@@ -9,8 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.internal.ClientCall
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
@@ -19,8 +19,8 @@ import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientCallListener
 import kotlinx.rpc.grpc.client.internal.createCall
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.HelloReply
@@ -40,12 +40,12 @@ private const val PORT = 50051
  */
 class GrpcCoreClientTest {
 
-    private fun descriptorFor(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): MethodDescriptor<HelloRequest, HelloReply> =
+    private fun descriptorFor(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): GrpcMethodDescriptor<HelloRequest, HelloReply> =
         methodDescriptor(
             fullMethodName = fullName,
             requestMarshaller = HelloRequestInternal.MARSHALLER,
             responseMarshaller = HelloReplyInternal.MARSHALLER,
-            type = MethodType.UNARY,
+            type = GrpcMethodType.UNARY,
             schemaDescriptor = Unit,
             idempotent = true,
             safe = true,
@@ -81,7 +81,7 @@ class GrpcCoreClientTest {
         val call = channel.newHelloCall()
         val req = helloReq()
 
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val replyDeferred = CompletableDeferred<HelloReply>()
         val listener = createClientCallListener<HelloReply>(
             onMessage = { replyDeferred.complete(it) },
@@ -96,7 +96,7 @@ class GrpcCoreClientTest {
         runBlocking {
             withTimeout(10000) {
                 val status = statusDeferred.await()
-                assertEquals(StatusCode.OK, status.statusCode)
+                assertEquals(GrpcStatusCode.OK, status.statusCode)
                 val reply = replyDeferred.await()
                 assertEquals("Hello world", reply.message)
             }
@@ -108,7 +108,7 @@ class GrpcCoreClientTest {
     fun start_twice_throws() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
@@ -124,7 +124,7 @@ class GrpcCoreClientTest {
     fun cancel_afterStart_resultsInCancelledStatus() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
@@ -133,7 +133,7 @@ class GrpcCoreClientTest {
         runBlocking {
             withTimeout(10000) {
                 val status = statusDeferred.await()
-                assertEquals(StatusCode.CANCELLED, status.statusCode)
+                assertEquals(GrpcStatusCode.CANCELLED, status.statusCode)
             }
         }
         shutdownAndWait(channel)
@@ -143,7 +143,7 @@ class GrpcCoreClientTest {
     fun invalid_method_returnsNonOkStatus() {
         val channel = createChannel()
         val call = channel.newHelloCall("kotlinx.rpc.grpc.test.Greeter/NoSuchMethod")
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
@@ -155,7 +155,7 @@ class GrpcCoreClientTest {
         runBlocking {
             withTimeout(10000) {
                 val status = statusDeferred.await()
-                assertEquals(StatusCode.UNIMPLEMENTED, status.statusCode)
+                assertEquals(GrpcStatusCode.UNIMPLEMENTED, status.statusCode)
             }
         }
         shutdownAndWait(channel)
@@ -165,7 +165,7 @@ class GrpcCoreClientTest {
     fun invokeStartAfterShutdown() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
@@ -180,7 +180,7 @@ class GrpcCoreClientTest {
         runBlocking {
             withTimeout(10000) {
                 val status = statusDeferred.await()
-                assertEquals(StatusCode.UNAVAILABLE, status.statusCode)
+                assertEquals(GrpcStatusCode.UNAVAILABLE, status.statusCode)
             }
         }
     }
@@ -189,7 +189,7 @@ class GrpcCoreClientTest {
     fun shutdownNowInMiddleOfCall() {
         val channel = createChannel()
         val call = channel.newHelloCall()
-        val statusDeferred = CompletableDeferred<Status>()
+        val statusDeferred = CompletableDeferred<GrpcStatus>()
         val listener = createClientCallListener<HelloReply>(
             onClose = { status, _ -> statusDeferred.complete(status) }
         )
@@ -205,7 +205,7 @@ class GrpcCoreClientTest {
             channel.shutdownNow()
             withTimeout(10000) {
                 val status = statusDeferred.await()
-                assertEquals(StatusCode.UNAVAILABLE, status.statusCode)
+                assertEquals(GrpcStatusCode.UNAVAILABLE, status.statusCode)
             }
         }
     }
@@ -214,7 +214,7 @@ class GrpcCoreClientTest {
 private fun <T> createClientCallListener(
     onHeaders: (headers: GrpcMetadata) -> Unit = {},
     onMessage: (message: T) -> Unit = {},
-    onClose: (status: Status, trailers: GrpcMetadata) -> Unit = { _, _ -> },
+    onClose: (status: GrpcStatus, trailers: GrpcMetadata) -> Unit = { _, _ -> },
     onReady: () -> Unit = {},
 ) = clientCallListener(
     onHeaders = onHeaders,

@@ -17,7 +17,7 @@ import name_conflicts.NestedWithKeywords
 import name_conflicts.copy
 import name_conflicts.invoke
 import name_conflicts.presence
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -127,7 +127,7 @@ class NameConflictTest {
             `return` = 999
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<KeywordFields>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<KeywordFields>())
 
         assertEquals(42, decoded.`for`)
         assertEquals(100, decoded.`when`)
@@ -161,7 +161,7 @@ class NameConflictTest {
             value = 70
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<InternalNameConflicts>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<InternalNameConflicts>())
 
         assertEquals(10, decoded.copy)
         assertEquals(50, decoded.result)
@@ -203,7 +203,7 @@ class NameConflictTest {
             encoder = 30
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<FunctionParamConflicts>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<FunctionParamConflicts>())
 
         assertEquals(10, decoded.msg)
         assertEquals(20, decoded.buffer)
@@ -247,7 +247,7 @@ class NameConflictTest {
             `if` = true
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<KeywordFieldsWithPresence>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<KeywordFieldsWithPresence>())
 
         assertEquals(42, decoded.`for`)
         assertEquals(100, decoded.`when`)
@@ -275,7 +275,7 @@ class NameConflictTest {
             `while` = mapOf("key" to 42)
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<KeywordCollections>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<KeywordCollections>())
 
         assertEquals(listOf(10, 20, 30), decoded.`for`)
         assertEquals(mapOf("key" to 42), decoded.`while`)
@@ -310,7 +310,7 @@ class NameConflictTest {
     @Test
     fun keywordOneofEncodeDecode() {
         val msg = KeywordOneof { value = KeywordOneof.Value.For(99) }
-        val decoded = msg.encodeDecode(marshallerOf<KeywordOneof>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<KeywordOneof>())
 
         assertEquals(99, (decoded.value as KeywordOneof.Value.For).value)
     }
@@ -342,7 +342,7 @@ class NameConflictTest {
             `return` = 99
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<NestedWithKeywords>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<NestedWithKeywords>())
 
         assertEquals(10, decoded.`while`.`for`)
         assertEquals(20, decoded.`while`.copy)
@@ -444,7 +444,7 @@ class NameConflictTest {
             startGroup = 170
         }
 
-        val decoded = msg.encodeDecode(marshallerOf<MoreInternalNameConflicts>())
+        val decoded = msg.encodeDecode(grpcMarshallerOf<MoreInternalNameConflicts>())
 
         assertEquals(10, decoded.other)
         assertEquals(20, decoded.indent)

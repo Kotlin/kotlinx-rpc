@@ -6,19 +6,19 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 
 /**
  * Registry of services and their methods used by servers to dispatching incoming calls.
  */
-public actual abstract class HandlerRegistry {
+public actual abstract class GrpcHandlerRegistry {
     /**
-     * Returns the [ServerServiceDefinition]s provided by the registry, or an empty list if not
+     * Returns the [GrpcServerServiceDefinition]s provided by the registry, or an empty list if not
      * supported by the implementation.
      */
-    public abstract fun getServices(): List<ServerServiceDefinition>
+    public abstract fun getServices(): List<GrpcServerServiceDefinition>
 
     /**
      * Lookup a [ServerMethodDefinition] by its fully-qualified name.
@@ -44,19 +44,18 @@ public actual abstract class HandlerRegistry {
 
 }
 
-internal actual class MutableHandlerRegistry : HandlerRegistry() {
+internal actual class GrpcMutableHandlerRegistry : GrpcHandlerRegistry() {
+    private val services = RpcInternalConcurrentHashMap<String, GrpcServerServiceDefinition>()
 
-    private val services = RpcInternalConcurrentHashMap<String, ServerServiceDefinition>()
-
-    actual fun addService(service: ServerServiceDefinition): ServerServiceDefinition? {
+    actual fun addService(service: GrpcServerServiceDefinition): GrpcServerServiceDefinition? {
         return services.put(service.getServiceDescriptor().getName(), service)
     }
 
-    actual fun removeService(service: ServerServiceDefinition): Boolean {
+    actual fun removeService(service: GrpcServerServiceDefinition): Boolean {
         return services.remove(service.getServiceDescriptor().getName()) != null
     }
 
-    override fun getServices(): List<ServerServiceDefinition> {
+    override fun getServices(): List<GrpcServerServiceDefinition> {
         return services.values.toList()
     }
 
@@ -64,7 +63,7 @@ internal actual class MutableHandlerRegistry : HandlerRegistry() {
         methodName: String,
         authority: String?,
     ): ServerMethodDefinition<*, *>? {
-        val serviceName = MethodDescriptor.extractFullServiceName(methodName) ?: return null
+        val serviceName = GrpcMethodDescriptor.extractFullServiceName(methodName) ?: return null
         val service = services[serviceName] ?: return null
         return service.getMethod(methodName)
     }

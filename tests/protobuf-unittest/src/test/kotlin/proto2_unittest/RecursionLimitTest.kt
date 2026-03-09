@@ -5,7 +5,7 @@
 package proto2_unittest
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
@@ -129,7 +129,7 @@ class RecursionLimitTest {
     fun testDefaultRecursionLimit() {
         val buffer = Buffer()
         WireDecoder(buffer).use { decoder ->
-            assertEquals(ProtobufConfig.DEFAULT_RECURSION_LIMIT, decoder.recursionLimit)
+            assertEquals(ProtoConfig.DEFAULT_RECURSION_LIMIT, decoder.recursionLimit)
             assertEquals(100, decoder.recursionLimit)
         }
     }

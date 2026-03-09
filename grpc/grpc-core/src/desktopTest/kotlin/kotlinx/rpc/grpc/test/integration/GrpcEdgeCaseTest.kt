@@ -6,8 +6,8 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.test.runTest
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
@@ -27,7 +27,7 @@ class GrpcEdgeCaseTest {
         val client = GrpcClient("invalid.host.jetbrains.com", 1234) {
             credentials = plaintext()
         }
-        assertGrpcFailure(StatusCode.UNAVAILABLE) {
+        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
             runTest {
                 val service = client.withService<EchoService>()
                 service.ServerStreamingEcho(message = EchoRequest {
@@ -35,7 +35,7 @@ class GrpcEdgeCaseTest {
                 }).retryWhen { cause, attempt ->
                     // we expect the cause to be UNAVAILABLE for every retry
                     println("Caused by: $cause, attempt: $attempt")
-                    assertEquals(StatusCode.UNAVAILABLE, (cause as? StatusException)?.status?.statusCode)
+                    assertEquals(GrpcStatusCode.UNAVAILABLE, (cause as? GrpcStatusException)?.status?.statusCode)
                     attempt < 3
                 }.collect { println(it) }
             }

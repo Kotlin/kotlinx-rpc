@@ -17,7 +17,7 @@ internal fun GrpcCallOptions.toJvm(coroutineContext: CoroutineContext): CallOpti
     if (compression !is GrpcCompression.None) {
         default = default.withCompression(compression.name)
     }
-    if (callCredentials !is EmptyCallCredentials) {
+    if (callCredentials !is GrpcEmptyCallCredentials) {
         default = default.withCallCredentials(callCredentials.toJvm(coroutineContext))
     }
     return default

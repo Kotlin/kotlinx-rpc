@@ -9,13 +9,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.withService
 import kotlin.reflect.KClass
 
 abstract class  BaseGrpcServiceTest {
     protected inline fun <@Grpc reified Service : Any> runServiceTest(
-        resolver: MessageMarshallerResolver,
+        resolver: GrpcMarshallerResolver,
         impl: Service,
         noinline block: suspend (Service) -> Unit,
     ) {
@@ -24,7 +24,7 @@ abstract class  BaseGrpcServiceTest {
 
     protected fun <@Grpc Service : Any> runServiceTest(
         kClass: KClass<Service>,
-        resolver: MessageMarshallerResolver,
+        resolver: GrpcMarshallerResolver,
         impl: Service,
         block: suspend (Service) -> Unit,
     ) = runTest {

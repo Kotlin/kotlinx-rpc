@@ -9,16 +9,16 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.client.ClientCallScope
-import kotlinx.rpc.grpc.client.ClientInterceptor
+import kotlinx.rpc.grpc.client.GrpcClientCallScope
+import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerCredentials
-import kotlinx.rpc.grpc.server.ServerInterceptor
+import kotlinx.rpc.grpc.server.GrpcServerCallScope
+import kotlinx.rpc.grpc.server.GrpcServerCredentials
+import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 
 abstract class GrpcTestBase {
     private val serverMutex = Mutex()
@@ -27,11 +27,11 @@ abstract class GrpcTestBase {
 
     @Suppress("LongParameterList")
     fun runGrpcTest(
-        serverCreds: ServerCredentials? = null,
+        serverCreds: GrpcServerCredentials? = null,
         clientCreds: GrpcClientCredentials? = null,
         overrideAuthority: String? = null,
-        clientInterceptors: List<ClientInterceptor> = emptyList(),
-        serverInterceptors: List<ServerInterceptor> = emptyList(),
+        clientInterceptors: List<GrpcClientInterceptor> = emptyList(),
+        serverInterceptors: List<GrpcServerInterceptor> = emptyList(),
         clientConfiguration: GrpcClientConfiguration.() -> Unit = {},
         serverConfiguration: GrpcServerConfiguration.() -> Unit = {},
         test: suspend (GrpcClient) -> Unit,
@@ -70,14 +70,14 @@ abstract class GrpcTestBase {
     }
 
     internal fun serverInterceptor(
-        block: ServerCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
-    ): List<ServerInterceptor> {
-        return listOf(object : ServerInterceptor {
+        block: GrpcServerCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
+    ): List<GrpcServerInterceptor> {
+        return listOf(object : GrpcServerInterceptor {
             @Suppress("UNCHECKED_CAST")
-            override fun <Req, Resp> ServerCallScope<Req, Resp>.intercept(
+            override fun <Req, Resp> GrpcServerCallScope<Req, Resp>.intercept(
                 request: Flow<Req>,
             ): Flow<Resp> {
-                with(this as ServerCallScope<Any, Any>) {
+                with(this as GrpcServerCallScope<Any, Any>) {
                     return block(request as Flow<Any>) as Flow<Resp>
                 }
             }
@@ -85,14 +85,14 @@ abstract class GrpcTestBase {
     }
 
     internal fun clientInterceptor(
-        block: ClientCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
-    ): List<ClientInterceptor> {
-        return listOf(object : ClientInterceptor {
+        block: GrpcClientCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
+    ): List<GrpcClientInterceptor> {
+        return listOf(object : GrpcClientInterceptor {
             @Suppress("UNCHECKED_CAST")
-            override fun <Req, Resp> ClientCallScope<Req, Resp>.intercept(
+            override fun <Req, Resp> GrpcClientCallScope<Req, Resp>.intercept(
                 request: Flow<Req>,
             ): Flow<Resp> {
-                with(this as ClientCallScope<Any, Any>) {
+                with(this as GrpcClientCallScope<Any, Any>) {
                     return block(request as Flow<Any>) as Flow<Resp>
                 }
             }

@@ -4,11 +4,11 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
@@ -88,24 +88,24 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public object MARSHALLER: MessageMarshaller<FieldMask> {
-        public override fun encode(value: FieldMask, config: MarshallerConfig?): Source {
+    public object MARSHALLER: GrpcMarshaller<FieldMask> {
+        public override fun encode(value: FieldMask, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        public override fun decode(source: Source, config: MarshallerConfig?): FieldMask {
+        public override fun decode(source: Source, config: GrpcMarshallerConfig?): FieldMask {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = FieldMaskInternal()
                 checkForPlatformDecodeException {
-                    FieldMaskInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    FieldMaskInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -128,7 +128,7 @@ public fun FieldMaskInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.paths.isNotEmpty()) {
         this.paths.forEach {
             encoder.writeString(1, it)
@@ -145,7 +145,7 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtobufCo
 }
 
 @InternalRpcApi
-public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

@@ -19,7 +19,7 @@
 package proto2_unittest
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -31,7 +31,7 @@ class WireFormatTest {
     @Test
     fun testSerialization() {
         val message = TestUtil.getAllSet()
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllFieldsSet(decoded)
     }
@@ -40,7 +40,7 @@ class WireFormatTest {
     @Test
     fun testSerializationPacked() {
         val message = TestUtil.getPackedSet()
-        val marshaller = marshallerOf<TestPackedTypes>()
+        val marshaller = grpcMarshallerOf<TestPackedTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertPackedFieldsSet(decoded)
     }
@@ -48,7 +48,7 @@ class WireFormatTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testOneofWireFormat
     @Test
     fun testOneofWireFormat() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val withUint32 = TestAllTypes {
             oneofField = TestAllTypes.OneofField.OneofUint32(42u)
@@ -68,7 +68,7 @@ class WireFormatTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testOneofOnlyLastSet
     @Test
     fun testOneofOnlyLastSet() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val withUint32 = TestAllTypes {
             oneofField = TestAllTypes.OneofField.OneofUint32(42u)
@@ -100,8 +100,8 @@ class WireFormatTest {
         // Packed and unpacked have the same field numbers but different wire formats.
         // A conformant parser should accept both.
         val packed = TestUtil.getPackedSet()
-        val packedMarshaller = marshallerOf<TestPackedTypes>()
-        val unpackedMarshaller = marshallerOf<TestUnpackedTypes>()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
+        val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
 
         val encoded = packedMarshaller.encode(packed)
         val decoded = unpackedMarshaller.decode(encoded)
@@ -111,8 +111,8 @@ class WireFormatTest {
     @Test
     fun testUnpackedToPackedWireCompat() {
         val unpacked = TestUtil.getUnpackedSet()
-        val unpackedMarshaller = marshallerOf<TestUnpackedTypes>()
-        val packedMarshaller = marshallerOf<TestPackedTypes>()
+        val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
 
         val encoded = unpackedMarshaller.encode(unpacked)
         val decoded = packedMarshaller.decode(encoded)
@@ -122,7 +122,7 @@ class WireFormatTest {
     @Test
     fun testEmptyMessageSerialization() {
         val msg = TestAllTypes {}
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(msg, marshaller)
         assertNull(decoded.optionalInt32)
         assertEquals(0, decoded.repeatedInt32.size)

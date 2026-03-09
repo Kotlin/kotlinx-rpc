@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.type
 import org.jetbrains.kotlin.name.Name
 
-object FirWithMarshallerDeclarationChecker {
+object FirWithGrpcMarshallerDeclarationChecker {
     fun check(
         declaration: FirRegularClass,
         context: CheckerContext,
@@ -35,26 +35,26 @@ object FirWithMarshallerDeclarationChecker {
             return
         }
 
-        val withMarshaller = declaration.getAnnotationByClassId(RpcClassId.withMarshallerAnnotation, context.session)
+        val withMarshaller = declaration.getAnnotationByClassId(RpcClassId.withGrpcMarshallerAnnotation, context.session)
             ?: error(
-                "Unexpected unresolved @WithMarshaller annotation type " +
+                "Unexpected unresolved @WithGrpcMarshaller annotation type " +
                         "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
             )
 
         val kClassValue = vsApi {
             withMarshaller.getKClassArgumentVS(MARSHALLER_ARGUMENT_NAME, context.session)
         } ?: error(
-            "Unexpected unresolved 'marshaller' argument for @WithMarshaller annotation " +
+            "Unexpected unresolved 'marshaller' argument for @WithGrpcMarshaller annotation " +
                     "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
         )
 
         val marshallerClassSymbol = vsApi { kClassValue.toClassSymbolVS(context.session) }
             ?: error(
-                "'marshaller' argument type for @WithMarshaller annotation is not a class " +
+                "'marshaller' argument type for @WithGrpcMarshaller annotation is not a class " +
                         "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
             )
 
-        val marshallerTargetClass = marshallerClassSymbol.resolveMessageMarshallerTypeArgument(context.session)
+        val marshallerTargetClass = marshallerClassSymbol.resolveGrpcMarshallerTypeArgument(context.session)
 
         if (marshallerTargetClass.classId != declaration.symbol.classId) {
             reporter.reportOn(
@@ -75,13 +75,13 @@ object FirWithMarshallerDeclarationChecker {
         }
     }
 
-    private fun FirClassSymbol<*>.resolveMessageMarshallerTypeArgument(session: FirSession): ConeKotlinType = vsApi {
+    private fun FirClassSymbol<*>.resolveGrpcMarshallerTypeArgument(session: FirSession): ConeKotlinType = vsApi {
         val superTypes = getSuperTypes(session, recursive = true, lookupInterfaces = true, substituteSuperTypes = true)
 
         return superTypes
-            .find { it.classId == RpcClassId.messageMarshaller }
+            .find { it.classId == RpcClassId.grpcMarshaller }
             ?.typeArguments?.single()?.type
-            ?: error("'MessageMarshaller' supertype not found for $classId")
+            ?: error("'GrpcMarshaller' supertype not found for $classId")
     }
 
     private val MARSHALLER_ARGUMENT_NAME = Name.identifier("marshaller")

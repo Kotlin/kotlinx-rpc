@@ -5,8 +5,8 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -28,12 +28,12 @@ public expect abstract class ServerCall<Request, Response> {
     public abstract fun request(numMessages: Int)
     public abstract fun sendHeaders(headers: GrpcMetadata)
     public abstract fun sendMessage(message: Response)
-    public abstract fun close(status: Status, trailers: GrpcMetadata)
+    public abstract fun close(status: GrpcStatus, trailers: GrpcMetadata)
 
     public open fun isReady(): Boolean
     public abstract fun isCancelled(): Boolean
 
-    public abstract fun getMethodDescriptor(): MethodDescriptor<Request, Response>
+    public abstract fun getMethodDescriptor(): GrpcMethodDescriptor<Request, Response>
 }
 
 @InternalRpcApi

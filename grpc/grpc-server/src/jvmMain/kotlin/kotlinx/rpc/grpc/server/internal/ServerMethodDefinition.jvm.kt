@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -12,7 +12,7 @@ public actual typealias ServerMethodDefinition<Request, Response> = io.grpc.Serv
 
 @InternalRpcApi
 public actual fun <Request, Response> serverMethodDefinition(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,
 ): ServerMethodDefinition<Request, Response> {
     return io.grpc.ServerMethodDefinition.create(descriptor, handler)

@@ -36,16 +36,16 @@ FILE: module_main_protoMessage.kt
 
         }
 
-        public final object MARSHALLER : R|kotlinx/rpc/grpc/marshaller/MessageMarshaller<test/my_message/MyMessage>| {
+        public final object MARSHALLER : R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<test/my_message/MyMessage>| {
             private constructor(): R|test/my_message/MyMessageInternal.MARSHALLER| {
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun encode(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/MarshallerConfig?|): R|test/my_message/MyMessage| {
+            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|test/my_message/MyMessage| {
                 R|kotlin/TODO|()
             }
 

@@ -8,8 +8,7 @@ package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.client.internal.ClientCall
+import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -34,7 +33,7 @@ public actual abstract class ClientCall<Request, Response> {
         public actual open fun onHeaders(headers: GrpcMetadata) {
         }
 
-        public actual open fun onClose(status: Status, trailers: GrpcMetadata) {
+        public actual open fun onClose(status: GrpcStatus, trailers: GrpcMetadata) {
         }
 
         public actual open fun onMessage(message: Message) {
@@ -49,7 +48,7 @@ public actual abstract class ClientCall<Request, Response> {
 public actual fun <Message> clientCallListener(
     onHeaders: (headers: GrpcMetadata) -> Unit,
     onMessage: (message: Message) -> Unit,
-    onClose: (status: Status, trailers: GrpcMetadata) -> Unit,
+    onClose: (status: GrpcStatus, trailers: GrpcMetadata) -> Unit,
     onReady: () -> Unit,
 ): ClientCall.Listener<Message> {
     return object : ClientCall.Listener<Message>() {
@@ -61,7 +60,7 @@ public actual fun <Message> clientCallListener(
             onMessage(message)
         }
 
-        override fun onClose(status: Status, trailers: GrpcMetadata) {
+        override fun onClose(status: GrpcStatus, trailers: GrpcMetadata) {
             onClose(status, trailers)
         }
 

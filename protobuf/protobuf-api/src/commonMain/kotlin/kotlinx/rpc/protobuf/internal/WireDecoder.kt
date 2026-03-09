@@ -14,12 +14,12 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
 /**
  * A platform-specific decoder for wire format data.
  *
- * This decoder is used by first calling [readTag], than looking up the field based on the field number in the returned,
- * tag and then calling the actual `read*()` method to read the value to the corresponding field.
+ * This decoder is used by first calling [readTag], then looking up the field based on the field number in the returned
+ * tag, and then calling the actual `read*()` method to read the value to the corresponding field.
  *
  * All `read*()` methods will throw an exception if the expected value couldn't be decoded.
  * Because of optimization reasons, the exception is platform-dependent. To unify them
- * wrap the decoding in a [checkForPlatformDecodeException] call, which turn platform-specific exceptions
+ * wrap the decoding in a [checkForPlatformDecodeException] call, which turns platform-specific exceptions
  * into a [ProtobufDecodingException].
  *
  * NOTE: If a call to `read*()` doesn't throw an error, it doesn't mean that the
@@ -29,14 +29,13 @@ internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
  * val buffer = Buffer()
  *
  * val encoder = WireEncoder(buffer)
- * assertTrue(encoder.writeInt32(fieldNr, 12312))
+ * encoder.writeInt32(fieldNr, 12312)
  * encoder.flush()
  *
  * checkForPlatformDecodeException {
  *  WireDecoder(buffer).use { decoder ->
  *      decoder.readTag()
  *      decoder.readBool()
- *      assertFalse(decoder.hasError())
  *  }
  * }
  * ```
@@ -50,7 +49,7 @@ public interface WireDecoder : AutoCloseable {
 
     /**
      * The maximum allowed recursion depth during message decoding.
-     * Defaults to [kotlinx.rpc.protobuf.ProtobufConfig.DEFAULT_RECURSION_LIMIT].
+     * Defaults to [kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT].
      */
     public var recursionLimit: Int
 
