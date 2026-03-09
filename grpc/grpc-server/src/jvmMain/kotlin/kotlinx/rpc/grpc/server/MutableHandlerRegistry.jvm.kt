@@ -12,6 +12,6 @@ import io.grpc.util.MutableHandlerRegistry
 /**
  * Registry of services and their methods used by servers to dispatching incoming calls.
  */
-public actual typealias HandlerRegistry = HandlerRegistry
+public actual typealias GrpcHandlerRegistry = HandlerRegistry
 
-internal actual typealias MutableHandlerRegistry = MutableHandlerRegistry
+internal actual typealias GrpcMutableHandlerRegistry = MutableHandlerRegistry

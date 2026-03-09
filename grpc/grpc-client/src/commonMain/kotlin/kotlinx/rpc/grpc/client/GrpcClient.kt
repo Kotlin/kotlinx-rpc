@@ -16,15 +16,15 @@ import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.ThrowingMessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.ThrowingGrpcMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.plus
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
@@ -37,14 +37,14 @@ private typealias RequestClient = Any
  */
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
-    messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver,
-    internal val interceptors: List<ClientInterceptor>,
+    messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
+    internal val interceptors: List<GrpcClientInterceptor>,
     // the default call credentials that are automatically attached to all calls made with this client
     internal val callCredentials: GrpcCallCredentials,
-    internal val marshallerConfig: MarshallerConfig?,
+    internal val marshallerConfig: GrpcMarshallerConfig?,
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
-    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingMessageMarshallerResolver
+    private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
     public fun shutdown() {
         delegates.clear()
@@ -65,14 +65,14 @@ public class GrpcClient internal constructor(
         val trailers = GrpcMetadata()
 
         return when (methodDescriptor.methodType) {
-            MethodType.UNARY -> unaryRpc(
+            GrpcMethodType.UNARY -> unaryRpc(
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
                 headers = trailers,
             )
 
-            MethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
+            GrpcMethodType.CLIENT_STREAMING -> @Suppress("UNCHECKED_CAST") clientStreamingRpc(
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -88,14 +88,14 @@ public class GrpcClient internal constructor(
         val headers = GrpcMetadata()
 
         when (methodDescriptor.methodType) {
-            MethodType.SERVER_STREAMING -> serverStreamingRpc(
+            GrpcMethodType.SERVER_STREAMING -> serverStreamingRpc(
                 descriptor = methodDescriptor,
                 request = request,
                 callOptions = callOptions,
                 headers = headers,
             )
 
-            MethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
+            GrpcMethodType.BIDI_STREAMING -> @Suppress("UNCHECKED_CAST") bidirectionalStreamingRpc(
                 descriptor = methodDescriptor,
                 requests = request as Flow<RequestClient>,
                 callOptions = callOptions,
@@ -106,7 +106,7 @@ public class GrpcClient internal constructor(
         }
     }
 
-    private inline fun <T, R> withGrpcCall(call: RpcCall, body: (MethodDescriptor<RequestClient, T>, Any) -> R): R {
+    private inline fun <T, R> withGrpcCall(call: RpcCall, body: (GrpcMethodDescriptor<RequestClient, T>, Any) -> R): R {
         require(call.arguments.size <= 1) {
             "Call parameter size must be 0 or 1, but ${call.arguments.size}"
         }
@@ -120,7 +120,7 @@ public class GrpcClient internal constructor(
 
         @Suppress("UNCHECKED_CAST")
         val methodDescriptor = delegate.getMethodDescriptor(call.callableName)
-                as? MethodDescriptor<RequestClient, T>
+            as? GrpcMethodDescriptor<RequestClient, T>
             ?: error("Expected a gRPC method descriptor")
 
         val request = call.arguments.getOrNull(0) ?: Unit
@@ -143,7 +143,7 @@ public class GrpcClient internal constructor(
  *
  * @return A new instance of [GrpcClient] configured with the specified target and options.
  *
- * @see [GrpcClientConfiguration]
+ * @see GrpcClientConfiguration
  */
 public fun GrpcClient(
     hostname: String,
@@ -153,7 +153,6 @@ public fun GrpcClient(
     val config = GrpcClientConfiguration().apply(configure)
     return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
 }
-
 
 /**
  * Creates and configures a gRPC client instance.
@@ -169,7 +168,7 @@ public fun GrpcClient(
  *
  * @return A new instance of [GrpcClient] configured with the specified target and options.
  *
- * @see [GrpcClientConfiguration]
+ * @see GrpcClientConfiguration
  */
 public fun GrpcClient(
     target: String,
@@ -184,10 +183,15 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.applyConfig(config).buildChannel()
-    val callCredentials = config.credentials?.realCallCredentials ?: EmptyCallCredentials
-    return GrpcClient(channel, config.messageMarshallerResolver, config.interceptors, callCredentials, config.marshallerConfig)
+    val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
+    return GrpcClient(
+        channel = channel,
+        messageMarshallerResolver = config.messageMarshallerResolver,
+        interceptors = config.interceptors,
+        callCredentials = callCredentials,
+        marshallerConfig = config.marshallerConfig,
+    )
 }
-
 
 /**
  * Configuration class for a gRPC client, providing customization options
@@ -199,23 +203,23 @@ private fun GrpcClient(
  * @see intercept
  */
 public class GrpcClientConfiguration internal constructor() {
-    internal val interceptors: MutableList<ClientInterceptor> = mutableListOf()
+    internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
 
     /**
      * Configurable resolver used to determine the appropriate marshaller for a given Kotlin type
      * during message serialization and deserialization in gRPC calls.
      *
-     * Custom implementations of [MessageMarshallerResolver] can be provided to handle specific serialization
+     * Custom implementations of [GrpcMarshallerResolver] can be provided to handle specific serialization
      * for arbitrary types.
-     * For custom types prefer using the [kotlinx.rpc.grpc.marshaller.WithMarshaller] annotation.
+     * For custom types prefer using the [kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller] annotation.
      *
-     * @see MessageMarshallerResolver
-     * @see kotlinx.rpc.grpc.marshaller.WithMarshaller
+     * @see GrpcMarshallerResolver
+     * @see kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
      */
-    public var messageMarshallerResolver: MessageMarshallerResolver = EmptyMessageMarshallerResolver
+    public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
-    public var marshallerConfig: MarshallerConfig? = null
+    public var marshallerConfig: GrpcMarshallerConfig? = null
 
     /**
      * Configures the client credentials used for secure gRPC requests made by the client.
@@ -257,13 +261,13 @@ public class GrpcClientConfiguration internal constructor() {
      * while one interceptor has to invoke the next interceptor to proceed with the call.
      *
      * @param interceptors Interceptors to be added to the current configuration.
-     * Each provided instance of [ClientInterceptor] may perform operations such as modifying headers,
+     * Each provided instance of [GrpcClientInterceptor] may perform operations such as modifying headers,
      * observing call metadata, logging, or transforming data flows.
      *
-     * @see ClientInterceptor
-     * @see ClientCallScope
+     * @see GrpcClientInterceptor
+     * @see GrpcClientCallScope
      */
-    public fun intercept(vararg interceptors: ClientInterceptor) {
+    public fun intercept(vararg interceptors: GrpcClientInterceptor) {
         this.interceptors.addAll(interceptors)
     }
 

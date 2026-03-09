@@ -8,9 +8,9 @@ import io.grpc.MethodDescriptor
 import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlin.reflect.KType
@@ -64,8 +64,8 @@ fun MethodDescriptor<*, *>.checkMethod(
     }
 }
 
-object SimpleResolver : MessageMarshallerResolver {
-    override fun resolveOrNull(kType: KType): MessageMarshaller<*>? {
+object SimpleResolver : GrpcMarshallerResolver {
+    override fun resolveOrNull(kType: KType): GrpcMarshaller<*>? {
         return when (kType.classifier) {
             String::class -> StringMarshaller
             Unit::class -> UnitMarshaller
@@ -75,22 +75,22 @@ object SimpleResolver : MessageMarshallerResolver {
     }
 }
 
-object StringMarshaller : MessageMarshaller<String> {
-    override fun encode(value: String, config: MarshallerConfig?): Source {
+object StringMarshaller : GrpcMarshaller<String> {
+    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): String {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
         TODO("Not yet implemented")
     }
 }
 
-object UnitMarshaller : MessageMarshaller<String> {
-    override fun encode(value: String, config: MarshallerConfig?): Source {
+object UnitMarshaller : GrpcMarshaller<String> {
+    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): String {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
         TODO("Not yet implemented")
     }
 }
@@ -98,12 +98,12 @@ object UnitMarshaller : MessageMarshaller<String> {
 @Suppress("unused")
 class Message(val a: Int, val b: String)
 
-object MessageClassMarshaller : MessageMarshaller<Message> {
-    override fun encode(value: Message, config: MarshallerConfig?): Source {
+object MessageClassMarshaller : GrpcMarshaller<Message> {
+    override fun encode(value: Message, config: GrpcMarshallerConfig?): Source {
         TODO("Not yet implemented")
     }
 
-    override fun decode(source: Source, config: MarshallerConfig?): Message {
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): Message {
         TODO("Not yet implemented")
     }
 }

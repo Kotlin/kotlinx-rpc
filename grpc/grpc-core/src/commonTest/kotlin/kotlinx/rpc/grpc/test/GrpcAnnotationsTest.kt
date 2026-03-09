@@ -7,10 +7,10 @@ package kotlinx.rpc.grpc.test
 import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.EmptyMessageMarshallerResolver
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MessageMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,7 +33,7 @@ class GrpcAnnotationsTest {
             val descriptor = serviceDescriptorOf<GrpcAnnotationsService>()
                     as GrpcServiceDescriptor<GrpcAnnotationsService>
 
-            descriptor.delegate(EmptyMessageMarshallerResolver, null)
+            descriptor.delegate(GrpcEmptyMarshallerResolver, null)
         }
     }
 
@@ -54,13 +54,13 @@ class GrpcAnnotationsTest {
     }
 }
 
-private val unitMarshaller = MessageMarshallerResolver {
-    object : MessageMarshaller<Unit> {
-        override fun encode(value: Unit, config: MarshallerConfig?): Source {
+private val unitMarshaller = GrpcMarshallerResolver {
+    object : GrpcMarshaller<Unit> {
+        override fun encode(value: Unit, config: GrpcMarshallerConfig?): Source {
             TODO("Not yet implemented")
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?) {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?) {
             TODO("Not yet implemented")
         }
     }

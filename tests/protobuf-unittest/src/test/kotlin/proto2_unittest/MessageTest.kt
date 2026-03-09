@@ -19,7 +19,7 @@
 
 package proto2_unittest
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -40,7 +40,7 @@ class MessageTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/MessageTest.java#testPreservesFloatingPointNegative0
     @Test
     fun testPreservesFloatingPointNegative0() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val withNegZeroFloat = TestAllTypes {
             optionalFloat = -0.0f
@@ -75,7 +75,7 @@ class MessageTest {
     @Test
     fun testSerializeRoundTrip() {
         val message = TestUtil.getAllSet()
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllFieldsSet(decoded)
     }
@@ -83,14 +83,14 @@ class MessageTest {
     @Test
     fun testEmptyMessageRoundTrip() {
         val message = TestAllTypes {}
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertClear(decoded)
     }
 
     @Test
     fun testPartialFieldsRoundTrip() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val partial = TestAllTypes {
             optionalInt32 = 42

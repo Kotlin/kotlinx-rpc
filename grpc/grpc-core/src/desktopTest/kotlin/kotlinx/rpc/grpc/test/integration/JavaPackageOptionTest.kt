@@ -8,7 +8,7 @@ import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.unaryRpc
 import kotlinx.rpc.grpc.test.withJavaPkg.TheService
@@ -38,7 +38,7 @@ class JavaPackageOptionTest : GrpcTestBase() {
             fullMethodName = "protopackage.TheService/TheMethod",
             requestMarshaller = EmptyInternal.MARSHALLER,
             responseMarshaller = EmptyInternal.MARSHALLER,
-            type = MethodType.UNARY,
+            type = GrpcMethodType.UNARY,
             schemaDescriptor = Unit,
             idempotent = true,
             safe = true,

@@ -15,8 +15,8 @@ import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.WithMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtobufException
 import java.nio.file.Path
@@ -87,7 +87,7 @@ internal class ConformanceClient {
 
     private fun doTest(request: ConformanceRequest): ConformanceResponse {
         val testMessage: InternalMessage
-        val marshaller: MessageMarshaller<Any?>
+        val marshaller: GrpcMarshaller<Any?>
         val messageType: String = request.messageType
 
         // todo support extensions
@@ -102,10 +102,10 @@ internal class ConformanceClient {
                     @Suppress("UNCHECKED_CAST")
                     marshaller = testMessageKClassOf(messageType)
                         .annotations
-                        .filterIsInstance<WithMarshaller>()
+                        .filterIsInstance<WithGrpcMarshaller>()
                         .singleOrNull()
                         ?.marshaller
-                        ?.objectInstance as? MessageMarshaller<Any?>
+                        ?.objectInstance as? GrpcMarshaller<Any?>
                         ?: error("Marshaller must be an object for $messageType")
 
                     val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value

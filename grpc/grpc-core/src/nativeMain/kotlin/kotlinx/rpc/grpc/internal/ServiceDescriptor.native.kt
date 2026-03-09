@@ -4,18 +4,18 @@
 
 package kotlinx.rpc.grpc.internal
 
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public actual class ServiceDescriptor internal constructor(
     private val name: String,
-    private val methods: Collection<MethodDescriptor<*, *>>,
+    private val methods: Collection<GrpcMethodDescriptor<*, *>>,
     private val schemaDescriptor: Any?,
 ) {
     public actual fun getName(): String = name
 
-    public actual fun getMethods(): Collection<MethodDescriptor<*, *>> = methods
+    public actual fun getMethods(): Collection<GrpcMethodDescriptor<*, *>> = methods
 
     public actual fun getSchemaDescriptor(): Any? = schemaDescriptor
 }
@@ -23,7 +23,7 @@ public actual class ServiceDescriptor internal constructor(
 @InternalRpcApi
 public actual fun serviceDescriptor(
     name: String,
-    methods: Collection<MethodDescriptor<*, *>>,
+    methods: Collection<GrpcMethodDescriptor<*, *>>,
     schemaDescriptor: Any?,
 ): ServiceDescriptor {
     return ServiceDescriptor(name, methods, schemaDescriptor)

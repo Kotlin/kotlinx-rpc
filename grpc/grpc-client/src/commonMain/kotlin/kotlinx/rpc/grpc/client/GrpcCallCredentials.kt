@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.client
 
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
 import kotlinx.rpc.grpc.plus
 
 /**
@@ -70,7 +69,6 @@ import kotlinx.rpc.grpc.plus
  * @see combine
  */
 public interface GrpcCallCredentials {
-
     /**
      * Retrieves authentication metadata for the gRPC call.
      *
@@ -97,13 +95,13 @@ public interface GrpcCallCredentials {
      * }
      * ```
      *
-     * Throwing a [kotlinx.rpc.grpc.StatusException] to fail the call:
+     * Throwing a [kotlinx.rpc.grpc.GrpcStatusException] to fail the call:
      * ```kotlin
      * override suspend fun Context.getRequestMetadata(): GrpcMetadata {
      *     val token = try {
      *         refreshToken()
      *     } catch (e: Exception) {
-     *         throw StatusException(Status(StatusCode.UNAUTHENTICATED, "Token refresh failed"))
+     *         throw GrpcStatusException(GrpcStatus(GrpcStatusCode.UNAUTHENTICATED, "Token refresh failed"))
      *     }
      *
      *     return GrpcMetadata {
@@ -114,7 +112,7 @@ public interface GrpcCallCredentials {
      *
      * @receiver Context information about the call being authenticated.
      * @return Metadata containing authentication information to attach to the request.
-     * @throws kotlinx.rpc.grpc.StatusException to abort the call with a specific gRPC status.
+     * @throws kotlinx.rpc.grpc.GrpcStatusException to abort the call with a specific gRPC status.
      */
     public suspend fun Context.getRequestMetadata(): GrpcMetadata
 
@@ -122,7 +120,7 @@ public interface GrpcCallCredentials {
      * Indicates whether this credential requires transport security (TLS).
      *
      * When `true` (the default), the credential will only be applied to calls over secure transports.
-     * If transport security is not present, the call will fail with [kotlinx.rpc.grpc.StatusCode.UNAUTHENTICATED].
+     * If transport security is not present, the call will fail with [kotlinx.rpc.grpc.GrpcStatusCode.UNAUTHENTICATED].
      *
      * Set to `false` only for credentials that are safe to send over insecure connections,
      * such as in testing environments or for non-sensitive authentication mechanisms.
@@ -203,14 +201,15 @@ public fun GrpcCallCredentials.combine(other: GrpcCallCredentials): GrpcCallCred
  * val credentials = if (useAuth) {
  *     BearerTokenCredentials(token)
  * } else {
- *     EmptyCallCredentials
+ *     GrpcEmptyCallCredentials
  * }
  * ```
  */
-public object  EmptyCallCredentials : GrpcCallCredentials {
+public object GrpcEmptyCallCredentials : GrpcCallCredentials {
     override suspend fun GrpcCallCredentials.Context.getRequestMetadata(): GrpcMetadata {
         return GrpcMetadata()
     }
+
     override val requiresTransportSecurity: Boolean = false
 }
 
@@ -224,5 +223,6 @@ internal class CombinedCallCredentials(
         return firstMetadata + secondMetadata
     }
 
-    override val requiresTransportSecurity: Boolean = first.requiresTransportSecurity || second.requiresTransportSecurity
+    override val requiresTransportSecurity: Boolean =
+        first.requiresTransportSecurity || second.requiresTransportSecurity
 }

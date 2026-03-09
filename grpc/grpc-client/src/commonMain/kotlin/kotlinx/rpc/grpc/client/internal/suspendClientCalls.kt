@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
@@ -20,16 +19,16 @@ import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.cause
-import kotlinx.rpc.grpc.client.ClientCallScope
+import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.plus
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.Ready
@@ -42,13 +41,13 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public suspend fun <Request, Response> GrpcClient.unaryRpc(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     request: Request,
     callOptions: GrpcCallOptions = GrpcCallOptions(),
     headers: GrpcMetadata = GrpcMetadata(),
 ): Response {
     val type = descriptor.methodType
-    require(type == MethodType.UNARY) {
+    require(type == GrpcMethodType.UNARY) {
         "Expected a unary RPC method, but got $descriptor"
     }
 
@@ -62,13 +61,13 @@ public suspend fun <Request, Response> GrpcClient.unaryRpc(
 
 @InternalRpcApi
 public fun <Request, Response> GrpcClient.serverStreamingRpc(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     request: Request,
     callOptions: GrpcCallOptions = GrpcCallOptions(),
     headers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
     val type = descriptor.methodType
-    require(type == MethodType.SERVER_STREAMING) {
+    require(type == GrpcMethodType.SERVER_STREAMING) {
         "Expected a server streaming RPC method, but got $type"
     }
 
@@ -82,13 +81,13 @@ public fun <Request, Response> GrpcClient.serverStreamingRpc(
 
 @InternalRpcApi
 public suspend fun <Request, Response> GrpcClient.clientStreamingRpc(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcCallOptions(),
     headers: GrpcMetadata = GrpcMetadata(),
 ): Response {
     val type = descriptor.methodType
-    require(type == MethodType.CLIENT_STREAMING) {
+    require(type == GrpcMethodType.CLIENT_STREAMING) {
         "Expected a client streaming RPC method, but got $type"
     }
 
@@ -102,13 +101,13 @@ public suspend fun <Request, Response> GrpcClient.clientStreamingRpc(
 
 @InternalRpcApi
 public fun <Request, Response> GrpcClient.bidirectionalStreamingRpc(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     requests: Flow<Request>,
     callOptions: GrpcCallOptions = GrpcCallOptions(),
     headers: GrpcMetadata = GrpcMetadata(),
 ): Flow<Response> {
     val type = descriptor.methodType
-    check(type == MethodType.BIDI_STREAMING) {
+    check(type == GrpcMethodType.BIDI_STREAMING) {
         "Expected a bidirectional streaming method, but got $type"
     }
 
@@ -150,7 +149,7 @@ private sealed interface ClientRequest<Request> {
 }
 
 private fun <Request, Response> GrpcClient.rpcImpl(
-    descriptor: MethodDescriptor<Request, Response>,
+    descriptor: GrpcMethodDescriptor<Request, Response>,
     callOptions: GrpcCallOptions,
     headers: GrpcMetadata,
     request: Flow<Request>,
@@ -171,13 +170,13 @@ private fun <Request, Response> GrpcClient.rpcImpl(
 
 private class ClientCallScopeImpl<Request, Response>(
     val client: GrpcClient,
-    override val method: MethodDescriptor<Request, Response>,
+    override val method: GrpcMethodDescriptor<Request, Response>,
     override val requestHeaders: GrpcMetadata,
     override val callOptions: GrpcCallOptions,
-) : ClientCallScope<Request, Response> {
+) : GrpcClientCallScope<Request, Response> {
     val interceptors = client.interceptors
     val onHeadersFuture = CallbackFuture<GrpcMetadata>()
-    val onCloseFuture = CallbackFuture<Pair<Status, GrpcMetadata>>()
+    val onCloseFuture = CallbackFuture<Pair<GrpcStatus, GrpcMetadata>>()
 
     var interceptorIndex = 0
 
@@ -185,12 +184,12 @@ private class ClientCallScopeImpl<Request, Response>(
         onHeadersFuture.onComplete { block(it) }
     }
 
-    override fun onClose(block: (Status, GrpcMetadata) -> Unit) {
+    override fun onClose(block: (GrpcStatus, GrpcMetadata) -> Unit) {
         onCloseFuture.onComplete { block(it.first, it.second) }
     }
 
     override fun cancel(message: String, cause: Throwable?): Nothing {
-        throw StatusException(Status(StatusCode.CANCELLED, message, cause))
+        throw GrpcStatusException(GrpcStatus(GrpcStatusCode.CANCELLED, message, cause))
     }
 
     override fun proceed(request: Flow<Request>): Flow<Response> {
@@ -224,7 +223,7 @@ private class ClientCallScopeImpl<Request, Response>(
             call.start(channelResponseListener(call, responses, ready), requestHeaders)
 
             suspend fun Flow<Request>.send() {
-                if (method.methodType == MethodType.UNARY || method.methodType == MethodType.SERVER_STREAMING) {
+                if (method.methodType == GrpcMethodType.UNARY || method.methodType == GrpcMethodType.SERVER_STREAMING) {
                     call.sendMessage(single())
                 } else {
                     ready.suspendUntilReady()
@@ -277,8 +276,8 @@ private class ClientCallScopeImpl<Request, Response>(
         onHeaders = {
             try {
                 onHeadersFuture.complete(it)
-            } catch (e: StatusException) {
-                // if a client interceptor called cancel, we throw a StatusException.
+            } catch (e: GrpcStatusException) {
+                // if a client interceptor called cancel, we throw a GrpcStatusException.
                 // as the JVM implementation treats them differently, we need to catch them here.
                 call.cancel(e.message, e.cause)
             }
@@ -288,20 +287,20 @@ private class ClientCallScopeImpl<Request, Response>(
                 throw e ?: AssertionError("onMessage should never be called until responses is ready")
             }
         },
-        onClose = { status: Status, trailers: GrpcMetadata ->
+        onClose = { status: GrpcStatus, trailers: GrpcMetadata ->
             var cause = when {
-                status.statusCode == StatusCode.OK -> null
+                status.statusCode == GrpcStatusCode.OK -> null
                 status.cause is CancellationException -> status.cause
-                else -> StatusException(status, trailers)
+                else -> GrpcStatusException(status, trailers)
             }
 
             try {
                 onCloseFuture.complete(status to trailers)
             } catch (exception: Throwable) {
                 cause = exception
-                if (exception !is StatusException) {
-                    val status = Status(StatusCode.CANCELLED, "Interceptor threw an error", exception)
-                    cause = StatusException(status)
+                if (exception !is GrpcStatusException) {
+                    val status = GrpcStatus(GrpcStatusCode.CANCELLED, "Interceptor threw an error", exception)
+                    cause = GrpcStatusException(status)
                 }
             }
 

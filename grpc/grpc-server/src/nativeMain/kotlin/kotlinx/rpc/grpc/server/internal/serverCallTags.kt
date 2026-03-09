@@ -16,11 +16,11 @@ import kotlinx.cinterop.cValue
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.toByteArray
-import kotlinx.rpc.grpc.server.HandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
 import libkgrpc.gpr_timespec
 import libkgrpc.grpc_call_details
 import libkgrpc.grpc_call_details_destroy
@@ -102,7 +102,7 @@ internal class RegisteredServerCallTag<Request, Response>(
  */
 internal class LookupServerCallTag(
     val cq: CompletionQueue,
-    val registry: HandlerRegistry,
+    val registry: GrpcHandlerRegistry,
 ) : CallbackTag {
     val arena = Arena()
     val rawCall = arena.alloc<CPointerVar<grpc_call>>()
@@ -141,7 +141,7 @@ internal class LookupServerCallTag(
                     val call = NativeServerCall(
                         rawCall.value!!,
                         cq,
-                        definition.getMethodDescriptor() as MethodDescriptor<Any, Any>
+                        definition.getMethodDescriptor() as GrpcMethodDescriptor<Any, Any>
                     )
                     val headers = GrpcMetadata(rawRequestMetadata)
                     val listener = callHandler.startCall(call, headers)

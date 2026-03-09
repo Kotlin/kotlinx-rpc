@@ -12,8 +12,8 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 
 // valid, because there is a corresponding builder interface and internal class with DESCRIPTOR and MARSHALLER objects
 @GeneratedProtoMessage
@@ -23,12 +23,12 @@ class MyMessage1Internal : MyMessage1.Builder {
         override val fullName: String = "fullName"
     }
 
-    object MARSHALLER: MessageMarshaller<MyMessage1> {
-        override fun encode(value: MyMessage1, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage1> {
+        override fun encode(value: MyMessage1, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage1 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage1 {
             TODO()
         }
     }
@@ -42,12 +42,12 @@ class MyMessage9Internal : MyMessage9 {
         override val fullName: String = "fullName"
     }
 
-    object MARSHALLER: MessageMarshaller<MyMessage9> {
-        override fun encode(value: MyMessage9, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage9> {
+        override fun encode(value: MyMessage9, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage9 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage9 {
             TODO()
         }
     }
@@ -60,12 +60,12 @@ class MyMessage2Internal : MyMessage2.<!UNRESOLVED_REFERENCE!>Builder<!> {
     object DESCRIPTOR: ProtoDescriptor<MyMessage2> {
         override val fullName: String = "fullName"
     }
-    object MARSHALLER: MessageMarshaller<MyMessage2> {
-        override fun encode(value: MyMessage2, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage2> {
+        override fun encode(value: MyMessage2, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage2 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage2 {
             TODO()
         }
     }
@@ -79,12 +79,12 @@ interface MyMessage3
 <!PROTO_MESSAGE_IS_GENERATED_ONLY!>@GeneratedProtoMessage<!>
 interface MyMessage4
 class MyMessage4Internal : MyMessage4.Builder {
-    object MARSHALLER: MessageMarshaller<MyMessage4> {
-        override fun encode(value: MyMessage4, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage4> {
+        override fun encode(value: MyMessage4, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage4 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage4 {
             TODO()
         }
     }
@@ -98,12 +98,12 @@ class MyMessage5Internal: MyMessage5 {
         override val fullName: String = "fullName"
     }
 
-    object MARSHALLER: MessageMarshaller<MyMessage5> {
-        override fun encode(value: MyMessage5, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage5> {
+        override fun encode(value: MyMessage5, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage5 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage5 {
             TODO()
         }
     }
@@ -115,18 +115,18 @@ interface MyMessage6
 class MyMessage6Internal: MyMessage6.Builder {
     object DESCRIPTOR {}
 
-    object MARSHALLER: MessageMarshaller<MyMessage6> {
-        override fun encode(value: MyMessage6, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage6> {
+        override fun encode(value: MyMessage6, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage6 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage6 {
             TODO()
         }
     }
 }
 
-// invalid, because there is the marshaller doesn't implement the MessageMarshaller interface
+// invalid, because there is the marshaller doesn't implement the GrpcMarshaller interface
 <!PROTO_MESSAGE_IS_GENERATED_ONLY!>@GeneratedProtoMessage<!>
 interface MyMessage7
 class MyMessage7Internal: MyMessage7.Builder {

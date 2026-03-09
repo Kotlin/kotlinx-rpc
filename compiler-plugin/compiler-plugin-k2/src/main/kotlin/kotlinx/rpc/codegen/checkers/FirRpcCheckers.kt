@@ -19,7 +19,7 @@ class FirRpcDeclarationCheckers(ctx: FirCheckersContext) : DeclarationCheckers()
         FirRpcStrictModeClassCheckerVS(),
         FirRpcServiceDeclarationCheckerVS(ctx),
         FirGrpcServiceDeclarationCheckerVS(),
-        FirWithMarshallerDeclarationCheckerVS(),
+        FirWithGrpcMarshallerDeclarationCheckerVS(),
         FirProtoMessageAnnotationCheckerVS(),
     )
 

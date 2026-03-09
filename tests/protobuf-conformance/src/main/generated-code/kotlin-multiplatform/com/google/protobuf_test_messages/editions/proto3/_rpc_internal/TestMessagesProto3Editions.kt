@@ -37,11 +37,11 @@ import com.google.protobuf.kotlin.ValueInternal
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -1208,24 +1208,24 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         @InternalRpcApi
-        object MARSHALLER: MessageMarshaller<TestAllTypesProto3.NestedMessage> {
-            override fun encode(value: TestAllTypesProto3.NestedMessage, config: MarshallerConfig?): Source {
+        object MARSHALLER: GrpcMarshaller<TestAllTypesProto3.NestedMessage> {
+            override fun encode(value: TestAllTypesProto3.NestedMessage, config: GrpcMarshallerConfig?): Source {
                 val buffer = Buffer()
                 val encoder = WireEncoder(buffer)
                 val internalMsg = value.asInternal()
                 checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
                 }
                 encoder.flush()
                 return buffer
             }
 
-            override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto3.NestedMessage {
+            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3.NestedMessage {
                 WireDecoder(source).use {
-                    (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                     val msg = NestedMessageInternal()
                     checkForPlatformDecodeException {
-                        NestedMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                        NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
                     }
                     msg.checkRequiredFields()
                     return msg
@@ -2308,24 +2308,24 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<TestAllTypesProto3> {
-        override fun encode(value: TestAllTypesProto3, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<TestAllTypesProto3> {
+        override fun encode(value: TestAllTypesProto3, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): TestAllTypesProto3 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3 {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = TestAllTypesProto3Internal()
                 checkForPlatformDecodeException {
-                    TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
+                    TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -2399,24 +2399,24 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<ForeignMessage> {
-        override fun encode(value: ForeignMessage, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<ForeignMessage> {
+        override fun encode(value: ForeignMessage, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): ForeignMessage {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): ForeignMessage {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = ForeignMessageInternal()
                 checkForPlatformDecodeException {
-                    ForeignMessageInternal.decodeWith(msg, it, config as? ProtobufConfig)
+                    ForeignMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -2485,24 +2485,24 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<NullHypothesisProto3> {
-        override fun encode(value: NullHypothesisProto3, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<NullHypothesisProto3> {
+        override fun encode(value: NullHypothesisProto3, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): NullHypothesisProto3 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): NullHypothesisProto3 {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = NullHypothesisProto3Internal()
                 checkForPlatformDecodeException {
-                    NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
+                    NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -2571,24 +2571,24 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: MessageMarshaller<EnumOnlyProto3> {
-        override fun encode(value: EnumOnlyProto3, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<EnumOnlyProto3> {
+        override fun encode(value: EnumOnlyProto3, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
             val encoder = WireEncoder(buffer)
             val internalMsg = value.asInternal()
             checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtobufConfig)
+                internalMsg.encodeWith(encoder, config as? ProtoConfig)
             }
             encoder.flush()
             return buffer
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): EnumOnlyProto3 {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): EnumOnlyProto3 {
             WireDecoder(source).use {
-                (config as? ProtobufConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
+                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
                 val msg = EnumOnlyProto3Internal()
                 checkForPlatformDecodeException {
-                    EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtobufConfig)
+                    EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
                 msg.checkRequiredFields()
                 return msg
@@ -2770,7 +2770,7 @@ fun TestAllTypesProto3Internal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.optionalInt32 != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.optionalInt32)
     }
@@ -3604,7 +3604,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: Protobuf
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5158,7 +5158,7 @@ fun ForeignMessageInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.c != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.c)
     }
@@ -5173,7 +5173,7 @@ fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConf
 }
 
 @InternalRpcApi
-fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5223,7 +5223,7 @@ fun NullHypothesisProto3Internal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     // no fields to encode
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
@@ -5235,7 +5235,7 @@ fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: Protob
 }
 
 @InternalRpcApi
-fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5278,7 +5278,7 @@ fun EnumOnlyProto3Internal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     // no fields to encode
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
@@ -5290,7 +5290,7 @@ fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtobufConf
 }
 
 @InternalRpcApi
-fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5336,7 +5336,7 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.a != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.a)
     }
@@ -5355,7 +5355,7 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5416,7 +5416,7 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.checkRequiredFields() 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -5435,7 +5435,7 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32Int32EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32Int32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5492,7 +5492,7 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.checkRequiredFields() 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0L) {
         encoder.writeInt64(fieldNr = 1, value = this.key)
     }
@@ -5511,7 +5511,7 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt64Int64EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt64Int64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5568,7 +5568,7 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.checkRequiredFields(
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0u) {
         encoder.writeUInt32(fieldNr = 1, value = this.key)
     }
@@ -5587,7 +5587,7 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint32Uint32EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint32Uint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5644,7 +5644,7 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.checkRequiredFields(
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0uL) {
         encoder.writeUInt64(fieldNr = 1, value = this.key)
     }
@@ -5663,7 +5663,7 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint64Uint64EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint64Uint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5720,7 +5720,7 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.checkRequiredFields(
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0) {
         encoder.writeSInt32(fieldNr = 1, value = this.key)
     }
@@ -5739,7 +5739,7 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint32Sint32EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint32Sint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5796,7 +5796,7 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.checkRequiredFields(
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0L) {
         encoder.writeSInt64(fieldNr = 1, value = this.key)
     }
@@ -5815,7 +5815,7 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint64Sint64EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint64Sint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5872,7 +5872,7 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.checkRequiredField
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0u) {
         encoder.writeFixed32(fieldNr = 1, value = this.key)
     }
@@ -5891,7 +5891,7 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -5948,7 +5948,7 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.checkRequiredField
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0uL) {
         encoder.writeFixed64(fieldNr = 1, value = this.key)
     }
@@ -5967,7 +5967,7 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6024,7 +6024,7 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.checkRequiredFie
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0) {
         encoder.writeSFixed32(fieldNr = 1, value = this.key)
     }
@@ -6043,7 +6043,7 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6100,7 +6100,7 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.checkRequiredFie
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0L) {
         encoder.writeSFixed64(fieldNr = 1, value = this.key)
     }
@@ -6119,7 +6119,7 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6176,7 +6176,7 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.checkRequiredFields() 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6195,7 +6195,7 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32FloatEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32FloatEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6252,7 +6252,7 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.checkRequiredFields()
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6271,7 +6271,7 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32DoubleEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32DoubleEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6328,7 +6328,7 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.checkRequiredFields() {
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key != false) {
         encoder.writeBool(fieldNr = 1, value = this.key)
     }
@@ -6347,7 +6347,7 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapBoolBoolEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapBoolBoolEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6404,7 +6404,7 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.checkRequiredFields(
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6423,7 +6423,7 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringStringEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringStringEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6480,7 +6480,7 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.checkRequiredFields()
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6499,7 +6499,7 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringBytesEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringBytesEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6559,7 +6559,7 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.checkRequired
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6578,7 +6578,7 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(en
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6642,7 +6642,7 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.checkRequire
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6661,7 +6661,7 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(e
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6722,7 +6722,7 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.checkRequiredFie
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6741,7 +6741,7 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
@@ -6798,7 +6798,7 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.checkRequiredFi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6817,7 +6817,7 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal, decoder: WireDecoder, config: ProtobufConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {

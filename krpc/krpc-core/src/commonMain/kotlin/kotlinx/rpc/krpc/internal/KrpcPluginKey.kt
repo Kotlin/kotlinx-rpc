@@ -76,7 +76,8 @@ public enum class KrpcPluginKey(
     }
 }
 
-private class KrpcPluginKeySerializer : RpcInternalShortEnumKSerializer<KrpcPluginKey>(
+@InternalRpcApi
+public class KrpcPluginKeySerializer : RpcInternalShortEnumKSerializer<KrpcPluginKey>(
     kClass = KrpcPluginKey::class,
     unknownValue = KrpcPluginKey.UNKNOWN,
     allValues = KrpcPluginKey.ALL,

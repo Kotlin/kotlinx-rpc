@@ -21,7 +21,7 @@ package proto2_unittest
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.invoke
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import proto2_unittest.TestAllTypes.NestedEnum
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -240,7 +240,7 @@ class GeneratedMessageTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testOneofSerialization
     @Test
     fun testOneofSerialization() {
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         // Test round-trip for each oneof variant
         val withUint32 = TestAllTypes {
@@ -292,8 +292,8 @@ class GeneratedMessageTest {
     fun testParsePackedToUnpacked() {
         // Encode packed, decode as unpacked
         val packed = TestUtil.getPackedSet()
-        val packedMarshaller = marshallerOf<TestPackedTypes>()
-        val unpackedMarshaller = marshallerOf<TestUnpackedTypes>()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
+        val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
 
         val encoded = packedMarshaller.encode(packed)
         val unpacked = unpackedMarshaller.decode(encoded)
@@ -305,8 +305,8 @@ class GeneratedMessageTest {
     fun testParseUnpackedToPacked() {
         // Encode unpacked, decode as packed
         val unpacked = TestUtil.getUnpackedSet()
-        val unpackedMarshaller = marshallerOf<TestUnpackedTypes>()
-        val packedMarshaller = marshallerOf<TestPackedTypes>()
+        val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
 
         val encoded = unpackedMarshaller.encode(unpacked)
         val packed = packedMarshaller.decode(encoded)
@@ -361,7 +361,7 @@ class GeneratedMessageTest {
     @Test
     fun testSerializeRoundTrip() {
         val message = TestUtil.getAllSet()
-        val marshaller = marshallerOf<TestAllTypes>()
+        val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllFieldsSet(decoded)
     }

@@ -7,8 +7,8 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.io.Buffer
 import kotlinx.io.InternalIoApi
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.marshaller.marshallerOf
-import kotlinx.rpc.protobuf.ProtobufConfig
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.submsg.Other
 import test.submsg.asInternal
@@ -22,13 +22,13 @@ import kotlin.test.assertTrue
 class UnknownFieldsTest {
 
     fun send(msg: UnknownFieldsAll): UnknownFieldsSubset {
-        val encoded = marshallerOf<UnknownFieldsAll>().encode(msg)
-        return marshallerOf<UnknownFieldsSubset>().decode(encoded)
+        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(msg)
+        return grpcMarshallerOf<UnknownFieldsSubset>().decode(encoded)
     }
 
     fun send(msg: UnknownFieldsSubset): UnknownFieldsAll {
-        val encoded = marshallerOf<UnknownFieldsSubset>().encode(msg)
-        return marshallerOf<UnknownFieldsAll>().decode(encoded)
+        val encoded = grpcMarshallerOf<UnknownFieldsSubset>().encode(msg)
+        return grpcMarshallerOf<UnknownFieldsAll>().decode(encoded)
     }
 
     @Test
@@ -43,14 +43,14 @@ class UnknownFieldsTest {
             testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
         }
 
-        val encoded = marshallerOf<UnknownFieldsAll>().encode(all)
-        val discardMarshaller = marshallerOf<UnknownFieldsSubset>(ProtobufConfig(discardUnknownFields = true))
+        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(all)
+        val discardMarshaller = grpcMarshallerOf<UnknownFieldsSubset>(ProtoConfig(discardUnknownFields = true))
 
         val subsetDiscarded = discardMarshaller.decode(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)
         assertEquals(all.field1, subsetDiscarded.field1)
 
-        val roundTrippedDiscarded = marshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
+        val roundTrippedDiscarded = grpcMarshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
         assertEquals(null, roundTrippedDiscarded.intMissing)
         assertEquals(all.field1, roundTrippedDiscarded.field1)
         assertEquals(AllPrimitives {}, roundTrippedDiscarded.allPrimitivesMissing)
@@ -422,14 +422,14 @@ class UnknownFieldsTest {
         val originalBytes = originalCopy.readByteArray()
 
         // decode with UnknownFieldsSubset (which doesn't know about the group fields)
-        val subset = marshallerOf<UnknownFieldsSubset>().decode(originalBuffer)
+        val subset = grpcMarshallerOf<UnknownFieldsSubset>().decode(originalBuffer)
 
         // the unknown fields should be preserved
         val unknownFields = subset.asInternal()._unknownFields
         assertTrue(unknownFields.size > 0L, "Unknown fields should contain the group data")
 
         // re-encode and check that the buffer contains the same data
-        val reencodedBuffer = marshallerOf<UnknownFieldsSubset>().encode(subset)
+        val reencodedBuffer = grpcMarshallerOf<UnknownFieldsSubset>().encode(subset)
         val reencodedBytes = reencodedBuffer.readByteArray()
 
         // the buffers should be identical
@@ -453,14 +453,14 @@ class UnknownFieldsTest {
         val unknownFieldsNested = subset.nested.asInternal()._unknownFields
         assertTrue(unknownFieldsNested.size != 0L)
 
-        val encodedSubset = marshallerOf<UnknownFieldsSubset>().encode(subset)
+        val encodedSubset = grpcMarshallerOf<UnknownFieldsSubset>().encode(subset)
 
         val unknownNestedFieldsHex = unknownFieldsNested.copy().readByteArray().toHexString()
         val encodedSubsetHex = encodedSubset.buffer.copy().readByteArray().toHexString()
         assertTrue(encodedSubsetHex.endsWith(unknownNestedFieldsHex),
             "Encoded subset should end with nested unknown fields")
 
-        val all2 = marshallerOf<UnknownFieldsAll>().decode(encodedSubset)
+        val all2 = grpcMarshallerOf<UnknownFieldsAll>().decode(encodedSubset)
         assertEquals(all, all2)
         assertEquals(all2.nested.stringMissing, "nested string")
     }

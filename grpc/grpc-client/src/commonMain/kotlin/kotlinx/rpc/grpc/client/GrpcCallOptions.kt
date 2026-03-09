@@ -57,7 +57,7 @@ public class GrpcCallOptions {
      * such as bearer tokens, API keys, or custom authentication information.
      *
      * ## Default Behavior
-     * Defaults to [EmptyCallCredentials], which attaches no authentication headers.
+     * Defaults to [GrpcEmptyCallCredentials], which attaches no authentication headers.
      *
      * ## Usage Patterns
      *
@@ -86,12 +86,12 @@ public class GrpcCallOptions {
      *
      * ### Transport Security
      * If any call credential requires transport security ([GrpcCallCredentials.requiresTransportSecurity]),
-     * the call will fail with [kotlinx.rpc.grpc.StatusCode.UNAUTHENTICATED] unless the channel
+     * the call will fail with [kotlinx.rpc.grpc.GrpcStatusCode.UNAUTHENTICATED] unless the channel
      * is configured with TLS credentials (which is the default, except if the client uses `plaintext()`).
      *
      * @see GrpcCallCredentials
-     * @see EmptyCallCredentials
+     * @see GrpcEmptyCallCredentials
      * @see GrpcCallCredentials.plus
      */
-    public var callCredentials: GrpcCallCredentials = EmptyCallCredentials
+    public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }

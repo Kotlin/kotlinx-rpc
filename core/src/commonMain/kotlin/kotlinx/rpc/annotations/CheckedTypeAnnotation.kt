@@ -57,10 +57,10 @@ public annotation class CheckedTypeAnnotation(
      * cannot be used directly in function declarations.
      * Example:
      * ```
-     * @WithMarshaller(MessageMarshaller::class)
+     * @WithGrpcMarshaller(GrpcMarshaller::class)
      * class Message
      *
-     * fun <reified @HasWithMarshaller T : Any> marshallerOf(): T { ... }
+     * fun <reified @HasWithGrpcMarshaller T : Any> grpcMarshallerOf(): T { ... }
      * ```
      */
     val checkFor: KClass<*> = CheckedTypeAnnotation::class

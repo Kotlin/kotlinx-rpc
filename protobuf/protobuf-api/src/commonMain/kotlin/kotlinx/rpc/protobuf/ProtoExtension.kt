@@ -41,7 +41,7 @@ public fun ProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> 
 /**
  * Runtime registry of known extension descriptors.
  *
- * The registry can be passed to a [ProtobufConfig] to enable extension parsing.
+ * The registry can be passed to a [ProtoConfig] to enable extension parsing.
  * During decoding, the protobuf runtime looks up extension descriptors by
  * `(message type, field number)` and delegates parsing to the matching descriptor.
  *
@@ -53,7 +53,7 @@ public fun ProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> 
  *     +MyFileExtensions.myExtension
  *     +MyFileExtensions.anotherExtension
  * }
- * val config = ProtobufConfig(extensionRegistry = registry)
+ * val config = ProtoConfig(extensionRegistry = registry)
  * ```
  */
 public class ProtoExtensionRegistry internal constructor() {

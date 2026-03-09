@@ -16,7 +16,7 @@
 
 package protobuf.kotlin.generator
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -234,7 +234,7 @@ class EvilNamesProto3Test {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
     @Test
     fun testEvilNamesProto3RoundTrip() {
-        val marshaller = marshallerOf<EvilNamesProto3>()
+        val marshaller = grpcMarshallerOf<EvilNamesProto3>()
         val msg = EvilNamesProto3 {
             hasFoo = true
             Bar = "test"
@@ -279,7 +279,7 @@ class EvilNamesProto3Test {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testHardKeywordGettersAndSetters
     @Test
     fun testHardKeywordsProto3RoundTrip() {
-        val marshaller = marshallerOf<HardKeywordsAllTypesProto3>()
+        val marshaller = grpcMarshallerOf<HardKeywordsAllTypesProto3>()
         val msg = HardKeywordsAllTypesProto3 {
             `as` = 42
             `in` = "inside"

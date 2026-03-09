@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.keys
 import kotlinx.rpc.grpc.test.EchoRequest
@@ -71,7 +71,7 @@ class GrpcCompressionTest : GrpcTestBase() {
 
     @Test
     fun `test unknown compression - should fail`() = assertGrpcFailure(
-        StatusCode.INTERNAL,
+        GrpcStatusCode.INTERNAL,
         "Unable to find compressor by name unknownCompressionName"
     ) {
         runGrpcTest(

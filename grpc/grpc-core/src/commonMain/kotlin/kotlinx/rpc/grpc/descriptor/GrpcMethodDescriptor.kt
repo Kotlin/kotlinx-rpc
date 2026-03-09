@@ -4,10 +4,10 @@
 
 package kotlinx.rpc.grpc.descriptor
 
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-public expect class MethodDescriptor<Request, Response> {
+public expect class GrpcMethodDescriptor<Request, Response> {
     public fun getFullMethodName(): String
     public fun getServiceName(): String?
     public fun getSchemaDescriptor(): Any?
@@ -16,9 +16,9 @@ public expect class MethodDescriptor<Request, Response> {
     public fun isSampledToLocalTracing(): Boolean
 }
 
-public expect val MethodDescriptor<*, *>.methodType: MethodType
+public expect val GrpcMethodDescriptor<*, *>.methodType: GrpcMethodType
 
-public enum class MethodType {
+public enum class GrpcMethodType {
     UNARY,
     CLIENT_STREAMING,
     SERVER_STREAMING,
@@ -27,7 +27,7 @@ public enum class MethodType {
 }
 
 /**
- * Creates a new [MethodDescriptor] instance.
+ * Creates a new [GrpcMethodDescriptor] instance.
  *
  * @param fullMethodName the full name of the method, consisting of the service name followed by a forward slash
  *      and the method name. It does not include a leading slash.
@@ -35,11 +35,11 @@ public enum class MethodType {
 @InternalRpcApi
 public expect fun <Request, Response> methodDescriptor(
     fullMethodName: String,
-    requestMarshaller: MessageMarshaller<Request>,
-    responseMarshaller: MessageMarshaller<Response>,
-    type: MethodType,
+    requestMarshaller: GrpcMarshaller<Request>,
+    responseMarshaller: GrpcMarshaller<Response>,
+    type: GrpcMethodType,
     schemaDescriptor: Any?,
     idempotent: Boolean,
     safe: Boolean,
     sampledToLocalTracing: Boolean,
-): MethodDescriptor<Request, Response>
+): GrpcMethodDescriptor<Request, Response>

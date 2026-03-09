@@ -17,8 +17,8 @@ import kotlinx.rpc.grpc.GrpcMetadataKey
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.contains
 import kotlinx.rpc.grpc.copy
 import kotlinx.rpc.grpc.get
@@ -435,14 +435,14 @@ class MetadataTest : GrpcTestBase() {
 
     // ASCII marshaller - encodes to/from ASCII string (for non-binary methods)
     @OptIn(ExperimentalRpcApi::class)
-    private object TestUserAsciiMarshaller : MessageMarshaller<TestUser> {
-        override fun encode(value: TestUser, config: MarshallerConfig?): Source {
+    private object TestUserAsciiMarshaller : GrpcMarshaller<TestUser> {
+        override fun encode(value: TestUser, config: GrpcMarshallerConfig?): Source {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
             return Buffer().apply { writeString(asciiString) }
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?   ): TestUser {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?   ): TestUser {
             // Decode from ASCII string
             val asciiString = Buffer().apply { transferFrom(source) }.readString()
             val parts = asciiString.split(":")

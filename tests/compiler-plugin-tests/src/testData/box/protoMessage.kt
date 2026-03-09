@@ -16,8 +16,8 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.io.Source
 
 @GeneratedProtoMessage
@@ -32,12 +32,12 @@ class MyMessageInternal : MyMessage.Builder {
         override val fullName: String = "fullName"
     }
 
-    object MARSHALLER: MessageMarshaller<MyMessage> {
-        override fun encode(value: MyMessage, config: MarshallerConfig?): Source {
+    object MARSHALLER: GrpcMarshaller<MyMessage> {
+        override fun encode(value: MyMessage, config: GrpcMarshallerConfig?): Source {
             TODO()
         }
 
-        override fun decode(source: Source, config: MarshallerConfig?): MyMessage {
+        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage {
             TODO()
         }
     }

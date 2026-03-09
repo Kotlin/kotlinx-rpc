@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 
 /**
  * Provides access to read and write metadata values to be exchanged during a gRPC call.
@@ -62,7 +62,7 @@ public expect class GrpcMetadata constructor()
 public fun GrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMetadata().apply(block)
 
 /**
- * A typed key for metadata entries that uses a [MessageMarshaller] to encode and decode values.
+ * A typed key for metadata entries that uses a [GrpcMarshaller] to encode and decode values.
  *
  * Typed keys provide type-safe access to metadata values with automatic serialization and
  * deserialization using the provided marshaller. The key name follows the same requirements as
@@ -78,7 +78,7 @@ public fun GrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMeta
  *   letters (a-z), and special characters (`-`, `_`, `.`). Binary keys must end with `-bin`.
  * @param marshaller the marshaller used to encode and decode values of type [T]
  */
-public expect class GrpcMetadataKey<T> public constructor(name: String, marshaller: MessageMarshaller<T>) {}
+public expect class GrpcMetadataKey<T> public constructor(name: String, marshaller: GrpcMarshaller<T>) {}
 
 /**
  * Returns the last metadata entry added with the given [key], or `null` if there are no entries.

@@ -7,7 +7,6 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.VersionSpecificApi
 import kotlinx.rpc.codegen.VersionSpecificApiImpl.asConstValueVS
 import kotlinx.rpc.codegen.common.RpcClassId
-import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -27,7 +26,6 @@ import org.jetbrains.kotlin.ir.builders.irBlockBody
 import org.jetbrains.kotlin.ir.builders.irBranch
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irCallConstructor
-import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.builders.irEqualsNull
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.builders.irIfNull
@@ -38,7 +36,6 @@ import org.jetbrains.kotlin.ir.builders.irVararg
 import org.jetbrains.kotlin.ir.builders.irWhen
 import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
@@ -60,14 +57,12 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetEnumValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.expressions.putConstructorTypeArgument
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.IrType
@@ -1019,7 +1014,7 @@ internal class RpcStubGenerator(
 
     /**
      * ```kotlin
-     * override fun delegate(resolver: MessageMarshallerResolver, marshallerConfig: MarshallerConfig?): GrpcServiceDelegate {
+     * override fun delegate(resolver: GrpcMarshallerResolver, marshallerConfig: GrpcMarshallerConfig?): GrpcServiceDelegate {
      *     val methodDescriptorMap = ...
      *     val serviceDescriptor = ...
      *
@@ -1043,12 +1038,12 @@ internal class RpcStubGenerator(
 
             val resolver = addValueParameter {
                 name = Name.identifier("resolver")
-                type = ctx.grpcMessageMarshallerResolver.defaultType
+                type = ctx.grpcMarshallerResolver.defaultType
             }
 
             val marshallerConfig = addValueParameter {
                 name = Name.identifier("marshallerConfig")
-                type = ctx.marshallerConfig.defaultType.makeNullable()
+                type = ctx.grpcMarshallerConfig.defaultType.makeNullable()
             }
 
             body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
@@ -1155,7 +1150,7 @@ internal class RpcStubGenerator(
      * gRPC Platform MethodDescriptor call
      *
      * ```kotlin
-     * // In scope: resolver: MessageMarshallerResolver
+     * // In scope: resolver: GrpcMarshallerResolver
      *
      * methodDescriptor<<request-type>, <response-type>>(
      *     fullMethodName = "${descriptor.serviceFqName}/${<from Grpc.Method annotation> ?: callable.name}",
@@ -1175,7 +1170,7 @@ internal class RpcStubGenerator(
      *   - <method-name> - the name of the method
      *   - <method-type> - one of MethodType.UNARY, MethodType.SERVER_STREAMING,
      *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
-     *   - <request-marshaller>/<response-marshaller> - a MessageMarshaller getter, see [irMarshallerWithConfigCheck]
+     *   - <request-marshaller>/<response-marshaller> - a GrpcMarshaller getter, see [irMarshallerWithConfigCheck]
      */
     private fun IrBlockBodyBuilder.irMethodDescriptor(
         callable: ServiceDeclaration.Callable,
@@ -1288,7 +1283,7 @@ internal class RpcStubGenerator(
      * if (marshallerConfig == null) {
      *    return marshaller // marshaller from irMarshaller
      * } else {
-     *   return ConfiguredMessageMarshallerDelegate(config, marshaller)
+     *   return ConfiguredGrpcMarshallerDelegate(config, marshaller)
      * }
      * ```
      */
@@ -1305,7 +1300,7 @@ internal class RpcStubGenerator(
         )
 
         val resolvedMarshaller = irCallConstructor(
-            callee = ctx.configuredMessageMarshallerDelegate.constructors.single(),
+            callee = ctx.configuredGrpcMarshallerDelegate.constructors.single(),
             typeArguments = listOf(messageType),
         ).apply {
             arguments {
@@ -1317,7 +1312,7 @@ internal class RpcStubGenerator(
         }
 
         return irIfNull(
-            type = ctx.grpcMessageMarshaller.typeWith(messageType),
+            type = ctx.grpcMarshaller.typeWith(messageType),
             subject = irGet(marshallerConfig),
             thenPart = irGet(marshaller),
             elsePart = resolvedMarshaller,
@@ -1325,7 +1320,7 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * If [messageType] is annotated with [RpcIrContext.withMarshallerAnnotation],
+     * If [messageType] is annotated with [RpcIrContext.withGrpcMarshallerAnnotation],
      * we use its marshaller object
      *
      * If not, use [resolver].resolveOrNull()
@@ -1344,11 +1339,11 @@ internal class RpcStubGenerator(
                 symbol = marshallerClassSymbol,
             )
         } else {
-            val marshallerType = ctx.grpcMessageMarshaller.typeWith(messageType)
+            val marshallerType = ctx.grpcMarshaller.typeWith(messageType)
             val marshallerCall = vsApi {
                 irCall(
                     type = marshallerType.makeNullable(),
-                    callee = ctx.functions.grpcMessageMarshallerResolverResolveOrNull.symbol,
+                    callee = ctx.functions.grpcMarshallerResolverResolveOrNull.symbol,
                     typeArgumentsCount = 0,
                 )
             }.apply {
@@ -1380,11 +1375,11 @@ internal class RpcStubGenerator(
     }
 
     private fun IrClass.extractMarshallerReference(): IrClassSymbol? {
-        val withMarshallerAnnotation = getAnnotation(ctx.withMarshallerAnnotation.owner.kotlinFqName)
+        val withMarshallerAnnotation = getAnnotation(ctx.withGrpcMarshallerAnnotation.owner.kotlinFqName)
 
         if (withMarshallerAnnotation != null) {
             val classReference = vsApi { withMarshallerAnnotation.argumentsVS }.single() as? IrClassReference
-                ?: error("Expected IrClassReference for ${ctx.withMarshallerAnnotation.owner.kotlinFqName} parameter")
+                ?: error("Expected IrClassReference for ${ctx.withGrpcMarshallerAnnotation.owner.kotlinFqName} parameter")
 
             return classReference.classType.classOrFail
         }

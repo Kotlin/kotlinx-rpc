@@ -19,14 +19,14 @@ import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.marshaller.MarshallerConfig
-import kotlinx.rpc.grpc.marshaller.MessageMarshaller
-import kotlinx.rpc.grpc.descriptor.MethodDescriptor
-import kotlinx.rpc.grpc.descriptor.MethodType
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.internal.serviceDescriptor
-import kotlinx.rpc.grpc.server.Server
-import kotlinx.rpc.grpc.server.ServerBuilder
+import kotlinx.rpc.grpc.server.internal.PlatformServer
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
@@ -43,7 +43,7 @@ class RawClientServerTest {
     @Test
     fun unaryCall() = runTest(
         methodName = "unary",
-        type = MethodType.UNARY,
+        type = GrpcMethodType.UNARY,
         methodDefinition = { descriptor ->
             unaryServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) { it + it }
         },
@@ -56,7 +56,7 @@ class RawClientServerTest {
     @Test
     fun serverStreamingCall() = runTest(
         methodName = "serverStreaming",
-        type = MethodType.SERVER_STREAMING,
+        type = GrpcMethodType.SERVER_STREAMING,
         methodDefinition = { descriptor ->
             serverStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                 flowOf(it, it)
@@ -71,7 +71,7 @@ class RawClientServerTest {
     @Test
     fun clientStreamingCall() = runTest(
         methodName = "clientStreaming",
-        type = MethodType.CLIENT_STREAMING,
+        type = GrpcMethodType.CLIENT_STREAMING,
         methodDefinition = { descriptor ->
             clientStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                 it.toList().joinToString(separator = "")
@@ -87,7 +87,7 @@ class RawClientServerTest {
     fun bidirectionalStreamingCall() {
         runTest(
             methodName = "bidirectionalStreaming",
-            type = MethodType.BIDI_STREAMING,
+            type = GrpcMethodType.BIDI_STREAMING,
             methodDefinition = { descriptor ->
                 bidiStreamingServerMethodDefinition(descriptor, typeOf<String>(), emptyList()) {
                     it.map { str -> str + str }
@@ -103,9 +103,9 @@ class RawClientServerTest {
 
     private fun runTest(
         methodName: String,
-        type: MethodType,
-        methodDefinition: CoroutineScope.(MethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
-        block: suspend (GrpcClient, MethodDescriptor<String, String>) -> Unit,
+        type: GrpcMethodType,
+        methodDefinition: CoroutineScope.(GrpcMethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
+        block: suspend (GrpcClient, GrpcMethodDescriptor<String, String>) -> Unit,
     ) = kotlinx.coroutines.test.runTest {
         val serverJob = Job()
         val serverScope = CoroutineScope(serverJob)
@@ -137,7 +137,7 @@ class RawClientServerTest {
                 methods = methods.map { serverScope.methodDefinition(it) },
             )
         )
-        val server = Server(builder)
+        val server = PlatformServer(builder)
         server.start()
 
         block(client, descriptor)
@@ -152,12 +152,12 @@ class RawClientServerTest {
     companion object {
         private const val SERVICE_NAME = "TestService"
 
-        private val simpleMarshaller = object : MessageMarshaller<String> {
-            override fun encode(value: String, config: MarshallerConfig?): Source {
+        private val simpleMarshaller = object : GrpcMarshaller<String> {
+            override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(source: Source, config: MarshallerConfig?): String {
+            override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
                 return source.readString()
             }
         }

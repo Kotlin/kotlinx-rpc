@@ -6,7 +6,7 @@ package kotlinx.rpc.protobuf.test
 
 import WithDefaults
 import invoke
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import presence
 import test.nested.NestedOuter
 import test.nested.invoke
@@ -33,7 +33,7 @@ class PresenceCheckTest {
         }
         check(message)
 
-        val decoded = message.encodeDecode(marshallerOf<WithDefaults>())
+        val decoded = message.encodeDecode(grpcMarshallerOf<WithDefaults>())
         check(decoded)
     }
 
@@ -49,7 +49,7 @@ class PresenceCheckTest {
         }
         val message = NestedOuter {}
         check(message)
-        val decoded = message.encodeDecode(marshallerOf<NestedOuter>())
+        val decoded = message.encodeDecode(grpcMarshallerOf<NestedOuter>())
         check(decoded)
     }
 

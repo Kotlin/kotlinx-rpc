@@ -1,9 +1,9 @@
-public final class kotlinx/rpc/grpc/marshaller/kotlinx/serialization/KotlinxSerializationMarshallerResolver : kotlinx/rpc/grpc/marshaller/MessageMarshallerResolver {
+public final class kotlinx/rpc/grpc/marshaller/kotlinx/serialization/GrpcKotlinxSerializationMarshallerResolver : kotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver {
 	public fun <init> (Lkotlinx/serialization/SerialFormat;)V
-	public fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/marshaller/MessageMarshaller;
+	public fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
 }
 
-public final class kotlinx/rpc/grpc/marshaller/kotlinx/serialization/KotlinxSerializationMarshallerResolverKt {
-	public static final fun asMarshallerResolver (Lkotlinx/serialization/SerialFormat;)Lkotlinx/rpc/grpc/marshaller/MessageMarshallerResolver;
+public final class kotlinx/rpc/grpc/marshaller/kotlinx/serialization/GrpcKotlinxSerializationMarshallerResolverKt {
+	public static final fun asMarshallerResolver (Lkotlinx/serialization/SerialFormat;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
 }
 

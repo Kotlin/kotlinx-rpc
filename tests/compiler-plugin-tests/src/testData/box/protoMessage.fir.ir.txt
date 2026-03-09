@@ -62,39 +62,39 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
           public open fun toString (): kotlin.String declared in kotlinx.rpc.protobuf.internal.ProtoDescriptor
-    CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.MessageMarshaller<test.my_message.MyMessage>]
+    CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.GrpcMarshaller<test.my_message.MyMessage>]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessageInternal.MARSHALLER
       CONSTRUCTOR visibility:private returnType:test.my_message.MyMessageInternal.MARSHALLER [primary]
         BLOCK_BODY
           DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
-          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.MessageMarshaller<test.my_message.MyMessage>]' type=kotlin.Unit
+          INSTANCE_INITIALIZER_CALL classDescriptor='CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.GrpcMarshaller<test.my_message.MyMessage>]' type=kotlin.Unit
       FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
         overridden:
-          public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.grpc.marshaller.MessageMarshaller
+          public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
       FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN returnType:kotlin.Int [fake_override]
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
-          public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.grpc.marshaller.MessageMarshaller
+          public open fun hashCode (): kotlin.Int declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
       FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN returnType:kotlin.String [fake_override]
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
-          public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.marshaller.MessageMarshaller
+          public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
       FUN name:decode visibility:public modality:OPEN returnType:test.my_message.MyMessage
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.MARSHALLER
         VALUE_PARAMETER kind:Regular name:source index:1 type:kotlinx.io.Source
-        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.MarshallerConfig?
+        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun decode (source: kotlinx.io.Source, config: kotlinx.rpc.grpc.marshaller.MarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.MessageMarshaller declared in kotlinx.rpc.grpc.marshaller.MessageMarshaller
+          public abstract fun decode (source: kotlinx.io.Source, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
       FUN name:encode visibility:public modality:OPEN returnType:kotlinx.io.Source
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.MARSHALLER
         VALUE_PARAMETER kind:Regular name:value index:1 type:test.my_message.MyMessage
-        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.MarshallerConfig?
+        VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun encode (value: T of kotlinx.rpc.grpc.marshaller.MessageMarshaller, config: kotlinx.rpc.grpc.marshaller.MarshallerConfig?): kotlinx.io.Source declared in kotlinx.rpc.grpc.marshaller.MessageMarshaller
+          public abstract fun encode (value: T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.io.Source declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
     CONSTRUCTOR visibility:public returnType:test.my_message.MyMessageInternal [primary]
@@ -118,7 +118,7 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
     annotations:
       GeneratedProtoMessage
       WithProtoDescriptor(descriptor = CLASS_REFERENCE 'CLASS OBJECT name:DESCRIPTOR modality:FINAL visibility:public superTypes:[kotlinx.rpc.protobuf.internal.ProtoDescriptor<test.my_message.MyMessage>]' type=kotlin.reflect.KClass<test.my_message.MyMessageInternal.DESCRIPTOR>)
-      WithMarshaller(marshaller = CLASS_REFERENCE 'CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.MessageMarshaller<test.my_message.MyMessage>]' type=kotlin.reflect.KClass<test.my_message.MyMessageInternal.MARSHALLER>)
+      WithGrpcMarshaller(marshaller = CLASS_REFERENCE 'CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.GrpcMarshaller<test.my_message.MyMessage>]' type=kotlin.reflect.KClass<test.my_message.MyMessageInternal.MARSHALLER>)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage
     CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderKey] INTERFACE name:Builder modality:ABSTRACT visibility:public superTypes:[test.my_message.MyMessage]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage.Builder

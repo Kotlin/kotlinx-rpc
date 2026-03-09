@@ -11,7 +11,7 @@ import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.rpc.grpc.Status
+import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.internal.internalError
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
@@ -28,7 +28,6 @@ internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
 
 private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
     private var cb = TlsChannelCredentials.newBuilder()
-
 
     override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
         cb.trustManager(rootCertsPem.byteInputStream())
@@ -57,7 +56,7 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
         ) {
             CoroutineScope(coroutineContext).launch {
                 if (requiresTransportSecurity && requestInfo.securityLevel == SecurityLevel.NONE) {
-                    applier.fail(Status.UNAUTHENTICATED.withDescription(
+                    applier.fail(GrpcStatus.UNAUTHENTICATED.withDescription(
                         "Established channel does not have a sufficient security level to transfer call credential."
                     ))
                     return@launch
@@ -70,9 +69,9 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
                 } catch (err: Throwable) {
                     // we are not treating StatusExceptions separately, as currently there is no
                     // clean way to support the same feature on native. So for the sake of similar behavior,
-                    // we always fail with Status.UNAVAILABLE. (KRPC-233)
+                    // we always fail with GrpcStatus.UNAVAILABLE. (KRPC-233)
                     val description = "Getting metadata from call credentials failed with error: ${err.message}"
-                    applier.fail(Status.UNAVAILABLE.withDescription(description).withCause(err))
+                    applier.fail(GrpcStatus.UNAVAILABLE.withDescription(description).withCause(err))
                     if (err is CancellationException) throw err
                 }
             }

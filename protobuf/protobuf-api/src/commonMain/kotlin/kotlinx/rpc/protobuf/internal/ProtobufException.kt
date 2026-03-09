@@ -6,11 +6,20 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
+/**
+ * Base class for exceptions thrown during Protobuf encoding or decoding operations.
+ */
 public sealed class ProtobufException : RuntimeException {
     protected constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }
 
 
+/**
+ * Exception thrown when a Protobuf message cannot be decoded from wire format.
+ *
+ * Common causes include truncated messages, invalid tags, exceeding the recursion limit,
+ * or missing required fields.
+ */
 public class ProtobufDecodingException : ProtobufException {
     public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
@@ -38,11 +47,14 @@ public class ProtobufDecodingException : ProtobufException {
 
         internal fun recursionLimitExceeded(limit: Int) = ProtobufDecodingException(
             "Protocol message had too many levels of nesting. May be malicious. " +
-                "Use ProtobufConfig.recursionLimit to increase the depth limit. Current limit: $limit"
+                "Use ProtoConfig.recursionLimit to increase the depth limit. Current limit: $limit"
         )
     }
 }
 
+/**
+ * Exception thrown when a Protobuf message cannot be encoded to wire format.
+ */
 public class ProtobufEncodingException : ProtobufException {
     public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 }

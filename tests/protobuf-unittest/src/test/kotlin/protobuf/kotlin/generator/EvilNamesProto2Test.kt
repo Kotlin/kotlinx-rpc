@@ -16,7 +16,7 @@
 
 package protobuf.kotlin.generator
 
-import kotlinx.rpc.grpc.marshaller.marshallerOf
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -267,7 +267,7 @@ class EvilNamesProto2Test {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
     @Test
     fun testEvilNamesRoundTrip() {
-        val marshaller = marshallerOf<EvilNamesProto2>()
+        val marshaller = grpcMarshallerOf<EvilNamesProto2>()
         val msg = EvilNamesProto2 {
             hasFoo = true
             Bar = "test"
@@ -304,7 +304,7 @@ class EvilNamesProto2Test {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testHardKeywordGettersAndSetters
     @Test
     fun testHardKeywordsRoundTrip() {
-        val marshaller = marshallerOf<HardKeywordsAllTypesProto2>()
+        val marshaller = grpcMarshallerOf<HardKeywordsAllTypesProto2>()
         val msg = HardKeywordsAllTypesProto2 {
             `as` = 42
             `break` = HardKeywordsAllTypesProto2.NestedEnum.FOO
@@ -346,7 +346,7 @@ class EvilNamesProto2Test {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
     @Test
     fun testEmptyEvilNamesMessageRoundTrip() {
-        val marshaller = marshallerOf<EvilNamesProto2>()
+        val marshaller = grpcMarshallerOf<EvilNamesProto2>()
         val msg = EvilNamesProto2 {}
         val encoded = marshaller.encode(msg)
         val decoded = marshaller.decode(encoded)

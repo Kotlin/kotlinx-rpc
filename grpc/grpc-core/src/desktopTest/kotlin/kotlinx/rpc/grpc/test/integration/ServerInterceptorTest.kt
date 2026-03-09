@@ -12,11 +12,11 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.server.ServerCallScope
-import kotlinx.rpc.grpc.server.ServerInterceptor
-import kotlinx.rpc.grpc.Status
-import kotlinx.rpc.grpc.StatusCode
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.server.GrpcServerCallScope
+import kotlinx.rpc.grpc.server.GrpcServerInterceptor
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse
@@ -40,7 +40,7 @@ class ServerInterceptorTest : GrpcTestBase() {
     @Test
     fun `throw during intercept - should fail with unknown status on client`() {
         var cause: Throwable? = null
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 onClose { status, _ -> cause = status.getCause() }
                 // this exception is not propagated to the client (only as UNKNOWN status code)
@@ -49,7 +49,7 @@ class ServerInterceptorTest : GrpcTestBase() {
             runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.UNKNOWN, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.UNKNOWN, error.getStatus().statusCode)
         assertIs<IllegalStateException>(cause)
         assertEquals("Failing in interceptor", cause?.message)
     }
@@ -57,46 +57,46 @@ class ServerInterceptorTest : GrpcTestBase() {
 
     @Test
     fun `close during intercept - should fail with correct status on client`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
-                close(Status(StatusCode.UNAUTHENTICATED, "Close in interceptor"), GrpcMetadata())
+                close(GrpcStatus(GrpcStatusCode.UNAUTHENTICATED, "Close in interceptor"), GrpcMetadata())
             }
             runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
         assertContains(error.getStatus().getDescription()!!, "Close in interceptor")
     }
 
     @Test
     fun `close during request flow - should fail with correct status on client`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 proceed(
                     it.map {
-                        close(Status(StatusCode.UNAUTHENTICATED, "Close in request flow"), GrpcMetadata())
+                        close(GrpcStatus(GrpcStatusCode.UNAUTHENTICATED, "Close in request flow"), GrpcMetadata())
                     }
                 )
             }
             runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
         assertContains(error.message!!, "Close in request flow")
     }
 
     @Test
     fun `close during response flow - should fail with correct status on client`() {
-        val error = assertFailsWith<StatusException> {
+        val error = assertFailsWith<GrpcStatusException> {
             val interceptor = interceptor {
                 proceed(it).map {
-                    close(Status(StatusCode.UNAUTHENTICATED, "Close in response flow"), GrpcMetadata())
+                    close(GrpcStatus(GrpcStatusCode.UNAUTHENTICATED, "Close in response flow"), GrpcMetadata())
                 }
             }
             runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
         }
 
-        assertEquals(StatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
+        assertEquals(GrpcStatusCode.UNAUTHENTICATED, error.getStatus().statusCode)
         assertContains(error.message!!, "Close in response flow")
     }
 
@@ -227,14 +227,14 @@ class ServerInterceptorTest : GrpcTestBase() {
 }
 
 private fun interceptor(
-    block: ServerCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
-): List<ServerInterceptor> {
-    return listOf(object : ServerInterceptor {
+    block: GrpcServerCallScope<Any, Any>.(Flow<Any>) -> Flow<Any>,
+): List<GrpcServerInterceptor> {
+    return listOf(object : GrpcServerInterceptor {
         @Suppress("UNCHECKED_CAST")
-        override fun <Req, Resp> ServerCallScope<Req, Resp>.intercept(
+        override fun <Req, Resp> GrpcServerCallScope<Req, Resp>.intercept(
             request: Flow<Req>,
         ): Flow<Resp> {
-            with(this as ServerCallScope<Any, Any>) {
+            with(this as GrpcServerCallScope<Any, Any>) {
                 return block(request as Flow<Any>) as Flow<Resp>
             }
         }

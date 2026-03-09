@@ -8,13 +8,13 @@ import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.grpc.internal.ServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-public actual typealias ServerServiceDefinition = io.grpc.ServerServiceDefinition
+public actual typealias GrpcServerServiceDefinition = io.grpc.ServerServiceDefinition
 
 @InternalRpcApi
 public actual fun serverServiceDefinition(
     serviceDescriptor: ServiceDescriptor,
     methods: Collection<ServerMethodDefinition<*, *>>,
-): ServerServiceDefinition {
+): GrpcServerServiceDefinition {
     return io.grpc.ServerServiceDefinition.builder(serviceDescriptor).apply {
         methods.forEach { addMethod(it) }
     }.build()

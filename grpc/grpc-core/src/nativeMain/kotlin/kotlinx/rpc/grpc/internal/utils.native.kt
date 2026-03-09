@@ -30,7 +30,7 @@ import kotlinx.io.Sink
 import kotlinx.io.Source
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
-import kotlinx.rpc.grpc.StatusCode
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import libkgrpc.grpc_byte_buffer
 import libkgrpc.grpc_byte_buffer_reader
@@ -187,47 +187,47 @@ public fun String.toGrpcSlice(): CValue<grpc_slice> {
 
 @InternalRpcApi
 @Suppress("REDUNDANT_ELSE_IN_WHEN") // compilation fails without else case, but gives warning with
-public fun grpc_status_code.toKotlin(): StatusCode = when (this) {
-    grpc_status_code.GRPC_STATUS_OK -> StatusCode.OK
-    grpc_status_code.GRPC_STATUS_CANCELLED -> StatusCode.CANCELLED
-    grpc_status_code.GRPC_STATUS_UNKNOWN -> StatusCode.UNKNOWN
-    grpc_status_code.GRPC_STATUS_INVALID_ARGUMENT -> StatusCode.INVALID_ARGUMENT
-    grpc_status_code.GRPC_STATUS_DEADLINE_EXCEEDED -> StatusCode.DEADLINE_EXCEEDED
-    grpc_status_code.GRPC_STATUS_NOT_FOUND -> StatusCode.NOT_FOUND
-    grpc_status_code.GRPC_STATUS_ALREADY_EXISTS -> StatusCode.ALREADY_EXISTS
-    grpc_status_code.GRPC_STATUS_PERMISSION_DENIED -> StatusCode.PERMISSION_DENIED
-    grpc_status_code.GRPC_STATUS_RESOURCE_EXHAUSTED -> StatusCode.RESOURCE_EXHAUSTED
-    grpc_status_code.GRPC_STATUS_FAILED_PRECONDITION -> StatusCode.FAILED_PRECONDITION
-    grpc_status_code.GRPC_STATUS_ABORTED -> StatusCode.ABORTED
-    grpc_status_code.GRPC_STATUS_OUT_OF_RANGE -> StatusCode.OUT_OF_RANGE
-    grpc_status_code.GRPC_STATUS_UNIMPLEMENTED -> StatusCode.UNIMPLEMENTED
-    grpc_status_code.GRPC_STATUS_INTERNAL -> StatusCode.INTERNAL
-    grpc_status_code.GRPC_STATUS_UNAVAILABLE -> StatusCode.UNAVAILABLE
-    grpc_status_code.GRPC_STATUS_DATA_LOSS -> StatusCode.DATA_LOSS
-    grpc_status_code.GRPC_STATUS_UNAUTHENTICATED -> StatusCode.UNAUTHENTICATED
+public fun grpc_status_code.toKotlin(): GrpcStatusCode = when (this) {
+    grpc_status_code.GRPC_STATUS_OK -> GrpcStatusCode.OK
+    grpc_status_code.GRPC_STATUS_CANCELLED -> GrpcStatusCode.CANCELLED
+    grpc_status_code.GRPC_STATUS_UNKNOWN -> GrpcStatusCode.UNKNOWN
+    grpc_status_code.GRPC_STATUS_INVALID_ARGUMENT -> GrpcStatusCode.INVALID_ARGUMENT
+    grpc_status_code.GRPC_STATUS_DEADLINE_EXCEEDED -> GrpcStatusCode.DEADLINE_EXCEEDED
+    grpc_status_code.GRPC_STATUS_NOT_FOUND -> GrpcStatusCode.NOT_FOUND
+    grpc_status_code.GRPC_STATUS_ALREADY_EXISTS -> GrpcStatusCode.ALREADY_EXISTS
+    grpc_status_code.GRPC_STATUS_PERMISSION_DENIED -> GrpcStatusCode.PERMISSION_DENIED
+    grpc_status_code.GRPC_STATUS_RESOURCE_EXHAUSTED -> GrpcStatusCode.RESOURCE_EXHAUSTED
+    grpc_status_code.GRPC_STATUS_FAILED_PRECONDITION -> GrpcStatusCode.FAILED_PRECONDITION
+    grpc_status_code.GRPC_STATUS_ABORTED -> GrpcStatusCode.ABORTED
+    grpc_status_code.GRPC_STATUS_OUT_OF_RANGE -> GrpcStatusCode.OUT_OF_RANGE
+    grpc_status_code.GRPC_STATUS_UNIMPLEMENTED -> GrpcStatusCode.UNIMPLEMENTED
+    grpc_status_code.GRPC_STATUS_INTERNAL -> GrpcStatusCode.INTERNAL
+    grpc_status_code.GRPC_STATUS_UNAVAILABLE -> GrpcStatusCode.UNAVAILABLE
+    grpc_status_code.GRPC_STATUS_DATA_LOSS -> GrpcStatusCode.DATA_LOSS
+    grpc_status_code.GRPC_STATUS_UNAUTHENTICATED -> GrpcStatusCode.UNAUTHENTICATED
     grpc_status_code.GRPC_STATUS__DO_NOT_USE -> error("Invalid status code: $this")
     else -> error("Invalid status code: $this")
 }
 
 @InternalRpcApi
-public fun StatusCode.toRaw(): grpc_status_code = when (this) {
-    StatusCode.OK -> grpc_status_code.GRPC_STATUS_OK
-    StatusCode.CANCELLED -> grpc_status_code.GRPC_STATUS_CANCELLED
-    StatusCode.UNKNOWN -> grpc_status_code.GRPC_STATUS_UNKNOWN
-    StatusCode.INVALID_ARGUMENT -> grpc_status_code.GRPC_STATUS_INVALID_ARGUMENT
-    StatusCode.DEADLINE_EXCEEDED -> grpc_status_code.GRPC_STATUS_DEADLINE_EXCEEDED
-    StatusCode.NOT_FOUND -> grpc_status_code.GRPC_STATUS_NOT_FOUND
-    StatusCode.ALREADY_EXISTS -> grpc_status_code.GRPC_STATUS_ALREADY_EXISTS
-    StatusCode.PERMISSION_DENIED -> grpc_status_code.GRPC_STATUS_PERMISSION_DENIED
-    StatusCode.RESOURCE_EXHAUSTED -> grpc_status_code.GRPC_STATUS_RESOURCE_EXHAUSTED
-    StatusCode.FAILED_PRECONDITION -> grpc_status_code.GRPC_STATUS_FAILED_PRECONDITION
-    StatusCode.ABORTED -> grpc_status_code.GRPC_STATUS_ABORTED
-    StatusCode.OUT_OF_RANGE -> grpc_status_code.GRPC_STATUS_OUT_OF_RANGE
-    StatusCode.UNIMPLEMENTED -> grpc_status_code.GRPC_STATUS_UNIMPLEMENTED
-    StatusCode.INTERNAL -> grpc_status_code.GRPC_STATUS_INTERNAL
-    StatusCode.UNAVAILABLE -> grpc_status_code.GRPC_STATUS_UNAVAILABLE
-    StatusCode.DATA_LOSS -> grpc_status_code.GRPC_STATUS_DATA_LOSS
-    StatusCode.UNAUTHENTICATED -> grpc_status_code.GRPC_STATUS_UNAUTHENTICATED
+public fun GrpcStatusCode.toRaw(): grpc_status_code = when (this) {
+    GrpcStatusCode.OK -> grpc_status_code.GRPC_STATUS_OK
+    GrpcStatusCode.CANCELLED -> grpc_status_code.GRPC_STATUS_CANCELLED
+    GrpcStatusCode.UNKNOWN -> grpc_status_code.GRPC_STATUS_UNKNOWN
+    GrpcStatusCode.INVALID_ARGUMENT -> grpc_status_code.GRPC_STATUS_INVALID_ARGUMENT
+    GrpcStatusCode.DEADLINE_EXCEEDED -> grpc_status_code.GRPC_STATUS_DEADLINE_EXCEEDED
+    GrpcStatusCode.NOT_FOUND -> grpc_status_code.GRPC_STATUS_NOT_FOUND
+    GrpcStatusCode.ALREADY_EXISTS -> grpc_status_code.GRPC_STATUS_ALREADY_EXISTS
+    GrpcStatusCode.PERMISSION_DENIED -> grpc_status_code.GRPC_STATUS_PERMISSION_DENIED
+    GrpcStatusCode.RESOURCE_EXHAUSTED -> grpc_status_code.GRPC_STATUS_RESOURCE_EXHAUSTED
+    GrpcStatusCode.FAILED_PRECONDITION -> grpc_status_code.GRPC_STATUS_FAILED_PRECONDITION
+    GrpcStatusCode.ABORTED -> grpc_status_code.GRPC_STATUS_ABORTED
+    GrpcStatusCode.OUT_OF_RANGE -> grpc_status_code.GRPC_STATUS_OUT_OF_RANGE
+    GrpcStatusCode.UNIMPLEMENTED -> grpc_status_code.GRPC_STATUS_UNIMPLEMENTED
+    GrpcStatusCode.INTERNAL -> grpc_status_code.GRPC_STATUS_INTERNAL
+    GrpcStatusCode.UNAVAILABLE -> grpc_status_code.GRPC_STATUS_UNAVAILABLE
+    GrpcStatusCode.DATA_LOSS -> grpc_status_code.GRPC_STATUS_DATA_LOSS
+    GrpcStatusCode.UNAUTHENTICATED -> grpc_status_code.GRPC_STATUS_UNAUTHENTICATED
 }
 
 @InternalRpcApi
