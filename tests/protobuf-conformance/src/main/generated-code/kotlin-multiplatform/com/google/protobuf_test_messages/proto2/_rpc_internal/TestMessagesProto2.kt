@@ -13256,14 +13256,15 @@ fun TestAllRequiredTypesProto2.NestedEnum.Companion.fromNumber(number: Int): Tes
 
 @InternalRpcApi
 object TestMessagesProto2KtExtensions {
-
-    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  Int> =         InternalExtensionDescriptor.int32(
+    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  Int> = 
+        InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
         )
 
-    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  GroupField> =         InternalExtensionDescriptor.message(
+    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  GroupField> = 
+        InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupfield",
             extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
@@ -13276,8 +13277,8 @@ object TestMessagesProto2KtExtensions {
 
     object TestAllTypesProto2 {
         object MessageSetCorrectExtension1 {
-
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> =                 InternalExtensionDescriptor.message(
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> = 
+                InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13290,8 +13291,8 @@ object TestMessagesProto2KtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> =                 InternalExtensionDescriptor.message(
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> = 
+                InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13304,8 +13305,8 @@ object TestMessagesProto2KtExtensions {
         }
 
         object ExtensionWithOneof {
-
-            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof> =                 InternalExtensionDescriptor.message(
+            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllTypesProto2.ExtensionWithOneof> = 
+                InternalExtensionDescriptor.message(
                     fieldNumber = 123456789,
                     name = "extensionWithOneof",
                     extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect::class,
@@ -13320,8 +13321,8 @@ object TestMessagesProto2KtExtensions {
 
     object TestAllRequiredTypesProto2 {
         object MessageSetCorrectExtension1 {
-
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> =                 InternalExtensionDescriptor.message(
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> = 
+                InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,
@@ -13334,8 +13335,8 @@ object TestMessagesProto2KtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> =                 InternalExtensionDescriptor.message(
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> = 
+                InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",
                     extendee = com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect::class,

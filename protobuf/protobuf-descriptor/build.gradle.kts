@@ -21,6 +21,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.protobuf.protobufApi)
+                api(projects.protobuf.protobufWkt)
             }
         }
     }

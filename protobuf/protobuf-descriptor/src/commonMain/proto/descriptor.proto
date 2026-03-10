@@ -1,0 +1,5 @@
+edition = "2023";
+
+// https://protobuf.dev/reference/protobuf/google.protobuf
+
+import "google/protobuf/descriptor.proto";

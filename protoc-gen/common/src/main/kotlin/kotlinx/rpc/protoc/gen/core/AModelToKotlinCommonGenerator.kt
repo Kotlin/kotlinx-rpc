@@ -32,6 +32,7 @@ abstract class AModelToKotlinCommonGenerator(
     protected abstract val FileDeclaration.hasInternalGeneratedContent: Boolean
 
     protected var currentPackage: FqName = FqName.Package.Root
+    protected val extImports = mutableSetOf<String>()
     protected val internalImports = mutableSetOf<String>()
 
     /**
@@ -91,6 +92,7 @@ abstract class AModelToKotlinCommonGenerator(
 
     private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {
         internalImports.clear()
+        extImports.clear()
 
         return listOfNotNull(
             if (hasPublicGeneratedContent) generatePublicKotlinFile() else null,
@@ -131,6 +133,10 @@ abstract class AModelToKotlinCommonGenerator(
             )
 
             generateExtensionEntities(this@generateExtensionKotlinFile)
+
+            extImports.forEach {
+                import(it)
+            }
         }
     }
 

@@ -28,6 +28,13 @@ class RecursionLimitTest {
 
         override val _size: Int get() = 0
         override val _unknownFields: Buffer = Buffer()
+
+        override fun copyInternal(): InternalMessage {
+            val copy = SimpleMsg()
+            copy.nested = nested?.copyInternal() as? SimpleMsg
+            copy.value = value
+            return copy
+        }
     }
 
     /**
