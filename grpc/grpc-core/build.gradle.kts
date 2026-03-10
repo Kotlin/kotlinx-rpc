@@ -76,7 +76,6 @@ kotlin {
                 api(libs.grpc.stub)
                 api(libs.grpc.protobuf)
                 api(libs.grpc.protobuf.lite)
-                implementation(libs.grpc.kotlin.stub) // causes problems to jpms if api
             }
         }
 

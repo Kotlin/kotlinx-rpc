@@ -53,7 +53,30 @@ sourceSets.main.get().proto {
     exclude(
         // buf incompatibilities:
         "**/unittest_custom_options.proto", // buf: legacy 'message set wire format' (proto1)
-        "**/unittest_lite_edition_2024.proto", // buf: edition "2024" not yet supported
+        // buf: edition "2024" not yet supported
+        "**/edition_unittest.proto",
+        "**/map_proto3_unittest.proto",
+        "**/unittest_arena.proto",
+        "**/unittest_custom_features.proto",
+        "**/unittest_custom_options_unlinked.proto",
+        "**/unittest_delimited.proto",
+        "**/unittest_delimited_import.proto",
+        "**/unittest_drop_unknown_fields.proto",
+        "**/unittest_features.proto",
+        "**/unittest_fuzz_extensions.proto",
+        "**/unittest_import_option.proto",
+        "**/unittest_lazy_dependencies.proto",
+        "**/unittest_lazy_dependencies_custom_option.proto",
+        "**/unittest_lazy_dependencies_enum.proto",
+        "**/unittest_legacy_features.proto",
+        "**/unittest_lite_edition_2024.proto",
+        "**/unittest_no_field_presence.proto",
+        "**/unittest_preserve_unknown_enum.proto",
+        "**/unittest_preserve_unknown_enum2.proto",
+        "**/unittest_redaction.proto",
+        "**/unittest_string_type.proto",
+        "**/unittest_string_view.proto",
+        "**/unittest_utf8_string_extensions.proto",
         // JVM limit:
         "**/unittest_enormous_descriptor.proto", // generated method exceeds 64KB
     )

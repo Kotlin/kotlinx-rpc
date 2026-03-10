@@ -300,6 +300,26 @@ var TestAllTypesEdition2023.Builder.extensionInt32: Int?
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32)
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32, value) }
 
+val TestAllTypesEdition2023.extensionString: String? get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionString)
+
+val TestAllTypesEdition2023.Companion.extensionString: ProtoExtensionDescriptor<TestAllTypesEdition2023, String> get() = TestMessagesEdition2023KtExtensions.extensionString
+
+val TestAllTypesEdition2023Presence.hasExtensionString: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesEdition2023KtExtensions.extensionString)
+
+var TestAllTypesEdition2023.Builder.extensionString: String?
+    get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionString)
+    set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionString, value) }
+
+val TestAllTypesEdition2023.extensionBytes: ByteArray? get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes)
+
+val TestAllTypesEdition2023.Companion.extensionBytes: ProtoExtensionDescriptor<TestAllTypesEdition2023, ByteArray> get() = TestMessagesEdition2023KtExtensions.extensionBytes
+
+val TestAllTypesEdition2023Presence.hasExtensionBytes: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesEdition2023KtExtensions.extensionBytes)
+
+var TestAllTypesEdition2023.Builder.extensionBytes: ByteArray?
+    get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes)
+    set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes, value) }
+
 val TestAllTypesEdition2023.groupliketype: GroupLikeType get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype) ?: TestMessagesEdition2023KtExtensions.groupliketype.defaultValue.value
 
 val TestAllTypesEdition2023.Companion.groupliketype: ProtoExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> get() = TestMessagesEdition2023KtExtensions.groupliketype

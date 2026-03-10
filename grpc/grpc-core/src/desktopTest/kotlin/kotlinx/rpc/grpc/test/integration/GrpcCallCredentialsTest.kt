@@ -22,6 +22,8 @@ import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
+import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test

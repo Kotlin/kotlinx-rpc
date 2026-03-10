@@ -13263,6 +13263,20 @@ object TestMessagesProto2KtExtensions {
             extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
         )
 
+    val extensionString: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  String> = 
+        InternalExtensionDescriptor.string(
+            fieldNumber = 133,
+            name = "extensionString",
+            extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
+        )
+
+    val extensionBytes: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  ByteArray> = 
+        InternalExtensionDescriptor.bytes(
+            fieldNumber = 134,
+            name = "extensionBytes",
+            extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
+        )
+
     val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  GroupField> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 121,

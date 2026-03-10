@@ -39,6 +39,7 @@
             <toc-element topic="grpc-server.topic"/>
             <toc-element topic="grpc-ktor-server.topic"/>
             <toc-element topic="grpc-limitations.topic"/>
+            <toc-element topic="grpc-versions.topic"/>
         </toc-element>
     </toc-element>
     <toc-element topic="strict-mode.topic"/>
