@@ -124,7 +124,7 @@
             </def>
             <def title="Calling generated code from Java may be inconvenient">
                 The generated API is designed to be Kotlin-first.
-                Kotlin-specific constructs such as sealed classes, extension properties,
+                Kotlin-specific constructs such as extension properties,
                 builder DSLs, and default parameter values may not translate well when called from Java.
                 If your project has Java callers that need to work with generated protobuf types,
                 you may need to write Kotlin wrapper functions to provide a Java-friendly API.

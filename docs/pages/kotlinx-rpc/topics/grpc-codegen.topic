@@ -13,7 +13,7 @@
         <path>.proto</path> files are the source of truth, built-in protoc plugins generate Kotlin declarations from
         them, and the <code>kotlinx.rpc</code> compiler plugin synthesizes the additional declarations required to make
         those generated files usable from Kotlin code and visible to runtime APIs such as <code>withService</code>,
-        <code>registerService</code>, <code>marshallerOf</code>, and <code>protoDescriptorOf</code>.
+        <code>registerService</code>, <code>grpcMarshallerOf</code>, and <code>protoDescriptorOf</code>.
     </p>
     <warning>
         This is still a dev release with no stability guarantees.
@@ -133,7 +133,7 @@
             <def title="Marshaller and descriptor binding" id="grpc-codegen-marshaller-descriptor">
                 The compiler plugin associates each public generated message type with the corresponding internal
                 <code>MARSHALLER</code> and <code>DESCRIPTOR</code> objects.
-                That is what makes <code>marshallerOf&lt;Message&gt;()</code> and <code>protoDescriptorOf&lt;Message&gt;()</code>
+                That is what makes <code>grpcMarshallerOf&lt;Message&gt;()</code> and <code>protoDescriptorOf&lt;Message&gt;()</code>
                 work on the public type.
             </def>
             <def title="Service metadata synthesis" id="grpc-codegen-service-metadata">
@@ -154,13 +154,14 @@
             val requestCopy = request.copy {
                 name = "grpc"
             }
-            val marshaller = marshallerOf&lt;HelloRequest&gt;(ProtoConfig(discardUnknownFields = true))
+            val marshaller = grpcMarshallerOf&lt;HelloRequest&gt;(ProtoConfig(discardUnknownFields = true))
             val descriptor = protoDescriptorOf&lt;HelloRequest&gt;()
             val service = grpcClient.withService&lt;Greeter&gt;()
         </code-block>
         <p>
             Generated protobuf marshallers use <code>ProtoConfig</code> as their runtime configuration object.
-            The current configuration options are <code>discardUnknownFields</code> and <code>recursionLimit</code>.
+            The current configuration options are <code>discardUnknownFields</code>, <code>recursionLimit</code>,
+            and <code>extensionRegistry</code>.
         </p>
     </chapter>
     <chapter title="Validation rules" id="grpc-validation-rules">
