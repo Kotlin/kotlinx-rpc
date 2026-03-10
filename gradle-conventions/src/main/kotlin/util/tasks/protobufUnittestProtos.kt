@@ -6,7 +6,7 @@ package util.tasks
 
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
-import org.gradle.kotlin.dsl.accessors.runtime.addExternalModuleDependencyTo
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.register
 import util.other.libs
@@ -34,22 +34,17 @@ fun Project.setupProtobufUnittestProtos() {
     configurations.create(PROTOBUF_SOURCE_ARCHIVE_CONFIGURATION)
 
     dependencies {
-        addExternalModuleDependencyTo(
-            dependencyHandler = this,
-            targetConfiguration = PROTOBUF_SOURCE_ARCHIVE_CONFIGURATION,
-            group = "protocolbuffers",
-            name = "protobuf",
-            version = protobufVersion,
-            classifier = null,
-            ext = null,
-            configuration = null,
-        ) {
-            artifact {
-                name = "protobuf"
-                type = "zip"
-                extension = "zip"
-            }
-        }
+        add(
+            PROTOBUF_SOURCE_ARCHIVE_CONFIGURATION,
+            dependencies.create("protocolbuffers:protobuf:$protobufVersion").apply {
+                this as ExternalModuleDependency
+                artifact {
+                    name = "protobuf"
+                    type = "zip"
+                    extension = "zip"
+                }
+            },
+        )
     }
 
     val archivePrefix = "protobuf-$protobufVersion/src/"

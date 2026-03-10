@@ -34,7 +34,6 @@ kotlin {
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.grpc.grpcKtorServer)
 
-                implementation(libs.grpc.kotlin.stub)
                 implementation(libs.grpc.netty)
 
                 implementation(libs.ktor.server.core)

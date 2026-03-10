@@ -16,7 +16,7 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.accessors.runtime.addExternalModuleDependencyTo
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.the
@@ -177,23 +177,18 @@ fun Project.setupProtobufConformanceResources() {
     configurations.create(PROTOC_TESTING_CONFIGURATION)
 
     dependencies {
-        addExternalModuleDependencyTo(
-            this,
+        add(
             PROTOC_TESTING_CONFIGURATION,
-            group = "protocolbuffers",
-            name = "protobuf",
-            version = libs.versions.protobuf.get().substringAfter("."),
-            classifier = null,
-            ext = null,
-            configuration = null,
-        ) {
-            artifact {
-                name = "protoc"
-                type = "zip"
-                extension = "zip"
-                classifier = "$osPart-$archPart"
-            }
-        }
+            dependencies.create("protocolbuffers:protobuf:${libs.versions.protobuf.get().substringAfter(".")}").apply {
+                this as ExternalModuleDependency
+                artifact {
+                    name = "protoc"
+                    type = "zip"
+                    extension = "zip"
+                    classifier = "$osPart-$archPart"
+                }
+            },
+        )
     }
 
     // Conformance test runner from npm: https://www.npmjs.com/package/protobuf-conformance

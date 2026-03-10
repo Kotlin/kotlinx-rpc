@@ -34,11 +34,6 @@
                 <td>JVM transport layer (<code>grpc-api</code>, <code>grpc-stub</code>, <code>grpc-netty</code>, <code>grpc-protobuf</code>)</td>
             </tr>
             <tr>
-                <td><a href="https://github.com/grpc/grpc-kotlin">gRPC Kotlin</a></td>
-                <td>1.5.0</td>
-                <td>Kotlin coroutine stubs (<code>grpc-kotlin-stub</code>)</td>
-            </tr>
-            <tr>
                 <td><a href="https://github.com/protocolbuffers/protobuf">Protobuf Java</a></td>
                 <td>4.34.0</td>
                 <td>Protobuf runtime and utilities (<code>protobuf-java</code>, <code>protobuf-kotlin</code>)</td>
