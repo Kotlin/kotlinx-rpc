@@ -10,23 +10,60 @@
        title="Server" id="grpc-server">
 
     <p>
-        Example of using a gRPC server:
+        <code>GrpcServer</code> listens for incoming gRPC calls and dispatches them to registered service implementations.
     </p>
     <code-block lang="Kotlin">
-        val grpcServer = GrpcServer(8080) {
-            registerService&lt;ImageRecognizer&gt; { ImageRecognizerImpl() }
+        val server = GrpcServer(8080) {
+            services {
+                registerService&lt;ImageRecognizer&gt; { ImageRecognizerImpl() }
+            }
         }
 
-        grpcServer.start()
-        grpcServer.awaitTermination()
+        server.start()
+        server.awaitTermination()
     </code-block>
-    <list>
-        <li>
-            <code>GrpcServer</code> allows to register multiple services, like regular <code>RpcServer</code>.
-        </li>
-        <li>
-            <code>GrpcServer</code> does <b>not</b> bind to Java gRPC <code>Server</code>,
-            but provides some functions to cover for that.
-        </li>
-    </list>
+    <p>
+        Multiple services can be registered in the same <code>services</code> block:
+    </p>
+    <code-block lang="Kotlin">
+        val server = GrpcServer(8080) {
+            services {
+                registerService&lt;ImageRecognizer&gt; { ImageRecognizerImpl() }
+                registerService&lt;EchoService&gt; { EchoServiceImpl() }
+            }
+        }
+    </code-block>
+
+    <chapter title="Configuration" id="grpc-server-configuration">
+        <deflist>
+            <def title="credentials">
+                Sets server credentials.
+                By default the server uses plaintext.
+                Use <code>tls(certificateChain, privateKey) { ... }</code> for secure communication.
+            </def>
+            <def title="messageMarshallerResolver">
+                A <code>GrpcMarshallerResolver</code> for custom serialization.
+                Not needed when using generated Protobuf types.
+                See <a href="grpc-services.topic" anchor="no-proto"/>.
+            </def>
+            <def title="intercept(...)">
+                Adds server-side interceptors for cross-cutting concerns like authentication,
+                logging, or metrics.
+            </def>
+            <def title="fallbackHandlerRegistry">
+                A custom <code>GrpcHandlerRegistry</code> for resolving services that were not
+                registered via <code>services { ... }</code>.
+                Unresolved services return <code>UNIMPLEMENTED</code> status by default.
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="Lifecycle" id="grpc-server-lifecycle">
+        <p>
+            Call <code>start()</code> to begin listening for connections.
+            Use <code>shutdown()</code> for an orderly shutdown (existing calls finish,
+            new calls are rejected) or <code>shutdownNow()</code> to cancel everything immediately.
+            <code>awaitTermination()</code> blocks until all calls have completed.
+        </p>
+    </chapter>
 </topic>

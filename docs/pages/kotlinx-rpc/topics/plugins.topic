@@ -1,40 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  - Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
   -->
-
 <!DOCTYPE topic
         SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
 <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Gradle plugin" id="plugins">
     <p>
-        The <code>kotlinx.rpc</code> library offers a <a href="https://docs.gradle.org/current/userguide/plugins.html">Gradle
-        plugin</a>
-        that simplifies project configuration by automating repetitive tasks and configuring code generation.
+        The <code>kotlinx.rpc</code> library provides a Gradle plugin that applies the compiler-plugin artifacts and
+        exposes the <code>rpc</code> extension.
+        The extension covers compiler diagnostics, strict-mode reporting, and optional protoc-based code generation.
     </p>
-
-    <code-block lang="kotlin">
+    <code-block lang="Kotlin">
         plugins {
             kotlin("jvm") version "%kotlin-version%"
             id("org.jetbrains.kotlinx.rpc.plugin") version "%kotlinx-rpc-version%"
         }
     </code-block>
     <note>
-        For multi-project setups you must add the plugin to all modules where services are declared or used.
+        In multi-project builds, apply the plugin to every module that declares RPC services or consumes compiler-plugin
+        generated declarations.
     </note>
-
-    Plugin provides an <code>rpc</code> extension:
-    <code-block lang="kotlin">
+    <p>
+        The plugin exposes the <code>rpc</code> extension:
+    </p>
+    <code-block lang="Kotlin">
         rpc {
             annotationTypeSafetyEnabled = true
+
+            protoc {
+                // gRPC / protobuf schema-first code generation
+            }
         }
     </code-block>
-    <p>Options:</p>
-    <list>
-        <li>
-            <code>annotationTypeSafetyEnabled</code> - whether to enable type safety checks for annotations.
+    <p>Top-level capabilities:</p>
+    <deflist>
+        <def title="annotationTypeSafetyEnabled" id="plugins-annotationTypeSafetyEnabled">
+            Controls annotation type-safety checks.
             See <a href="annotation-type-safety.topic"/>.
-        </li>
-    </list>
+        </def>
+        <def title="strict" id="plugins-strict">
+            Configures strict-mode reporting for deprecated RPC patterns.
+            See <a href="strict-mode.topic"/>.
+        </def>
+        <def title="protoc() / protoc { ... }" id="plugins-protoc">
+            Enables Buf/protoc integration for schema-first protobuf and gRPC code generation.
+            See <a href="grpc-configuration.topic"/>.
+        </def>
+    </deflist>
 </topic>

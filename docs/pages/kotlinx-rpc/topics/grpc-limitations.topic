@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Known limitations" id="grpc-limitations">
+
+    <p>
+        The gRPC integration is under active development. This page lists current limitations
+        that may affect your project.
+    </p>
+
+    <chapter title="Platform support" id="platform-support">
+        <p>
+            The following Kotlin targets are <b>not supported</b>:
+        </p>
+        <list>
+            <li>Kotlin/JS</li>
+            <li>Kotlin/Wasm (both WasmJs and WasmWasi)</li>
+        </list>
+        <p>
+            gRPC support is available for JVM, Android, Apple, and Linux targets.
+            See <a href="platforms.topic"/> for the full per-artifact matrix.
+        </p>
+    </chapter>
+
+    <chapter title="Protobuf code generation" id="protobuf-codegen">
+        <deflist>
+            <def title="Field presence API is being redesigned">
+                The way <code>optional</code> fields map to Kotlin types is being reworked.
+                Currently, optional fields are generated with their default values
+                and a <code>has&lt;Field&gt;()</code> presence API.
+                A future release will introduce Kotlin nullable types for optional fields,
+                with extension properties like <code>fieldOrDefault</code> to access default values
+                when presence is not set.
+                The exact API shape — including whether to default to nullable or non-nullable types,
+                and how editions 2023+ (where all fields are implicitly optional) interact with this —
+                is still under discussion.
+            </def>
+            <def title="Well-Known Types are not mapped to Kotlin types">
+                Well-Known Types such as <code>google.protobuf.Timestamp</code>,
+                <code>google.protobuf.Duration</code>, and <code>google.protobuf.Empty</code>
+                are generated as regular protobuf messages.
+                They are not mapped to Kotlin equivalents like <code>kotlinx.datetime.Instant</code>,
+                <code>kotlin.time.Duration</code>, or <code>Unit</code>.
+            </def>
+            <def title="Oneof field access is being redesigned">
+                <code>oneof</code> fields are generated as Kotlin sealed classes and accessed
+                through a wrapper property (e.g. <code>message.either.success</code>).
+                A flatter access pattern (e.g. <code>message.success</code>) and
+                a more ergonomic builder syntax are being explored,
+                while preserving exhaustive <code>when</code> matching as the primary usage pattern.
+            </def>
+            <def title="No kotlin_package option">
+                The <code>kotlin_package</code> file option is not supported.
+                Generated code uses the package derived from the proto <code>package</code> declaration.
+            </def>
+            <def title="No kotlin_multiple_files option">
+                The <code>kotlin_multiple_files</code> file option is not supported.
+                All declarations from a single <path>.proto</path> file are generated into a single Kotlin file.
+            </def>
+            <def title="Decoded lists and maps are mutable">
+                List and map fields in decoded messages are backed by mutable collections.
+                Modifying them after decoding may lead to unexpected behavior.
+            </def>
+            <def title="No message merging">
+                There is no <code>mergeFrom</code> equivalent.
+                To combine two messages, you must manually copy fields using the builder DSL.
+            </def>
+            <def title="No runtime access to field numbers">
+                Proto field numbers are not exposed in the generated Kotlin API.
+                If you need to work with raw field numbers at runtime,
+                you must maintain the mapping manually.
+            </def>
+            <def title="No descriptor-based reflection">
+                Unlike protobuf-java, there is no runtime reflection API based on descriptors.
+                Features like <code>Descriptors.Descriptor</code>, <code>Descriptors.FieldDescriptor</code>,
+                dynamic field access via <code>getField</code>/<code>setField</code>,
+                and <code>DynamicMessage</code> are not available.
+                Generic proto processing, schema-driven validation, and dynamic message routing
+                must be implemented using the generated static API.
+            </def>
+            <def title="No JSON encoding for protobuf messages">
+                Protobuf messages can only be serialized in the binary wire format.
+                JSON encoding (as specified by the proto3 JSON mapping) is not available.
+            </def>
+            <def title="Unknown fields are not accessible">
+                Unknown fields encountered during decoding are preserved and re-encoded,
+                but there is no API to read or write them directly.
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="gRPC runtime" id="grpc-runtime">
+        <deflist>
+            <def title="No per-service or per-method interceptors">
+                Client and server interceptors can only be applied globally.
+                There is no way to attach an interceptor to a specific service or method.
+            </def>
+            <def title="No per-service call options">
+                <code>GrpcCallOptions</code> (such as deadlines and credentials) can only be set
+                at the client level. Per-service configuration via <code>withService</code> is not available.
+            </def>
+            <def title="No gRPC transcoding">
+                REST-to-gRPC transcoding (as defined by <code>google.api.http</code> annotations)
+                is not supported.
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="Java interoperability" id="java-interop">
+        <deflist>
+            <def title="No compatibility with protobuf-java generated types">
+                Generated Kotlin protobuf types are not compatible with protobuf-java
+                or grpc-java generated types.
+                If your project depends on Java libraries that accept or return
+                protobuf-java <code>Message</code> instances, you cannot pass
+                <code>kotlinx.rpc</code>-generated messages directly.
+                Interop requires serializing to bytes on one side and deserializing on the other.
+            </def>
+            <def title="Calling generated code from Java may be inconvenient">
+                The generated API is designed to be Kotlin-first.
+                Kotlin-specific constructs such as extension properties,
+                builder DSLs, and default parameter values may not translate well when called from Java.
+                If your project has Java callers that need to work with generated protobuf types,
+                you may need to write Kotlin wrapper functions to provide a Java-friendly API.
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="Gradle plugin" id="gradle-plugin">
+        <deflist>
+            <def title="Eager configuration in Gradle 9.0">
+                The plugin eagerly resolves jar dependencies for the Buf CLI and protoc plugins,
+                which triggers a configuration-time warning in Gradle 9.0 and later.
+                The build still succeeds, but the warning may appear in your console output.
+            </def>
+        </deflist>
+    </chapter>
+
+    <note>
+        Found a bug or missing a feature?
+        Please report it in <a href="https://github.com/Kotlin/kotlinx-rpc/issues">GitHub issues</a>.
+    </note>
+</topic>

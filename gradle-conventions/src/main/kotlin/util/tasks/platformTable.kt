@@ -265,8 +265,12 @@ abstract class DumpPlatformsTask : DefaultTask() {
                                 }
                             }
 
+                            val nonEmptySubtargets = target.subtargets.filter { subtarget ->
+                                subtarget !is PlatformTarget.Group || subtarget.subtargets.isNotEmpty()
+                            }
+
                             append("<list>")
-                            target.subtargets.forEach { subtarget ->
+                            nonEmptySubtargets.forEach { subtarget ->
                                 append("<li>")
                                 append(writeRecursive(subtarget, topLevel = false))
                                 append("</li>")

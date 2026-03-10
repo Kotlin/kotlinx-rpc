@@ -38,15 +38,8 @@
         </tr>
         <tr>
             <td>gRPC</td>
-            <td>Jvm</td>
-            <td>
-                <p>
-                    Projects with <code>kotlin("jvm")</code> <b>only</b>!
-                </p>
-                <p>
-                    KMP support is in development
-                </p>
-            </td>
+            <td>Jvm, Android, Apple, Linux</td>
+            <td></td>
         </tr>
     </table>
 
@@ -90,7 +83,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -98,7 +91,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -106,7 +99,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list></list></li><li>tvos<list></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -114,7 +107,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -122,7 +115,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -130,7 +123,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list></list></li><li>tvos<list></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -170,7 +163,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -178,7 +171,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -186,7 +179,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -194,7 +187,7 @@
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li><li>macosX64</li></list></li><li>watchos<list><li>watchosArm32</li><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li><li>watchosX64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li><li>tvosX64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li></list></td>
 </tr>
 
 <tr>

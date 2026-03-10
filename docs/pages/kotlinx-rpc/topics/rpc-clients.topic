@@ -20,7 +20,7 @@
         (for example, the services generated from
         <a href="https://grpc.io/docs/what-is-grpc/core-concepts/#service-definition">.proto files</a>).
         In this case, you can use the generated code.
-        See <a href="grpc-services.topic"/>.
+        See <a href="grpc-codegen.topic"/>.
     </tip>
     <p>
         To be able to get an instance of your service, you need to have an <code>RpcClient</code>.
