@@ -8,7 +8,7 @@
 // Tests NOT copied (depend on Java-specific APIs):
 // - testMergeFromDynamic: DynamicMessage API
 // - testDynamicMergeFrom: DynamicMessage API
-// - testRequiredExtension: Extensions API (TestRequired.single, TestRequired.multi)
+// - testRequiredExtension: isInitialized() Java API (TestRequired.single, TestRequired.multi)
 // - testRequiredDynamic: DynamicMessage.newBuilder(descriptor)
 // - testRequiredDynamicForeign: DynamicMessage + reflection
 // - testDynamicUninitializedException: DynamicMessage

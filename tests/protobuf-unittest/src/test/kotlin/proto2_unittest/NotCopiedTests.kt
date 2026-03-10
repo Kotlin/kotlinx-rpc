@@ -169,14 +169,23 @@
  *   https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/DynamicMessageTest.java
  *
  * ===========================================================================================================
- * Tests NOT copied — Java Extensions API:
+ * Tests NOT copied — Java Extensions internal API:
  * ===========================================================================================================
  *
- * - ExtensionRegistryFactoryTest.java: Tests Java ExtensionRegistry factory
+ * Extension tests that use the pure extension API (set/get/presence, serialization, copy)
+ * HAVE been translated and added to GeneratedMessageTest.kt, WireFormatTest.kt, and ParserTest.kt.
+ * Extension tests that remain NOT copied are those depending on Java-internal APIs:
+ *
+ * - ExtensionRegistryFactoryTest.java: Tests Java ExtensionRegistry factory internals
  *   https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/ExtensionRegistryFactoryTest.java
  *
  * - Proto2ExtensionLookupSchemaTest.java: Tests Java Extension lookup in Schema API
  *   https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/Proto2ExtensionLookupSchemaTest.java
+ *
+ * - GeneratedMessageTest.java reflection-based extension tests: getFieldBuilder,
+ *   extensionFieldContainingBuilder, ReflectionTester for extensions, MockBuilderParent,
+ *   newBuilderForField — all depend on Java Descriptor/Reflection API
+ *   https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java
  *
  * ===========================================================================================================
  * Tests NOT copied — Java TextFormat API:
@@ -375,7 +384,7 @@
  * Kotlin proto test files:
  * ===========================================================================================================
  *
- * - example_extensible_message.proto: Requires extensions support
+ * - example_extensible_message.proto: Separate Kotlin-specific test proto (not part of standard unittest set)
  *   https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/proto/com/google/protobuf/example_extensible_message.proto
  *
  * - multiple_files_proto3.proto: Tests Java java_multiple_files option (not relevant for Kotlin generator)
