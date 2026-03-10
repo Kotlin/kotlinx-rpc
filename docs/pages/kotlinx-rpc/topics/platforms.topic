@@ -38,15 +38,8 @@
         </tr>
         <tr>
             <td>gRPC</td>
-            <td>Jvm</td>
-            <td>
-                <p>
-                    Projects with <code>kotlin("jvm")</code> <b>only</b>!
-                </p>
-                <p>
-                    KMP support is in development
-                </p>
-            </td>
+            <td>Jvm, Android, Apple, Linux</td>
+            <td></td>
         </tr>
     </table>
 

@@ -10,14 +10,14 @@
        title="Client" id="grpc-client">
 
     <p>
-        Example of using a gRPC client:
+        <code>GrpcClient</code> connects to a gRPC server and provides service stubs via <code>withService</code>.
     </p>
     <code-block lang="Kotlin">
-        val grpcClient = GrpcClient("localhost", 8080) {
-            usePlaintext()
+        val client = GrpcClient("localhost", 8080) {
+            credentials = plaintext()
         }
 
-        val recognizer = grpcClient.withService&lt;ImageRecognizer&gt;()
+        val recognizer = client.withService&lt;ImageRecognizer&gt;()
 
         val image = Image {
             data = byteArrayOf(0, 1, 2, 3)
@@ -25,11 +25,42 @@
         val result = recognizer.recognize(image)
         println("Recognized category: ${result.category}")
 
-        grpcClient.close()
+        client.shutdown()
+        client.awaitTermination()
     </code-block>
-    <list>
-        <li>
-            <code>usePlaintext()</code> - is a JVM binding to Java gRPC runtime. Other bindings are also present.
-        </li>
-    </list>
+
+    <chapter title="Configuration" id="grpc-client-configuration">
+        <deflist>
+            <def title="credentials">
+                Sets client credentials. Use <code>plaintext()</code> for insecure connections (testing only)
+                or <code>tls { ... }</code> for secure communication.
+                Default TLS credentials are used when not specified.
+            </def>
+            <def title="messageMarshallerResolver">
+                A <code>GrpcMarshallerResolver</code> for custom serialization.
+                Not needed when using generated Protobuf types.
+                See <a href="grpc-services.topic" anchor="no-proto"/>.
+            </def>
+            <def title="overrideAuthority">
+                Overrides the authority used with TLS and HTTP virtual hosting.
+                Does not change the actual host the client connects to.
+            </def>
+            <def title="intercept(...)">
+                Adds client-side interceptors.
+                Interceptors are executed in the order they are added.
+            </def>
+            <def title="keepAlive { ... }">
+                Configures keep-alive pings to detect broken connections.
+                Disabled by default.
+            </def>
+        </deflist>
+    </chapter>
+
+    <chapter title="Lifecycle" id="grpc-client-lifecycle">
+        <p>
+            Call <code>shutdown()</code> to stop accepting new calls and <code>awaitTermination()</code>
+            to wait for in-flight calls to complete.
+            Use <code>shutdownNow()</code> to cancel all calls immediately.
+        </p>
+    </chapter>
 </topic>
