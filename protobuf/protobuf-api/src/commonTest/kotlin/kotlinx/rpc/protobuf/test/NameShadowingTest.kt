@@ -4,18 +4,35 @@
 
 package kotlinx.rpc.protobuf.test
 
+import name_shadowing.Any
+import name_shadowing.BoolValue
 import name_shadowing.Collection
 import name_shadowing.ComplexNesting
+import name_shadowing.DescriptorProto
+import name_shadowing.Duration
+import name_shadowing.Empty
+import name_shadowing.FieldMask
+import name_shadowing.FieldOptions
 import name_shadowing.Int
 import name_shadowing.List
 import name_shadowing.Map
+import name_shadowing.MixedNesting
+import name_shadowing.MixedOneof
+import name_shadowing.MixedWktAndLocal
 import name_shadowing.MyClass1
 import name_shadowing.MyClass2
 import name_shadowing.RecursiveWithShadowing
 import name_shadowing.ShadowedOneof
 import name_shadowing.String
+import name_shadowing.StringValue
+import name_shadowing.Struct
+import name_shadowing.Timestamp
+import name_shadowing.Value
+import name_shadowing.WktNesting
+import name_shadowing.WktOneof
 import name_shadowing.copy
 import name_shadowing.invoke
+import com.google.protobuf.kotlin.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -482,5 +499,554 @@ class NameShadowingTest {
         assertEquals("level 3", rootString.nestedInt.nestedString.value)
         assertEquals(4, rootString.nestedInt.nestedString.nestedInt.value)
         assertEquals("level 5", rootString.nestedInt.nestedString.nestedInt.nestedString.value)
+    }
+
+    // WKT name shadowing tests
+
+    @Test
+    fun testShadowedTimestamp() {
+        val msg = Timestamp {
+            seconds = 1234567890L
+            label = "epoch"
+        }
+
+        assertEquals(1234567890L, msg.seconds)
+        assertEquals("epoch", msg.label)
+    }
+
+    @Test
+    fun testShadowedDuration() {
+        val ts = Timestamp {
+            seconds = 100L
+            label = "start"
+        }
+
+        val msg = Duration {
+            millis = 5000L
+            start = ts
+        }
+
+        assertEquals(5000L, msg.millis)
+        assertEquals(100L, msg.start.seconds)
+        assertEquals("start", msg.start.label)
+    }
+
+    @Test
+    fun testShadowedAny() {
+        val dur = Duration {
+            millis = 1000L
+            start = Timestamp {
+                seconds = 0L
+                label = "zero"
+            }
+        }
+
+        val msg = Any {
+            typeUrl = "type.googleapis.com/test"
+            duration = dur
+        }
+
+        assertEquals("type.googleapis.com/test", msg.typeUrl)
+        assertEquals(1000L, msg.duration.millis)
+        assertEquals(0L, msg.duration.start.seconds)
+    }
+
+    @Test
+    fun testShadowedEmpty() {
+        val msg = Empty {
+            placeholder = "not really empty"
+        }
+
+        assertEquals("not really empty", msg.placeholder)
+    }
+
+    @Test
+    fun testShadowedFieldMask() {
+        val msg = FieldMask {
+            paths = listOf("field1", "field2.nested")
+            createdAt = Timestamp {
+                seconds = 999L
+                label = "created"
+            }
+        }
+
+        assertEquals(listOf("field1", "field2.nested"), msg.paths)
+        assertEquals(999L, msg.createdAt.seconds)
+        assertEquals("created", msg.createdAt.label)
+    }
+
+    @Test
+    fun testShadowedValueAndStruct() {
+        val anyVal = Any {
+            typeUrl = "some.type"
+            duration = Duration { millis = 42L }
+        }
+
+        val value = Value {
+            data = "test data"
+            anyValue = anyVal
+        }
+
+        val empty = Empty { placeholder = "" }
+
+        val msg = Struct {
+            fields = mapOf("key1" to value)
+            this.empty = empty
+        }
+
+        assertEquals("test data", msg.fields["key1"]?.data)
+        assertEquals("some.type", msg.fields["key1"]?.anyValue?.typeUrl)
+        assertEquals("", msg.empty.placeholder)
+    }
+
+    @Test
+    fun testShadowedBoolValue() {
+        val msg = BoolValue {
+            value = true
+        }
+
+        assertEquals(true, msg.value)
+    }
+
+    @Test
+    fun testShadowedStringValue() {
+        val msg = StringValue {
+            value = "wrapped"
+            ts = Timestamp {
+                seconds = 42L
+                label = "ts"
+            }
+        }
+
+        assertEquals("wrapped", msg.value)
+        assertEquals(42L, msg.ts.seconds)
+    }
+
+    @Test
+    fun testShadowedDescriptorTypes() {
+        val opts = FieldOptions {
+            deprecated = true
+            defaultValue = StringValue {
+                value = "default"
+            }
+        }
+
+        val msg = DescriptorProto {
+            name = "MyMessage"
+            options = opts
+        }
+
+        assertEquals("MyMessage", msg.name)
+        assertEquals(true, msg.options.deprecated)
+        assertEquals("default", msg.options.defaultValue.value)
+    }
+
+    @Test
+    fun testWktNesting() {
+        val deep = WktNesting.Nested.DeeplyNested {
+            mask = FieldMask {
+                paths = listOf("a.b")
+                createdAt = Timestamp { seconds = 1L; label = "mask" }
+            }
+            flag = BoolValue { value = true }
+            descriptor = DescriptorProto {
+                name = "Desc"
+                options = FieldOptions { deprecated = false }
+            }
+        }
+
+        val nested = WktNesting.Nested {
+            empty = Empty { placeholder = "nested empty" }
+            struct = Struct {
+                fields = mapOf(
+                    "f" to Value { data = "val" }
+                )
+                this.empty = Empty { placeholder = "" }
+            }
+            value = Value { data = "nested value" }
+            this.deep = deep
+        }
+
+        val msg = WktNesting {
+            ts = Timestamp { seconds = 10L; label = "root ts" }
+            dur = Duration { millis = 200L; start = Timestamp { seconds = 5L; label = "dur start" } }
+            any = Any { typeUrl = "root.any" }
+            this.nested = nested
+            values = listOf(
+                Value { data = "v1" },
+                Value { data = "v2" },
+            )
+            anyMap = mapOf(
+                "a" to Any { typeUrl = "map.any" },
+            )
+        }
+
+        assertEquals(10L, msg.ts.seconds)
+        assertEquals("root ts", msg.ts.label)
+        assertEquals(200L, msg.dur.millis)
+        assertEquals(5L, msg.dur.start.seconds)
+        assertEquals("root.any", msg.any.typeUrl)
+        assertEquals("nested empty", msg.nested.empty.placeholder)
+        assertEquals("val", msg.nested.struct.fields["f"]?.data)
+        assertEquals("nested value", msg.nested.value.data)
+        assertEquals(listOf("a.b"), msg.nested.deep.mask.paths)
+        assertEquals(true, msg.nested.deep.flag.value)
+        assertEquals("Desc", msg.nested.deep.descriptor.name)
+        assertEquals(2, msg.values.size)
+        assertEquals("v1", msg.values[0].data)
+        assertEquals("v2", msg.values[1].data)
+        assertEquals("map.any", msg.anyMap["a"]?.typeUrl)
+    }
+
+    @Test
+    fun testWktOneof() {
+        val msgWithTs = WktOneof {
+            content = WktOneof.Content.Timestamp(Timestamp {
+                seconds = 123L
+                label = "oneof ts"
+            })
+        }
+
+        val msgWithDuration = WktOneof {
+            content = WktOneof.Content.Duration(Duration {
+                millis = 500L
+            })
+        }
+
+        val msgWithAny = WktOneof {
+            content = WktOneof.Content.Any(Any {
+                typeUrl = "oneof.any"
+            })
+        }
+
+        val msgWithEmpty = WktOneof {
+            content = WktOneof.Content.Empty(Empty {
+                placeholder = "oneof empty"
+            })
+        }
+
+        val msgWithValue = WktOneof {
+            content = WktOneof.Content.Value(Value {
+                data = "oneof value"
+            })
+        }
+
+        val msgWithStruct = WktOneof {
+            content = WktOneof.Content.Struct(Struct {
+                fields = mapOf("s" to Value { data = "struct val" })
+                empty = Empty { placeholder = "" }
+            })
+        }
+
+        val tsContent = msgWithTs.content as WktOneof.Content.Timestamp
+        assertEquals(123L, tsContent.value.seconds)
+        assertEquals("oneof ts", tsContent.value.label)
+
+        val durContent = msgWithDuration.content as WktOneof.Content.Duration
+        assertEquals(500L, durContent.value.millis)
+
+        val anyContent = msgWithAny.content as WktOneof.Content.Any
+        assertEquals("oneof.any", anyContent.value.typeUrl)
+
+        val emptyContent = msgWithEmpty.content as WktOneof.Content.Empty
+        assertEquals("oneof empty", emptyContent.value.placeholder)
+
+        val valueContent = msgWithValue.content as WktOneof.Content.Value
+        assertEquals("oneof value", valueContent.value.data)
+
+        val structContent = msgWithStruct.content as WktOneof.Content.Struct
+        assertEquals("struct val", structContent.value.fields["s"]?.data)
+    }
+
+    @Test
+    fun testWktShadowedCopy() {
+        val original = Timestamp {
+            seconds = 100L
+            label = "original"
+        }
+
+        val copied = original.copy {
+            label = "copied"
+        }
+
+        assertEquals(100L, original.seconds)
+        assertEquals("original", original.label)
+        assertEquals(100L, copied.seconds)
+        assertEquals("copied", copied.label)
+    }
+
+    @Test
+    fun testWktShadowedEquality() {
+        val ts1 = Timestamp { seconds = 42L; label = "test" }
+        val ts2 = Timestamp { seconds = 42L; label = "test" }
+        val ts3 = Timestamp { seconds = 42L; label = "different" }
+
+        assertEquals(ts1, ts2)
+        assertEquals(ts1.hashCode(), ts2.hashCode())
+        assertNotEquals(ts1, ts3)
+    }
+
+    @Test
+    fun testWktCrossReferences() {
+        val ts = Timestamp { seconds = 1L; label = "ts" }
+        val dur = Duration { millis = 10L; start = ts }
+        val any = Any { typeUrl = "url"; duration = dur }
+        val sv = StringValue { value = "sv"; this.ts = ts }
+        val fo = FieldOptions { deprecated = true; defaultValue = sv }
+        val dp = DescriptorProto { name = "dp"; options = fo }
+
+        assertEquals(1L, dur.start.seconds)
+        assertEquals(10L, any.duration.millis)
+        assertEquals(1L, any.duration.start.seconds)
+        assertEquals("sv", fo.defaultValue.value)
+        assertEquals(1L, fo.defaultValue.ts.seconds)
+        assertEquals("dp", dp.name)
+        assertEquals(true, dp.options.deprecated)
+        assertEquals("sv", dp.options.defaultValue.value)
+    }
+
+    // Tests mixing local shadowed types with actual WKT types
+
+    @Test
+    fun testMixedWktAndLocal() {
+        // Local shadowed types
+        val localTs = Timestamp { seconds = 1L; label = "local" }
+        val localDur = Duration { millis = 100L }
+        val localAny = Any { typeUrl = "local.any" }
+        val localEmpty = Empty { placeholder = "local" }
+        val localValue = Value { data = "local val" }
+        val localStruct = Struct {
+            fields = mapOf("k" to localValue)
+            empty = localEmpty
+        }
+        val localBool = BoolValue { value = true }
+        val localSv = StringValue { value = "local sv" }
+
+        // Actual WKT types (FQN because local names shadow them)
+        val wktTs = com.google.protobuf.kotlin.Timestamp { seconds = 2L; nanos = 500 }
+        val wktDur = com.google.protobuf.kotlin.Duration { seconds = 60L; nanos = 0 }
+        val wktAny = com.google.protobuf.kotlin.Any { typeUrl = "type.googleapis.com/wkt" }
+        val wktEmpty = com.google.protobuf.kotlin.Empty {}
+        val wktValue = com.google.protobuf.kotlin.Value {
+            kind = com.google.protobuf.kotlin.Value.Kind.StringValue("wkt string")
+        }
+        val wktStruct = com.google.protobuf.kotlin.Struct {
+            fields = mapOf("wkt_key" to wktValue)
+        }
+        val wktBool = com.google.protobuf.kotlin.BoolValue { value = false }
+        val wktSv = com.google.protobuf.kotlin.StringValue { value = "wkt sv" }
+        val wktFieldMask = com.google.protobuf.kotlin.FieldMask { paths = listOf("f1", "f2") }
+
+        val msg = MixedWktAndLocal {
+            this.localTs = localTs
+            this.localDur = localDur
+            this.localAny = localAny
+            this.localEmpty = localEmpty
+            this.localValue = localValue
+            this.localStruct = localStruct
+            this.localBool = localBool
+            this.localStringValue = localSv
+            this.wktTs = wktTs
+            this.wktDur = wktDur
+            this.wktAny = wktAny
+            this.wktEmpty = wktEmpty
+            this.wktValue = wktValue
+            this.wktStruct = wktStruct
+            this.wktBool = wktBool
+            this.wktStringValue = wktSv
+            this.wktFieldMask = wktFieldMask
+        }
+
+        // Verify local types
+        assertEquals(1L, msg.localTs.seconds)
+        assertEquals("local", msg.localTs.label)
+        assertEquals(100L, msg.localDur.millis)
+        assertEquals("local.any", msg.localAny.typeUrl)
+        assertEquals("local", msg.localEmpty.placeholder)
+        assertEquals("local val", msg.localValue.data)
+        assertEquals("local val", msg.localStruct.fields["k"]?.data)
+        assertEquals(true, msg.localBool.value)
+        assertEquals("local sv", msg.localStringValue.value)
+
+        // Verify WKT types
+        assertEquals(2L, msg.wktTs.seconds)
+        assertEquals(500, msg.wktTs.nanos)
+        assertEquals(60L, msg.wktDur.seconds)
+        assertEquals(0, msg.wktDur.nanos)
+        assertEquals("type.googleapis.com/wkt", msg.wktAny.typeUrl)
+        assertEquals(false, msg.wktBool.value)
+        assertEquals("wkt sv", msg.wktStringValue.value)
+        assertEquals(listOf("f1", "f2"), msg.wktFieldMask.paths)
+
+        // Verify WKT Value kind
+        val kind = msg.wktValue.kind as com.google.protobuf.kotlin.Value.Kind.StringValue
+        assertEquals("wkt string", kind.value)
+    }
+
+    @Test
+    fun testMixedNesting() {
+        val localTs = Timestamp { seconds = 10L; label = "local nested" }
+        val wktTs = com.google.protobuf.kotlin.Timestamp { seconds = 20L; nanos = 100 }
+
+        val localDur = Duration { millis = 500L }
+        val wktDur = com.google.protobuf.kotlin.Duration { seconds = 5L; nanos = 0 }
+
+        val localAny = Any { typeUrl = "local.nested.any" }
+        val wktAny = com.google.protobuf.kotlin.Any { typeUrl = "type.googleapis.com/nested" }
+
+        val localSv = StringValue { value = "local sv nested" }
+        val wktSv = com.google.protobuf.kotlin.StringValue { value = "wkt sv nested" }
+
+        val localMask = FieldMask {
+            paths = listOf("local.path")
+            createdAt = localTs
+        }
+        val wktMask = com.google.protobuf.kotlin.FieldMask { paths = listOf("wkt.path") }
+
+        val deep = MixedNesting.Inner.DeepInner {
+            this.localSv = localSv
+            this.wktSv = wktSv
+            this.localMask = localMask
+            this.wktMask = wktMask
+        }
+
+        val inner = MixedNesting.Inner {
+            this.localDur = localDur
+            this.wktDur = wktDur
+            this.localAny = localAny
+            this.wktAny = wktAny
+            this.deep = deep
+        }
+
+        val msg = MixedNesting {
+            this.localTs = localTs
+            this.wktTs = wktTs
+            this.inner = inner
+            this.wktTsList = listOf(
+                com.google.protobuf.kotlin.Timestamp { seconds = 1L; nanos = 0 },
+                com.google.protobuf.kotlin.Timestamp { seconds = 2L; nanos = 0 },
+            )
+            this.localTsList = listOf(
+                Timestamp { seconds = 100L; label = "l1" },
+                Timestamp { seconds = 200L; label = "l2" },
+            )
+            this.wktAnyMap = mapOf(
+                "w" to com.google.protobuf.kotlin.Any { typeUrl = "type.googleapis.com/map" }
+            )
+            this.localAnyMap = mapOf(
+                "l" to Any { typeUrl = "local.map" }
+            )
+        }
+
+        // Verify local types at root
+        assertEquals(10L, msg.localTs.seconds)
+        assertEquals("local nested", msg.localTs.label)
+
+        // Verify WKT types at root
+        assertEquals(20L, msg.wktTs.seconds)
+        assertEquals(100, msg.wktTs.nanos)
+
+        // Verify inner local
+        assertEquals(500L, msg.inner.localDur.millis)
+        assertEquals("local.nested.any", msg.inner.localAny.typeUrl)
+
+        // Verify inner WKT
+        assertEquals(5L, msg.inner.wktDur.seconds)
+        assertEquals("type.googleapis.com/nested", msg.inner.wktAny.typeUrl)
+
+        // Verify deep inner local
+        assertEquals("local sv nested", msg.inner.deep.localSv.value)
+        assertEquals(listOf("local.path"), msg.inner.deep.localMask.paths)
+        assertEquals(10L, msg.inner.deep.localMask.createdAt.seconds)
+
+        // Verify deep inner WKT
+        assertEquals("wkt sv nested", msg.inner.deep.wktSv.value)
+        assertEquals(listOf("wkt.path"), msg.inner.deep.wktMask.paths)
+
+        // Verify repeated WKT vs local
+        assertEquals(2, msg.wktTsList.size)
+        assertEquals(1L, msg.wktTsList[0].seconds)
+        assertEquals(2L, msg.wktTsList[1].seconds)
+
+        assertEquals(2, msg.localTsList.size)
+        assertEquals(100L, msg.localTsList[0].seconds)
+        assertEquals("l1", msg.localTsList[0].label)
+        assertEquals(200L, msg.localTsList[1].seconds)
+
+        // Verify map WKT vs local
+        assertEquals("type.googleapis.com/map", msg.wktAnyMap["w"]?.typeUrl)
+        assertEquals("local.map", msg.localAnyMap["l"]?.typeUrl)
+    }
+
+    @Test
+    fun testMixedOneof() {
+        val msgLocalTs = MixedOneof {
+            content = MixedOneof.Content.LocalTs(Timestamp {
+                seconds = 1L; label = "oneof local"
+            })
+        }
+
+        val msgWktTs = MixedOneof {
+            content = MixedOneof.Content.WktTs(com.google.protobuf.kotlin.Timestamp {
+                seconds = 2L; nanos = 999
+            })
+        }
+
+        val msgLocalDur = MixedOneof {
+            content = MixedOneof.Content.LocalDur(Duration {
+                millis = 100L
+            })
+        }
+
+        val msgWktDur = MixedOneof {
+            content = MixedOneof.Content.WktDur(com.google.protobuf.kotlin.Duration {
+                seconds = 30L; nanos = 0
+            })
+        }
+
+        val msgLocalAny = MixedOneof {
+            content = MixedOneof.Content.LocalAny(Any {
+                typeUrl = "local.oneof"
+            })
+        }
+
+        val msgWktAny = MixedOneof {
+            content = MixedOneof.Content.WktAny(com.google.protobuf.kotlin.Any {
+                typeUrl = "type.googleapis.com/oneof"
+            })
+        }
+
+        // Verify local variants
+        val localTs = msgLocalTs.content as MixedOneof.Content.LocalTs
+        assertEquals(1L, localTs.value.seconds)
+        assertEquals("oneof local", localTs.value.label)
+
+        val localDur = msgLocalDur.content as MixedOneof.Content.LocalDur
+        assertEquals(100L, localDur.value.millis)
+
+        val localAny = msgLocalAny.content as MixedOneof.Content.LocalAny
+        assertEquals("local.oneof", localAny.value.typeUrl)
+
+        // Verify WKT variants
+        val wktTs = msgWktTs.content as MixedOneof.Content.WktTs
+        assertEquals(2L, wktTs.value.seconds)
+        assertEquals(999, wktTs.value.nanos)
+
+        val wktDur = msgWktDur.content as MixedOneof.Content.WktDur
+        assertEquals(30L, wktDur.value.seconds)
+
+        val wktAny = msgWktAny.content as MixedOneof.Content.WktAny
+        assertEquals("type.googleapis.com/oneof", wktAny.value.typeUrl)
+    }
+
+    @Test
+    fun testMixedTypesNotEqual() {
+        // Local Timestamp has different fields than WKT Timestamp -
+        // they are completely different types
+        val localTs = Timestamp { seconds = 42L; label = "local" }
+        val wktTs = com.google.protobuf.kotlin.Timestamp { seconds = 42L; nanos = 0 }
+
+        // They should be different types entirely (no equals possible)
+        assertNotEquals<kotlin.Any>(localTs, wktTs)
     }
 }

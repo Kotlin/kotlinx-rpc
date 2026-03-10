@@ -6536,14 +6536,15 @@ fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAl
 
 @InternalRpcApi
 object TestMessagesEdition2023KtExtensions {
-
-    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> =         InternalExtensionDescriptor.int32(
+    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> = 
+        InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =         InternalExtensionDescriptor.message(
+    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+        InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupliketype",
             extendee = TestAllTypesEdition2023::class,
@@ -6554,7 +6555,8 @@ object TestMessagesEdition2023KtExtensions {
             decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
         )
 
-    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> =         InternalExtensionDescriptor.message(
+    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+        InternalExtensionDescriptor.message(
             fieldNumber = 122,
             name = "delimitedExt",
             extendee = TestAllTypesEdition2023::class,
