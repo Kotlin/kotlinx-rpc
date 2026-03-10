@@ -17,12 +17,22 @@ jobs:
           fetch-depth: 0
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-      - name: Run Protobuf Conformance Test Generation
+      - name: Run Protobuf WKT Generation
         run: ./gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain --info --stacktrace
       - name: Check if Well-Known Types are up-to-date
         run: |
-          if [[ -n "$(git status --porcelain | grep protobuf/protobuf-core/)" ]]; then
-            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-core:bufGenerateCommonMain' and commit changes"
+          if [[ -n "$(git status --porcelain | grep protobuf/protobuf-wkt/)" ]]; then
+            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain' and commit changes"
+            git status --porcelain
+            git diff --minimal | cat
+            exit 1
+          fi
+      - name: Run Protobuf Descriptor Generation
+        run: ./gradlew :protobuf:protobuf-descriptor:bufGenerateCommonMain --info --stacktrace
+      - name: Check if Descriptor Types are up-to-date
+        run: |
+          if [[ -n "$(git status --porcelain | grep protobuf/protobuf-descriptor/)" ]]; then
+            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-descriptor:bufGenerateCommonMain' and commit changes"
             git status --porcelain
             git diff --minimal | cat
             exit 1
