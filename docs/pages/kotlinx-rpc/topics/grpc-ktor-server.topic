@@ -15,8 +15,10 @@
     </p>
     <code-block lang="kotlin">
 fun Application.module() {
-    grpc(port = PORT, configure = { /* ... */ }) {
-        registerService&lt;MyService&gt; { MyServiceImpl() }
+    grpc(port = PORT) {
+        services {
+            registerService&lt;MyService&gt; { MyServiceImpl() }
+        }
     }
 }
     </code-block>
@@ -26,6 +28,15 @@ fun Application.module() {
     </p>
     Add the Ktor dependency to your project:
     <code-block lang="kotlin">
-        implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server:%kotlinx-rpc-version%")
+        implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server:&lt;version&gt;")
     </code-block>
+    <p>
+        Version to use:
+    </p>
+    <p>
+        <a href="https://redirector.kotlinlang.org/maven/kxrpc-grpc">
+            <img alt="Latest dev version"
+                 src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fredirector.kotlinlang.org%2Fmaven%2Fkxrpc-grpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&amp;query=%2F%2Fmetadata%2Fversioning%2Flatest&amp;label=Latest%20dev%20version&amp;color=forest-green&amp;cacheSeconds=60"/>
+        </a>
+    </p>
 </topic>

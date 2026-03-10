@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="Using generated code" id="grpc-generated-code">
+
+    <p>
+        This page shows how to work with the Kotlin types generated from <path>.proto</path> schemas.
+        For details on what the protoc plugins and the compiler plugin produce, see <a href="grpc-codegen.topic"/>.
+    </p>
+    <note>
+        If you use an IntelliJ-based IDE, install the
+        <a href="ide-plugin.topic">Kotlin External FIR Support (KEFS)</a> plugin so the editor can resolve
+        compiler-generated declarations like <code>Companion</code> objects and <code>Builder</code> interfaces.
+    </note>
+
+    <chapter title="Building messages" id="grpc-building-messages">
+        <p>
+            Every generated message has a builder DSL accessed through the <code>Companion.invoke</code> operator:
+        </p>
+        <code-block lang="Kotlin">
+            val request = HelloRequest {
+                name = "kotlinx.rpc"
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Copying messages" id="grpc-copying-messages">
+        <p>
+            Messages are immutable. Use <code>copy</code> to create a modified version:
+        </p>
+        <code-block lang="Kotlin">
+            val updated = request.copy {
+                name = "grpc"
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Enums" id="grpc-enums">
+        <p>
+            Proto enums become Kotlin sealed types. Unknown values received over the wire
+            are represented as <code>UNRECOGNIZED</code>:
+        </p>
+        <code-block lang="protobuf">
+            enum Priority {
+              PRIORITY_UNSPECIFIED = 0;
+              HIGH = 1;
+              LOW = 2;
+            }
+
+            message Task {
+              Priority priority = 1;
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            val task = Task {
+                priority = Priority.HIGH
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Repeated fields" id="grpc-repeated-fields">
+        <p>
+            Repeated fields map to Kotlin <code>List</code>:
+        </p>
+        <code-block lang="protobuf">
+            message Numbers {
+              repeated int32 values = 1;
+              repeated string labels = 2;
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            val numbers = Numbers {
+                values = listOf(1, 2, 3)
+                labels = listOf("a", "b", "c")
+            }
+
+            val extended = numbers.copy {
+                values = values + 4
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Map fields" id="grpc-map-fields">
+        <p>
+            Map fields map to Kotlin <code>Map</code>:
+        </p>
+        <code-block lang="protobuf">
+            message Config {
+              map&lt;string, int64&gt; settings = 1;
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            val config = Config {
+                settings = mapOf("timeout" to 30L, "retries" to 3L)
+            }
+
+            val updated = config.copy {
+                settings = settings + ("retries" to 5L)
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Oneof fields" id="grpc-oneof-fields">
+        <p>
+            Oneof fields become Kotlin sealed interfaces.
+            Each case is a data class wrapping the value:
+        </p>
+        <code-block lang="protobuf">
+            message Event {
+              oneof payload {
+                string text = 1;
+                int32 code = 2;
+              }
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            val event = Event {
+                payload = Event.Payload.Text("hello")
+            }
+
+            when (event.payload) {
+                is Event.Payload.Text -&gt; println(event.payload.value)
+                is Event.Payload.Code -&gt; println(event.payload.value)
+                null -&gt; {}
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Nested messages" id="grpc-nested-messages">
+        <p>
+            Nested message types are accessed through the parent type:
+        </p>
+        <code-block lang="protobuf">
+            message Outer {
+              message Inner {
+                int32 value = 1;
+              }
+
+              Inner inner = 1;
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            val outer = Outer {
+                inner = Outer.Inner {
+                    value = 42
+                }
+            }
+        </code-block>
+    </chapter>
+
+    <chapter title="Streaming RPCs" id="grpc-streaming-rpcs">
+        <p>
+            Streaming signatures use <code>Flow</code>.
+            Given the following schema:
+        </p>
+        <code-block lang="protobuf">
+            service Echo {
+              rpc ServerStream(EchoRequest) returns (stream EchoResponse);
+              rpc ClientStream(stream EchoRequest) returns (EchoResponse);
+              rpc BidiStream(stream EchoRequest) returns (stream EchoResponse);
+            }
+        </code-block>
+        <p>
+            The generated interface looks like this:
+        </p>
+        <code-block lang="Kotlin">
+            @Grpc
+            interface Echo {
+                fun ServerStream(message: EchoRequest): Flow&lt;EchoResponse&gt;
+                suspend fun ClientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse
+                fun BidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt;
+            }
+        </code-block>
+        <p>
+            Implementation:
+        </p>
+        <code-block lang="Kotlin">
+            class EchoImpl : Echo {
+                override fun ServerStream(message: EchoRequest): Flow&lt;EchoResponse&gt; {
+                    return flow {
+                        repeat(3) { emit(EchoResponse { text = message.text }) }
+                    }
+                }
+
+                override suspend fun ClientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse {
+                    return EchoResponse { text = message.last().text }
+                }
+
+                override fun BidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt; {
+                    return message.map { EchoResponse { text = it.text } }
+                }
+            }
+        </code-block>
+        <p>
+            Client usage:
+        </p>
+        <code-block lang="Kotlin">
+            val echo = client.withService&lt;Echo&gt;()
+
+            // Server streaming
+            echo.ServerStream(EchoRequest { text = "hello" }).collect {
+                println(it.text)
+            }
+
+            // Client streaming
+            val result = echo.ClientStream(flow {
+                emit(EchoRequest { text = "one" })
+                emit(EchoRequest { text = "two" })
+            })
+
+            // Bidirectional streaming
+            echo.BidiStream(flow {
+                emit(EchoRequest { text = "ping" })
+            }).collect {
+                println(it.text)
+            }
+        </code-block>
+    </chapter>
+</topic>
