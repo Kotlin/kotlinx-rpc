@@ -6,7 +6,7 @@
 // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java
 //
 // Tests that depend on Java-specific APIs are NOT included:
-// - Extension tests (getFieldBuilder, extensionFieldContainingBuilder, etc.)
+// - Reflection-based extension tests (getFieldBuilder, extensionFieldContainingBuilder, etc.)
 // - Reflection tests (ReflectionTester, getField/setField with FieldDescriptor)
 // - Java serialization tests (ObjectOutputStream/ObjectInputStream)
 // - DynamicMessage tests
@@ -23,8 +23,10 @@ import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.invoke
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import proto2_unittest.TestAllTypes.NestedEnum
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
@@ -440,5 +442,87 @@ class GeneratedMessageTest {
         }
         assertEquals(42, msg.optionalImportMessage.d)
         assertEquals(ImportEnum.IMPORT_BAR, msg.optionalImportEnum)
+    }
+
+    // ===========================================================================================================
+    // Extension tests — translated from GeneratedMessageTest.java extension methods
+    // ===========================================================================================================
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testExtensionMessageOrBuilder
+    @Test
+    fun testExtensionMessageOrBuilder() {
+        val message = TestUtil.getAllExtensionsSet()
+        TestUtil.assertAllExtensionsSet(message)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testExtensionDefaults
+    @Test
+    fun testExtensionDefaults() {
+        TestUtil.assertExtensionsClear(TestAllExtensions {})
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testClearExtension
+    @Test
+    fun testClearExtension() {
+        // Set an optional extension, then clear it by setting to null
+        val msg = TestAllExtensions {
+            optionalInt32Extension = 1
+        }
+        val cleared = msg.copy {
+            optionalInt32Extension = null
+        }
+        assertFalse(cleared.presence.hasOptionalInt32Extension)
+
+        // Set a repeated extension, then clear it by setting to empty list
+        val withRepeated = TestAllExtensions {
+            repeatedInt32Extension = listOf(1)
+        }
+        val clearedRepeated = withRepeated.copy {
+            repeatedInt32Extension = emptyList()
+        }
+        assertEquals(0, clearedRepeated.repeatedInt32Extension.size)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testExtensionCopy
+    @Test
+    fun testExtensionCopy() {
+        val original = TestUtil.getAllExtensionsSet()
+        val copy = original.copy()
+        TestUtil.assertAllExtensionsSet(copy)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testExtensionMergeFrom
+    @Test
+    fun testExtensionMergeFrom() {
+        val original = TestAllExtensions {
+            optionalInt32Extension = 1
+        }
+        val merged = original.copy()
+        assertTrue(merged.presence.hasOptionalInt32Extension)
+        assertEquals(1, merged.optionalInt32Extension)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testExtensionRepeatedSetters
+    @Test
+    fun testExtensionRepeatedSetters() {
+        val message = TestUtil.getAllExtensionsSet()
+        val modified = message.copy {
+            repeatedInt32Extension = listOf(201, 501)
+            repeatedStringExtension = listOf("215", "515")
+        }
+        assertEquals(201, modified.repeatedInt32Extension[0])
+        assertEquals(501, modified.repeatedInt32Extension[1])
+        assertEquals("215", modified.repeatedStringExtension[0])
+        assertEquals("515", modified.repeatedStringExtension[1])
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testSerialize (extension variant)
+    @Test
+    fun testExtensionSerializeRoundTrip() {
+        val message = TestUtil.getAllExtensionsSet()
+        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
+        val decoded = TestUtil.encodeDecode(message, marshaller)
+        TestUtil.assertAllExtensionsSet(decoded)
     }
 }
