@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.server.internal
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
-@InternalRpcApi
 public actual class GrpcContext
 
 private val currentGrpcContext = GrpcContext()

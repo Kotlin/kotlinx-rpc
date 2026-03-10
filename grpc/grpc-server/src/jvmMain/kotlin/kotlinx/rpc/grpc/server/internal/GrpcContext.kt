@@ -9,7 +9,6 @@ import kotlinx.coroutines.ThreadContextElement
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
-@InternalRpcApi
 public actual typealias GrpcContext = Context
 
 internal actual val CurrentGrpcContext: GrpcContext

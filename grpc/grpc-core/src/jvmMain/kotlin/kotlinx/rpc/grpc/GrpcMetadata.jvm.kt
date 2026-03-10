@@ -10,7 +10,6 @@ import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-@InternalRpcApi
 public actual typealias GrpcMetadata = Metadata
 
 public actual class GrpcMetadataKey<T> public actual constructor(
