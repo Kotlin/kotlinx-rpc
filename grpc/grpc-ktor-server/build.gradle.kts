@@ -23,21 +23,19 @@ kotlin {
 
         commonTest {
             dependencies {
+                implementation(kotlin("test"))
                 implementation(projects.protobuf.protobufApi)
+                implementation(projects.grpc.grpcClient)
+                implementation(projects.grpc.grpcKtorServer)
+
+                implementation(libs.ktor.server.core)
+                implementation(libs.ktor.server.test.host)
             }
         }
 
         jvmTest {
             dependencies {
-                implementation(kotlin("test"))
-
-                implementation(projects.grpc.grpcClient)
-                implementation(projects.grpc.grpcKtorServer)
-
                 implementation(libs.grpc.netty)
-
-                implementation(libs.ktor.server.core)
-                implementation(libs.ktor.server.test.host)
 
                 runtimeOnly(libs.logback.classic)
             }
