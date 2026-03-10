@@ -4,10 +4,17 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
-@InternalRpcApi
+/**
+ * Platform abstraction for the underlying gRPC call context associated with the current server call.
+ *
+ * On JVM this is backed by `io.grpc.Context` and can be used to preserve gRPC call-local state across coroutine
+ * boundaries.
+ *
+ * On Native targets this type currently exists only as a placeholder for API parity. Native gRPC context
+ * propagation is not implemented yet, so the current instance does not carry a real call-scoped state.
+ */
 public expect class GrpcContext
 
 internal expect val CurrentGrpcContext: GrpcContext

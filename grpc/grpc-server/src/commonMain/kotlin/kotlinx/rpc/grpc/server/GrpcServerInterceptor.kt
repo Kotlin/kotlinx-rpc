@@ -52,6 +52,8 @@ public interface GrpcServerCallScope<Request, Response> {
      *
      * It can be used by the interceptor to provide call-scoped information about
      * the current call, such as the identity of the caller or the current authentication state.
+     *
+     * Note that the [GrpcContext] is currently only functional on JVM targets.
      */
     public val context: GrpcContext
 

@@ -18,10 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -39,17 +41,17 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlinx.rpc.grpc.StatusException
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.description
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.sample.messages.invoke
 import kotlinx.rpc.sample.messages.ChatEntry
 import kotlinx.rpc.sample.messages.MessageService
 import kotlinx.rpc.sample.messages.ReceiveMessagesRequest
 import kotlinx.rpc.sample.messages.SendMessageRequest
-import kotlinx.rpc.sample.messages.invoke
 import kotlinx.rpc.withService
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.random.Random
@@ -85,59 +87,89 @@ private fun ChatScreen(service: MessageService) {
     var input by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<ChatEntry>() }
     var error by remember { mutableStateOf<String?>(null) }
+    var isSending by remember { mutableStateOf(false) }
+    var retryCountDown by remember { mutableStateOf(0L) }
 
     fun sendMessage() {
+        val currentUser = me.trim()
+        val draftText = input
+        val messageText = draftText.trim()
+
+        if (isSending) return
+        if (currentUser.isBlank()) {
+            error = "Enter a user name before sending."
+            return
+        }
+        if (messageText.isBlank()) {
+            error = "Enter a message before sending."
+            return
+        }
+
         scope.launch {
+            isSending = true
             try {
                 val result = service.SendMessage(
                     SendMessageRequest {
-                        user = me
-                        text = input
+                        user = currentUser
+                        text = messageText
                     }
                 )
                 if (result.success) {
                     messages += ChatEntry {
-                        user = me
-                        text = input
+                        user = currentUser
+                        text = messageText
                         tsMillis = Clock.System.now().toEpochMilliseconds()
                     }
-                    input = ""
+                    if (input == draftText) {
+                        input = ""
+                    }
                     error = null
                 } else {
                     error = "Message not accepted by server."
                 }
             } catch (e: CancellationException) {
                 throw e
-            } catch (e: StatusException) {
-                error = e.status.description?.let { "${e.status.statusCode}: $it" } ?: "gRPC error: ${e.status.statusCode}"
             } catch (e: Throwable) {
-                error = e.message ?: "Unknown error while sending."
+                error = e.toRpcError("sending")
+            } finally {
+                isSending = false
             }
         }
     }
 
-    LaunchedEffect(me) {
+    LaunchedEffect(me.trim()) {
+        val currentUser = me.trim()
         messages.clear()
         error = null
-        val req = ReceiveMessagesRequest { user = me }
+        if (currentUser.isBlank()) {
+            error = "Enter a user name to connect."
+            return@LaunchedEffect
+        }
+
+        val req = ReceiveMessagesRequest { user = currentUser }
         try {
             service.ReceiveMessages(req)
                 .retryWhen { cause, attempt ->
-                    if (cause is CancellationException) false
-                    else {
-                        error = (cause as? StatusException)?.status?.description?.let { "${cause.status.statusCode}: $it" }
-                            ?: cause.message ?: "Error receiving messages."
-                        delay(2.seconds)
-                        true
+                    if (cause is CancellationException) return@retryWhen false
+
+                    error = cause.toRpcError("receiving")
+                    if (!cause.isRetryableRpcFailure()) {
+                        return@retryWhen false
                     }
+
+                    val seconds = minOf(attempt + 1, 5)
+                    for (i in 0 until seconds) {
+                        retryCountDown = seconds - i
+                        delay(1.seconds)
+                    }
+                    error = null
+                    true
                 }
                 .collect { msg -> messages += msg; error = null }
         } catch (e: CancellationException) {
             throw e
-        } catch (e: StatusException) {
-            error = e.status.description ?: "gRPC error: ${e.status.statusCode}"
         } catch (e: Throwable) {
-            error = e.message ?: "Unknown error while receiving."
+            error = e.toRpcError("receiving")
         }
     }
 
@@ -148,14 +180,7 @@ private fun ChatScreen(service: MessageService) {
     ) {
 
         if (error != null) {
-            Text(
-                error!!,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.errorContainer)
-                    .padding(8.dp)
-            )
+            ErrorBanner(error!!, retryCountDown)
         }
 
         OutlinedTextField(
@@ -190,7 +215,60 @@ private fun ChatScreen(service: MessageService) {
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
-            Button(onClick = ::sendMessage) { Text("Send") }
+            Button(
+                onClick = ::sendMessage,
+                enabled = !isSending && me.isNotBlank() && input.isNotBlank()
+            ) {
+                Text(if (isSending) "Sending..." else "Send")
+            }
+        }
+    }
+}
+
+private fun Throwable.toRpcError(action: String): String {
+    val status = (this as? GrpcStatusException)?.status
+    return status?.statusCode?.toErrorMessage(action)
+        ?: message
+        ?: "Unknown error while $action."
+}
+
+private fun Throwable.isRetryableRpcFailure(): Boolean {
+    return when ((this as? GrpcStatusException)?.status?.statusCode) {
+        GrpcStatusCode.UNAVAILABLE,
+        GrpcStatusCode.CANCELLED,
+        GrpcStatusCode.DEADLINE_EXCEEDED,
+        GrpcStatusCode.UNKNOWN,
+        GrpcStatusCode.INTERNAL -> true
+        else -> false
+    }
+}
+
+private fun GrpcStatusCode.toErrorMessage(action: String): String {
+    return when (this) {
+        GrpcStatusCode.UNAVAILABLE -> "Server is unavailable."
+        else -> "Unknown error occurred while $action."
+    }
+}
+
+@Composable
+fun ErrorBanner(
+    error: String,
+    retrySeconds: Long,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(8.dp),
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.error
+        ) {
+            Text(error)
+
+            if (retrySeconds > 0) {
+                Text("Retry in ${retrySeconds}s")
+            }
         }
     }
 }
