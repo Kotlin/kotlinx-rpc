@@ -186,10 +186,10 @@ Though possible, it is much more complicated way to use the library and generall
 
 ## gRPC integration
 The library provides experimental support for the [gRPC](https://grpc.io) protocol.
-The artifacts are published separately in our [Space repository](https://public.jetbrains.space/p/krpc/packages/maven/grpc).
+The artifacts are published separately in our [Space repository](https://redirector.kotlinlang.org/maven/kxrpc-grpc).
 Current latest version: 
 
-![Dynamic XML Badge](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fmaven.pkg.jetbrains.space%2Fpublic%2Fp%2Fkrpc%2Fgrpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&query=%2F%2Fmetadata%2Fversioning%2Flatest&label=Latest%20dev%20version&color=forest-green&cacheSeconds=60)
+![Dynamic XML Badge](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fredirector.kotlinlang.org%2Fmaven%2Fkxrpc-grpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&query=%2F%2Fmetadata%2Fversioning%2Flatest&label=Latest%20dev%20version&color=forest-green&cacheSeconds=60)
 
 For more information on gRPC usage, 
 see the [official documentation](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).

@@ -10,97 +10,247 @@
        title="Services" id="grpc-services">
 
     <p>
-        To define a service, create a new <code>.proto</code> file in the <code>proto</code> folder next to your source sets:
+        gRPC is serialization-agnostic by design, and <code>kotlinx.rpc</code> follows this principle.
+        Protobuf is the most common choice, but you can use any serialization format
+        by providing a custom <code>GrpcMarshaller</code>.
+        <code>kotlinx.serialization</code> support is provided out of the box.
     </p>
-    <code-block>
-        ├── build.gradle.kts
-        ├── settings.gradle.kts
-        └── src
-            ├── main
-            │   ├── kotlin
-            │   │   ├── Client.kt
-            │   │   ├── ImageRecognizer.kt
-            │   │   └── Server.kt
-            │   └── resources
-            │       └── logback.xml
-            └── proto
-                └── image-recognizer.proto
-    </code-block>
-
     <p>
-        Inside the <code>.proto</code> file define your service:
+        There are three ways to define a gRPC service, depending on how much code generation you need:
     </p>
-    <code-block lang="protobuf">
-        syntax = "proto3";
+    <list>
+        <li><a anchor="full-proto">Full proto generation</a> — service and messages defined in <path>.proto</path> files</li>
+        <li><a anchor="partial-proto">Partial proto generation</a> — only messages from <path>.proto</path>, service interface written by hand</li>
+        <li><a anchor="no-proto">No proto</a> — everything hand-written, any serialization via marshallers</li>
+    </list>
 
-        message Image {
-          bytes data = 1;
-        }
-
-        message RecogniseResult {
-          int32 category = 1;
-        }
-
-        service ImageRecognizer {
-          rpc recognize(Image) returns (RecogniseResult);
-        }
-    </code-block>
-    <p>
-        This will generate the necessary code, including the most important interfaces:
-        <code>ImageRecognizer</code>, <code>Image</code>, <code>RecogniseResult</code>:
-    </p>
-    <code-block lang="Kotlin">
-        @Grpc
-        interface ImageRecognizer {
-            suspend fun recognize(image: Image): RecogniseResult
-        }
-
-        interface RecogniseResult {
-            val category: Int
-
-            companion object
-        }
-
-        interface Image {
-            val data: ByteArray
-
-            companion object
-        }
-    </code-block>
-    <p>
-        You can implement the <code>ImageRecognizer</code>:
-    </p>
-    <code-block lang="Kotlin">
-        class ImageRecognizerImpl : ImageRecognizer {
-            override suspend fun recognize(image: Image): RecogniseResult {
-                val byte = image.data[0].toInt()
-                delay(100) // heavy processing
-                val result = RecogniseResult {
-                    category = if (byte == 0) 0 else 1
-                }
-                return result
-            }
-        }
-    </code-block>
-    <p>
-        Here you can also see the usage of the <code>RecogniseResult</code> interface.
-        To create an instance, use its <code>.invoke()</code> extension function:
-    </p>
-    <code-block lang="Kotlin">
-        RecogniseResult {
-            category = 0
-        }
-    </code-block>
-
-    <chapter title="Limitations" id="limitations">
-        <p>Current known limitations:</p>
-        <list>
-            <li>Mandatory java and kotlin protoc generation in addition to our codegen</li>
-            <li>Kotlin/JVM project only</li>
-        </list>
+    <chapter title="Full proto generation" id="full-proto">
         <p>
-            If you encounter other unexpected limitations or bugs,
-            please <a href="https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md">report</a> them
+            This is the default path. You define both messages and the service in a <path>.proto</path> file,
+            and the Gradle plugin generates all Kotlin code.
+            You only need to implement the service interface.
         </p>
+        <p>
+            Given the following schema:
+        </p>
+        <code-block lang="protobuf">
+            syntax = "proto3";
+
+            message Image {
+              bytes data = 1;
+            }
+
+            message RecogniseResult {
+              int32 category = 1;
+            }
+
+            service ImageRecognizer {
+              rpc recognize(Image) returns (RecogniseResult);
+            }
+        </code-block>
+        <p>
+            The plugin generates the <code>Image</code> and <code>RecogniseResult</code> message types and
+            the <code>ImageRecognizer</code> service interface annotated with <code>@Grpc</code>.
+            You implement the service:
+        </p>
+        <code-block lang="Kotlin">
+            class ImageRecognizerImpl : ImageRecognizer {
+                override suspend fun recognize(image: Image): RecogniseResult {
+                    val byte = image.data[0].toInt()
+
+                    return RecogniseResult {
+                        category = if (byte == 0) 0 else 1
+                    }
+                }
+            }
+        </code-block>
+        <p>
+            Register it on the server and call it from the client:
+        </p>
+        <tabs>
+            <tab title="Server">
+                <code-block lang="Kotlin">
+                    val server = GrpcServer(8080) {
+                        registerService&lt;ImageRecognizer&gt; { ImageRecognizerImpl() }
+                    }
+
+                    server.start()
+                    server.awaitTermination()
+                </code-block>
+            </tab>
+            <tab title="Client">
+                <code-block lang="Kotlin">
+                    val client = GrpcClient("localhost", 8080) {
+                        credentials = plaintext()
+                    }
+
+                    val recognizer = client.withService&lt;ImageRecognizer&gt;()
+
+                    val image = Image {
+                        data = byteArrayOf(0, 1, 2, 3)
+                    }
+                    val result = recognizer.recognize(image)
+                    println("Category: ${result.category}")
+                </code-block>
+            </tab>
+        </tabs>
+        <p>
+            For details on what the protoc plugins and the compiler plugin generate,
+            see <a href="grpc-codegen.topic"/>.
+        </p>
+    </chapter>
+
+    <chapter title="Partial proto generation" id="partial-proto">
+        <p>
+            In this mode you only define messages in a <path>.proto</path> file (no <code>service</code> block)
+            and write the <code>@Grpc</code> service interface yourself.
+            This gives you full control over the service contract while still using generated Protobuf types.
+        </p>
+        <p>
+            Given the following schema:
+        </p>
+        <code-block lang="protobuf">
+            syntax = "proto3";
+
+            message Image {
+              bytes data = 1;
+            }
+
+            message RecogniseResult {
+              int32 category = 1;
+            }
+        </code-block>
+        <p>
+            Write the service interface by hand with the <code>@Grpc</code> annotation:
+        </p>
+        <code-block lang="Kotlin">
+            @Grpc
+            interface ImageRecognizer {
+                suspend fun recognize(image: Image): RecogniseResult
+            }
+        </code-block>
+        <p>
+            The generated <code>Image</code> and <code>RecogniseResult</code> types already have built-in Protobuf
+            marshallers, so no additional marshaller configuration is needed.
+            The rest of the setup — implementation, server, and client — is identical
+            to <a anchor="full-proto">full proto generation</a>.
+        </p>
+    </chapter>
+
+    <chapter title="No proto" id="no-proto">
+        <p>
+            You can skip <path>.proto</path> files entirely and write both the service interface and message types
+            in Kotlin. In this case you must provide a <code>GrpcMarshallerResolver</code> so the framework knows
+            how to serialize and deserialize your types over the wire.
+        </p>
+
+        <chapter title="Using kotlinx.serialization" id="no-proto-kotlinx-serialization">
+            <p>
+                The <code>grpc-marshaller-kotlinx-serialization</code> module provides a ready-made resolver
+                that works with any <code>kotlinx.serialization</code> format.
+                Add the dependency:
+            </p>
+            <code-block lang="Kotlin">
+                implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-kotlinx-serialization:&lt;version&gt;")
+            </code-block>
+            <p>
+                Define your types with <code>@Serializable</code> and your service with <code>@Grpc</code>:
+            </p>
+            <code-block lang="Kotlin">
+                @Serializable
+                data class EchoMessage(val text: String)
+
+                @Grpc
+                interface EchoService {
+                    suspend fun echo(message: EchoMessage): EchoMessage
+                }
+
+                class EchoServiceImpl : EchoService {
+                    override suspend fun echo(message: EchoMessage): EchoMessage {
+                        return EchoMessage("${message.text} ${message.text}")
+                    }
+                }
+            </code-block>
+            <p>
+                Pass the resolver when creating the server and client using <code>asMarshallerResolver()</code>:
+            </p>
+            <tabs>
+                <tab title="Server">
+                    <code-block lang="Kotlin">
+                        val server = GrpcServer(8080) {
+                            messageMarshallerResolver = Json.asMarshallerResolver()
+
+                            services {
+                                registerService&lt;EchoService&gt; { EchoServiceImpl() }
+                            }
+                        }
+
+                        server.start()
+                    </code-block>
+                </tab>
+                <tab title="Client">
+                    <code-block lang="Kotlin">
+                        val client = GrpcClient("localhost", 8080) {
+                            messageMarshallerResolver = Json.asMarshallerResolver()
+                            credentials = plaintext()
+                        }
+
+                        val service = client.withService&lt;EchoService&gt;()
+                        val result = service.echo(EchoMessage("hello"))
+                    </code-block>
+                </tab>
+            </tabs>
+            <p>
+                Any <code>StringFormat</code> (such as <code>Json</code>) or <code>BinaryFormat</code>
+                (such as <code>Cbor</code> or <code>ProtoBuf</code>) can be used.
+            </p>
+        </chapter>
+
+        <chapter title="Custom marshallers" id="no-proto-custom-marshallers">
+            <p>
+                For full control over serialization, implement <code>GrpcMarshaller</code> directly
+                and provide a <code>GrpcMarshallerResolver</code>:
+            </p>
+            <code-block lang="Kotlin">
+                val stringMarshaller = object : GrpcMarshaller&lt;String&gt; {
+                    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
+                        return Buffer().apply { writeString(value) }
+                    }
+
+                    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
+                        return source.readString()
+                    }
+                }
+
+                val resolver = GrpcMarshallerResolver { kType -&gt;
+                    when (kType.classifier) {
+                        String::class -&gt; stringMarshaller
+                        else -&gt; null
+                    }
+                }
+            </code-block>
+            <p>
+                Pass the resolver to both server and client via <code>messageMarshallerResolver</code>,
+                as shown above.
+            </p>
+            <p>
+                Alternatively, you can annotate individual message types with <code>@WithGrpcMarshaller</code>
+                to bind a marshaller directly to a type. In this case no resolver is needed for that type:
+            </p>
+            <code-block lang="Kotlin">
+                @WithGrpcMarshaller(MyMessage.Marshaller::class)
+                class MyMessage(val value: String) {
+                    object Marshaller : GrpcMarshaller&lt;MyMessage&gt; {
+                        override fun encode(value: MyMessage, config: GrpcMarshallerConfig?): Source {
+                            return Buffer().apply { writeString(value.value) }
+                        }
+
+                        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage {
+                            return MyMessage(source.readString())
+                        }
+                    }
+                }
+            </code-block>
+        </chapter>
     </chapter>
 </topic>
