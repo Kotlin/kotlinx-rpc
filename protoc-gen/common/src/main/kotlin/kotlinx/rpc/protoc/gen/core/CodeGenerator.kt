@@ -388,12 +388,12 @@ open class CodeGenerator(
         val typeString = type.wrapInIfNotBlankOr { ": $it" }
 
         selectNames {
-            if (valueOnNewLine) {
-                newLine()
-            }
             addLine(contextString.merge(typeString) { contextString, typeString ->
                 "${modifiersString}val $contextString$name$typeString = "
             })
+            if (valueOnNewLine) {
+                newLine()
+            }
         }
 
         val nested = CodeGenerator(

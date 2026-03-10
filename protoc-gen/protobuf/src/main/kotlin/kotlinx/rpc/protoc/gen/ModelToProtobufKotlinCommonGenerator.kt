@@ -1199,7 +1199,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = declaration.internalCompanionName.scoped(),
             returnType = FqName.Implicits.Unit.scoped(),
         ) {
-            if (!declaration.isGroup && declaration.hasExtensionRange) {
+            if (declaration.hasExtensionRange) {
                 code("val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(%T::class) ?: emptyMap()"
                     .scoped(declaration.name))
             }
@@ -1235,7 +1235,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     declaration.actualFields.forEach { field -> readMatchCase(field) }
                     whenCase("else".scoped()) {
                         // check if it is an extension
-                        if (declaration.extensionRanges.isNotEmpty()) {
+                        if (declaration.hasExtensionRange) {
                             code("val extension = knownExtensions[tag.fieldNr] as? %T".scoped(FqName.RpcClasses.InternalExtensionDescriptor))
                             ifBranch(condition = "extension != null && tag.wireType in extension.acceptedWireTypes".scoped(), ifBlock = {
                                 code("val currentExtension = msg._extensions[tag.fieldNr]?.takeIf { it.descriptor == extension }?.value".scoped())
