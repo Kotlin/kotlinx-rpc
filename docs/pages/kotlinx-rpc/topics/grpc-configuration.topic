@@ -40,6 +40,12 @@
         The Gradle build does not depend on KEFS, but editor resolution of compiler-generated declarations does.
     </note>
     <warning>
+        IDE version 2026.1 (261) has a
+        <a href="https://youtrack.jetbrains.com/issue/KT-84711">known issue (KT-84711)</a>
+        where generated declarations may disappear after file changes.
+        Use IDE versions 2025.1–2025.3 (251–253) until the fix ships (expected in 261.1).
+    </warning>
+    <warning>
         Do not apply the <code>com.google.protobuf</code> Gradle plugin or Buf's Gradle plugin to the same module.
         <code>kotlinx.rpc</code> manages the generated workspace, Buf invocation, and protoc plugins itself.
     </warning>

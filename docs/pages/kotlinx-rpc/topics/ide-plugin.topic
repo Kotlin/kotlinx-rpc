@@ -55,6 +55,12 @@
             If the IDE and compiler plugin disagree, first update to a recent IDE version and the latest KEFS version
             from the Marketplace page.
         </p>
+        <warning>
+            IntelliJ-based IDEs version 2026.1 (261) have a
+            <a href="https://youtrack.jetbrains.com/issue/KT-84711">known issue (KT-84711)</a>
+            where FIR plugin-generated declarations may disappear after file changes.
+            Use IDE versions 2025.1–2025.3 (251–253) until the fix ships (expected in 261.1).
+        </warning>
     </chapter>
     <chapter title="Links" id="ide-plugin-links">
         <list>

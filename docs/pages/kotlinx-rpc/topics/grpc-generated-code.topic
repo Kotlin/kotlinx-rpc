@@ -13,6 +13,11 @@
         This page shows how to work with the Kotlin types generated from <path>.proto</path> schemas.
         For details on what the protoc plugins and the compiler plugin produce, see <a href="grpc-codegen.topic"/>.
     </p>
+    <note>
+        If you use an IntelliJ-based IDE, install the
+        <a href="ide-plugin.topic">Kotlin External FIR Support (KEFS)</a> plugin so the editor can resolve
+        compiler-generated declarations like <code>Companion</code> objects and <code>Builder</code> interfaces.
+    </note>
 
     <chapter title="Building messages" id="grpc-building-messages">
         <p>

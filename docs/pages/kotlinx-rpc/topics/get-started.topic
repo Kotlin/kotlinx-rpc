@@ -47,6 +47,12 @@
             To make those declarations visible in IntelliJ-based IDEs,
             install the <a href="https://plugins.jetbrains.com/plugin/26480-kotlin-external-fir-support?noRedirect=true">Kotlin External FIR Support (KEFS)</a> plugin.
         </p>
+        <warning>
+            IDE version 2026.1 (261) has a
+            <a href="https://youtrack.jetbrains.com/issue/KT-84711">known issue (KT-84711)</a>
+            where generated declarations may disappear after file changes.
+            Use IDE versions 2025.1–2025.3 (251–253) until the fix ships (expected in 261.1).
+        </warning>
         <p>
             To learn more, see <a href="ide-plugin.topic"/> page
         </p>
