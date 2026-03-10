@@ -438,6 +438,7 @@ class UnknownFieldsTest {
     }
 
     @Test
+    @OptIn(ExperimentalStdlibApi::class, InternalIoApi::class)
     fun `test unknown fields - nested unknown fields`() {
         val all = UnknownFieldsAll {
             nested = UnknownFieldsAll {

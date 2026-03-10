@@ -32,8 +32,9 @@ import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.milliseconds
 
 class GrpcCallCredentialsTest : GrpcTestBase() {
+
     override fun RpcServer.registerServices() {
-        return registerService<EchoService> { EchoServiceImpl() }
+        registerService<EchoService> { EchoServiceImpl() }
     }
 
     private fun assertAuthorizationHeaders(metadata: GrpcMetadata?, vararg expectedTokens: String) {
