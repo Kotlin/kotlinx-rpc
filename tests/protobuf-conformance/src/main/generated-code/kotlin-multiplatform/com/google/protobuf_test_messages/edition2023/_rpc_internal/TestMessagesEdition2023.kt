@@ -6543,6 +6543,20 @@ object TestMessagesEdition2023KtExtensions {
             extendee = TestAllTypesEdition2023::class,
         )
 
+    val extensionString: InternalExtensionDescriptor<TestAllTypesEdition2023,  String> = 
+        InternalExtensionDescriptor.string(
+            fieldNumber = 133,
+            name = "extensionString",
+            extendee = TestAllTypesEdition2023::class,
+        )
+
+    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023,  ByteArray> = 
+        InternalExtensionDescriptor.bytes(
+            fieldNumber = 134,
+            name = "extensionBytes",
+            extendee = TestAllTypesEdition2023::class,
+        )
+
     val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 121,

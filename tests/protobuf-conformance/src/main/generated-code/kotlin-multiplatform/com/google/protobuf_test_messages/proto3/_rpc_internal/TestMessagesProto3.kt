@@ -11,6 +11,8 @@ import com.google.protobuf.kotlin.DoubleValue
 import com.google.protobuf.kotlin.DoubleValueInternal
 import com.google.protobuf.kotlin.Duration
 import com.google.protobuf.kotlin.DurationInternal
+import com.google.protobuf.kotlin.Empty
+import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.FieldMask
 import com.google.protobuf.kotlin.FieldMaskInternal
 import com.google.protobuf.kotlin.FloatValue
@@ -89,7 +91,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
-class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 18) {
+class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 19) {
     private object PresenceIndices {
         const val optionalNestedMessage: Int = 0
         const val optionalForeignMessage: Int = 1
@@ -109,6 +111,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         const val optionalStruct: Int = 15
         const val optionalAny: Int = 16
         const val optionalValue: Int = 17
+        const val optionalEmpty: Int = 18
     }
 
     @InternalRpcApi
@@ -236,6 +239,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var optionalAny: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.optionalAny) { AnyInternal() }
     override var optionalValue: Value by MsgFieldDelegate(PresenceIndices.optionalValue) { ValueInternal() }
     override var optionalNullValue: NullValue by MsgFieldDelegate { NullValue.NULL_VALUE }
+    override var optionalEmpty: Empty by MsgFieldDelegate(PresenceIndices.optionalEmpty) { EmptyInternal() }
     override var repeatedDuration: List<Duration> by MsgFieldDelegate { mutableListOf() }
     override var repeatedTimestamp: List<Timestamp> by MsgFieldDelegate { mutableListOf() }
     override var repeatedFieldmask: List<FieldMask> by MsgFieldDelegate { mutableListOf() }
@@ -243,6 +247,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var repeatedAny: List<com.google.protobuf.kotlin.Any> by MsgFieldDelegate { mutableListOf() }
     override var repeatedValue: List<Value> by MsgFieldDelegate { mutableListOf() }
     override var repeatedListValue: List<ListValue> by MsgFieldDelegate { mutableListOf() }
+    override var repeatedEmpty: List<Empty> by MsgFieldDelegate { mutableListOf() }
     override var fieldname1: Int by MsgFieldDelegate { 0 }
     override var fieldName2: Int by MsgFieldDelegate { 0 }
     override var FieldName3: Int by MsgFieldDelegate { 0 }
@@ -304,6 +309,8 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override val hasOptionalAny: Boolean get() = presenceMask[16]
 
         override val hasOptionalValue: Boolean get() = presenceMask[17]
+
+        override val hasOptionalEmpty: Boolean get() = presenceMask[18]
     }
 
     override fun hashCode(): Int {
@@ -424,6 +431,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[16]) optionalAny.hashCode() else 0
         result = 31 * result + if (presenceMask[17]) optionalValue.hashCode() else 0
         result = 31 * result + optionalNullValue.hashCode()
+        result = 31 * result + if (presenceMask[18]) optionalEmpty.hashCode() else 0
         result = 31 * result + repeatedDuration.hashCode()
         result = 31 * result + repeatedTimestamp.hashCode()
         result = 31 * result + repeatedFieldmask.hashCode()
@@ -431,6 +439,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + repeatedAny.hashCode()
         result = 31 * result + repeatedValue.hashCode()
         result = 31 * result + repeatedListValue.hashCode()
+        result = 31 * result + repeatedEmpty.hashCode()
         result = 31 * result + fieldname1.hashCode()
         result = 31 * result + fieldName2.hashCode()
         result = 31 * result + FieldName3.hashCode()
@@ -609,6 +618,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (presenceMask[16] && this.optionalAny != other.optionalAny) return false
         if (presenceMask[17] && this.optionalValue != other.optionalValue) return false
         if (this.optionalNullValue != other.optionalNullValue) return false
+        if (presenceMask[18] && this.optionalEmpty != other.optionalEmpty) return false
         if (this.repeatedDuration != other.repeatedDuration) return false
         if (this.repeatedTimestamp != other.repeatedTimestamp) return false
         if (this.repeatedFieldmask != other.repeatedFieldmask) return false
@@ -616,6 +626,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedAny != other.repeatedAny) return false
         if (this.repeatedValue != other.repeatedValue) return false
         if (this.repeatedListValue != other.repeatedListValue) return false
+        if (this.repeatedEmpty != other.repeatedEmpty) return false
         if (this.fieldname1 != other.fieldname1) return false
         if (this.fieldName2 != other.fieldName2) return false
         if (this.FieldName3 != other.FieldName3) return false
@@ -854,6 +865,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         builder.appendLine("${nextIndentString}optionalNullValue=${this.optionalNullValue},")
+        if (presenceMask[18]) {
+            builder.appendLine("${nextIndentString}optionalEmpty=${this.optionalEmpty.asInternal().asString(indent = indent + 4)},")
+        } else {
+            builder.appendLine("${nextIndentString}optionalEmpty=<unset>,")
+        }
+
         builder.appendLine("${nextIndentString}repeatedDuration=${this.repeatedDuration},")
         builder.appendLine("${nextIndentString}repeatedTimestamp=${this.repeatedTimestamp},")
         builder.appendLine("${nextIndentString}repeatedFieldmask=${this.repeatedFieldmask},")
@@ -861,6 +878,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}repeatedAny=${this.repeatedAny},")
         builder.appendLine("${nextIndentString}repeatedValue=${this.repeatedValue},")
         builder.appendLine("${nextIndentString}repeatedListValue=${this.repeatedListValue},")
+        builder.appendLine("${nextIndentString}repeatedEmpty=${this.repeatedEmpty},")
         builder.appendLine("${nextIndentString}fieldname1=${this.fieldname1},")
         builder.appendLine("${nextIndentString}fieldName2=${this.fieldName2},")
         builder.appendLine("${nextIndentString}FieldName3=${this.FieldName3},")
@@ -1061,6 +1079,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         copy.optionalNullValue = this.optionalNullValue
+        if (presenceMask[18]) {
+            copy.optionalEmpty = this.optionalEmpty.copy()
+        }
+
         copy.repeatedDuration = this.repeatedDuration.map { it.copy() }
         copy.repeatedTimestamp = this.repeatedTimestamp.map { it.copy() }
         copy.repeatedFieldmask = this.repeatedFieldmask.map { it.copy() }
@@ -1068,6 +1090,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.repeatedAny = this.repeatedAny.map { it.copy() }
         copy.repeatedValue = this.repeatedValue.map { it.copy() }
         copy.repeatedListValue = this.repeatedListValue.map { it.copy() }
+        copy.repeatedEmpty = this.repeatedEmpty.map { it.copy() }
         copy.fieldname1 = this.fieldname1
         copy.fieldName2 = this.fieldName2
         copy.FieldName3 = this.FieldName3
@@ -2684,6 +2707,10 @@ fun TestAllTypesProto3Internal.checkRequiredFields() {
         this.optionalValue.asInternal().checkRequiredFields()
     }
 
+    if (presenceMask[18]) {
+        this.optionalEmpty.asInternal().checkRequiredFields()
+    }
+
     this.oneofField?.also {
         when {
             it is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
@@ -2761,6 +2788,10 @@ fun TestAllTypesProto3Internal.checkRequiredFields() {
     }
 
     this.repeatedListValue.forEach {
+        it.asInternal().checkRequiredFields()
+    }
+
+    this.repeatedEmpty.forEach {
         it.asInternal().checkRequiredFields()
     }
 
@@ -3449,6 +3480,10 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeEnum(fieldNr = 307, value = this.optionalNullValue.number)
     }
 
+    if (presenceMask[18]) {
+        encoder.writeMessage(fieldNr = 308, value = this.optionalEmpty.asInternal()) { encodeWith(it, config) }
+    }
+
     if (this.repeatedDuration.isNotEmpty()) {
         this.repeatedDuration.forEach {
             encoder.writeMessage(fieldNr = 311, value = it.asInternal()) { encodeWith(it, config) }
@@ -3488,6 +3523,12 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     if (this.repeatedListValue.isNotEmpty()) {
         this.repeatedListValue.forEach {
             encoder.writeMessage(fieldNr = 317, value = it.asInternal()) { encodeWith(it, config) }
+        }
+    }
+
+    if (this.repeatedEmpty.isNotEmpty()) {
+        this.repeatedEmpty.forEach {
+            encoder.writeMessage(fieldNr = 318, value = it.asInternal()) { encodeWith(it, config) }
         }
     }
 
@@ -4287,6 +4328,13 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
             tag.fieldNr == 307 && tag.wireType == WireType.VARINT -> {
                 msg.optionalNullValue = NullValue.fromNumber(decoder.readEnum())
             }
+            tag.fieldNr == 308 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                if (!msg.presenceMask[18]) {
+                    msg.optionalEmpty = EmptyInternal()
+                }
+
+                decoder.readMessage(msg.optionalEmpty.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
+            }
             tag.fieldNr == 311 && tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val elem = DurationInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
@@ -4321,6 +4369,11 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 val elem = ListValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) })
                 (msg.repeatedListValue as MutableList).add(elem)
+            }
+            tag.fieldNr == 318 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val elem = EmptyInternal()
+                decoder.readMessage(elem.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
+                (msg.repeatedEmpty as MutableList).add(elem)
             }
             tag.fieldNr == 401 && tag.wireType == WireType.VARINT -> {
                 msg.fieldname1 = decoder.readInt32()
@@ -5012,6 +5065,10 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += (WireSize.tag(307, WireType.VARINT) + WireSize.enum(this.optionalNullValue.number))
     }
 
+    if (presenceMask[18]) {
+        __result += this.optionalEmpty.asInternal()._size.let { WireSize.tag(308, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
     if (this.repeatedDuration.isNotEmpty()) {
         __result += this.repeatedDuration.sumOf { it.asInternal()._size.let { WireSize.tag(311, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
@@ -5038,6 +5095,10 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
 
     if (this.repeatedListValue.isNotEmpty()) {
         __result += this.repeatedListValue.sumOf { it.asInternal()._size.let { WireSize.tag(317, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+    }
+
+    if (this.repeatedEmpty.isNotEmpty()) {
+        __result += this.repeatedEmpty.sumOf { it.asInternal()._size.let { WireSize.tag(318, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.fieldname1 != 0) {

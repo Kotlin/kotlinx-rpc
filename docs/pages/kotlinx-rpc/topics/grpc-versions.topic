@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<!DOCTYPE topic
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/xhtml-entities.dtd">
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
+       title="gRPC and Protobuf versions" id="grpc-versions">
+
+    <p>
+        The <code>kotlinx.rpc</code> gRPC integration depends on several external libraries
+        for protocol buffer serialization, gRPC transport, and code generation.
+        This page lists the versions bundled with each <code>kotlinx.rpc</code> release
+        and notes compatibility constraints.
+    </p>
+
+    <chapter title="Bundled versions" id="grpc-bundled-versions">
+        <p>
+            The following table shows the third-party dependency versions used by <code>kotlinx.rpc</code>.
+            These versions are set internally and do not need to be specified in your build files,
+            except for <code>grpc-netty</code> which must be added explicitly as a runtime dependency on JVM.
+        </p>
+        <table>
+            <tr>
+                <td>Dependency</td>
+                <td>Version</td>
+                <td>Notes</td>
+            </tr>
+            <tr>
+                <td><a href="https://github.com/grpc/grpc-java">gRPC Java</a></td>
+                <td>1.79.0</td>
+                <td>JVM transport layer (<code>grpc-api</code>, <code>grpc-stub</code>, <code>grpc-netty</code>, <code>grpc-protobuf</code>)</td>
+            </tr>
+            <tr>
+                <td><a href="https://github.com/protocolbuffers/protobuf">Protobuf Java</a></td>
+                <td>4.34.0</td>
+                <td>Protobuf runtime and utilities (<code>protobuf-java</code>, <code>protobuf-kotlin</code>)</td>
+            </tr>
+            <tr>
+                <td><a href="https://buf.build">Buf CLI</a></td>
+                <td>1.66.0</td>
+                <td>Manages the protoc workspace and runs code generation</td>
+            </tr>
+        </table>
+    </chapter>
+
+    <chapter title="grpc-netty" id="grpc-netty">
+        <p>
+            The <code>grpc-netty</code> dependency provides the JVM network transport for gRPC and must be added
+            explicitly in your build file:
+        </p>
+        <code-block lang="Kotlin">
+            dependencies {
+                implementation("io.grpc:grpc-netty:1.79.0")
+            }
+        </code-block>
+        <p>
+            Use the same gRPC Java version as listed in the table above to avoid version conflicts.
+        </p>
+    </chapter>
+
+    <chapter title="Protobuf compatibility" id="grpc-protobuf-compat">
+        <p>
+            The <code>kotlinx.rpc</code> code generator supports proto2, proto3, and editions 2023 syntax.
+            Well-Known Types (WKT) such as <code>google.protobuf.Timestamp</code> and <code>google.protobuf.Any</code>
+            are provided by the library's protobuf runtime module.
+        </p>
+        <p>
+            The code generator is a custom <code>kotlinx.rpc</code> protoc plugin
+            and does not depend on official <code>protoc-gen-java</code> or <code>protoc-gen-kotlin</code> outputs.
+            It produces Kotlin Multiplatform code directly from <path>.proto</path> files via Buf.
+        </p>
+    </chapter>
+
+    <chapter title="Overriding versions" id="grpc-overriding-versions">
+        <p>
+            The gRPC and protobuf dependency versions are managed by the library.
+            If you need to align with a specific version of <code>grpc-netty</code> or other gRPC artifacts
+            in your project, you can use Gradle's dependency resolution strategy:
+        </p>
+        <code-block lang="Kotlin">
+            configurations.all {
+                resolutionStrategy {
+                    force("io.grpc:grpc-netty:1.79.0")
+                }
+            }
+        </code-block>
+        <warning>
+            Overriding bundled versions may cause binary incompatibilities.
+            Only override when you have verified compatibility with the specific <code>kotlinx.rpc</code> release.
+        </warning>
+    </chapter>
+</topic>

@@ -177,6 +177,8 @@ interface TestAllTypesProto3Presence {
 
     val hasOptionalValue: Boolean
 
+    val hasOptionalEmpty: Boolean
+
     /**
     * Interface providing field-presence information for [com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage] messages.
     * Retrieve it via the [com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3.NestedMessage.presence] extension property.

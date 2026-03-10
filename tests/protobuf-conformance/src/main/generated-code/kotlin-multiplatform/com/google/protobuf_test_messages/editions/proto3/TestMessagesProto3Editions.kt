@@ -6,6 +6,7 @@ import com.google.protobuf.kotlin.BoolValue
 import com.google.protobuf.kotlin.BytesValue
 import com.google.protobuf.kotlin.DoubleValue
 import com.google.protobuf.kotlin.Duration
+import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.FieldMask
 import com.google.protobuf.kotlin.FloatValue
 import com.google.protobuf.kotlin.Int32Value
@@ -168,6 +169,7 @@ interface TestAllTypesProto3 {
     val optionalAny: com.google.protobuf.kotlin.Any
     val optionalValue: Value
     val optionalNullValue: NullValue
+    val optionalEmpty: Empty
     val repeatedDuration: List<Duration>
     val repeatedTimestamp: List<Timestamp>
     val repeatedFieldmask: List<FieldMask>
@@ -175,6 +177,7 @@ interface TestAllTypesProto3 {
     val repeatedAny: List<com.google.protobuf.kotlin.Any>
     val repeatedValue: List<Value>
     val repeatedListValue: List<ListValue>
+    val repeatedEmpty: List<Empty>
     /**
     * Test field-name-to-JSON-name convention.
     * (protobuf says names can be any valid C/C++ identifier.)
