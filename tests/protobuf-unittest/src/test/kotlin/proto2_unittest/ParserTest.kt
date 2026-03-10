@@ -7,14 +7,14 @@
 //
 // Tests NOT copied (depend on Java-specific APIs):
 // - testGeneratedMessageParserSingleton: getParserForType() Java Parser API
-// - testParseExtensions: Extensions + ExtensionRegistry
-// - testOptimizeForSize: Extensions + ExtensionRegistry
-// - testParsingMerge: Complex groups + Extensions + ExtensionRegistry
-// - testExceptionWhenMergingExtendedMessagesMissingRequiredFields: Extension merge exceptions
+// - testOptimizeForSize: TestOptimizedForSize + separate proto file registry
+// - testParsingMerge: Complex groups + TestParsingMerge.RepeatedFieldsGenerator
+// - testExceptionWhenMergingExtendedMessagesMissingRequiredFields: Java exception API
 
 package proto2_unittest
 
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -112,5 +112,19 @@ class ParserTest {
         assertEquals(2, decoded.repeatedNestedMessage.size)
         assertEquals(1, decoded.repeatedNestedMessage[0].bb)
         assertEquals(2, decoded.repeatedNestedMessage[1].bb)
+    }
+
+    // ===========================================================================================================
+    // Extension tests — translated from ParserTest.java
+    // ===========================================================================================================
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/ParserTest.java#testParseExtensions
+    @Test
+    fun testParseExtensions() {
+        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
+        val message = TestUtil.getAllExtensionsSet()
+        val decoded = TestUtil.encodeDecode(message, marshaller)
+        TestUtil.assertAllExtensionsSet(decoded)
     }
 }

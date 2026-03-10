@@ -6,13 +6,7 @@
 // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java
 //
 // Tests NOT copied (depend on Java-specific APIs):
-// - testSerializeExtensions: Extensions API
-// - testSerializePackedExtensions: Extensions API
-// - testParseExtensions: ExtensionRegistry
-// - testParsePackedExtensions: ExtensionRegistry
-// - testInterleavedFieldsAndExtensions: DynamicMessage + Extensions
-// - testParseMultipleExtensionRanges: Extensions
-// - testExtensionInsideTable: Extensions
+// - testInterleavedFieldsAndExtensions: DynamicMessage + assertFieldsInOrder helper
 // - testParseMultipleExtensionRangesDynamic: DynamicMessage
 // - All MessageSet tests: MessageSet wire format (Java-specific legacy)
 
@@ -20,6 +14,8 @@ package proto2_unittest
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -126,5 +122,92 @@ class WireFormatTest {
         val decoded = TestUtil.encodeDecode(msg, marshaller)
         assertNull(decoded.optionalInt32)
         assertEquals(0, decoded.repeatedInt32.size)
+    }
+
+    // ===========================================================================================================
+    // Extension tests — translated from WireFormatTest.java
+    // ===========================================================================================================
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testSerializeExtensions
+    @Test
+    fun testSerializeExtensions() {
+        // Extension round-trip: encode with extensions, decode with extension registry
+        val message = TestUtil.getAllExtensionsSet()
+        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
+        val decoded = TestUtil.encodeDecode(message, marshaller)
+        TestUtil.assertAllExtensionsSet(decoded)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testSerializePackedExtensions
+    @Test
+    fun testSerializePackedExtensions() {
+        val message = TestUtil.getPackedExtensionsSet()
+        val packedExtMarshaller = grpcMarshallerOf<TestPackedExtensions>()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
+        // Packed extension wire format should be identical to regular packed types
+        // (no groups involved in packed fields).
+        val encoded = packedExtMarshaller.encode(message)
+        val decoded = packedMarshaller.decode(encoded)
+        TestUtil.assertPackedFieldsSet(decoded)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testParseExtensions
+    @Test
+    fun testParseExtensions() {
+        // Cross-format: encode packed types, decode as packed extensions
+        val message = TestUtil.getPackedSet()
+        val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
+        val encoded = packedMarshaller.encode(message)
+        val config = ProtoConfig(extensionRegistry = TestUtil.getPackedExtensionRegistry())
+        val packedExtMarshaller = grpcMarshallerOf<TestPackedExtensions>(config)
+        val decoded = packedExtMarshaller.decode(encoded)
+        TestUtil.assertPackedExtensionsSet(decoded)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testParsePackedExtensions
+    @Test
+    fun testParsePackedExtensions() {
+        val message = TestUtil.getPackedExtensionsSet()
+        val config = ProtoConfig(extensionRegistry = TestUtil.getPackedExtensionRegistry())
+        val marshaller = grpcMarshallerOf<TestPackedExtensions>(config)
+        val decoded = TestUtil.encodeDecode(message, marshaller)
+        TestUtil.assertPackedExtensionsSet(decoded)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testParseMultipleExtensionRanges
+    @Test
+    fun testParseMultipleExtensionRanges() {
+        val source = TestFieldOrderings {
+            myInt = 1
+            myString = "foo"
+            myFloat = 1.0f
+            myExtensionInt = 23
+            myExtensionString = "bar"
+        }
+        val registry = ProtoExtensionRegistry {
+            +TestFieldOrderings.myExtensionInt
+            +TestFieldOrderings.myExtensionString
+        }
+        val config = ProtoConfig(extensionRegistry = registry)
+        val marshaller = grpcMarshallerOf<TestFieldOrderings>(config)
+        val dest = TestUtil.encodeDecode(source, marshaller)
+        assertEquals(source, dest)
+    }
+
+    // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testExtensionInsideTable
+    @Test
+    fun testExtensionInsideTable() {
+        val source = TestExtensionInsideTable {
+            field1 = 1
+            testExtensionInsideTableExtension = 23
+        }
+        val registry = ProtoExtensionRegistry {
+            +TestExtensionInsideTable.testExtensionInsideTableExtension
+        }
+        val config = ProtoConfig(extensionRegistry = registry)
+        val marshaller = grpcMarshallerOf<TestExtensionInsideTable>(config)
+        val dest = TestUtil.encodeDecode(source, marshaller)
+        assertEquals(source, dest)
     }
 }
