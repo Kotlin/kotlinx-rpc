@@ -1157,6 +1157,26 @@ var TestAllTypesProto2.Builder.extensionInt32: Int?
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32)
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32, value) }
 
+val TestAllTypesProto2.extensionString: String? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString)
+
+val TestAllTypesProto2.Companion.extensionString: ProtoExtensionDescriptor<TestAllTypesProto2, String> get() = TestMessagesProto2EditionsKtExtensions.extensionString
+
+val TestAllTypesProto2Presence.hasExtensionString: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionString)
+
+var TestAllTypesProto2.Builder.extensionString: String?
+    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString)
+    set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString, value) }
+
+val TestAllTypesProto2.extensionBytes: ByteArray? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+
+val TestAllTypesProto2.Companion.extensionBytes: ProtoExtensionDescriptor<TestAllTypesProto2, ByteArray> get() = TestMessagesProto2EditionsKtExtensions.extensionBytes
+
+val TestAllTypesProto2Presence.hasExtensionBytes: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+
+var TestAllTypesProto2.Builder.extensionBytes: ByteArray?
+    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+    set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes, value) }
+
 val TestAllTypesProto2.groupfield: GroupField get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield) ?: TestMessagesProto2EditionsKtExtensions.groupfield.defaultValue.value
 
 val TestAllTypesProto2.Companion.groupfield: ProtoExtensionDescriptor<TestAllTypesProto2, GroupField> get() = TestMessagesProto2EditionsKtExtensions.groupfield

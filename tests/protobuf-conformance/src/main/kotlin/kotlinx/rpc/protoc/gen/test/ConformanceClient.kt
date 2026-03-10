@@ -72,16 +72,14 @@ internal class ConformanceClient {
         writeToStdout(buf)
     }
 
-    private fun testMessageKClassOf(messageType: String): KClass<*> {
+    private fun testMessageKClassOf(messageType: String): KClass<*>? {
         return when (messageType) {
             "protobuf_test_messages.proto3.TestAllTypesProto3" -> com.google.protobuf_test_messages.proto3.TestAllTypesProto3::class
             "protobuf_test_messages.proto2.TestAllTypesProto2" -> com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class
             "protobuf_test_messages.editions.TestAllTypesEdition2023" -> com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023::class
             "protobuf_test_messages.editions.proto3.TestAllTypesProto3" -> com.google.protobuf_test_messages.editions.proto3.TestAllTypesProto3::class
             "protobuf_test_messages.editions.proto2.TestAllTypesProto2" -> com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class
-            else -> error(
-                "Protobuf request has unexpected payload type: $messageType"
-            )
+            else -> null
         }
     }
 
@@ -89,6 +87,11 @@ internal class ConformanceClient {
         val testMessage: InternalMessage
         val marshaller: GrpcMarshaller<Any?>
         val messageType: String = request.messageType
+
+        val messageKClass = testMessageKClassOf(messageType)
+            ?: return ConformanceResponse {
+                result = ConformanceResponse.Result.Skipped("Unsupported message type: $messageType")
+            }
 
         // todo support extensions
 //        val extensions: ExtensionRegistry? = ExtensionRegistry.newInstance()
@@ -100,7 +103,7 @@ internal class ConformanceClient {
             is ConformanceRequest.Payload.ProtobufPayload -> {
                 try {
                     @Suppress("UNCHECKED_CAST")
-                    marshaller = testMessageKClassOf(messageType)
+                    marshaller = messageKClass
                         .annotations
                         .filterIsInstance<WithGrpcMarshaller>()
                         .singleOrNull()

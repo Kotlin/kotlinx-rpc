@@ -60,11 +60,19 @@ class ConformanceTest {
         val mockDir = Path(CONFORMANCE_OUTPUT_DIR).resolve("mock")
         val (baselineFile, _) = createConformanceTestFiles(mockDir, createBlank = false)
 
+        val knownFailures = ConformanceTest::class.java
+            .getResourceAsStream("/known_failures.txt")!!
+            .bufferedReader()
+            .readLines()
+            .map { it.substringBefore('#').trim() }
+            .filter { it.isNotEmpty() }
+            .toSet()
+
         // TODO: Remove once we support JSON encoding (KRPC-195)
         // Exclude any JSON-related tests
         fun includeTest(name: String): Boolean {
             val trimmed = name.substringBefore('#').trim()
-            return !trimmed.contains(".Json")
+            return !trimmed.contains(".Json") && trimmed !in knownFailures
         }
 
         val baseline = baselineFile

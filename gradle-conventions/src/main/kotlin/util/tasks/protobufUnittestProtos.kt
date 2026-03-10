@@ -16,7 +16,7 @@ private const val EXTRACT_UNITTEST_PROTOS_TASK = "extractUnittestProtos"
 private const val EXTRACT_UNITTEST_PROTO_IMPORTS_TASK = "extractUnittestProtoImports"
 
 fun Project.setupProtobufUnittestProtos() {
-    val protobufVersion = libs.versions.protobuf.asProvider().get().substringAfter(".")
+    val protobufVersion = libs.versions.protobuf.get().substringAfter(".")
 
     // Ivy repository for GitHub releases (source archive has no platform classifier)
     repositories.ivy {
