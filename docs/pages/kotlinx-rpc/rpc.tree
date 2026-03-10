@@ -34,6 +34,7 @@
             <toc-element topic="grpc-configuration.topic"/>
             <toc-element topic="grpc-services.topic"/>
             <toc-element topic="grpc-codegen.topic"/>
+            <toc-element topic="grpc-generated-code.topic"/>
             <toc-element topic="grpc-client.topic"/>
             <toc-element topic="grpc-server.topic"/>
             <toc-element topic="grpc-ktor-server.topic"/>
