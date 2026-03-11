@@ -27,13 +27,3 @@ jobs:
             git diff --minimal | cat
             exit 1
           fi
-      - name: Run Protobuf Descriptor Generation
-        run: ./gradlew :protobuf:protobuf-descriptor:bufGenerateCommonMain --info --stacktrace
-      - name: Check if Descriptor Types are up-to-date
-        run: |
-          if [[ -n "$(git status --porcelain | grep protobuf/protobuf-descriptor/)" ]]; then
-            echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-descriptor:bufGenerateCommonMain' and commit changes"
-            git status --porcelain
-            git diff --minimal | cat
-            exit 1
-          fi

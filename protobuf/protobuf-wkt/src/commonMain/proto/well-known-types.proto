@@ -32,3 +32,6 @@ import "google/protobuf/source_context.proto";
 
 // Struct, Value, NullValue, ListValue
 import "google/protobuf/struct.proto";
+
+// Descriptor
+import "google/protobuf/descriptor.proto";
