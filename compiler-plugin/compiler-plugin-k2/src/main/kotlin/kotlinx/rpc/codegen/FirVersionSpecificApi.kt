@@ -10,7 +10,9 @@ import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
+import org.jetbrains.kotlin.fir.plugin.DeclarationBuildingContext
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
@@ -48,6 +50,10 @@ interface FirVersionSpecificApi {
     fun FirAnnotation.getBooleanArgumentVS(name: Name, session: FirSession): Boolean?
 
     fun FirAnnotation.getStringArgumentVS(name: Name, session: FirSession): String?
+
+    fun FirClassSymbol<*>.forAllCallablesVS(session: FirSession, body: (FirCallableSymbol<*>) -> Unit)
+
+    var DeclarationBuildingContext<*>.sourceVS: KtSourceElement?
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {

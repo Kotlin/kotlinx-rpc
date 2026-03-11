@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.caches.getValue
-import org.jetbrains.kotlin.fir.declarations.processAllDeclaredCallables
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.*
 import org.jetbrains.kotlin.fir.plugin.createCompanionObject
@@ -38,9 +37,11 @@ class FirProtobufMessageGenerator(
     private val messageCallablesCache: FirCache<FirClassSymbol<*>, Map<Name, FirCallableSymbol<*>>, Nothing?> =
         session.firCachesFactory.createCache { messageClassSymbol: FirClassSymbol<*>, _ ->
             buildMap {
-                messageClassSymbol.processAllDeclaredCallables(session) {
-                    if (it is FirPropertySymbol) {
-                        put(it.name, it)
+                vsApi {
+                    messageClassSymbol.forAllCallablesVS(session) {
+                        if (it is FirPropertySymbol) {
+                            put(it.name, it)
+                        }
                     }
                 }
             }
@@ -94,7 +95,9 @@ class FirProtobufMessageGenerator(
                     visibility = Visibilities.Public
                     modality = Modality.ABSTRACT
                     superType { owner.defaultType() }
-                    source = owner.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                    vsApi {
+                        sourceVS = owner.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                    }
                 }.symbol
             }
 
@@ -144,7 +147,9 @@ class FirProtobufMessageGenerator(
                 status {
                     isOverride = true
                 }
-                source = property.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                vsApi {
+                    sourceVS = property.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                }
             }.symbol
         )
     }
