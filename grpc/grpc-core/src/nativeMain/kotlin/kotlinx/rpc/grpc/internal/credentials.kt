@@ -3,6 +3,7 @@
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:Suppress("detekt.MatchingDeclarationName")
 
 package kotlinx.rpc.grpc.internal
 
@@ -49,7 +50,9 @@ public class TlsCredentialsOptionsBuilder {
             val p = grpc_tls_identity_pairs_create() ?: error("pairs alloc failed")
             grpc_tls_identity_pairs_add_pair(p, key, cert);
             p
-        } else null
+        } else {
+            null
+        }
 
         if (roots != null || pairs != null) {
             val provider = grpc_tls_certificate_provider_static_data_create(
@@ -60,8 +63,12 @@ public class TlsCredentialsOptionsBuilder {
         }
 
 
-        if (pairs != null) grpc_tls_credentials_options_watch_identity_key_cert_pairs(opts)
-        if (roots != null) grpc_tls_credentials_options_watch_root_certs(opts)
+        if (pairs != null) {
+            grpc_tls_credentials_options_watch_identity_key_cert_pairs(opts)
+        }
+        if (roots != null) {
+            grpc_tls_credentials_options_watch_root_certs(opts)
+        }
 
         val clientAuth = clientAuth
         if (clientAuth != null) grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth)

@@ -182,7 +182,6 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("indentSize", buf.generate.indentSize)
     }
 
-    @Suppress("detekt.LongMethod", "detekt.CyclomaticComplexMethod", "detekt.ThrowsCount")
     private fun configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         if (protoSourceSet.tasksConfigured.get()) {
             return
@@ -391,7 +390,6 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
     }
 
-    @Suppress("detekt.LongParameterList")
     private fun configureCustomTasks(
         protoSourceSet: DefaultProtoSourceSet,
         buildSourceSetsDir: File,
@@ -680,7 +678,6 @@ private fun Project.configureMultiplatformWithAndroidSourceSets(body: (DefaultPr
         }
 }
 
-@Suppress("detekt.CyclomaticComplexMethod")
 private fun AndroidComponents.configureLegacyAndroidVariants(
     project: Project,
     isKmp: Boolean,

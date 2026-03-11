@@ -62,7 +62,7 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
     public abstract val bufGenFile: Property<File>
 
     @TaskAction
-    @Suppress("detekt.CyclomaticComplexMethod", "detekt.NestedBlockDepth")
+    @Suppress("detekt.NestedBlockDepth")
     internal fun generate() {
         val file = bufGenFile.get()
         if (!file.exists()) {

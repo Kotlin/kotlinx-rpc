@@ -59,7 +59,8 @@ fun MethodDescriptor<*, *>.checkMethod(
         serviceName != expectedServiceName -> "wrong service name: $fullMethodName"
         isSafe != expectedIsSafe -> "wrong isSafe: $isSafe"
         isIdempotent != expectedIsIdempotent -> "wrong isIdempotent: $isIdempotent"
-        isSampledToLocalTracing != expectedIsSampledToLocalTracing -> "wrong isSampledToLocalTracing: $isSampledToLocalTracing"
+        isSampledToLocalTracing != expectedIsSampledToLocalTracing ->
+            "wrong isSampledToLocalTracing: $isSampledToLocalTracing"
         else -> null
     }
 }

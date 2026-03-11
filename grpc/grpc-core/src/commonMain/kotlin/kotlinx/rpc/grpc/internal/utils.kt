@@ -8,5 +8,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public fun internalError(message: String): Nothing {
-    error("Unexpected internal error: $message. Please, report the issue here: https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md")
+    error(
+        "Unexpected internal error: $message. " +
+            "Please, report the issue here: " +
+            "https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md"
+    )
 }

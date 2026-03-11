@@ -40,8 +40,9 @@ private const val PORT = 50051
  */
 class GrpcCoreClientTest {
 
-    private fun descriptorFor(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): GrpcMethodDescriptor<HelloRequest, HelloReply> =
-        methodDescriptor(
+    private fun descriptorFor(
+        fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello",
+    ): GrpcMethodDescriptor<HelloRequest, HelloReply> = methodDescriptor(
             fullMethodName = fullName,
             requestMarshaller = HelloRequestInternal.MARSHALLER,
             responseMarshaller = HelloReplyInternal.MARSHALLER,
@@ -52,7 +53,9 @@ class GrpcCoreClientTest {
             sampledToLocalTracing = true,
         )
 
-    private fun ManagedChannel.newHelloCall(fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello"): ClientCall<HelloRequest, HelloReply> =
+    private fun ManagedChannel.newHelloCall(
+        fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello",
+    ): ClientCall<HelloRequest, HelloReply> =
         platformApi.createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(

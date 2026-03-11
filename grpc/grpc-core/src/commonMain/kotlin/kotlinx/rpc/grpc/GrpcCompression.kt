@@ -15,8 +15,6 @@ package kotlinx.rpc.grpc
  *
  * This interface is not meant to be implemented by users.
  *
- * @property name The compression algorithm identifier sent in the `grpc-encoding` header.
- *
  * @see GrpcCompression.None
  * @see GrpcCompression.Gzip
  */

@@ -36,7 +36,6 @@ class ModelToGrpcKotlinCommonGenerator(
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
 
-    @Suppress("detekt.LongMethod")
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration, packageName: FqName.Package) {
         val pkg = service.dec.file.`package`.orEmpty()
         val annotationParams = if (pkg.isNotEmpty() && pkg != packageName.fullName()) """(protoPackage = "$pkg")""" else ""

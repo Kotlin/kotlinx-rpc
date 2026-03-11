@@ -123,7 +123,6 @@ class ModelToProtobufKotlinCommonGenerator(
         message.forEach { generatePresenceInterface(it) }
     }
 
-    @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
 
@@ -168,7 +167,6 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    @Suppress("detekt.CyclomaticComplexMethod")
     private fun CodeGenerator.generateInternalMessage(declaration: MessageDeclaration) {
         val superTypes = buildList {
             if (declaration.isUserFacing) {

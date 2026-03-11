@@ -257,7 +257,6 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
         protoTasksAreCachedProperlyBody()
     }
 
-    @Suppress("detekt.LongMethod")
     private fun GrpcTestEnv.protoTasksAreCachedProperlyBody() {
         val firstRunDebug = runForSet(SSetsAndroid.Default.debug)
 

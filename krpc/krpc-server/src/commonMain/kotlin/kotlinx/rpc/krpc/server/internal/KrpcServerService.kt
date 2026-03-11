@@ -103,7 +103,6 @@ internal class KrpcServerService<@Rpc T : Any>(
         }
     }
 
-    @Suppress("detekt.ThrowsCount", "detekt.LongMethod")
     private fun handleCall(callData: KrpcCallMessage.CallData) {
         val callId = callData.callId
 
@@ -270,7 +269,6 @@ internal class KrpcServerService<@Rpc T : Any>(
         connector.sendMessage(result)
     }
 
-    @Suppress("detekt.ThrowsCount")
     private suspend fun sendFlowMessages(
         serialFormat: SerialFormat,
         returnSerializer: KSerializer<Any?>,
