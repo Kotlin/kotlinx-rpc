@@ -121,6 +121,9 @@ fun KotlinMultiplatformExtension.configureCLibDependency(
     }
 }
 
+private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task>
+    get() = named("downloadKotlinNativeDistribution")
+
 fun Project.registerBuildCLibIncludeDirTask(
     bazelTask: String,
     bazelExtractIncludeOutputDir: Provider<Directory>,
@@ -128,6 +131,7 @@ fun Project.registerBuildCLibIncludeDirTask(
     val buildTargetName = bazelTask.split(":").last()
     val includeDir = bazelExtractIncludeOutputDir.get().asFile
     return project.tasks.register<Exec>("buildIncludeDirCLib${buildTargetName.capitalized()}") {
+        dependsOn(tasks.downloadKotlinNativeDistribution)
         dependsOn(":checkBazel")
         group = "build"
         workingDir = project.cinteropLibDir
@@ -151,9 +155,6 @@ private val Project.bazelBuildDir: Directory
 private fun KotlinNativeTarget.canonicalCLibTaskPostfix(buildTargetName: String): String {
     return "CLib${buildTargetName.capitalized()}_$targetName"
 }
-
-private val TaskContainer.downloadKotlinNativeDistribution: TaskProvider<Task>
-    get() = named("downloadKotlinNativeDistribution")
 
 private fun TaskContainer.registerBuildClibTask(
     name: String,
