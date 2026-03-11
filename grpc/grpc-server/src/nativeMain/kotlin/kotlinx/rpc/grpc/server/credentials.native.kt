@@ -50,7 +50,10 @@ internal actual fun GrpcTlsServerCredentialsBuilder.build(): GrpcServerCredentia
     return (this as NativeTlsServerCredentialsBuilder).build()
 }
 
-private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: String) : GrpcTlsServerCredentialsBuilder {
+private class NativeTlsServerCredentialsBuilder(
+    certChain: String,
+    privateKey: String,
+) : GrpcTlsServerCredentialsBuilder {
     var optionsBuilder = TlsCredentialsOptionsBuilder()
 
     init {
@@ -78,8 +81,14 @@ private class NativeTlsServerCredentialsBuilder(certChain: String, privateKey: S
     }
 }
 
-private fun GrpcTlsClientAuth.toRaw(): grpc_ssl_client_certificate_request_type = when (this) {
-    GrpcTlsClientAuth.NONE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE
-    GrpcTlsClientAuth.OPTIONAL -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_BUT_DONT_VERIFY
-    GrpcTlsClientAuth.REQUIRE -> grpc_ssl_client_certificate_request_type.GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
-}
+private fun GrpcTlsClientAuth.toRaw(): grpc_ssl_client_certificate_request_type =
+    when (this) {
+        GrpcTlsClientAuth.NONE ->
+            grpc_ssl_client_certificate_request_type.GRPC_SSL_DONT_REQUEST_CLIENT_CERTIFICATE
+        GrpcTlsClientAuth.OPTIONAL ->
+            grpc_ssl_client_certificate_request_type
+                .GRPC_SSL_REQUEST_CLIENT_CERTIFICATE_BUT_DONT_VERIFY
+        GrpcTlsClientAuth.REQUIRE ->
+            grpc_ssl_client_certificate_request_type
+                .GRPC_SSL_REQUEST_AND_REQUIRE_CLIENT_CERTIFICATE_AND_VERIFY
+    }

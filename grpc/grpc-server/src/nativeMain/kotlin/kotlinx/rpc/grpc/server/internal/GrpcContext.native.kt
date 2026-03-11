@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.server.internal
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
 public actual class GrpcContext

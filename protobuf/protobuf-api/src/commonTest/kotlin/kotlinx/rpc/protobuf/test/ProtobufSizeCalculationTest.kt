@@ -36,7 +36,8 @@ class ProtobufSizeCalculationTest {
         assertEquals(
             actualSize,
             declaredSize,
-            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) for repeated messages. Actual bytes: ${bytes.toHexString()}"
+            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) " +
+                "for repeated messages. Actual bytes: ${bytes.toHexString()}"
         )
     }
 
@@ -55,7 +56,8 @@ class ProtobufSizeCalculationTest {
         assertEquals(
             actualSize,
             declaredSize,
-            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) for repeated strings. Actual bytes: ${bytes.toHexString()}"
+            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) " +
+                "for repeated strings. Actual bytes: ${bytes.toHexString()}"
         )
     }
 
@@ -74,7 +76,8 @@ class ProtobufSizeCalculationTest {
         assertEquals(
             actualSize,
             declaredSize,
-            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) for map entries. Actual bytes: ${bytes.toHexString()}"
+            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) " +
+                "for map entries. Actual bytes: ${bytes.toHexString()}"
         )
     }
 
@@ -213,7 +216,8 @@ class ProtobufSizeCalculationTest {
         assertEquals(
             actualSize,
             declaredSize,
-            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) for $label. Actual bytes: ${bytes.toHexString()}"
+            "The declared _size ($declaredSize) should match the actual encoded size ($actualSize) " +
+                "for $label. Actual bytes: ${bytes.toHexString()}"
         )
     }
 }

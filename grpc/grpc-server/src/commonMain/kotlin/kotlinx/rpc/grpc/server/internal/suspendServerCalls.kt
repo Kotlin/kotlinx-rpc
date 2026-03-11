@@ -240,7 +240,10 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
                 result.onFailure { ex ->
                     if (ex !is CancellationException) {
                         throw GrpcStatusException(
-                            GrpcStatus(GrpcStatusCode.INTERNAL, "onMessage should never be called until requests is ready"),
+                            GrpcStatus(
+                                GrpcStatusCode.INTERNAL,
+                                "onMessage should never be called until requests is ready",
+                            ),
                         )
                     }
                 }

@@ -87,12 +87,12 @@ public class CompletionQueue {
 
     // internal as it must be accessible from the SHUTDOWN_CB,
     // but it shouldn't be used from outside this file.
-    @Suppress("PropertyName", "detekt.VariableNaming")
+    @Suppress("PropertyName")
     internal val _state = atomic(State.OPEN)
 
     // internal as it must be accessible from the SHUTDOWN_CB,
     // but it shouldn't be used from outside this file.
-    @Suppress("PropertyName", "detekt.VariableNaming")
+    @Suppress("PropertyName")
     internal val _shutdownDone = CallbackFuture<Unit>()
 
     // used to synchronize the start of a new batch operation.

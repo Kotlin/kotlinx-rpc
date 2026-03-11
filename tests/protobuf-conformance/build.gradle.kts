@@ -141,3 +141,7 @@ tasks.test {
 
     dependsOn(generateConformanceTests)
 }
+
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    enabled = false
+}

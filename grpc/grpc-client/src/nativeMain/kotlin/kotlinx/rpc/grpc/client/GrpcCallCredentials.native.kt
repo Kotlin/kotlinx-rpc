@@ -28,6 +28,7 @@ private class CredentialsPluginState(
 )
 
 @OptIn(UnsafeNumber::class)
+@Suppress("detekt.UnusedParameter")
 private fun getMetadataCallback(
     state: COpaquePointer?,
     context: CValue<grpc_auth_metadata_context>,
@@ -99,6 +100,7 @@ private fun getMetadataCallback(
     return 0
 }
 
+@Suppress("detekt.UnusedParameter")
 private fun debugStringCallback(state: COpaquePointer?): CPointer<ByteVar>? {
     return gpr_strdup("KotlinCallCredentials")
 }

@@ -66,7 +66,6 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-
 internal class NativeClientCall<Request, Response>(
     private val cq: CompletionQueue,
     internal val raw: CPointer<grpc_call>,
@@ -210,7 +209,8 @@ internal class NativeClientCall<Request, Response>(
     }
 
     /**
-     * Submits a batch operation to the [CompletionQueue] and handle the returned [kotlinx.rpc.grpc.internal.BatchResult].
+     * Submits a batch operation to the [CompletionQueue] and handle
+     * the returned [kotlinx.rpc.grpc.internal.BatchResult].
      * If the batch was successfully submitted, [onSuccess] is called.
      * In any case, [cleanup] is called.
      */
@@ -337,7 +337,10 @@ internal class NativeClientCall<Request, Response>(
         if (callOptions.compression !is GrpcCompression.None) {
             if (callOptions.compression !is GrpcCompression.Gzip) {
                 // to match the behavior of grpc-java, we throw an error if the compression algorithm is not supported.
-                cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Unable to find compressor by name ${callOptions.compression.name}")
+                cancelInternal(
+                    grpc_status_code.GRPC_STATUS_INTERNAL,
+                    "Unable to find compressor by name ${callOptions.compression.name}"
+                )
             }
             headers.append("grpc-internal-encoding-request", callOptions.compression.name)
         }
@@ -432,7 +435,10 @@ internal class NativeClientCall<Request, Response>(
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
         val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
         if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
-            markClosePending(GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to cancel call: $cancelResult"), GrpcMetadata())
+            markClosePending(
+                GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to cancel call: $cancelResult"),
+                GrpcMetadata()
+            )
         }
     }
 

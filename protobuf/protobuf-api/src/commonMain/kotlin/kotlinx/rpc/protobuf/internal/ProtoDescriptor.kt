@@ -25,7 +25,8 @@ public interface ProtoDescriptor<@GeneratedProtoMessage Message: Any> {
 }
 
 @InternalRpcApi
-public inline fun <@GeneratedProtoMessage reified T: Any> protoDescriptorOf(): ProtoDescriptor<T> = protoDescriptorOf(T::class)
+public inline fun <@GeneratedProtoMessage reified T : Any> protoDescriptorOf(): ProtoDescriptor<T> =
+    protoDescriptorOf(T::class)
 
 @InternalRpcApi
 public fun <@GeneratedProtoMessage T: Any> protoDescriptorOf(kType: KType): ProtoDescriptor<T> {

@@ -21,7 +21,9 @@ import kotlinx.serialization.serializerOrNull
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public class GrpcKotlinxSerializationMarshallerResolver(private val serialFormat: SerialFormat) : GrpcMarshallerResolver {
+public class GrpcKotlinxSerializationMarshallerResolver(
+    private val serialFormat: SerialFormat,
+) : GrpcMarshallerResolver {
     override fun resolveOrNull(kType: KType): GrpcMarshaller<*>? {
         val serializer = serialFormat.serializersModule.serializerOrNull(kType) ?: return null
 

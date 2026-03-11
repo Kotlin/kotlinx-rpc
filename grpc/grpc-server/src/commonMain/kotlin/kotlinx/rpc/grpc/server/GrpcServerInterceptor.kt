@@ -72,8 +72,9 @@ public interface GrpcServerCallScope<Request, Response> {
      * This method does not return (declared as [Nothing]). After calling it, no further messages will be processed
      * or sent. Prefer setting [responseHeaders]/[responseTrailers] before closing if you need to include metadata.
      *
-     * We made close throw a [kotlinx.rpc.grpc.GrpcStatusException] instead of returning, so control flow is explicit and race conditions
-     * between interceptors and the service implementation are avoided.
+     * We made close throw a [kotlinx.rpc.grpc.GrpcStatusException] instead of returning,
+     * so control flow is explicit and race conditions between interceptors
+     * and the service implementation are avoided.
      */
     public fun close(status: GrpcStatus, trailers: GrpcMetadata = GrpcMetadata()): Nothing
 
@@ -96,7 +97,9 @@ public interface GrpcServerCallScope<Request, Response> {
      *
      * ```
      * val myAuthInterceptor = object : GrpcServerInterceptor {
-     *     override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(request: Flow<Request>): Flow<Response> =
+     *     override fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
+     *         request: Flow<Request>,
+     *     ): Flow<Response> =
      *         flow {
      *             val authorized = mySuspendAuth(requestHeaders)
      *             if (!authorized) {
@@ -136,13 +139,15 @@ public interface GrpcServerInterceptor {
      *
      * You can:
      * - Inspect [GrpcServerCallScope.method].
-     * - Read [GrpcServerCallScope.requestHeaders] and populate [GrpcServerCallScope.responseHeaders]/[GrpcServerCallScope.responseTrailers].
+     * - Read [GrpcServerCallScope.requestHeaders] and populate
+     *   [GrpcServerCallScope.responseHeaders]/[GrpcServerCallScope.responseTrailers].
      * - Register [GrpcServerCallScope.onClose] callbacks.
      * - Transform the [request] flow or wrap the resulting response flow.
      * - Append information to the [GrpcServerCallScope.context].
      *
-     * IMPORTANT: You must eventually call [GrpcServerCallScope.proceed] to actually invoke the service logic and produce
-     * the response [Flow]. If [GrpcServerCallScope.proceed] is omitted, the call will never reach the service.
+     * IMPORTANT: You must eventually call [GrpcServerCallScope.proceed] to actually invoke
+     * the service logic and produce the response [Flow].
+     * If [GrpcServerCallScope.proceed] is omitted, the call will never reach the service.
      */
     public fun <Request, Response> GrpcServerCallScope<Request, Response>.intercept(
         request: Flow<Request>,

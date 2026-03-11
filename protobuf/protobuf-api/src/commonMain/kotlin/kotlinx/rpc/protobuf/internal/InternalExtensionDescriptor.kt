@@ -66,8 +66,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Boolean::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.bool(value.encodingCast<Boolean>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeBool(fieldNr, value.encodingCast<Boolean>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.bool(value.encodingCast<Boolean>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeBool(fieldNr, value.encodingCast<Boolean>())
+            },
             decode = { _, dec, _ -> dec.readBool() },
             copy = { it as Boolean },
             encodePacked = { enc, fieldNr, value ->
@@ -89,8 +93,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Int::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int32(value.encodingCast<Int>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeInt32(fieldNr, value.encodingCast<Int>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int32(value.encodingCast<Int>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeInt32(fieldNr, value.encodingCast<Int>())
+            },
             decode = { _, dec, _ -> dec.readInt32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value ->
@@ -112,8 +120,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Long::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int64(value.encodingCast<Long>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeInt64(fieldNr, value.encodingCast<Long>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.int64(value.encodingCast<Long>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeInt64(fieldNr, value.encodingCast<Long>())
+            },
             decode = { _, dec, _ -> dec.readInt64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value ->
@@ -135,8 +147,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = UInt::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt32(value.encodingCast<UInt>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeUInt32(fieldNr, value.encodingCast<UInt>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt32(value.encodingCast<UInt>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeUInt32(fieldNr, value.encodingCast<UInt>())
+            },
             decode = { _, dec, _ -> dec.readUInt32() },
             copy = { it as UInt },
             encodePacked = { enc, fieldNr, value ->
@@ -158,8 +174,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = ULong::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt64(value.encodingCast<ULong>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeUInt64(fieldNr, value.encodingCast<ULong>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.uInt64(value.encodingCast<ULong>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeUInt64(fieldNr, value.encodingCast<ULong>())
+            },
             decode = { _, dec, _ -> dec.readUInt64() },
             copy = { it as ULong },
             encodePacked = { enc, fieldNr, value ->
@@ -181,8 +201,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Int::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt32(value.encodingCast<Int>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeSInt32(fieldNr, value.encodingCast<Int>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt32(value.encodingCast<Int>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeSInt32(fieldNr, value.encodingCast<Int>())
+            },
             decode = { _, dec, _ -> dec.readSInt32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value ->
@@ -204,8 +228,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Long::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt64(value.encodingCast<Long>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeSInt64(fieldNr, value.encodingCast<Long>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.VARINT) + WireSize.sInt64(value.encodingCast<Long>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeSInt64(fieldNr, value.encodingCast<Long>())
+            },
             decode = { _, dec, _ -> dec.readSInt64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value ->
@@ -227,8 +255,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = UInt::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.fixed32(value.encodingCast<UInt>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeFixed32(fieldNr, value.encodingCast<UInt>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.fixed32(value.encodingCast<UInt>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeFixed32(fieldNr, value.encodingCast<UInt>())
+            },
             decode = { _, dec, _ -> dec.readFixed32() },
             copy = { it as UInt },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFixed32(fieldNr, value) },
@@ -247,8 +279,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = ULong::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.fixed64(value.encodingCast<ULong>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeFixed64(fieldNr, value.encodingCast<ULong>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.fixed64(value.encodingCast<ULong>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeFixed64(fieldNr, value.encodingCast<ULong>())
+            },
             decode = { _, dec, _ -> dec.readFixed64() },
             copy = { it as ULong },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFixed64(fieldNr, value) },
@@ -267,8 +303,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Int::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.sFixed32(value.encodingCast<Int>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeSFixed32(fieldNr, value.encodingCast<Int>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.sFixed32(value.encodingCast<Int>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeSFixed32(fieldNr, value.encodingCast<Int>())
+            },
             decode = { _, dec, _ -> dec.readSFixed32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed32(fieldNr, value) },
@@ -287,8 +327,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Long::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.sFixed64(value.encodingCast<Long>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeSFixed64(fieldNr, value.encodingCast<Long>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.sFixed64(value.encodingCast<Long>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeSFixed64(fieldNr, value.encodingCast<Long>())
+            },
             decode = { _, dec, _ -> dec.readSFixed64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed64(fieldNr, value) },
@@ -307,8 +351,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Float::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.float(value.encodingCast<Float>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeFloat(fieldNr, value.encodingCast<Float>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED32) + WireSize.float(value.encodingCast<Float>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeFloat(fieldNr, value.encodingCast<Float>())
+            },
             decode = { _, dec, _ -> dec.readFloat() },
             copy = { it as Float },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFloat(fieldNr, value) },
@@ -327,8 +375,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             messageType = extendee,
             valueType = Double::class,
             defaultValue = lazy { defaultValue },
-            size = { fieldNr, value -> WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.double(value.encodingCast<Double>()) },
-            encode = { enc, fieldNr, value, _ -> enc.writeDouble(fieldNr, value.encodingCast<Double>()) },
+            size = { fieldNr, value ->
+                WireSize.tag(fieldNr, WireType.FIXED64) + WireSize.double(value.encodingCast<Double>())
+            },
+            encode = { enc, fieldNr, value, _ ->
+                enc.writeDouble(fieldNr, value.encodingCast<Double>())
+            },
             decode = { _, dec, _ -> dec.readDouble() },
             copy = { it as Double },
             encodePacked = { enc, fieldNr, value -> enc.writePackedDouble(fieldNr, value) },
@@ -349,7 +401,8 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value ->
                 val bytes = value.encodingCast<ByteArray>()
-                WireSize.tag(fieldNr, WireType.LENGTH_DELIMITED) + WireSize.uInt32(bytes.size.toUInt()) + WireSize.bytes(bytes)
+                WireSize.tag(fieldNr, WireType.LENGTH_DELIMITED) +
+                    WireSize.uInt32(bytes.size.toUInt()) + WireSize.bytes(bytes)
             },
             encode = { enc, fieldNr, value, _ -> enc.writeBytes(fieldNr, value.encodingCast<ByteArray>()) },
             decode = { _, dec, _ -> dec.readBytes() },
@@ -524,7 +577,9 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     }
                 },
                 decode = { currentValue, dec, config ->
-                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
+                    val result = currentValue
+                        ?.let { listType.cast(it) as MutableList }
+                        ?: defaultValue().toMutableList()
                     result += elementDescriptor.decode(null, dec, config)
                     result
                 },
@@ -541,10 +596,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             defaultValue: () -> List<E> = { emptyList() },
         ): InternalExtensionDescriptor<T, List<E>> {
             val encodePacked = requireNotNull(elementDescriptor.encodePacked) {
-                "Packed extension not supported for ${elementDescriptor.name}: ${elementDescriptor.valueType.simpleName}"
+                "Packed extension not supported for " +
+                    "${elementDescriptor.name}: ${elementDescriptor.valueType.simpleName}"
             }
             val decodePackedValues = requireNotNull(elementDescriptor.decodePackedValues) {
-                "Packed extension not supported for ${elementDescriptor.name}: ${elementDescriptor.valueType.simpleName}"
+                "Packed extension not supported for " +
+                    "${elementDescriptor.name}: ${elementDescriptor.valueType.simpleName}"
             }
 
             @Suppress("UNCHECKED_CAST")
@@ -579,12 +636,16 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     }
                 },
                 decode = { currentValue, dec, config ->
-                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
+                    val result = currentValue
+                        ?.let { listType.cast(it) as MutableList }
+                        ?: defaultValue().toMutableList()
                     result += elementDescriptor.decode(null, dec, config)
                     result
                 },
                 decodePacked = { currentValue, dec, _ ->
-                    val result = currentValue?.let { listType.cast(it) as MutableList } ?: defaultValue().toMutableList()
+                    val result = currentValue
+                        ?.let { listType.cast(it) as MutableList }
+                        ?: defaultValue().toMutableList()
                     result += decodePackedValues(dec)
                     result
                 },

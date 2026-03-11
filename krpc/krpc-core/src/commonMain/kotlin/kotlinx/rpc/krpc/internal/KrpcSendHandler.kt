@@ -41,7 +41,7 @@ internal class KrpcSendHandler(
     private val continuationsLock = ReentrantLock()
 
     // internal for tests
-    @Suppress("PropertyName", "detekt.VariableNaming")
+    @Suppress("PropertyName")
     internal val __continuations = mutableListOf<CancellableContinuation<Unit>>()
 
     fun updateWindowSize(update: Int) {

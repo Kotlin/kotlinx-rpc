@@ -62,7 +62,9 @@ public class ProtoExtensionRegistry internal constructor() {
     /**
      * Returns all registered extensions for [messageType], keyed by field number.
      */
-    public fun <@GeneratedProtoMessage T: Any> getAllExtensionsForMessage(messageType: KClass<T>): Map<Int, ProtoExtensionDescriptor<T, *>> {
+    public fun <@GeneratedProtoMessage T : Any> getAllExtensionsForMessage(
+        messageType: KClass<T>,
+    ): Map<Int, ProtoExtensionDescriptor<T, *>> {
         @Suppress ("UNCHECKED_CAST")
         return (table[messageType] ?: emptyMap()) as Map<Int, ProtoExtensionDescriptor<T, *>>
     }

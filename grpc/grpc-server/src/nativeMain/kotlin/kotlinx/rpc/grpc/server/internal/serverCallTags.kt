@@ -32,8 +32,8 @@ import libkgrpc.kgrpc_registered_call_allocation
 import kotlin.experimental.ExperimentalNativeApi
 
 /**
- * A [kotlinx.rpc.grpc.internal.CallbackTag] that is passed to a completion queue and invoked when an incoming gRPC call for the
- * registered [method] must be handled.
+ * A [kotlinx.rpc.grpc.internal.CallbackTag] that is passed to a completion queue
+ * and invoked when an incoming gRPC call for the registered [method] must be handled.
  *
  * The [toRawCallAllocation] method provides a [kgrpc_registered_call_allocation] used by the grpc runtime
  * to pass the call context to this callback.
