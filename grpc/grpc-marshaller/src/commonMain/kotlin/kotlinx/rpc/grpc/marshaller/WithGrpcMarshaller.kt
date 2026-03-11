@@ -8,7 +8,6 @@ import kotlinx.rpc.annotations.CheckedTypeAnnotation
 import kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate
 import kotlinx.rpc.grpc.marshaller.internal.resolveMarshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -31,7 +30,8 @@ import kotlin.reflect.KType
  *
  * *Note:* The referenced [GrpcMarshaller] must be an object.
  *
- * @property marshaller The [GrpcMarshaller] object responsible for encoding and decoding instances of the annotated type.
+ * @property marshaller The [GrpcMarshaller] object responsible for encoding and decoding
+ *   instances of the annotated type.
  *
  * @see GrpcMarshaller
  * @see marshaller
@@ -86,7 +86,9 @@ public annotation class HasWithGrpcMarshaller
  * @see GrpcMarshaller
  * @see GrpcMarshallerConfig
  */
-public inline fun <@HasWithGrpcMarshaller reified T : Any> grpcMarshallerOf(config: GrpcMarshallerConfig? = null): GrpcMarshaller<T> {
+public inline fun <@HasWithGrpcMarshaller reified T : Any> grpcMarshallerOf(
+    config: GrpcMarshallerConfig? = null,
+): GrpcMarshaller<T> {
     return grpcMarshallerOf(T::class, config)
 }
 
@@ -145,7 +147,8 @@ public fun <@HasWithGrpcMarshaller T : Any> grpcMarshallerOf(
  * ```
  *
  * @param T The message type for which to retrieve the marshaller.
- * @param messageClass The message type class [T] for which to retrieve the marshaller. Must be annotated with [WithGrpcMarshaller].
+ * @param messageClass The message type class [T] for which to retrieve the marshaller.
+ *   Must be annotated with [WithGrpcMarshaller].
  * @param config Optional default [GrpcMarshallerConfig] to use for encoding and decoding operations.
  * @return A [GrpcMarshaller] instance for the [messageClass].
  *
@@ -165,7 +168,8 @@ public fun <@HasWithGrpcMarshaller T : Any> grpcMarshallerOf(
     @Suppress("UNCHECKED_CAST")
     val marshaller = marshallerObj as? GrpcMarshaller<T> ?: error(
         "Internal kotlinx.rpc error: " +
-            "Marshaller for ${messageClass.qualifiedName} is not a GrpcMarshaller but ${marshallerObj::class.simpleName}"
+            "Marshaller for ${messageClass.qualifiedName} is not a GrpcMarshaller " +
+            "but ${marshallerObj::class.simpleName}"
     )
 
     if (config == null) {

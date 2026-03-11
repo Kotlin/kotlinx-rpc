@@ -16,7 +16,6 @@ import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 @WithGrpcMarshaller(MyGrpcMarshaller::class)
 data class MyMessage(
     val value: String

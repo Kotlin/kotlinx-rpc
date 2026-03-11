@@ -135,8 +135,8 @@ public interface GrpcCallCredentials {
      *
      * Provides metadata about the RPC call to enable method-specific authentication strategies.
      *
-     * @property methodName The method name of the RPC being invoked.
      * @property authority The authority (host:port) for this call.
+     * @property methodName The method name of the RPC being invoked.
      */
     // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
     public data class Context(

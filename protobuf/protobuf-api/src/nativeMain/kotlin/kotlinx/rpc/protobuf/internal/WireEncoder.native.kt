@@ -55,7 +55,6 @@ import libprotowire.pw_encoder_write_uint64_no_tag
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     /**

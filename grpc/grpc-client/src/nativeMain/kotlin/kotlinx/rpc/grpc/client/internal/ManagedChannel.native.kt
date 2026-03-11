@@ -46,12 +46,13 @@ internal class NativeManagedChannelBuilder(
             clientCredentials = credentials.value,
         )
     }
-
 }
 
 @InternalRpcApi
 public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    check(this is NativeManagedChannelBuilder) { internalError("Wrong builder type, expected NativeManagedChannelBuilder") }
+    check(this is NativeManagedChannelBuilder) {
+        internalError("Wrong builder type, expected NativeManagedChannelBuilder")
+    }
     return buildChannel()
 }
 

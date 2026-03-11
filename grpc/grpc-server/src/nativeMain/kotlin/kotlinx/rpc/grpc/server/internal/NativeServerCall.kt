@@ -414,10 +414,14 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
             if (cur == null) {
                 queue.addLast { invokeListener(it) }
                 null
-            } else cur
+            } else {
+                cur
+            }
         }
         // if the delegate was already set, call it
-        if (safeCurrentDelegate != null) invokeListener(safeCurrentDelegate)
+        if (safeCurrentDelegate != null) {
+            invokeListener(safeCurrentDelegate)
+        }
     }
 
     override fun onMessage(message: T) = deliver { it.onMessage(message) }

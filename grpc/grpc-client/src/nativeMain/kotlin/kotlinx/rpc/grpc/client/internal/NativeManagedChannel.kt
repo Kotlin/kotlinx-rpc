@@ -49,12 +49,13 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
 
-
 /**
  * Native implementation of [ManagedChannel].
  *
  * @param target The target address to connect to.
- * @param rawChannelCredentials The credentials to use for the connection.
+ * @property overrideAuthority Optional authority override for TLS and HTTP virtual hosting.
+ * @property keepAlive Optional keep-alive configuration for the connection.
+ * @param clientCredentials The credentials to use for the connection.
  */
 internal class NativeManagedChannel(
     target: String,

@@ -37,7 +37,8 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  *
  * Configuration can be passed to marshallers in two ways:
  * - Per-operation: directly to [GrpcMarshaller.encode] and [GrpcMarshaller.decode] methods
- * - As default: when retrieving a marshaller using [grpcMarshallerOf], which wraps the marshaller to use the config by default
+ * - As default: when retrieving a marshaller using [grpcMarshallerOf],
+ *   which wraps the marshaller to use the config by default
  *
  * Example:
  * ```kotlin

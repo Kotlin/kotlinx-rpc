@@ -9,14 +9,8 @@ package kotlinx.rpc.grpc.client
 import cnames.structs.grpc_channel_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.grpc.internal.internalError
-import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_call_credentials_release
-import libkgrpc.grpc_channel_credentials_release
-import libkgrpc.grpc_composite_channel_credentials_create
 import libkgrpc.grpc_insecure_credentials_create
 import libkgrpc.grpc_tls_credentials_create
 import libkgrpc.grpc_tls_credentials_options_destroy
@@ -27,7 +21,9 @@ internal fun GrpcClientCredentials.createRaw(): CPointer<grpc_channel_credential
         is GrpcCombinedClientCredentials ->
             // we don't create a composite credential, as we collect them and apply them on every call
             clientCredentials.createRaw()
-        is GrpcInsecureClientCredentials -> grpc_insecure_credentials_create() ?: error("grpc_insecure_credentials_create() returned null")
+        is GrpcInsecureClientCredentials ->
+            grpc_insecure_credentials_create()
+                ?: error("grpc_insecure_credentials_create() returned null")
         is GrpcTlsClientCredentials -> NativeTlsClientCredentialsBuilder().apply(configure).build()
         else -> internalError("Unknown client credentials type: $this")
     }

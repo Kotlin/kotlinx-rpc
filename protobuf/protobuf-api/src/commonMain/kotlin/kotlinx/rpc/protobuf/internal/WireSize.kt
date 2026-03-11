@@ -35,21 +35,27 @@ public expect fun WireSize.sInt32(value: Int): Int
 public expect fun WireSize.sInt64(value: Long): Int
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.float(value: Float): Int = 4
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.double(value: Double): Int = 8
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.fixed32(value: UInt): Int = 4
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.fixed64(value: ULong): Int = 8
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.sFixed32(value: Int): Int = 4
 
 @InternalRpcApi
+@Suppress("detekt.UnusedParameter")
 public fun WireSize.sFixed64(value: Long): Int = 8
 
 @InternalRpcApi

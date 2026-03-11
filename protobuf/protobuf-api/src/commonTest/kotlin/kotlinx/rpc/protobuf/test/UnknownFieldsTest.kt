@@ -50,7 +50,8 @@ class UnknownFieldsTest {
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)
         assertEquals(all.field1, subsetDiscarded.field1)
 
-        val roundTrippedDiscarded = grpcMarshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
+        val roundTrippedDiscarded =
+            grpcMarshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
         assertEquals(null, roundTrippedDiscarded.intMissing)
         assertEquals(all.field1, roundTrippedDiscarded.field1)
         assertEquals(AllPrimitives {}, roundTrippedDiscarded.allPrimitivesMissing)

@@ -22,7 +22,6 @@ import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
-import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
 import libkgrpc.grpc_server_add_http2_port

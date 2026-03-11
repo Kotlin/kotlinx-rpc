@@ -3,7 +3,6 @@
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-@file:Suppress("detekt.MatchingDeclarationName")
 
 package kotlinx.rpc.grpc.internal
 

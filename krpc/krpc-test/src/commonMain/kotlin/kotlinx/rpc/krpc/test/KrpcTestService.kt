@@ -39,7 +39,6 @@ data class LocalDateTime(
     }
 }
 
-@Suppress("detekt.TooManyFunctions")
 @Rpc
 interface KrpcTestService {
     fun nonSuspendFlow(): Flow<Int>

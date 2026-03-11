@@ -179,7 +179,8 @@ class AnyExtensionTest {
             deep = NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner {
                 num = 987654
             }
-            deepEnum = NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED
+            deepEnum =
+                NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED
         }
 
         val packed = Any.pack(original)
@@ -193,9 +194,14 @@ class AnyExtensionTest {
         )
 
         val innerPacked = Any.pack(unpacked.deep)
-        val innerUnpacked = innerPacked.unpack<NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner>()
+        val innerUnpacked =
+            innerPacked.unpack<NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner>()
         assertEquals(987654, innerUnpacked.num)
-        assertEquals("type.googleapis.com/test.nested.NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner", innerPacked.typeUrl)
+        assertEquals(
+            "type.googleapis.com/test.nested.NestedOuter.Inner" +
+                ".SuperInner.DuperInner.EvenMoreInner.CantBelieveItsSoInner",
+            innerPacked.typeUrl,
+        )
     }
 
     @Test

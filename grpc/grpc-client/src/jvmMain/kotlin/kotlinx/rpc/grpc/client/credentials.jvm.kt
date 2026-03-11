@@ -63,7 +63,10 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
                 }
 
                 try {
-                    val context = GrpcCallCredentials.Context(requestInfo.authority, requestInfo.methodDescriptor.fullMethodName)
+                    val context = GrpcCallCredentials.Context(
+                        requestInfo.authority,
+                        requestInfo.methodDescriptor.fullMethodName,
+                    )
                     val metadata = context.getRequestMetadata()
                     applier.apply(metadata)
                 } catch (err: Throwable) {
