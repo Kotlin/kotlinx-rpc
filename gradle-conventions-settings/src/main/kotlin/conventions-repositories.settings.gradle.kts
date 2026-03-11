@@ -96,6 +96,7 @@ pluginManagement {
         } else {
             mavenCentral()
             gradlePluginPortal()
+            google()
         }
 
         maven("${findGlobalRootDirPath()}/lib-kotlin/")
@@ -212,6 +213,7 @@ gradle.rootProject {
                 } else {
                     mavenCentral()
                     gradlePluginPortal()
+                    google()
                 }
 
                 maven("$globalRootDir/lib-kotlin/")
@@ -224,6 +226,7 @@ gradle.rootProject {
             } else {
                 mavenCentral()
                 gradlePluginPortal()
+                google()
 
                 maven("https://www.jetbrains.com/intellij-repository/releases")
 
