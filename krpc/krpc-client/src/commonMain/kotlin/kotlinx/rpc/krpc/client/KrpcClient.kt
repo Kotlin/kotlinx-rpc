@@ -258,7 +258,6 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
         return callServerStreaming<T>(call).first()
     }
 
-    @Suppress("detekt.CyclomaticComplexMethod")
     final override fun <T> callServerStreaming(call: RpcCall): Flow<T> {
         return flow {
             if (clientCancelled) {

@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("detekt.TooManyFunctions")
+
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -78,7 +80,7 @@ public fun GrpcMetadata(block: GrpcMetadata.() -> Unit): GrpcMetadata = GrpcMeta
  *   letters (a-z), and special characters (`-`, `_`, `.`). Binary keys must end with `-bin`.
  * @param marshaller the marshaller used to encode and decode values of type [T]
  */
-public expect class GrpcMetadataKey<T> public constructor(name: String, marshaller: GrpcMarshaller<T>) {}
+public expect class GrpcMetadataKey<T> public constructor(name: String, marshaller: GrpcMarshaller<T>)
 
 /**
  * Returns the last metadata entry added with the given [key], or `null` if there are no entries.
@@ -124,7 +126,8 @@ public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
  *
  * @param T the type of value associated with the key
  * @param key the typed metadata key. The key name must end with `-bin`.
- * @return the last binary value associated with the key, decoded using the key's marshaller, or `null` if no values exist
+ * @return the last binary value associated with the key, decoded using the key's marshaller,
+ *   or `null` if no values exist
  * @throws IllegalArgumentException if the key name does not end with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T?
@@ -148,7 +151,8 @@ public expect fun GrpcMetadata.getAll(key: String): List<String>
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @return a list of all values associated with the key, decoded using the key's marshaller, or an empty list if no values exist
+ * @return a list of all values associated with the key, decoded using the key's marshaller,
+ *   or an empty list if no values exist
  * @throws IllegalArgumentException if the key name ends with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T>
@@ -174,7 +178,8 @@ public expect fun GrpcMetadata.getAllBinary(key: String): List<ByteArray>
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must end with `-bin`.
- * @return a list of all binary values associated with the key, decoded using the key's marshaller, or an empty list if no values exist
+ * @return a list of all binary values associated with the key, decoded using the key's marshaller,
+ *   or an empty list if no values exist
  * @throws IllegalArgumentException if the key name does not end with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T>
@@ -329,7 +334,8 @@ public expect fun GrpcMetadata.removeAll(key: String): List<String>
  *
  * @param T the type of values associated with the key
  * @param key the typed metadata key. The key name must not end with `-bin`.
- * @return a list of all values that were removed, decoded using the key's marshaller, or an empty list if there were no values
+ * @return a list of all values that were removed, decoded using the key's marshaller,
+ *   or an empty list if there were no values
  * @throws IllegalArgumentException if the key name ends with `-bin` or contains invalid characters
  */
 public expect fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T>
@@ -373,7 +379,7 @@ public operator fun GrpcMetadata.plusAssign(other: GrpcMetadata): Unit = merge(o
  *
  * @return a new [GrpcMetadata] instance with the same entries as this metadata
  */
-public fun GrpcMetadata.copy(): GrpcMetadata = GrpcMetadata().also { it.merge(this) }
+public fun GrpcMetadata.copy(): GrpcMetadata = GrpcMetadata().apply { merge(this@copy) }
 
 /**
  * Creates a new metadata instance containing all entries from this metadata and [other].

@@ -69,7 +69,6 @@ internal class KrpcSendHandler(
         }
     }
 
-    @Suppress("detekt.ThrowsCount")
     suspend fun sendMessage(message: KrpcTransportMessage) {
         if (closed.value) {
             throw ClosedSendChannelException("KrpcSendHandler closed")

@@ -26,6 +26,7 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     }
 }
 
+@Suppress("detekt.NestedBlockDepth")
 actual suspend fun captureGrpcLogs(
     jvmLogLevel: String,
     jvmLoggers: List<String>,

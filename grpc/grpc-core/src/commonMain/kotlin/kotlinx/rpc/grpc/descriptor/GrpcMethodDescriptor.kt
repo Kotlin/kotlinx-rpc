@@ -29,8 +29,17 @@ public enum class GrpcMethodType {
 /**
  * Creates a new [GrpcMethodDescriptor] instance.
  *
+ * @param Request the request message type
+ * @param Response the response message type
  * @param fullMethodName the full name of the method, consisting of the service name followed by a forward slash
  *      and the method name. It does not include a leading slash.
+ * @param requestMarshaller marshaller for request messages
+ * @param responseMarshaller marshaller for response messages
+ * @param type the method type (unary, streaming, etc.)
+ * @param schemaDescriptor an optional schema descriptor for the method
+ * @param idempotent whether the method is idempotent
+ * @param safe whether the method is safe (has no side effects)
+ * @param sampledToLocalTracing whether the method is sampled to local tracing
  */
 @InternalRpcApi
 public expect fun <Request, Response> methodDescriptor(

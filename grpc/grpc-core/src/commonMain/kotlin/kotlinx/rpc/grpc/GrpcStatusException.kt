@@ -22,6 +22,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * @see GrpcStatus
  * @see GrpcStatusCode
  */
+@Suppress("detekt.UnusedPrivateProperty") // expect class constructors: params used in actual implementations
 public expect class GrpcStatusException : Exception {
     public constructor(status: GrpcStatus)
     public constructor(status: GrpcStatus, trailers: GrpcMetadata?)
@@ -41,6 +42,7 @@ public val GrpcStatusException.status: GrpcStatus get() = getStatus()
 public val GrpcStatusException.trailers: GrpcMetadata? get() = getTrailers()
 
 @InternalRpcApi
+@Suppress("detekt.UnusedPrivateProperty") // expect class constructors: params used in actual implementations
 public expect class StatusRuntimeException : RuntimeException {
     internal constructor(status: GrpcStatus, trailers: GrpcMetadata?)
 

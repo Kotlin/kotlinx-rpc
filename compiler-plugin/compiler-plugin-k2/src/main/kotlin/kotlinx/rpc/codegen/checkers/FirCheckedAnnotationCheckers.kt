@@ -132,7 +132,6 @@ object FirCheckedAnnotationFirFunctionChecker {
 }
 
 object FirCheckedAnnotationHelper {
-    @Suppress("detekt.LongParameterList", "detekt.CyclomaticComplexMethod", "detekt.LongMethod")
     fun <Origin, OriginTransformed, Symbol, TypeArgument> checkTypeArguments(
         context: CheckerContext,
         reporter: DiagnosticReporter,

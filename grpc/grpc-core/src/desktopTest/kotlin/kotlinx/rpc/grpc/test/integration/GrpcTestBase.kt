@@ -25,7 +25,6 @@ abstract class GrpcTestBase {
 
     abstract fun RpcServer.registerServices()
 
-    @Suppress("LongParameterList")
     fun runGrpcTest(
         serverCreds: GrpcServerCredentials? = null,
         clientCreds: GrpcClientCredentials? = null,

@@ -3,6 +3,7 @@
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class)
+@file:Suppress("detekt.TooManyFunctions")
 
 package kotlinx.rpc.grpc
 

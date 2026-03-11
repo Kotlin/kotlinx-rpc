@@ -6,7 +6,6 @@
 
 package kotlinx.rpc.grpc.test
 
-import platform.posix.getenv
 import platform.posix.setenv
 
 import kotlinx.cinterop.ExperimentalForeignApi

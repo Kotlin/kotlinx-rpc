@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import kotlin.reflect.KClass
 
-@Suppress("detekt.LongParameterList")
 interface VersionSpecificApi {
     fun referenceBuiltinClassVS(
         context: IrPluginContext,

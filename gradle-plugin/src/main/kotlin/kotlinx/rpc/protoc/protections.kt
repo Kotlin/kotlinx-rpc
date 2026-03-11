@@ -11,7 +11,6 @@ import org.gradle.api.Project
 private const val BUF_PLUGIN_ID = "build.buf"
 private const val PROTOBUF_PLUGIN_ID = "com.google.protobuf"
 
-@Suppress("detekt.ThrowsCount")
 internal fun Project.configurePluginProtections() {
     var isBufPluginApplied = false
     var isProtobufPluginApplied = false

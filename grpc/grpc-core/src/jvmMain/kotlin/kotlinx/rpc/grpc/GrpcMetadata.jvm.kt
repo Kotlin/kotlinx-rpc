@@ -2,13 +2,14 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("detekt.TooManyFunctions")
+
 package kotlinx.rpc.grpc
 
 import io.grpc.Metadata
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual typealias GrpcMetadata = Metadata
 
@@ -85,9 +86,11 @@ public actual fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T
 }
 
 public actual operator fun GrpcMetadata.contains(key: String): Boolean {
-    val javaKey = if (key.endsWith(Metadata.BINARY_HEADER_SUFFIX))
-        Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER) else
+    val javaKey = if (key.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+        Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER)
+    } else {
         Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER)
+    }
     return containsKey(javaKey)
 }
 

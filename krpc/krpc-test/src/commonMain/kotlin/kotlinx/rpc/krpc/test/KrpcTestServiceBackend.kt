@@ -51,7 +51,6 @@ class KrpcTestServiceBackend : KrpcTestService {
         }
     }
 
-    @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun empty() {}
 
     override suspend fun returnType(): String {
@@ -207,10 +206,8 @@ class KrpcTestServiceBackend : KrpcTestService {
         }
     }
 
-    @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun bytes(byteArray: ByteArray) { }
 
-    @Suppress("detekt.EmptyFunctionBlock")
     override suspend fun nullableBytes(byteArray: ByteArray?) { }
 
     @Suppress("detekt.TooGenericExceptionThrown")

@@ -353,7 +353,6 @@ abstract class KrpcTransportTestBase {
     }
 
     @Test
-    @Suppress("detekt.ThrowsCount")
     fun testExceptionSerializationAndPropagating() = runTest {
         try {
             client.throwsIllegalArgument("me")

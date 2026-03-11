@@ -41,7 +41,6 @@ class CborLocalTransportTest : LocalTransportTest() {
     }
 }
 
-@Suppress("detekt.EmptyFunctionBlock")
 class ProtoBufLocalTransportTest : LocalTransportTest() {
     @OptIn(ExperimentalSerializationApi::class)
     override val serializationConfig: KrpcSerialFormatConfiguration.() -> Unit = {
