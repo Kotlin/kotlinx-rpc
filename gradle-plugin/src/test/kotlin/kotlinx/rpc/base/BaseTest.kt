@@ -184,7 +184,7 @@ abstract class BaseTest {
             .withProjectDir(projectDir.absolute().toFile())
             .withTestKitDir(testKitDir.absolute().toFile())
             .withGradleVersion(versions.gradle)
-            .withEnvironment(mapOf("ANDROID_HOME" to ANDROID_HOME_DIR))
+            .withEnvironment(mapOf("ANDROID_HOME" to ANDROID_HOME_DIR.ifEmpty { error("ANDROID_HOME is not set") }))
             .withArguments(
                 listOfNotNull(
                     task,
