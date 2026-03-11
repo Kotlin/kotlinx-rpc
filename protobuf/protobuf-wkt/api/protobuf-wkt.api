@@ -169,6 +169,303 @@ public final class com/google/protobuf/kotlin/BytesValueInternal : kotlinx/rpc/p
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/DescriptorProto$Companion;
+	public abstract fun getEnumType ()Ljava/util/List;
+	public abstract fun getExtension ()Ljava/util/List;
+	public abstract fun getExtensionRange ()Ljava/util/List;
+	public abstract fun getField ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNestedType ()Ljava/util/List;
+	public abstract fun getOneofDecl ()Ljava/util/List;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/MessageOptions;
+	public abstract fun getReservedName ()Ljava/util/List;
+	public abstract fun getReservedRange ()Ljava/util/List;
+	public abstract fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto$Builder : com/google/protobuf/kotlin/DescriptorProto {
+	public abstract fun getEnumType ()Ljava/util/List;
+	public abstract fun getExtension ()Ljava/util/List;
+	public abstract fun getExtensionRange ()Ljava/util/List;
+	public abstract fun getField ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNestedType ()Ljava/util/List;
+	public abstract fun getOneofDecl ()Ljava/util/List;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/MessageOptions;
+	public abstract fun getReservedName ()Ljava/util/List;
+	public abstract fun getReservedRange ()Ljava/util/List;
+	public abstract fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+	public abstract fun setEnumType (Ljava/util/List;)V
+	public abstract fun setExtension (Ljava/util/List;)V
+	public abstract fun setExtensionRange (Ljava/util/List;)V
+	public abstract fun setField (Ljava/util/List;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setNestedType (Ljava/util/List;)V
+	public abstract fun setOneofDecl (Ljava/util/List;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/MessageOptions;)V
+	public abstract fun setReservedName (Ljava/util/List;)V
+	public abstract fun setReservedRange (Ljava/util/List;)V
+	public abstract fun setVisibility (Lcom/google/protobuf/kotlin/SymbolVisibility;)V
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProto$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ExtensionRange {
+	public static final field Companion Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Companion;
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public abstract fun getStart ()Ljava/lang/Integer;
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Builder : com/google/protobuf/kotlin/DescriptorProto$ExtensionRange {
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public abstract fun getStart ()Ljava/lang/Integer;
+	public abstract fun setEnd (Ljava/lang/Integer;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;)V
+	public abstract fun setStart (Ljava/lang/Integer;)V
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ReservedRange {
+	public static final field Companion Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange$Companion;
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getStart ()Ljava/lang/Integer;
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProto$ReservedRange$Builder : com/google/protobuf/kotlin/DescriptorProto$ReservedRange {
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getStart ()Ljava/lang/Integer;
+	public abstract fun setEnd (Ljava/lang/Integer;)V
+	public abstract fun setStart (Ljava/lang/Integer;)V
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProto$ReservedRange$Companion {
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/DescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/DescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/DescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEnumType ()Ljava/util/List;
+	public fun getExtension ()Ljava/util/List;
+	public fun getExtensionRange ()Ljava/util/List;
+	public fun getField ()Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun getNestedType ()Ljava/util/List;
+	public fun getOneofDecl ()Ljava/util/List;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/MessageOptions;
+	public fun getReservedName ()Ljava/util/List;
+	public fun getReservedRange ()Ljava/util/List;
+	public fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+	public fun hashCode ()I
+	public fun setEnumType (Ljava/util/List;)V
+	public fun setExtension (Ljava/util/List;)V
+	public fun setExtensionRange (Ljava/util/List;)V
+	public fun setField (Ljava/util/List;)V
+	public fun setName (Ljava/lang/String;)V
+	public fun setNestedType (Ljava/util/List;)V
+	public fun setOneofDecl (Ljava/util/List;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/MessageOptions;)V
+	public fun setReservedName (Ljava/util/List;)V
+	public fun setReservedRange (Ljava/util/List;)V
+	public fun setVisibility (Lcom/google/protobuf/kotlin/SymbolVisibility;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProtoInternal$ExtensionRangeInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/DescriptorProtoInternal$ExtensionRangeInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/DescriptorProtoInternal$ExtensionRangeInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEnd ()Ljava/lang/Integer;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public fun getStart ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun setEnd (Ljava/lang/Integer;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;)V
+	public fun setStart (Ljava/lang/Integer;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/DescriptorProtoInternal$ReservedRangeInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/DescriptorProto$ReservedRange$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/DescriptorProtoInternal$ReservedRangeInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/DescriptorProtoInternal$ReservedRangeInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEnd ()Ljava/lang/Integer;
+	public fun getStart ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun setEnd (Ljava/lang/Integer;)V
+	public fun setStart (Ljava/lang/Integer;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProtoPresence {
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasVisibility ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProtoPresence$ExtensionRange {
+	public abstract fun getHasEnd ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasStart ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/DescriptorProtoPresence$ReservedRange {
+	public abstract fun getHasEnd ()Z
+	public abstract fun getHasStart ()Z
+}
+
+public final class com/google/protobuf/kotlin/Descriptor_extKt {
+	public static final fun copy (Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;
+	public static final fun copy (Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;
+	public static final fun copy (Lcom/google/protobuf/kotlin/DescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/EnumValueOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
+	public static final fun copy (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSet;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSetDefaults;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FieldDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FieldOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FileDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FileDescriptorSet;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorSet;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FileOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;
+	public static final fun copy (Lcom/google/protobuf/kotlin/GeneratedCodeInfo;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo;
+	public static final fun copy (Lcom/google/protobuf/kotlin/MessageOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MessageOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/MethodDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/MethodOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/OneofDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/OneofOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/ServiceDescriptorProto;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceDescriptorProto;
+	public static final fun copy (Lcom/google/protobuf/kotlin/ServiceOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;
+	public static final fun copy (Lcom/google/protobuf/kotlin/SourceCodeInfo;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public static final fun copy (Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;
+	public static final fun copy (Lcom/google/protobuf/kotlin/UninterpretedOption;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/DescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/DescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumValueOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumValueOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSetDefaults;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FileDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FileDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FileDescriptorSet;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FileDescriptorSet;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FileOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FileOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/GeneratedCodeInfo;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/MessageOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/MessageOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/MethodDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/MethodDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/MethodOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/MethodOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/OneofDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/OneofDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/OneofOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/OneofOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ServiceDescriptorProto;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ServiceDescriptorProto;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ServiceOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ServiceOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/SourceCodeInfo;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/UninterpretedOption;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/UninterpretedOption;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;)Lcom/google/protobuf/kotlin/DescriptorProtoPresence$ExtensionRange;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;)Lcom/google/protobuf/kotlin/DescriptorProtoPresence$ReservedRange;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/DescriptorProto;)Lcom/google/protobuf/kotlin/DescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;)Lcom/google/protobuf/kotlin/EnumDescriptorProtoPresence$EnumReservedRange;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/EnumDescriptorProto;)Lcom/google/protobuf/kotlin/EnumDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/EnumOptions;)Lcom/google/protobuf/kotlin/EnumOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/EnumValueOptions;)Lcom/google/protobuf/kotlin/EnumValueOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;)Lcom/google/protobuf/kotlin/ExtensionRangeOptionsPresence$Declaration;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;)Lcom/google/protobuf/kotlin/ExtensionRangeOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FeatureSet;)Lcom/google/protobuf/kotlin/FeatureSetPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;)Lcom/google/protobuf/kotlin/FeatureSetDefaultsPresence$FeatureSetEditionDefault;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FeatureSetDefaults;)Lcom/google/protobuf/kotlin/FeatureSetDefaultsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FieldDescriptorProto;)Lcom/google/protobuf/kotlin/FieldDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;)Lcom/google/protobuf/kotlin/FieldOptionsPresence$EditionDefault;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)Lcom/google/protobuf/kotlin/FieldOptionsPresence$FeatureSupport;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FieldOptions;)Lcom/google/protobuf/kotlin/FieldOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FileDescriptorProto;)Lcom/google/protobuf/kotlin/FileDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FileDescriptorSet;)Lcom/google/protobuf/kotlin/FileDescriptorSetPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/FileOptions;)Lcom/google/protobuf/kotlin/FileOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;)Lcom/google/protobuf/kotlin/GeneratedCodeInfoPresence$Annotation;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/MessageOptions;)Lcom/google/protobuf/kotlin/MessageOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/MethodDescriptorProto;)Lcom/google/protobuf/kotlin/MethodDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/MethodOptions;)Lcom/google/protobuf/kotlin/MethodOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/OneofDescriptorProto;)Lcom/google/protobuf/kotlin/OneofDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/OneofOptions;)Lcom/google/protobuf/kotlin/OneofOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/ServiceDescriptorProto;)Lcom/google/protobuf/kotlin/ServiceDescriptorProtoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/ServiceOptions;)Lcom/google/protobuf/kotlin/ServiceOptionsPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;)Lcom/google/protobuf/kotlin/SourceCodeInfoPresence$Location;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/SourceCodeInfo;)Lcom/google/protobuf/kotlin/SourceCodeInfoPresence;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;)Lcom/google/protobuf/kotlin/UninterpretedOptionPresence$NamePart;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/UninterpretedOption;)Lcom/google/protobuf/kotlin/UninterpretedOptionPresence;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ExtensionRange;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/DescriptorProto$ReservedRange;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValueDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/EnumValueOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FileDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FileDescriptorSet$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileDescriptorSet;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FileOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FileOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/MessageOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MessageOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/MethodDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/MethodOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/MethodOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/OneofDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/OneofOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/OneofOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/ServiceDescriptorProto$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceDescriptorProto;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/ServiceOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ServiceOptions;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceCodeInfo$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/SourceCodeInfo$Location$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/SourceCodeInfo$Location;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/UninterpretedOption$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart;
+}
+
 public abstract interface class com/google/protobuf/kotlin/DoubleValue {
 	public static final field Companion Lcom/google/protobuf/kotlin/DoubleValue$Companion;
 	public abstract fun getValue ()D
@@ -237,6 +534,111 @@ public final class com/google/protobuf/kotlin/Duration_extKt {
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Duration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Duration;
 }
 
+public abstract class com/google/protobuf/kotlin/Edition {
+	public static final field Companion Lcom/google/protobuf/kotlin/Edition$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/Edition$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_1_TEST_ONLY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_1_TEST_ONLY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_2023 : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_2023;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_2024 : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_2024;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_2_TEST_ONLY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_2_TEST_ONLY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_99997_TEST_ONLY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_99997_TEST_ONLY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_99998_TEST_ONLY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_99998_TEST_ONLY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_99999_TEST_ONLY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_99999_TEST_ONLY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_LEGACY : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_LEGACY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_MAX : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_MAX;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_PROTO2 : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_PROTO2;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_PROTO3 : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_PROTO3;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_UNKNOWN : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$UNRECOGNIZED : com/google/protobuf/kotlin/Edition {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/Edition$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Edition$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/Edition$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public abstract interface class com/google/protobuf/kotlin/Empty {
 	public static final field Companion Lcom/google/protobuf/kotlin/Empty$Companion;
 }
@@ -292,6 +694,99 @@ public abstract interface class com/google/protobuf/kotlin/Enum$Builder : com/go
 public final class com/google/protobuf/kotlin/Enum$Companion {
 }
 
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/EnumDescriptorProto$Companion;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/EnumOptions;
+	public abstract fun getReservedName ()Ljava/util/List;
+	public abstract fun getReservedRange ()Ljava/util/List;
+	public abstract fun getValue ()Ljava/util/List;
+	public abstract fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$Builder : com/google/protobuf/kotlin/EnumDescriptorProto {
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/EnumOptions;
+	public abstract fun getReservedName ()Ljava/util/List;
+	public abstract fun getReservedRange ()Ljava/util/List;
+	public abstract fun getValue ()Ljava/util/List;
+	public abstract fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/EnumOptions;)V
+	public abstract fun setReservedName (Ljava/util/List;)V
+	public abstract fun setReservedRange (Ljava/util/List;)V
+	public abstract fun setValue (Ljava/util/List;)V
+	public abstract fun setVisibility (Lcom/google/protobuf/kotlin/SymbolVisibility;)V
+}
+
+public final class com/google/protobuf/kotlin/EnumDescriptorProto$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange {
+	public static final field Companion Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Companion;
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getStart ()Ljava/lang/Integer;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Builder : com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange {
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getStart ()Ljava/lang/Integer;
+	public abstract fun setEnd (Ljava/lang/Integer;)V
+	public abstract fun setStart (Ljava/lang/Integer;)V
+}
+
+public final class com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Companion {
+}
+
+public final class com/google/protobuf/kotlin/EnumDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getName ()Ljava/lang/String;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/EnumOptions;
+	public fun getReservedName ()Ljava/util/List;
+	public fun getReservedRange ()Ljava/util/List;
+	public fun getValue ()Ljava/util/List;
+	public fun getVisibility ()Lcom/google/protobuf/kotlin/SymbolVisibility;
+	public fun hashCode ()I
+	public fun setName (Ljava/lang/String;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/EnumOptions;)V
+	public fun setReservedName (Ljava/util/List;)V
+	public fun setReservedRange (Ljava/util/List;)V
+	public fun setValue (Ljava/util/List;)V
+	public fun setVisibility (Lcom/google/protobuf/kotlin/SymbolVisibility;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/EnumDescriptorProtoInternal$EnumReservedRangeInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumDescriptorProtoInternal$EnumReservedRangeInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumDescriptorProtoInternal$EnumReservedRangeInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEnd ()Ljava/lang/Integer;
+	public fun getStart ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun setEnd (Ljava/lang/Integer;)V
+	public fun setStart (Ljava/lang/Integer;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProtoPresence {
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasVisibility ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumDescriptorProtoPresence$EnumReservedRange {
+	public abstract fun getHasEnd ()Z
+	public abstract fun getHasStart ()Z
+}
+
 public final class com/google/protobuf/kotlin/EnumInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/Enum$Builder {
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
@@ -313,6 +808,59 @@ public final class com/google/protobuf/kotlin/EnumInternal : kotlinx/rpc/protobu
 	public fun setSourceContext (Lcom/google/protobuf/kotlin/SourceContext;)V
 	public fun setSyntax (Lcom/google/protobuf/kotlin/Syntax;)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/EnumOptions$Companion;
+	public abstract fun getAllowAlias ()Ljava/lang/Boolean;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumOptions$Builder : com/google/protobuf/kotlin/EnumOptions {
+	public abstract fun getAllowAlias ()Ljava/lang/Boolean;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setAllowAlias (Ljava/lang/Boolean;)V
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setDeprecatedLegacyJsonFieldConflicts (Ljava/lang/Boolean;)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/EnumOptions$Companion {
+}
+
+public final class com/google/protobuf/kotlin/EnumOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAllowAlias ()Ljava/lang/Boolean;
+	public fun getDeprecated ()Z
+	public fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setAllowAlias (Ljava/lang/Boolean;)V
+	public fun setDeprecated (Z)V
+	public fun setDeprecatedLegacyJsonFieldConflicts (Ljava/lang/Boolean;)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumOptionsPresence {
+	public abstract fun getHasAllowAlias ()Z
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasDeprecatedLegacyJsonFieldConflicts ()Z
+	public abstract fun getHasFeatures ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/EnumPresence {
@@ -338,6 +886,48 @@ public abstract interface class com/google/protobuf/kotlin/EnumValue$Builder : c
 public final class com/google/protobuf/kotlin/EnumValue$Companion {
 }
 
+public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/EnumValueDescriptorProto$Companion;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/EnumValueOptions;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorProto$Builder : com/google/protobuf/kotlin/EnumValueDescriptorProto {
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/EnumValueOptions;
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setNumber (Ljava/lang/Integer;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/EnumValueOptions;)V
+}
+
+public final class com/google/protobuf/kotlin/EnumValueDescriptorProto$Companion {
+}
+
+public final class com/google/protobuf/kotlin/EnumValueDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumValueDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumValueDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumValueDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getName ()Ljava/lang/String;
+	public fun getNumber ()Ljava/lang/Integer;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/EnumValueOptions;
+	public fun hashCode ()I
+	public fun setName (Ljava/lang/String;)V
+	public fun setNumber (Ljava/lang/Integer;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/EnumValueOptions;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumValueDescriptorProtoPresence {
+	public abstract fun getHasName ()Z
+	public abstract fun getHasNumber ()Z
+	public abstract fun getHasOptions ()Z
+}
+
 public final class com/google/protobuf/kotlin/EnumValueInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumValue$Builder {
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
@@ -353,6 +943,727 @@ public final class com/google/protobuf/kotlin/EnumValueInternal : kotlinx/rpc/pr
 	public fun setNumber (I)V
 	public fun setOptions (Ljava/util/List;)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumValueOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/EnumValueOptions$Companion;
+	public abstract fun getDebugRedact ()Z
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumValueOptions$Builder : com/google/protobuf/kotlin/EnumValueOptions {
+	public abstract fun getDebugRedact ()Z
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setDebugRedact (Z)V
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setFeatureSupport (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/EnumValueOptions$Companion {
+}
+
+public final class com/google/protobuf/kotlin/EnumValueOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/EnumValueOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/EnumValueOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/EnumValueOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDebugRedact ()Z
+	public fun getDeprecated ()Z
+	public fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setDebugRedact (Z)V
+	public fun setDeprecated (Z)V
+	public fun setFeatureSupport (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/EnumValueOptionsPresence {
+	public abstract fun getHasDebugRedact ()Z
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasFeatureSupport ()Z
+	public abstract fun getHasFeatures ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Companion;
+	public abstract fun getDeclaration ()Ljava/util/List;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun getVerification ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions$Builder : com/google/protobuf/kotlin/ExtensionRangeOptions {
+	public abstract fun getDeclaration ()Ljava/util/List;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun getVerification ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState;
+	public abstract fun setDeclaration (Ljava/util/List;)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+	public abstract fun setVerification (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState;)V
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration {
+	public static final field Companion Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion;
+	public abstract fun getFullName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getRepeated ()Ljava/lang/Boolean;
+	public abstract fun getReserved ()Ljava/lang/Boolean;
+	public abstract fun getType ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Builder : com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration {
+	public abstract fun getFullName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getRepeated ()Ljava/lang/Boolean;
+	public abstract fun getReserved ()Ljava/lang/Boolean;
+	public abstract fun getType ()Ljava/lang/String;
+	public abstract fun setFullName (Ljava/lang/String;)V
+	public abstract fun setNumber (Ljava/lang/Integer;)V
+	public abstract fun setRepeated (Ljava/lang/Boolean;)V
+	public abstract fun setReserved (Ljava/lang/Boolean;)V
+	public abstract fun setType (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState {
+	public static final field Companion Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$DECLARATION : com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$DECLARATION;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNRECOGNIZED : com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNVERIFIED : com/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState$UNVERIFIED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/ExtensionRangeOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ExtensionRangeOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDeclaration ()Ljava/util/List;
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun getVerification ()Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState;
+	public fun hashCode ()I
+	public fun setDeclaration (Ljava/util/List;)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun setVerification (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$VerificationState;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/ExtensionRangeOptionsInternal$DeclarationInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptionsInternal$DeclarationInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ExtensionRangeOptionsInternal$DeclarationInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getFullName ()Ljava/lang/String;
+	public fun getNumber ()Ljava/lang/Integer;
+	public fun getRepeated ()Ljava/lang/Boolean;
+	public fun getReserved ()Ljava/lang/Boolean;
+	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun setFullName (Ljava/lang/String;)V
+	public fun setNumber (Ljava/lang/Integer;)V
+	public fun setRepeated (Ljava/lang/Boolean;)V
+	public fun setReserved (Ljava/lang/Boolean;)V
+	public fun setType (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptionsPresence {
+	public abstract fun getHasFeatures ()Z
+	public abstract fun getHasVerification ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/ExtensionRangeOptionsPresence$Declaration {
+	public abstract fun getHasFullName ()Z
+	public abstract fun getHasNumber ()Z
+	public abstract fun getHasRepeated ()Z
+	public abstract fun getHasReserved ()Z
+	public abstract fun getHasType ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$Companion;
+	public abstract fun getDefaultSymbolVisibility ()Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;
+	public abstract fun getEnforceNamingStyle ()Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public abstract fun getEnumType ()Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
+	public abstract fun getFieldPresence ()Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;
+	public abstract fun getJsonFormat ()Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;
+	public abstract fun getMessageEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding;
+	public abstract fun getRepeatedFieldEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;
+	public abstract fun getUtf8Validation ()Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet$Builder : com/google/protobuf/kotlin/FeatureSet {
+	public abstract fun getDefaultSymbolVisibility ()Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;
+	public abstract fun getEnforceNamingStyle ()Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public abstract fun getEnumType ()Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
+	public abstract fun getFieldPresence ()Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;
+	public abstract fun getJsonFormat ()Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;
+	public abstract fun getMessageEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding;
+	public abstract fun getRepeatedFieldEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;
+	public abstract fun getUtf8Validation ()Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;
+	public abstract fun setDefaultSymbolVisibility (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;)V
+	public abstract fun setEnforceNamingStyle (Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;)V
+	public abstract fun setEnumType (Lcom/google/protobuf/kotlin/FeatureSet$EnumType;)V
+	public abstract fun setFieldPresence (Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;)V
+	public abstract fun setJsonFormat (Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;)V
+	public abstract fun setMessageEncoding (Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding;)V
+	public abstract fun setRepeatedFieldEncoding (Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;)V
+	public abstract fun setUtf8Validation (Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;)V
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$ENFORCE_NAMING_STYLE_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$ENFORCE_NAMING_STYLE_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2024 : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2024;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE_LEGACY : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE_LEGACY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$EnumType {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$EnumType$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnumType$CLOSED : com/google/protobuf/kotlin/FeatureSet$EnumType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnumType$CLOSED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnumType$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnumType$ENUM_TYPE_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$EnumType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnumType$ENUM_TYPE_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnumType$OPEN : com/google/protobuf/kotlin/FeatureSet$EnumType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnumType$OPEN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnumType$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$EnumType {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$EnumType$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$EnumType$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$EnumType$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$EXPLICIT : com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$EXPLICIT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$FIELD_PRESENCE_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$FIELD_PRESENCE_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$IMPLICIT : com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$IMPLICIT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$LEGACY_REQUIRED : com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$LEGACY_REQUIRED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$FieldPresence$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$FieldPresence {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$JsonFormat {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$JsonFormat$ALLOW : com/google/protobuf/kotlin/FeatureSet$JsonFormat {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$ALLOW;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$JsonFormat$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$JsonFormat$JSON_FORMAT_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$JsonFormat {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$JSON_FORMAT_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$JsonFormat$LEGACY_BEST_EFFORT : com/google/protobuf/kotlin/FeatureSet$JsonFormat {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$LEGACY_BEST_EFFORT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$JsonFormat$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$JsonFormat {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$MessageEncoding {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$DELIMITED : com/google/protobuf/kotlin/FeatureSet$MessageEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$DELIMITED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$LENGTH_PREFIXED : com/google/protobuf/kotlin/FeatureSet$MessageEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$LENGTH_PREFIXED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$MESSAGE_ENCODING_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$MessageEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$MESSAGE_ENCODING_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$MessageEncoding {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$EXPANDED : com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$EXPANDED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$PACKED : com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$PACKED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$REPEATED_FIELD_ENCODING_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$REPEATED_FIELD_ENCODING_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$Utf8Validation {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Utf8Validation$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Utf8Validation$NONE : com/google/protobuf/kotlin/FeatureSet$Utf8Validation {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$NONE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Utf8Validation$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$Utf8Validation {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Utf8Validation$UTF8_VALIDATION_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$Utf8Validation {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$UTF8_VALIDATION_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$Utf8Validation$VERIFY : com/google/protobuf/kotlin/FeatureSet$Utf8Validation {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation$VERIFY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Builder : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature {
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$DEFAULT_SYMBOL_VISIBILITY_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$DEFAULT_SYMBOL_VISIBILITY_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$EXPORT_ALL : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$EXPORT_ALL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$EXPORT_TOP_LEVEL : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$EXPORT_TOP_LEVEL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$LOCAL_ALL : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$LOCAL_ALL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$STRICT : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$STRICT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSetDefaults$Companion;
+	public abstract fun getDefaults ()Ljava/util/List;
+	public abstract fun getMaximumEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getMinimumEdition ()Lcom/google/protobuf/kotlin/Edition;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$Builder : com/google/protobuf/kotlin/FeatureSetDefaults {
+	public abstract fun getDefaults ()Ljava/util/List;
+	public abstract fun getMaximumEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getMinimumEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun setDefaults (Ljava/util/List;)V
+	public abstract fun setMaximumEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setMinimumEdition (Lcom/google/protobuf/kotlin/Edition;)V
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetDefaults$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion;
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getFixedFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getOverridableFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Builder : com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault {
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getFixedFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getOverridableFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setFixedFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setOverridableFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion {
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetDefaultsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FeatureSetDefaults$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FeatureSetDefaultsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FeatureSetDefaultsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDefaults ()Ljava/util/List;
+	public fun getMaximumEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getMinimumEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public fun hashCode ()I
+	public fun setDefaults (Ljava/util/List;)V
+	public fun setMaximumEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setMinimumEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetDefaultsInternal$FeatureSetEditionDefaultInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FeatureSetDefaultsInternal$FeatureSetEditionDefaultInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FeatureSetDefaultsInternal$FeatureSetEditionDefaultInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getFixedFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getOverridableFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun hashCode ()I
+	public fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setFixedFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setOverridableFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaultsPresence {
+	public abstract fun getHasMaximumEdition ()Z
+	public abstract fun getHasMinimumEdition ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaultsPresence$FeatureSetEditionDefault {
+	public abstract fun getHasEdition ()Z
+	public abstract fun getHasFixedFeatures ()Z
+	public abstract fun getHasOverridableFeatures ()Z
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FeatureSet$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FeatureSetInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FeatureSetInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDefaultSymbolVisibility ()Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;
+	public fun getEnforceNamingStyle ()Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public fun getEnumType ()Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
+	public fun getFieldPresence ()Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;
+	public fun getJsonFormat ()Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;
+	public fun getMessageEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding;
+	public fun getRepeatedFieldEncoding ()Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;
+	public fun getUtf8Validation ()Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;
+	public fun hashCode ()I
+	public fun setDefaultSymbolVisibility (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;)V
+	public fun setEnforceNamingStyle (Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;)V
+	public fun setEnumType (Lcom/google/protobuf/kotlin/FeatureSet$EnumType;)V
+	public fun setFieldPresence (Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;)V
+	public fun setJsonFormat (Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;)V
+	public fun setMessageEncoding (Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding;)V
+	public fun setRepeatedFieldEncoding (Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;)V
+	public fun setUtf8Validation (Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSetInternal$VisibilityFeatureInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FeatureSetInternal$VisibilityFeatureInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FeatureSetInternal$VisibilityFeatureInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSetPresence {
+	public abstract fun getHasDefaultSymbolVisibility ()Z
+	public abstract fun getHasEnforceNamingStyle ()Z
+	public abstract fun getHasEnumType ()Z
+	public abstract fun getHasFieldPresence ()Z
+	public abstract fun getHasJsonFormat ()Z
+	public abstract fun getHasMessageEncoding ()Z
+	public abstract fun getHasRepeatedFieldEncoding ()Z
+	public abstract fun getHasUtf8Validation ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/Field {
@@ -598,6 +1909,285 @@ public final class com/google/protobuf/kotlin/Field$Kind$UNRECOGNIZED : com/goog
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class com/google/protobuf/kotlin/FieldDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldDescriptorProto$Companion;
+	public abstract fun getDefaultValue ()Ljava/lang/String;
+	public abstract fun getExtendee ()Ljava/lang/String;
+	public abstract fun getJsonName ()Ljava/lang/String;
+	public abstract fun getLabel ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getOneofIndex ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/FieldOptions;
+	public abstract fun getProto3Optional ()Ljava/lang/Boolean;
+	public abstract fun getType ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type;
+	public abstract fun getTypeName ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldDescriptorProto$Builder : com/google/protobuf/kotlin/FieldDescriptorProto {
+	public abstract fun getDefaultValue ()Ljava/lang/String;
+	public abstract fun getExtendee ()Ljava/lang/String;
+	public abstract fun getJsonName ()Ljava/lang/String;
+	public abstract fun getLabel ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getNumber ()Ljava/lang/Integer;
+	public abstract fun getOneofIndex ()Ljava/lang/Integer;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/FieldOptions;
+	public abstract fun getProto3Optional ()Ljava/lang/Boolean;
+	public abstract fun getType ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type;
+	public abstract fun getTypeName ()Ljava/lang/String;
+	public abstract fun setDefaultValue (Ljava/lang/String;)V
+	public abstract fun setExtendee (Ljava/lang/String;)V
+	public abstract fun setJsonName (Ljava/lang/String;)V
+	public abstract fun setLabel (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setNumber (Ljava/lang/Integer;)V
+	public abstract fun setOneofIndex (Ljava/lang/Integer;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/FieldOptions;)V
+	public abstract fun setProto3Optional (Ljava/lang/Boolean;)V
+	public abstract fun setType (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type;)V
+	public abstract fun setTypeName (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_OPTIONAL : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_OPTIONAL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REPEATED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REPEATED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REQUIRED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REQUIRED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$UNRECOGNIZED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BOOL : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BOOL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BYTES : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BYTES;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_DOUBLE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_DOUBLE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_ENUM : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_ENUM;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED32;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED64;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FLOAT : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FLOAT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_GROUP : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_GROUP;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT32;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT64;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_MESSAGE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_MESSAGE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED32;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED64;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT32;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT64;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_STRING : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_STRING;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT32;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT64;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$UNRECOGNIZED : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FieldDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDefaultValue ()Ljava/lang/String;
+	public fun getExtendee ()Ljava/lang/String;
+	public fun getJsonName ()Ljava/lang/String;
+	public fun getLabel ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label;
+	public fun getName ()Ljava/lang/String;
+	public fun getNumber ()Ljava/lang/Integer;
+	public fun getOneofIndex ()Ljava/lang/Integer;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/FieldOptions;
+	public fun getProto3Optional ()Ljava/lang/Boolean;
+	public fun getType ()Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type;
+	public fun getTypeName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun setDefaultValue (Ljava/lang/String;)V
+	public fun setExtendee (Ljava/lang/String;)V
+	public fun setJsonName (Ljava/lang/String;)V
+	public fun setLabel (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label;)V
+	public fun setName (Ljava/lang/String;)V
+	public fun setNumber (Ljava/lang/Integer;)V
+	public fun setOneofIndex (Ljava/lang/Integer;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/FieldOptions;)V
+	public fun setProto3Optional (Ljava/lang/Boolean;)V
+	public fun setType (Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type;)V
+	public fun setTypeName (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldDescriptorProtoPresence {
+	public abstract fun getHasDefaultValue ()Z
+	public abstract fun getHasExtendee ()Z
+	public abstract fun getHasJsonName ()Z
+	public abstract fun getHasLabel ()Z
+	public abstract fun getHasName ()Z
+	public abstract fun getHasNumber ()Z
+	public abstract fun getHasOneofIndex ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasProto3Optional ()Z
+	public abstract fun getHasType ()Z
+	public abstract fun getHasTypeName ()Z
+}
+
 public final class com/google/protobuf/kotlin/FieldInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/Field$Builder {
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
@@ -661,6 +2251,732 @@ public final class com/google/protobuf/kotlin/FieldMask_extKt {
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FieldMask$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FieldMask;
 }
 
+public abstract interface class com/google/protobuf/kotlin/FieldOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$Companion;
+	public abstract fun getCtype ()Lcom/google/protobuf/kotlin/FieldOptions$CType;
+	public abstract fun getDebugRedact ()Z
+	public abstract fun getDeprecated ()Z
+	public abstract fun getEditionDefaults ()Ljava/util/List;
+	public abstract fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getJstype ()Lcom/google/protobuf/kotlin/FieldOptions$JSType;
+	public abstract fun getLazy ()Z
+	public abstract fun getPacked ()Ljava/lang/Boolean;
+	public abstract fun getRetention ()Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention;
+	public abstract fun getTargets ()Ljava/util/List;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun getUnverifiedLazy ()Z
+	public abstract fun getWeak ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptions$Builder : com/google/protobuf/kotlin/FieldOptions {
+	public abstract fun getCtype ()Lcom/google/protobuf/kotlin/FieldOptions$CType;
+	public abstract fun getDebugRedact ()Z
+	public abstract fun getDeprecated ()Z
+	public abstract fun getEditionDefaults ()Ljava/util/List;
+	public abstract fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getJstype ()Lcom/google/protobuf/kotlin/FieldOptions$JSType;
+	public abstract fun getLazy ()Z
+	public abstract fun getPacked ()Ljava/lang/Boolean;
+	public abstract fun getRetention ()Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention;
+	public abstract fun getTargets ()Ljava/util/List;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun getUnverifiedLazy ()Z
+	public abstract fun getWeak ()Z
+	public abstract fun setCtype (Lcom/google/protobuf/kotlin/FieldOptions$CType;)V
+	public abstract fun setDebugRedact (Z)V
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setEditionDefaults (Ljava/util/List;)V
+	public abstract fun setFeatureSupport (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setJstype (Lcom/google/protobuf/kotlin/FieldOptions$JSType;)V
+	public abstract fun setLazy (Z)V
+	public abstract fun setPacked (Ljava/lang/Boolean;)V
+	public abstract fun setRetention (Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention;)V
+	public abstract fun setTargets (Ljava/util/List;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+	public abstract fun setUnverifiedLazy (Z)V
+	public abstract fun setWeak (Z)V
+}
+
+public abstract class com/google/protobuf/kotlin/FieldOptions$CType {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$CType$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$CType$CORD : com/google/protobuf/kotlin/FieldOptions$CType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$CType$CORD;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$CType$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$CType$STRING : com/google/protobuf/kotlin/FieldOptions$CType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$CType$STRING;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$CType$STRING_PIECE : com/google/protobuf/kotlin/FieldOptions$CType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$CType$STRING_PIECE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$CType$UNRECOGNIZED : com/google/protobuf/kotlin/FieldOptions$CType {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldOptions$CType$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$CType$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$CType$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptions$EditionDefault {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$EditionDefault$Companion;
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getValue ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptions$EditionDefault$Builder : com/google/protobuf/kotlin/FieldOptions$EditionDefault {
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getValue ()Ljava/lang/String;
+	public abstract fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setValue (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$EditionDefault$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureSupport {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion;
+	public abstract fun getDeprecationWarning ()Ljava/lang/String;
+	public abstract fun getEditionDeprecated ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEditionIntroduced ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEditionRemoved ()Lcom/google/protobuf/kotlin/Edition;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Builder : com/google/protobuf/kotlin/FieldOptions$FeatureSupport {
+	public abstract fun getDeprecationWarning ()Ljava/lang/String;
+	public abstract fun getEditionDeprecated ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEditionIntroduced ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEditionRemoved ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun setDeprecationWarning (Ljava/lang/String;)V
+	public abstract fun setEditionDeprecated (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setEditionIntroduced (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setEditionRemoved (Lcom/google/protobuf/kotlin/Edition;)V
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FieldOptions$JSType {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$JSType$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$JSType$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$JSType$JS_NORMAL : com/google/protobuf/kotlin/FieldOptions$JSType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$JSType$JS_NORMAL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$JSType$JS_NUMBER : com/google/protobuf/kotlin/FieldOptions$JSType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$JSType$JS_NUMBER;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$JSType$JS_STRING : com/google/protobuf/kotlin/FieldOptions$JSType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$JSType$JS_STRING;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$JSType$UNRECOGNIZED : com/google/protobuf/kotlin/FieldOptions$JSType {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldOptions$JSType$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$JSType$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$JSType$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FieldOptions$OptionRetention {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionRetention$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_RUNTIME : com/google/protobuf/kotlin/FieldOptions$OptionRetention {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_RUNTIME;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_SOURCE : com/google/protobuf/kotlin/FieldOptions$OptionRetention {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_SOURCE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_UNKNOWN : com/google/protobuf/kotlin/FieldOptions$OptionRetention {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$RETENTION_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionRetention$UNRECOGNIZED : com/google/protobuf/kotlin/FieldOptions$OptionRetention {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field Companion Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ENUM : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ENUM;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ENUM_ENTRY : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ENUM_ENTRY;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_EXTENSION_RANGE : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_EXTENSION_RANGE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_FIELD : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_FIELD;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_FILE : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_FILE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_MESSAGE : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_MESSAGE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_METHOD : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_METHOD;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ONEOF : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_ONEOF;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_SERVICE : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_SERVICE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_UNKNOWN : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$TARGET_TYPE_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptions$OptionTargetType$UNRECOGNIZED : com/google/protobuf/kotlin/FieldOptions$OptionTargetType {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FieldOptions$OptionTargetType$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FieldOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCtype ()Lcom/google/protobuf/kotlin/FieldOptions$CType;
+	public fun getDebugRedact ()Z
+	public fun getDeprecated ()Z
+	public fun getEditionDefaults ()Ljava/util/List;
+	public fun getFeatureSupport ()Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getJstype ()Lcom/google/protobuf/kotlin/FieldOptions$JSType;
+	public fun getLazy ()Z
+	public fun getPacked ()Ljava/lang/Boolean;
+	public fun getRetention ()Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention;
+	public fun getTargets ()Ljava/util/List;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun getUnverifiedLazy ()Z
+	public fun getWeak ()Z
+	public fun hashCode ()I
+	public fun setCtype (Lcom/google/protobuf/kotlin/FieldOptions$CType;)V
+	public fun setDebugRedact (Z)V
+	public fun setDeprecated (Z)V
+	public fun setEditionDefaults (Ljava/util/List;)V
+	public fun setFeatureSupport (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setJstype (Lcom/google/protobuf/kotlin/FieldOptions$JSType;)V
+	public fun setLazy (Z)V
+	public fun setPacked (Ljava/lang/Boolean;)V
+	public fun setRetention (Lcom/google/protobuf/kotlin/FieldOptions$OptionRetention;)V
+	public fun setTargets (Ljava/util/List;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun setUnverifiedLazy (Z)V
+	public fun setWeak (Z)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptionsInternal$EditionDefaultInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FieldOptions$EditionDefault$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldOptionsInternal$EditionDefaultInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldOptionsInternal$EditionDefaultInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getValue ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setValue (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldOptionsInternal$FeatureSupportInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FieldOptionsInternal$FeatureSupportInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FieldOptionsInternal$FeatureSupportInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDeprecationWarning ()Ljava/lang/String;
+	public fun getEditionDeprecated ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getEditionIntroduced ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getEditionRemoved ()Lcom/google/protobuf/kotlin/Edition;
+	public fun hashCode ()I
+	public fun setDeprecationWarning (Ljava/lang/String;)V
+	public fun setEditionDeprecated (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setEditionIntroduced (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setEditionRemoved (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptionsPresence {
+	public abstract fun getHasCtype ()Z
+	public abstract fun getHasDebugRedact ()Z
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasFeatureSupport ()Z
+	public abstract fun getHasFeatures ()Z
+	public abstract fun getHasJstype ()Z
+	public abstract fun getHasLazy ()Z
+	public abstract fun getHasPacked ()Z
+	public abstract fun getHasRetention ()Z
+	public abstract fun getHasUnverifiedLazy ()Z
+	public abstract fun getHasWeak ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptionsPresence$EditionDefault {
+	public abstract fun getHasEdition ()Z
+	public abstract fun getHasValue ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FieldOptionsPresence$FeatureSupport {
+	public abstract fun getHasDeprecationWarning ()Z
+	public abstract fun getHasEditionDeprecated ()Z
+	public abstract fun getHasEditionIntroduced ()Z
+	public abstract fun getHasEditionRemoved ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/FileDescriptorProto$Companion;
+	public abstract fun getDependency ()Ljava/util/List;
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEnumType ()Ljava/util/List;
+	public abstract fun getExtension ()Ljava/util/List;
+	public abstract fun getMessageType ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptionDependency ()Ljava/util/List;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/FileOptions;
+	public abstract fun getPackage ()Ljava/lang/String;
+	public abstract fun getPublicDependency ()Ljava/util/List;
+	public abstract fun getService ()Ljava/util/List;
+	public abstract fun getSourceCodeInfo ()Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public abstract fun getSyntax ()Ljava/lang/String;
+	public abstract fun getWeakDependency ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorProto$Builder : com/google/protobuf/kotlin/FileDescriptorProto {
+	public abstract fun getDependency ()Ljava/util/List;
+	public abstract fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getEnumType ()Ljava/util/List;
+	public abstract fun getExtension ()Ljava/util/List;
+	public abstract fun getMessageType ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptionDependency ()Ljava/util/List;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/FileOptions;
+	public abstract fun getPackage ()Ljava/lang/String;
+	public abstract fun getPublicDependency ()Ljava/util/List;
+	public abstract fun getService ()Ljava/util/List;
+	public abstract fun getSourceCodeInfo ()Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public abstract fun getSyntax ()Ljava/lang/String;
+	public abstract fun getWeakDependency ()Ljava/util/List;
+	public abstract fun setDependency (Ljava/util/List;)V
+	public abstract fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setEnumType (Ljava/util/List;)V
+	public abstract fun setExtension (Ljava/util/List;)V
+	public abstract fun setMessageType (Ljava/util/List;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setOptionDependency (Ljava/util/List;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/FileOptions;)V
+	public abstract fun setPackage (Ljava/lang/String;)V
+	public abstract fun setPublicDependency (Ljava/util/List;)V
+	public abstract fun setService (Ljava/util/List;)V
+	public abstract fun setSourceCodeInfo (Lcom/google/protobuf/kotlin/SourceCodeInfo;)V
+	public abstract fun setSyntax (Ljava/lang/String;)V
+	public abstract fun setWeakDependency (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/FileDescriptorProto$Companion {
+}
+
+public final class com/google/protobuf/kotlin/FileDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FileDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FileDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FileDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDependency ()Ljava/util/List;
+	public fun getEdition ()Lcom/google/protobuf/kotlin/Edition;
+	public fun getEnumType ()Ljava/util/List;
+	public fun getExtension ()Ljava/util/List;
+	public fun getMessageType ()Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun getOptionDependency ()Ljava/util/List;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/FileOptions;
+	public fun getPackage ()Ljava/lang/String;
+	public fun getPublicDependency ()Ljava/util/List;
+	public fun getService ()Ljava/util/List;
+	public fun getSourceCodeInfo ()Lcom/google/protobuf/kotlin/SourceCodeInfo;
+	public fun getSyntax ()Ljava/lang/String;
+	public fun getWeakDependency ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setDependency (Ljava/util/List;)V
+	public fun setEdition (Lcom/google/protobuf/kotlin/Edition;)V
+	public fun setEnumType (Ljava/util/List;)V
+	public fun setExtension (Ljava/util/List;)V
+	public fun setMessageType (Ljava/util/List;)V
+	public fun setName (Ljava/lang/String;)V
+	public fun setOptionDependency (Ljava/util/List;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/FileOptions;)V
+	public fun setPackage (Ljava/lang/String;)V
+	public fun setPublicDependency (Ljava/util/List;)V
+	public fun setService (Ljava/util/List;)V
+	public fun setSourceCodeInfo (Lcom/google/protobuf/kotlin/SourceCodeInfo;)V
+	public fun setSyntax (Ljava/lang/String;)V
+	public fun setWeakDependency (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorProtoPresence {
+	public abstract fun getHasEdition ()Z
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasPackage ()Z
+	public abstract fun getHasSourceCodeInfo ()Z
+	public abstract fun getHasSyntax ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorSet {
+	public static final field Companion Lcom/google/protobuf/kotlin/FileDescriptorSet$Companion;
+	public abstract fun getFile ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorSet$Builder : com/google/protobuf/kotlin/FileDescriptorSet {
+	public abstract fun getFile ()Ljava/util/List;
+	public abstract fun setFile (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/FileDescriptorSet$Companion {
+}
+
+public final class com/google/protobuf/kotlin/FileDescriptorSetInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FileDescriptorSet$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FileDescriptorSetInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FileDescriptorSetInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getFile ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setFile (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileDescriptorSetPresence {
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/FileOptions$Companion;
+	public abstract fun getCcEnableArenas ()Z
+	public abstract fun getCcGenericServices ()Z
+	public abstract fun getCsharpNamespace ()Ljava/lang/String;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getGoPackage ()Ljava/lang/String;
+	public abstract fun getJavaGenerateEqualsAndHash ()Ljava/lang/Boolean;
+	public abstract fun getJavaGenericServices ()Z
+	public abstract fun getJavaMultipleFiles ()Z
+	public abstract fun getJavaOuterClassname ()Ljava/lang/String;
+	public abstract fun getJavaPackage ()Ljava/lang/String;
+	public abstract fun getJavaStringCheckUtf8 ()Z
+	public abstract fun getObjcClassPrefix ()Ljava/lang/String;
+	public abstract fun getOptimizeFor ()Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode;
+	public abstract fun getPhpClassPrefix ()Ljava/lang/String;
+	public abstract fun getPhpMetadataNamespace ()Ljava/lang/String;
+	public abstract fun getPhpNamespace ()Ljava/lang/String;
+	public abstract fun getPyGenericServices ()Z
+	public abstract fun getRubyPackage ()Ljava/lang/String;
+	public abstract fun getSwiftPrefix ()Ljava/lang/String;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileOptions$Builder : com/google/protobuf/kotlin/FileOptions {
+	public abstract fun getCcEnableArenas ()Z
+	public abstract fun getCcGenericServices ()Z
+	public abstract fun getCsharpNamespace ()Ljava/lang/String;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getGoPackage ()Ljava/lang/String;
+	public abstract fun getJavaGenerateEqualsAndHash ()Ljava/lang/Boolean;
+	public abstract fun getJavaGenericServices ()Z
+	public abstract fun getJavaMultipleFiles ()Z
+	public abstract fun getJavaOuterClassname ()Ljava/lang/String;
+	public abstract fun getJavaPackage ()Ljava/lang/String;
+	public abstract fun getJavaStringCheckUtf8 ()Z
+	public abstract fun getObjcClassPrefix ()Ljava/lang/String;
+	public abstract fun getOptimizeFor ()Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode;
+	public abstract fun getPhpClassPrefix ()Ljava/lang/String;
+	public abstract fun getPhpMetadataNamespace ()Ljava/lang/String;
+	public abstract fun getPhpNamespace ()Ljava/lang/String;
+	public abstract fun getPyGenericServices ()Z
+	public abstract fun getRubyPackage ()Ljava/lang/String;
+	public abstract fun getSwiftPrefix ()Ljava/lang/String;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setCcEnableArenas (Z)V
+	public abstract fun setCcGenericServices (Z)V
+	public abstract fun setCsharpNamespace (Ljava/lang/String;)V
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setGoPackage (Ljava/lang/String;)V
+	public abstract fun setJavaGenerateEqualsAndHash (Ljava/lang/Boolean;)V
+	public abstract fun setJavaGenericServices (Z)V
+	public abstract fun setJavaMultipleFiles (Z)V
+	public abstract fun setJavaOuterClassname (Ljava/lang/String;)V
+	public abstract fun setJavaPackage (Ljava/lang/String;)V
+	public abstract fun setJavaStringCheckUtf8 (Z)V
+	public abstract fun setObjcClassPrefix (Ljava/lang/String;)V
+	public abstract fun setOptimizeFor (Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode;)V
+	public abstract fun setPhpClassPrefix (Ljava/lang/String;)V
+	public abstract fun setPhpMetadataNamespace (Ljava/lang/String;)V
+	public abstract fun setPhpNamespace (Ljava/lang/String;)V
+	public abstract fun setPyGenericServices (Z)V
+	public abstract fun setRubyPackage (Ljava/lang/String;)V
+	public abstract fun setSwiftPrefix (Ljava/lang/String;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FileOptions$OptimizeMode {
+	public static final field Companion Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$OptimizeMode$CODE_SIZE : com/google/protobuf/kotlin/FileOptions$OptimizeMode {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$CODE_SIZE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$OptimizeMode$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$OptimizeMode$LITE_RUNTIME : com/google/protobuf/kotlin/FileOptions$OptimizeMode {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$LITE_RUNTIME;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$OptimizeMode$SPEED : com/google/protobuf/kotlin/FileOptions$OptimizeMode {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$SPEED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FileOptions$OptimizeMode$UNRECOGNIZED : com/google/protobuf/kotlin/FileOptions$OptimizeMode {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FileOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/FileOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/FileOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/FileOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCcEnableArenas ()Z
+	public fun getCcGenericServices ()Z
+	public fun getCsharpNamespace ()Ljava/lang/String;
+	public fun getDeprecated ()Z
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getGoPackage ()Ljava/lang/String;
+	public fun getJavaGenerateEqualsAndHash ()Ljava/lang/Boolean;
+	public fun getJavaGenericServices ()Z
+	public fun getJavaMultipleFiles ()Z
+	public fun getJavaOuterClassname ()Ljava/lang/String;
+	public fun getJavaPackage ()Ljava/lang/String;
+	public fun getJavaStringCheckUtf8 ()Z
+	public fun getObjcClassPrefix ()Ljava/lang/String;
+	public fun getOptimizeFor ()Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode;
+	public fun getPhpClassPrefix ()Ljava/lang/String;
+	public fun getPhpMetadataNamespace ()Ljava/lang/String;
+	public fun getPhpNamespace ()Ljava/lang/String;
+	public fun getPyGenericServices ()Z
+	public fun getRubyPackage ()Ljava/lang/String;
+	public fun getSwiftPrefix ()Ljava/lang/String;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setCcEnableArenas (Z)V
+	public fun setCcGenericServices (Z)V
+	public fun setCsharpNamespace (Ljava/lang/String;)V
+	public fun setDeprecated (Z)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setGoPackage (Ljava/lang/String;)V
+	public fun setJavaGenerateEqualsAndHash (Ljava/lang/Boolean;)V
+	public fun setJavaGenericServices (Z)V
+	public fun setJavaMultipleFiles (Z)V
+	public fun setJavaOuterClassname (Ljava/lang/String;)V
+	public fun setJavaPackage (Ljava/lang/String;)V
+	public fun setJavaStringCheckUtf8 (Z)V
+	public fun setObjcClassPrefix (Ljava/lang/String;)V
+	public fun setOptimizeFor (Lcom/google/protobuf/kotlin/FileOptions$OptimizeMode;)V
+	public fun setPhpClassPrefix (Ljava/lang/String;)V
+	public fun setPhpMetadataNamespace (Ljava/lang/String;)V
+	public fun setPhpNamespace (Ljava/lang/String;)V
+	public fun setPyGenericServices (Z)V
+	public fun setRubyPackage (Ljava/lang/String;)V
+	public fun setSwiftPrefix (Ljava/lang/String;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FileOptionsPresence {
+	public abstract fun getHasCcEnableArenas ()Z
+	public abstract fun getHasCcGenericServices ()Z
+	public abstract fun getHasCsharpNamespace ()Z
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasFeatures ()Z
+	public abstract fun getHasGoPackage ()Z
+	public abstract fun getHasJavaGenerateEqualsAndHash ()Z
+	public abstract fun getHasJavaGenericServices ()Z
+	public abstract fun getHasJavaMultipleFiles ()Z
+	public abstract fun getHasJavaOuterClassname ()Z
+	public abstract fun getHasJavaPackage ()Z
+	public abstract fun getHasJavaStringCheckUtf8 ()Z
+	public abstract fun getHasObjcClassPrefix ()Z
+	public abstract fun getHasOptimizeFor ()Z
+	public abstract fun getHasPhpClassPrefix ()Z
+	public abstract fun getHasPhpMetadataNamespace ()Z
+	public abstract fun getHasPhpNamespace ()Z
+	public abstract fun getHasPyGenericServices ()Z
+	public abstract fun getHasRubyPackage ()Z
+	public abstract fun getHasSwiftPrefix ()Z
+}
+
 public abstract interface class com/google/protobuf/kotlin/FloatValue {
 	public static final field Companion Lcom/google/protobuf/kotlin/FloatValue$Companion;
 	public abstract fun getValue ()F
@@ -685,6 +3001,130 @@ public final class com/google/protobuf/kotlin/FloatValueInternal : kotlinx/rpc/p
 	public fun hashCode ()I
 	public fun setValue (F)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo {
+	public static final field Companion Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Companion;
+	public abstract fun getAnnotation ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation {
+	public static final field Companion Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Companion;
+	public abstract fun getBegin ()Ljava/lang/Integer;
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getPath ()Ljava/util/List;
+	public abstract fun getSemantic ()Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic;
+	public abstract fun getSourceFile ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Builder : com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation {
+	public abstract fun getBegin ()Ljava/lang/Integer;
+	public abstract fun getEnd ()Ljava/lang/Integer;
+	public abstract fun getPath ()Ljava/util/List;
+	public abstract fun getSemantic ()Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic;
+	public abstract fun getSourceFile ()Ljava/lang/String;
+	public abstract fun setBegin (Ljava/lang/Integer;)V
+	public abstract fun setEnd (Ljava/lang/Integer;)V
+	public abstract fun setPath (Ljava/util/List;)V
+	public abstract fun setSemantic (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic;)V
+	public abstract fun setSourceFile (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
+	public static final field Companion Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$ALIAS : com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$ALIAS;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$NONE : com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$NONE;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$SET : com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$SET;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$UNRECOGNIZED : com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfo$Builder : com/google/protobuf/kotlin/GeneratedCodeInfo {
+	public abstract fun getAnnotation ()Ljava/util/List;
+	public abstract fun setAnnotation (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfo$Companion {
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/GeneratedCodeInfo$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/GeneratedCodeInfoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/GeneratedCodeInfoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAnnotation ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setAnnotation (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/GeneratedCodeInfoInternal$AnnotationInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/GeneratedCodeInfoInternal$AnnotationInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/GeneratedCodeInfoInternal$AnnotationInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getBegin ()Ljava/lang/Integer;
+	public fun getEnd ()Ljava/lang/Integer;
+	public fun getPath ()Ljava/util/List;
+	public fun getSemantic ()Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic;
+	public fun getSourceFile ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun setBegin (Ljava/lang/Integer;)V
+	public fun setEnd (Ljava/lang/Integer;)V
+	public fun setPath (Ljava/util/List;)V
+	public fun setSemantic (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation$Semantic;)V
+	public fun setSourceFile (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfoPresence {
+}
+
+public abstract interface class com/google/protobuf/kotlin/GeneratedCodeInfoPresence$Annotation {
+	public abstract fun getHasBegin ()Z
+	public abstract fun getHasEnd ()Z
+	public abstract fun getHasSemantic ()Z
+	public abstract fun getHasSourceFile ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/Int32Value {
@@ -765,6 +3205,71 @@ public final class com/google/protobuf/kotlin/ListValueInternal : kotlinx/rpc/pr
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class com/google/protobuf/kotlin/MessageOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/MessageOptions$Companion;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getMapEntry ()Ljava/lang/Boolean;
+	public abstract fun getMessageSetWireFormat ()Z
+	public abstract fun getNoStandardDescriptorAccessor ()Z
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MessageOptions$Builder : com/google/protobuf/kotlin/MessageOptions {
+	public abstract fun getDeprecated ()Z
+	public abstract fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getMapEntry ()Ljava/lang/Boolean;
+	public abstract fun getMessageSetWireFormat ()Z
+	public abstract fun getNoStandardDescriptorAccessor ()Z
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setDeprecatedLegacyJsonFieldConflicts (Ljava/lang/Boolean;)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setMapEntry (Ljava/lang/Boolean;)V
+	public abstract fun setMessageSetWireFormat (Z)V
+	public abstract fun setNoStandardDescriptorAccessor (Z)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/MessageOptions$Companion {
+}
+
+public final class com/google/protobuf/kotlin/MessageOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/MessageOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/MessageOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/MessageOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDeprecated ()Z
+	public fun getDeprecatedLegacyJsonFieldConflicts ()Ljava/lang/Boolean;
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getMapEntry ()Ljava/lang/Boolean;
+	public fun getMessageSetWireFormat ()Z
+	public fun getNoStandardDescriptorAccessor ()Z
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setDeprecated (Z)V
+	public fun setDeprecatedLegacyJsonFieldConflicts (Ljava/lang/Boolean;)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setMapEntry (Ljava/lang/Boolean;)V
+	public fun setMessageSetWireFormat (Z)V
+	public fun setNoStandardDescriptorAccessor (Z)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MessageOptionsPresence {
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasDeprecatedLegacyJsonFieldConflicts ()Z
+	public abstract fun getHasFeatures ()Z
+	public abstract fun getHasMapEntry ()Z
+	public abstract fun getHasMessageSetWireFormat ()Z
+	public abstract fun getHasNoStandardDescriptorAccessor ()Z
+}
+
 public abstract interface class com/google/protobuf/kotlin/Method {
 	public static final field Companion Lcom/google/protobuf/kotlin/Method$Companion;
 	public abstract fun getName ()Ljava/lang/String;
@@ -796,6 +3301,66 @@ public abstract interface class com/google/protobuf/kotlin/Method$Builder : com/
 public final class com/google/protobuf/kotlin/Method$Companion {
 }
 
+public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/MethodDescriptorProto$Companion;
+	public abstract fun getClientStreaming ()Z
+	public abstract fun getInputType ()Ljava/lang/String;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/MethodOptions;
+	public abstract fun getOutputType ()Ljava/lang/String;
+	public abstract fun getServerStreaming ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProto$Builder : com/google/protobuf/kotlin/MethodDescriptorProto {
+	public abstract fun getClientStreaming ()Z
+	public abstract fun getInputType ()Ljava/lang/String;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/MethodOptions;
+	public abstract fun getOutputType ()Ljava/lang/String;
+	public abstract fun getServerStreaming ()Z
+	public abstract fun setClientStreaming (Z)V
+	public abstract fun setInputType (Ljava/lang/String;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/MethodOptions;)V
+	public abstract fun setOutputType (Ljava/lang/String;)V
+	public abstract fun setServerStreaming (Z)V
+}
+
+public final class com/google/protobuf/kotlin/MethodDescriptorProto$Companion {
+}
+
+public final class com/google/protobuf/kotlin/MethodDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/MethodDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/MethodDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/MethodDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getClientStreaming ()Z
+	public fun getInputType ()Ljava/lang/String;
+	public fun getName ()Ljava/lang/String;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/MethodOptions;
+	public fun getOutputType ()Ljava/lang/String;
+	public fun getServerStreaming ()Z
+	public fun hashCode ()I
+	public fun setClientStreaming (Z)V
+	public fun setInputType (Ljava/lang/String;)V
+	public fun setName (Ljava/lang/String;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/MethodOptions;)V
+	public fun setOutputType (Ljava/lang/String;)V
+	public fun setServerStreaming (Z)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MethodDescriptorProtoPresence {
+	public abstract fun getHasClientStreaming ()Z
+	public abstract fun getHasInputType ()Z
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+	public abstract fun getHasOutputType ()Z
+	public abstract fun getHasServerStreaming ()Z
+}
+
 public final class com/google/protobuf/kotlin/MethodInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/Method$Builder {
 	public fun <init> ()V
 	public final fun asString (I)Ljava/lang/String;
@@ -819,6 +3384,95 @@ public final class com/google/protobuf/kotlin/MethodInternal : kotlinx/rpc/proto
 	public fun setResponseTypeUrl (Ljava/lang/String;)V
 	public fun setSyntax (Lcom/google/protobuf/kotlin/Syntax;)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MethodOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/MethodOptions$Companion;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getIdempotencyLevel ()Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MethodOptions$Builder : com/google/protobuf/kotlin/MethodOptions {
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getIdempotencyLevel ()Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setIdempotencyLevel (Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
+	public static final field Companion Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$IDEMPOTENCY_UNKNOWN : com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$IDEMPOTENCY_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$IDEMPOTENT : com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$IDEMPOTENT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$NO_SIDE_EFFECTS : com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$NO_SIDE_EFFECTS;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$UNRECOGNIZED : com/google/protobuf/kotlin/MethodOptions$IdempotencyLevel {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/MethodOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/MethodOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/MethodOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/MethodOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDeprecated ()Z
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getIdempotencyLevel ()Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setDeprecated (Z)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setIdempotencyLevel (Lcom/google/protobuf/kotlin/MethodOptions$IdempotencyLevel;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/MethodOptionsPresence {
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasFeatures ()Z
+	public abstract fun getHasIdempotencyLevel ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/Mixin {
@@ -880,6 +3534,77 @@ public final class com/google/protobuf/kotlin/NullValue$UNRECOGNIZED : com/googl
 	public fun toString ()Ljava/lang/String;
 }
 
+public abstract interface class com/google/protobuf/kotlin/OneofDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/OneofDescriptorProto$Companion;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/OneofOptions;
+}
+
+public abstract interface class com/google/protobuf/kotlin/OneofDescriptorProto$Builder : com/google/protobuf/kotlin/OneofDescriptorProto {
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/OneofOptions;
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/OneofOptions;)V
+}
+
+public final class com/google/protobuf/kotlin/OneofDescriptorProto$Companion {
+}
+
+public final class com/google/protobuf/kotlin/OneofDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/OneofDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/OneofDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/OneofDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getName ()Ljava/lang/String;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/OneofOptions;
+	public fun hashCode ()I
+	public fun setName (Ljava/lang/String;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/OneofOptions;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/OneofDescriptorProtoPresence {
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/OneofOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/OneofOptions$Companion;
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/OneofOptions$Builder : com/google/protobuf/kotlin/OneofOptions {
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/OneofOptions$Companion {
+}
+
+public final class com/google/protobuf/kotlin/OneofOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/OneofOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/OneofOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/OneofOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/OneofOptionsPresence {
+	public abstract fun getHasFeatures ()Z
+}
+
 public abstract interface class com/google/protobuf/kotlin/Option {
 	public static final field Companion Lcom/google/protobuf/kotlin/Option$Companion;
 	public abstract fun getName ()Ljava/lang/String;
@@ -913,6 +3638,168 @@ public final class com/google/protobuf/kotlin/OptionInternal : kotlinx/rpc/proto
 
 public abstract interface class com/google/protobuf/kotlin/OptionPresence {
 	public abstract fun getHasValue ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceDescriptorProto {
+	public static final field Companion Lcom/google/protobuf/kotlin/ServiceDescriptorProto$Companion;
+	public abstract fun getMethod ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/ServiceOptions;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceDescriptorProto$Builder : com/google/protobuf/kotlin/ServiceDescriptorProto {
+	public abstract fun getMethod ()Ljava/util/List;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getOptions ()Lcom/google/protobuf/kotlin/ServiceOptions;
+	public abstract fun setMethod (Ljava/util/List;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public abstract fun setOptions (Lcom/google/protobuf/kotlin/ServiceOptions;)V
+}
+
+public final class com/google/protobuf/kotlin/ServiceDescriptorProto$Companion {
+}
+
+public final class com/google/protobuf/kotlin/ServiceDescriptorProtoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/ServiceDescriptorProto$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ServiceDescriptorProtoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ServiceDescriptorProtoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getMethod ()Ljava/util/List;
+	public fun getName ()Ljava/lang/String;
+	public fun getOptions ()Lcom/google/protobuf/kotlin/ServiceOptions;
+	public fun hashCode ()I
+	public fun setMethod (Ljava/util/List;)V
+	public fun setName (Ljava/lang/String;)V
+	public fun setOptions (Lcom/google/protobuf/kotlin/ServiceOptions;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceDescriptorProtoPresence {
+	public abstract fun getHasName ()Z
+	public abstract fun getHasOptions ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceOptions {
+	public static final field Companion Lcom/google/protobuf/kotlin/ServiceOptions$Companion;
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceOptions$Builder : com/google/protobuf/kotlin/ServiceOptions {
+	public abstract fun getDeprecated ()Z
+	public abstract fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public abstract fun getUninterpretedOption ()Ljava/util/List;
+	public abstract fun setDeprecated (Z)V
+	public abstract fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public abstract fun setUninterpretedOption (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/ServiceOptions$Companion {
+}
+
+public final class com/google/protobuf/kotlin/ServiceOptionsInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/ServiceOptions$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/ServiceOptionsInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/ServiceOptionsInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getDeprecated ()Z
+	public fun getFeatures ()Lcom/google/protobuf/kotlin/FeatureSet;
+	public fun getUninterpretedOption ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setDeprecated (Z)V
+	public fun setFeatures (Lcom/google/protobuf/kotlin/FeatureSet;)V
+	public fun setUninterpretedOption (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/ServiceOptionsPresence {
+	public abstract fun getHasDeprecated ()Z
+	public abstract fun getHasFeatures ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo {
+	public static final field Companion Lcom/google/protobuf/kotlin/SourceCodeInfo$Companion;
+	public abstract fun getLocation ()Ljava/util/List;
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Builder : com/google/protobuf/kotlin/SourceCodeInfo {
+	public abstract fun getLocation ()Ljava/util/List;
+	public abstract fun setLocation (Ljava/util/List;)V
+}
+
+public final class com/google/protobuf/kotlin/SourceCodeInfo$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Location {
+	public static final field Companion Lcom/google/protobuf/kotlin/SourceCodeInfo$Location$Companion;
+	public abstract fun getLeadingComments ()Ljava/lang/String;
+	public abstract fun getLeadingDetachedComments ()Ljava/util/List;
+	public abstract fun getPath ()Ljava/util/List;
+	public abstract fun getSpan ()Ljava/util/List;
+	public abstract fun getTrailingComments ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfo$Location$Builder : com/google/protobuf/kotlin/SourceCodeInfo$Location {
+	public abstract fun getLeadingComments ()Ljava/lang/String;
+	public abstract fun getLeadingDetachedComments ()Ljava/util/List;
+	public abstract fun getPath ()Ljava/util/List;
+	public abstract fun getSpan ()Ljava/util/List;
+	public abstract fun getTrailingComments ()Ljava/lang/String;
+	public abstract fun setLeadingComments (Ljava/lang/String;)V
+	public abstract fun setLeadingDetachedComments (Ljava/util/List;)V
+	public abstract fun setPath (Ljava/util/List;)V
+	public abstract fun setSpan (Ljava/util/List;)V
+	public abstract fun setTrailingComments (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/SourceCodeInfo$Location$Companion {
+}
+
+public final class com/google/protobuf/kotlin/SourceCodeInfoInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/SourceCodeInfo$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/SourceCodeInfoInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/SourceCodeInfoInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getLocation ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun setLocation (Ljava/util/List;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/SourceCodeInfoInternal$LocationInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/SourceCodeInfo$Location$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/SourceCodeInfoInternal$LocationInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/SourceCodeInfoInternal$LocationInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getLeadingComments ()Ljava/lang/String;
+	public fun getLeadingDetachedComments ()Ljava/util/List;
+	public fun getPath ()Ljava/util/List;
+	public fun getSpan ()Ljava/util/List;
+	public fun getTrailingComments ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun setLeadingComments (Ljava/lang/String;)V
+	public fun setLeadingDetachedComments (Ljava/util/List;)V
+	public fun setPath (Ljava/util/List;)V
+	public fun setSpan (Ljava/util/List;)V
+	public fun setTrailingComments (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfoPresence {
+}
+
+public abstract interface class com/google/protobuf/kotlin/SourceCodeInfoPresence$Location {
+	public abstract fun getHasLeadingComments ()Z
+	public abstract fun getHasTrailingComments ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/SourceContext {
@@ -1024,6 +3911,48 @@ public final class com/google/protobuf/kotlin/Struct_extKt {
 	public static final fun invoke (Lcom/google/protobuf/kotlin/ListValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Struct$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
+}
+
+public abstract class com/google/protobuf/kotlin/SymbolVisibility {
+	public static final field Companion Lcom/google/protobuf/kotlin/SymbolVisibility$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/SymbolVisibility$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/SymbolVisibility$UNRECOGNIZED : com/google/protobuf/kotlin/SymbolVisibility {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/SymbolVisibility$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/SymbolVisibility$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/SymbolVisibility$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_EXPORT : com/google/protobuf/kotlin/SymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_EXPORT;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_LOCAL : com/google/protobuf/kotlin/SymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_LOCAL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_UNSET : com/google/protobuf/kotlin/SymbolVisibility {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/SymbolVisibility$VISIBILITY_UNSET;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class com/google/protobuf/kotlin/Syntax {
@@ -1241,6 +4170,107 @@ public final class com/google/protobuf/kotlin/UInt64ValueInternal : kotlinx/rpc/
 	public fun hashCode ()I
 	public fun setValue-VKZWuLQ (J)V
 	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOption {
+	public static final field Companion Lcom/google/protobuf/kotlin/UninterpretedOption$Companion;
+	public abstract fun getAggregateValue ()Ljava/lang/String;
+	public abstract fun getDoubleValue ()Ljava/lang/Double;
+	public abstract fun getIdentifierValue ()Ljava/lang/String;
+	public abstract fun getName ()Ljava/util/List;
+	public abstract fun getNegativeIntValue ()Ljava/lang/Long;
+	public abstract fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
+	public abstract fun getStringValue ()[B
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$Builder : com/google/protobuf/kotlin/UninterpretedOption {
+	public abstract fun getAggregateValue ()Ljava/lang/String;
+	public abstract fun getDoubleValue ()Ljava/lang/Double;
+	public abstract fun getIdentifierValue ()Ljava/lang/String;
+	public abstract fun getName ()Ljava/util/List;
+	public abstract fun getNegativeIntValue ()Ljava/lang/Long;
+	public abstract fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
+	public abstract fun getStringValue ()[B
+	public abstract fun setAggregateValue (Ljava/lang/String;)V
+	public abstract fun setDoubleValue (Ljava/lang/Double;)V
+	public abstract fun setIdentifierValue (Ljava/lang/String;)V
+	public abstract fun setName (Ljava/util/List;)V
+	public abstract fun setNegativeIntValue (Ljava/lang/Long;)V
+	public abstract fun setPositiveIntValue-ADd3fzo (Lkotlin/ULong;)V
+	public abstract fun setStringValue ([B)V
+}
+
+public final class com/google/protobuf/kotlin/UninterpretedOption$Companion {
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$NamePart {
+	public static final field Companion Lcom/google/protobuf/kotlin/UninterpretedOption$NamePart$Companion;
+	public abstract fun getNamePart ()Ljava/lang/String;
+	public abstract fun isExtension ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$NamePart$Builder : com/google/protobuf/kotlin/UninterpretedOption$NamePart {
+	public abstract fun getNamePart ()Ljava/lang/String;
+	public abstract fun isExtension ()Z
+	public abstract fun setExtension (Z)V
+	public abstract fun setNamePart (Ljava/lang/String;)V
+}
+
+public final class com/google/protobuf/kotlin/UninterpretedOption$NamePart$Companion {
+}
+
+public final class com/google/protobuf/kotlin/UninterpretedOptionInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/UninterpretedOption$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/UninterpretedOptionInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/UninterpretedOptionInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAggregateValue ()Ljava/lang/String;
+	public fun getDoubleValue ()Ljava/lang/Double;
+	public fun getIdentifierValue ()Ljava/lang/String;
+	public fun getName ()Ljava/util/List;
+	public fun getNegativeIntValue ()Ljava/lang/Long;
+	public fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
+	public fun getStringValue ()[B
+	public fun hashCode ()I
+	public fun setAggregateValue (Ljava/lang/String;)V
+	public fun setDoubleValue (Ljava/lang/Double;)V
+	public fun setIdentifierValue (Ljava/lang/String;)V
+	public fun setName (Ljava/util/List;)V
+	public fun setNegativeIntValue (Ljava/lang/Long;)V
+	public fun setPositiveIntValue-ADd3fzo (Lkotlin/ULong;)V
+	public fun setStringValue ([B)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/UninterpretedOptionInternal$NamePartInternal : kotlinx/rpc/protobuf/internal/InternalMessage, com/google/protobuf/kotlin/UninterpretedOption$NamePart$Builder {
+	public fun <init> ()V
+	public final fun asString (I)Ljava/lang/String;
+	public static synthetic fun asString$default (Lcom/google/protobuf/kotlin/UninterpretedOptionInternal$NamePartInternal;IILjava/lang/Object;)Ljava/lang/String;
+	public fun copyInternal ()Lcom/google/protobuf/kotlin/UninterpretedOptionInternal$NamePartInternal;
+	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNamePart ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun isExtension ()Z
+	public fun setExtension (Z)V
+	public fun setNamePart (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOptionPresence {
+	public abstract fun getHasAggregateValue ()Z
+	public abstract fun getHasDoubleValue ()Z
+	public abstract fun getHasIdentifierValue ()Z
+	public abstract fun getHasNegativeIntValue ()Z
+	public abstract fun getHasPositiveIntValue ()Z
+	public abstract fun getHasStringValue ()Z
+}
+
+public abstract interface class com/google/protobuf/kotlin/UninterpretedOptionPresence$NamePart {
+	public abstract fun getHasIsExtension ()Z
+	public abstract fun getHasNamePart ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/Value {
