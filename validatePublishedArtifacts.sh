@@ -17,15 +17,17 @@ function usageAndFail() {
     fancyEcho "  -v --- Verbose Gradle output"
     fancyEcho "  -s --- Silent mode"
     fancyEcho "  --dump --- Dump artifacts"
+    fancyEcho "  --no-proxy --- Set kotlinx.rpc.useProxyRepositories=true"
     exit 1
 }
 
 silent=false
 dump=false
 verbose=false
+noproxy=false
 
 function checkArgument() {
-  if [[ "$1" != "--dump" ]] && [[ "$1" != "-v" ]] && [[ "$1" != "-s" ]]; then
+  if [[ "$1" != "--dump" ]] && [[ "$1" != "-v" ]] && [[ "$1" != "-s" ]] && [[ "$1" != "--no-proxy" ]]; then
       usageAndFail
   elif [[ "$1" == "--dump" ]]; then
       dump=true
@@ -33,10 +35,12 @@ function checkArgument() {
       verbose=true
   elif [[ "$1" == "-s" ]]; then
       silent=true
+  elif [[ "$1" == "--no-proxy" ]]; then
+      noproxy=true
   fi
 }
 
-if [[ "$#" -gt 3 ]]; then
+if [[ "$#" -gt 4 ]]; then
     usageAndFail
 fi
 
@@ -52,14 +56,23 @@ if [[ "$#" -ge 3 ]]; then
     checkArgument "$3"
 fi
 
+if [[ "$#" -ge 4 ]]; then
+    checkArgument "$4"
+fi
+
 fancyEcho "Dump mode: $dump"
 fancyEcho "Verbose mode: $verbose"
 fancyEcho "Silent mode: $silent"
+fancyEcho "No proxy mode: $noproxy"
 
 if [[ "$dump" == true ]]; then
     command="./gradlew validatePublishedArtifacts --dump"
 else
     command="./gradlew validatePublishedArtifacts"
+fi
+
+if [[ "$noproxy" == true ]]; then
+    command="$command -Pkotlinx.rpc.useProxyRepositories=true"
 fi
 
 failed=()
