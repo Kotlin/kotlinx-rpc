@@ -1,3 +1,0 @@
-org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin/all.jar
-org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-protobuf-plugin/sources.jar
