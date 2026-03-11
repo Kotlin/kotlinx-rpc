@@ -77,6 +77,10 @@ abstract class kotlinx.rpc.grpc.server/GrpcHandlerRegistry { // kotlinx.rpc.grpc
 
 abstract class kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcServerCredentials|null[0]
 
+final class kotlinx.rpc.grpc.server.internal/GrpcContext { // kotlinx.rpc.grpc.server.internal/GrpcContext|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.server.internal/GrpcContext.<init>|<init>(){}[0]
+}
+
 final class kotlinx.rpc.grpc.server/GrpcInsecureServerCredentials : kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcInsecureServerCredentials|null[0]
 
 final class kotlinx.rpc.grpc.server/GrpcServerConfiguration { // kotlinx.rpc.grpc.server/GrpcServerConfiguration|null[0]
