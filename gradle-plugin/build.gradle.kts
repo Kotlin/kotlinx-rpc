@@ -117,7 +117,7 @@ val androidHome = System.getenv("ANDROID_HOME")
         ?.find { it.startsWith("sdk.dir=") }
         ?.substringAfter("=")
         ?.trim()
-    ?: error("ANDROID_HOME is not set")
+    ?: ""
 
 generateSource(
     name = "TestVersions",
