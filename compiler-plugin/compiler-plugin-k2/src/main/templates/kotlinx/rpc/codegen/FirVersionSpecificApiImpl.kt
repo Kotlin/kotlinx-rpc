@@ -219,7 +219,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
             body(it)
         }
         //##csm /default
-        //##csm specific=[2.1.0...2.1.99]
+        //##csm specific=[2.1.0...2.1.99, 2.2.0-ij251-*]
         declaredMemberScope(session, null).processAllCallables {
             body(it)
         }
