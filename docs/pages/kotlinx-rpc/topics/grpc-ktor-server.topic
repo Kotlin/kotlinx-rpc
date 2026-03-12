@@ -9,6 +9,13 @@
        xsi:noNamespaceSchemaLocation="https://resources.jetbrains.com/writerside/1.0/topic.v2.xsd"
        title="Ktor Server" id="grpc-ktor-server">
 
+    <tip>
+        <p>
+            Want to get started quickly?
+            <a href="https://start.ktor.io/p/kotlinx-rpc-grpc">Generate a gRPC + Ktor project</a>
+            with the Ktor Project Generator.
+        </p>
+    </tip>
     <p>
         Similarly to <a href="grpc-server.topic"/>,
         you can use gRPC with Ktor:
