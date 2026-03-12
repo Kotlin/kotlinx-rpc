@@ -8,6 +8,6 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/krpc/grpc")
+        maven("https://redirector.kotlinlang.org/maven/kxrpc-grpc")
     }
 }

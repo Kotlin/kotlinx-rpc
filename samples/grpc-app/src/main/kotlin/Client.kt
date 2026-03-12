@@ -3,12 +3,12 @@
  */
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.grpc.GrpcClient
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.withService
 
 fun main(): Unit = runBlocking {
     val grpcClient = GrpcClient("localhost", 8080) {
-        usePlaintext()
+        credentials = plaintext()
     }
 
     val recognizer = grpcClient.withService<ImageRecognizer>()
