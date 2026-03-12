@@ -12,7 +12,13 @@
 
 [//]: # ([![TeamCity build]&#40;https://img.shields.io/teamcity/build/s/Build_kRPC_All.svg?server=http%3A%2F%2Fkrpc.teamcity.com&#41;]&#40;https://teamcity.jetbrains.com/viewType.html?buildTypeId=Build_kRPC_All&guest=1&#41;)
 
-`kotlinx.rpc` is a Kotlin library for adding asynchronous Remote Procedure Call (RPC) services to your applications. 
+> [!NOTE]
+> **gRPC Kotlin Multiplatform support is now available for preview!**
+> 
+> Try the new gRPC KMP integration and share your feedback.
+> See [gRPC Integration](#grpc-integration) for details or check the [documentation](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).
+
+`kotlinx.rpc` is a Kotlin library for adding asynchronous Remote Procedure Call (RPC) services to your applications.
 Build your RPC with already known language constructs and nothing more!
 
 ## Quick start
@@ -192,7 +198,7 @@ Current latest version:
 
 For more information on gRPC usage, 
 see the [official documentation](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).
-For a working example, see the [sample gRPC project](/samples/grpc-app).
+For a working example, see the [sample gRPC JVM project](/samples/grpc-app) and the [sample gRPC KMP Project](/samples/grpc-kmp-app).
 
 ## JetBrains Product
 
