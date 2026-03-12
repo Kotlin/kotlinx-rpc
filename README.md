@@ -196,7 +196,9 @@ Current latest version:
 
 ![Dynamic XML Badge](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fredirector.kotlinlang.org%2Fmaven%2Fkxrpc-grpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&query=%2F%2Fmetadata%2Fversioning%2Flatest&label=Latest%20dev%20version&color=forest-green&cacheSeconds=60)
 
-For more information on gRPC usage, 
+Try it now — [generate a gRPC + Ktor project](https://start.ktor.io/p/kotlinx-rpc-grpc) with the Ktor Project Generator.
+
+For more information on gRPC usage,
 see the [official documentation](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html).
 For a working example, see the [sample gRPC JVM project](/samples/grpc-app) and the [sample gRPC KMP Project](/samples/grpc-kmp-app).
 
