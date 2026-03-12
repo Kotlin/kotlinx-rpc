@@ -3,10 +3,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        // TODO: Remove once we published grpc-common
-        mavenLocal {
-            url = uri("../../build/repo")
-        }
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -16,15 +12,12 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://redirector.kotlinlang.org/maven/kxrpc-grpc")
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        // TODO: Remove once we published grpc-common
-        mavenLocal {
-            url = uri("../../build/repo")
-        }
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
@@ -33,6 +26,7 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+        maven("https://redirector.kotlinlang.org/maven/kxrpc-grpc")
     }
 }
 
@@ -40,6 +34,9 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
+include(":androidApp")
 include(":composeApp")
 include(":server")
+include(":server-shared")
+include(":ktor-server")
 include(":shared")

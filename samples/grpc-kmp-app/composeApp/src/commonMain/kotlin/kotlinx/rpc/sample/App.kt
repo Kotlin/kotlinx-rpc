@@ -1,5 +1,6 @@
 package kotlinx.rpc.sample
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,6 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.retryWhen
@@ -53,7 +60,6 @@ import kotlinx.rpc.sample.messages.MessageService
 import kotlinx.rpc.sample.messages.ReceiveMessagesRequest
 import kotlinx.rpc.sample.messages.SendMessageRequest
 import kotlinx.rpc.withService
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -66,21 +72,30 @@ import kotlin.time.Instant
 fun App() {
 
     val grpcClient = remember {
-        GrpcClient("localhost", 8080) {
+        GrpcClient(SERVER_HOST, 8080) {
             credentials = plaintext()
         }
     }
 
     val service = remember { grpcClient.withService<MessageService>() }
 
-    MaterialTheme() {
-        ChatScreen(service)
+    val httpClient = remember { HttpClient() }
+
+    MaterialTheme {
+        ChatScreen(service, httpClient)
     }
+}
+
+private sealed class RestStatus {
+    data object Idle : RestStatus()
+    data object Loading : RestStatus()
+    data class Success(val message: String) : RestStatus()
+    data object Unavailable : RestStatus()
 }
 
 @Composable
 @OptIn(ExperimentalTime::class)
-private fun ChatScreen(service: MessageService) {
+private fun ChatScreen(service: MessageService, httpClient: HttpClient) {
     val scope = rememberCoroutineScope()
 
     var me by remember { mutableStateOf("user-${Random.nextInt(until = 999)}" ) }
@@ -89,6 +104,7 @@ private fun ChatScreen(service: MessageService) {
     var error by remember { mutableStateOf<String?>(null) }
     var isSending by remember { mutableStateOf(false) }
     var retryCountDown by remember { mutableStateOf(0L) }
+    var restStatus by remember { mutableStateOf<RestStatus>(RestStatus.Idle) }
 
     fun sendMessage() {
         val currentUser = me.trim()
@@ -133,6 +149,20 @@ private fun ChatScreen(service: MessageService) {
                 error = e.toRpcError("sending")
             } finally {
                 isSending = false
+            }
+        }
+    }
+
+    fun checkHealth() {
+        scope.launch {
+            restStatus = RestStatus.Loading
+            try {
+                val response = httpClient.get("http://$SERVER_HOST:8081/health")
+                restStatus = RestStatus.Success(response.bodyAsText())
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Throwable) {
+                restStatus = RestStatus.Unavailable
             }
         }
     }
@@ -191,6 +221,10 @@ private fun ChatScreen(service: MessageService) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(Modifier.height(8.dp))
+
+        HealthCheckButton(restStatus, ::checkHealth)
+
         Spacer(Modifier.height(12.dp))
 
         LazyColumn(
@@ -222,6 +256,47 @@ private fun ChatScreen(service: MessageService) {
                 Text(if (isSending) "Sending..." else "Send")
             }
         }
+    }
+}
+
+@Composable
+private fun HealthCheckButton(
+    status: RestStatus,
+    onCheck: () -> Unit,
+) {
+    val containerColor by animateColorAsState(
+        targetValue = when (status) {
+            is RestStatus.Success -> MaterialTheme.colorScheme.primaryContainer
+            is RestStatus.Unavailable -> MaterialTheme.colorScheme.surfaceVariant
+            else -> MaterialTheme.colorScheme.secondaryContainer
+        }
+    )
+
+    val contentColor by animateColorAsState(
+        targetValue = when (status) {
+            is RestStatus.Success -> MaterialTheme.colorScheme.onPrimaryContainer
+            is RestStatus.Unavailable -> MaterialTheme.colorScheme.onSurfaceVariant
+            else -> MaterialTheme.colorScheme.onSecondaryContainer
+        }
+    )
+
+    FilledTonalButton(
+        onClick = onCheck,
+        enabled = status !is RestStatus.Loading,
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = when (status) {
+                is RestStatus.Idle -> "Send REST"
+                is RestStatus.Loading -> "Checking..."
+                is RestStatus.Success -> status.message
+                is RestStatus.Unavailable -> "No REST — tap to retry"
+            }
+        )
     }
 }
 
