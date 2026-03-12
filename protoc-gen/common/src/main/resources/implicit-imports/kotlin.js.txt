@@ -28,6 +28,7 @@ JsQualifier
 JsReference
 JsStatic
 JsString
+JsSymbol
 Json
 Promise
 RegExp

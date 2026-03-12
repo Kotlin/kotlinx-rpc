@@ -36,6 +36,7 @@ ExperimentalMultiplatform
 ExperimentalStdlibApi
 ExperimentalSubclassOptIn
 ExperimentalUnsignedTypes
+ExperimentalVersionOverloading
 ExposedCopyVisibility
 ExtensionFunctionType
 Float
@@ -47,6 +48,7 @@ IllegalStateException
 IndexOutOfBoundsException
 Int
 IntArray
+IntroducedAt
 JsFun
 KotlinVersion
 Lazy
