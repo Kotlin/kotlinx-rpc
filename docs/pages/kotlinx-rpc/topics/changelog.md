@@ -2,6 +2,147 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.11.0-grpc-185
+> Published 12 March 2026
+
+**Full Changelog**: [0.10.2...0.11.0-grpc-185](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.11.0-grpc-185)
+
+> **This is a development preview release.** APIs are subject to change and may break without notice in future versions.
+
+### Overview {id=Overview_0_11_0-grpc-185}
+
+This release introduces **gRPC and Protocol Buffers support** for kotlinx-rpc — a Kotlin Multiplatform
+implementation of gRPC with native protobuf serialization.
+
+Two approaches are supported:
+- **Schema-first** — define services and messages in `.proto` files, and the Gradle plugin generates
+  idiomatic Kotlin code with `suspend` functions, `Flow`-based streaming, and type-safe message builders.
+  See the [gRPC configuration](https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html) and
+  [generated code](https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html) docs.
+- **Proto-less** — write gRPC service interfaces directly in Kotlin with any serialization format
+  (`kotlinx.serialization`, custom `GrpcMarshaller`, etc.), no `.proto` files needed.
+  See the [gRPC services](https://kotlin.github.io/kotlinx-rpc/grpc-services.html) docs.
+
+**Supported gRPC workflows:**
+- Unary RPC (request-response)
+- Server streaming (server returns `Flow`)
+- Client streaming (client sends `Flow`)
+- Bidirectional streaming (both sides use `Flow`)
+- Client and server interceptors
+- TLS encryption and call credentials
+- Call metadata (headers and trailers)
+- Timeout, gzip compression, and keepalive support
+- Ktor server integration
+- Status exception handling
+- proto-less gRPC services
+
+**Supported protobuf features:**
+- Proto2, proto3, and editions 2023 syntax
+- All scalar types, enums, repeated fields, maps, oneof, nested messages
+- Optional types and field presence tracking
+- Extensions and groups (deprecated proto2 feature)
+- Well-Known Types (bundled with the runtime)
+- Unknown field propagation
+- Full protobuf conformance test compliance
+- Custom serialization via `kotlinx.serialization` or custom `GrpcMarshaller`
+
+**Supported platforms:** JVM, Android, iOS, macOS, Linux.
+
+#### Features 🎉 {id=Features_0_11_0-grpc-185}
+* gRPC initial implementation by [@Mr3zee](https://github.com/Mr3zee) in [#262](https://github.com/Kotlin/kotlinx-rpc/pull/262)
+* Simplified gRPC Gradle configuration by [@Mr3zee](https://github.com/Mr3zee) in [#281](https://github.com/Kotlin/kotlinx-rpc/pull/281)
+* Internal vs public codegen separation in gRPC (KRPC-162) by [@Mr3zee](https://github.com/Mr3zee) in [#285](https://github.com/Kotlin/kotlinx-rpc/pull/285)
+* Reference types by [@Mr3zee](https://github.com/Mr3zee) in [#291](https://github.com/Kotlin/kotlinx-rpc/pull/291)
+* Enum support by [@Mr3zee](https://github.com/Mr3zee) in [#294](https://github.com/Kotlin/kotlinx-rpc/pull/294)
+* Optional types support (KRPC-142) by [@Mr3zee](https://github.com/Mr3zee) in [#295](https://github.com/Kotlin/kotlinx-rpc/pull/295)
+* Repeated types (KRPC-143) by [@Mr3zee](https://github.com/Mr3zee) in [#328](https://github.com/Kotlin/kotlinx-rpc/pull/328)
+* Nested types (KRPC-146) by [@Mr3zee](https://github.com/Mr3zee) in [#331](https://github.com/Kotlin/kotlinx-rpc/pull/331)
+* OneOf types (KRPC-147) by [@Mr3zee](https://github.com/Mr3zee) in [#332](https://github.com/Kotlin/kotlinx-rpc/pull/332)
+* Map types (KRPC-145) by [@Mr3zee](https://github.com/Mr3zee) in [#334](https://github.com/Kotlin/kotlinx-rpc/pull/334)
+* Streaming support (unary, server, client, bidirectional) by [@Mr3zee](https://github.com/Mr3zee) in [#389](https://github.com/Kotlin/kotlinx-rpc/pull/389)
+* gRPC Ktor server plugin by [@Mr3zee](https://github.com/Mr3zee) in [#393](https://github.com/Kotlin/kotlinx-rpc/pull/393)
+* Native initial setup with C++/C/Kotlin interface by [@Jozott00](https://github.com/Jozott00) in [#400](https://github.com/Kotlin/kotlinx-rpc/pull/400)
+* Wire format encoder and decoder by [@Jozott00](https://github.com/Jozott00) in [#412](https://github.com/Kotlin/kotlinx-rpc/pull/412)
+* Proto generation for common (JVM and Native) by [@Jozott00](https://github.com/Jozott00) in [#415](https://github.com/Kotlin/kotlinx-rpc/pull/415)
+* Common APIs for gRPC Services, Client, and Server by [@Mr3zee](https://github.com/Mr3zee) in [#419](https://github.com/Kotlin/kotlinx-rpc/pull/419)
+* Field presence tracking, required field enforcing, and MessageCodec generation by [@Jozott00](https://github.com/Jozott00) in [#421](https://github.com/Kotlin/kotlinx-rpc/pull/421)
+* Enum and oneof field generation by [@Jozott00](https://github.com/Jozott00) in [#426](https://github.com/Kotlin/kotlinx-rpc/pull/426)
+* gRPC service generation in the compiler plugin by [@Mr3zee](https://github.com/Mr3zee) in [#428](https://github.com/Kotlin/kotlinx-rpc/pull/428)
+* Sub-messages (recursive, nested, repeated) by [@Jozott00](https://github.com/Jozott00) in [#430](https://github.com/Kotlin/kotlinx-rpc/pull/430)
+* Map support in protobuf codec by [@Jozott00](https://github.com/Jozott00) in [#434](https://github.com/Kotlin/kotlinx-rpc/pull/434)
+* Exceptions and skip unknown fields by [@Jozott00](https://github.com/Jozott00) in [#437](https://github.com/Kotlin/kotlinx-rpc/pull/437)
+* Native client calls support by [@Jozott00](https://github.com/Jozott00) in [#452](https://github.com/Kotlin/kotlinx-rpc/pull/452)
+* iOS support (arm64, x64, simulatorArm64) by [@Jozott00](https://github.com/Jozott00) in [#458](https://github.com/Kotlin/kotlinx-rpc/pull/458)
+* Linux support (arm64, x64) by [@Jozott00](https://github.com/Jozott00) in [#466](https://github.com/Kotlin/kotlinx-rpc/pull/466)
+* Native server implementation by [@Jozott00](https://github.com/Jozott00) in [#469](https://github.com/Kotlin/kotlinx-rpc/pull/469)
+* TLS credentials support (client and server) by [@Jozott00](https://github.com/Jozott00) in [#471](https://github.com/Kotlin/kotlinx-rpc/pull/471)
+* Deprecated groups support by [@Jozott00](https://github.com/Jozott00) in [#472](https://github.com/Kotlin/kotlinx-rpc/pull/472)
+* Enable all conformance tests by [@Jozott00](https://github.com/Jozott00) in [#473](https://github.com/Kotlin/kotlinx-rpc/pull/473)
+* Client and server interceptor API by [@Jozott00](https://github.com/Jozott00) in [#484](https://github.com/Kotlin/kotlinx-rpc/pull/484)
+* `Grpc.Method` annotation by [@Mr3zee](https://github.com/Mr3zee) in [#487](https://github.com/Kotlin/kotlinx-rpc/pull/487)
+* Comments support in generated code by [@Mr3zee](https://github.com/Mr3zee) in [#488](https://github.com/Kotlin/kotlinx-rpc/pull/488)
+* Deprecated options support by [@Mr3zee](https://github.com/Mr3zee) in [#489](https://github.com/Kotlin/kotlinx-rpc/pull/489)
+* `hashCode`, `equals` and `toString` for generated messages by [@Mr3zee](https://github.com/Mr3zee) in [#490](https://github.com/Kotlin/kotlinx-rpc/pull/490)
+* Call metadata — headers and trailers by [@Jozott00](https://github.com/Jozott00) in [#517](https://github.com/Kotlin/kotlinx-rpc/pull/517)
+* Timeout support by [@Jozott00](https://github.com/Jozott00) in [#525](https://github.com/Kotlin/kotlinx-rpc/pull/525)
+* gzip compression support by [@Jozott00](https://github.com/Jozott00) in [#527](https://github.com/Kotlin/kotlinx-rpc/pull/527)
+* Keepalive support by [@Jozott00](https://github.com/Jozott00) in [#528](https://github.com/Kotlin/kotlinx-rpc/pull/528)
+* Call credentials by [@Jozott00](https://github.com/Jozott00) in [#530](https://github.com/Kotlin/kotlinx-rpc/pull/530)
+* Add missing Apple targets by [@Jozott00](https://github.com/Jozott00) in [#533](https://github.com/Kotlin/kotlinx-rpc/pull/533)
+* Full KMP support for the Gradle Plugin by [@Mr3zee](https://github.com/Mr3zee) in [#534](https://github.com/Kotlin/kotlinx-rpc/pull/534)
+* Status exception API refactoring by [@Jozott00](https://github.com/Jozott00) in [#536](https://github.com/Kotlin/kotlinx-rpc/pull/536)
+* `copy` method for generated messages by [@Jozott00](https://github.com/Jozott00) in [#539](https://github.com/Kotlin/kotlinx-rpc/pull/539)
+* Presence check support by [@Jozott00](https://github.com/Jozott00) in [#540](https://github.com/Kotlin/kotlinx-rpc/pull/540)
+* Android source sets support by [@Mr3zee](https://github.com/Mr3zee) in [#542](https://github.com/Kotlin/kotlinx-rpc/pull/542)
+* Unknown field propagation by [@Jozott00](https://github.com/Jozott00) in [#557](https://github.com/Kotlin/kotlinx-rpc/pull/557)
+* Add `protoServiceName` to `[@Grpc](https://github.com/Grpc)` annotation by [@Jozott00](https://github.com/Jozott00) in [#563](https://github.com/Kotlin/kotlinx-rpc/pull/563)
+* Add `CodecConfig` and `codec` function by [@Jozott00](https://github.com/Jozott00) in [#565](https://github.com/Kotlin/kotlinx-rpc/pull/565)
+* `ProtobufConfig` with `discardUnknownFields` option by [@Jozott00](https://github.com/Jozott00) in [#569](https://github.com/Kotlin/kotlinx-rpc/pull/569)
+* `[@GeneratedProtoMessage](https://github.com/GeneratedProtoMessage)` annotation and descriptor object by [@Jozott00](https://github.com/Jozott00) in [#572](https://github.com/Kotlin/kotlinx-rpc/pull/572)
+* Shortest unambiguous names in generated code by [@Mr3zee](https://github.com/Mr3zee) in [#573](https://github.com/Kotlin/kotlinx-rpc/pull/573) and [#575](https://github.com/Kotlin/kotlinx-rpc/pull/575)
+* Platform options for the Gradle plugin by [@Mr3zee](https://github.com/Mr3zee) in [#574](https://github.com/Kotlin/kotlinx-rpc/pull/574)
+* Well-known `Any` extension functions by [@Jozott00](https://github.com/Jozott00) in [#577](https://github.com/Kotlin/kotlinx-rpc/pull/577)
+* Companion object generation moved to the compiler plugin by [@Mr3zee](https://github.com/Mr3zee) in [#586](https://github.com/Kotlin/kotlinx-rpc/pull/586)
+* Extensions support by [@Jozott00](https://github.com/Jozott00) in [#587](https://github.com/Kotlin/kotlinx-rpc/pull/587)
+* MARSHALLER and DESCRIPTOR objects for group messages by [@Jozott00](https://github.com/Jozott00) in [#589](https://github.com/Kotlin/kotlinx-rpc/pull/589)
+* Message recursion limit (KRPC-192) by [@Mr3zee](https://github.com/Mr3zee) in [#594](https://github.com/Kotlin/kotlinx-rpc/pull/594)
+* `descriptor.proto` generation by [@Mr3zee](https://github.com/Mr3zee) in [#600](https://github.com/Kotlin/kotlinx-rpc/pull/600)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_11_0-grpc-185}
+* Fix JPMS for gRPC by [@Mr3zee](https://github.com/Mr3zee) in [#390](https://github.com/Kotlin/kotlinx-rpc/pull/390)
+* Fix generation run for imported files by [@Mr3zee](https://github.com/Mr3zee) in [#409](https://github.com/Kotlin/kotlinx-rpc/pull/409)
+* Tasks caching by [@Mr3zee](https://github.com/Mr3zee) in [#410](https://github.com/Kotlin/kotlinx-rpc/pull/410)
+* Protobuf conformance fixes by [@Mr3zee](https://github.com/Mr3zee) in [#454](https://github.com/Kotlin/kotlinx-rpc/pull/454)
+* Fix service names in the generated descriptor by [@Jozott00](https://github.com/Jozott00) in [#457](https://github.com/Kotlin/kotlinx-rpc/pull/457)
+* Fix `onReady()` listener delegation — native server streaming fix (KRPC-220) by [@Jozott00](https://github.com/Jozott00) in [#477](https://github.com/Kotlin/kotlinx-rpc/pull/477)
+* Fix 32-bit target APIs by [@Jozott00](https://github.com/Jozott00) in [#537](https://github.com/Kotlin/kotlinx-rpc/pull/537)
+* Fix retry behavior for client RPC calls by [@Jozott00](https://github.com/Jozott00) in [#545](https://github.com/Kotlin/kotlinx-rpc/pull/545)
+* Fix protobuf size calculation for repeated fields and maps by [@fabiocarneiro](https://github.com/fabiocarneiro) in [#566](https://github.com/Kotlin/kotlinx-rpc/pull/566)
+* Add `grpc-marshaller` dependency to `protobuf-core` (KRPC-219) by [@Mr3zee](https://github.com/Mr3zee) in [#595](https://github.com/Kotlin/kotlinx-rpc/pull/595)
+* AGP 9.0 support by [@Mr3zee](https://github.com/Mr3zee) in [#596](https://github.com/Kotlin/kotlinx-rpc/pull/596)
+* Fix unknown fields in nested messages by [@Jozott00](https://github.com/Jozott00) in [#599](https://github.com/Kotlin/kotlinx-rpc/pull/599)
+
+#### Documentation 📗 {id=Documentation_0_11_0-grpc-185}
+* KMP sample project by [@Jozott00](https://github.com/Jozott00) in [#474](https://github.com/Kotlin/kotlinx-rpc/pull/474)
+* gRPC and Protobuf documentation by [@Mr3zee](https://github.com/Mr3zee) in [#598](https://github.com/Kotlin/kotlinx-rpc/pull/598) and [#604](https://github.com/Kotlin/kotlinx-rpc/pull/604)
+
+#### Infra 🚧 {id=Infra_0_11_0-grpc-185}
+* Set up protobuf conformance tests by [@Mr3zee](https://github.com/Mr3zee) in [#447](https://github.com/Kotlin/kotlinx-rpc/pull/447)
+* Pre-built gRPC library to avoid long compilation times by [@Jozott00](https://github.com/Jozott00) in [#461](https://github.com/Kotlin/kotlinx-rpc/pull/461)
+* Splitting core module into client and server by [@Jozott00](https://github.com/Jozott00) in [#504](https://github.com/Kotlin/kotlinx-rpc/pull/504)
+* Konan LLVM bundle resolution pinning by [@Jozott00](https://github.com/Jozott00) in [#579](https://github.com/Kotlin/kotlinx-rpc/pull/579)
+* Gradle 9.4 support by [@Mr3zee](https://github.com/Mr3zee) in [#597](https://github.com/Kotlin/kotlinx-rpc/pull/597)
+
+#### Other Changes 🧹 {id=Other_Changes_0_11_0-grpc-185}
+* Protoc-gen-kotlin-multiplatform as an included build by [@Mr3zee](https://github.com/Mr3zee) in [#411](https://github.com/Kotlin/kotlinx-rpc/pull/411)
+* Gradle plugin tests by [@Mr3zee](https://github.com/Mr3zee) in [#413](https://github.com/Kotlin/kotlinx-rpc/pull/413)
+* Fix condition for non-JVM projects by [@Mr3zee](https://github.com/Mr3zee) in [#417](https://github.com/Kotlin/kotlinx-rpc/pull/417)
+* Protoc-plugin intermediate model refactoring by [@Jozott00](https://github.com/Jozott00) in [#418](https://github.com/Kotlin/kotlinx-rpc/pull/418)
+* Integration tests for gRPC + Protoc generated files by [@Mr3zee](https://github.com/Mr3zee) in [#444](https://github.com/Kotlin/kotlinx-rpc/pull/444)
+* Remove `InputStream` abstraction in common by [@Jozott00](https://github.com/Jozott00) in [#571](https://github.com/Kotlin/kotlinx-rpc/pull/571)
+* Konan LLVM bundle mapping update by [@Jozott00](https://github.com/Jozott00) in [#585](https://github.com/Kotlin/kotlinx-rpc/pull/585)
+
+
 ## 0.10.2
 > Published 15 February 2026
 
