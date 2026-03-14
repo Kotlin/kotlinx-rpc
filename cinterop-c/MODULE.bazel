@@ -4,7 +4,7 @@ module(
 )
 
 # rules_cc for cc_library support
-bazel_dep(name = "rules_cc", version = "0.2.0")
+bazel_dep(name = "rules_cc", version = "0.2.17")
 
 # required to build for apple targets (like iOS)
 bazel_dep(name = "apple_support", version = "1.24.5", repo_name = "build_bazel_apple_support")
