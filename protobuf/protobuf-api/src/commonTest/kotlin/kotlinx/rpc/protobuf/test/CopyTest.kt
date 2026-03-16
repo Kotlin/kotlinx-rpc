@@ -13,6 +13,7 @@ import test.submsg.Other
 import test.submsg.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -143,7 +144,8 @@ class CopyTest {
         val p = PresenceCheck { RequiredPresence = 1 }
         val cp = p.copy()
         assertEquals(1, cp.RequiredPresence)
-        assertNull(cp.OptionalPresence)
+        assertEquals(0f, cp.OptionalPresence)
+        assertFalse(cp.presence.hasOptionalPresence)
 
         val cp2 = p.copy { OptionalPresence = 5f }
         assertEquals(1, cp2.RequiredPresence)
