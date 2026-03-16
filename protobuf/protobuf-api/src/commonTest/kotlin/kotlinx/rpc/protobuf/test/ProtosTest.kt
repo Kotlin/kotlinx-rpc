@@ -11,6 +11,8 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.toHexString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
@@ -80,7 +82,7 @@ class ProtosTest {
             float = 1.0f
             double = 3.0
             string = "test"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
         }
 
         val msgObj = msg

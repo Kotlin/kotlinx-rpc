@@ -5,9 +5,13 @@
 package kotlinx.rpc.protobuf.internal
 
 import com.google.protobuf.CodedOutputStream
+import com.google.protobuf.UnsafeByteOperations
 import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.asOutputStream
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 
 private class WireEncoderJvm(sink: Sink) : WireEncoder {
     private val codedOutputStream = CodedOutputStream.newInstance(sink.asOutputStream())
@@ -82,6 +86,13 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
 
     override fun writeBytes(fieldNr: Int, value: ByteArray) {
         codedOutputStream.writeByteArray(fieldNr, value)
+    }
+
+    @OptIn(UnsafeByteStringApi::class)
+    override fun writeBytes(fieldNr: Int, value: ByteString) {
+        UnsafeByteStringOperations.withByteArrayUnsafe(value) {
+            codedOutputStream.writeByteArray(fieldNr, it)
+        }
     }
 
     override fun writeString(fieldNr: Int, value: String) {

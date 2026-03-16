@@ -4,6 +4,8 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -769,11 +771,11 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
+    public override var value: ByteString by MsgFieldDelegate { ByteString() }
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.contentHashCode()
+        var result = value.hashCode()
         return result
     }
 
@@ -783,7 +785,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         if (other == null || this::class != other::class) return false
         other as BytesValueInternal
         other.checkRequiredFields()
-        if (!this.value.contentEquals(other.value)) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -797,7 +799,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("BytesValue(")
-        builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+        builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -809,7 +811,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     public fun copyInternal(body: BytesValueInternal.() -> Unit): BytesValueInternal {
         val copy = BytesValueInternal()
-        copy.value = this.value.copyOf()
+        copy.value = this.value
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy

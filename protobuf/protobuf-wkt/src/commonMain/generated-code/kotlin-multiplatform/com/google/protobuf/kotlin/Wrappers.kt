@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -146,5 +147,5 @@ public interface BytesValue {
     /**
     * The bytes value.
     */
-    public val value: ByteArray
+    public val value: ByteString
 }

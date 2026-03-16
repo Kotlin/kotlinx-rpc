@@ -14,6 +14,7 @@ import com.google.protobuf.conformance.TestCategory
 import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
 import kotlinx.io.Buffer
+import kotlinx.io.bytestring.ByteString
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
@@ -113,7 +114,7 @@ internal class ConformanceClient {
 
                     val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
 
-                    testMessage = marshaller.decode(binary.buffered()) as InternalMessage
+                    testMessage = marshaller.decode(binary.toByteArray().buffered()) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
                         result = ConformanceResponse.Result.ParseError(
@@ -176,7 +177,7 @@ internal class ConformanceClient {
             UNSPECIFIED -> error("Unspecified output format.")
 
             PROTOBUF -> {
-                val messageString: ByteArray = marshaller.encode(testMessage).readByteArray()
+                val messageString = marshaller.encode(testMessage).readByteArray().asByteString()
 
                 ConformanceResponse {
                     result = ConformanceResponse.Result.ProtobufPayload(messageString)
@@ -248,7 +249,7 @@ internal class ConformanceClient {
                 result = ConformanceResponse.Result.ProtobufPayload(
                     FailureSetInternal.MARSHALLER.encode(
                         FailureSet {}
-                    ).readByteArray()
+                    ).readByteArray().asByteString()
                 )
             }
         } else {
@@ -270,7 +271,7 @@ internal class ConformanceClient {
         return doTest {
             if (`is ProtobufInput_UnknownOrdering_ProtobufOutput`(it)) {
                 return@doTest ConformanceResponse {
-                    result = ConformanceResponse.Result.ProtobufPayload(ByteArray(0))
+                    result = ConformanceResponse.Result.ProtobufPayload(ByteArray(0).asByteString())
                 }
             }
 
@@ -311,7 +312,7 @@ internal class ConformanceClient {
             return false
         }
 
-        if (!payload.contentEquals(ProtobufInput_UnknownOrdering_ProtobufOutput_Payload)) {
+        if (!payload.toByteArray().contentEquals(ProtobufInput_UnknownOrdering_ProtobufOutput_Payload)) {
             return false
         }
 
@@ -340,7 +341,7 @@ internal class ConformanceClient {
 
             if (request.payload is ConformanceRequest.Payload.ProtobufPayload) {
                 dumpConfig.dumpPayloadInputFile
-                    ?.writeBytes((request.payload as ConformanceRequest.Payload.ProtobufPayload).value)
+                    ?.writeBytes((request.payload as ConformanceRequest.Payload.ProtobufPayload).value.toByteArray())
             }
 
             responseResult.fold(
@@ -350,7 +351,7 @@ internal class ConformanceClient {
 
                     if (`is ProtobufInput_UnknownOrdering_ProtobufOutput`(request)) {
                         ConformanceResponse {
-                            result = ConformanceResponse.Result.ProtobufPayload(message.encodeToByteArray())
+                            result = ConformanceResponse.Result.ProtobufPayload(message.encodeToByteArray().asByteString())
                         }
                     } else {
                         ConformanceResponse {
@@ -361,7 +362,7 @@ internal class ConformanceClient {
             ).apply {
                 if (result is ConformanceResponse.Result.ProtobufPayload) {
                     dumpConfig.dumpPayloadOutputFile
-                        ?.writeBytes((result as ConformanceResponse.Result.ProtobufPayload).value)
+                        ?.writeBytes((result as ConformanceResponse.Result.ProtobufPayload).value.toByteArray())
                 }
             }
         }
@@ -416,3 +417,5 @@ private fun getDumpFile(propName: String): Path? {
 }
 
 private fun ByteArray.buffered() = Buffer().apply { write(this@buffered) }
+
+private fun ByteArray.asByteString(): ByteString = ByteString(*this)

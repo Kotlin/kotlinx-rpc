@@ -4,6 +4,8 @@ package com.google.protobuf_test_messages.proto2
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -118,7 +120,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     }
 
     private object BytesDefaults {
-        val defaultBytes: ByteArray = byteArrayOf(0x6A, 0x6F, 0x73, 0x68, 0x75, 0x61)
+        val defaultBytes: ByteString = ByteString(0x6A, 0x6F, 0x73, 0x68, 0x75, 0x61)
     }
 
     @InternalRpcApi
@@ -144,7 +146,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var optionalDouble: Double? by MsgFieldDelegate(PresenceIndices.optionalDouble) { null }
     override var optionalBool: Boolean? by MsgFieldDelegate(PresenceIndices.optionalBool) { null }
     override var optionalString: String? by MsgFieldDelegate(PresenceIndices.optionalString) { null }
-    override var optionalBytes: ByteArray? by MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
+    override var optionalBytes: ByteString? by MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
     override var optionalNestedMessage: TestAllTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal() }
     override var optionalForeignMessage: ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageProto2Internal() }
     override var optionalNestedEnum: TestAllTypesProto2.NestedEnum? by MsgFieldDelegate(PresenceIndices.optionalNestedEnum) { null }
@@ -166,7 +168,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var repeatedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
     override var repeatedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
     override var repeatedString: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBytes: List<ByteArray> by MsgFieldDelegate { mutableListOf() }
+    override var repeatedBytes: List<ByteString> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedMessage: List<TestAllTypesProto2.NestedMessage> by MsgFieldDelegate { mutableListOf() }
     override var repeatedForeignMessage: List<ForeignMessageProto2> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedEnum: List<TestAllTypesProto2.NestedEnum> by MsgFieldDelegate { mutableListOf() }
@@ -217,7 +219,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var mapInt32NestedMessage: Map<Int, TestAllTypesProto2.NestedMessage> by MsgFieldDelegate { mutableMapOf() }
     override var mapBoolBool: Map<Boolean, Boolean> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringString: Map<String, String> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringBytes: Map<String, ByteArray> by MsgFieldDelegate { mutableMapOf() }
+    override var mapStringBytes: Map<String, ByteString> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedMessage: Map<String, TestAllTypesProto2.NestedMessage> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringForeignMessage: Map<String, ForeignMessageProto2> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedEnum: Map<String, TestAllTypesProto2.NestedEnum> by MsgFieldDelegate { mutableMapOf() }
@@ -238,7 +240,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultBool: Boolean by MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
-    override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
+    override var defaultBytes: ByteString by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
     override var fieldname1: Int? by MsgFieldDelegate(PresenceIndices.fieldname1) { null }
     override var fieldName2: Int? by MsgFieldDelegate(PresenceIndices.fieldName2) { null }
     override var FieldName3: Int? by MsgFieldDelegate(PresenceIndices.FieldName3) { null }
@@ -399,7 +401,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[11]) (optionalDouble?.toBits()?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[14]) (optionalBytes?.contentHashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[14]) (optionalBytes?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[15]) optionalNestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[16]) optionalForeignMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[17]) (optionalNestedEnum?.hashCode() ?: 0) else 0
@@ -421,7 +423,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
+        result = 31 * result + repeatedBytes.hashCode()
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -493,7 +495,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
-        result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
+        result = 31 * result + if (presenceMask[38]) defaultBytes.hashCode() else 0
         result = 31 * result + if (presenceMask[39]) (fieldname1?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[40]) (fieldName2?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[41]) (FieldName3?.hashCode() ?: 0) else 0
@@ -523,7 +525,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             is TestAllTypesProto2.OneofField.OneofUint32 -> hashCode() + 0
             is TestAllTypesProto2.OneofField.OneofNestedMessage -> hashCode() + 1
             is TestAllTypesProto2.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesProto2.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesProto2.OneofField.OneofBytes -> hashCode() + 3
             is TestAllTypesProto2.OneofField.OneofBool -> hashCode() + 4
             is TestAllTypesProto2.OneofField.OneofUint64 -> hashCode() + 5
             is TestAllTypesProto2.OneofField.OneofFloat -> value.toBits().hashCode() + 6
@@ -540,7 +542,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             is TestAllTypesProto2.OneofField.OneofUint32 -> a == b
             is TestAllTypesProto2.OneofField.OneofNestedMessage -> a == b
             is TestAllTypesProto2.OneofField.OneofString -> a == b
-            is TestAllTypesProto2.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesProto2.OneofField.OneofBytes).value)
+            is TestAllTypesProto2.OneofField.OneofBytes -> a == b
             is TestAllTypesProto2.OneofField.OneofBool -> a == b
             is TestAllTypesProto2.OneofField.OneofUint64 -> a == b
             is TestAllTypesProto2.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto2.OneofField.OneofFloat).value.toBits()
@@ -570,7 +572,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[11] && this.optionalDouble?.toBits() != other.optionalDouble?.toBits()) return false
         if (presenceMask[12] && this.optionalBool != other.optionalBool) return false
         if (presenceMask[13] && this.optionalString != other.optionalString) return false
-        if (presenceMask[14] && ((this.optionalBytes != null && (other.optionalBytes == null || !this.optionalBytes!!.contentEquals(other.optionalBytes!!))) || this.optionalBytes == null)) return false
+        if (presenceMask[14] && this.optionalBytes != other.optionalBytes) return false
         if (presenceMask[15] && this.optionalNestedMessage != other.optionalNestedMessage) return false
         if (presenceMask[16] && this.optionalForeignMessage != other.optionalForeignMessage) return false
         if (presenceMask[17] && this.optionalNestedEnum != other.optionalNestedEnum) return false
@@ -592,7 +594,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
+        if (this.repeatedBytes != other.repeatedBytes) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -664,7 +666,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[35] && this.defaultDouble.toBits() != other.defaultDouble.toBits()) return false
         if (presenceMask[36] && this.defaultBool != other.defaultBool) return false
         if (presenceMask[37] && this.defaultString != other.defaultString) return false
-        if (presenceMask[38] && !this.defaultBytes.contentEquals(other.defaultBytes)) return false
+        if (presenceMask[38] && this.defaultBytes != other.defaultBytes) return false
         if (presenceMask[39] && this.fieldname1 != other.fieldname1) return false
         if (presenceMask[40] && this.fieldName2 != other.fieldName2) return false
         if (presenceMask[41] && this.FieldName3 != other.FieldName3) return false
@@ -784,7 +786,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         if (presenceMask[14]) {
-            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.contentToString()},")
+            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes?.toByteArray().contentToString()},")
         } else {
             builder.appendLine("${nextIndentString}optionalBytes=<unset>,")
         }
@@ -998,7 +1000,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         if (presenceMask[38]) {
-            builder.appendLine("${nextIndentString}defaultBytes=${this.defaultBytes.contentToString()},")
+            builder.appendLine("${nextIndentString}defaultBytes=${this.defaultBytes.toByteArray().contentToString()},")
         } else {
             builder.appendLine("${nextIndentString}defaultBytes=<unset>,")
         }
@@ -1187,7 +1189,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         if (presenceMask[14]) {
-            copy.optionalBytes = this.optionalBytes?.copyOf()
+            copy.optionalBytes = this.optionalBytes
         }
 
         if (presenceMask[15]) {
@@ -1232,7 +1234,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         copy.repeatedDouble = this.repeatedDouble.map { it }
         copy.repeatedBool = this.repeatedBool.map { it }
         copy.repeatedString = this.repeatedString.map { it }
-        copy.repeatedBytes = this.repeatedBytes.map { it.copyOf() }
+        copy.repeatedBytes = this.repeatedBytes.map { it }
         copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
         copy.repeatedForeignMessage = this.repeatedForeignMessage.map { it.copy() }
         copy.repeatedNestedEnum = this.repeatedNestedEnum.map { it }
@@ -1283,7 +1285,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         copy.mapInt32NestedMessage = this.mapInt32NestedMessage.mapValues { it.value.copy() }
         copy.mapBoolBool = this.mapBoolBool.mapValues { it.value }
         copy.mapStringString = this.mapStringString.mapValues { it.value }
-        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value.copyOf() }
+        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value }
         copy.mapStringNestedMessage = this.mapStringNestedMessage.mapValues { it.value.copy() }
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
@@ -1353,7 +1355,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         if (presenceMask[38]) {
-            copy.defaultBytes = this.defaultBytes.copyOf()
+            copy.defaultBytes = this.defaultBytes
         }
 
         if (presenceMask[39]) {
@@ -1452,7 +1454,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
                 this
             }
             is TestAllTypesProto2.OneofField.OneofBytes -> {
-                TestAllTypesProto2.OneofField.OneofBytes(this.value.copyOf())
+                this
             }
             is TestAllTypesProto2.OneofField.OneofBool -> {
                 this
@@ -2753,12 +2755,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
-        var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
+        var value: ByteString by MsgFieldDelegate(PresenceIndices.value) { ByteString() }
 
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.contentHashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
             return result
         }
 
@@ -2770,7 +2772,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && !this.value.contentEquals(other.value)) return false
+            if (presenceMask[1] && this.value != other.value) return false
             return true
         }
 
@@ -2791,7 +2793,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             }
 
             if (presenceMask[1]) {
-                builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+                builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
             }
@@ -4813,7 +4815,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
     }
 
     private object BytesDefaults {
-        val defaultBytes: ByteArray = byteArrayOf(0x6A, 0x6F, 0x73, 0x68, 0x75, 0x61)
+        val defaultBytes: ByteString = ByteString(0x6A, 0x6F, 0x73, 0x68, 0x75, 0x61)
     }
 
     @InternalRpcApi
@@ -4839,7 +4841,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
     override var requiredDouble: Double by MsgFieldDelegate(PresenceIndices.requiredDouble) { 0.0 }
     override var requiredBool: Boolean by MsgFieldDelegate(PresenceIndices.requiredBool) { false }
     override var requiredString: String by MsgFieldDelegate(PresenceIndices.requiredString) { "" }
-    override var requiredBytes: ByteArray by MsgFieldDelegate(PresenceIndices.requiredBytes) { byteArrayOf() }
+    override var requiredBytes: ByteString by MsgFieldDelegate(PresenceIndices.requiredBytes) { ByteString() }
     override var requiredNestedMessage: TestAllRequiredTypesProto2.NestedMessage by MsgFieldDelegate(PresenceIndices.requiredNestedMessage) { NestedMessageInternal() }
     override var requiredForeignMessage: ForeignMessageProto2 by MsgFieldDelegate(PresenceIndices.requiredForeignMessage) { ForeignMessageProto2Internal() }
     override var requiredNestedEnum: TestAllRequiredTypesProto2.NestedEnum by MsgFieldDelegate(PresenceIndices.requiredNestedEnum) { TestAllRequiredTypesProto2.NestedEnum.FOO }
@@ -4863,7 +4865,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
     override var defaultDouble: Double by MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultBool: Boolean by MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultString: String by MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
-    override var defaultBytes: ByteArray by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
+    override var defaultBytes: ByteString by MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
 
     private val _owner: TestAllRequiredTypesProto2Internal = this
 
@@ -4966,7 +4968,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         result = 31 * result + if (presenceMask[11]) requiredDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[12]) requiredBool.hashCode() else 0
         result = 31 * result + if (presenceMask[13]) requiredString.hashCode() else 0
-        result = 31 * result + if (presenceMask[14]) requiredBytes.contentHashCode() else 0
+        result = 31 * result + if (presenceMask[14]) requiredBytes.hashCode() else 0
         result = 31 * result + if (presenceMask[15]) requiredNestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[16]) requiredForeignMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[17]) requiredNestedEnum.hashCode() else 0
@@ -4990,7 +4992,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
         result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
-        result = 31 * result + if (presenceMask[38]) defaultBytes.contentHashCode() else 0
+        result = 31 * result + if (presenceMask[38]) defaultBytes.hashCode() else 0
         result = 31 * result + extensionsHashCode()
         return result
     }
@@ -5016,7 +5018,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         if (presenceMask[11] && this.requiredDouble.toBits() != other.requiredDouble.toBits()) return false
         if (presenceMask[12] && this.requiredBool != other.requiredBool) return false
         if (presenceMask[13] && this.requiredString != other.requiredString) return false
-        if (presenceMask[14] && !this.requiredBytes.contentEquals(other.requiredBytes)) return false
+        if (presenceMask[14] && this.requiredBytes != other.requiredBytes) return false
         if (presenceMask[15] && this.requiredNestedMessage != other.requiredNestedMessage) return false
         if (presenceMask[16] && this.requiredForeignMessage != other.requiredForeignMessage) return false
         if (presenceMask[17] && this.requiredNestedEnum != other.requiredNestedEnum) return false
@@ -5040,7 +5042,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         if (presenceMask[35] && this.defaultDouble.toBits() != other.defaultDouble.toBits()) return false
         if (presenceMask[36] && this.defaultBool != other.defaultBool) return false
         if (presenceMask[37] && this.defaultString != other.defaultString) return false
-        if (presenceMask[38] && !this.defaultBytes.contentEquals(other.defaultBytes)) return false
+        if (presenceMask[38] && this.defaultBytes != other.defaultBytes) return false
         if (!extensionsEqual(other)) return false
         return true
     }
@@ -5140,7 +5142,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         }
 
         if (presenceMask[14]) {
-            builder.appendLine("${nextIndentString}requiredBytes=${this.requiredBytes.contentToString()},")
+            builder.appendLine("${nextIndentString}requiredBytes=${this.requiredBytes.toByteArray().contentToString()},")
         } else {
             builder.appendLine("${nextIndentString}requiredBytes=<unset>,")
         }
@@ -5284,7 +5286,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         }
 
         if (presenceMask[38]) {
-            builder.appendLine("${nextIndentString}defaultBytes=${this.defaultBytes.contentToString()},")
+            builder.appendLine("${nextIndentString}defaultBytes=${this.defaultBytes.toByteArray().contentToString()},")
         } else {
             builder.appendLine("${nextIndentString}defaultBytes=<unset>,")
         }
@@ -5358,7 +5360,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         }
 
         if (presenceMask[14]) {
-            copy.requiredBytes = this.requiredBytes.copyOf()
+            copy.requiredBytes = this.requiredBytes
         }
 
         if (presenceMask[15]) {
@@ -5454,7 +5456,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         }
 
         if (presenceMask[38]) {
-            copy.defaultBytes = this.defaultBytes.copyOf()
+            copy.defaultBytes = this.defaultBytes
         }
 
         copy.copyExtensionsFrom(this)
@@ -13270,7 +13272,7 @@ object TestMessagesProto2KtExtensions {
             extendee = com.google.protobuf_test_messages.proto2.TestAllTypesProto2::class,
         )
 
-    val extensionBytes: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  ByteArray> = 
+    val extensionBytes: InternalExtensionDescriptor<com.google.protobuf_test_messages.proto2.TestAllTypesProto2,  ByteString> = 
         InternalExtensionDescriptor.bytes(
             fieldNumber = 134,
             name = "extensionBytes",

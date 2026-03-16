@@ -6,6 +6,7 @@ package kotlinx.rpc.protobuf.test
 
 import Equals
 import invoke
+import kotlinx.io.bytestring.ByteString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -15,13 +16,13 @@ class ComparisonTest {
     fun equal() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
@@ -34,16 +35,16 @@ class ComparisonTest {
         val msg1 = Equals {
             str1 = "hello"
             str2 = "world"
-            bytes1 = byteArrayOf(1, 2, 3)
-            bytes2 = byteArrayOf(1, 2, 4)
+            bytes1 = ByteString(1, 2, 3)
+            bytes2 = ByteString(1, 2, 4)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
             str2 = "world"
-            bytes1 = byteArrayOf(1, 2, 3)
-            bytes2 = byteArrayOf(1, 2, 4)
+            bytes1 = ByteString(1, 2, 3)
+            bytes2 = ByteString(1, 2, 4)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
@@ -55,7 +56,7 @@ class ComparisonTest {
     fun equalWithUnsetOptionalReference() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             nested = Equals.Nested {
                 content = "hello"
             }
@@ -64,7 +65,7 @@ class ComparisonTest {
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
@@ -76,13 +77,13 @@ class ComparisonTest {
     fun notEqual() {
         val msg1 = Equals {
             str1 = "hello1"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
@@ -94,14 +95,14 @@ class ComparisonTest {
     fun differentOneOf() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             oneof = Equals.Oneof.Option1(42)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             oneof = Equals.Oneof.Option2(42)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
@@ -114,14 +115,14 @@ class ComparisonTest {
     fun sameOneOf() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             oneof = Equals.Oneof.Option1(42)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             oneof = Equals.Oneof.Option1(42)
             someEnum2 = Equals.SomeEnum.VALUE1
         }
@@ -134,14 +135,14 @@ class ComparisonTest {
     fun sameEnum() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum = Equals.SomeEnum.VALUE1
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum = Equals.SomeEnum.VALUE1
             someEnum2 = Equals.SomeEnum.VALUE1
         }
@@ -154,14 +155,14 @@ class ComparisonTest {
     fun differentEnum() {
         val msg1 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum = Equals.SomeEnum.VALUE1
             someEnum2 = Equals.SomeEnum.VALUE2
         }
 
         val msg2 = Equals {
             str1 = "hello"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = ByteString(1, 2, 3)
             someEnum = Equals.SomeEnum.VALUE2
             someEnum2 = Equals.SomeEnum.VALUE2
         }

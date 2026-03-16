@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.kotlin
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -1172,7 +1173,7 @@ public interface UninterpretedOption {
     public val positiveIntValue: ULong?
     public val negativeIntValue: Long?
     public val doubleValue: Double?
-    public val stringValue: ByteArray?
+    public val stringValue: ByteString?
     public val aggregateValue: String?
 
     /**

@@ -8,6 +8,7 @@ import Equals
 import OneOfMsg
 import copy
 import invoke
+import kotlinx.io.bytestring.ByteString
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.test.Test
@@ -20,7 +21,7 @@ class CopyTest {
 
     @Test
     fun `copy primitives and bytes - equality and independence`() {
-        val bytesSrc = byteArrayOf(1, 2, 3)
+        val bytesSrc = ByteString(1, 2, 3)
         val msg = AllPrimitives {
             int32 = 42
             int64 = 123L
@@ -45,8 +46,8 @@ class CopyTest {
         assertEquals(msg, copy)
 
         // bytes are copied
-        assertEquals(byteArrayOf(1, 2, 3).toList(), msg.bytes?.toList())
-        assertEquals(byteArrayOf(1, 2, 3).toList(), copy.bytes?.toList())
+        assertEquals(byteArrayOf(1, 2, 3).toList(), msg.bytes.toByteList())
+        assertEquals(byteArrayOf(1, 2, 3).toList(), copy.bytes.toByteList())
     }
 
     @Test
@@ -121,7 +122,7 @@ class CopyTest {
     fun `copy nested sub-message - deep copy and lambda modification`() {
         val equals = Equals {
             str1 = "root"
-            bytes1 = byteArrayOf(1, 2, 3)
+            bytes1 = byteArrayOf(1, 2, 3).asByteString()
             someEnum2 = Equals.SomeEnum.VALUE1
             nested = Equals.Nested { content = "leaf" }
         }
@@ -171,12 +172,12 @@ class CopyTest {
     fun `copy with user-provided bytes - mutation after copy should not affect copy`() {
         val userBytes = byteArrayOf(1, 2, 3)
         val original = AllPrimitives {
-            bytes = userBytes
+            bytes = userBytes.asByteString()
         }
         val copy = original.copy()
         userBytes[0] = 99
-        assertEquals(listOf<Byte>(99, 2, 3), original.bytes?.toList())
-        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes?.toList())
+        assertEquals(listOf<Byte>(1, 2, 3), original.bytes.toByteList())
+        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes.toByteList())
     }
 
     @Test
@@ -205,7 +206,7 @@ class CopyTest {
     fun `copy with bytes - mutating source array after construction should not affect copy`() {
         val bytesSrc = byteArrayOf(1, 2, 3)
         val msg = AllPrimitives {
-            bytes = bytesSrc
+            bytes = bytesSrc.asByteString()
         }
 
         val copy = msg.copy()
@@ -215,21 +216,21 @@ class CopyTest {
         bytesSrc[1] = 88
 
         // Neither original nor copy should be affected
-        assertEquals(listOf<Byte>(99, 88, 3), msg.bytes?.toList())
-        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes?.toList())
+        assertEquals(listOf<Byte>(1, 2, 3), msg.bytes.toByteList())
+        assertEquals(listOf<Byte>(1, 2, 3), copy.bytes.toByteList())
     }
 
     @Test
     fun `copy with bytes in oneof - mutating must not affect copy`() {
         val userBytes = byteArrayOf(1, 2, 3)
         val original = OneOfMsg {
-            field = OneOfMsg.Field.Bytes(userBytes)
+            field = OneOfMsg.Field.Bytes(userBytes.asByteString())
         }
         val copy = original.copy()
         userBytes[0] = 99
 
-        assertContentEquals(byteArrayOf(99, 2, 3), (original.field as OneOfMsg.Field.Bytes).value)
-        assertContentEquals(byteArrayOf(1, 2, 3), (copy.field as OneOfMsg.Field.Bytes).value)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (original.field as OneOfMsg.Field.Bytes).value)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (copy.field as OneOfMsg.Field.Bytes).value)
     }
 
     @Test

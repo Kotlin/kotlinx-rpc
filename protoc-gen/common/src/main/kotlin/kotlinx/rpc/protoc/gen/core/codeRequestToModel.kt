@@ -90,6 +90,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.KotlinLibs.Flow,
         FqName.KotlinLibs.Buffer,
         FqName.KotlinLibs.Source,
+        FqName.KotlinLibs.ByteString,
         FqName.KotlinLibs.JvmInline,
 
         // WKT types

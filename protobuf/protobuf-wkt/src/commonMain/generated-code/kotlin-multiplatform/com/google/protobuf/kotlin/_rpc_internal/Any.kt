@@ -4,6 +4,8 @@ package com.google.protobuf.kotlin
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -35,12 +37,12 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override var typeUrl: String by MsgFieldDelegate { "" }
-    public override var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
+    public override var value: ByteString by MsgFieldDelegate { ByteString() }
 
     public override fun hashCode(): Int {
         checkRequiredFields()
         var result = typeUrl.hashCode()
-        result = 31 * result + value.contentHashCode()
+        result = 31 * result + value.hashCode()
         return result
     }
 
@@ -51,7 +53,7 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         other as AnyInternal
         other.checkRequiredFields()
         if (this.typeUrl != other.typeUrl) return false
-        if (!this.value.contentEquals(other.value)) return false
+        if (this.value != other.value) return false
         return true
     }
 
@@ -66,7 +68,7 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         val builder = StringBuilder()
         builder.appendLine("Any(")
         builder.appendLine("${nextIndentString}typeUrl=${this.typeUrl},")
-        builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+        builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -79,7 +81,7 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     public fun copyInternal(body: AnyInternal.() -> Unit): AnyInternal {
         val copy = AnyInternal()
         copy.typeUrl = this.typeUrl
-        copy.value = this.value.copyOf()
+        copy.value = this.value
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy

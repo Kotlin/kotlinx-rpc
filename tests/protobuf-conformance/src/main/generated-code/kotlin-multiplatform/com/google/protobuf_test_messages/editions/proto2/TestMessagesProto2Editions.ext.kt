@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.editions.proto2
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
@@ -1167,13 +1168,13 @@ var TestAllTypesProto2.Builder.extensionString: String?
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString)
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString, value) }
 
-val TestAllTypesProto2.extensionBytes: ByteArray? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+val TestAllTypesProto2.extensionBytes: ByteString? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
 
-val TestAllTypesProto2.Companion.extensionBytes: ProtoExtensionDescriptor<TestAllTypesProto2, ByteArray> get() = TestMessagesProto2EditionsKtExtensions.extensionBytes
+val TestAllTypesProto2.Companion.extensionBytes: ProtoExtensionDescriptor<TestAllTypesProto2, ByteString> get() = TestMessagesProto2EditionsKtExtensions.extensionBytes
 
 val TestAllTypesProto2Presence.hasExtensionBytes: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionBytes)
 
-var TestAllTypesProto2.Builder.extensionBytes: ByteArray?
+var TestAllTypesProto2.Builder.extensionBytes: ByteString?
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes, value) }
 

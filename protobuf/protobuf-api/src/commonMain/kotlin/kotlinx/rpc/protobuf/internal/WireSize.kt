@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.encodeToByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -66,6 +67,9 @@ public fun WireSize.enum(value: Int): Int = int32(value)
 
 @InternalRpcApi
 public fun WireSize.bytes(value: ByteArray): Int = value.size
+
+@InternalRpcApi
+public fun WireSize.bytes(value: ByteString): Int = value.size
 
 @InternalRpcApi
 public fun WireSize.string(value: String): Int = value.encodeToByteString().size

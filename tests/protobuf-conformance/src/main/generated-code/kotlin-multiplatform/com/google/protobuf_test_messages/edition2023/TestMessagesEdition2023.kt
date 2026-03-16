@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.edition2023
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -29,7 +30,7 @@ interface TestAllTypesEdition2023 {
     val optionalDouble: Double?
     val optionalBool: Boolean?
     val optionalString: String?
-    val optionalBytes: ByteArray?
+    val optionalBytes: ByteString?
     val optionalNestedMessage: NestedMessage
     val optionalForeignMessage: ForeignMessageEdition2023
     val optionalNestedEnum: NestedEnum?
@@ -54,7 +55,7 @@ interface TestAllTypesEdition2023 {
     val repeatedDouble: List<Double>
     val repeatedBool: List<Boolean>
     val repeatedString: List<String>
-    val repeatedBytes: List<ByteArray>
+    val repeatedBytes: List<ByteString>
     val repeatedNestedMessage: List<NestedMessage>
     val repeatedForeignMessage: List<ForeignMessageEdition2023>
     val repeatedNestedEnum: List<NestedEnum>
@@ -112,7 +113,7 @@ interface TestAllTypesEdition2023 {
     val mapInt32Double: Map<Int, Double>
     val mapBoolBool: Map<Boolean, Boolean>
     val mapStringString: Map<String, String>
-    val mapStringBytes: Map<String, ByteArray>
+    val mapStringBytes: Map<String, ByteString>
     val mapStringNestedMessage: Map<String, NestedMessage>
     val mapStringForeignMessage: Map<String, ForeignMessageEdition2023>
     val mapStringNestedEnum: Map<String, NestedEnum>
@@ -132,7 +133,7 @@ interface TestAllTypesEdition2023 {
         value class OneofString(val value: String): OneofField
 
         @JvmInline
-        value class OneofBytes(val value: ByteArray): OneofField
+        value class OneofBytes(val value: ByteString): OneofField
 
         @JvmInline
         value class OneofBool(val value: Boolean): OneofField

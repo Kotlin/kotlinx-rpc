@@ -14,7 +14,7 @@ class ToStringTest {
     fun noOptionals() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
         }
 
         assertEquals("""
@@ -35,8 +35,8 @@ class ToStringTest {
     fun withOptionals() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
-            optionalBytes = byteArrayOf(1, 2, 4)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
+            optionalBytes = byteArrayOf(1, 2, 4).asByteString()
             nested = ToString.Nested { }
             enum = ToString.SomeEnum.VALUE1
         }
@@ -61,7 +61,7 @@ class ToStringTest {
     fun list() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
             list = listOf("a", "b", "c")
         }
         assertEquals("""
@@ -82,7 +82,7 @@ class ToStringTest {
     fun map() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
             map = mapOf(1 to 1, 2 to 2, 3 to 3)
         }
         assertEquals("""
@@ -103,7 +103,7 @@ class ToStringTest {
     fun oneOf() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
             oneof = ToString.Oneof.Option1("option1_value")
         }
         assertEquals("""
@@ -121,7 +121,7 @@ class ToStringTest {
 
         val message2 = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
             oneof = ToString.Oneof.Option3(42)
         }
         assertEquals("""
@@ -142,7 +142,7 @@ class ToStringTest {
     fun recursive() {
         val message = ToString {
             text = "hello"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
             nested = ToString.Nested {
                 recursive = ToString.Nested {
                     recursive = ToString.Nested { }
