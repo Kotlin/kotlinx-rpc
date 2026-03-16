@@ -52,11 +52,13 @@ class UnknownFieldsTest {
 
         val roundTrippedDiscarded =
             grpcMarshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
-        assertEquals(null, roundTrippedDiscarded.intMissing)
+        assertFalse(roundTrippedDiscarded.presence.hasIntMissing)
+        assertEquals(0, roundTrippedDiscarded.intMissing)
         assertEquals(all.field1, roundTrippedDiscarded.field1)
         assertEquals(AllPrimitives {}, roundTrippedDiscarded.allPrimitivesMissing)
         assertFalse(roundTrippedDiscarded.presence.hasAllPrimitivesMissing)
-        assertEquals(null, roundTrippedDiscarded.enumMissing)
+        assertFalse(roundTrippedDiscarded.presence.hasEnumMissing)
+        assertEquals(MyEnum.ZERO, roundTrippedDiscarded.enumMissing)
         assertEquals(null, roundTrippedDiscarded.testOneof)
     }
 
