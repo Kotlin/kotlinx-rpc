@@ -123,6 +123,7 @@ class ModelToProtobufKotlinCommonGenerator(
             generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
+            generatePublicBuilderFieldClearFunctions(it)
         }
 
         // the presence interfaces are not generated in the flattened list
@@ -863,6 +864,26 @@ class ModelToProtobufKotlinCommonGenerator(
                 """.trimIndent()
             )
         )
+    }
+
+    private fun CodeGenerator.generatePublicBuilderFieldClearFunctions(msg: MessageDeclaration) {
+        msg.actualFields.forEach { field ->
+            // if the field must always be present, we don't have a clear function
+            if (field.presenceIdx == null) return
+
+            function(
+                name = "clear${field.name.capitalize()}",
+                contextReceiver = msg.builderClassName.scoped(),
+                returnType = "".scoped(),
+                comment = Comment.leading(
+                    """
+                        Clears the [${field.name}] field.
+                    """.trimIndent()
+                )
+            ) {
+                TODO("Clear field in internal message")
+            }
+        }
     }
 
     private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, packageName: FqName.Package) {
