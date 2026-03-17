@@ -25,7 +25,8 @@ class HideInternalRpcApiTransformer(context: DokkaContext) : SuppressedByConditi
     }
 
     private fun isInternalRpcAnnotation(annotation: Annotations.Annotation): Boolean {
-        return annotation.dri.packageName == "kotlinx.rpc.internal.utils"
-                && annotation.dri.classNames == "InternalRpcApi"
+        return annotation.dri.classNames == "InternalRpcApi"
+                && (annotation.dri.packageName == "kotlinx.rpc.internal.utils"
+                || annotation.dri.packageName == "kotlinx.rpc.internal")
     }
 }

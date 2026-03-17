@@ -15,6 +15,8 @@ dependencyResolutionManagement {
     // for tests
     includeBuild("../protoc-gen")
     includeBuild("../compiler-plugin")
+    // for Dokka
+    includeBuild("../dokka-plugin")
 }
 
 plugins {

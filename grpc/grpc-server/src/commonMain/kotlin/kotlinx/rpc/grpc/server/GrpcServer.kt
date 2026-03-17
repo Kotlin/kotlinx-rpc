@@ -47,7 +47,7 @@ public interface GrpcServer : RpcServer {
      * After this call returns, clients may begin connecting to the listening socket(s).
      * @return `this`
      * @throws IllegalStateException if already started or shut down
-     * @throws IOException if unable to bind
+     * Throws `IOException` if unable to bind.
      */
     // TODO, What is IOException in KMP? KRPC-163
     public fun start(): GrpcServer

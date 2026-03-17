@@ -74,6 +74,18 @@ if (gradle.parent != null && gradle.parent!!.startParameter.isDryRun) {
     gradle.startParameter.isDryRun = true
 }
 
+dokka {
+    moduleName = "Gradle Plugin"
+
+    // Distinct modulePath is required for included build aggregation with Dokka V2
+    modulePath.set("gradle-plugin")
+
+    // Gradle API classes are compileOnly, which may cause unresolved link warnings
+    dokkaPublications.configureEach {
+        failOnWarning = false
+    }
+}
+
 gradlePlugin {
     plugins {
         create("plugin") {

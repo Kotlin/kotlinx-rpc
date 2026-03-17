@@ -15,6 +15,7 @@ import kotlin.time.Duration
 /**
  * Platform-specific gRPC server builder.
  */
+@InternalRpcApi
 public actual typealias ServerBuilder<T> = io.grpc.ServerBuilder<T>
 
 @InternalRpcApi
