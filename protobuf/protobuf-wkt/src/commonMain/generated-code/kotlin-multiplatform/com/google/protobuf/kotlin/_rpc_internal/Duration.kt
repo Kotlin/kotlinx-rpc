@@ -25,6 +25,7 @@ import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 

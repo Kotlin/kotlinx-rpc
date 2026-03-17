@@ -23,6 +23,7 @@ import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
@@ -68,7 +69,7 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
         val builder = StringBuilder()
         builder.appendLine("Any(")
         builder.appendLine("${nextIndentString}typeUrl=${this.typeUrl},")
-        builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
+        builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
         builder.append("${indentString})")
         return builder.toString()
     }

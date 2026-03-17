@@ -8,6 +8,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
 import kotlinx.io.readByteArray
 import kotlinx.io.readString
 import kotlinx.io.writeString
@@ -722,7 +723,7 @@ class MetadataTest : GrpcTestBase() {
             uint64 = 222uL
             bool = true
             string = "complex data"
-            bytes = byteArrayOf(1, 2, 3, 4, 5)
+            bytes = ByteString(1, 2, 3, 4, 5)
         }
 
         metadata.appendBinary(key, complexValue)
@@ -736,7 +737,7 @@ class MetadataTest : GrpcTestBase() {
         assertEquals(222uL, result.uint64)
         assertEquals(true, result.bool)
         assertEquals("complex data", result.string)
-        assertContentEquals(byteArrayOf(1, 2, 3, 4, 5), result.bytes)
+        assertEquals(ByteString(1, 2, 3, 4, 5), result.bytes)
     }
 
     @Test
@@ -1005,7 +1006,7 @@ class MetadataTest : GrpcTestBase() {
                 float = 2.718f
                 bool = true
                 string = "Complex metadata"
-                bytes = byteArrayOf(10, 20, 30, 40, 50)
+                bytes = ByteString(10, 20, 30, 40, 50)
                 uint32 = 100u
                 uint64 = 200uL
                 sint32 = -50
@@ -1075,7 +1076,7 @@ class MetadataTest : GrpcTestBase() {
             assertEquals(2.718f, data.float)
             assertEquals(true, data.bool)
             assertEquals("Complex metadata", data.string)
-            assertContentEquals(byteArrayOf(10, 20, 30, 40, 50), data.bytes)
+            assertEquals(ByteString(10, 20, 30, 40, 50), data.bytes)
             assertEquals(100u, data.uint32)
             assertEquals(200uL, data.uint64)
             assertEquals(-50, data.sint32)

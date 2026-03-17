@@ -8,6 +8,7 @@ import Other
 import ReferenceTestService
 import References
 import invoke
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Nested
@@ -242,13 +243,13 @@ class TestReferenceService : GrpcTestBase() {
                 field = 42
             })
             mixed = OneOf.Mixed.Int64(42L)
-            single = OneOf.Single.Bytes(byteArrayOf(42))
+            single = OneOf.Single.Bytes(ByteString(42))
         })
 
         assertEquals("42", (result1.primitives as OneOf.Primitives.StringValue).value)
         assertEquals(42, (result1.references as OneOf.References.Other).value.field)
         assertEquals(42L, (result1.mixed as OneOf.Mixed.Int64).value)
-        assertContentEquals(byteArrayOf(42), (result1.single as OneOf.Single.Bytes).value)
+        assertEquals(ByteString(42), (result1.single as OneOf.Single.Bytes).value)
 
         val result2 = service.OneOf(OneOf {
             primitives = OneOf.Primitives.Bool(true)

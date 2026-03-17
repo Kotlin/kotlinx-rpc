@@ -28,6 +28,7 @@ import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.float
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
@@ -799,7 +800,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("BytesValue(")
-        builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
+        builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
         builder.append("${indentString})")
         return builder.toString()
     }

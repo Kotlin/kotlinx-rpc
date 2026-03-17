@@ -48,6 +48,7 @@ import kotlinx.rpc.protobuf.internal.packedSInt32
 import kotlinx.rpc.protobuf.internal.packedSInt64
 import kotlinx.rpc.protobuf.internal.packedUInt32
 import kotlinx.rpc.protobuf.internal.packedUInt64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.sFixed32
 import kotlinx.rpc.protobuf.internal.sFixed64
 import kotlinx.rpc.protobuf.internal.sInt32
@@ -685,7 +686,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         if (presenceMask[14]) {
-            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes?.toByteArray().contentToString()},")
+            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes?.protoToString()},")
         } else {
             builder.appendLine("${nextIndentString}optionalBytes=<unset>,")
         }
@@ -2206,7 +2207,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             }
 
             if (presenceMask[1]) {
-                builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
+                builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
             }

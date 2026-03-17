@@ -301,6 +301,7 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         internalImports.add("kotlinx.io.bytestring.isNotEmpty")
+        internalImports.add("kotlinx.rpc.protobuf.internal.protoToString")
     }
 
     private fun CodeGenerator.generateCompanionObject() {
@@ -581,9 +582,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 val suffix = when (it.type) {
                     FieldType.IntegralType.BYTES -> {
                         val nullable = if (it.nullable) "?" else ""
-                        // I would prefer `.toHexString()` but it is it depends on experimental
-                        // stdlib API introduced in Kotlin 2.2 (KRPC-281)
-                        "$nullable.toByteArray().contentToString()"
+                        "$nullable.protoToString()"
                     }
 
                     is FieldType.Message -> {

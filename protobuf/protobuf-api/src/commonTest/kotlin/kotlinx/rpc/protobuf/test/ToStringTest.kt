@@ -20,7 +20,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
@@ -44,8 +44,8 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
-                optionalBytes=[1, 2, 4],
+                bytes=01 02 03,
+                optionalBytes=01 02 04,
                 nested=ToString.Nested(
                     recursive=<unset>,
                 ),
@@ -67,7 +67,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
@@ -88,7 +88,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
@@ -109,7 +109,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
@@ -127,7 +127,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
@@ -153,7 +153,7 @@ class ToStringTest {
         assertEquals("""
             ToString(
                 text=hello,
-                bytes=[1, 2, 3],
+                bytes=01 02 03,
                 optionalBytes=<unset>,
                 nested=ToString.Nested(
                     recursive=ToString.Nested(

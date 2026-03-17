@@ -12,7 +12,6 @@ import kotlinx.io.bytestring.ByteString
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue

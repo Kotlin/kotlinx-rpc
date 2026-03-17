@@ -18,6 +18,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
+import kotlinx.rpc.protobuf.internal.protoToString
 
 public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi

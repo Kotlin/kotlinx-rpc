@@ -22,6 +22,7 @@ import kotlinx.rpc.protobuf.internal.bytes
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 

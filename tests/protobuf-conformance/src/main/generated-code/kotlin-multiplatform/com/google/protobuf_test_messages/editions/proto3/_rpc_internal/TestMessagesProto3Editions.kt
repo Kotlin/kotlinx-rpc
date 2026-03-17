@@ -84,6 +84,7 @@ import kotlinx.rpc.protobuf.internal.packedSInt32
 import kotlinx.rpc.protobuf.internal.packedSInt64
 import kotlinx.rpc.protobuf.internal.packedUInt32
 import kotlinx.rpc.protobuf.internal.packedUInt64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.sFixed32
 import kotlinx.rpc.protobuf.internal.sFixed64
 import kotlinx.rpc.protobuf.internal.sInt32
@@ -675,7 +676,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}optionalDouble=${this.optionalDouble},")
         builder.appendLine("${nextIndentString}optionalBool=${this.optionalBool},")
         builder.appendLine("${nextIndentString}optionalString=${this.optionalString},")
-        builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.toByteArray().contentToString()},")
+        builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.protoToString()},")
         if (presenceMask[0]) {
             builder.appendLine("${nextIndentString}optionalNestedMessage=${this.optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
         } else {
@@ -2083,7 +2084,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto3.MapStringBytesEntry(")
             builder.appendLine("${nextIndentString}key=${this.key},")
-            builder.appendLine("${nextIndentString}value=${this.value.toByteArray().contentToString()},")
+            builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
             builder.append("${indentString})")
             return builder.toString()
         }
