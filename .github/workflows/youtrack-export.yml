@@ -24,6 +24,24 @@ jobs:
             echo "yt_type=Task" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Ensure github-issue tag exists
+        run: |
+          # Create the tag if it doesn't exist (409 = already exists, which is fine)
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name": "github-issue"}' \
+            "$YOUTRACK_URL/api/tags")
+
+          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
+            echo "Created 'github-issue' tag"
+          elif [ "$HTTP_CODE" -eq 409 ]; then
+            echo "'github-issue' tag already exists"
+          else
+            echo "::warning::Failed to ensure tag exists (HTTP $HTTP_CODE), tagging step may fail"
+          fi
+
       - name: Create YouTrack issue
         id: create-issue
         env:
@@ -32,7 +50,7 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
           YT_TYPE: ${{ steps.map-type.outputs.yt_type }}
         run: |
-          DESCRIPTION="$(printf '%s\n\n---\nOriginal GitHub issue: %s' "$ISSUE_BODY" "$ISSUE_URL")"
+          DESCRIPTION="$(printf 'Original GitHub issue: %s\n\n---\n\n%s' "$ISSUE_URL" "$ISSUE_BODY")"
 
           PAYLOAD=$(jq -n \
             --arg summary "[GitHub] $ISSUE_TITLE" \
