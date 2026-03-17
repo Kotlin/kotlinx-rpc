@@ -43,7 +43,7 @@ kotlin {
             }
 
             proto {
-                // hack until proper imports are done
+                // hack until proper imports are done: KRPC-238
                 fileImports.from(
                     JavaPath.of(
                         globalRootDir,
