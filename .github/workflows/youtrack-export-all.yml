@@ -12,18 +12,53 @@ jobs:
       YOUTRACK_TOKEN: ${{ secrets.YOUTRACK_TOKEN }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: Resolve github-issue tag ID
+        id: resolve-tag
+        run: |
+          TAG_ID=$(curl -sf \
+            -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+            "$YOUTRACK_URL/api/tags?fields=id,name&query=github-issue" \
+            | jq -r '.[0].id')
+
+          if [ -z "$TAG_ID" ] || [ "$TAG_ID" = "null" ]; then
+            echo "Tag not found, creating..."
+            TAG_ID=$(curl -sf \
+              -X POST \
+              -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"name": "github-issue"}' \
+              "$YOUTRACK_URL/api/tags?fields=id" \
+              | jq -r '.id')
+          fi
+
+          echo "tag_id=$TAG_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag ID: $TAG_ID"
+
       - name: Fetch and export all issues
+        shell: bash {0}
+        env:
+          TAG_ID: ${{ steps.resolve-tag.outputs.tag_id }}
         run: |
           PAGE=1
           EXPORTED=0
           SKIPPED=0
           FAILED=0
 
+          echo "Fetching issues from ${{ github.repository }}..."
+
           while true; do
-            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=all&per_page=100&page=$PAGE&sort=created&direction=asc" \
+            echo "--- Fetching page $PAGE ---"
+            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=open&per_page=100&page=$PAGE&sort=created&direction=asc" \
               --jq '[.[] | select(.pull_request == null)]')
 
+            if [ $? -ne 0 ]; then
+              echo "::error::Failed to fetch issues page $PAGE"
+              exit 1
+            fi
+
             COUNT=$(echo "$ISSUES" | jq 'length')
+            echo "Found $COUNT issue(s) on page $PAGE"
+
             if [ "$COUNT" -eq 0 ]; then
               break
             fi
@@ -36,6 +71,16 @@ jobs:
               ISSUE_NUMBER=$(echo "$ISSUE" | jq -r '.number')
               LABELS=$(echo "$ISSUE" | jq -r '[.labels[].name] | join(",")')
 
+              echo ""
+              echo "Processing issue #$ISSUE_NUMBER: '$ISSUE_TITLE' [labels: $LABELS]"
+
+              # Skip Dependency Dashboard (issue #8)
+              if [ "$ISSUE_NUMBER" = "8" ]; then
+                echo "  -> Skipping (Dependency Dashboard)"
+                SKIPPED=$((SKIPPED + 1))
+                continue
+              fi
+
               # Map type
               if echo "$LABELS" | grep -q "bug"; then
                 YT_TYPE="Bug"
@@ -44,23 +89,25 @@ jobs:
               else
                 YT_TYPE="Task"
               fi
+              echo "  -> Mapped type: $YT_TYPE"
 
               # Check if already exported by searching YouTrack
-              SEARCH_RESULT=$(curl -sf \
+              echo "  -> Checking for duplicates in YouTrack..."
+              SEARCH_RESULT=$(curl -s \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -G --data-urlencode "query=project: KRPC tag: github-issue summary: [GitHub] $ISSUE_TITLE" \
-                "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1" 2>/dev/null || echo "[]")
+                "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1")
 
-              EXISTING=$(echo "$SEARCH_RESULT" | jq 'length')
+              EXISTING=$(echo "$SEARCH_RESULT" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
               if [ "$EXISTING" -gt 0 ]; then
                 EXISTING_ID=$(echo "$SEARCH_RESULT" | jq -r '.[0].idReadable')
-                echo "Skipping issue #$ISSUE_NUMBER ('$ISSUE_TITLE') — already exists as $EXISTING_ID"
+                echo "  -> Skipping (already exists as $EXISTING_ID)"
                 SKIPPED=$((SKIPPED + 1))
                 continue
               fi
 
               # Create issue
-              DESCRIPTION="$(printf '%s\n\n---\nOriginal GitHub issue: %s' "$ISSUE_BODY" "$ISSUE_URL")"
+              DESCRIPTION="$(printf 'Original GitHub issue: %s\n\n---\n\n%s' "$ISSUE_URL" "$ISSUE_BODY")"
 
               PAYLOAD=$(jq -n \
                 --arg summary "[GitHub] $ISSUE_TITLE" \
@@ -84,30 +131,45 @@ jobs:
                   ]
                 }')
 
-              RESPONSE=$(curl -sf \
+              echo "  -> Creating YouTrack issue..."
+              RESPONSE=$(curl -s -w "\n%{http_code}" \
                 -X POST \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -H "Content-Type: application/json" \
                 -d "$PAYLOAD" \
-                "$YOUTRACK_URL/api/issues?fields=idReadable" 2>/dev/null)
+                "$YOUTRACK_URL/api/issues?fields=idReadable")
 
-              if [ $? -ne 0 ] || [ -z "$RESPONSE" ]; then
-                echo "Failed to create YouTrack issue for #$ISSUE_NUMBER ('$ISSUE_TITLE')"
+              HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+              BODY=$(echo "$RESPONSE" | sed '$d')
+
+              if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+                echo "  -> FAILED to create (HTTP $HTTP_CODE): $BODY"
                 FAILED=$((FAILED + 1))
                 continue
               fi
 
-              YT_ID=$(echo "$RESPONSE" | jq -r '.idReadable')
+              YT_ID=$(echo "$BODY" | jq -r '.idReadable')
+              echo "  -> Created: $YT_ID"
 
               # Tag issue
-              curl -sf \
+              echo "  -> Tagging $YT_ID with 'github-issue' (tag ID: $TAG_ID)..."
+              TAG_RESPONSE=$(curl -s -w "\n%{http_code}" \
                 -X POST \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -H "Content-Type: application/json" \
-                -d '{"name": "github-issue"}' \
-                "$YOUTRACK_URL/api/issues/$YT_ID/tags" > /dev/null 2>&1
+                -d "{\"id\": \"$TAG_ID\"}" \
+                "$YOUTRACK_URL/api/issues/$YT_ID/tags")
 
-              echo "Exported issue #$ISSUE_NUMBER ('$ISSUE_TITLE') → $YT_ID (Type: $YT_TYPE)"
+              TAG_HTTP=$(echo "$TAG_RESPONSE" | tail -1)
+              TAG_BODY=$(echo "$TAG_RESPONSE" | sed '$d')
+
+              if [ "$TAG_HTTP" -lt 200 ] || [ "$TAG_HTTP" -ge 300 ]; then
+                echo "  -> WARNING: Failed to tag $YT_ID (HTTP $TAG_HTTP): $TAG_BODY"
+              else
+                echo "  -> Tagged successfully"
+              fi
+
+              echo "  -> Exported #$ISSUE_NUMBER -> $YT_ID (Type: $YT_TYPE)"
               EXPORTED=$((EXPORTED + 1))
             done
 
@@ -117,7 +179,7 @@ jobs:
           echo ""
           echo "=== Export Summary ==="
           echo "Exported: $EXPORTED"
-          echo "Skipped (already exist): $SKIPPED"
+          echo "Skipped: $SKIPPED"
           echo "Failed: $FAILED"
 
           if [ "$FAILED" -gt 0 ]; then
