@@ -10,7 +10,6 @@ import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 

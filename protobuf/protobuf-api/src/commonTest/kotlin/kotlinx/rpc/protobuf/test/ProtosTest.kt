@@ -11,8 +11,6 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.io.bytestring.ByteString
-import kotlinx.io.bytestring.toHexString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.internal.ProtobufDecodingException

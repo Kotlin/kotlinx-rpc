@@ -5,7 +5,6 @@
 package kotlinx.rpc.protobuf.internal
 
 import com.google.protobuf.CodedOutputStream
-import com.google.protobuf.UnsafeByteOperations
 import kotlinx.io.IOException
 import kotlinx.io.Sink
 import kotlinx.io.asOutputStream
