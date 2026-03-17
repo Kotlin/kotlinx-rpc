@@ -13,6 +13,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 /**
  * Platform-specific gRPC server builder.
  */
+@InternalRpcApi
 public actual abstract class ServerBuilder<T : ServerBuilder<T>> {
     public actual abstract fun addService(service: GrpcServerServiceDefinition): T
 

@@ -24,7 +24,7 @@ dokka {
 
     dokkaSourceSets.configureEach {
         sourceLink {
-            localDirectory = rootDir
+            localDirectory = file(globalRootDir)
             remoteUrl("https://github.com/Kotlin/kotlinx-rpc/blob/${libs.versions.kotlinx.rpc.get()}")
             remoteLineSuffix = "#L"
 

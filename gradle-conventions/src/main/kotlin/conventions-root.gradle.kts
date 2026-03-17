@@ -63,6 +63,7 @@ dokka {
 
 dependencies {
     dokkaPlugin(libs.dokka.rpc.plugin)
+    dokka("org.jetbrains.kotlinx:gradle-plugin")
 }
 
 configureNpm()
@@ -99,3 +100,4 @@ tasks.register<CheckExecutableTask>("checkBazel") {
     exec = "bazel"
     helpMessage = "Install Bazel: https://bazel.build/"
 }
+

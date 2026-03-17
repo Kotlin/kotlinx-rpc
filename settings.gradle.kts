@@ -27,6 +27,7 @@ dependencyResolutionManagement {
     includeBuild("compiler-plugin")
     includeBuild("dokka-plugin")
     includeBuild("protoc-gen")
+    includeBuild("gradle-plugin")
 }
 
 include(":protobuf")

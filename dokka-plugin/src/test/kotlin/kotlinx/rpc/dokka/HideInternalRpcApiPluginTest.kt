@@ -44,4 +44,40 @@ class HideInternalRpcApiPluginTest : BaseAbstractTest() {
             }
         }
     }
+
+    @Test
+    fun `should hide annotated functions from gradle-plugin internal package`() {
+        val configuration = dokkaConfiguration {
+            sourceSets {
+                sourceSet {
+                    sourceRoots = listOf("src/main/kotlin/basic/Test.kt")
+                }
+            }
+        }
+
+        testInline(
+            """
+            |/src/main/kotlin/basic/Test.kt
+            |package kotlinx.rpc.internal
+            |
+            |annotation class InternalRpcApi
+            |
+            |fun shouldBeVisible() {}
+            |
+            |@InternalRpcApi
+            |fun shouldBeExcludedFromDocumentation() {}
+        """.trimMargin(),
+            configuration = configuration,
+            pluginOverrides = listOf(RpcDokkaPlugin())
+        ) {
+            preMergeDocumentablesTransformationStage = { modules ->
+                val testModule = modules.single { it.name == "root" }
+                val testPackage = testModule.packages.single { it.name == "kotlinx.rpc.internal" }
+
+                val packageFunctions = testPackage.functions
+                assertEquals(1, packageFunctions.size)
+                assertEquals("shouldBeVisible", packageFunctions[0].name)
+            }
+        }
+    }
 }
