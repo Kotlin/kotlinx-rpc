@@ -36,7 +36,8 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var fileName: String by MsgFieldDelegate { "" }
+    internal val __fileNameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var fileName: String by __fileNameDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -114,7 +115,9 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: SourceContext by lazy { SourceContextInternal() }
+    }
 }
 
 @InternalRpcApi

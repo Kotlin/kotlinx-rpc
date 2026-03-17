@@ -103,7 +103,9 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Empty by lazy { EmptyInternal() }
+    }
 }
 
 @InternalRpcApi

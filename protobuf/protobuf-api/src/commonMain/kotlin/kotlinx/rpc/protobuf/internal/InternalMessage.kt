@@ -91,11 +91,23 @@ public class MsgFieldDelegate<T>(
     private var valueSet = false
     private var value: T? = null
 
+    private fun storeValue(thisRef: InternalMessage, value: T) {
+        presenceIdx?.let { thisRef.presenceMask[it] = true }
+        this.value = value
+        valueSet = true
+    }
+
+    override operator fun setValue(thisRef: InternalMessage, property: KProperty<*>, value: T) {
+        storeValue(thisRef, value)
+    }
+
+    /**
+     * Returns the set value or the default if not set.
+     */
     override operator fun getValue(thisRef: InternalMessage, property: KProperty<*>): T {
         if (!valueSet) {
             if (defaultProvider != null) {
-                value = defaultProvider.invoke()
-                valueSet = true
+                return defaultProvider.invoke()
             } else {
                 error("Property ${property.name} not initialized")
             }
@@ -104,10 +116,18 @@ public class MsgFieldDelegate<T>(
         return value as T
     }
 
-    override operator fun setValue(thisRef: InternalMessage, property: KProperty<*>, value: T) {
-        presenceIdx?.let { thisRef.presenceMask[it] = true }
-        this@MsgFieldDelegate.value = value
-        valueSet = true
+    /**
+     * Gets the value if set, otherwise create a new instance from the [factory].
+     * This is used during decoding to create a new instance or merge with the existing one.
+     * It will also set the presence of the field.
+     */
+    public fun getOrCreate(thisRef: InternalMessage, factory: () -> T): T {
+        if (!valueSet) {
+            storeValue(thisRef, factory())
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return value as T
     }
 }
 

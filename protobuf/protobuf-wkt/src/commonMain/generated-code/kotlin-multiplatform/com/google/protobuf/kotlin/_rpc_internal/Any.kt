@@ -37,8 +37,10 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var typeUrl: String by MsgFieldDelegate { "" }
-    public override var value: ByteString by MsgFieldDelegate { ByteString() }
+    internal val __typeUrlDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var typeUrl: String by __typeUrlDelegate
+    internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate { ByteString() }
+    public override var value: ByteString by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -120,7 +122,9 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Any by lazy { AnyInternal() }
+    }
 }
 
 @InternalRpcApi

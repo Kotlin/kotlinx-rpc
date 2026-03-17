@@ -39,9 +39,12 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var name: String by MsgFieldDelegate { "" }
-    override var failureMessage: String by MsgFieldDelegate { "" }
-    override var matchedName: String by MsgFieldDelegate { "" }
+    internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var name: String by __nameDelegate
+    internal val __failureMessageDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var failureMessage: String by __failureMessageDelegate
+    internal val __matchedNameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var matchedName: String by __matchedNameDelegate
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -127,7 +130,9 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: TestStatus by lazy { TestStatusInternal() }
+    }
 }
 
 class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -140,7 +145,8 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var test: List<TestStatus> by MsgFieldDelegate { mutableListOf() }
+    internal val __testDelegate: MsgFieldDelegate<List<TestStatus>> = MsgFieldDelegate { emptyList() }
+    override var test: List<TestStatus> by __testDelegate
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -218,7 +224,9 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: FailureSet by lazy { FailureSetInternal() }
+    }
 }
 
 class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 1) {
@@ -235,11 +243,16 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var requestedOutputFormat: WireFormat by MsgFieldDelegate { WireFormat.UNSPECIFIED }
-    override var messageType: String by MsgFieldDelegate { "" }
-    override var testCategory: TestCategory by MsgFieldDelegate { TestCategory.UNSPECIFIED_TEST }
-    override var jspbEncodingOptions: JspbEncodingConfig by MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { JspbEncodingConfigInternal() }
-    override var printUnknownFields: Boolean by MsgFieldDelegate { false }
+    internal val __requestedOutputFormatDelegate: MsgFieldDelegate<WireFormat> = MsgFieldDelegate { WireFormat.UNSPECIFIED }
+    override var requestedOutputFormat: WireFormat by __requestedOutputFormatDelegate
+    internal val __messageTypeDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var messageType: String by __messageTypeDelegate
+    internal val __testCategoryDelegate: MsgFieldDelegate<TestCategory> = MsgFieldDelegate { TestCategory.UNSPECIFIED_TEST }
+    override var testCategory: TestCategory by __testCategoryDelegate
+    internal val __jspbEncodingOptionsDelegate: MsgFieldDelegate<JspbEncodingConfig> = MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { JspbEncodingConfigInternal.DEFAULT }
+    override var jspbEncodingOptions: JspbEncodingConfig by __jspbEncodingOptionsDelegate
+    internal val __printUnknownFieldsDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    override var printUnknownFields: Boolean by __printUnknownFieldsDelegate
     override var payload: ConformanceRequest.Payload? = null
 
     private val _owner: ConformanceRequestInternal = this
@@ -372,7 +385,9 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: ConformanceRequest by lazy { ConformanceRequestInternal() }
+    }
 }
 
 class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -484,7 +499,9 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: ConformanceResponse by lazy { ConformanceResponseInternal() }
+    }
 }
 
 class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -497,7 +514,8 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var useJspbArrayAnyFormat: Boolean by MsgFieldDelegate { false }
+    internal val __useJspbArrayAnyFormatDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    override var useJspbArrayAnyFormat: Boolean by __useJspbArrayAnyFormatDelegate
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -575,7 +593,9 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: JspbEncodingConfig by lazy { JspbEncodingConfigInternal() }
+    }
 }
 
 @InternalRpcApi
@@ -696,9 +716,10 @@ fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: Wi
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__testDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestStatusInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> TestStatusInternal.decodeWith(msg, decoder, config) })
-                (msg.test as MutableList).add(elem)
+                target.add(elem)
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -808,11 +829,8 @@ fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInter
                 msg.testCategory = TestCategory.fromNumber(decoder.readEnum())
             }
             tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.jspbEncodingOptions = JspbEncodingConfigInternal()
-                }
-
-                decoder.readMessage(msg.jspbEncodingOptions.asInternal(), { msg, decoder -> JspbEncodingConfigInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__jspbEncodingOptionsDelegate.getOrCreate(msg) { JspbEncodingConfigInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> JspbEncodingConfigInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 9 && tag.wireType == WireType.VARINT -> {
                 msg.printUnknownFields = decoder.readBool()

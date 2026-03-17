@@ -49,13 +49,20 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var name: String by MsgFieldDelegate { "" }
-    public override var methods: List<Method> by MsgFieldDelegate { mutableListOf() }
-    public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
-    public override var version: String by MsgFieldDelegate { "" }
-    public override var sourceContext: SourceContext by MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal() }
-    public override var mixins: List<Mixin> by MsgFieldDelegate { mutableListOf() }
-    public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var name: String by __nameDelegate
+    internal val __methodsDelegate: MsgFieldDelegate<List<Method>> = MsgFieldDelegate { emptyList() }
+    public override var methods: List<Method> by __methodsDelegate
+    internal val __optionsDelegate: MsgFieldDelegate<List<Option>> = MsgFieldDelegate { emptyList() }
+    public override var options: List<Option> by __optionsDelegate
+    internal val __versionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var version: String by __versionDelegate
+    internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
+    public override var sourceContext: SourceContext by __sourceContextDelegate
+    internal val __mixinsDelegate: MsgFieldDelegate<List<Mixin>> = MsgFieldDelegate { emptyList() }
+    public override var mixins: List<Mixin> by __mixinsDelegate
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    public override var syntax: Syntax by __syntaxDelegate
 
     private val _owner: ApiInternal = this
 
@@ -175,7 +182,9 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Api by lazy { ApiInternal() }
+    }
 }
 
 public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -188,13 +197,20 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var name: String by MsgFieldDelegate { "" }
-    public override var requestTypeUrl: String by MsgFieldDelegate { "" }
-    public override var requestStreaming: Boolean by MsgFieldDelegate { false }
-    public override var responseTypeUrl: String by MsgFieldDelegate { "" }
-    public override var responseStreaming: Boolean by MsgFieldDelegate { false }
-    public override var options: List<Option> by MsgFieldDelegate { mutableListOf() }
-    public override var syntax: Syntax by MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var name: String by __nameDelegate
+    internal val __requestTypeUrlDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var requestTypeUrl: String by __requestTypeUrlDelegate
+    internal val __requestStreamingDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    public override var requestStreaming: Boolean by __requestStreamingDelegate
+    internal val __responseTypeUrlDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var responseTypeUrl: String by __responseTypeUrlDelegate
+    internal val __responseStreamingDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    public override var responseStreaming: Boolean by __responseStreamingDelegate
+    internal val __optionsDelegate: MsgFieldDelegate<List<Option>> = MsgFieldDelegate { emptyList() }
+    public override var options: List<Option> by __optionsDelegate
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    public override var syntax: Syntax by __syntaxDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -296,7 +312,9 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Method by lazy { MethodInternal() }
+    }
 }
 
 public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -309,8 +327,10 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var name: String by MsgFieldDelegate { "" }
-    public override var root: String by MsgFieldDelegate { "" }
+    internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var name: String by __nameDelegate
+    internal val __rootDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var root: String by __rootDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -392,7 +412,9 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Mixin by lazy { MixinInternal() }
+    }
 }
 
 @InternalRpcApi
@@ -469,29 +491,29 @@ public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecod
                 msg.name = decoder.readString()
             }
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__methodsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = MethodInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> MethodInternal.decodeWith(msg, decoder, config) })
-                (msg.methods as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
-                (msg.options as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.version = decoder.readString()
             }
             tag.fieldNr == 5 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.sourceContext = SourceContextInternal()
-                }
-
-                decoder.readMessage(msg.sourceContext.asInternal(), { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mixinsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = MixinInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> MixinInternal.decodeWith(msg, decoder, config) })
-                (msg.mixins as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 7 && tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
@@ -627,9 +649,10 @@ public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: Wir
                 msg.responseStreaming = decoder.readBool()
             }
             tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
-                (msg.options as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 7 && tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())

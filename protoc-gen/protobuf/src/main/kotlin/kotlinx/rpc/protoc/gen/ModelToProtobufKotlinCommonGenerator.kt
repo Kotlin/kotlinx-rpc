@@ -223,52 +223,8 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "null".scoped(),
             )
 
-            val override = if (declaration.isUserFacing) "override" else ""
             declaration.actualFields.forEachIndexed { i, field ->
-                val value = when {
-                    field.nullable && field.presenceIdx == null -> {
-                        "null".scoped()
-                    }
-
-                    field.type is FieldType.Message -> {
-                        "%T(%T.${field.name}) { %T() }".scoped(
-                            FqName.RpcClasses.MsgFieldDelegate,
-                            declaration.presenceIndicesName,
-                            (field.type as FieldType.Message).dec.value.internalClassName,
-                        )
-                    }
-
-                    else -> {
-                        val fieldPresence = if (field.presenceIdx != null) {
-                            "(%T.${field.name})".scoped(declaration.presenceIndicesName)
-                        } else {
-                            ScopedFormattedString.empty
-                        }
-
-                        FqName.RpcClasses.MsgFieldDelegate
-                            .scoped()
-                            .merge(
-                                other = fieldPresence,
-                                another = field.safeDefaultValue(declaration),
-                            ) { msgFieldDelegate, fieldPresence, fieldDefault ->
-                                "$msgFieldDelegate$fieldPresence { $fieldDefault }"
-                            }
-                    }
-                }
-
-                property(
-                    name = field.name,
-                    modifiers = override,
-                    value = value,
-                    isVar = true,
-                    type = field.typeFqName(),
-                    propertyInitializer = if (field.nullable && field.presenceIdx == null) {
-                        CodeGenerator.PropertyInitializer.PLAIN
-                    } else {
-                        CodeGenerator.PropertyInitializer.DELEGATE
-                    },
-                    needsNewLineAfterDeclaration = i == declaration.actualFields.lastIndex,
-                )
+                generatedInternalFieldPropertyDeclaration(i, field, declaration)
             }
 
             generateInternalPresenceObjectProperty(declaration)
@@ -285,8 +241,67 @@ class ModelToProtobufKotlinCommonGenerator(
 
             generateMarshallerObject(declaration)
             generateDescriptorObject(declaration)
-            generateCompanionObject()
+            generateCompanionObject(declaration)
         }
+    }
+
+    private fun CodeGenerator.generatedInternalFieldPropertyDeclaration(index: Int, field: FieldDeclaration, msg: MessageDeclaration) {
+        val isOneOfField = field.type is FieldType.OneOf
+        val override = if (msg.isUserFacing) "override" else ""
+        val value = when {
+            isOneOfField -> {
+                "null".scoped()
+            }
+
+            else -> {
+                val fieldPresence = if (field.presenceIdx != null) {
+                    "(%T.${field.name})".scoped(msg.presenceIndicesName)
+                } else {
+                    ScopedFormattedString.empty
+                }
+
+                FqName.RpcClasses.MsgFieldDelegate
+                    .scoped()
+                    .merge(
+                        other = fieldPresence,
+                        another = field.safeDefaultValue(msg),
+                    ) { msgFieldDelegate, fieldPresence, fieldDefault ->
+                        "$msgFieldDelegate$fieldPresence { $fieldDefault }"
+                    }
+            }
+        }
+
+        val delegateType = FqName.RpcClasses.MsgFieldDelegate.scoped()
+            .merge(field.typeFqName()) { msgFieldDelegate, fieldFqName ->
+            "$msgFieldDelegate<$fieldFqName>"
+        }
+
+        if (!isOneOfField) {
+            // create a delegate and store it using __<name>Delegate
+            property(
+                name = field.internalDelegateName,
+                modifiers = "internal",
+                type = delegateType,
+                value = value,
+                needsNewLineAfterDeclaration = false
+            )
+        }
+
+        val propertyValue = if (isOneOfField) value else field.internalDelegateName.scoped()
+
+        property(
+            name = field.name,
+            modifiers = override,
+            value = propertyValue,
+            isVar = true,
+            type = field.typeFqName(),
+            propertyInitializer = if (isOneOfField) {
+                CodeGenerator.PropertyInitializer.PLAIN
+            } else {
+                CodeGenerator.PropertyInitializer.DELEGATE
+            },
+            needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
+        )
     }
 
     /**
@@ -319,13 +334,15 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateCompanionObject() {
+    private fun CodeGenerator.generateCompanionObject(declaration: MessageDeclaration) {
         clazz(
             name = "",
             modifiers = "companion",
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object
-        )
+        ) {
+            generateMessageDefault(declaration)
+        }
     }
 
     private fun CodeGenerator.generateHashCode(declaration: MessageDeclaration) {
@@ -1045,6 +1062,17 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
+    private fun CodeGenerator.generateMessageDefault(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+
+        property(
+            name = "DEFAULT",
+            type = declaration.name.scoped(),
+            propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
+            value = "lazy { %T() }".scoped(declaration.internalClassName),
+        )
+    }
+
     private fun CodeGenerator.generateMarshallerObject(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
 
@@ -1267,6 +1295,30 @@ class ModelToProtobufKotlinCommonGenerator(
         wrapperCtor: (ScopedFormattedString) -> ScopedFormattedString = { it },
         beforeValueDecoding: CodeGenerator.() -> Unit = {},
     ) {
+        fun CodeGenerator.repeatedDecodeTarget(): ScopedFormattedString {
+            code(
+                "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { mutableListOf() } as %T"
+                    .scoped(FqName.Implicits.MutableList)
+            )
+            return "target".scoped()
+        }
+
+        fun CodeGenerator.mapDecodeTarget(): ScopedFormattedString {
+            code(
+                "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { mutableMapOf() } as %T"
+                    .scoped(FqName.Implicits.MutableMap)
+            )
+            return "target".scoped()
+        }
+
+        fun CodeGenerator.messageDecodeTarget(internalClassName: FqName.Declaration): ScopedFormattedString {
+            if (field.isPartOfOneof) return lvalue
+
+            code("val target = msg.${field.internalDelegateName}.getOrCreate(msg) { %T() }"
+                .scoped(internalClassName))
+            return "target".scoped()
+        }
+
         when (val fieldType = field.type) {
             is FieldType.IntegralType -> whenCase(
                 "tag.fieldNr == ${field.number} && tag.wireType == %T"
@@ -1285,8 +1337,9 @@ class ModelToProtobufKotlinCommonGenerator(
                         "tag.fieldNr == ${field.number} && tag.wireType == %T"
                             .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
                     ) {
+                        val target = repeatedDecodeTarget()
                         beforeValueDecoding()
-                        generateDecodeFieldValue(fieldType, lvalue, isPacked = true, wrapperCtor = wrapperCtor)
+                        generateDecodeFieldValue(fieldType, target, isPacked = true, wrapperCtor = wrapperCtor)
                     }
                 }
 
@@ -1294,8 +1347,9 @@ class ModelToProtobufKotlinCommonGenerator(
                     "tag.fieldNr == ${field.number} && tag.wireType == %T"
                         .scoped(FqName.RpcClasses.WireType.nested(fieldType.value.wireType.name))
                 ) {
+                    val target = repeatedDecodeTarget()
                     beforeValueDecoding()
-                    generateDecodeFieldValue(fieldType, lvalue, isPacked = false, wrapperCtor = wrapperCtor)
+                    generateDecodeFieldValue(fieldType, target, isPacked = false, wrapperCtor = wrapperCtor)
                 }
             }
 
@@ -1354,19 +1408,9 @@ class ModelToProtobufKotlinCommonGenerator(
                     "tag.fieldNr == ${field.number} && tag.wireType == %T"
                         .scoped(FqName.RpcClasses.WireType.nested(fieldType.wireType.name))
                 ) {
-                    if (field.presenceIdx != null) {
-                        // check if the current sub message object was already set, if not, set a new one
-                        // to set the field's presence tracker to true
-                        ifBranch(condition = "!msg.presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                            code(
-                                lvalue.merge(fieldType.dec.value.internalClassName.scoped()) { lvalue, internalClassName ->
-                                    "$lvalue = $internalClassName()"
-                                }
-                            )
-                        })
-                    }
+                    val target = messageDecodeTarget(fieldType.dec.value.internalClassName)
                     beforeValueDecoding()
-                    generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+                    generateDecodeFieldValue(fieldType, target, wrapperCtor = wrapperCtor)
                 }
             }
 
@@ -1374,8 +1418,9 @@ class ModelToProtobufKotlinCommonGenerator(
                 "tag.fieldNr == ${field.number} && tag.wireType == %T"
                     .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
             ) {
+                val target = mapDecodeTarget()
                 beforeValueDecoding()
-                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+                generateDecodeFieldValue(fieldType, target, wrapperCtor = wrapperCtor)
             }
         }
     }
@@ -1386,16 +1431,20 @@ class ModelToProtobufKotlinCommonGenerator(
         isPacked: Boolean = false,
         wrapperCtor: (ScopedFormattedString) -> ScopedFormattedString = { it },
     ) {
+        fun emitAssignment(raw: ScopedFormattedString) {
+            code(lvalue.merge(wrapperCtor(raw)) { target, value -> "$target = $value" })
+        }
+
         when (fieldType) {
             is FieldType.IntegralType -> {
                 val raw = "decoder.read${fieldType.decodeEncodeFuncName()}()".scoped()
-                code(lvalue.merge(wrapperCtor(raw)) { lvalue, ctor -> "$lvalue = $ctor" })
+                emitAssignment(raw)
             }
 
             is FieldType.List -> if (isPacked) {
-                val fieldType = fieldType.value
-                val conversion = if (fieldType is FieldType.Enum) {
-                    ".map { %T.fromNumber(it) }".scoped(fieldType.dec.value.name)
+                val elementType = fieldType.value
+                val conversion = if (elementType is FieldType.Enum) {
+                    ".map { %T.fromNumber(it) }".scoped(elementType.dec.value.name)
                 } else {
                     "".scoped()
                 }
@@ -1405,8 +1454,8 @@ class ModelToProtobufKotlinCommonGenerator(
                 // parsers must be prepared to accept multiple key-value pairs.
                 // In this case, the payloads should be concatenated.
                 code(
-                    lvalue.merge(conversion) { lvalue, conversion ->
-                        "$lvalue += decoder.readPacked${fieldType.decodeEncodeFuncName()}()$conversion"
+                    lvalue.merge(conversion) { target, packedConversion ->
+                        "$target.addAll(decoder.readPacked${elementType.decodeEncodeFuncName()}()$packedConversion)"
                     }
                 )
             } else {
@@ -1418,47 +1467,30 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     else -> generateDecodeFieldValue(fieldType.value, "val elem".scoped(), wrapperCtor = wrapperCtor)
                 }
-                code(
-                    lvalue.merge(FqName.Implicits.MutableList.scoped()) { lvalue, mutableList ->
-                        "($lvalue as $mutableList).add(elem)"
-                    }
-                )
+                code(lvalue.wrapIn { target -> "$target.add(elem)" })
             }
 
             is FieldType.Enum -> {
                 val raw = "%T.fromNumber(decoder.read${fieldType.decodeEncodeFuncName()}())"
                     .scoped(fieldType.dec.value.name)
 
-                code(
-                    lvalue.merge(wrapperCtor(raw)) { lvalue, ctor -> "$lvalue = $ctor" }
-                )
+                emitAssignment(raw)
             }
 
-            is FieldType.OneOf -> {
-                fieldType.dec.variants.forEach { variant ->
-                    val variantName = fieldType.dec.name.nested(variant.name).scoped()
-                    readMatchCase(
-                        field = variant,
-                        lvalue = lvalue,
-                        wrapperCtor = { raw ->
-                            variantName.merge(raw) { variantName, raw -> "$variantName($raw)" }
-                        }
-                    )
-                }
-            }
+            is FieldType.OneOf -> error("Oneof decoding is handled in readMatchCase")
 
             is FieldType.Message -> {
                 val msg = fieldType.dec.value
                 if (msg.isGroup) {
                     code(
-                        lvalue.merge(msg.internalClassName.scoped()) { lvalue, internalClassName ->
-                            "decoder.readGroup($lvalue.asInternal()) { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config, tag) }"
+                        lvalue.merge(msg.internalClassName.scoped()) { target, internalClassName ->
+                            "decoder.readGroup($target.asInternal()) { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config, tag) }"
                         }
                     )
                 } else {
                     code(
-                        lvalue.merge(msg.internalClassName.scoped()) { lvalue, internalClassName ->
-                            "decoder.readMessage($lvalue.asInternal(), { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config) })"
+                        lvalue.merge(msg.internalClassName.scoped()) { target, internalClassName ->
+                            "decoder.readMessage($target.asInternal(), { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config) })"
                         }
                     )
                 }
@@ -1472,11 +1504,7 @@ class ModelToProtobufKotlinCommonGenerator(
                         isPacked = false,
                         wrapperCtor = wrapperCtor
                     )
-                    code(
-                        lvalue.merge(FqName.Implicits.MutableMap.scoped()) { lvalue, mutableMap ->
-                            "($lvalue as $mutableMap)[key] = value"
-                        }
-                    )
+                    code(lvalue.wrapIn { target -> "$target[key] = value" })
                 }
             }
         }
@@ -2293,7 +2321,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 function = "%T.group".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
                 namedArgs = field.baseExtensionDescriptorArgs() + listOf(
                     "valueType" to "%T::class".scoped(message.name),
-                    "default" to "{ %T() }".scoped(message.internalClassName),
+                    "default" to "{ %T }".scoped(message.defaultObjectRef),
                     "asInternal" to "{ it.asInternal() }".scoped(),
                     "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
                     "decodeWith" to "{ value, decoder, config, startGroup -> %T.decodeWith(value.asInternal(), decoder, config, startGroup) }".scoped(
@@ -2306,7 +2334,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 function = "%T.message".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
                 namedArgs = field.baseExtensionDescriptorArgs() + listOf(
                     "valueType" to "%T::class".scoped(message.name),
-                    "default" to "{ %T() }".scoped(message.internalClassName),
+                    "default" to "{ %T }".scoped(message.defaultObjectRef),
                     "asInternal" to "{ it.asInternal() }".scoped(),
                     "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
                     "decodeWith" to "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config) }".scoped(
@@ -2359,6 +2387,9 @@ private fun FieldDeclaration.baseExtensionDescriptorArgs(): List<Pair<String, Sc
         "extendee" to "%T::class".scoped(containingType.value.name),
     )
 }
+
+// we use double "__" to avoid conflicts with internal names that start with "_"
+private val FieldDeclaration.internalDelegateName: String get() = "__${rawName}Delegate"
 
 private fun EnumDeclaration.generatedValueName(descriptor: Descriptors.EnumValueDescriptor): FqName {
     originalEntries.firstOrNull { it.dec == descriptor }?.let { return it.name }

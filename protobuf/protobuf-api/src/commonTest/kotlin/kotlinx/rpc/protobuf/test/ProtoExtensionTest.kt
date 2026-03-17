@@ -192,6 +192,29 @@ class ProtoExtensionTest {
     }
 
     @Test
+    fun `test extension default instance is not mutated during decoding`() {
+        val registry = ProtoExtensionRegistry {
+            +ExtensionBase.msg
+        }
+        val codec = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry))
+        val populated = ExtensionBase {
+            msg = AllPrimitives {
+                int32 = 123
+                requiredString = "required"
+                requiredBytes = byteArrayOf(1).asByteString()
+            }
+        }
+
+        val decodedPopulated = codec.decode(grpcMarshallerOf<ExtensionBase>().encode(populated))
+        assertEquals(123, decodedPopulated.msg.int32)
+
+        val decodedEmpty = codec.decode(Buffer())
+        assertEquals(0, decodedEmpty.msg.int32)
+        assertEquals("", decodedEmpty.msg.requiredString)
+        assertByteStringContentEquals(byteArrayOf(), decodedEmpty.msg.requiredBytes)
+    }
+
+    @Test
     fun `test extension message decode with missing extension`() {
         val message = completeMessage()
         val codec = grpcMarshallerOf<ExtensionBase>()
