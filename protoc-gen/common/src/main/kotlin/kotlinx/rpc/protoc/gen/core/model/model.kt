@@ -81,6 +81,10 @@ data class MessageDeclaration(
         return hasPresenceFields || hasExtensionRange || nestedDeclarations.any { it.isUserFacing && it.hasPresenceFieldsRecursive() }
     }
 
+    fun hasEnums(): Boolean {
+        return enumDeclarations.isNotEmpty() || nestedDeclarations.any { it.hasEnums() }
+    }
+
     fun nonDefaultByteFields(): List<FieldDeclaration> {
         return actualFields
             .filter {
@@ -175,8 +179,6 @@ data class FieldDeclaration(
             )
             || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number
-
-    val isExtension = dec.isExtension
 }
 
 data class ServiceDeclaration(

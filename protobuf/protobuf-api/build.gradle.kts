@@ -6,12 +6,16 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.proto
 import util.configureCLibCInterop
+import java.nio.file.Path as JavaPath
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
 }
+
+val globalRootDir: String by project.extra
 
 kotlin {
     compilerOptions {
@@ -35,6 +39,22 @@ kotlin {
                 implementation(projects.protobuf.protobufWkt)
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
+                implementation(projects.tests.testProtos)
+            }
+
+            proto {
+                // hack until proper imports are done
+                fileImports.from(
+                    JavaPath.of(
+                        globalRootDir,
+                        "tests",
+                        "test-protos",
+                        "src",
+                        "commonMain",
+                        "proto",
+                        "to_be_imported.proto",
+                    )
+                )
             }
         }
 

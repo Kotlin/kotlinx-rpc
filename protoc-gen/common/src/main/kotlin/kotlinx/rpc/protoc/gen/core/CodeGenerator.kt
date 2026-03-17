@@ -729,12 +729,6 @@ class FileGenerator(
 ) : CodeGenerator("", config = config, nameTable = rawNameTable.scoped(packageName, imports)) {
     private val stringPackageName = packageName.toString()
 
-    fun importPackage(name: String) {
-        if (name != stringPackageName && name.isNotBlank()) {
-            imports.add("$name.*")
-        }
-    }
-
     fun import(name: String) {
         imports.add(name)
     }

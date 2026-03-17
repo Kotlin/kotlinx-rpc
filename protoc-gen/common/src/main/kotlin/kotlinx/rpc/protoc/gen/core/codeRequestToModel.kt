@@ -234,7 +234,7 @@ private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDecl
     FileDeclaration(
         name = kotlinFileName(),
         packageName = ktPackage,
-        dependencies = dependencies.map { it.toModel(nameTable) },
+        dependencies = dependencies.map { it.toModel(nameTable) }, // only for name resolution
         messageDeclarations = messageTypes.map {
             it.toModel(
                 comments = comments + Paths.messageCommentPath + it.index,

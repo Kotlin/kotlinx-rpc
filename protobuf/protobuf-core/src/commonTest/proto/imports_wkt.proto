@@ -1,0 +1,9 @@
+import "google/protobuf/any.proto";
+
+message WithWkt {
+  required google.protobuf.Any any = 1;
+}
+
+message Content {
+  required string content = 1;
+}

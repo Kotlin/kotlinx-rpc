@@ -5,6 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
+import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -20,5 +21,13 @@ kotlin {
                 api(projects.grpc.grpcMarshaller)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+                implementation(libs.coroutines.test)
+            }
+        }
     }
 }
+
+configureLocalProtocGenDevelopmentDependency("Test")

@@ -108,10 +108,6 @@ abstract class AModelToKotlinCommonGenerator(
             filename = this@generatePublicKotlinFile.name
             comments = this@generatePublicKotlinFile.doc
 
-            dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.fullName())
-            }
-
             fileOptIns = listOf(
                 "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
                 "%T::class".scoped(FqName.Annotations.InternalRpcApi),
@@ -152,10 +148,6 @@ abstract class AModelToKotlinCommonGenerator(
                 "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
                 "%T::class".scoped(FqName.Annotations.InternalRpcApi),
             )
-
-            dependencies.forEach { dependency ->
-                importPackage(dependency.packageName.fullName())
-            }
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
 

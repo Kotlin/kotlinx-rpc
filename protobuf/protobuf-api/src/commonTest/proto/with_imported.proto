@@ -1,0 +1,5 @@
+import "to_be_imported.proto";
+
+message UseImported {
+  required to.be.imported.IWantToBeImported import = 1;
+}
