@@ -1,0 +1,125 @@
+name: Export All Issues to YouTrack
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export-all-issues:
+    name: Export all issues to YouTrack
+    runs-on: ubuntu-latest
+    env:
+      YOUTRACK_URL: https://youtrack.jetbrains.com
+      YOUTRACK_TOKEN: ${{ secrets.YOUTRACK_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Fetch and export all issues
+        run: |
+          PAGE=1
+          EXPORTED=0
+          SKIPPED=0
+          FAILED=0
+
+          while true; do
+            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=all&per_page=100&page=$PAGE&sort=created&direction=asc" \
+              --jq '[.[] | select(.pull_request == null)]')
+
+            COUNT=$(echo "$ISSUES" | jq 'length')
+            if [ "$COUNT" -eq 0 ]; then
+              break
+            fi
+
+            for i in $(seq 0 $((COUNT - 1))); do
+              ISSUE=$(echo "$ISSUES" | jq ".[$i]")
+              ISSUE_TITLE=$(echo "$ISSUE" | jq -r '.title')
+              ISSUE_BODY=$(echo "$ISSUE" | jq -r '.body // ""')
+              ISSUE_URL=$(echo "$ISSUE" | jq -r '.html_url')
+              ISSUE_NUMBER=$(echo "$ISSUE" | jq -r '.number')
+              LABELS=$(echo "$ISSUE" | jq -r '[.labels[].name] | join(",")')
+
+              # Map type
+              if echo "$LABELS" | grep -q "bug"; then
+                YT_TYPE="Bug"
+              elif echo "$LABELS" | grep -q "feature"; then
+                YT_TYPE="Feature"
+              else
+                YT_TYPE="Task"
+              fi
+
+              # Check if already exported by searching YouTrack
+              SEARCH_RESULT=$(curl -sf \
+                -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+                -G --data-urlencode "query=project: KRPC tag: github-issue summary: [GitHub] $ISSUE_TITLE" \
+                "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1" 2>/dev/null || echo "[]")
+
+              EXISTING=$(echo "$SEARCH_RESULT" | jq 'length')
+              if [ "$EXISTING" -gt 0 ]; then
+                EXISTING_ID=$(echo "$SEARCH_RESULT" | jq -r '.[0].idReadable')
+                echo "Skipping issue #$ISSUE_NUMBER ('$ISSUE_TITLE') — already exists as $EXISTING_ID"
+                SKIPPED=$((SKIPPED + 1))
+                continue
+              fi
+
+              # Create issue
+              DESCRIPTION="$(printf '%s\n\n---\nOriginal GitHub issue: %s' "$ISSUE_BODY" "$ISSUE_URL")"
+
+              PAYLOAD=$(jq -n \
+                --arg summary "[GitHub] $ISSUE_TITLE" \
+                --arg description "$DESCRIPTION" \
+                --arg type "$YT_TYPE" \
+                '{
+                  project: { shortName: "KRPC" },
+                  summary: $summary,
+                  description: $description,
+                  customFields: [
+                    {
+                      name: "Type",
+                      "$type": "SingleEnumIssueCustomField",
+                      value: { name: $type }
+                    },
+                    {
+                      name: "Scope",
+                      "$type": "MultiEnumIssueCustomField",
+                      value: [{ name: "Other" }]
+                    }
+                  ]
+                }')
+
+              RESPONSE=$(curl -sf \
+                -X POST \
+                -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d "$PAYLOAD" \
+                "$YOUTRACK_URL/api/issues?fields=idReadable" 2>/dev/null)
+
+              if [ $? -ne 0 ] || [ -z "$RESPONSE" ]; then
+                echo "Failed to create YouTrack issue for #$ISSUE_NUMBER ('$ISSUE_TITLE')"
+                FAILED=$((FAILED + 1))
+                continue
+              fi
+
+              YT_ID=$(echo "$RESPONSE" | jq -r '.idReadable')
+
+              # Tag issue
+              curl -sf \
+                -X POST \
+                -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"name": "github-issue"}' \
+                "$YOUTRACK_URL/api/issues/$YT_ID/tags" > /dev/null 2>&1
+
+              echo "Exported issue #$ISSUE_NUMBER ('$ISSUE_TITLE') → $YT_ID (Type: $YT_TYPE)"
+              EXPORTED=$((EXPORTED + 1))
+            done
+
+            PAGE=$((PAGE + 1))
+          done
+
+          echo ""
+          echo "=== Export Summary ==="
+          echo "Exported: $EXPORTED"
+          echo "Skipped (already exist): $SKIPPED"
+          echo "Failed: $FAILED"
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::warning::$FAILED issue(s) failed to export"
+          fi

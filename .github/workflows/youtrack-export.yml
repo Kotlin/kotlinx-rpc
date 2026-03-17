@@ -1,0 +1,81 @@
+name: Export Issue to YouTrack
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  export-to-youtrack:
+    name: Export to YouTrack
+    runs-on: ubuntu-latest
+    env:
+      YOUTRACK_URL: https://youtrack.jetbrains.com
+      YOUTRACK_TOKEN: ${{ secrets.YOUTRACK_TOKEN }}
+    steps:
+      - name: Map issue type
+        id: map-type
+        run: |
+          LABELS='${{ toJson(github.event.issue.labels.*.name) }}'
+          if echo "$LABELS" | jq -e 'index("bug")' > /dev/null 2>&1; then
+            echo "yt_type=Bug" >> "$GITHUB_OUTPUT"
+          elif echo "$LABELS" | jq -e 'index("feature")' > /dev/null 2>&1; then
+            echo "yt_type=Feature" >> "$GITHUB_OUTPUT"
+          else
+            echo "yt_type=Task" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create YouTrack issue
+        id: create-issue
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          YT_TYPE: ${{ steps.map-type.outputs.yt_type }}
+        run: |
+          DESCRIPTION="$(printf '%s\n\n---\nOriginal GitHub issue: %s' "$ISSUE_BODY" "$ISSUE_URL")"
+
+          PAYLOAD=$(jq -n \
+            --arg summary "[GitHub] $ISSUE_TITLE" \
+            --arg description "$DESCRIPTION" \
+            --arg type "$YT_TYPE" \
+            '{
+              project: { shortName: "KRPC" },
+              summary: $summary,
+              description: $description,
+              customFields: [
+                {
+                  name: "Type",
+                  "$type": "SingleEnumIssueCustomField",
+                  value: { name: $type }
+                },
+                {
+                  name: "Scope",
+                  "$type": "MultiEnumIssueCustomField",
+                  value: [{ name: "Other" }]
+                }
+              ]
+            }')
+
+          RESPONSE=$(curl -sf \
+            -X POST \
+            -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$YOUTRACK_URL/api/issues?fields=idReadable")
+
+          ISSUE_ID=$(echo "$RESPONSE" | jq -r '.idReadable')
+          echo "issue_id=$ISSUE_ID" >> "$GITHUB_OUTPUT"
+          echo "Created YouTrack issue: $ISSUE_ID"
+
+      - name: Tag issue with github-issue
+        env:
+          ISSUE_ID: ${{ steps.create-issue.outputs.issue_id }}
+        run: |
+          curl -sf \
+            -X POST \
+            -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name": "github-issue"}' \
+            "$YOUTRACK_URL/api/issues/$ISSUE_ID/tags"
+
+          echo "Tagged $ISSUE_ID with 'github-issue'"
