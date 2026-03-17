@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto2
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -33,7 +34,7 @@ interface TestAllTypesProto2 {
     val optionalDouble: Double?
     val optionalBool: Boolean?
     val optionalString: String?
-    val optionalBytes: ByteArray?
+    val optionalBytes: ByteString?
     val optionalNestedMessage: NestedMessage
     val optionalForeignMessage: ForeignMessageProto2
     val optionalNestedEnum: NestedEnum?
@@ -58,7 +59,7 @@ interface TestAllTypesProto2 {
     val repeatedDouble: List<Double>
     val repeatedBool: List<Boolean>
     val repeatedString: List<String>
-    val repeatedBytes: List<ByteArray>
+    val repeatedBytes: List<ByteString>
     val repeatedNestedMessage: List<NestedMessage>
     val repeatedForeignMessage: List<ForeignMessageProto2>
     val repeatedNestedEnum: List<NestedEnum>
@@ -118,7 +119,7 @@ interface TestAllTypesProto2 {
     val mapInt32NestedMessage: Map<Int, NestedMessage>
     val mapBoolBool: Map<Boolean, Boolean>
     val mapStringString: Map<String, String>
-    val mapStringBytes: Map<String, ByteArray>
+    val mapStringBytes: Map<String, ByteString>
     val mapStringNestedMessage: Map<String, NestedMessage>
     val mapStringForeignMessage: Map<String, ForeignMessageProto2>
     val mapStringNestedEnum: Map<String, NestedEnum>
@@ -142,7 +143,7 @@ interface TestAllTypesProto2 {
     val defaultDouble: Double
     val defaultBool: Boolean
     val defaultString: String
-    val defaultBytes: ByteArray
+    val defaultBytes: ByteString
     /**
     * Test field-name-to-JSON-name convention.
     * (protobuf says names can be any valid C/C++ identifier.)
@@ -179,7 +180,7 @@ interface TestAllTypesProto2 {
         value class OneofString(val value: String): OneofField
 
         @JvmInline
-        value class OneofBytes(val value: ByteArray): OneofField
+        value class OneofBytes(val value: ByteString): OneofField
 
         @JvmInline
         value class OneofBool(val value: Boolean): OneofField
@@ -342,7 +343,7 @@ interface TestAllRequiredTypesProto2 {
     val requiredDouble: Double
     val requiredBool: Boolean
     val requiredString: String
-    val requiredBytes: ByteArray
+    val requiredBytes: ByteString
     val requiredNestedMessage: NestedMessage
     val requiredForeignMessage: ForeignMessageProto2
     val requiredNestedEnum: NestedEnum
@@ -369,7 +370,7 @@ interface TestAllRequiredTypesProto2 {
     val defaultDouble: Double
     val defaultBool: Boolean
     val defaultString: String
-    val defaultBytes: ByteArray
+    val defaultBytes: ByteString
 
     @GeneratedProtoMessage
     interface NestedMessage {

@@ -5,6 +5,8 @@
 package com.google.protobuf.kotlin
 
 import kotlinx.io.Buffer
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -129,6 +131,7 @@ public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.Companion.
  * which makes it possible to use the internal [protoDescriptorOf] function.
  */
 @InternalRpcApi
+@OptIn(UnsafeByteStringApi::class)
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
     value: T,
     valueClass: KClass<T>,
@@ -138,10 +141,13 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
     val typeUrl = "$urlPrefix/${descriptor.fullName}"
     val encoded = grpcMarshallerOf(valueClass)
         .encode(value)
+    val byteString = UnsafeByteStringOperations.wrapUnsafe(
+        encoded.readByteArray()
+    )
 
     return Any {
         this.typeUrl = typeUrl
-        this.value = encoded.readByteArray()
+        this.value = byteString
     }
 }
 
@@ -193,9 +199,14 @@ public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpack(): 
  * @see pack
  * @see contains
  */
+@OptIn(UnsafeByteStringApi::class)
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>): T {
     require(contains(kClass)) { "Cannot unpack Any message of type $typeUrl to ${kClass.qualifiedName}" }
-    val source = Buffer().apply { write(value) }
+    val source = Buffer().apply {
+        UnsafeByteStringOperations.withByteArrayUnsafe(value) {
+            write(it)
+        }
+    }
     return grpcMarshallerOf(kClass).decode(source)
 }
 
@@ -221,9 +232,14 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>)
  * @see pack
  * @see contains
  */
+@OptIn(UnsafeByteStringApi::class)
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kType: KType): T {
     require(contains<T>(kType)) { "Cannot unpack Any message of type $typeUrl to ${kType.classifier}" }
-    val source = Buffer().apply { write(value) }
+    val source = Buffer().apply {
+        UnsafeByteStringOperations.withByteArrayUnsafe(value) {
+            write(it)
+        }
+    }
     return grpcMarshallerOf<T>(kType).decode(source)
 }
 

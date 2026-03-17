@@ -14,6 +14,7 @@ import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.PublicImportMessage
 import com.google.protobuf.test.invoke
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import proto2_unittest.TestAllTypes.NestedEnum
 import kotlin.test.assertEquals
@@ -43,7 +44,7 @@ object TestUtil {
         optionalDouble = 112.0
         optionalBool = true
         optionalString = "115"
-        optionalBytes = toBytes("116")
+        optionalBytes = toBytes("116").asByteString()
 
         optionalgroup = TestAllTypes.OptionalGroup { a = 117 }
         optionalNestedMessage = TestAllTypes.NestedMessage { bb = 118 }
@@ -74,7 +75,7 @@ object TestUtil {
         repeatedDouble = listOf(212.0, 312.0)
         repeatedBool = listOf(true, false)
         repeatedString = listOf("215", "315")
-        repeatedBytes = listOf(toBytes("216"), toBytes("316"))
+        repeatedBytes = listOf(toBytes("216").asByteString(), toBytes("316").asByteString())
 
         repeatedgroup = listOf(
             TestAllTypes.RepeatedGroup { a = 217 },
@@ -118,7 +119,7 @@ object TestUtil {
         defaultDouble = 412.0
         defaultBool = false
         defaultString = "415"
-        defaultBytes = toBytes("416")
+        defaultBytes = toBytes("416").asByteString()
         defaultNestedEnum = NestedEnum.FOO
         defaultForeignEnum = ForeignEnum.FOREIGN_FOO
         defaultImportEnum = ImportEnum.IMPORT_FOO
@@ -126,7 +127,7 @@ object TestUtil {
         defaultCord = "425"
 
         // Oneof field (last one wins)
-        oneofField = TestAllTypes.OneofField.OneofBytes(toBytes("604"))
+        oneofField = TestAllTypes.OneofField.OneofBytes(toBytes("604").asByteString())
     }
 
     /**
@@ -611,7 +612,7 @@ object TestUtil {
         optionalDoubleExtension = 112.0
         optionalBoolExtension = true
         optionalStringExtension = "115"
-        optionalBytesExtension = toBytes("116")
+        optionalBytesExtension = toBytes("116").asByteString()
 
         optionalgroupExtension = OptionalGroupExtension { a = 117 }
         optionalNestedMessageExtension = TestAllTypes.NestedMessage { bb = 118 }
@@ -642,7 +643,7 @@ object TestUtil {
         repeatedDoubleExtension = listOf(212.0, 312.0)
         repeatedBoolExtension = listOf(true, false)
         repeatedStringExtension = listOf("215", "315")
-        repeatedBytesExtension = listOf(toBytes("216"), toBytes("316"))
+        repeatedBytesExtension = listOf(toBytes("216").asByteString(), toBytes("316").asByteString())
 
         repeatedgroupExtension = listOf(
             RepeatedGroupExtension { a = 217 },
@@ -686,7 +687,7 @@ object TestUtil {
         defaultDoubleExtension = 412.0
         defaultBoolExtension = false
         defaultStringExtension = "415"
-        defaultBytesExtension = toBytes("416")
+        defaultBytesExtension = toBytes("416").asByteString()
         defaultNestedEnumExtension = NestedEnum.FOO
         defaultForeignEnumExtension = ForeignEnum.FOREIGN_FOO
         defaultImportEnumExtension = ImportEnum.IMPORT_FOO
@@ -694,7 +695,7 @@ object TestUtil {
         defaultCordExtension = "425"
 
         // Oneof extension (only set one, matching regular test)
-        oneofBytesExtension = toBytes("604")
+        oneofBytesExtension = toBytes("604").asByteString()
     }
 
     /**
@@ -1174,3 +1175,9 @@ object TestUtil {
 fun assertByteArrayEquals(expected: ByteArray?, actual: ByteArray?) {
     assertTrue(expected.contentEquals(actual), "Expected ${expected?.contentToString()} but got ${actual?.contentToString()}")
 }
+
+fun assertByteArrayEquals(expected: ByteArray?, actual: ByteString?) {
+    assertByteArrayEquals(expected, actual?.toByteArray())
+}
+
+fun ByteArray.asByteString(): ByteString = ByteString(*this)

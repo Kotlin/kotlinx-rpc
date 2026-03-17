@@ -15,6 +15,7 @@ import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.invoke
 import com.google.protobuf.kotlin.contains
 import invoke
+import kotlinx.io.bytestring.isNotEmpty
 import test.nested.NestedOuter
 import test.nested.invoke
 import test.recursive.Recursive

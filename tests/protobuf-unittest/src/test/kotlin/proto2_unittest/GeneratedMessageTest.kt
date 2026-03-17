@@ -221,7 +221,7 @@ class GeneratedMessageTest {
         assertEquals("test", (withString.oneofField as TestAllTypes.OneofField.OneofString).value)
 
         val withBytes = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofBytes("bytes".encodeToByteArray())
+            oneofField = TestAllTypes.OneofField.OneofBytes("bytes".encodeToByteArray().asByteString())
         }
         assertByteArrayEquals(
             "bytes".encodeToByteArray(),
@@ -260,7 +260,7 @@ class GeneratedMessageTest {
         assertEquals("hello", (decoded2.oneofField as TestAllTypes.OneofField.OneofString).value)
 
         val withBytes = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofBytes("world".encodeToByteArray())
+            oneofField = TestAllTypes.OneofField.OneofBytes("world".encodeToByteArray().asByteString())
         }
         val decoded3 = TestUtil.encodeDecode(withBytes, marshaller)
         assertIs<TestAllTypes.OneofField.OneofBytes>(decoded3.oneofField)

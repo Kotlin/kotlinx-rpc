@@ -17,6 +17,9 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.usePinned
 import kotlinx.io.Sink
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import libprotowire.pw_encoder_delete
 import libprotowire.pw_encoder_flush
 import libprotowire.pw_encoder_new
@@ -174,6 +177,13 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
         }
         return@checked value.usePinned {
             pw_encoder_write_bytes(raw, fieldNr, it.addressOf(0), value.size)
+        }
+    }
+
+    @OptIn(UnsafeByteStringApi::class)
+    override fun writeBytes(fieldNr: Int, value: ByteString) {
+        UnsafeByteStringOperations.withByteArrayUnsafe(value) {
+            writeBytes(fieldNr, it)
         }
     }
 

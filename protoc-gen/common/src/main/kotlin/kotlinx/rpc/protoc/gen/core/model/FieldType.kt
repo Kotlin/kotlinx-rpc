@@ -54,13 +54,13 @@ sealed interface FieldType {
     }
 
     enum class IntegralType(
-        simpleName: String,
-        stringDefaultValue: String,
+        val fqName: FqName,
+        override val defaultValue: ScopedFormattedString,
         override val wireType: WireType,
         override val isPackable: Boolean = true,
     ) : FieldType {
         STRING("String", "\"\"", WireType.LENGTH_DELIMITED, false),
-        BYTES("ByteArray", "byteArrayOf()", WireType.LENGTH_DELIMITED, false),
+        BYTES(FqName.KotlinLibs.ByteString, "%T()".scoped(FqName.KotlinLibs.ByteString), WireType.LENGTH_DELIMITED, false),
         BOOL("Boolean", "false", WireType.VARINT),
         FLOAT("Float", "0.0f", WireType.FIXED32),
         DOUBLE("Double", "0.0", WireType.FIXED64),
@@ -75,8 +75,14 @@ sealed interface FieldType {
         SFIXED32("Int", "0", WireType.FIXED32),
         SFIXED64("Long", "0L", WireType.FIXED64);
 
-        val fqName: FqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin"))
-        override val defaultValue: ScopedFormattedString = stringDefaultValue.scoped()
+        constructor(simpleName: String,
+                    stringDefaultValue: String,
+                    wireType: WireType,
+                    isPackable: Boolean = true,) : this(
+            fqName = FqName.Declaration(simpleName, FqName.Package.fromString("kotlin")),
+            defaultValue = stringDefaultValue.scoped(),
+            wireType = wireType,
+            isPackable = isPackable)
     }
 }
 

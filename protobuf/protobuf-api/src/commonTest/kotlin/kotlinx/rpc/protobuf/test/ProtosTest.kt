@@ -80,7 +80,7 @@ class ProtosTest {
             float = 1.0f
             double = 3.0
             string = "test"
-            bytes = byteArrayOf(1, 2, 3)
+            bytes = byteArrayOf(1, 2, 3).asByteString()
         }
 
         val msgObj = msg

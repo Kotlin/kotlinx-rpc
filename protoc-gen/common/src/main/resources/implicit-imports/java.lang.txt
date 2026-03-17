@@ -48,6 +48,7 @@ InternalError
 InterruptedException
 Iterable
 LayerInstantiationException
+LazyConstant
 LinkageError
 Long
 MatchException

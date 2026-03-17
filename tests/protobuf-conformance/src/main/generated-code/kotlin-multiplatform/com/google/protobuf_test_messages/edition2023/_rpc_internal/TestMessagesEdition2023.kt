@@ -4,6 +4,8 @@ package com.google.protobuf_test_messages.edition2023
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -46,6 +48,7 @@ import kotlinx.rpc.protobuf.internal.packedSInt32
 import kotlinx.rpc.protobuf.internal.packedSInt64
 import kotlinx.rpc.protobuf.internal.packedUInt32
 import kotlinx.rpc.protobuf.internal.packedUInt64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.sFixed32
 import kotlinx.rpc.protobuf.internal.sFixed64
 import kotlinx.rpc.protobuf.internal.sInt32
@@ -219,7 +222,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     override var optionalDouble: Double? by MsgFieldDelegate(PresenceIndices.optionalDouble) { null }
     override var optionalBool: Boolean? by MsgFieldDelegate(PresenceIndices.optionalBool) { null }
     override var optionalString: String? by MsgFieldDelegate(PresenceIndices.optionalString) { null }
-    override var optionalBytes: ByteArray? by MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
+    override var optionalBytes: ByteString? by MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
     override var optionalNestedMessage: TestAllTypesEdition2023.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal() }
     override var optionalForeignMessage: ForeignMessageEdition2023 by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageEdition2023Internal() }
     override var optionalNestedEnum: TestAllTypesEdition2023.NestedEnum? by MsgFieldDelegate(PresenceIndices.optionalNestedEnum) { null }
@@ -241,7 +244,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     override var repeatedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
     override var repeatedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
     override var repeatedString: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBytes: List<ByteArray> by MsgFieldDelegate { mutableListOf() }
+    override var repeatedBytes: List<ByteString> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedMessage: List<TestAllTypesEdition2023.NestedMessage> by MsgFieldDelegate { mutableListOf() }
     override var repeatedForeignMessage: List<ForeignMessageEdition2023> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedEnum: List<TestAllTypesEdition2023.NestedEnum> by MsgFieldDelegate { mutableListOf() }
@@ -290,7 +293,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     override var mapInt32Double: Map<Int, Double> by MsgFieldDelegate { mutableMapOf() }
     override var mapBoolBool: Map<Boolean, Boolean> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringString: Map<String, String> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringBytes: Map<String, ByteArray> by MsgFieldDelegate { mutableMapOf() }
+    override var mapStringBytes: Map<String, ByteString> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedMessage: Map<String, TestAllTypesEdition2023.NestedMessage> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringForeignMessage: Map<String, ForeignMessageEdition2023> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedEnum: Map<String, TestAllTypesEdition2023.NestedEnum> by MsgFieldDelegate { mutableMapOf() }
@@ -370,7 +373,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + if (presenceMask[11]) (optionalDouble?.toBits()?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[14]) (optionalBytes?.contentHashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[14]) (optionalBytes?.hashCode() ?: 0) else 0
         result = 31 * result + if (presenceMask[15]) optionalNestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[16]) optionalForeignMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[17]) (optionalNestedEnum?.hashCode() ?: 0) else 0
@@ -392,7 +395,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
+        result = 31 * result + repeatedBytes.hashCode()
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -458,7 +461,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             is TestAllTypesEdition2023.OneofField.OneofUint32 -> hashCode() + 0
             is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> hashCode() + 1
             is TestAllTypesEdition2023.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesEdition2023.OneofField.OneofBytes -> hashCode() + 3
             is TestAllTypesEdition2023.OneofField.OneofBool -> hashCode() + 4
             is TestAllTypesEdition2023.OneofField.OneofUint64 -> hashCode() + 5
             is TestAllTypesEdition2023.OneofField.OneofFloat -> value.toBits().hashCode() + 6
@@ -475,7 +478,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             is TestAllTypesEdition2023.OneofField.OneofUint32 -> a == b
             is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> a == b
             is TestAllTypesEdition2023.OneofField.OneofString -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesEdition2023.OneofField.OneofBytes).value)
+            is TestAllTypesEdition2023.OneofField.OneofBytes -> a == b
             is TestAllTypesEdition2023.OneofField.OneofBool -> a == b
             is TestAllTypesEdition2023.OneofField.OneofUint64 -> a == b
             is TestAllTypesEdition2023.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesEdition2023.OneofField.OneofFloat).value.toBits()
@@ -505,7 +508,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (presenceMask[11] && this.optionalDouble?.toBits() != other.optionalDouble?.toBits()) return false
         if (presenceMask[12] && this.optionalBool != other.optionalBool) return false
         if (presenceMask[13] && this.optionalString != other.optionalString) return false
-        if (presenceMask[14] && ((this.optionalBytes != null && (other.optionalBytes == null || !this.optionalBytes!!.contentEquals(other.optionalBytes!!))) || this.optionalBytes == null)) return false
+        if (presenceMask[14] && this.optionalBytes != other.optionalBytes) return false
         if (presenceMask[15] && this.optionalNestedMessage != other.optionalNestedMessage) return false
         if (presenceMask[16] && this.optionalForeignMessage != other.optionalForeignMessage) return false
         if (presenceMask[17] && this.optionalNestedEnum != other.optionalNestedEnum) return false
@@ -527,7 +530,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
+        if (this.repeatedBytes != other.repeatedBytes) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -683,7 +686,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         if (presenceMask[14]) {
-            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.contentToString()},")
+            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes?.protoToString()},")
         } else {
             builder.appendLine("${nextIndentString}optionalBytes=<unset>,")
         }
@@ -880,7 +883,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         if (presenceMask[14]) {
-            copy.optionalBytes = this.optionalBytes?.copyOf()
+            copy.optionalBytes = this.optionalBytes
         }
 
         if (presenceMask[15]) {
@@ -925,7 +928,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         copy.repeatedDouble = this.repeatedDouble.map { it }
         copy.repeatedBool = this.repeatedBool.map { it }
         copy.repeatedString = this.repeatedString.map { it }
-        copy.repeatedBytes = this.repeatedBytes.map { it.copyOf() }
+        copy.repeatedBytes = this.repeatedBytes.map { it }
         copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
         copy.repeatedForeignMessage = this.repeatedForeignMessage.map { it.copy() }
         copy.repeatedNestedEnum = this.repeatedNestedEnum.map { it }
@@ -974,7 +977,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         copy.mapInt32Double = this.mapInt32Double.mapValues { it.value }
         copy.mapBoolBool = this.mapBoolBool.mapValues { it.value }
         copy.mapStringString = this.mapStringString.mapValues { it.value }
-        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value.copyOf() }
+        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value }
         copy.mapStringNestedMessage = this.mapStringNestedMessage.mapValues { it.value.copy() }
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
@@ -1007,7 +1010,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
                 this
             }
             is TestAllTypesEdition2023.OneofField.OneofBytes -> {
-                TestAllTypesEdition2023.OneofField.OneofBytes(this.value.copyOf())
+                this
             }
             is TestAllTypesEdition2023.OneofField.OneofBool -> {
                 this
@@ -2166,12 +2169,12 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate(PresenceIndices.key) { "" }
-        var value: ByteArray by MsgFieldDelegate(PresenceIndices.value) { byteArrayOf() }
+        var value: ByteString by MsgFieldDelegate(PresenceIndices.value) { ByteString() }
 
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.contentHashCode() else 0
+            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
             return result
         }
 
@@ -2183,7 +2186,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (presenceMask[0] && this.key != other.key) return false
-            if (presenceMask[1] && !this.value.contentEquals(other.value)) return false
+            if (presenceMask[1] && this.value != other.value) return false
             return true
         }
 
@@ -2204,7 +2207,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             }
 
             if (presenceMask[1]) {
-                builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+                builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
             }
@@ -6550,7 +6553,7 @@ object TestMessagesEdition2023KtExtensions {
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023,  ByteArray> = 
+    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023,  ByteString> = 
         InternalExtensionDescriptor.bytes(
             fieldNumber = 134,
             name = "extensionBytes",

@@ -8,6 +8,9 @@ import com.google.protobuf.CodedInputStream
 import com.google.protobuf.InvalidProtocolBufferException
 import kotlinx.io.Source
 import kotlinx.io.asInputStream
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 
 internal class WireDecoderJvm(source: Source) : WireDecoder {
     override var recursionDepth: Int = 0
@@ -88,8 +91,9 @@ internal class WireDecoderJvm(source: Source) : WireDecoder {
         return codedInputStream.readStringRequireUtf8()
     }
 
-    override fun readBytes(): ByteArray {
-        return codedInputStream.readByteArray()
+    @OptIn(UnsafeByteStringApi::class)
+    override fun readBytes(): ByteString {
+        return UnsafeByteStringOperations.wrapUnsafe(codedInputStream.readByteArray())
     }
 
     override fun readPackedBool() = readPackedInternal(this::readBool)

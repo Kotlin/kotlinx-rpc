@@ -8,6 +8,9 @@ import kotlinx.cinterop.*
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import libprotowire.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
@@ -168,18 +171,20 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 
     // TODO: Should readBytes return a buffer, to prevent allocation of large contiguous memory blocks ? KRPC-182
-    override fun readBytes(): ByteArray {
+    @OptIn(UnsafeByteStringApi::class)
+    override fun readBytes(): ByteString {
         val length = readInt32()
         if (length < 0) throw ProtobufDecodingException.negativeSize()
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
         if (source.size < length) throw ProtobufDecodingException.truncatedMessage()
-        if (length == 0) return ByteArray(0) // actually an empty array (no error)
+        if (length == 0) return ByteString() // actually an empty array (no error)
         val bytes = ByteArray(length)
         bytes.usePinned {
             pw_decoder_read_raw_bytes(raw, it.addressOf(0), length).checkError()
         }
-        return bytes
+        // return the ByteArray as ByteString
+        return UnsafeByteStringOperations.wrapUnsafe(bytes)
     }
 
     override fun readPackedBool() = readPackedVarInternal(this::readBool)

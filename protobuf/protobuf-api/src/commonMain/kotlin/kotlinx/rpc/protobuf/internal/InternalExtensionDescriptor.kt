@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -391,22 +392,22 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             fieldNumber: Int,
             name: String,
             extendee: KClass<T>,
-            defaultValue: ByteArray = byteArrayOf(),
-        ): InternalExtensionDescriptor<T, ByteArray> = InternalExtensionDescriptor(
+            defaultValue: ByteString = ByteString(),
+        ): InternalExtensionDescriptor<T, ByteString> = InternalExtensionDescriptor(
             fieldNumber = fieldNumber,
             name = name,
             wireType = WireType.LENGTH_DELIMITED,
             messageType = extendee,
-            valueType = ByteArray::class,
+            valueType = ByteString::class,
             defaultValue = lazy { defaultValue },
             size = { fieldNr, value ->
-                val bytes = value.encodingCast<ByteArray>()
+                val bytes = value.encodingCast<ByteString>()
                 WireSize.tag(fieldNr, WireType.LENGTH_DELIMITED) +
                     WireSize.uInt32(bytes.size.toUInt()) + WireSize.bytes(bytes)
             },
-            encode = { enc, fieldNr, value, _ -> enc.writeBytes(fieldNr, value.encodingCast<ByteArray>()) },
+            encode = { enc, fieldNr, value, _ -> enc.writeBytes(fieldNr, value.encodingCast<ByteString>()) },
             decode = { _, dec, _ -> dec.readBytes() },
-            copy = { (it as ByteArray).copyOf() },
+            copy = { it as ByteString },
         )
 
         public fun <@GeneratedProtoMessage T : Any> string(

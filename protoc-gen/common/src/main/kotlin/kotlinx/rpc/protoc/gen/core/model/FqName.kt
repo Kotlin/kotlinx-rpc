@@ -186,6 +186,7 @@ sealed interface FqName {
     object KotlinLibs {
         val Buffer = fqDec("kotlinx.io", "Buffer")
         val Source = fqDec("kotlinx.io", "Source")
+        val ByteString = fqDec("kotlinx.io.bytestring", "ByteString")
         val Flow = fqDec("kotlinx.coroutines.flow", "Flow")
         val JvmInline = fqDec("kotlin.jvm", "JvmInline")
     }

@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 // TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
@@ -73,7 +74,7 @@ public interface WireDecoder : AutoCloseable {
 
     public fun readEnum(): Int
     public fun readString(): String
-    public fun readBytes(): ByteArray
+    public fun readBytes(): ByteString
     public fun readPackedBool(): List<Boolean>
     public fun readPackedInt32(): List<Int>
     public fun readPackedInt64(): List<Long>

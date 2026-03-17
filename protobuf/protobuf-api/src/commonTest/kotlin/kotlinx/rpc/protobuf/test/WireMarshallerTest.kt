@@ -630,7 +630,7 @@ class WireMarshallerTest {
         val actualBytes = decoder.readBytes()
         assertNotNull(actualBytes)
         assertEquals(1000000, actualBytes.size)
-        assertTrue(bytes.contentEquals(actualBytes))
+        assertTrue(bytes.contentEquals(actualBytes.toByteArray()))
 
         decoder.close()
         assertTrue(buffer.exhausted())

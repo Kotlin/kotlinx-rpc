@@ -19,6 +19,7 @@ import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -52,7 +53,7 @@ interface TestAllTypesProto3 {
     val optionalDouble: Double
     val optionalBool: Boolean
     val optionalString: String
-    val optionalBytes: ByteArray
+    val optionalBytes: ByteString
     val optionalNestedMessage: NestedMessage
     val optionalForeignMessage: ForeignMessage
     val optionalNestedEnum: NestedEnum
@@ -78,7 +79,7 @@ interface TestAllTypesProto3 {
     val repeatedDouble: List<Double>
     val repeatedBool: List<Boolean>
     val repeatedString: List<String>
-    val repeatedBytes: List<ByteArray>
+    val repeatedBytes: List<ByteString>
     val repeatedNestedMessage: List<NestedMessage>
     val repeatedForeignMessage: List<ForeignMessage>
     val repeatedNestedEnum: List<NestedEnum>
@@ -136,7 +137,7 @@ interface TestAllTypesProto3 {
     val mapInt32Double: Map<Int, Double>
     val mapBoolBool: Map<Boolean, Boolean>
     val mapStringString: Map<String, String>
-    val mapStringBytes: Map<String, ByteArray>
+    val mapStringBytes: Map<String, ByteString>
     val mapStringNestedMessage: Map<String, NestedMessage>
     val mapStringForeignMessage: Map<String, ForeignMessage>
     val mapStringNestedEnum: Map<String, NestedEnum>
@@ -213,7 +214,7 @@ interface TestAllTypesProto3 {
         value class OneofString(val value: String): OneofField
 
         @JvmInline
-        value class OneofBytes(val value: ByteArray): OneofField
+        value class OneofBytes(val value: ByteString): OneofField
 
         @JvmInline
         value class OneofBool(val value: Boolean): OneofField

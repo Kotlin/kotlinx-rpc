@@ -87,7 +87,7 @@
                     val recognizer = client.withService&lt;ImageRecognizer&gt;()
 
                     val image = Image {
-                        data = byteArrayOf(0, 1, 2, 3)
+                        data = ByteString(0, 1, 2, 3)
                     }
                     val result = recognizer.recognize(image)
                     println("Category: ${result.category}")

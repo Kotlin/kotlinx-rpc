@@ -6,6 +6,7 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Buffer
 import kotlinx.io.Sink
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -39,6 +40,7 @@ public interface WireEncoder {
     public fun writeDouble(fieldNr: Int, value: Double)
     public fun writeEnum(fieldNr: Int, value: Int)
     public fun writeBytes(fieldNr: Int, value: ByteArray)
+    public fun writeBytes(fieldNr: Int, value: ByteString)
     public fun writeString(fieldNr: Int, value: String)
     public fun writePackedBool(fieldNr: Int, value: List<Boolean>, fieldSize: Int)
     public fun writePackedInt32(fieldNr: Int, value: List<Int>, fieldSize: Int)

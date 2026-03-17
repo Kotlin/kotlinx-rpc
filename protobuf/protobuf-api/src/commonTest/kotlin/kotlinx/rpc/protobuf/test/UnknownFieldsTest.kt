@@ -121,7 +121,7 @@ class UnknownFieldsTest {
             sfixed64Missing = -888L
             boolMissing = true
             stringMissing = "test string"
-            bytesMissing = byteArrayOf(1, 2, 3, 4, 5)
+            bytesMissing = byteArrayOf(1, 2, 3, 4, 5).asByteString()
             floatMissing = 3.14f
             doubleMissing = 2.718
         }
@@ -146,7 +146,7 @@ class UnknownFieldsTest {
                 uint32 = 1213u
                 uint64 = 1415uL
                 string = "nested"
-                bytes = byteArrayOf(6, 7, 8)
+                bytes = byteArrayOf(6, 7, 8).asByteString()
             }
         }
 

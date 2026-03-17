@@ -10,7 +10,6 @@ import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -26,7 +25,7 @@ class ProtoExtensionTest {
         subExt = ExtensionBase {
             enum = MyEnum.ONE
             msg = AllPrimitives {
-                bytes = byteArrayOf(1, 2, 3)
+                bytes = byteArrayOf(1, 2, 3).asByteString()
             }
         }
         repeatedInt32 = listOf(1, 2, 3)
@@ -162,7 +161,7 @@ class ProtoExtensionTest {
         assertEquals(message.int32, decoded.int32)
         assertEquals(message.enum, decoded.enum)
         assertEquals(message.msg, decoded.msg)
-        assertContentEquals(byteArrayOf(1, 2, 3), decoded.subExt.msg.bytes)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), decoded.subExt.msg.bytes)
         assertEquals(message.repeatedInt32, decoded.repeatedInt32)
         assertEquals(message.repeatedEnum, decoded.repeatedEnum)
         assertEquals(message.repeatedMsg, decoded.repeatedMsg)
@@ -219,7 +218,7 @@ class ProtoExtensionTest {
                 ExtensionBase {
                     subExt = ExtensionBase {
                         msg = AllPrimitives {
-                            bytes = byteArrayOf(1, 2, 3)
+                            bytes = byteArrayOf(1, 2, 3).asByteString()
                         }
                     }
                 },

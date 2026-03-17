@@ -43,6 +43,8 @@ import com.google.protobuf.kotlin.decodeWith
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -82,6 +84,7 @@ import kotlinx.rpc.protobuf.internal.packedSInt32
 import kotlinx.rpc.protobuf.internal.packedSInt64
 import kotlinx.rpc.protobuf.internal.packedUInt32
 import kotlinx.rpc.protobuf.internal.packedUInt64
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.sFixed32
 import kotlinx.rpc.protobuf.internal.sFixed64
 import kotlinx.rpc.protobuf.internal.sInt32
@@ -137,7 +140,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var optionalDouble: Double by MsgFieldDelegate { 0.0 }
     override var optionalBool: Boolean by MsgFieldDelegate { false }
     override var optionalString: String by MsgFieldDelegate { "" }
-    override var optionalBytes: ByteArray by MsgFieldDelegate { byteArrayOf() }
+    override var optionalBytes: ByteString by MsgFieldDelegate { ByteString() }
     override var optionalNestedMessage: TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal() }
     override var optionalForeignMessage: ForeignMessage by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageInternal() }
     override var optionalNestedEnum: TestAllTypesProto3.NestedEnum by MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
@@ -160,7 +163,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var repeatedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
     override var repeatedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
     override var repeatedString: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBytes: List<ByteArray> by MsgFieldDelegate { mutableListOf() }
+    override var repeatedBytes: List<ByteString> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedMessage: List<TestAllTypesProto3.NestedMessage> by MsgFieldDelegate { mutableListOf() }
     override var repeatedForeignMessage: List<ForeignMessage> by MsgFieldDelegate { mutableListOf() }
     override var repeatedNestedEnum: List<TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableListOf() }
@@ -209,7 +212,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var mapInt32Double: Map<Int, Double> by MsgFieldDelegate { mutableMapOf() }
     override var mapBoolBool: Map<Boolean, Boolean> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringString: Map<String, String> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringBytes: Map<String, ByteArray> by MsgFieldDelegate { mutableMapOf() }
+    override var mapStringBytes: Map<String, ByteString> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedMessage: Map<String, TestAllTypesProto3.NestedMessage> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringForeignMessage: Map<String, ForeignMessage> by MsgFieldDelegate { mutableMapOf() }
     override var mapStringNestedEnum: Map<String, TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableMapOf() }
@@ -329,7 +332,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + optionalDouble.toBits().hashCode()
         result = 31 * result + optionalBool.hashCode()
         result = 31 * result + optionalString.hashCode()
-        result = 31 * result + optionalBytes.contentHashCode()
+        result = 31 * result + optionalBytes.hashCode()
         result = 31 * result + if (presenceMask[0]) optionalNestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[1]) optionalForeignMessage.hashCode() else 0
         result = 31 * result + optionalNestedEnum.hashCode()
@@ -352,7 +355,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + repeatedDouble.hashCode()
         result = 31 * result + repeatedBool.hashCode()
         result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.fold(1) { acc, b -> 31 * acc + b.contentHashCode() }
+        result = 31 * result + repeatedBytes.hashCode()
         result = 31 * result + repeatedNestedMessage.hashCode()
         result = 31 * result + repeatedForeignMessage.hashCode()
         result = 31 * result + repeatedNestedEnum.hashCode()
@@ -467,7 +470,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             is TestAllTypesProto3.OneofField.OneofUint32 -> hashCode() + 0
             is TestAllTypesProto3.OneofField.OneofNestedMessage -> hashCode() + 1
             is TestAllTypesProto3.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesProto3.OneofField.OneofBytes -> value.contentHashCode() + 3
+            is TestAllTypesProto3.OneofField.OneofBytes -> hashCode() + 3
             is TestAllTypesProto3.OneofField.OneofBool -> hashCode() + 4
             is TestAllTypesProto3.OneofField.OneofUint64 -> hashCode() + 5
             is TestAllTypesProto3.OneofField.OneofFloat -> value.toBits().hashCode() + 6
@@ -485,7 +488,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             is TestAllTypesProto3.OneofField.OneofUint32 -> a == b
             is TestAllTypesProto3.OneofField.OneofNestedMessage -> a == b
             is TestAllTypesProto3.OneofField.OneofString -> a == b
-            is TestAllTypesProto3.OneofField.OneofBytes -> a.value.contentEquals((b as TestAllTypesProto3.OneofField.OneofBytes).value)
+            is TestAllTypesProto3.OneofField.OneofBytes -> a == b
             is TestAllTypesProto3.OneofField.OneofBool -> a == b
             is TestAllTypesProto3.OneofField.OneofUint64 -> a == b
             is TestAllTypesProto3.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofFloat).value.toBits()
@@ -516,7 +519,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.optionalDouble.toBits() != other.optionalDouble.toBits()) return false
         if (this.optionalBool != other.optionalBool) return false
         if (this.optionalString != other.optionalString) return false
-        if (!this.optionalBytes.contentEquals(other.optionalBytes)) return false
+        if (this.optionalBytes != other.optionalBytes) return false
         if (presenceMask[0] && this.optionalNestedMessage != other.optionalNestedMessage) return false
         if (presenceMask[1] && this.optionalForeignMessage != other.optionalForeignMessage) return false
         if (this.optionalNestedEnum != other.optionalNestedEnum) return false
@@ -539,7 +542,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedDouble != other.repeatedDouble) return false
         if (this.repeatedBool != other.repeatedBool) return false
         if (this.repeatedString != other.repeatedString) return false
-        if ((this.repeatedBytes.size != other.repeatedBytes.size || !this.repeatedBytes.zip(other.repeatedBytes).all { (a, b) -> a.contentEquals(b) })) return false
+        if (this.repeatedBytes != other.repeatedBytes) return false
         if (this.repeatedNestedMessage != other.repeatedNestedMessage) return false
         if (this.repeatedForeignMessage != other.repeatedForeignMessage) return false
         if (this.repeatedNestedEnum != other.repeatedNestedEnum) return false
@@ -673,7 +676,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}optionalDouble=${this.optionalDouble},")
         builder.appendLine("${nextIndentString}optionalBool=${this.optionalBool},")
         builder.appendLine("${nextIndentString}optionalString=${this.optionalString},")
-        builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.contentToString()},")
+        builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.protoToString()},")
         if (presenceMask[0]) {
             builder.appendLine("${nextIndentString}optionalNestedMessage=${this.optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
         } else {
@@ -923,7 +926,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.optionalDouble = this.optionalDouble
         copy.optionalBool = this.optionalBool
         copy.optionalString = this.optionalString
-        copy.optionalBytes = this.optionalBytes.copyOf()
+        copy.optionalBytes = this.optionalBytes
         if (presenceMask[0]) {
             copy.optionalNestedMessage = this.optionalNestedMessage.copy()
         }
@@ -955,7 +958,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.repeatedDouble = this.repeatedDouble.map { it }
         copy.repeatedBool = this.repeatedBool.map { it }
         copy.repeatedString = this.repeatedString.map { it }
-        copy.repeatedBytes = this.repeatedBytes.map { it.copyOf() }
+        copy.repeatedBytes = this.repeatedBytes.map { it }
         copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
         copy.repeatedForeignMessage = this.repeatedForeignMessage.map { it.copy() }
         copy.repeatedNestedEnum = this.repeatedNestedEnum.map { it }
@@ -1004,7 +1007,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.mapInt32Double = this.mapInt32Double.mapValues { it.value }
         copy.mapBoolBool = this.mapBoolBool.mapValues { it.value }
         copy.mapStringString = this.mapStringString.mapValues { it.value }
-        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value.copyOf() }
+        copy.mapStringBytes = this.mapStringBytes.mapValues { it.value }
         copy.mapStringNestedMessage = this.mapStringNestedMessage.mapValues { it.value.copy() }
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
@@ -1128,7 +1131,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                 this
             }
             is TestAllTypesProto3.OneofField.OneofBytes -> {
-                TestAllTypesProto3.OneofField.OneofBytes(this.value.copyOf())
+                this
             }
             is TestAllTypesProto3.OneofField.OneofBool -> {
                 this
@@ -2050,12 +2053,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
         var key: String by MsgFieldDelegate { "" }
-        var value: ByteArray by MsgFieldDelegate { byteArrayOf() }
+        var value: ByteString by MsgFieldDelegate { ByteString() }
 
         override fun hashCode(): Int {
             checkRequiredFields()
             var result = key.hashCode()
-            result = 31 * result + value.contentHashCode()
+            result = 31 * result + value.hashCode()
             return result
         }
 
@@ -2066,7 +2069,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             other as MapStringBytesEntryInternal
             other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (!this.value.contentEquals(other.value)) return false
+            if (this.value != other.value) return false
             return true
         }
 
@@ -2081,7 +2084,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto3.MapStringBytesEntry(")
             builder.appendLine("${nextIndentString}key=${this.key},")
-            builder.appendLine("${nextIndentString}value=${this.value.contentToString()},")
+            builder.appendLine("${nextIndentString}value=${this.value.protoToString()},")
             builder.append("${indentString})")
             return builder.toString()
         }

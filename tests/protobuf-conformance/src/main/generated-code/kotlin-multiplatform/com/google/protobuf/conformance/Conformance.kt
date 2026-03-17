@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf.conformance
 
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -83,7 +84,7 @@ interface ConformanceRequest {
     */
     sealed interface Payload {
         @JvmInline
-        value class ProtobufPayload(val value: ByteArray): Payload
+        value class ProtobufPayload(val value: ByteString): Payload
 
         @JvmInline
         value class JsonPayload(val value: String): Payload
@@ -146,7 +147,7 @@ interface ConformanceResponse {
         * protobuf, serialize it to protobuf and set it in this field.
         */
         @JvmInline
-        value class ProtobufPayload(val value: ByteArray): Result
+        value class ProtobufPayload(val value: ByteString): Result
 
         /**
         * If the input was successfully parsed and the requested output was JSON,

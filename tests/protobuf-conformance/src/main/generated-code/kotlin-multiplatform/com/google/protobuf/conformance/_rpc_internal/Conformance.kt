@@ -4,6 +4,7 @@ package com.google.protobuf.conformance
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -24,6 +25,7 @@ import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
@@ -261,24 +263,14 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     fun ConformanceRequest.Payload.oneOfHashCode(): Int {
-        return when (this) {
-            is ConformanceRequest.Payload.ProtobufPayload -> value.contentHashCode() + 0
-            is ConformanceRequest.Payload.JsonPayload -> hashCode() + 1
-            is ConformanceRequest.Payload.JspbPayload -> hashCode() + 2
-            is ConformanceRequest.Payload.TextPayload -> hashCode() + 3
+        val offset = when (this) {
+            is ConformanceRequest.Payload.ProtobufPayload -> 0
+            is ConformanceRequest.Payload.JsonPayload -> 1
+            is ConformanceRequest.Payload.JspbPayload -> 2
+            is ConformanceRequest.Payload.TextPayload -> 3
         }
-    }
 
-    fun oneOfEquals(a: ConformanceRequest.Payload?, b: ConformanceRequest.Payload?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is ConformanceRequest.Payload.ProtobufPayload -> a.value.contentEquals((b as ConformanceRequest.Payload.ProtobufPayload).value)
-            is ConformanceRequest.Payload.JsonPayload -> a == b
-            is ConformanceRequest.Payload.JspbPayload -> a == b
-            is ConformanceRequest.Payload.TextPayload -> a == b
-        }
+        return hashCode() + offset
     }
 
     override fun equals(other: Any?): Boolean {
@@ -293,7 +285,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         if (this.testCategory != other.testCategory) return false
         if (presenceMask[0] && this.jspbEncodingOptions != other.jspbEncodingOptions) return false
         if (this.printUnknownFields != other.printUnknownFields) return false
-        if (!oneOfEquals(this.payload, other.payload)) return false
+        if (this.payload != other.payload) return false
         return true
     }
 
@@ -345,20 +337,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     @InternalRpcApi
     fun ConformanceRequest.Payload.oneOfCopy(): ConformanceRequest.Payload {
-        return when (this) {
-            is ConformanceRequest.Payload.ProtobufPayload -> {
-                ConformanceRequest.Payload.ProtobufPayload(this.value.copyOf())
-            }
-            is ConformanceRequest.Payload.JsonPayload -> {
-                this
-            }
-            is ConformanceRequest.Payload.JspbPayload -> {
-                this
-            }
-            is ConformanceRequest.Payload.TextPayload -> {
-                this
-            }
-        }
+        return this
     }
 
     @InternalRpcApi
@@ -415,34 +394,19 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     fun ConformanceResponse.Result.oneOfHashCode(): Int {
-        return when (this) {
-            is ConformanceResponse.Result.ParseError -> hashCode() + 0
-            is ConformanceResponse.Result.SerializeError -> hashCode() + 1
-            is ConformanceResponse.Result.TimeoutError -> hashCode() + 2
-            is ConformanceResponse.Result.RuntimeError -> hashCode() + 3
-            is ConformanceResponse.Result.ProtobufPayload -> value.contentHashCode() + 4
-            is ConformanceResponse.Result.JsonPayload -> hashCode() + 5
-            is ConformanceResponse.Result.Skipped -> hashCode() + 6
-            is ConformanceResponse.Result.JspbPayload -> hashCode() + 7
-            is ConformanceResponse.Result.TextPayload -> hashCode() + 8
+        val offset = when (this) {
+            is ConformanceResponse.Result.ParseError -> 0
+            is ConformanceResponse.Result.SerializeError -> 1
+            is ConformanceResponse.Result.TimeoutError -> 2
+            is ConformanceResponse.Result.RuntimeError -> 3
+            is ConformanceResponse.Result.ProtobufPayload -> 4
+            is ConformanceResponse.Result.JsonPayload -> 5
+            is ConformanceResponse.Result.Skipped -> 6
+            is ConformanceResponse.Result.JspbPayload -> 7
+            is ConformanceResponse.Result.TextPayload -> 8
         }
-    }
 
-    fun oneOfEquals(a: ConformanceResponse.Result?, b: ConformanceResponse.Result?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is ConformanceResponse.Result.ParseError -> a == b
-            is ConformanceResponse.Result.SerializeError -> a == b
-            is ConformanceResponse.Result.TimeoutError -> a == b
-            is ConformanceResponse.Result.RuntimeError -> a == b
-            is ConformanceResponse.Result.ProtobufPayload -> a.value.contentEquals((b as ConformanceResponse.Result.ProtobufPayload).value)
-            is ConformanceResponse.Result.JsonPayload -> a == b
-            is ConformanceResponse.Result.Skipped -> a == b
-            is ConformanceResponse.Result.JspbPayload -> a == b
-            is ConformanceResponse.Result.TextPayload -> a == b
-        }
+        return hashCode() + offset
     }
 
     override fun equals(other: Any?): Boolean {
@@ -451,7 +415,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         if (other == null || this::class != other::class) return false
         other as ConformanceResponseInternal
         other.checkRequiredFields()
-        if (!oneOfEquals(this.result, other.result)) return false
+        if (this.result != other.result) return false
         return true
     }
 
@@ -485,35 +449,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     @InternalRpcApi
     fun ConformanceResponse.Result.oneOfCopy(): ConformanceResponse.Result {
-        return when (this) {
-            is ConformanceResponse.Result.ParseError -> {
-                this
-            }
-            is ConformanceResponse.Result.SerializeError -> {
-                this
-            }
-            is ConformanceResponse.Result.TimeoutError -> {
-                this
-            }
-            is ConformanceResponse.Result.RuntimeError -> {
-                this
-            }
-            is ConformanceResponse.Result.ProtobufPayload -> {
-                ConformanceResponse.Result.ProtobufPayload(this.value.copyOf())
-            }
-            is ConformanceResponse.Result.JsonPayload -> {
-                this
-            }
-            is ConformanceResponse.Result.Skipped -> {
-                this
-            }
-            is ConformanceResponse.Result.JspbPayload -> {
-                this
-            }
-            is ConformanceResponse.Result.TextPayload -> {
-                this
-            }
-        }
+        return this
     }
 
     @InternalRpcApi
