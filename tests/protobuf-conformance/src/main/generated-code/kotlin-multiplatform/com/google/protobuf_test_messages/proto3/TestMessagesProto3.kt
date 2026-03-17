@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto3
 
-import com.google.protobuf.kotlin.*
 import com.google.protobuf.kotlin.BoolValue
 import com.google.protobuf.kotlin.BytesValue
 import com.google.protobuf.kotlin.DoubleValue

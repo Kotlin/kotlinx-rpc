@@ -78,6 +78,13 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
+        // todo needs actual function name resolution if we want to not have unused imports
+        fileDeclaration.dependencies.forEach { dependency ->
+            dependency.packageName.addExtensionImports(
+                dependency.enumDeclarations.isNotEmpty() || dependency.messageDeclarations.any { it.hasEnums() },
+            )
+        }
+
         generateInternalMessageEntities(fileDeclaration.messageDeclarations)
 
         val allEnums = fileDeclaration.enumDeclarations + fileDeclaration.messageDeclarations
@@ -293,15 +300,23 @@ class ModelToProtobufKotlinCommonGenerator(
             // if the subMsg is part of some other package and not a well-known type,
             // we import all necessary functions
             if (subMsgPkg != pkg) {
-                internalImports.add(subMsgPkg.importPath("asInternal"))
-                internalImports.add(subMsgPkg.importPath("copy"))
-                internalImports.add(subMsgPkg.importPath("checkRequiredFields"))
-                internalImports.add(subMsgPkg.importPath("decodeWith"))
+                subMsgPkg.addExtensionImports(hasEnums = false)
             }
         }
 
         internalImports.add("kotlinx.io.bytestring.isNotEmpty")
         internalImports.add("kotlinx.rpc.protobuf.internal.protoToString")
+    }
+
+    private fun FqName.Package.addExtensionImports(hasEnums: Boolean) {
+        internalImports.add(importPath("asInternal"))
+        internalImports.add(importPath("copy"))
+        internalImports.add(importPath("checkRequiredFields"))
+        internalImports.add(importPath("decodeWith"))
+        internalImports.add(importPath("encodeWith"))
+        if (hasEnums) {
+            internalImports.add(importPath("fromNumber"))
+        }
     }
 
     private fun CodeGenerator.generateCompanionObject() {

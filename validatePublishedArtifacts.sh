@@ -72,7 +72,7 @@ else
 fi
 
 if [[ "$noproxy" == true ]]; then
-    command="$command -Pkotlinx.rpc.useProxyRepositories=true"
+    command="$command -Pkotlinx.rpc.useProxyRepositories=false"
 fi
 
 failed=()

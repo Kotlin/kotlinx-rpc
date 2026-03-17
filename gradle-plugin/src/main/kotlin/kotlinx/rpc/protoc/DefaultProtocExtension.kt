@@ -206,7 +206,7 @@ internal open class DefaultProtocExtension @Inject constructor(
                     if (!plugin.artifact.isPresent) {
                         throw GradleException(
                             "Artifact is not specified for protoc plugin ${plugin.name}. " +
-                                    "Use `local {}` or `remote {}` to specify it."
+                                "Use `local {}` or `remote {}` to specify it."
                         )
                     }
                 }
@@ -238,7 +238,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
-            withImport = protoSourceSet.imports.map { it.isNotEmpty() },
+            withImport = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty },
             properties = properties,
         ) {
             dependsOn(processProtoTask)
@@ -607,7 +607,7 @@ private fun Project.configurePlatformOptions() {
 
                 compilationSourceSets.forAll {
                     val protoSourceSet = protoSourceSets.getByName(it.name)
-                            as? DefaultProtoSourceSet ?: return@forAll
+                        as? DefaultProtoSourceSet ?: return@forAll
 
                     updatePlatform(protoSourceSet, target)
                 }
@@ -665,7 +665,7 @@ private fun Project.configureMultiplatformWithAndroidSourceSets(body: (DefaultPr
 
                 compilationSourceSets.forAll {
                     val protoSourceSet = protoSourceSets.getByName(it.name)
-                            as? DefaultProtoSourceSet ?: return@forAll
+                        as? DefaultProtoSourceSet ?: return@forAll
 
                     if (protoSourceSet.tasksConfigured.orElse(false).get()) {
                         return@forAll
@@ -687,7 +687,7 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
     val rootSourceSets = LegacyAndroidRootSourceSets.entries
         .mapNotNull { rootName ->
             val sourceSet = project.protoSourceSets.findByName(rootName.stringValue)
-                    as? DefaultProtoSourceSet
+                as? DefaultProtoSourceSet
 
             sourceSet?.let { rootName to it }
         }.toMap()
@@ -725,7 +725,7 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
                 ?: throw GradleException("No source sets found for variant ${variant.name}")
 
             val variantProtoSourceSet = project.protoSourceSets.findByName(variantSourceSetName)
-                    as? DefaultProtoSourceSet ?: return@forEach
+                as? DefaultProtoSourceSet ?: return@forEach
 
             val proxyNames = mutableListOf<String>()
             (dependencySourceSetNames + testFixtureSetNames)
@@ -780,7 +780,7 @@ private fun AndroidComponents.configureLegacyAndroidVariants(
             } else {
                 if (rootName != LegacyAndroidRootSourceSets.Main) {
                     val mainVariantProtoSourceSet = project.protoSourceSets.findByName(variant.name)
-                            as? DefaultProtoSourceSet
+                        as? DefaultProtoSourceSet
 
                     if (mainVariantProtoSourceSet != null) {
                         variantProtoSourceSet.androidDependencies.add(mainVariantProtoSourceSet)

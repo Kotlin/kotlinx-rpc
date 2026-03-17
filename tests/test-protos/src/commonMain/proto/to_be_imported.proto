@@ -1,0 +1,5 @@
+package to.be.imported;
+
+message IWantToBeImported {
+  required string hello = 1;
+}

@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
 package com.google.protobuf_test_messages.proto3
 
-import com.google.protobuf.kotlin.*
 import com.google.protobuf.kotlin.AnyInternal
 import com.google.protobuf.kotlin.BoolValue
 import com.google.protobuf.kotlin.BoolValueInternal
@@ -40,6 +39,8 @@ import com.google.protobuf.kotlin.asInternal
 import com.google.protobuf.kotlin.checkRequiredFields
 import com.google.protobuf.kotlin.copy
 import com.google.protobuf.kotlin.decodeWith
+import com.google.protobuf.kotlin.encodeWith
+import com.google.protobuf.kotlin.fromNumber
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
