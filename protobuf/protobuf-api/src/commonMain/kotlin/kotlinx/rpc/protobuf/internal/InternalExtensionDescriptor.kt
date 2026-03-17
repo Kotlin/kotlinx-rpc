@@ -37,7 +37,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     public val encode: (encoder: WireEncoder, fieldNumber: Int, value: Any, config: ProtoConfig?) -> Unit,
     /** Decodes one extension field occurrence from wire format.
      *
-     * @param currentValue The current value of the extension, or `null` if the field is unset.
+     * `currentValue` The current value of the extension, or `null` if the field is unset.
      *                     This is necessary for messages that are send in multiple batches and not at ones.
      */
     public val decode: (currentValue: Any?, decoder: WireDecoder, config: ProtoConfig?) -> V,
