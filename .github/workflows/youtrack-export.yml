@@ -29,26 +29,27 @@ jobs:
             echo "Mapped to YouTrack type: Task (default)"
           fi
 
-      - name: Ensure github-issue tag exists
+      - name: Resolve github-issue tag ID
+        id: resolve-tag
         run: |
-          echo "Creating 'github-issue' tag if it doesn't exist..."
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -X POST \
+          TAG_ID=$(curl -sf \
             -H "Authorization: Bearer $YOUTRACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{"name": "github-issue"}' \
-            "$YOUTRACK_URL/api/tags")
+            "$YOUTRACK_URL/api/tags?fields=id,name&query=github-issue" \
+            | jq -r '.[0].id')
 
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
-
-          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
-            echo "Created 'github-issue' tag"
-          elif [ "$HTTP_CODE" -eq 409 ]; then
-            echo "'github-issue' tag already exists"
-          else
-            echo "::warning::Failed to ensure tag exists (HTTP $HTTP_CODE): $BODY"
+          if [ -z "$TAG_ID" ] || [ "$TAG_ID" = "null" ]; then
+            echo "Tag not found, creating..."
+            TAG_ID=$(curl -sf \
+              -X POST \
+              -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"name": "github-issue"}' \
+              "$YOUTRACK_URL/api/tags?fields=id" \
+              | jq -r '.id')
           fi
+
+          echo "tag_id=$TAG_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag ID: $TAG_ID"
 
       - name: Create YouTrack issue
         id: create-issue
@@ -113,14 +114,15 @@ jobs:
       - name: Tag issue with github-issue
         env:
           ISSUE_ID: ${{ steps.create-issue.outputs.issue_id }}
+          TAG_ID: ${{ steps.resolve-tag.outputs.tag_id }}
         run: |
-          echo "Tagging $ISSUE_ID with 'github-issue'..."
+          echo "Tagging $ISSUE_ID with 'github-issue' (tag ID: $TAG_ID)..."
 
           RESPONSE=$(curl -s -w "\n%{http_code}" \
             -X POST \
             -H "Authorization: Bearer $YOUTRACK_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"name": "github-issue"}' \
+            -d "{\"id\": \"$TAG_ID\"}" \
             "$YOUTRACK_URL/api/issues/$ISSUE_ID/tags")
 
           HTTP_CODE=$(echo "$RESPONSE" | tail -1)

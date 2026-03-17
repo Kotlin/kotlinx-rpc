@@ -12,29 +12,32 @@ jobs:
       YOUTRACK_TOKEN: ${{ secrets.YOUTRACK_TOKEN }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Ensure github-issue tag exists
+      - name: Resolve github-issue tag ID
+        id: resolve-tag
         run: |
-          echo "Creating 'github-issue' tag if it doesn't exist..."
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
-            -X POST \
+          TAG_ID=$(curl -sf \
             -H "Authorization: Bearer $YOUTRACK_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{"name": "github-issue"}' \
-            "$YOUTRACK_URL/api/tags")
+            "$YOUTRACK_URL/api/tags?fields=id,name&query=github-issue" \
+            | jq -r '.[0].id')
 
-          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | sed '$d')
-
-          if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
-            echo "Created 'github-issue' tag"
-          elif [ "$HTTP_CODE" -eq 409 ]; then
-            echo "'github-issue' tag already exists"
-          else
-            echo "::warning::Failed to ensure tag exists (HTTP $HTTP_CODE): $BODY"
+          if [ -z "$TAG_ID" ] || [ "$TAG_ID" = "null" ]; then
+            echo "Tag not found, creating..."
+            TAG_ID=$(curl -sf \
+              -X POST \
+              -H "Authorization: Bearer $YOUTRACK_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"name": "github-issue"}' \
+              "$YOUTRACK_URL/api/tags?fields=id" \
+              | jq -r '.id')
           fi
+
+          echo "tag_id=$TAG_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag ID: $TAG_ID"
 
       - name: Fetch and export all issues
         shell: bash {0}
+        env:
+          TAG_ID: ${{ steps.resolve-tag.outputs.tag_id }}
         run: |
           PAGE=1
           EXPORTED=0
@@ -45,7 +48,7 @@ jobs:
 
           while true; do
             echo "--- Fetching page $PAGE ---"
-            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=all&per_page=100&page=$PAGE&sort=created&direction=asc" \
+            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=open&per_page=100&page=$PAGE&sort=created&direction=asc" \
               --jq '[.[] | select(.pull_request == null)]')
 
             if [ $? -ne 0 ]; then
@@ -95,7 +98,7 @@ jobs:
                 -G --data-urlencode "query=project: KRPC tag: github-issue summary: [GitHub] $ISSUE_TITLE" \
                 "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1")
 
-              EXISTING=$(echo "$SEARCH_RESULT" | jq 'length' 2>/dev/null || echo "0")
+              EXISTING=$(echo "$SEARCH_RESULT" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
               if [ "$EXISTING" -gt 0 ]; then
                 EXISTING_ID=$(echo "$SEARCH_RESULT" | jq -r '.[0].idReadable')
                 echo "  -> Skipping (already exists as $EXISTING_ID)"
@@ -149,12 +152,12 @@ jobs:
               echo "  -> Created: $YT_ID"
 
               # Tag issue
-              echo "  -> Tagging $YT_ID with 'github-issue'..."
+              echo "  -> Tagging $YT_ID with 'github-issue' (tag ID: $TAG_ID)..."
               TAG_RESPONSE=$(curl -s -w "\n%{http_code}" \
                 -X POST \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -H "Content-Type: application/json" \
-                -d '{"name": "github-issue"}' \
+                -d "{\"id\": \"$TAG_ID\"}" \
                 "$YOUTRACK_URL/api/issues/$YT_ID/tags")
 
               TAG_HTTP=$(echo "$TAG_RESPONSE" | tail -1)
