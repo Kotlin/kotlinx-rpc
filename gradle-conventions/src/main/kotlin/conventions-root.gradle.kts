@@ -43,14 +43,6 @@ dokka {
         html {
             setupPage(globalRootDir)
         }
-        versioning {
-            version.set(libVersion)
-            val olderVersionsDirFile = pagesDirectory.resolve("api-older-versions").toFile()
-            if (olderVersionsDirFile.exists()) {
-                olderVersionsDir.set(olderVersionsDirFile)
-            }
-            renderVersionsNavigationOnAllPages.set(true)
-        }
     }
 
     dokkaPublications.html {
@@ -71,7 +63,6 @@ dokka {
 
 dependencies {
     dokkaPlugin(libs.dokka.rpc.plugin)
-    dokkaPlugin(libs.dokka.versioning.plugin)
     dokka("org.jetbrains.kotlinx:gradle-plugin")
 }
 

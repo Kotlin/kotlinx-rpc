@@ -102,7 +102,6 @@ dokka-test-api = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = 
 dokka-base-test-utils = { module = "org.jetbrains.dokka:dokka-base-test-utils", version.ref = "dokka" }
 dokka-analysis-kotlin-symbols = { module = "org.jetbrains.dokka:analysis-kotlin-symbols", version.ref = "dokka" }
 dokka-rpc-plugin = { module = "org.jetbrains.kotlinx:dokka-rpc-plugin", version.ref = "kotlinx-rpc" }
-dokka-versioning-plugin = { module = "org.jetbrains.dokka:versioning-plugin", version.ref = "dokka" }
 
 # grpc and protobuf
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protobuf" }
