@@ -17,19 +17,19 @@ enum class WireType {
 }
 
 sealed interface FieldType {
-    val defaultValue: ScopedFormattedString?
+    val defaultValue: ScopedFormattedString
     val wireType: WireType
 
     val isPackable: Boolean get() = false
 
     data class List(val value: FieldType) : FieldType {
-        override val defaultValue: ScopedFormattedString = "mutableListOf()".scoped()
+        override val defaultValue: ScopedFormattedString = "emptyList()".scoped()
         override val wireType: WireType by lazy { value.wireType }
         override val isPackable: Boolean = value.isPackable
     }
 
     data class Map(val entry: Entry) : FieldType {
-        override val defaultValue: ScopedFormattedString = "mutableMapOf()".scoped()
+        override val defaultValue: ScopedFormattedString = "emptyMap()".scoped()
         override val wireType: WireType = WireType.LENGTH_DELIMITED
 
         data class Entry(val dec: Lazy<MessageDeclaration>, val key: FieldType, val value: FieldType)
@@ -44,7 +44,7 @@ sealed interface FieldType {
     }
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
-        override val defaultValue: ScopedFormattedString? = null
+        override val defaultValue: ScopedFormattedString by lazy { "%T.DEFAULT".scoped(dec.value.internalClassName) }
         override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 

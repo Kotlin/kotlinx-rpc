@@ -480,35 +480,41 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             asInternal: (V) -> InternalMessage,
             encodeWith: (V, WireEncoder, ProtoConfig?) -> Unit,
             decodeWith: (V, WireDecoder, ProtoConfig?) -> Unit
-        ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
-            fieldNumber = fieldNumber,
-            name = name,
-            wireType = WireType.LENGTH_DELIMITED,
-            messageType = extendee,
-            valueType = valueType,
-            defaultValue = lazy { default() },
-            size = { fieldNr, value ->
-                val size = asInternal(value.encodingCast(valueType))._size
-                WireSize.tag(fieldNr, WireType.LENGTH_DELIMITED) + WireSize.uInt32(size.toUInt()) + size
-            },
-            encode = { enc, fieldNr, value, config ->
-                val value = value.encodingCast(valueType)
-                val internal = asInternal(value)
-                enc.writeMessage(fieldNr, internal) { encodeWith(value, it, config) }
-            },
-            decode = { currentMessage, dec, config ->
-                val msg = currentMessage?.let { valueType.cast(it) } ?: run { default() }
-                val internal = asInternal(msg)
-                dec.readMessage(internal) { _, dec ->
-                    decodeWith(msg, dec, config)
+        ): InternalExtensionDescriptor<T, V> {
+            val sharedDefault = lazy(default)
+            return InternalExtensionDescriptor(
+                fieldNumber = fieldNumber,
+                name = name,
+                wireType = WireType.LENGTH_DELIMITED,
+                messageType = extendee,
+                valueType = valueType,
+                defaultValue = sharedDefault,
+                size = { fieldNr, value ->
+                    val size = asInternal(value.encodingCast(valueType))._size
+                    WireSize.tag(fieldNr, WireType.LENGTH_DELIMITED) + WireSize.uInt32(size.toUInt()) + size
+                },
+                encode = { enc, fieldNr, value, config ->
+                    val value = value.encodingCast(valueType)
+                    val internal = asInternal(value)
+                    enc.writeMessage(fieldNr, internal) { encodeWith(value, it, config) }
+                },
+                decode = { currentMessage, dec, config ->
+                    val msg = currentMessage?.let { valueType.cast(it) } ?: run {
+                        @Suppress("UNCHECKED_CAST")
+                        asInternal(sharedDefault.value).copyInternal() as V
+                    }
+                    val internal = asInternal(msg)
+                    dec.readMessage(internal) { _, dec ->
+                        decodeWith(msg, dec, config)
+                    }
+                    msg
+                },
+                copy = {
+                    @Suppress("UNCHECKED_CAST")
+                    asInternal(it.encodingCast(valueType)).copyInternal() as V
                 }
-                msg
-            },
-            copy = {
-                @Suppress("UNCHECKED_CAST")
-                asInternal(it.encodingCast(valueType)).copyInternal() as V
-            }
-        )
+            )
+        }
 
         public fun <@GeneratedProtoMessage T : Any, V : Any> group(
             fieldNumber: Int,
@@ -519,38 +525,44 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             asInternal: (V) -> InternalMessage,
             encodeWith: (V, WireEncoder, ProtoConfig?) -> Unit,
             decodeWith: (V, WireDecoder, ProtoConfig?, KTag?) -> Unit,
-        ): InternalExtensionDescriptor<T, V> = InternalExtensionDescriptor(
-            fieldNumber = fieldNumber,
-            name = name,
-            wireType = WireType.START_GROUP,
-            messageType = extendee,
-            valueType = valueType,
-            defaultValue = lazy { default() },
-            size = { fieldNr, value ->
-                val groupSize = asInternal(value.encodingCast(valueType))._size
-                WireSize.tag(fieldNr, WireType.START_GROUP) +
-                    groupSize +
-                    WireSize.tag(fieldNr, WireType.END_GROUP)
-            },
-            encode = { enc, fieldNr, value, config ->
-                val value = value.encodingCast(valueType)
-                val internal = asInternal(value)
-                enc.writeGroupMessage(fieldNr, internal) { encodeWith(value, it, config) }
-            },
-            decode = { currentMessage, dec, config ->
-                val msg = currentMessage?.let { valueType.cast(it) } ?: run { default() }
-                val internal = asInternal(msg)
-                val startGroup = KTag(fieldNumber, WireType.START_GROUP)
-                dec.readGroup(internal) { _, decoder ->
-                    decodeWith(msg, decoder, config, startGroup)
+        ): InternalExtensionDescriptor<T, V> {
+            val sharedDefault = lazy(default)
+            return InternalExtensionDescriptor(
+                fieldNumber = fieldNumber,
+                name = name,
+                wireType = WireType.START_GROUP,
+                messageType = extendee,
+                valueType = valueType,
+                defaultValue = sharedDefault,
+                size = { fieldNr, value ->
+                    val groupSize = asInternal(value.encodingCast(valueType))._size
+                    WireSize.tag(fieldNr, WireType.START_GROUP) +
+                        groupSize +
+                        WireSize.tag(fieldNr, WireType.END_GROUP)
+                },
+                encode = { enc, fieldNr, value, config ->
+                    val value = value.encodingCast(valueType)
+                    val internal = asInternal(value)
+                    enc.writeGroupMessage(fieldNr, internal) { encodeWith(value, it, config) }
+                },
+                decode = { currentMessage, dec, config ->
+                    val msg = currentMessage?.let { valueType.cast(it) } ?: run {
+                        @Suppress("UNCHECKED_CAST")
+                        asInternal(sharedDefault.value).copyInternal() as V
+                    }
+                    val internal = asInternal(msg)
+                    val startGroup = KTag(fieldNumber, WireType.START_GROUP)
+                    dec.readGroup(internal) { _, decoder ->
+                        decodeWith(msg, decoder, config, startGroup)
+                    }
+                    msg
+                },
+                copy = {
+                    @Suppress("UNCHECKED_CAST")
+                    asInternal(it.encodingCast(valueType)).copyInternal() as V
                 }
-                msg
-            },
-            copy = {
-                @Suppress("UNCHECKED_CAST")
-                asInternal(it.encodingCast(valueType)).copyInternal() as V
-            }
-        )
+            )
+        }
 
         public fun <@GeneratedProtoMessage T : Any, E : Any> repeated(
             elementDescriptor: InternalExtensionDescriptor<T, E>,
@@ -558,6 +570,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
         ): InternalExtensionDescriptor<T, List<E>> {
             @Suppress("UNCHECKED_CAST")
             val listType = List::class as KClass<List<E>>
+            val sharedDefault = lazy(defaultValue)
 
             return InternalExtensionDescriptor(
                 fieldNumber = elementDescriptor.fieldNumber,
@@ -565,7 +578,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 wireType = elementDescriptor.wireType,
                 messageType = elementDescriptor.messageType,
                 valueType = listType,
-                defaultValue = lazy(defaultValue),
+                defaultValue = sharedDefault,
                 size = { _, value ->
                     // Non-packed repeated extensions write one field occurrence per element.
                     listType.cast(value).sumOf { rawElement ->
@@ -580,7 +593,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 decode = { currentValue, dec, config ->
                     val result = currentValue
                         ?.let { listType.cast(it) as MutableList }
-                        ?: defaultValue().toMutableList()
+                        ?: sharedDefault.value.toMutableList()
                     result += elementDescriptor.decode(null, dec, config)
                     result
                 },
@@ -608,6 +621,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             @Suppress("UNCHECKED_CAST")
             val listType = List::class as KClass<List<E>>
             val elementTagSize = WireSize.tag(elementDescriptor.fieldNumber, elementDescriptor.wireType)
+            val sharedDefault = lazy(defaultValue)
 
             return InternalExtensionDescriptor(
                 fieldNumber = elementDescriptor.fieldNumber,
@@ -616,7 +630,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 acceptedWireTypes = setOf(WireType.LENGTH_DELIMITED, elementDescriptor.wireType),
                 messageType = elementDescriptor.messageType,
                 valueType = listType,
-                defaultValue = lazy(defaultValue),
+                defaultValue = sharedDefault,
                 size = { _, value ->
                     val elements = listType.cast(value)
                     if (elements.isEmpty()) {
@@ -639,14 +653,14 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 decode = { currentValue, dec, config ->
                     val result = currentValue
                         ?.let { listType.cast(it) as MutableList }
-                        ?: defaultValue().toMutableList()
+                        ?: sharedDefault.value.toMutableList()
                     result += elementDescriptor.decode(null, dec, config)
                     result
                 },
                 decodePacked = { currentValue, dec, _ ->
                     val result = currentValue
                         ?.let { listType.cast(it) as MutableList }
-                        ?: defaultValue().toMutableList()
+                        ?: sharedDefault.value.toMutableList()
                     result += decodePackedValues(dec)
                     result
                 },

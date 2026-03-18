@@ -43,7 +43,8 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var paths: List<String> by MsgFieldDelegate { mutableListOf() }
+    internal val __pathsDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
+    public override var paths: List<String> by __pathsDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -121,7 +122,9 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: FieldMask by lazy { FieldMaskInternal() }
+    }
 }
 
 @InternalRpcApi
@@ -152,8 +155,9 @@ public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decode
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__pathsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
-                (msg.paths as MutableList).add(elem)
+                target.add(elem)
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {

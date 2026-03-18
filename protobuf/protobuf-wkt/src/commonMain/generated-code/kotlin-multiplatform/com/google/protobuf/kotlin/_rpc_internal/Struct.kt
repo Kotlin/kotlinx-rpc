@@ -43,7 +43,8 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var fields: Map<String, Value> by MsgFieldDelegate { mutableMapOf() }
+    internal val __fieldsDelegate: MsgFieldDelegate<Map<String, Value>> = MsgFieldDelegate { emptyMap() }
+    public override var fields: Map<String, Value> by __fieldsDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -103,8 +104,10 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        public var key: String by MsgFieldDelegate { "" }
-        public var value: Value by MsgFieldDelegate(PresenceIndices.value) { ValueInternal() }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        public var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Value> = MsgFieldDelegate(PresenceIndices.value) { ValueInternal.DEFAULT }
+        public var value: Value by __valueDelegate
 
         public override fun hashCode(): Int {
             checkRequiredFields()
@@ -186,7 +189,9 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Struct by lazy { StructInternal() }
+    }
 }
 
 public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -326,7 +331,9 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Value by lazy { ValueInternal() }
+    }
 }
 
 public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -339,7 +346,8 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var values: List<Value> by MsgFieldDelegate { mutableListOf() }
+    internal val __valuesDelegate: MsgFieldDelegate<List<Value>> = MsgFieldDelegate { emptyList() }
+    public override var values: List<Value> by __valuesDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -417,7 +425,9 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: ListValue by lazy { ListValueInternal() }
+    }
 }
 
 @InternalRpcApi
@@ -457,9 +467,10 @@ public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: Wir
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__fieldsDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(StructInternal.FieldsEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> StructInternal.FieldsEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.fields as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             else -> {
@@ -672,9 +683,10 @@ public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decode
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when {
             tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__valuesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.values as MutableList).add(elem)
+                target.add(elem)
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -749,11 +761,8 @@ public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructIn
                 msg.key = decoder.readString()
             }
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.value = ValueInternal()
-                }
-
-                decoder.readMessage(msg.value.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__valueDelegate.getOrCreate(msg) { ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {

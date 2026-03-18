@@ -127,149 +127,292 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var optionalInt32: Int by MsgFieldDelegate { 0 }
-    override var optionalInt64: Long by MsgFieldDelegate { 0L }
-    override var optionalUint32: UInt by MsgFieldDelegate { 0u }
-    override var optionalUint64: ULong by MsgFieldDelegate { 0uL }
-    override var optionalSint32: Int by MsgFieldDelegate { 0 }
-    override var optionalSint64: Long by MsgFieldDelegate { 0L }
-    override var optionalFixed32: UInt by MsgFieldDelegate { 0u }
-    override var optionalFixed64: ULong by MsgFieldDelegate { 0uL }
-    override var optionalSfixed32: Int by MsgFieldDelegate { 0 }
-    override var optionalSfixed64: Long by MsgFieldDelegate { 0L }
-    override var optionalFloat: Float by MsgFieldDelegate { 0.0f }
-    override var optionalDouble: Double by MsgFieldDelegate { 0.0 }
-    override var optionalBool: Boolean by MsgFieldDelegate { false }
-    override var optionalString: String by MsgFieldDelegate { "" }
-    override var optionalBytes: ByteString by MsgFieldDelegate { ByteString() }
-    override var optionalNestedMessage: TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal() }
-    override var optionalForeignMessage: ForeignMessage by MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageInternal() }
-    override var optionalNestedEnum: TestAllTypesProto3.NestedEnum by MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
-    override var optionalForeignEnum: ForeignEnum by MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
-    override var optionalAliasedEnum: TestAllTypesProto3.AliasedEnum by MsgFieldDelegate { TestAllTypesProto3.AliasedEnum.ALIAS_FOO }
-    override var optionalStringPiece: String by MsgFieldDelegate { "" }
-    override var optionalCord: String by MsgFieldDelegate { "" }
-    override var recursiveMessage: TestAllTypesProto3 by MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllTypesProto3Internal() }
-    override var repeatedInt32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedInt64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedUint32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedUint64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedSint32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedSint64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedFixed32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedFixed64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedSfixed32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedSfixed64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedFloat: List<Float> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedString: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBytes: List<ByteString> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedNestedMessage: List<TestAllTypesProto3.NestedMessage> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedForeignMessage: List<ForeignMessage> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedNestedEnum: List<TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedForeignEnum: List<ForeignEnum> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedStringPiece: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedCord: List<String> by MsgFieldDelegate { mutableListOf() }
-    override var packedInt32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var packedInt64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var packedUint32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var packedUint64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var packedSint32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var packedSint64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var packedFixed32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var packedFixed64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var packedSfixed32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var packedSfixed64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var packedFloat: List<Float> by MsgFieldDelegate { mutableListOf() }
-    override var packedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
-    override var packedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
-    override var packedNestedEnum: List<TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedInt32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedInt64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedUint32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedUint64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedSint32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedSint64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedFixed32: List<UInt> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedFixed64: List<ULong> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedSfixed32: List<Int> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedSfixed64: List<Long> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedFloat: List<Float> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedDouble: List<Double> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedBool: List<Boolean> by MsgFieldDelegate { mutableListOf() }
-    override var unpackedNestedEnum: List<TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableListOf() }
-    override var mapInt32Int32: Map<Int, Int> by MsgFieldDelegate { mutableMapOf() }
-    override var mapInt64Int64: Map<Long, Long> by MsgFieldDelegate { mutableMapOf() }
-    override var mapUint32Uint32: Map<UInt, UInt> by MsgFieldDelegate { mutableMapOf() }
-    override var mapUint64Uint64: Map<ULong, ULong> by MsgFieldDelegate { mutableMapOf() }
-    override var mapSint32Sint32: Map<Int, Int> by MsgFieldDelegate { mutableMapOf() }
-    override var mapSint64Sint64: Map<Long, Long> by MsgFieldDelegate { mutableMapOf() }
-    override var mapFixed32Fixed32: Map<UInt, UInt> by MsgFieldDelegate { mutableMapOf() }
-    override var mapFixed64Fixed64: Map<ULong, ULong> by MsgFieldDelegate { mutableMapOf() }
-    override var mapSfixed32Sfixed32: Map<Int, Int> by MsgFieldDelegate { mutableMapOf() }
-    override var mapSfixed64Sfixed64: Map<Long, Long> by MsgFieldDelegate { mutableMapOf() }
-    override var mapInt32Float: Map<Int, Float> by MsgFieldDelegate { mutableMapOf() }
-    override var mapInt32Double: Map<Int, Double> by MsgFieldDelegate { mutableMapOf() }
-    override var mapBoolBool: Map<Boolean, Boolean> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringString: Map<String, String> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringBytes: Map<String, ByteString> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringNestedMessage: Map<String, TestAllTypesProto3.NestedMessage> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringForeignMessage: Map<String, ForeignMessage> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringNestedEnum: Map<String, TestAllTypesProto3.NestedEnum> by MsgFieldDelegate { mutableMapOf() }
-    override var mapStringForeignEnum: Map<String, ForeignEnum> by MsgFieldDelegate { mutableMapOf() }
-    override var optionalBoolWrapper: BoolValue by MsgFieldDelegate(PresenceIndices.optionalBoolWrapper) { BoolValueInternal() }
-    override var optionalInt32Wrapper: Int32Value by MsgFieldDelegate(PresenceIndices.optionalInt32Wrapper) { Int32ValueInternal() }
-    override var optionalInt64Wrapper: Int64Value by MsgFieldDelegate(PresenceIndices.optionalInt64Wrapper) { Int64ValueInternal() }
-    override var optionalUint32Wrapper: UInt32Value by MsgFieldDelegate(PresenceIndices.optionalUint32Wrapper) { UInt32ValueInternal() }
-    override var optionalUint64Wrapper: UInt64Value by MsgFieldDelegate(PresenceIndices.optionalUint64Wrapper) { UInt64ValueInternal() }
-    override var optionalFloatWrapper: FloatValue by MsgFieldDelegate(PresenceIndices.optionalFloatWrapper) { FloatValueInternal() }
-    override var optionalDoubleWrapper: DoubleValue by MsgFieldDelegate(PresenceIndices.optionalDoubleWrapper) { DoubleValueInternal() }
-    override var optionalStringWrapper: StringValue by MsgFieldDelegate(PresenceIndices.optionalStringWrapper) { StringValueInternal() }
-    override var optionalBytesWrapper: BytesValue by MsgFieldDelegate(PresenceIndices.optionalBytesWrapper) { BytesValueInternal() }
-    override var repeatedBoolWrapper: List<BoolValue> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedInt32Wrapper: List<Int32Value> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedInt64Wrapper: List<Int64Value> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedUint32Wrapper: List<UInt32Value> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedUint64Wrapper: List<UInt64Value> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedFloatWrapper: List<FloatValue> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedDoubleWrapper: List<DoubleValue> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedStringWrapper: List<StringValue> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedBytesWrapper: List<BytesValue> by MsgFieldDelegate { mutableListOf() }
-    override var optionalDuration: Duration by MsgFieldDelegate(PresenceIndices.optionalDuration) { DurationInternal() }
-    override var optionalTimestamp: Timestamp by MsgFieldDelegate(PresenceIndices.optionalTimestamp) { TimestampInternal() }
-    override var optionalFieldMask: FieldMask by MsgFieldDelegate(PresenceIndices.optionalFieldMask) { FieldMaskInternal() }
-    override var optionalStruct: Struct by MsgFieldDelegate(PresenceIndices.optionalStruct) { StructInternal() }
-    override var optionalAny: com.google.protobuf.kotlin.Any by MsgFieldDelegate(PresenceIndices.optionalAny) { AnyInternal() }
-    override var optionalValue: Value by MsgFieldDelegate(PresenceIndices.optionalValue) { ValueInternal() }
-    override var optionalNullValue: NullValue by MsgFieldDelegate { NullValue.NULL_VALUE }
-    override var optionalEmpty: Empty by MsgFieldDelegate(PresenceIndices.optionalEmpty) { EmptyInternal() }
-    override var repeatedDuration: List<Duration> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedTimestamp: List<Timestamp> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedFieldmask: List<FieldMask> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedStruct: List<Struct> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedAny: List<com.google.protobuf.kotlin.Any> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedValue: List<Value> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedListValue: List<ListValue> by MsgFieldDelegate { mutableListOf() }
-    override var repeatedEmpty: List<Empty> by MsgFieldDelegate { mutableListOf() }
-    override var fieldname1: Int by MsgFieldDelegate { 0 }
-    override var fieldName2: Int by MsgFieldDelegate { 0 }
-    override var FieldName3: Int by MsgFieldDelegate { 0 }
-    override var field_Name4_: Int by MsgFieldDelegate { 0 }
-    override var field0name5: Int by MsgFieldDelegate { 0 }
-    override var field_0Name6: Int by MsgFieldDelegate { 0 }
-    override var fieldName7: Int by MsgFieldDelegate { 0 }
-    override var FieldName8: Int by MsgFieldDelegate { 0 }
-    override var field_Name9: Int by MsgFieldDelegate { 0 }
-    override var Field_Name10: Int by MsgFieldDelegate { 0 }
-    override var FIELD_NAME11: Int by MsgFieldDelegate { 0 }
-    override var FIELDName12: Int by MsgFieldDelegate { 0 }
-    override var _FieldName13: Int by MsgFieldDelegate { 0 }
-    override var __FieldName14: Int by MsgFieldDelegate { 0 }
-    override var field_Name15: Int by MsgFieldDelegate { 0 }
-    override var field__Name16: Int by MsgFieldDelegate { 0 }
-    override var fieldName17__: Int by MsgFieldDelegate { 0 }
-    override var FieldName18__: Int by MsgFieldDelegate { 0 }
+    internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var optionalInt32: Int by __optionalInt32Delegate
+    internal val __optionalInt64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+    override var optionalInt64: Long by __optionalInt64Delegate
+    internal val __optionalUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+    override var optionalUint32: UInt by __optionalUint32Delegate
+    internal val __optionalUint64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+    override var optionalUint64: ULong by __optionalUint64Delegate
+    internal val __optionalSint32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var optionalSint32: Int by __optionalSint32Delegate
+    internal val __optionalSint64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+    override var optionalSint64: Long by __optionalSint64Delegate
+    internal val __optionalFixed32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+    override var optionalFixed32: UInt by __optionalFixed32Delegate
+    internal val __optionalFixed64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+    override var optionalFixed64: ULong by __optionalFixed64Delegate
+    internal val __optionalSfixed32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var optionalSfixed32: Int by __optionalSfixed32Delegate
+    internal val __optionalSfixed64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+    override var optionalSfixed64: Long by __optionalSfixed64Delegate
+    internal val __optionalFloatDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate { 0.0f }
+    override var optionalFloat: Float by __optionalFloatDelegate
+    internal val __optionalDoubleDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate { 0.0 }
+    override var optionalDouble: Double by __optionalDoubleDelegate
+    internal val __optionalBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    override var optionalBool: Boolean by __optionalBoolDelegate
+    internal val __optionalStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var optionalString: String by __optionalStringDelegate
+    internal val __optionalBytesDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate { ByteString() }
+    override var optionalBytes: ByteString by __optionalBytesDelegate
+    internal val __optionalNestedMessageDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedMessage> = MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal.DEFAULT }
+    override var optionalNestedMessage: TestAllTypesProto3.NestedMessage by __optionalNestedMessageDelegate
+    internal val __optionalForeignMessageDelegate: MsgFieldDelegate<ForeignMessage> = MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageInternal.DEFAULT }
+    override var optionalForeignMessage: ForeignMessage by __optionalForeignMessageDelegate
+    internal val __optionalNestedEnumDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedEnum> = MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
+    override var optionalNestedEnum: TestAllTypesProto3.NestedEnum by __optionalNestedEnumDelegate
+    internal val __optionalForeignEnumDelegate: MsgFieldDelegate<ForeignEnum> = MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
+    override var optionalForeignEnum: ForeignEnum by __optionalForeignEnumDelegate
+    internal val __optionalAliasedEnumDelegate: MsgFieldDelegate<TestAllTypesProto3.AliasedEnum> = MsgFieldDelegate { TestAllTypesProto3.AliasedEnum.ALIAS_FOO }
+    override var optionalAliasedEnum: TestAllTypesProto3.AliasedEnum by __optionalAliasedEnumDelegate
+    internal val __optionalStringPieceDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var optionalStringPiece: String by __optionalStringPieceDelegate
+    internal val __optionalCordDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    override var optionalCord: String by __optionalCordDelegate
+    internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllTypesProto3Internal.DEFAULT }
+    override var recursiveMessage: TestAllTypesProto3 by __recursiveMessageDelegate
+    internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var repeatedInt32: List<Int> by __repeatedInt32Delegate
+    internal val __repeatedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var repeatedInt64: List<Long> by __repeatedInt64Delegate
+    internal val __repeatedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var repeatedUint32: List<UInt> by __repeatedUint32Delegate
+    internal val __repeatedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var repeatedUint64: List<ULong> by __repeatedUint64Delegate
+    internal val __repeatedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var repeatedSint32: List<Int> by __repeatedSint32Delegate
+    internal val __repeatedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var repeatedSint64: List<Long> by __repeatedSint64Delegate
+    internal val __repeatedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var repeatedFixed32: List<UInt> by __repeatedFixed32Delegate
+    internal val __repeatedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var repeatedFixed64: List<ULong> by __repeatedFixed64Delegate
+    internal val __repeatedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var repeatedSfixed32: List<Int> by __repeatedSfixed32Delegate
+    internal val __repeatedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var repeatedSfixed64: List<Long> by __repeatedSfixed64Delegate
+    internal val __repeatedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
+    override var repeatedFloat: List<Float> by __repeatedFloatDelegate
+    internal val __repeatedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
+    override var repeatedDouble: List<Double> by __repeatedDoubleDelegate
+    internal val __repeatedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
+    override var repeatedBool: List<Boolean> by __repeatedBoolDelegate
+    internal val __repeatedStringDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
+    override var repeatedString: List<String> by __repeatedStringDelegate
+    internal val __repeatedBytesDelegate: MsgFieldDelegate<List<ByteString>> = MsgFieldDelegate { emptyList() }
+    override var repeatedBytes: List<ByteString> by __repeatedBytesDelegate
+    internal val __repeatedNestedMessageDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedMessage>> = MsgFieldDelegate { emptyList() }
+    override var repeatedNestedMessage: List<TestAllTypesProto3.NestedMessage> by __repeatedNestedMessageDelegate
+    internal val __repeatedForeignMessageDelegate: MsgFieldDelegate<List<ForeignMessage>> = MsgFieldDelegate { emptyList() }
+    override var repeatedForeignMessage: List<ForeignMessage> by __repeatedForeignMessageDelegate
+    internal val __repeatedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyList() }
+    override var repeatedNestedEnum: List<TestAllTypesProto3.NestedEnum> by __repeatedNestedEnumDelegate
+    internal val __repeatedForeignEnumDelegate: MsgFieldDelegate<List<ForeignEnum>> = MsgFieldDelegate { emptyList() }
+    override var repeatedForeignEnum: List<ForeignEnum> by __repeatedForeignEnumDelegate
+    internal val __repeatedStringPieceDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
+    override var repeatedStringPiece: List<String> by __repeatedStringPieceDelegate
+    internal val __repeatedCordDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
+    override var repeatedCord: List<String> by __repeatedCordDelegate
+    internal val __packedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var packedInt32: List<Int> by __packedInt32Delegate
+    internal val __packedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var packedInt64: List<Long> by __packedInt64Delegate
+    internal val __packedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var packedUint32: List<UInt> by __packedUint32Delegate
+    internal val __packedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var packedUint64: List<ULong> by __packedUint64Delegate
+    internal val __packedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var packedSint32: List<Int> by __packedSint32Delegate
+    internal val __packedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var packedSint64: List<Long> by __packedSint64Delegate
+    internal val __packedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var packedFixed32: List<UInt> by __packedFixed32Delegate
+    internal val __packedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var packedFixed64: List<ULong> by __packedFixed64Delegate
+    internal val __packedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var packedSfixed32: List<Int> by __packedSfixed32Delegate
+    internal val __packedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var packedSfixed64: List<Long> by __packedSfixed64Delegate
+    internal val __packedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
+    override var packedFloat: List<Float> by __packedFloatDelegate
+    internal val __packedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
+    override var packedDouble: List<Double> by __packedDoubleDelegate
+    internal val __packedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
+    override var packedBool: List<Boolean> by __packedBoolDelegate
+    internal val __packedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyList() }
+    override var packedNestedEnum: List<TestAllTypesProto3.NestedEnum> by __packedNestedEnumDelegate
+    internal val __unpackedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var unpackedInt32: List<Int> by __unpackedInt32Delegate
+    internal val __unpackedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var unpackedInt64: List<Long> by __unpackedInt64Delegate
+    internal val __unpackedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var unpackedUint32: List<UInt> by __unpackedUint32Delegate
+    internal val __unpackedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var unpackedUint64: List<ULong> by __unpackedUint64Delegate
+    internal val __unpackedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var unpackedSint32: List<Int> by __unpackedSint32Delegate
+    internal val __unpackedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var unpackedSint64: List<Long> by __unpackedSint64Delegate
+    internal val __unpackedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
+    override var unpackedFixed32: List<UInt> by __unpackedFixed32Delegate
+    internal val __unpackedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
+    override var unpackedFixed64: List<ULong> by __unpackedFixed64Delegate
+    internal val __unpackedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
+    override var unpackedSfixed32: List<Int> by __unpackedSfixed32Delegate
+    internal val __unpackedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
+    override var unpackedSfixed64: List<Long> by __unpackedSfixed64Delegate
+    internal val __unpackedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
+    override var unpackedFloat: List<Float> by __unpackedFloatDelegate
+    internal val __unpackedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
+    override var unpackedDouble: List<Double> by __unpackedDoubleDelegate
+    internal val __unpackedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
+    override var unpackedBool: List<Boolean> by __unpackedBoolDelegate
+    internal val __unpackedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyList() }
+    override var unpackedNestedEnum: List<TestAllTypesProto3.NestedEnum> by __unpackedNestedEnumDelegate
+    internal val __mapInt32Int32Delegate: MsgFieldDelegate<Map<Int, Int>> = MsgFieldDelegate { emptyMap() }
+    override var mapInt32Int32: Map<Int, Int> by __mapInt32Int32Delegate
+    internal val __mapInt64Int64Delegate: MsgFieldDelegate<Map<Long, Long>> = MsgFieldDelegate { emptyMap() }
+    override var mapInt64Int64: Map<Long, Long> by __mapInt64Int64Delegate
+    internal val __mapUint32Uint32Delegate: MsgFieldDelegate<Map<UInt, UInt>> = MsgFieldDelegate { emptyMap() }
+    override var mapUint32Uint32: Map<UInt, UInt> by __mapUint32Uint32Delegate
+    internal val __mapUint64Uint64Delegate: MsgFieldDelegate<Map<ULong, ULong>> = MsgFieldDelegate { emptyMap() }
+    override var mapUint64Uint64: Map<ULong, ULong> by __mapUint64Uint64Delegate
+    internal val __mapSint32Sint32Delegate: MsgFieldDelegate<Map<Int, Int>> = MsgFieldDelegate { emptyMap() }
+    override var mapSint32Sint32: Map<Int, Int> by __mapSint32Sint32Delegate
+    internal val __mapSint64Sint64Delegate: MsgFieldDelegate<Map<Long, Long>> = MsgFieldDelegate { emptyMap() }
+    override var mapSint64Sint64: Map<Long, Long> by __mapSint64Sint64Delegate
+    internal val __mapFixed32Fixed32Delegate: MsgFieldDelegate<Map<UInt, UInt>> = MsgFieldDelegate { emptyMap() }
+    override var mapFixed32Fixed32: Map<UInt, UInt> by __mapFixed32Fixed32Delegate
+    internal val __mapFixed64Fixed64Delegate: MsgFieldDelegate<Map<ULong, ULong>> = MsgFieldDelegate { emptyMap() }
+    override var mapFixed64Fixed64: Map<ULong, ULong> by __mapFixed64Fixed64Delegate
+    internal val __mapSfixed32Sfixed32Delegate: MsgFieldDelegate<Map<Int, Int>> = MsgFieldDelegate { emptyMap() }
+    override var mapSfixed32Sfixed32: Map<Int, Int> by __mapSfixed32Sfixed32Delegate
+    internal val __mapSfixed64Sfixed64Delegate: MsgFieldDelegate<Map<Long, Long>> = MsgFieldDelegate { emptyMap() }
+    override var mapSfixed64Sfixed64: Map<Long, Long> by __mapSfixed64Sfixed64Delegate
+    internal val __mapInt32FloatDelegate: MsgFieldDelegate<Map<Int, Float>> = MsgFieldDelegate { emptyMap() }
+    override var mapInt32Float: Map<Int, Float> by __mapInt32FloatDelegate
+    internal val __mapInt32DoubleDelegate: MsgFieldDelegate<Map<Int, Double>> = MsgFieldDelegate { emptyMap() }
+    override var mapInt32Double: Map<Int, Double> by __mapInt32DoubleDelegate
+    internal val __mapBoolBoolDelegate: MsgFieldDelegate<Map<Boolean, Boolean>> = MsgFieldDelegate { emptyMap() }
+    override var mapBoolBool: Map<Boolean, Boolean> by __mapBoolBoolDelegate
+    internal val __mapStringStringDelegate: MsgFieldDelegate<Map<String, String>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringString: Map<String, String> by __mapStringStringDelegate
+    internal val __mapStringBytesDelegate: MsgFieldDelegate<Map<String, ByteString>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringBytes: Map<String, ByteString> by __mapStringBytesDelegate
+    internal val __mapStringNestedMessageDelegate: MsgFieldDelegate<Map<String, TestAllTypesProto3.NestedMessage>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringNestedMessage: Map<String, TestAllTypesProto3.NestedMessage> by __mapStringNestedMessageDelegate
+    internal val __mapStringForeignMessageDelegate: MsgFieldDelegate<Map<String, ForeignMessage>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringForeignMessage: Map<String, ForeignMessage> by __mapStringForeignMessageDelegate
+    internal val __mapStringNestedEnumDelegate: MsgFieldDelegate<Map<String, TestAllTypesProto3.NestedEnum>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringNestedEnum: Map<String, TestAllTypesProto3.NestedEnum> by __mapStringNestedEnumDelegate
+    internal val __mapStringForeignEnumDelegate: MsgFieldDelegate<Map<String, ForeignEnum>> = MsgFieldDelegate { emptyMap() }
+    override var mapStringForeignEnum: Map<String, ForeignEnum> by __mapStringForeignEnumDelegate
+    internal val __optionalBoolWrapperDelegate: MsgFieldDelegate<BoolValue> = MsgFieldDelegate(PresenceIndices.optionalBoolWrapper) { BoolValueInternal.DEFAULT }
+    override var optionalBoolWrapper: BoolValue by __optionalBoolWrapperDelegate
+    internal val __optionalInt32WrapperDelegate: MsgFieldDelegate<Int32Value> = MsgFieldDelegate(PresenceIndices.optionalInt32Wrapper) { Int32ValueInternal.DEFAULT }
+    override var optionalInt32Wrapper: Int32Value by __optionalInt32WrapperDelegate
+    internal val __optionalInt64WrapperDelegate: MsgFieldDelegate<Int64Value> = MsgFieldDelegate(PresenceIndices.optionalInt64Wrapper) { Int64ValueInternal.DEFAULT }
+    override var optionalInt64Wrapper: Int64Value by __optionalInt64WrapperDelegate
+    internal val __optionalUint32WrapperDelegate: MsgFieldDelegate<UInt32Value> = MsgFieldDelegate(PresenceIndices.optionalUint32Wrapper) { UInt32ValueInternal.DEFAULT }
+    override var optionalUint32Wrapper: UInt32Value by __optionalUint32WrapperDelegate
+    internal val __optionalUint64WrapperDelegate: MsgFieldDelegate<UInt64Value> = MsgFieldDelegate(PresenceIndices.optionalUint64Wrapper) { UInt64ValueInternal.DEFAULT }
+    override var optionalUint64Wrapper: UInt64Value by __optionalUint64WrapperDelegate
+    internal val __optionalFloatWrapperDelegate: MsgFieldDelegate<FloatValue> = MsgFieldDelegate(PresenceIndices.optionalFloatWrapper) { FloatValueInternal.DEFAULT }
+    override var optionalFloatWrapper: FloatValue by __optionalFloatWrapperDelegate
+    internal val __optionalDoubleWrapperDelegate: MsgFieldDelegate<DoubleValue> = MsgFieldDelegate(PresenceIndices.optionalDoubleWrapper) { DoubleValueInternal.DEFAULT }
+    override var optionalDoubleWrapper: DoubleValue by __optionalDoubleWrapperDelegate
+    internal val __optionalStringWrapperDelegate: MsgFieldDelegate<StringValue> = MsgFieldDelegate(PresenceIndices.optionalStringWrapper) { StringValueInternal.DEFAULT }
+    override var optionalStringWrapper: StringValue by __optionalStringWrapperDelegate
+    internal val __optionalBytesWrapperDelegate: MsgFieldDelegate<BytesValue> = MsgFieldDelegate(PresenceIndices.optionalBytesWrapper) { BytesValueInternal.DEFAULT }
+    override var optionalBytesWrapper: BytesValue by __optionalBytesWrapperDelegate
+    internal val __repeatedBoolWrapperDelegate: MsgFieldDelegate<List<BoolValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedBoolWrapper: List<BoolValue> by __repeatedBoolWrapperDelegate
+    internal val __repeatedInt32WrapperDelegate: MsgFieldDelegate<List<Int32Value>> = MsgFieldDelegate { emptyList() }
+    override var repeatedInt32Wrapper: List<Int32Value> by __repeatedInt32WrapperDelegate
+    internal val __repeatedInt64WrapperDelegate: MsgFieldDelegate<List<Int64Value>> = MsgFieldDelegate { emptyList() }
+    override var repeatedInt64Wrapper: List<Int64Value> by __repeatedInt64WrapperDelegate
+    internal val __repeatedUint32WrapperDelegate: MsgFieldDelegate<List<UInt32Value>> = MsgFieldDelegate { emptyList() }
+    override var repeatedUint32Wrapper: List<UInt32Value> by __repeatedUint32WrapperDelegate
+    internal val __repeatedUint64WrapperDelegate: MsgFieldDelegate<List<UInt64Value>> = MsgFieldDelegate { emptyList() }
+    override var repeatedUint64Wrapper: List<UInt64Value> by __repeatedUint64WrapperDelegate
+    internal val __repeatedFloatWrapperDelegate: MsgFieldDelegate<List<FloatValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedFloatWrapper: List<FloatValue> by __repeatedFloatWrapperDelegate
+    internal val __repeatedDoubleWrapperDelegate: MsgFieldDelegate<List<DoubleValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedDoubleWrapper: List<DoubleValue> by __repeatedDoubleWrapperDelegate
+    internal val __repeatedStringWrapperDelegate: MsgFieldDelegate<List<StringValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedStringWrapper: List<StringValue> by __repeatedStringWrapperDelegate
+    internal val __repeatedBytesWrapperDelegate: MsgFieldDelegate<List<BytesValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedBytesWrapper: List<BytesValue> by __repeatedBytesWrapperDelegate
+    internal val __optionalDurationDelegate: MsgFieldDelegate<Duration> = MsgFieldDelegate(PresenceIndices.optionalDuration) { DurationInternal.DEFAULT }
+    override var optionalDuration: Duration by __optionalDurationDelegate
+    internal val __optionalTimestampDelegate: MsgFieldDelegate<Timestamp> = MsgFieldDelegate(PresenceIndices.optionalTimestamp) { TimestampInternal.DEFAULT }
+    override var optionalTimestamp: Timestamp by __optionalTimestampDelegate
+    internal val __optionalFieldMaskDelegate: MsgFieldDelegate<FieldMask> = MsgFieldDelegate(PresenceIndices.optionalFieldMask) { FieldMaskInternal.DEFAULT }
+    override var optionalFieldMask: FieldMask by __optionalFieldMaskDelegate
+    internal val __optionalStructDelegate: MsgFieldDelegate<Struct> = MsgFieldDelegate(PresenceIndices.optionalStruct) { StructInternal.DEFAULT }
+    override var optionalStruct: Struct by __optionalStructDelegate
+    internal val __optionalAnyDelegate: MsgFieldDelegate<com.google.protobuf.kotlin.Any> = MsgFieldDelegate(PresenceIndices.optionalAny) { AnyInternal.DEFAULT }
+    override var optionalAny: com.google.protobuf.kotlin.Any by __optionalAnyDelegate
+    internal val __optionalValueDelegate: MsgFieldDelegate<Value> = MsgFieldDelegate(PresenceIndices.optionalValue) { ValueInternal.DEFAULT }
+    override var optionalValue: Value by __optionalValueDelegate
+    internal val __optionalNullValueDelegate: MsgFieldDelegate<NullValue> = MsgFieldDelegate { NullValue.NULL_VALUE }
+    override var optionalNullValue: NullValue by __optionalNullValueDelegate
+    internal val __optionalEmptyDelegate: MsgFieldDelegate<Empty> = MsgFieldDelegate(PresenceIndices.optionalEmpty) { EmptyInternal.DEFAULT }
+    override var optionalEmpty: Empty by __optionalEmptyDelegate
+    internal val __repeatedDurationDelegate: MsgFieldDelegate<List<Duration>> = MsgFieldDelegate { emptyList() }
+    override var repeatedDuration: List<Duration> by __repeatedDurationDelegate
+    internal val __repeatedTimestampDelegate: MsgFieldDelegate<List<Timestamp>> = MsgFieldDelegate { emptyList() }
+    override var repeatedTimestamp: List<Timestamp> by __repeatedTimestampDelegate
+    internal val __repeatedFieldmaskDelegate: MsgFieldDelegate<List<FieldMask>> = MsgFieldDelegate { emptyList() }
+    override var repeatedFieldmask: List<FieldMask> by __repeatedFieldmaskDelegate
+    internal val __repeatedStructDelegate: MsgFieldDelegate<List<Struct>> = MsgFieldDelegate { emptyList() }
+    override var repeatedStruct: List<Struct> by __repeatedStructDelegate
+    internal val __repeatedAnyDelegate: MsgFieldDelegate<List<com.google.protobuf.kotlin.Any>> = MsgFieldDelegate { emptyList() }
+    override var repeatedAny: List<com.google.protobuf.kotlin.Any> by __repeatedAnyDelegate
+    internal val __repeatedValueDelegate: MsgFieldDelegate<List<Value>> = MsgFieldDelegate { emptyList() }
+    override var repeatedValue: List<Value> by __repeatedValueDelegate
+    internal val __repeatedListValueDelegate: MsgFieldDelegate<List<ListValue>> = MsgFieldDelegate { emptyList() }
+    override var repeatedListValue: List<ListValue> by __repeatedListValueDelegate
+    internal val __repeatedEmptyDelegate: MsgFieldDelegate<List<Empty>> = MsgFieldDelegate { emptyList() }
+    override var repeatedEmpty: List<Empty> by __repeatedEmptyDelegate
+    internal val __fieldname1Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldname1: Int by __fieldname1Delegate
+    internal val __fieldName2Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName2: Int by __fieldName2Delegate
+    internal val __FieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var FieldName3: Int by __FieldName3Delegate
+    internal val __field_Name4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field_Name4_: Int by __field_Name4_Delegate
+    internal val __field0name5Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field0name5: Int by __field0name5Delegate
+    internal val __field_0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field_0Name6: Int by __field_0Name6Delegate
+    internal val __fieldName7Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName7: Int by __fieldName7Delegate
+    internal val __FieldName8Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var FieldName8: Int by __FieldName8Delegate
+    internal val __field_Name9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field_Name9: Int by __field_Name9Delegate
+    internal val __Field_Name10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var Field_Name10: Int by __Field_Name10Delegate
+    internal val __FIELD_NAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var FIELD_NAME11: Int by __FIELD_NAME11Delegate
+    internal val __FIELDName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var FIELDName12: Int by __FIELDName12Delegate
+    internal val ___FieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var _FieldName13: Int by ___FieldName13Delegate
+    internal val ____FieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var __FieldName14: Int by ____FieldName14Delegate
+    internal val __field_Name15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field_Name15: Int by __field_Name15Delegate
+    internal val __field__Name16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field__Name16: Int by __field__Name16Delegate
+    internal val __fieldName17__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName17__: Int by __fieldName17__Delegate
+    internal val __FieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var FieldName18__: Int by __FieldName18__Delegate
     override var oneofField: TestAllTypesProto3.OneofField? = null
 
     private val _owner: TestAllTypesProto3Internal = this
@@ -1169,8 +1312,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        override var a: Int by MsgFieldDelegate { 0 }
-        override var corecursive: TestAllTypesProto3 by MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto3Internal() }
+        internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        override var a: Int by __aDelegate
+        internal val __corecursiveDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto3Internal.DEFAULT }
+        override var corecursive: TestAllTypesProto3 by __corecursiveDelegate
 
         private val _owner: NestedMessageInternal = this
 
@@ -1270,7 +1415,9 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         @InternalRpcApi
-        companion object
+        companion object {
+            val DEFAULT: TestAllTypesProto3.NestedMessage by lazy { NestedMessageInternal() }
+        }
     }
 
     class MapInt32Int32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
@@ -1283,8 +1430,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Int by MsgFieldDelegate { 0 }
-        var value: Int by MsgFieldDelegate { 0 }
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1338,8 +1487,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Long by MsgFieldDelegate { 0L }
-        var value: Long by MsgFieldDelegate { 0L }
+        internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var key: Long by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1393,8 +1544,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: UInt by MsgFieldDelegate { 0u }
-        var value: UInt by MsgFieldDelegate { 0u }
+        internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+        var key: UInt by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+        var value: UInt by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1448,8 +1601,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: ULong by MsgFieldDelegate { 0uL }
-        var value: ULong by MsgFieldDelegate { 0uL }
+        internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+        var key: ULong by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+        var value: ULong by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1503,8 +1658,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Int by MsgFieldDelegate { 0 }
-        var value: Int by MsgFieldDelegate { 0 }
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1558,8 +1715,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Long by MsgFieldDelegate { 0L }
-        var value: Long by MsgFieldDelegate { 0L }
+        internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var key: Long by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1613,8 +1772,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: UInt by MsgFieldDelegate { 0u }
-        var value: UInt by MsgFieldDelegate { 0u }
+        internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+        var key: UInt by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+        var value: UInt by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1668,8 +1829,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: ULong by MsgFieldDelegate { 0uL }
-        var value: ULong by MsgFieldDelegate { 0uL }
+        internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+        var key: ULong by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+        var value: ULong by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1723,8 +1886,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Int by MsgFieldDelegate { 0 }
-        var value: Int by MsgFieldDelegate { 0 }
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1778,8 +1943,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Long by MsgFieldDelegate { 0L }
-        var value: Long by MsgFieldDelegate { 0L }
+        internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var key: Long by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+        var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1833,8 +2000,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Int by MsgFieldDelegate { 0 }
-        var value: Float by MsgFieldDelegate { 0.0f }
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate { 0.0f }
+        var value: Float by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1888,8 +2057,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Int by MsgFieldDelegate { 0 }
-        var value: Double by MsgFieldDelegate { 0.0 }
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate { 0.0 }
+        var value: Double by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1943,8 +2114,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: Boolean by MsgFieldDelegate { false }
-        var value: Boolean by MsgFieldDelegate { false }
+        internal val __keyDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+        var key: Boolean by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+        var value: Boolean by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -1998,8 +2171,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: String by MsgFieldDelegate { "" }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var value: String by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2053,8 +2228,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: ByteString by MsgFieldDelegate { ByteString() }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate { ByteString() }
+        var value: ByteString by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2112,8 +2289,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: TestAllTypesProto3.NestedMessage by MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal() }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedMessage> = MsgFieldDelegate(PresenceIndices.value) { NestedMessageInternal.DEFAULT }
+        var value: TestAllTypesProto3.NestedMessage by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2177,8 +2356,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: ForeignMessage by MsgFieldDelegate(PresenceIndices.value) { ForeignMessageInternal() }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<ForeignMessage> = MsgFieldDelegate(PresenceIndices.value) { ForeignMessageInternal.DEFAULT }
+        var value: ForeignMessage by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2238,8 +2419,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: TestAllTypesProto3.NestedEnum by MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedEnum> = MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
+        var value: TestAllTypesProto3.NestedEnum by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2293,8 +2476,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        var key: String by MsgFieldDelegate { "" }
-        var value: ForeignEnum by MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
+        internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+        var key: String by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<ForeignEnum> = MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
+        var value: ForeignEnum by __valueDelegate
 
         override fun hashCode(): Int {
             checkRequiredFields()
@@ -2370,7 +2555,9 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: TestAllTypesProto3 by lazy { TestAllTypesProto3Internal() }
+    }
 }
 
 class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -2383,7 +2570,8 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var c: Int by MsgFieldDelegate { 0 }
+    internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var c: Int by __cDelegate
 
     override fun hashCode(): Int {
         checkRequiredFields()
@@ -2461,7 +2649,9 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: ForeignMessage by lazy { ForeignMessageInternal() }
+    }
 }
 
 class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -2547,7 +2737,9 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: NullHypothesisProto3 by lazy { NullHypothesisProto3Internal() }
+    }
 }
 
 class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -2633,7 +2825,9 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    companion object
+    companion object {
+        val DEFAULT: EnumOnlyProto3 by lazy { EnumOnlyProto3Internal() }
+    }
 }
 
 @InternalRpcApi
@@ -3703,18 +3897,12 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 msg.optionalBytes = decoder.readBytes()
             }
             tag.fieldNr == 18 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.optionalNestedMessage = TestAllTypesProto3Internal.NestedMessageInternal()
-                }
-
-                decoder.readMessage(msg.optionalNestedMessage.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalNestedMessageDelegate.getOrCreate(msg) { TestAllTypesProto3Internal.NestedMessageInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 19 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[1]) {
-                    msg.optionalForeignMessage = ForeignMessageInternal()
-                }
-
-                decoder.readMessage(msg.optionalForeignMessage.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalForeignMessageDelegate.getOrCreate(msg) { ForeignMessageInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 21 && tag.wireType == WireType.VARINT -> {
                 msg.optionalNestedEnum = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
@@ -3732,652 +3920,729 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 msg.optionalCord = decoder.readString()
             }
             tag.fieldNr == 27 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[2]) {
-                    msg.recursiveMessage = TestAllTypesProto3Internal()
-                }
-
-                decoder.readMessage(msg.recursiveMessage.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
+                val target = msg.__recursiveMessageDelegate.getOrCreate(msg) { TestAllTypesProto3Internal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 31 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedInt32 += decoder.readPackedInt32()
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt32())
             }
             tag.fieldNr == 31 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
-                (msg.repeatedInt32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 32 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedInt64 += decoder.readPackedInt64()
+                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt64())
             }
             tag.fieldNr == 32 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
-                (msg.repeatedInt64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 33 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedUint32 += decoder.readPackedUInt32()
+                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt32())
             }
             tag.fieldNr == 33 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
-                (msg.repeatedUint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 34 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedUint64 += decoder.readPackedUInt64()
+                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt64())
             }
             tag.fieldNr == 34 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
-                (msg.repeatedUint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 35 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedSint32 += decoder.readPackedSInt32()
+                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt32())
             }
             tag.fieldNr == 35 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
-                (msg.repeatedSint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 36 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedSint64 += decoder.readPackedSInt64()
+                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt64())
             }
             tag.fieldNr == 36 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
-                (msg.repeatedSint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 37 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedFixed32 += decoder.readPackedFixed32()
+                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed32())
             }
             tag.fieldNr == 37 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
-                (msg.repeatedFixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 38 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedFixed64 += decoder.readPackedFixed64()
+                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed64())
             }
             tag.fieldNr == 38 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
-                (msg.repeatedFixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 39 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedSfixed32 += decoder.readPackedSFixed32()
+                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed32())
             }
             tag.fieldNr == 39 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
-                (msg.repeatedSfixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 40 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedSfixed64 += decoder.readPackedSFixed64()
+                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed64())
             }
             tag.fieldNr == 40 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
-                (msg.repeatedSfixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 41 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedFloat += decoder.readPackedFloat()
+                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFloat())
             }
             tag.fieldNr == 41 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
-                (msg.repeatedFloat as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 42 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedDouble += decoder.readPackedDouble()
+                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedDouble())
             }
             tag.fieldNr == 42 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
-                (msg.repeatedDouble as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 43 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedBool += decoder.readPackedBool()
+                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedBool())
             }
             tag.fieldNr == 43 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
-                (msg.repeatedBool as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 44 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedStringDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
-                (msg.repeatedString as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 45 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedBytesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBytes()
-                (msg.repeatedBytes as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 48 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedNestedMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3Internal.NestedMessageInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedNestedMessage as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 49 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedForeignMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignMessageInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedForeignMessage as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 51 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedNestedEnum += decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) }
+                val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
             tag.fieldNr == 51 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
-                (msg.repeatedNestedEnum as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 52 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.repeatedForeignEnum += decoder.readPackedEnum().map { ForeignEnum.fromNumber(it) }
+                val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedEnum().map { ForeignEnum.fromNumber(it) })
             }
             tag.fieldNr == 52 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignEnum.fromNumber(decoder.readEnum())
-                (msg.repeatedForeignEnum as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 54 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedStringPieceDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
-                (msg.repeatedStringPiece as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 55 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedCordDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
-                (msg.repeatedCord as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 75 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedInt32 += decoder.readPackedInt32()
+                val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt32())
             }
             tag.fieldNr == 75 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
-                (msg.packedInt32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 76 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedInt64 += decoder.readPackedInt64()
+                val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt64())
             }
             tag.fieldNr == 76 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
-                (msg.packedInt64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 77 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedUint32 += decoder.readPackedUInt32()
+                val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt32())
             }
             tag.fieldNr == 77 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
-                (msg.packedUint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 78 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedUint64 += decoder.readPackedUInt64()
+                val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt64())
             }
             tag.fieldNr == 78 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
-                (msg.packedUint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 79 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedSint32 += decoder.readPackedSInt32()
+                val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt32())
             }
             tag.fieldNr == 79 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
-                (msg.packedSint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 80 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedSint64 += decoder.readPackedSInt64()
+                val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt64())
             }
             tag.fieldNr == 80 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
-                (msg.packedSint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 81 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedFixed32 += decoder.readPackedFixed32()
+                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed32())
             }
             tag.fieldNr == 81 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
-                (msg.packedFixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 82 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedFixed64 += decoder.readPackedFixed64()
+                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed64())
             }
             tag.fieldNr == 82 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
-                (msg.packedFixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 83 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedSfixed32 += decoder.readPackedSFixed32()
+                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed32())
             }
             tag.fieldNr == 83 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
-                (msg.packedSfixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 84 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedSfixed64 += decoder.readPackedSFixed64()
+                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed64())
             }
             tag.fieldNr == 84 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
-                (msg.packedSfixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 85 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedFloat += decoder.readPackedFloat()
+                val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFloat())
             }
             tag.fieldNr == 85 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
-                (msg.packedFloat as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 86 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedDouble += decoder.readPackedDouble()
+                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedDouble())
             }
             tag.fieldNr == 86 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
-                (msg.packedDouble as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 87 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedBool += decoder.readPackedBool()
+                val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedBool())
             }
             tag.fieldNr == 87 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
-                (msg.packedBool as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 88 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.packedNestedEnum += decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) }
+                val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
             tag.fieldNr == 88 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
-                (msg.packedNestedEnum as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 89 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedInt32 += decoder.readPackedInt32()
+                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt32())
             }
             tag.fieldNr == 89 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
-                (msg.unpackedInt32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 90 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedInt64 += decoder.readPackedInt64()
+                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedInt64())
             }
             tag.fieldNr == 90 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
-                (msg.unpackedInt64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 91 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedUint32 += decoder.readPackedUInt32()
+                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt32())
             }
             tag.fieldNr == 91 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
-                (msg.unpackedUint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 92 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedUint64 += decoder.readPackedUInt64()
+                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedUInt64())
             }
             tag.fieldNr == 92 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
-                (msg.unpackedUint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 93 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedSint32 += decoder.readPackedSInt32()
+                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt32())
             }
             tag.fieldNr == 93 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
-                (msg.unpackedSint32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 94 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedSint64 += decoder.readPackedSInt64()
+                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSInt64())
             }
             tag.fieldNr == 94 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
-                (msg.unpackedSint64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 95 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedFixed32 += decoder.readPackedFixed32()
+                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed32())
             }
             tag.fieldNr == 95 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
-                (msg.unpackedFixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 96 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedFixed64 += decoder.readPackedFixed64()
+                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFixed64())
             }
             tag.fieldNr == 96 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
-                (msg.unpackedFixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 97 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedSfixed32 += decoder.readPackedSFixed32()
+                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed32())
             }
             tag.fieldNr == 97 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
-                (msg.unpackedSfixed32 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 98 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedSfixed64 += decoder.readPackedSFixed64()
+                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedSFixed64())
             }
             tag.fieldNr == 98 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
-                (msg.unpackedSfixed64 as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 99 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedFloat += decoder.readPackedFloat()
+                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedFloat())
             }
             tag.fieldNr == 99 && tag.wireType == WireType.FIXED32 -> {
+                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
-                (msg.unpackedFloat as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 100 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedDouble += decoder.readPackedDouble()
+                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedDouble())
             }
             tag.fieldNr == 100 && tag.wireType == WireType.FIXED64 -> {
+                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
-                (msg.unpackedDouble as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 101 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedBool += decoder.readPackedBool()
+                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedBool())
             }
             tag.fieldNr == 101 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
-                (msg.unpackedBool as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 102 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.unpackedNestedEnum += decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) }
+                val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
             tag.fieldNr == 102 && tag.wireType == WireType.VARINT -> {
+                val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
-                (msg.unpackedNestedEnum as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 56 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapInt32Int32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32Int32EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32Int32EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapInt32Int32 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 57 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapInt64Int64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt64Int64EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt64Int64EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapInt64Int64 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 58 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapUint32Uint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapUint32Uint32EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapUint32Uint32 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 59 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapUint64Uint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapUint64Uint64EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapUint64Uint64 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 60 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapSint32Sint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSint32Sint32EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapSint32Sint32 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 61 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapSint64Sint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSint64Sint64EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapSint64Sint64 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 62 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapFixed32Fixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapFixed32Fixed32 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 63 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapFixed64Fixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapFixed64Fixed64 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 64 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapSfixed32Sfixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapSfixed32Sfixed32 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 65 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapSfixed64Sfixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapSfixed64Sfixed64 as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 66 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapInt32FloatDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32FloatEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32FloatEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapInt32Float as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 67 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapInt32DoubleDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32DoubleEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapInt32Double as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 68 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapBoolBoolDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapBoolBoolEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapBoolBoolEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapBoolBool as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 69 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringStringDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringStringEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringStringEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringString as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 70 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringBytesDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringBytesEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringBytesEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringBytes as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 71 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringNestedMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringNestedMessage as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 72 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringForeignMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringForeignMessage as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 73 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringNestedEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringNestedEnum as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 74 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapStringForeignEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal()) {
                     decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.decodeWith(msg, decoder, config) })
-                    (msg.mapStringForeignEnum as MutableMap)[key] = value
+                    target[key] = value
                 }
             }
             tag.fieldNr == 201 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[3]) {
-                    msg.optionalBoolWrapper = BoolValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalBoolWrapper.asInternal(), { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalBoolWrapperDelegate.getOrCreate(msg) { BoolValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 202 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[4]) {
-                    msg.optionalInt32Wrapper = Int32ValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalInt32Wrapper.asInternal(), { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalInt32WrapperDelegate.getOrCreate(msg) { Int32ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 203 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[5]) {
-                    msg.optionalInt64Wrapper = Int64ValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalInt64Wrapper.asInternal(), { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalInt64WrapperDelegate.getOrCreate(msg) { Int64ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 204 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[6]) {
-                    msg.optionalUint32Wrapper = UInt32ValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalUint32Wrapper.asInternal(), { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalUint32WrapperDelegate.getOrCreate(msg) { UInt32ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 205 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[7]) {
-                    msg.optionalUint64Wrapper = UInt64ValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalUint64Wrapper.asInternal(), { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalUint64WrapperDelegate.getOrCreate(msg) { UInt64ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 206 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[8]) {
-                    msg.optionalFloatWrapper = FloatValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalFloatWrapper.asInternal(), { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalFloatWrapperDelegate.getOrCreate(msg) { FloatValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 207 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[9]) {
-                    msg.optionalDoubleWrapper = DoubleValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalDoubleWrapper.asInternal(), { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalDoubleWrapperDelegate.getOrCreate(msg) { DoubleValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 208 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[10]) {
-                    msg.optionalStringWrapper = StringValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalStringWrapper.asInternal(), { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalStringWrapperDelegate.getOrCreate(msg) { StringValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 209 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[11]) {
-                    msg.optionalBytesWrapper = BytesValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalBytesWrapper.asInternal(), { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalBytesWrapperDelegate.getOrCreate(msg) { BytesValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 211 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedBoolWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = BoolValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedBoolWrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 212 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedInt32WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = Int32ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedInt32Wrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 213 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedInt64WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = Int64ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedInt64Wrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 214 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedUint32WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = UInt32ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedUint32Wrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 215 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedUint64WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = UInt64ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedUint64Wrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 216 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedFloatWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FloatValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedFloatWrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 217 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedDoubleWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = DoubleValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedDoubleWrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 218 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedStringWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = StringValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedStringWrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 219 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedBytesWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = BytesValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedBytesWrapper as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 301 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[12]) {
-                    msg.optionalDuration = DurationInternal()
-                }
-
-                decoder.readMessage(msg.optionalDuration.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalDurationDelegate.getOrCreate(msg) { DurationInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 302 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[13]) {
-                    msg.optionalTimestamp = TimestampInternal()
-                }
-
-                decoder.readMessage(msg.optionalTimestamp.asInternal(), { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalTimestampDelegate.getOrCreate(msg) { TimestampInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 303 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[14]) {
-                    msg.optionalFieldMask = FieldMaskInternal()
-                }
-
-                decoder.readMessage(msg.optionalFieldMask.asInternal(), { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalFieldMaskDelegate.getOrCreate(msg) { FieldMaskInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 304 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[15]) {
-                    msg.optionalStruct = StructInternal()
-                }
-
-                decoder.readMessage(msg.optionalStruct.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalStructDelegate.getOrCreate(msg) { StructInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 305 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[16]) {
-                    msg.optionalAny = AnyInternal()
-                }
-
-                decoder.readMessage(msg.optionalAny.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalAnyDelegate.getOrCreate(msg) { AnyInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 306 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[17]) {
-                    msg.optionalValue = ValueInternal()
-                }
-
-                decoder.readMessage(msg.optionalValue.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalValueDelegate.getOrCreate(msg) { ValueInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 307 && tag.wireType == WireType.VARINT -> {
                 msg.optionalNullValue = NullValue.fromNumber(decoder.readEnum())
             }
             tag.fieldNr == 308 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[18]) {
-                    msg.optionalEmpty = EmptyInternal()
-                }
-
-                decoder.readMessage(msg.optionalEmpty.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__optionalEmptyDelegate.getOrCreate(msg) { EmptyInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
             }
             tag.fieldNr == 311 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedDurationDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = DurationInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedDuration as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 312 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedTimestampDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TimestampInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedTimestamp as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 313 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedFieldmaskDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FieldMaskInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedFieldmask as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 324 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedStructDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = StructInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedStruct as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 315 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedAnyDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = AnyInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedAny as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 316 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedValueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedValue as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 317 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedListValueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ListValueInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedListValue as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 318 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__repeatedEmptyDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = EmptyInternal()
                 decoder.readMessage(elem.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
-                (msg.repeatedEmpty as MutableList).add(elem)
+                target.add(elem)
             }
             tag.fieldNr == 401 && tag.wireType == WireType.VARINT -> {
                 msg.fieldname1 = decoder.readInt32()
@@ -5432,11 +5697,8 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: T
                 msg.a = decoder.readInt32()
             }
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.corecursive = TestAllTypesProto3Internal()
-                }
-
-                decoder.readMessage(msg.corecursive.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
+                val target = msg.__corecursiveDelegate.getOrCreate(msg) { TestAllTypesProto3Internal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -6655,11 +6917,8 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.dec
                 msg.key = decoder.readString()
             }
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.value = TestAllTypesProto3Internal.NestedMessageInternal()
-                }
-
-                decoder.readMessage(msg.value.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__valueDelegate.getOrCreate(msg) { TestAllTypesProto3Internal.NestedMessageInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -6738,11 +6997,8 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.de
                 msg.key = decoder.readString()
             }
             tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
-                if (!msg.presenceMask[0]) {
-                    msg.value = ForeignMessageInternal()
-                }
-
-                decoder.readMessage(msg.value.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
+                val target = msg.__valueDelegate.getOrCreate(msg) { ForeignMessageInternal() }
+                decoder.readMessage(target.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {

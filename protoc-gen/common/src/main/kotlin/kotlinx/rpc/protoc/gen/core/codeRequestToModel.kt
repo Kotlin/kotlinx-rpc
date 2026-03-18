@@ -314,6 +314,7 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         nameTable.register { declaration.internalClassName }
         nameTable.register { declaration.builderClassName }
         nameTable.register { declaration.internalCompanionName }
+        nameTable.register { declaration.defaultObjectRef }
 
         if (declaration.isUserFacing && declaration.hasPresenceFieldsRecursive()) {
             nameTable.register { declaration.presenceInterfaceName }

@@ -74,6 +74,7 @@ data class MessageDeclaration(
 
     val internalCompanionName: FqName.Declaration by lazy { internalClassName.nested("Companion") }
     val presenceIndicesName: FqName.Declaration by lazy { internalClassName.nested("PresenceIndices") }
+    val defaultObjectRef: FqName.Declaration by lazy { internalClassName.nested("DEFAULT") }
     val marshallerObjectName: FqName.Declaration by lazy { internalClassName.nested("MARSHALLER") }
     val bytesDefaultsName: FqName.Declaration by lazy { internalClassName.nested("BytesDefaults") }
 

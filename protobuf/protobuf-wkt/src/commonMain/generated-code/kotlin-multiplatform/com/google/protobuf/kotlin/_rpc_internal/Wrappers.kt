@@ -44,7 +44,8 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: Double by MsgFieldDelegate { 0.0 }
+    internal val __valueDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate { 0.0 }
+    public override var value: Double by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -122,7 +123,9 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: DoubleValue by lazy { DoubleValueInternal() }
+    }
 }
 
 public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -135,7 +138,8 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: Float by MsgFieldDelegate { 0.0f }
+    internal val __valueDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate { 0.0f }
+    public override var value: Float by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -213,7 +217,9 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: FloatValue by lazy { FloatValueInternal() }
+    }
 }
 
 public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -226,7 +232,8 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: Long by MsgFieldDelegate { 0L }
+    internal val __valueDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+    public override var value: Long by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -304,7 +311,9 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Int64Value by lazy { Int64ValueInternal() }
+    }
 }
 
 public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -317,7 +326,8 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: ULong by MsgFieldDelegate { 0uL }
+    internal val __valueDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
+    public override var value: ULong by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -395,7 +405,9 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: UInt64Value by lazy { UInt64ValueInternal() }
+    }
 }
 
 public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -408,7 +420,8 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: Int by MsgFieldDelegate { 0 }
+    internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    public override var value: Int by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -486,7 +499,9 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Int32Value by lazy { Int32ValueInternal() }
+    }
 }
 
 public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -499,7 +514,8 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: UInt by MsgFieldDelegate { 0u }
+    internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
+    public override var value: UInt by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -577,7 +593,9 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: UInt32Value by lazy { UInt32ValueInternal() }
+    }
 }
 
 public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -590,7 +608,8 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: Boolean by MsgFieldDelegate { false }
+    internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
+    public override var value: Boolean by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -668,7 +687,9 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: BoolValue by lazy { BoolValueInternal() }
+    }
 }
 
 public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -681,7 +702,8 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: String by MsgFieldDelegate { "" }
+    internal val __valueDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var value: String by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -759,7 +781,9 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: StringValue by lazy { StringValueInternal() }
+    }
 }
 
 public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -772,7 +796,8 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var value: ByteString by MsgFieldDelegate { ByteString() }
+    internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate { ByteString() }
+    public override var value: ByteString by __valueDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -850,7 +875,9 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: BytesValue by lazy { BytesValueInternal() }
+    }
 }
 
 @InternalRpcApi

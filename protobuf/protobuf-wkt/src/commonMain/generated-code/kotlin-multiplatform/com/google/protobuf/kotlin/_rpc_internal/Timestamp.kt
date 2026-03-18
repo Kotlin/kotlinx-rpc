@@ -39,8 +39,10 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var seconds: Long by MsgFieldDelegate { 0L }
-    public override var nanos: Int by MsgFieldDelegate { 0 }
+    internal val __secondsDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
+    public override var seconds: Long by __secondsDelegate
+    internal val __nanosDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    public override var nanos: Int by __nanosDelegate
 
     public override fun hashCode(): Int {
         checkRequiredFields()
@@ -122,7 +124,9 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public companion object
+    public companion object {
+        public val DEFAULT: Timestamp by lazy { TimestampInternal() }
+    }
 }
 
 @InternalRpcApi

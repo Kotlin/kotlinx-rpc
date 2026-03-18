@@ -383,6 +383,55 @@ class ProtosTest {
         assertEquals("fourth", decoded.other.arg3)
     }
 
+    @Test
+    fun testSharedDefaultsAreNotMutatedDuringDecoding() {
+        val referenceMarshaller = grpcMarshallerOf<Reference>()
+        val populatedReference = Reference {
+            other = Other {
+                arg1 = "first"
+                arg2 = "second"
+            }
+        }
+
+        val decodedReference = encodeDecode(populatedReference, referenceMarshaller)
+        assertEquals("first", decodedReference.other.arg1)
+        assertEquals("second", decodedReference.other.arg2)
+
+        val emptyReference = referenceMarshaller.decode(Buffer())
+        assertNull(emptyReference.other.arg1)
+        assertNull(emptyReference.other.arg2)
+        assertNull(emptyReference.other.arg3)
+
+        val repeatedMarshaller = grpcMarshallerOf<Repeated>()
+        val populatedRepeated = Repeated {
+            listInt32 = listOf(1, 2, 3)
+            listMessage = listOf(Repeated.Other { a = 7 })
+        }
+
+        val decodedRepeated = encodeDecode(populatedRepeated, repeatedMarshaller)
+        assertEquals(listOf(1, 2, 3), decodedRepeated.listInt32)
+        assertEquals(1, decodedRepeated.listMessage.size)
+        assertEquals(7, decodedRepeated.listMessage.single().a)
+
+        val emptyRepeated = repeatedMarshaller.decode(Buffer())
+        assertTrue(emptyRepeated.listInt32.isEmpty())
+        assertTrue(emptyRepeated.listMessage.isEmpty())
+
+        val mapMarshaller = grpcMarshallerOf<TestMap>()
+        val populatedMap = TestMap {
+            primitives = mapOf("one" to 1L)
+            messages = mapOf(1 to PresenceCheck { RequiredPresence = 7 })
+        }
+
+        val decodedMap = encodeDecode(populatedMap, mapMarshaller)
+        assertEquals(mapOf("one" to 1L), decodedMap.primitives)
+        assertEquals(7, decodedMap.messages.getValue(1).RequiredPresence)
+
+        val emptyMap = mapMarshaller.decode(Buffer())
+        assertTrue(emptyMap.primitives.isEmpty())
+        assertTrue(emptyMap.messages.isEmpty())
+    }
+
 
     @Test
     fun testMap() {
