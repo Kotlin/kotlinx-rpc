@@ -22,4 +22,8 @@ class RpcDokkaPlugin : DokkaPlugin() {
     val pageTransformer by extending {
         CoreExtensions.pageTransformer providing ::AddDocsLinkPageTransformer
     }
+
+    val moduleVersionBadgeTransformer by extending {
+        CoreExtensions.pageTransformer providing ::ModuleVersionBadgeTransformer
+    }
 }

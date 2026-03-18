@@ -20,6 +20,10 @@ fun DokkaHtmlPluginParameters.setupPage(globalRootDir: String) {
         "$globalRootDir/docs/pages/assets/homepage.svg",
     )
 
+    customStyleSheets.from(
+        "$globalRootDir/docs/pages/assets/rpc-dev-notice.css",
+    )
+
     footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors. Apache License 2.0"
     homepageLink = "https://kotlin.github.io/kotlinx-rpc/get-started.html"
 
