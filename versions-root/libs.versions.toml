@@ -36,7 +36,7 @@ grpc = "1.79.0"
 grpc-kotlin = "1.5.0"
 protobuf = "4.34.0"
 buf-tool = "1.66.0"
-agp = "8.4.0"
+agp = "9.1.0"
 test-retry = "1.5.9"
 
 [libraries]
