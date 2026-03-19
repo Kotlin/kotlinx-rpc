@@ -36,6 +36,7 @@ grpc-kotlin = "1.5.0"
 protobuf = "4.34.0"
 buf-tool = "1.66.0"
 agp = "8.4.0"
+test-retry = "1.5.9"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -139,6 +140,7 @@ gradle-publish-gradle-plugin = { module = "com.gradle.publish:plugin-publish-plu
 compat-patrouille-gradle-plugin = { module = "com.gradleup.compat.patrouille:compat-patrouille-gradle-plugin", version.ref = "compat-patrouille" }
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
+test-retry-gradle-plugin = { module = "org.gradle:test-retry-gradle-plugin", version.ref = "test-retry" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }

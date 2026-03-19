@@ -3,6 +3,7 @@
  */
 
 import io.gitlab.arturbosch.detekt.Detekt
+import org.gradle.api.tasks.testing.Test
 import util.other.libs
 
 plugins {
@@ -10,6 +11,7 @@ plugins {
     id("conventions-publishing")
     id("conventions-kotlin-version")
     id("conventions-dokka-public")
+    id("org.gradle.test-retry")
 }
 
 val globalRootDir: String by extra
@@ -49,5 +51,13 @@ afterEvaluate {
         setDependsOn(dependsOn.filterNot {
             it is TaskProvider<*> && it.name.contains("detekt")
         })
+    }
+}
+
+// https://blog.jetbrains.com/teamcity/2025/12/how-to-tame-flaky-tests/
+tasks.withType<Test>().configureEach {
+    retry {
+        maxRetries = providers.systemProperty("retryCount").orNull?.toInt() ?: 0
+        failOnPassedAfterRetry = false
     }
 }
