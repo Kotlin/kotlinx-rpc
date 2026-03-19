@@ -17,12 +17,15 @@ fun DokkaHtmlPluginParameters.setupPage(globalRootDir: String) {
 
     customAssets.from(
         "$globalRootDir/docs/pages/assets/logo-icon.svg",
-        "$globalRootDir/docs/pages/assets/homepage.svg", // Doesn't work due to https://github.com/Kotlin/dokka/issues/4007
+        "$globalRootDir/docs/pages/assets/homepage.svg",
+    )
+
+    customStyleSheets.from(
+        "$globalRootDir/docs/pages/assets/rpc-dev-notice.css",
     )
 
     footerMessage = "© ${Year.now()} JetBrains s.r.o and contributors. Apache License 2.0"
     homepageLink = "https://kotlin.github.io/kotlinx-rpc/get-started.html"
 
-    // replace with homepage.svg once the mentioned issue is resolved
     templatesDir.set(templatesDirectory)
 }
