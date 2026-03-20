@@ -114,6 +114,11 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in test.my_message.MyMessage.Builder
+    FUN name:clearField visibility:public modality:OPEN returnType:kotlin.Unit
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+      overridden:
+        public abstract fun clearField (): kotlin.Unit declared in test.my_message.MyMessage.Builder
+      BLOCK_BODY
   CLASS INTERFACE name:MyMessage modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
       GeneratedProtoMessage
@@ -135,6 +140,8 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
           public open fun toString (): kotlin.String declared in test.my_message.MyMessage
+      FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderFunctionKey] name:clearField visibility:public modality:ABSTRACT returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
       PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:field visibility:public modality:ABSTRACT [var]
         overridden:
           public abstract field: kotlin.Int declared in test.my_message.MyMessage

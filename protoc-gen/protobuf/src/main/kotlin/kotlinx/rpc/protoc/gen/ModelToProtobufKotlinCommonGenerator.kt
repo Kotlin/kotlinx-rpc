@@ -117,18 +117,17 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateExtensionMessageEntities(message: List<MessageDeclaration>) {
-        val allMessages = message + message.flatMap(MessageDeclaration::allNestedRecursively)
+    private fun CodeGenerator.generateExtensionMessageEntities(messages: List<MessageDeclaration>) {
+        val allMessages = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMessages.forEach {
             generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
-            generatePublicBuilderFieldClearFunctions(it)
         }
 
         // the presence interfaces are not generated in the flattened list
         // as nested classes are generated as nested presence interfaces
-        message.forEach { generatePresenceInterface(it) }
+        messages.forEach { generatePresenceInterface(it) }
     }
 
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
@@ -866,10 +865,12 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
+    // TODO: Remove
     private fun CodeGenerator.generatePublicBuilderFieldClearFunctions(msg: MessageDeclaration) {
         msg.actualFields.forEach { field ->
             // if the field must always be present, we don't have a clear function
-            if (field.presenceIdx == null) return
+            if (field.presenceIdx == null) return@forEach
+            if (field.type is FieldType.OneOf) return@forEach
 
             function(
                 name = "clear${field.name.capitalize()}",
@@ -881,7 +882,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     """.trimIndent()
                 )
             ) {
-                TODO("Clear field in internal message")
+                code("asInternal().${field.internalDelegateName}.clear()".scoped())
             }
         }
     }

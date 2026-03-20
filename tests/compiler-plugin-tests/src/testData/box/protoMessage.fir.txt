@@ -14,6 +14,8 @@ FILE: module_main_protoMessage.kt
                 public get(): R|kotlin/Int|
                 public set(value: R|kotlin/Int|): R|kotlin/Unit|
 
+            public abstract fun clearField(): R|kotlin/Unit|
+
         }
 
     }
@@ -25,6 +27,9 @@ FILE: module_main_protoMessage.kt
         public open override var field: R|kotlin/Int| = Int(1)
             public get(): R|kotlin/Int|
             public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public open override fun clearField(): R|kotlin/Unit| {
+        }
 
         public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<test/my_message/MyMessage>| {
             private constructor(): R|test/my_message/MyMessageInternal.DESCRIPTOR| {
