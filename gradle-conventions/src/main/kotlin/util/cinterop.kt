@@ -183,23 +183,3 @@ private val Project.cinteropLibDir: File
         val globalRootDir: String by project.extra
         return layout.projectDirectory.dir("$globalRootDir/cinterop-c").asFile.absoluteFile
     }
-
-private fun Project.findKonanHome(): String {
-    val userHome = System.getProperty("user.home")
-    val osName = System.getProperty("os.name").lowercase()
-    val hostOs = when {
-        osName.contains("mac") -> "macos"
-        osName.contains("linux") -> "linux"
-        osName.contains("windows") -> "windows"
-        else -> error("Unsupported OS: $osName")
-    }
-    val hostArch = System.getProperty("os.arch").lowercase().let {
-        when {
-            it.contains("aarch64") || it.contains("arm64") -> "aarch64"
-            it.contains("x86_64") || it.contains("amd64") -> "x86_64"
-            else -> error("Unsupported arch: $it")
-        }
-    }
-    val kotlinVersion = project.libs.versions.kotlin.compiler.get()
-    return "$userHome/.konan/kotlin-native-prebuilt-$hostOs-$hostArch-$kotlinVersion"
-}

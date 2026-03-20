@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+/build/
+/bazel-*/
+/bazel-bin
+/bazel-grpc
+/bazel-out
+/bazel-testlogs
+/MODULE.bazel.lock

@@ -1,0 +1,29 @@
+module(
+    name = "grpc_native_deps",
+    version = "0.1",
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.0")
+bazel_dep(name = "apple_support", version = "1.24.5", repo_name = "build_bazel_apple_support")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "kotlinx_rpc_native_bazel_support", version = "0.1")
+
+local_path_override(
+    module_name = "kotlinx_rpc_native_bazel_support",
+    path = "../bazel-support",
+)
+
+# This value is Gradle-managed. `native-deps/grpc` rewrites it from `gradle.properties` before Bazel-backed
+# build/package/publish tasks, so change `grpcVersion` there instead of editing this line manually.
+GRPC_VERSION = "1.74.1"
+
+bazel_dep(
+    name = "grpc",
+    version = GRPC_VERSION,
+    repo_name = "com_github_grpc_grpc",
+)
+
+register_toolchains(
+    "@kotlinx_rpc_native_bazel_support//toolchain:toolchain_linux_x64_konan",
+    "@kotlinx_rpc_native_bazel_support//toolchain:toolchain_linux_arm64_konan",
+)
