@@ -28,6 +28,8 @@ interface MyMessage {
 class MyMessageInternal : MyMessage.Builder {
     override var field: Int = 1
 
+    override fun clearField() {}
+
     object DESCRIPTOR: ProtoDescriptor<MyMessage> {
         override val fullName: String = "fullName"
     }

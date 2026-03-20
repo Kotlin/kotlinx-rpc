@@ -49,3 +49,9 @@ internal object FirGeneratedProtoMessageBuilderPropertyKey : GeneratedDeclaratio
         return "FirGeneratedProtoMessageBuilderPropertyKey"
     }
 }
+
+internal object FirGeneratedProtoMessageBuilderFunctionKey : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirGeneratedProtoMessageBuilderFunctionKey"
+    }
+}
