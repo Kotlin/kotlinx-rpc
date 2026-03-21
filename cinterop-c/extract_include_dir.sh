@@ -24,16 +24,27 @@ CONFIG=release
 mkdir -p $(dirname "$DST")
 
 KH_DEFINE="--define=KONAN_HOME=$KONAN_HOME"
+# Ensure Bazel uses the full Xcode (not just CommandLineTools) so that
+# platform SDKs (iOS, watchOS, tvOS) are available for cross-compilation.
+if [[ -z "${DEVELOPER_DIR:-}" && -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+    export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+fi
+
 KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
 # Resolve the version-pinned clang resource include path for the active KONAN_HOME.
 KONAN_LLVM_RESOURCE_DIR="$(KONAN_DEPS="$KONAN_DEPS" python3 ./toolchain/resolve_konan_llvm_resource_dir.py "$KONAN_HOME")"
 KD_DEFINE="--define=KONAN_DEPS=$KONAN_DEPS"
 KLLVM_DEFINE="--define=KONAN_LLVM_RESOURCE_DIR=$KONAN_LLVM_RESOURCE_DIR"
 
-bazel build "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE >/dev/null
+XCODE_ENV=""
+if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+    XCODE_ENV="--repo_env=DEVELOPER_DIR=$DEVELOPER_DIR"
+fi
+
+bazel build "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE $XCODE_ENV >/dev/null
 
 # Ask Bazel what file(s) this target produced
-out="$(bazel cquery "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE --output=files | head -n1)"
+out="$(bazel cquery "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE $XCODE_ENV --output=files | head -n1)"
 [[ -n "$out/include" ]] || { echo "No output for $LABEL"; exit 1; }
 
 SRC_INCLUDE="$out/include"
