@@ -39,7 +39,7 @@ out="$(bazel cquery "$LABEL" $KH_DEFINE $KD_DEFINE $KLLVM_DEFINE --output=files 
 SRC_INCLUDE="$out/include"
 DST_INCLUDE="$DST/include"
 
-rm -rf "$DST_INCLUDE"
+rm -rf "$DST"
 mkdir -p "$DST_INCLUDE"
 
 # Copy headers without trying to adjust permissions (some mounts reject chmod).

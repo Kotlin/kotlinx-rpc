@@ -6,7 +6,7 @@
 set -Eeuo pipefail
 trap 'echo "ERROR: Build failed at ${BASH_SOURCE}:${LINENO}" >&2' ERR
 
-# Builds a target-specific grpc shim static library from the unpacked grpc bundle.
+# Builds a target-specific grpc shim static library against grpc headers provided by Bazel.
 
 find_bazel() {
   if command -v bazel >/dev/null 2>&1; then

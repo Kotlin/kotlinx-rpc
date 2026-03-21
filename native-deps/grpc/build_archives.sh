@@ -97,8 +97,16 @@ def to_bundle_relative_path(short_path: str) -> Path:
     # Bazel reports external repos as "../repo+/...". Drop the Bazel-specific "../" / "external" framing, but keep
     # the repo-qualified structure itself so repeated basenames like Abseil's libinternal.a do not collide.
     if short_path.startswith("../"):
-        return Path(short_path[3:])
-    return Path(short_path)
+        short_path = short_path[3:]
+    return normalize_bundle_relative_path(Path(short_path))
+
+
+def normalize_bundle_relative_path(path: Path) -> Path:
+    # Bazel exposes c-ares as libares.lo even though it is an ar archive. Normalize logical archive
+    # names to .a so downstream static linkers treat the bundle entries as archives consistently.
+    if path.suffix == ".lo":
+        return path.with_suffix(".a")
+    return path
 
 
 def pack_archive_from_objects(destination: Path, short_path: str, object_paths: List[str]) -> None:

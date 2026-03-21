@@ -4,10 +4,6 @@
 # from the dependency, so we can use them for our cinterop bindings.
 # The target is called by the extract_include_dir.sh script.
 #
-# The 'headers_dir' rule is similar, but keeps all repo-scoped headers.
-# This is useful for shim libraries like kgrpc that also need internal
-# grpc headers under src/core/** at compile time.
-#
 # The 'cc_header_only` rule returns a CcInfo that only contains the
 # header files of the compilation dependency. This allows a
 # library to depend on the header files, without compiling
@@ -15,8 +11,6 @@
 # E.g. it is used to bundle the
 # //prebuilt-deps/grpc_fat:grpc_core_prebuilt
 # target including the grpc headers.
-
-HeaderInfo = provider(fields = ["headers_dir", "headers"])
 
 # determines if the file is in the given repository
 def _same_repo(file, repo_name):
@@ -74,92 +68,12 @@ PY
 
     return [
         DefaultInfo(files = depset([outdir])),
-        HeaderInfo(headers_dir = outdir, headers = depset(hdrs)),
+        OutputGroupInfo(headers = depset(hdrs)),
     ]
 
 # rule to copy the include directory of some target to some location
 include_dir = rule(
     implementation = _include_dir_impl,
-    attrs = {
-        "target": attr.label(mandatory = True),
-    },
-)
-
-def _headers_dir_impl(ctx):
-    cc = ctx.attr.target[CcInfo].compilation_context
-
-    all_hdrs = cc.headers
-    hdrs = all_hdrs.to_list() if type(all_hdrs) == "depset" else all_hdrs
-
-    manifest = ctx.actions.declare_file(ctx.label.name + ".headers.list")
-    outdir = ctx.actions.declare_directory(ctx.label.name + "_headers")
-
-    ctx.actions.write(
-        manifest,
-        "\n".join(["%s\t%s" % (f.path, f.short_path) for f in hdrs]),
-    )
-
-    ctx.actions.run_shell(
-        inputs = hdrs + [manifest],
-        outputs = [outdir],
-        command = r"""
-set -euo pipefail
-OUT="$1"; MAN="$2"
-python3 - <<'PY' "$OUT" "$MAN"
-import os, shutil, sys
-
-out, man = sys.argv[1], sys.argv[2]
-
-def header_relative_path(short_path: str) -> str:
-    if short_path.startswith("external/"):
-        parts = short_path.split("/", 2)
-        if len(parts) == 3:
-            short_path = parts[2]
-    if short_path.startswith("../"):
-        parts = short_path.split("/", 2)
-        if len(parts) == 3:
-            short_path = parts[2]
-
-    # Bazel exposes generated protobuf/upb headers through _virtual_imports directories, but the grpc sources include
-    # them by their logical path such as google/protobuf/any.upb.h. Strip the virtual-import wrapper so published
-    # headers match the include paths seen by downstream consumers like kgrpc.
-    if "/_virtual_imports/" in short_path:
-        short_path = short_path.split("/_virtual_imports/", 1)[1]
-        parts = short_path.split("/", 1)
-        if len(parts) == 2:
-            short_path = parts[1]
-
-    if short_path.startswith("include/"):
-        return short_path[len("include/"):]
-    if "/include/" in short_path:
-        return short_path.split("/include/", 1)[1]
-
-    return short_path
-
-for line in open(man):
-    line = line.strip()
-    if not line:
-        continue
-    src_path, short_path = line.split("\t", 1)
-    rel = header_relative_path(short_path)
-
-    dst = os.path.join(out, rel)
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    shutil.copy2(src_path, dst)
-PY
-""",
-        arguments = [outdir.path, manifest.path],
-        progress_message = "Collecting repo-scoped headers into %s" % outdir.path,
-        mnemonic = "CollectHeaders",
-    )
-
-    return [
-        DefaultInfo(files = depset([outdir])),
-        HeaderInfo(headers_dir = outdir, headers = depset(hdrs)),
-    ]
-
-headers_dir = rule(
-    implementation = _headers_dir_impl,
     attrs = {
         "target": attr.label(mandatory = True),
     },

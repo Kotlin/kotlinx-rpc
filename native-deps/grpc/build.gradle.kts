@@ -12,6 +12,7 @@ import util.nativeDependencyTargets
 import util.registerCheckBazelTask
 import util.registerCheckKonanHomeTask
 import util.registerPrepareKonanHomeTask
+import util.registerSyncBazelModuleVersionTask
 import util.requireGradleProperty
 import util.toTaskSuffix
 
@@ -39,18 +40,10 @@ val checkKonanHome = registerCheckKonanHomeTask(
     prepareKonanHome = prepareKonanHome,
     konanHome = konanHome,
 )
-val syncGrpcVersionToBazelModule = tasks.register("syncGrpcVersionToBazelModule") {
-    doLast {
-        val currentText = moduleFile.readText()
-        val updatedText = currentText.replaceGrpcVersion(grpcVersion)
-        check(updatedText != currentText || currentText.contains("""GRPC_VERSION = "$grpcVersion"""")) {
-            "Failed to sync GRPC_VERSION in ${moduleFile.absolutePath}"
-        }
-        if (updatedText != currentText) {
-            moduleFile.writeText(updatedText)
-        }
-    }
-}
+val syncGrpcVersionToBazelModule = registerSyncBazelModuleVersionTask(
+    moduleFile = moduleFile,
+    version = grpcVersion,
+)
 
 val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     dependsOn(syncGrpcVersionToBazelModule, checkBazel, checkKonanHome)
@@ -59,8 +52,8 @@ val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     val outputDir = headersDir.get().asFile
     outputs.dir(outputDir)
     commandLine(
-        "./extract_headers_dir.sh",
-        ":grpc_headers_dir",
+        "./extract_include_dir.sh",
+        ":grpc_include_dir",
         outputDir.absolutePath,
         konanHome.get(),
     )
@@ -145,12 +138,4 @@ publishing {
             }
         }
     }
-}
-
-fun String.replaceGrpcVersion(grpcVersion: String): String {
-    val regex = Regex("""(?m)^GRPC_VERSION\s*=\s*"[^"]*"$""")
-    check(regex.containsMatchIn(this)) {
-        "Failed to find GRPC_VERSION assignment in ${moduleFile.absolutePath}"
-    }
-    return replace(regex, """GRPC_VERSION = "$grpcVersion"""")
 }

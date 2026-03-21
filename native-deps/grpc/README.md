@@ -8,7 +8,7 @@ Versioning:
 - Manual edits to `GRPC_VERSION` in `MODULE.bazel` will be overwritten on the next Gradle run.
 
 Current shape:
-- Bazel builds the ordered archive set for `@com_github_grpc_grpc//:grpc` and extracts gRPC headers.
+- Bazel builds the ordered archive set for `@com_github_grpc_grpc//:grpc` and extracts the public gRPC C headers.
 - Shared Bazel `platforms` and `toolchain` live in `../bazel-support`.
 - Gradle publishes one shared headers bundle and one native archive bundle per target.
 
@@ -21,8 +21,6 @@ Useful tasks:
 
 Published headers bundle contains:
 - `include/**`
-- `src/**` for grpc-internal headers needed by shim builds like `kgrpc`
-- transitive dependency headers such as `absl/**` when grpc internal headers include them
 
 Each published target bundle contains:
 - `lib/**` with all transitive grpc dependency archives

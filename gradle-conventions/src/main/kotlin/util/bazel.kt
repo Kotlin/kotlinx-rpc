@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import java.io.File
 
 data class NativeDependencyTarget(
     val kotlinName: String,
@@ -107,6 +108,29 @@ fun Project.registerCheckKonanHomeTask(
             "KONAN_HOME does not exist: ${dir.absolutePath}"
         }
     }
+}
+
+fun Project.registerSyncBazelModuleVersionTask(
+    moduleFile: File,
+    version: String,
+    variableName: String = "GRPC_VERSION",
+    name: String = "syncGrpcVersionToBazelModule",
+): TaskProvider<Task> = tasks.register(name) {
+    doLast {
+        val currentText = moduleFile.readText()
+        val updatedText = currentText.replaceBazelModuleVersion(variableName, version, moduleFile)
+        if (updatedText != currentText) {
+            moduleFile.writeText(updatedText)
+        }
+    }
+}
+
+private fun String.replaceBazelModuleVersion(variableName: String, version: String, moduleFile: File): String {
+    val regex = Regex("""(?m)^${Regex.escape(variableName)}\s*=\s*"[^"]*"$""")
+    check(regex.containsMatchIn(this)) {
+        "Failed to find $variableName assignment in ${moduleFile.absolutePath}"
+    }
+    return replace(regex, """$variableName = "$version"""")
 }
 
 fun KotlinMultiplatformExtension.registerNativeDependencyTargets() {

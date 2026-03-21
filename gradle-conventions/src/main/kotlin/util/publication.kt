@@ -142,6 +142,14 @@ class PublicationRepositoryConfig {
     var password: String? = null
 }
 
+fun RepositoryHandler.configureSpacePackagesConsumerRepository(
+    repoName: String,
+) {
+    maven(url = "https://packages.jetbrains.team/maven/p/krpc/$repoName") {
+        name = repoName
+    }
+}
+
 fun RepositoryHandler.configureRepository(
     project: Project,
     configBuilder: PublicationRepositoryConfig.() -> Unit,

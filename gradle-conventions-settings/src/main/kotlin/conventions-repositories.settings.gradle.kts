@@ -207,6 +207,9 @@ gradle.rootProject {
 
         buildscript {
             repositories {
+                // Temporary local development fallback while grpc-shim is still consumed from mavenLocal.
+                mavenLocal()
+
                 if (useProxy) {
                     buildDeps()
                     buildDepsEap()
@@ -220,6 +223,9 @@ gradle.rootProject {
             }
         }
         repositories {
+            // Temporary local development fallback while grpc-shim is still consumed from mavenLocal.
+            mavenLocal()
+
             if (useProxy) {
                 buildDeps()
                 buildDepsEap()

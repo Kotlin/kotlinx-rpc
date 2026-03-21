@@ -14,10 +14,12 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import util.konanHomeProvider
 import util.nativeDependencyTargets
+import util.configureSpacePackagesConsumerRepository
 import util.registerCheckBazelTask
 import util.registerCheckKonanHomeTask
 import util.registerNativeDependencyTargets
 import util.registerPrepareKonanHomeTask
+import util.registerSyncBazelModuleVersionTask
 import util.requireGradleProperty
 import util.toTaskSuffix
 
@@ -30,7 +32,8 @@ group = "org.jetbrains.kotlinx"
 val globalRootDir: String by extra
 
 repositories {
-    maven("$globalRootDir/build/repo")
+    // Fall back to the public grpc package repository when the local dev repo does not contain the bundle.
+    configureSpacePackagesConsumerRepository(repoName = "grpc")
 }
 
 val grpcVersion = requireGradleProperty("grpcVersion")
@@ -38,6 +41,7 @@ val shimVersion = requireGradleProperty("shimVersion")
 version = "$grpcVersion-$shimVersion"
 val libkgrpcDefTemplate = layout.projectDirectory.file("src/nativeInterop/cinterop/libkgrpc.def")
 val grpcShimTargets = nativeDependencyTargets
+val grpcShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 
 val grpcHeaders by configurations.creating {
     isCanBeConsumed = false
@@ -72,9 +76,27 @@ val checkKonanHome = registerCheckKonanHomeTask(
     prepareKonanHome = prepareKonanHome,
     konanHome = konanHome,
 )
+val syncGrpcVersionToBazelModule = registerSyncBazelModuleVersionTask(
+    moduleFile = grpcShimModuleFile,
+    version = grpcVersion,
+)
 
-fun String.toInteropArchiveName(): String = removePrefix("lib/")
+fun String.normalizeGrpcArchivePath(): String =
+    if (endsWith(".lo")) removeSuffix(".lo") + ".a" else this
+
+fun String.toInteropArchiveName(): String = normalizeGrpcArchivePath()
+    .removePrefix("lib/")
     .replace("/", "__")
+
+val grpcHeadersDir = layout.buildDirectory.dir("grpc/headers")
+val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
+    group = "build"
+    into(grpcHeadersDir)
+    from({ zipTree(grpcHeaders.singleFile) })
+    doFirst {
+        delete(grpcHeadersDir)
+    }
+}
 
 kotlin {
     registerNativeDependencyTargets()
@@ -83,7 +105,6 @@ kotlin {
         val target = grpcShimTargets.single { it.bazelName == konanTarget.visibleName }
         val taskSuffix = target.bazelName.toTaskSuffix()
         val grpcPrebuiltDir = layout.buildDirectory.dir("grpc/${target.bazelName}/prebuilt")
-        val grpcHeadersDir = grpcPrebuiltDir.map { it.dir("headers") }
         val interopLibDir = layout.buildDirectory.dir("grpc/${target.bazelName}/interop-libs")
         val generatedDefFile = layout.buildDirectory.file("grpc/${target.bazelName}/libkgrpc.def")
         val shimLibFile = layout.buildDirectory.file("grpc-shim/${target.bazelName}/libkgrpc.${target.bazelName}.a")
@@ -91,20 +112,17 @@ kotlin {
         val prepareGrpcBundle = tasks.register<Sync>("prepareGrpc${taskSuffix}") {
             group = "build"
             into(grpcPrebuiltDir)
-            from({ zipTree(grpcHeaders.singleFile) }) {
-                into("headers")
-            }
             from({ zipTree(grpcTargetBundles.getValue(target).singleFile) })
         }
 
         val buildGrpcShim = tasks.register<Exec>("buildGrpcShim${taskSuffix}") {
-            dependsOn(prepareGrpcBundle, checkBazel, checkKonanHome)
+            dependsOn(syncGrpcVersionToBazelModule, checkBazel, checkKonanHome)
             group = "build"
             workingDir = layout.projectDirectory.asFile
             outputs.file(shimLibFile)
             commandLine(
                 "./build_target.sh",
-                ":grpc_shim_${target.bazelName}",
+                ":grpc_shim",
                 shimLibFile.get().asFile.absolutePath,
                 target.bazelName,
                 konanHome.get(),
@@ -112,7 +130,7 @@ kotlin {
         }
 
         val prepareInterop = tasks.register("prepareGrpcShimInterop${taskSuffix}") {
-            dependsOn(buildGrpcShim)
+            dependsOn(prepareGrpcBundle, buildGrpcShim)
             outputs.dir(interopLibDir)
 
             doLast {
@@ -137,11 +155,12 @@ kotlin {
                 manifestFile.readLines()
                     .filter { it.isNotBlank() }
                     .forEach { relativePath ->
+                        val normalizedPath = relativePath.normalizeGrpcArchivePath()
                         val source = prebuiltDir.resolve(relativePath)
                         check(source.isFile) {
                             "Missing grpc archive from manifest: ${source.absolutePath}"
                         }
-                        val targetName = relativePath.toInteropArchiveName()
+                        val targetName = normalizedPath.toInteropArchiveName()
                         source.copyTo(interopDir.resolve(targetName), overwrite = true)
                     }
             }
@@ -161,6 +180,7 @@ kotlin {
                 val archives = prebuiltDir.resolve("metadata/archives.txt")
                     .readLines()
                     .filter { it.isNotBlank() }
+                    .map { it.normalizeGrpcArchivePath() }
                     .map { it.toInteropArchiveName() }
                 val staticLibraries = buildList {
                     add("libkgrpc.${target.bazelName}.a")
@@ -182,14 +202,13 @@ kotlin {
             includeDirs(
                 layout.projectDirectory.dir("include").asFile,
                 grpcHeadersDir.get().asFile.resolve("include"),
-                grpcHeadersDir.get().asFile,
             )
             extraOpts("-libraryPath", interopLibDir.get().asFile.absolutePath)
         }
 
         val cinteropTaskName = "cinteropLibkgrpc${target.kotlinName.replaceFirstChar { it.uppercase() }}"
         tasks.named(cinteropTaskName, CInteropProcess::class) {
-            dependsOn(generateInteropDef)
+            dependsOn(prepareGrpcHeaders, generateInteropDef)
         }
     }
 }
