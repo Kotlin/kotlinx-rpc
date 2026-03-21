@@ -12,7 +12,6 @@ build:ios_x64 --platforms=@build_bazel_apple_support//platforms:ios_x86_64 --app
 build:watchos_arm64 --platforms=@build_bazel_apple_support//platforms:watchos_arm64_32 --apple_platform_type=watchos
 build:watchos_device_arm64 --platforms=@build_bazel_apple_support//platforms:watchos_device_arm64 --apple_platform_type=watchos
 build:watchos_simulator_arm64 --platforms=@build_bazel_apple_support//platforms:watchos_arm64 --apple_platform_type=watchos
-build:watchos_arm32 --platforms=@build_bazel_apple_support//platforms:watchos_armv7k --apple_platform_type=watchos
 build:watchos_x64 --platforms=@build_bazel_apple_support//platforms:watchos_x86_64 --apple_platform_type=watchos
 
 build:tvos_arm64 --platforms=@build_bazel_apple_support//platforms:tvos_arm64 --apple_platform_type=watchos

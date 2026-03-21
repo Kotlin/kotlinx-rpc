@@ -18,7 +18,6 @@ staticLibraries.ios_x64 = libkgrpc.ios_x64.a libgrpc_fat.ios_x64.a
 staticLibraries.watchos_arm64 = libkgrpc.watchos_arm64.a libgrpc_fat.watchos_arm64.a
 staticLibraries.watchos_device_arm64 = libkgrpc.watchos_device_arm64.a libgrpc_fat.watchos_device_arm64.a
 staticLibraries.watchos_simulator_arm64 = libkgrpc.watchos_simulator_arm64.a libgrpc_fat.watchos_simulator_arm64.a
-staticLibraries.watchos_arm32 = libkgrpc.watchos_arm32.a libgrpc_fat.watchos_arm32.a
 staticLibraries.watchos_x64 = libkgrpc.watchos_x64.a libgrpc_fat.watchos_x64.a
 
 staticLibraries.tvos_arm64 = libkgrpc.tvos_arm64.a libgrpc_fat.tvos_arm64.a

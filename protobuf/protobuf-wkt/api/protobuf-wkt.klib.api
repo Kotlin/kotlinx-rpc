@@ -1,5 +1,5 @@
 // Klib ABI Dump
-// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm32, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, tvosArm64, tvosSimulatorArm64, tvosX64, watchosArm64, watchosDeviceArm64, watchosSimulatorArm64, watchosX64]
 // Rendering settings:
 // - Signature version: 2
 // - Show manifest properties: true
@@ -10,15 +10,15 @@ abstract interface com.google.protobuf.kotlin/Any { // com.google.protobuf.kotli
     abstract val typeUrl // com.google.protobuf.kotlin/Any.typeUrl|{}typeUrl[0]
         abstract fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/Any.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
     abstract val value // com.google.protobuf.kotlin/Any.value|{}value[0]
-        abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/Any.value.<get-value>|<get-value>(){}[0]
+        abstract fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/Any.value.<get-value>|<get-value>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/Any { // com.google.protobuf.kotlin/Any.Builder|null[0]
         abstract var typeUrl // com.google.protobuf.kotlin/Any.Builder.typeUrl|{}typeUrl[0]
             abstract fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/Any.Builder.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
             abstract fun <set-typeUrl>(kotlin/String) // com.google.protobuf.kotlin/Any.Builder.typeUrl.<set-typeUrl>|<set-typeUrl>(kotlin.String){}[0]
         abstract var value // com.google.protobuf.kotlin/Any.Builder.value|{}value[0]
-            abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/Any.Builder.value.<get-value>|<get-value>(){}[0]
-            abstract fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/Any.Builder.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+            abstract fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/Any.Builder.value.<get-value>|<get-value>(){}[0]
+            abstract fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/Any.Builder.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
     }
 
     final object Companion // com.google.protobuf.kotlin/Any.Companion|null[0]
@@ -87,12 +87,12 @@ abstract interface com.google.protobuf.kotlin/BoolValue { // com.google.protobuf
 
 abstract interface com.google.protobuf.kotlin/BytesValue { // com.google.protobuf.kotlin/BytesValue|null[0]
     abstract val value // com.google.protobuf.kotlin/BytesValue.value|{}value[0]
-        abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/BytesValue.value.<get-value>|<get-value>(){}[0]
+        abstract fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/BytesValue.value.<get-value>|<get-value>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/BytesValue { // com.google.protobuf.kotlin/BytesValue.Builder|null[0]
         abstract var value // com.google.protobuf.kotlin/BytesValue.Builder.value|{}value[0]
-            abstract fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/BytesValue.Builder.value.<get-value>|<get-value>(){}[0]
-            abstract fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/BytesValue.Builder.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+            abstract fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/BytesValue.Builder.value.<get-value>|<get-value>(){}[0]
+            abstract fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/BytesValue.Builder.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
     }
 
     final object Companion // com.google.protobuf.kotlin/BytesValue.Companion|null[0]
@@ -3045,7 +3045,7 @@ abstract interface com.google.protobuf.kotlin/UninterpretedOption { // com.googl
     abstract val positiveIntValue // com.google.protobuf.kotlin/UninterpretedOption.positiveIntValue|{}positiveIntValue[0]
         abstract fun <get-positiveIntValue>(): kotlin/ULong? // com.google.protobuf.kotlin/UninterpretedOption.positiveIntValue.<get-positiveIntValue>|<get-positiveIntValue>(){}[0]
     abstract val stringValue // com.google.protobuf.kotlin/UninterpretedOption.stringValue|{}stringValue[0]
-        abstract fun <get-stringValue>(): kotlin/ByteArray? // com.google.protobuf.kotlin/UninterpretedOption.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
+        abstract fun <get-stringValue>(): kotlinx.io.bytestring/ByteString? // com.google.protobuf.kotlin/UninterpretedOption.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/UninterpretedOption { // com.google.protobuf.kotlin/UninterpretedOption.Builder|null[0]
         abstract var aggregateValue // com.google.protobuf.kotlin/UninterpretedOption.Builder.aggregateValue|{}aggregateValue[0]
@@ -3067,8 +3067,8 @@ abstract interface com.google.protobuf.kotlin/UninterpretedOption { // com.googl
             abstract fun <get-positiveIntValue>(): kotlin/ULong? // com.google.protobuf.kotlin/UninterpretedOption.Builder.positiveIntValue.<get-positiveIntValue>|<get-positiveIntValue>(){}[0]
             abstract fun <set-positiveIntValue>(kotlin/ULong?) // com.google.protobuf.kotlin/UninterpretedOption.Builder.positiveIntValue.<set-positiveIntValue>|<set-positiveIntValue>(kotlin.ULong?){}[0]
         abstract var stringValue // com.google.protobuf.kotlin/UninterpretedOption.Builder.stringValue|{}stringValue[0]
-            abstract fun <get-stringValue>(): kotlin/ByteArray? // com.google.protobuf.kotlin/UninterpretedOption.Builder.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
-            abstract fun <set-stringValue>(kotlin/ByteArray?) // com.google.protobuf.kotlin/UninterpretedOption.Builder.stringValue.<set-stringValue>|<set-stringValue>(kotlin.ByteArray?){}[0]
+            abstract fun <get-stringValue>(): kotlinx.io.bytestring/ByteString? // com.google.protobuf.kotlin/UninterpretedOption.Builder.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
+            abstract fun <set-stringValue>(kotlinx.io.bytestring/ByteString?) // com.google.protobuf.kotlin/UninterpretedOption.Builder.stringValue.<set-stringValue>|<set-stringValue>(kotlinx.io.bytestring.ByteString?){}[0]
     }
 
     abstract interface NamePart { // com.google.protobuf.kotlin/UninterpretedOption.NamePart|null[0]
@@ -3202,8 +3202,8 @@ final class com.google.protobuf.kotlin/AnyInternal : com.google.protobuf.kotlin/
         final fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/AnyInternal.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
         final fun <set-typeUrl>(kotlin/String) // com.google.protobuf.kotlin/AnyInternal.typeUrl.<set-typeUrl>|<set-typeUrl>(kotlin.String){}[0]
     final var value // com.google.protobuf.kotlin/AnyInternal.value|{}value[0]
-        final fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/AnyInternal.value.<get-value>|<get-value>(){}[0]
-        final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/AnyInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+        final fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/AnyInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/AnyInternal.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/AnyInternal.asString|asString(kotlin.Int){}[0]
     final fun copyInternal(): com.google.protobuf.kotlin/AnyInternal // com.google.protobuf.kotlin/AnyInternal.copyInternal|copyInternal(){}[0]
@@ -3262,8 +3262,8 @@ final class com.google.protobuf.kotlin/BytesValueInternal : com.google.protobuf.
     constructor <init>() // com.google.protobuf.kotlin/BytesValueInternal.<init>|<init>(){}[0]
 
     final var value // com.google.protobuf.kotlin/BytesValueInternal.value|{}value[0]
-        final fun <get-value>(): kotlin/ByteArray // com.google.protobuf.kotlin/BytesValueInternal.value.<get-value>|<get-value>(){}[0]
-        final fun <set-value>(kotlin/ByteArray) // com.google.protobuf.kotlin/BytesValueInternal.value.<set-value>|<set-value>(kotlin.ByteArray){}[0]
+        final fun <get-value>(): kotlinx.io.bytestring/ByteString // com.google.protobuf.kotlin/BytesValueInternal.value.<get-value>|<get-value>(){}[0]
+        final fun <set-value>(kotlinx.io.bytestring/ByteString) // com.google.protobuf.kotlin/BytesValueInternal.value.<set-value>|<set-value>(kotlinx.io.bytestring.ByteString){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/BytesValueInternal.asString|asString(kotlin.Int){}[0]
     final fun copyInternal(): com.google.protobuf.kotlin/BytesValueInternal // com.google.protobuf.kotlin/BytesValueInternal.copyInternal|copyInternal(){}[0]
@@ -4546,8 +4546,8 @@ final class com.google.protobuf.kotlin/UninterpretedOptionInternal : com.google.
         final fun <get-positiveIntValue>(): kotlin/ULong? // com.google.protobuf.kotlin/UninterpretedOptionInternal.positiveIntValue.<get-positiveIntValue>|<get-positiveIntValue>(){}[0]
         final fun <set-positiveIntValue>(kotlin/ULong?) // com.google.protobuf.kotlin/UninterpretedOptionInternal.positiveIntValue.<set-positiveIntValue>|<set-positiveIntValue>(kotlin.ULong?){}[0]
     final var stringValue // com.google.protobuf.kotlin/UninterpretedOptionInternal.stringValue|{}stringValue[0]
-        final fun <get-stringValue>(): kotlin/ByteArray? // com.google.protobuf.kotlin/UninterpretedOptionInternal.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
-        final fun <set-stringValue>(kotlin/ByteArray?) // com.google.protobuf.kotlin/UninterpretedOptionInternal.stringValue.<set-stringValue>|<set-stringValue>(kotlin.ByteArray?){}[0]
+        final fun <get-stringValue>(): kotlinx.io.bytestring/ByteString? // com.google.protobuf.kotlin/UninterpretedOptionInternal.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
+        final fun <set-stringValue>(kotlinx.io.bytestring/ByteString?) // com.google.protobuf.kotlin/UninterpretedOptionInternal.stringValue.<set-stringValue>|<set-stringValue>(kotlinx.io.bytestring.ByteString?){}[0]
 
     final fun asString(kotlin/Int = ...): kotlin/String // com.google.protobuf.kotlin/UninterpretedOptionInternal.asString|asString(kotlin.Int){}[0]
     final fun copyInternal(): com.google.protobuf.kotlin/UninterpretedOptionInternal // com.google.protobuf.kotlin/UninterpretedOptionInternal.copyInternal|copyInternal(){}[0]

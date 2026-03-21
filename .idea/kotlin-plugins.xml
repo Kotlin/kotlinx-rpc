@@ -4,13 +4,10 @@
     <option name="repositories">
       <map>
         <entry key="Local Build Repo" value="$PROJECT_DIR$/build/repo;PATH" />
-        <entry key="Maven Central" value="https://repo1.maven.org/maven2;URL" />
-        <entry key="kotlinx-rpc for IDE" value="https://redirector.kotlinlang.org/maven/kxrpc-for-ide;URL" />
       </map>
     </option>
     <option name="plugins">
       <map>
-        <entry key="kotlinx-rpc" value="EXACT;true;false;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-cli;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-backend;org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-common" />
         <entry key="kotlinx-rpc-local" value="EXACT;true;false;org.jetbrains.kotlinx:compiler-plugin-cli;org.jetbrains.kotlinx:compiler-plugin-k2;org.jetbrains.kotlinx:compiler-plugin-backend;org.jetbrains.kotlinx:compiler-plugin-common" />
       </map>
     </option>
@@ -21,7 +18,6 @@
     </option>
     <option name="pluginsRepos">
       <map>
-        <entry key="kotlinx-rpc" value="kotlinx-rpc for IDE" />
         <entry key="kotlinx-rpc-local" value="Local Build Repo" />
       </map>
     </option>
