@@ -1,0 +1,9 @@
+/.gradle/
+/.idea/
+/bazel-*/
+/build/
+/bazel-bin
+/bazel-kgrpc
+/bazel-grpc-shim
+/bazel-out
+/bazel-testlogs

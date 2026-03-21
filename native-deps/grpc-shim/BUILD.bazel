@@ -1,0 +1,22 @@
+load("//:grpc_shim_targets.bzl", "grpc_shim_target")
+
+package(default_visibility = ["//visibility:public"])
+
+# Each target-specific rule points at the grpc bundle that Gradle unpacked into build/grpc/<target>/prebuilt.
+# Bazel only compiles the shim C++ source here; both the grpc headers and the grpc archives come from the
+# published native-deps/grpc artifacts that Gradle unpacked for the requested target.
+grpc_shim_target("ios_arm64")
+grpc_shim_target("ios_simulator_arm64")
+grpc_shim_target("ios_x64")
+grpc_shim_target("macos_arm64")
+grpc_shim_target("macos_x64")
+grpc_shim_target("tvos_arm64")
+grpc_shim_target("tvos_simulator_arm64")
+grpc_shim_target("tvos_x64")
+grpc_shim_target("watchos_arm32")
+grpc_shim_target("watchos_arm64")
+grpc_shim_target("watchos_device_arm64")
+grpc_shim_target("watchos_simulator_arm64")
+grpc_shim_target("watchos_x64")
+grpc_shim_target("linux_arm64")
+grpc_shim_target("linux_x64")

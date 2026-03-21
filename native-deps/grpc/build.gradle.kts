@@ -3,12 +3,17 @@
  */
 
 import org.gradle.api.tasks.Exec
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.register
 import org.gradle.api.publish.maven.MavenPublication
-import util.findKonanHome
+import util.konanHomeProvider
+import util.nativeDependencyTargets
 import util.registerCheckBazelTask
+import util.registerCheckKonanHomeTask
 import util.registerPrepareKonanHomeTask
+import util.requireGradleProperty
+import util.toTaskSuffix
 
 plugins {
     base
@@ -16,43 +21,24 @@ plugins {
 }
 
 group = "org.jetbrains.kotlinx"
-val grpcVersion = providers.gradleProperty("grpcVersion").orNull
-    ?: error("Missing grpcVersion in ${layout.projectDirectory.file("gradle.properties").asFile.absolutePath}")
+val grpcVersion = requireGradleProperty("grpcVersion")
 version = grpcVersion
-
-data class GrpcTarget(
-    val bazelName: String,
-    val publicationSuffix: String,
-)
 
 // Bazel target names and published artifact suffixes intentionally differ:
 // Bazel uses Konan-style names, while Maven coordinates follow the repo's lowercase target naming.
-val grpcTargets = listOf(
-    GrpcTarget("ios_arm64", "iosarm64"),
-    GrpcTarget("ios_simulator_arm64", "iossimulatorarm64"),
-    GrpcTarget("ios_x64", "iosx64"),
-    GrpcTarget("macos_arm64", "macosarm64"),
-    GrpcTarget("macos_x64", "macosx64"),
-    GrpcTarget("tvos_arm64", "tvosarm64"),
-    GrpcTarget("tvos_simulator_arm64", "tvossimulatorarm64"),
-    GrpcTarget("tvos_x64", "tvosx64"),
-    GrpcTarget("watchos_arm32", "watchosarm32"),
-    GrpcTarget("watchos_arm64", "watchosarm64"),
-    GrpcTarget("watchos_device_arm64", "watchosdevicearm64"),
-    GrpcTarget("watchos_simulator_arm64", "watchossimulatorarm64"),
-    GrpcTarget("watchos_x64", "watchosx64"),
-    GrpcTarget("linux_arm64", "linuxarm64"),
-    GrpcTarget("linux_x64", "linuxx64"),
-)
+val grpcTargets = nativeDependencyTargets
 
-val konanHome = providers.provider { findKonanHome() }
+val konanHome = konanHomeProvider()
 val headersDir = layout.buildDirectory.dir("grpc/headers")
 val moduleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 val checkBazel = registerCheckBazelTask()
 val prepareKonanHome = registerPrepareKonanHomeTask(
     downloadTaskPath = ":grpc:grpc-core:downloadKotlinNativeDistribution",
 )
-
+val checkKonanHome = registerCheckKonanHomeTask(
+    prepareKonanHome = prepareKonanHome,
+    konanHome = konanHome,
+)
 val syncGrpcVersionToBazelModule = tasks.register("syncGrpcVersionToBazelModule") {
     doLast {
         val currentText = moduleFile.readText()
@@ -66,16 +52,6 @@ val syncGrpcVersionToBazelModule = tasks.register("syncGrpcVersionToBazelModule"
     }
 }
 
-val checkKonanHome = tasks.register("checkKonanHome") {
-    dependsOn(prepareKonanHome)
-    doLast {
-        val dir = file(konanHome.get())
-        check(dir.isDirectory) {
-            "KONAN_HOME does not exist: ${dir.absolutePath}"
-        }
-    }
-}
-
 val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     dependsOn(syncGrpcVersionToBazelModule, checkBazel, checkKonanHome)
     group = "build"
@@ -83,8 +59,8 @@ val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     val outputDir = headersDir.get().asFile
     outputs.dir(outputDir)
     commandLine(
-        "./extract_include_dir.sh",
-        ":grpc_include_dir",
+        "./extract_headers_dir.sh",
+        ":grpc_headers_dir",
         outputDir.absolutePath,
         konanHome.get(),
     )
@@ -93,8 +69,18 @@ val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
 val buildAllGrpcBundles = tasks.register("buildAllGrpcBundles") {
     group = "build"
 }
+// gRPC native bundles must only go to the dedicated grpc package repository. Keeping the
+// allowed set explicit here prevents accidental publication to the generic EAP / for-IDE repos
+// that conventions-publishing would otherwise add for normal modules.
+val allowedPublishRepositories = setOf("grpc", "buildRepo")
 
 publishing {
+    // conventions-publishing adds the shared repository set for normal modules. This standalone
+    // build is intentionally stricter, so trim it down to the grpc repo and the local build repo.
+    repositories.toList()
+        .filter { it.name !in allowedPublishRepositories }
+        .forEach { repositories.remove(it) }
+
     publications {
         val headersBundle = tasks.register<Zip>("packageGrpcHeaders") {
             dependsOn(buildGrpcHeaders)
@@ -159,10 +145,6 @@ publishing {
             }
         }
     }
-}
-
-fun String.toTaskSuffix(): String = split('_').joinToString("") { part ->
-    part.replaceFirstChar { char -> char.uppercase() }
 }
 
 fun String.replaceGrpcVersion(grpcVersion: String): String {
