@@ -19,3 +19,10 @@ plugins {
 }
 
 includeRootAsPublic()
+includePublic(":annotation")
+project(":annotation").projectDir = file("grpc-core-shim-internal-api")
+include(":klib-patcher")
+project(":klib-patcher").projectDir = file("grpc-shim-unsupported-api-plugin")
+include(":verification-negative")
+include(":verification-positive")
+include(":verification-scope")

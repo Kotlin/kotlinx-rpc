@@ -3,15 +3,19 @@
  */
 
 import org.gradle.api.tasks.Exec
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.Sync
 import org.gradle.kotlin.dsl.creating
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.konanHomeProvider
 import util.nativeDependencyTargets
 import util.configureSpacePackagesConsumerRepository
@@ -22,6 +26,7 @@ import util.registerPrepareKonanHomeTask
 import util.registerSyncBazelModuleVersionTask
 import util.requireGradleProperty
 import util.toTaskSuffix
+import java.io.ByteArrayOutputStream
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -39,9 +44,30 @@ repositories {
 val grpcVersion = requireGradleProperty("grpcVersion")
 val shimVersion = requireGradleProperty("shimVersion")
 version = "$grpcVersion-$shimVersion"
+val verificationRepositoryDir = layout.buildDirectory.dir("verification-repo")
+allprojects {
+    group = rootProject.group
+    version = rootProject.version
+
+    plugins.withId("maven-publish") {
+        extensions.configure<PublishingExtension> {
+            repositories {
+                maven {
+                    name = "verification"
+                    url = uri(rootProject.layout.buildDirectory.dir("verification-repo"))
+                }
+            }
+        }
+    }
+}
+
 val libkgrpcDefTemplate = layout.projectDirectory.file("src/nativeInterop/cinterop/libkgrpc.def")
 val grpcShimTargets = nativeDependencyTargets
 val grpcShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
+val unsupportedApiPluginProject = project(":klib-patcher")
+val unsupportedApiPluginJar = unsupportedApiPluginProject.layout.buildDirectory.file(
+    "libs/${unsupportedApiPluginProject.name}-${project.version}.jar",
+)
 
 val grpcHeaders by configurations.creating {
     isCanBeConsumed = false
@@ -76,6 +102,9 @@ val checkKonanHome = registerCheckKonanHomeTask(
     prepareKonanHome = prepareKonanHome,
     konanHome = konanHome,
 )
+unsupportedApiPluginProject.tasks.withType<KotlinCompile>().configureEach {
+    dependsOn(checkKonanHome)
+}
 val syncGrpcVersionToBazelModule = registerSyncBazelModuleVersionTask(
     moduleFile = grpcShimModuleFile,
     version = grpcVersion,
@@ -89,6 +118,7 @@ fun String.toInteropArchiveName(): String = normalizeGrpcArchivePath()
     .replace("/", "__")
 
 val grpcHeadersDir = layout.buildDirectory.dir("grpc/headers")
+val patchUnsupportedApiTasks = mutableListOf<TaskProvider<Task>>()
 val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
     group = "build"
     into(grpcHeadersDir)
@@ -101,13 +131,33 @@ val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
 kotlin {
     registerNativeDependencyTargets()
 
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(project(":annotation"))
+            }
+        }
+
+        nativeMain {
+            dependencies {
+                // The cinterop dependency configuration resolves from the implementation side,
+                // while downstream consumers still need the marker as a transitive API dependency.
+                implementation(project(":annotation"))
+            }
+        }
+    }
+
     targets.withType<KotlinNativeTarget>().configureEach {
         val target = grpcShimTargets.single { it.bazelName == konanTarget.visibleName }
         val taskSuffix = target.bazelName.toTaskSuffix()
+        val publicationTaskSuffix = target.kotlinName.replaceFirstChar { it.uppercase() }
         val grpcPrebuiltDir = layout.buildDirectory.dir("grpc/${target.bazelName}/prebuilt")
         val interopLibDir = layout.buildDirectory.dir("grpc/${target.bazelName}/interop-libs")
         val generatedDefFile = layout.buildDirectory.file("grpc/${target.bazelName}/libkgrpc.def")
         val shimLibFile = layout.buildDirectory.file("grpc-shim/${target.bazelName}/libkgrpc.${target.bazelName}.a")
+        val packedCinteropKlibFile = layout.buildDirectory.file(
+            "libs/${project.name}-${target.kotlinName}Cinterop-libkgrpcMain-$version.klib",
+        )
 
         val prepareGrpcBundle = tasks.register<Sync>("prepareGrpc${taskSuffix}") {
             group = "build"
@@ -207,10 +257,77 @@ kotlin {
         }
 
         val cinteropTaskName = "cinteropLibkgrpc${target.kotlinName.replaceFirstChar { it.uppercase() }}"
-        tasks.named(cinteropTaskName, CInteropProcess::class) {
+        val cinteropTask = tasks.named(cinteropTaskName, CInteropProcess::class) {
             dependsOn(prepareGrpcHeaders, generateInteropDef)
         }
+        val cinteropPublicationTaskName = "${target.kotlinName}Cinterop-libkgrpcKlib"
+
+        fun patchPackedKlib(outputFile: File) {
+            val toolJar = unsupportedApiPluginJar.get().asFile
+            check(toolJar.isFile) {
+                "Missing grpc-shim unsupported API tool jar: ${toolJar.absolutePath}"
+            }
+            val process = ProcessBuilder(
+                "java",
+                "-cp",
+                toolJar.absolutePath,
+                "kotlinx.rpc.grpc.nativedeps.tooling.GrpcShimUnsupportedApiKlibPatcher",
+                cinteropTask.get().klibDirectory.get().asFile.absolutePath,
+                outputFile.absolutePath,
+            )
+                .directory(layout.projectDirectory.asFile)
+                .inheritIO()
+                .start()
+            check(process.waitFor() == 0) {
+                "grpc-shim unsupported API patcher failed for ${outputFile.absolutePath}"
+            }
+        }
+
+        val patchUnsupportedApiTask = tasks.register("patchGrpcShimUnsupportedApi${taskSuffix}") {
+            dependsOn(cinteropTask)
+            dependsOn(":klib-patcher:jar")
+            inputs.file(unsupportedApiPluginJar)
+            inputs.dir(cinteropTask.flatMap { it.klibDirectory })
+            outputs.file(packedCinteropKlibFile)
+
+            doLast {
+                patchPackedKlib(packedCinteropKlibFile.get().asFile)
+            }
+        }
+        patchUnsupportedApiTasks += patchUnsupportedApiTask
+        tasks.withType<Zip>().matching { it.name == cinteropPublicationTaskName }.configureEach {
+            dependsOn(cinteropTask)
+            dependsOn(":klib-patcher:jar")
+            inputs.file(unsupportedApiPluginJar)
+            inputs.dir(cinteropTask.flatMap { it.klibDirectory })
+
+            doLast {
+                patchPackedKlib(archiveFile.get().asFile)
+            }
+        }
+        tasks.matching { task ->
+            task.name == "generateMetadataFileFor${publicationTaskSuffix}Publication" ||
+                task.name == "generatePomFileFor${publicationTaskSuffix}Publication" ||
+                task.name == "patchModuleJsonFor${publicationTaskSuffix}"
+        }.configureEach {
+            dependsOn(patchUnsupportedApiTask)
+        }
     }
+}
+
+tasks.register("patchGrpcShimUnsupportedApiArtifacts") {
+    group = "build"
+    dependsOn(patchUnsupportedApiTasks)
+}
+
+tasks.named("assemble") {
+    dependsOn("patchGrpcShimUnsupportedApiArtifacts")
+}
+
+tasks.matching { task ->
+    task.name.startsWith("publish") && task.name.endsWith("Repository")
+}.configureEach {
+    dependsOn("patchGrpcShimUnsupportedApiArtifacts")
 }
 
 publishing {
@@ -227,4 +344,98 @@ publishing {
             else -> artifactId
         }
     }
+}
+
+fun verificationCompileTaskName(): String {
+    val os = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    return when {
+        os.contains("mac") && (arch.contains("aarch64") || arch.contains("arm64")) -> "compileKotlinMacosArm64"
+        os.contains("mac") -> "compileKotlinMacosX64"
+        os.contains("linux") && (arch.contains("aarch64") || arch.contains("arm64")) -> "compileKotlinLinuxArm64"
+        os.contains("linux") -> "compileKotlinLinuxX64"
+        else -> error("Unsupported verification host: os=$os arch=$arch")
+    }
+}
+
+fun registerVerificationBuildTask(
+    name: String,
+    projectPath: String,
+    expectFailure: Boolean,
+    diagnosticSubstring: String? = null,
+) = tasks.register(name) {
+    group = "verification"
+
+    doLast {
+        verificationRepositoryDir.get().asFile.deleteRecursively()
+
+        fun runNestedBuild(vararg taskPaths: String): Pair<Int, String> {
+            val outputBuffer = ByteArrayOutputStream()
+            val process = ProcessBuilder(
+                "./gradlew",
+                *taskPaths,
+                "--no-daemon",
+                "--console=plain",
+                "--rerun-tasks",
+                "--refresh-dependencies",
+            )
+                .directory(layout.projectDirectory.asFile)
+                .redirectErrorStream(true)
+                .start()
+            process.inputStream.copyTo(outputBuffer)
+            return process.waitFor() to outputBuffer.toString(Charsets.UTF_8)
+        }
+
+        val (publishExitCode, publishOutput) = runNestedBuild(
+            ":publishAllPublicationsToVerificationRepository",
+            ":annotation:publishAllPublicationsToVerificationRepository",
+        )
+        check(publishExitCode == 0) {
+            "Expected verification publication to succeed, but it failed.\n$publishOutput"
+        }
+
+        val (exitCode, output) = runNestedBuild(projectPath)
+        if (expectFailure) {
+            check(exitCode != 0) {
+                "Expected $projectPath to fail, but it succeeded.\n$output"
+            }
+            if (diagnosticSubstring != null) {
+                check(output.contains(diagnosticSubstring)) {
+                    "Expected $projectPath to mention '$diagnosticSubstring'.\n$output"
+                }
+            }
+        } else {
+            check(exitCode == 0) {
+                "Expected $projectPath to succeed, but it failed.\n$output"
+            }
+        }
+    }
+}
+
+val verifyUnsupportedApiNegative = registerVerificationBuildTask(
+    name = "verifyUnsupportedApiNegative",
+    projectPath = ":verification-negative:${verificationCompileTaskName()}",
+    expectFailure = true,
+    diagnosticSubstring = "internal implementation details",
+)
+
+val verifyUnsupportedApiPositive = registerVerificationBuildTask(
+    name = "verifyUnsupportedApiPositive",
+    projectPath = ":verification-positive:${verificationCompileTaskName()}",
+    expectFailure = false,
+)
+
+val verifyUnsupportedApiScope = registerVerificationBuildTask(
+    name = "verifyUnsupportedApiScope",
+    projectPath = ":verification-scope:${verificationCompileTaskName()}",
+    expectFailure = false,
+)
+
+tasks.register("verifyGrpcShimUnsupportedApiOptIn") {
+    group = "verification"
+    dependsOn(verifyUnsupportedApiNegative, verifyUnsupportedApiPositive, verifyUnsupportedApiScope)
+}
+
+tasks.named("check") {
+    dependsOn("verifyGrpcShimUnsupportedApiOptIn")
 }
