@@ -21,10 +21,4 @@ plugins {
 includePublic(":core")
 includePublic(":annotation")
 include(":klib-patcher")
-include(":verification-negative")
-include(":verification-positive")
-include(":verification-scope")
-
-project(":verification-negative").projectDir = file("tests/verification-negative")
-project(":verification-positive").projectDir = file("tests/verification-positive")
-project(":verification-scope").projectDir = file("tests/verification-scope")
+include(":tests")

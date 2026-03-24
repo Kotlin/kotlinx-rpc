@@ -29,7 +29,7 @@ import java.util.zip.ZipOutputStream
  * does not load compiler plugin registrars on this build path, so the narrow reliable hook is to rewrite the
  * produced KLIB metadata immediately after cinterop and before the artifact is consumed or published.
  */
-internal object GrpcShimUnsupportedApiKlibPatcher {
+internal object KlibPatcher {
     private const val targetPackageName = "libkgrpc"
     private const val unsupportedApiAnnotationClassName = "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi"
     private const val unsupportedApiDependencyUniqueName =

@@ -13,3 +13,4 @@
 /core/bazel-grpc-shim
 /core/bazel-out
 /core/bazel-testlogs
+/tests/build/

@@ -248,7 +248,7 @@ kotlin {
                 "java",
                 "-cp",
                 toolJar.absolutePath,
-                "kotlinx.rpc.grpc.nativedeps.tooling.GrpcShimUnsupportedApiKlibPatcher",
+                "kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher",
                 cinteropTask.get().klibDirectory.get().asFile.absolutePath,
                 outputFile.absolutePath,
             )
