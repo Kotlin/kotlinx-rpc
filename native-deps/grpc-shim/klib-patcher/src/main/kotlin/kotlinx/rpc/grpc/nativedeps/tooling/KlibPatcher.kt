@@ -25,12 +25,12 @@ import java.util.zip.ZipOutputStream
  * Patches the produced grpc-shim cinterop KLIB after cinterop finishes.
  *
  * grpc-shim is published as a KLIB because the build needs it, but the declarations generated into the
- * `libkgrpc` package are internal implementation detail, not supported public API. The cinterop toolchain
+ * `grpcCoreInterop` package are internal implementation detail, not supported public API. The cinterop toolchain
  * does not load compiler plugin registrars on this build path, so the narrow reliable hook is to rewrite the
  * produced KLIB metadata immediately after cinterop and before the artifact is consumed or published.
  */
 internal object KlibPatcher {
-    private const val targetPackageName = "libkgrpc"
+    private const val targetPackageName = "grpcCoreInterop"
     private const val unsupportedApiAnnotationClassName = "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi"
     private const val unsupportedApiDependencyUniqueName =
         "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation"

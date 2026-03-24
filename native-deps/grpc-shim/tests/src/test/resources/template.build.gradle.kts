@@ -18,7 +18,7 @@ val grpcShimPublishedFiles = listOf(
     verificationRepositoryDir.resolve(
         "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix/" +
             "$verificationVersion/" +
-            "kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix-$verificationVersion-cinterop-libkgrpc.klib",
+            "kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix-$verificationVersion-cinterop-grpcCoreInterop.klib",
     ),
     verificationRepositoryDir.resolve(
         "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-annotation-$verificationTargetSuffix/" +

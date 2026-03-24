@@ -37,8 +37,10 @@ repositories {
 }
 
 val grpcVersion = requireGradleProperty("grpcVersion")
+val grpcCoreInteropName = "grpcCoreInterop"
+val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
 
-val libkgrpcDefTemplate = layout.projectDirectory.file("src/nativeInterop/cinterop/libkgrpc.def")
+val grpcCoreInteropDefTemplate = layout.projectDirectory.file("src/nativeInterop/cinterop/grpcCoreInterop.def")
 val grpcShimTargets = nativeDependencyTargets
 val grpcShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 val unsupportedApiPluginProject = project(":klib-patcher")
@@ -130,10 +132,11 @@ kotlin {
         val publicationTaskSuffix = target.kotlinName.replaceFirstChar { it.uppercase() }
         val grpcPrebuiltDir = layout.buildDirectory.dir("grpc/${target.bazelName}/prebuilt")
         val interopLibDir = layout.buildDirectory.dir("grpc/${target.bazelName}/interop-libs")
-        val generatedDefFile = layout.buildDirectory.file("grpc/${target.bazelName}/libkgrpc.def")
-        val shimLibFile = layout.buildDirectory.file("grpc-shim/${target.bazelName}/libkgrpc.${target.bazelName}.a")
+        val generatedDefFile = layout.buildDirectory.file("grpc/${target.bazelName}/$grpcCoreInteropName.def")
+        val shimLibFile = layout.buildDirectory.file("grpc-shim/${target.bazelName}/lib$grpcCoreInteropTaskName.${target.bazelName}.a")
         val packedCinteropKlibFile = layout.buildDirectory.file(
-            "libs/${project.name}-${target.kotlinName}Cinterop-libkgrpcMain-$version.klib",
+            "libs/${project.name}-${target.kotlinName}Cinterop-$grpcCoreInteropName" +
+                "Main-$version.klib",
         )
 
         val prepareGrpcBundle = tasks.register<Sync>("prepareGrpc${taskSuffix}") {
@@ -172,7 +175,7 @@ kotlin {
                     mkdirs()
                 }
 
-                val shimLibName = "libkgrpc.${target.bazelName}.a"
+                val shimLibName = "lib$grpcCoreInteropTaskName.${target.bazelName}.a"
                 shimLibFile.get().asFile.copyTo(interopDir.resolve(shimLibName), overwrite = true)
 
                 // The grpc bundle keeps repo-qualified subdirectories to avoid basename collisions.
@@ -195,7 +198,7 @@ kotlin {
 
         val generateInteropDef = tasks.register("generateGrpcShimInteropDef${taskSuffix}") {
             dependsOn(prepareInterop)
-            inputs.file(libkgrpcDefTemplate)
+            inputs.file(grpcCoreInteropDefTemplate)
             inputs.file(shimLibFile)
             inputs.file(grpcPrebuiltDir.map { it.file("metadata/archives.txt") })
             outputs.file(generatedDefFile)
@@ -210,21 +213,21 @@ kotlin {
                     .map { it.normalizeGrpcArchivePath() }
                     .map { it.toInteropArchiveName() }
                 val staticLibraries = buildList {
-                    add("libkgrpc.${target.bazelName}.a")
+                    add("lib$grpcCoreInteropTaskName.${target.bazelName}.a")
                     addAll(archives)
                 }.joinToString(" ")
 
                 generatedDefFile.get().asFile.apply {
                     parentFile.mkdirs()
                     writeText(
-                        libkgrpcDefTemplate.asFile.readText()
+                        grpcCoreInteropDefTemplate.asFile.readText()
                             .replace("__STATIC_LIBRARIES__", "staticLibraries = $staticLibraries"),
                     )
                 }
             }
         }
 
-        compilations.getByName("main").cinterops.create("libkgrpc") {
+        compilations.getByName("main").cinterops.create(grpcCoreInteropName) {
             defFile(generatedDefFile.get().asFile)
             includeDirs(
                 layout.projectDirectory.dir("include").asFile,
@@ -233,11 +236,11 @@ kotlin {
             extraOpts("-libraryPath", interopLibDir.get().asFile.absolutePath)
         }
 
-        val cinteropTaskName = "cinteropLibkgrpc${target.kotlinName.replaceFirstChar { it.uppercase() }}"
+        val cinteropTaskName = "cinterop$grpcCoreInteropTaskName${target.kotlinName.replaceFirstChar { it.uppercase() }}"
         val cinteropTask = tasks.named(cinteropTaskName, CInteropProcess::class) {
             dependsOn(prepareGrpcHeaders, generateInteropDef)
         }
-        val cinteropPublicationTaskName = "${target.kotlinName}Cinterop-libkgrpcKlib"
+        val cinteropPublicationTaskName = "${target.kotlinName}Cinterop-$grpcCoreInteropName" + "Klib"
 
         fun patchPackedKlib(outputFile: File) {
             val toolJar = unsupportedApiPluginJar.get().asFile
