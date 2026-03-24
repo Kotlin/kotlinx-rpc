@@ -43,6 +43,28 @@ fun MavenPublication.setPublicArtifactId(project: Project) {
 }
 
 /**
+ * Remaps the project-scoped public artifact base id produced by [setPublicArtifactId] to a custom published base id.
+ *
+ * This is intended for modules whose published coordinates should not mirror the Gradle project name directly.
+ * It handles both the raw project-name form and the `kotlinx-rpc-` prefixed form used by the generic conventions.
+ */
+fun MavenPublication.remapPublicArtifactBaseId(project: Project, publishedBaseId: String) {
+    val currentArtifactId = artifactId
+    val unprefixedBaseId = project.name
+    val prefixedBaseId = "$KOTLINX_RPC_PREFIX-$unprefixedBaseId"
+
+    artifactId = when {
+        currentArtifactId == unprefixedBaseId -> publishedBaseId
+        currentArtifactId.startsWith("$unprefixedBaseId-") ->
+            currentArtifactId.replaceFirst(unprefixedBaseId, publishedBaseId)
+        currentArtifactId == prefixedBaseId -> publishedBaseId
+        currentArtifactId.startsWith("$prefixedBaseId-") ->
+            currentArtifactId.replaceFirst(prefixedBaseId, publishedBaseId)
+        else -> currentArtifactId
+    }
+}
+
+/**
  * Fixes [KT-67965](https://youtrack.jetbrains.com/issue/KT-67965/KMP-root-publication-gradle-metadata-has-incorrect-GAV-coordinates-for-Apple-specific-targets-when-published-from-non-Apple)
  *
  * TLDR: module.json file of Gradle metadata does not always respect [setPublicArtifactId] change

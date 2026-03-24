@@ -54,9 +54,9 @@ val publishHostCore = project(":core").tasks.named("publish${hostTarget.publicat
 val publishHostAnnotation = project(":annotation").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
 val testSourceSet = the<SourceSetContainer>()["test"]
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
+fun Test.configureFixtureVerification() {
     dependsOn(publishHostCore, publishHostAnnotation)
+    useJUnitPlatform()
 
     systemProperty("grpcShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
     systemProperty("grpcShimVersion", rootProject.version.toString())
@@ -66,22 +66,19 @@ tasks.withType<Test>().configureEach {
     systemProperty("grpcShimHostPublicationSuffix", hostTarget.publicationSuffix)
 }
 
+tasks.withType<Test>().configureEach {
+    configureFixtureVerification()
+}
+
 fun registerTaggedTest(name: String, tag: String) = tasks.register<Test>(name) {
     group = "verification"
     description = "Runs grpc-shim fixture tests tagged '$tag'."
     testClassesDirs = testSourceSet.output.classesDirs
     classpath = testSourceSet.runtimeClasspath
+    configureFixtureVerification()
     useJUnitPlatform {
         includeTags(tag)
     }
-    dependsOn(publishHostCore, publishHostAnnotation)
-
-    systemProperty("grpcShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
-    systemProperty("grpcShimVersion", rootProject.version.toString())
-    systemProperty("grpcShimKotlinVersion", rootProject.libs.versions.kotlin.lang.get())
-    systemProperty("grpcShimHostTargetDeclaration", hostTarget.declaration)
-    systemProperty("grpcShimHostCompileTask", hostTarget.compileTask)
-    systemProperty("grpcShimHostPublicationSuffix", hostTarget.publicationSuffix)
 }
 
 registerTaggedTest("negativeTest", "negative")

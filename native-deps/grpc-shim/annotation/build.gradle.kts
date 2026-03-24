@@ -3,6 +3,7 @@
  */
 
 import org.gradle.api.publish.maven.MavenPublication
+import util.remapPublicArtifactBaseId
 import util.registerNativeDependencyTargets
 
 plugins {
@@ -16,30 +17,9 @@ kotlin {
 
 publishing {
     publications.withType(MavenPublication::class).configureEach {
-        artifactId = when {
-            artifactId == "annotation" ->
-                "kotlinx-rpc-grpc-core-shim-annotation"
-            artifactId.startsWith("annotation-") ->
-                artifactId.replaceFirst("annotation", "kotlinx-rpc-grpc-core-shim-annotation")
-            artifactId == "kotlinx-rpc-annotation" ->
-                "kotlinx-rpc-grpc-core-shim-annotation"
-            artifactId.startsWith("kotlinx-rpc-annotation-") ->
-                artifactId.replaceFirst("kotlinx-rpc-annotation", "kotlinx-rpc-grpc-core-shim-annotation")
-            artifactId == "grpc-core-shim-internal-api" ->
-                "kotlinx-rpc-grpc-core-shim-annotation"
-            artifactId.startsWith("grpc-core-shim-internal-api-") ->
-                artifactId.replaceFirst(
-                    "grpc-core-shim-internal-api",
-                    "kotlinx-rpc-grpc-core-shim-annotation",
-                )
-            artifactId == "kotlinx-rpc-grpc-core-shim-internal-api" ->
-                "kotlinx-rpc-grpc-core-shim-annotation"
-            artifactId.startsWith("kotlinx-rpc-grpc-core-shim-internal-api-") ->
-                artifactId.replaceFirst(
-                    "kotlinx-rpc-grpc-core-shim-internal-api",
-                    "kotlinx-rpc-grpc-core-shim-annotation",
-                )
-            else -> artifactId
-        }
+        remapPublicArtifactBaseId(
+            project = project,
+            publishedBaseId = "kotlinx-rpc-grpc-core-shim-annotation",
+        )
     }
 }

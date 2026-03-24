@@ -2,18 +2,24 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Sync
+import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.konanHomeProvider
+import util.remapPublicArtifactBaseId
 import util.nativeDependencyTargets
 import util.configureSpacePackagesConsumerRepository
 import util.registerCheckBazelTask
@@ -24,13 +30,22 @@ import util.registerSyncBazelModuleVersionTask
 import util.requireGradleProperty
 import util.toTaskSuffix
 
+/**
+ * Configures a Kotlin Multiplatform project to build and publish a gRPC shim KLIB.
+ *
+ * This build process includes assembling a KLIB from the following components:
+ * 1. gRPC headers and prebuilt archives provided by native-deps/grpc.
+ * 2. A small target-specific native shim library built using Bazel.
+ * 3. A post-processing step that applies the `InternalNativeRpcApi` marker.
+ */
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     id("conventions-publishing")
 }
 
-val globalRootDir: String by extra
-
+// grpc-shim depends on the grpc artifacts published by native-deps/grpc. For local development we prefer
+// the workspace-local repository, but still fall back to the public grpc channel when needed.
 repositories {
     // Fall back to the public grpc package repository when the local dev repo does not contain the bundle.
     configureSpacePackagesConsumerRepository(repoName = "grpc")
@@ -40,12 +55,17 @@ val grpcVersion = requireGradleProperty("grpcVersion")
 val grpcCoreInteropName = "grpcCoreInterop"
 val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
 
+// The checked-in .def file stays small and stable. We derive a target-specific copy during the build with
+// the full static library list gathered from the unpacked grpc bundle.
 val grpcCoreInteropDefTemplate = layout.projectDirectory.file("src/nativeInterop/cinterop/grpcCoreInterop.def")
 val grpcShimTargets = nativeDependencyTargets
 val grpcShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
-val unsupportedApiPluginProject = project(":klib-patcher")
-val unsupportedApiPluginJar = unsupportedApiPluginProject.layout.buildDirectory.file(
-    "libs/${unsupportedApiPluginProject.name}-${project.version}.jar",
+
+// cinterop does not load our compiler plugin on this build path, so grpc-shim uses a dedicated internal
+// KLIB patcher to add the opt-in marker after cinterop and before publication.
+val internalNativeRpcApiPatcherProject = project(":klib-patcher")
+val internalNativeRpcApiPatcherJar = internalNativeRpcApiPatcherProject.layout.buildDirectory.file(
+    "libs/${internalNativeRpcApiPatcherProject.name}-${project.version}.jar",
 )
 
 val grpcHeaders by configurations.creating {
@@ -81,9 +101,6 @@ val checkKonanHome = registerCheckKonanHomeTask(
     prepareKonanHome = prepareKonanHome,
     konanHome = konanHome,
 )
-unsupportedApiPluginProject.tasks.withType<KotlinCompile>().configureEach {
-    dependsOn(checkKonanHome)
-}
 val syncGrpcVersionToBazelModule = registerSyncBazelModuleVersionTask(
     moduleFile = grpcShimModuleFile,
     version = grpcVersion,
@@ -97,7 +114,7 @@ fun String.toInteropArchiveName(): String = normalizeGrpcArchivePath()
     .replace("/", "__")
 
 val grpcHeadersDir = layout.buildDirectory.dir("grpc/headers")
-val patchUnsupportedApiTasks = mutableListOf<TaskProvider<Task>>()
+val patchInternalNativeRpcApiTasks = mutableListOf<TaskProvider<out Task>>()
 val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
     group = "build"
     into(grpcHeadersDir)
@@ -241,81 +258,81 @@ kotlin {
             dependsOn(prepareGrpcHeaders, generateInteropDef)
         }
         val cinteropPublicationTaskName = "${target.kotlinName}Cinterop-$grpcCoreInteropName" + "Klib"
+        val cinteropPublicationTask = tasks.named(cinteropPublicationTaskName, Zip::class)
 
-        fun patchPackedKlib(outputFile: File) {
-            val toolJar = unsupportedApiPluginJar.get().asFile
-            check(toolJar.isFile) {
-                "Missing grpc-shim unsupported API tool jar: ${toolJar.absolutePath}"
-            }
-            val process = ProcessBuilder(
-                "java",
-                "-cp",
-                toolJar.absolutePath,
-                "kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher",
-                cinteropTask.get().klibDirectory.get().asFile.absolutePath,
-                outputFile.absolutePath,
-            )
-                .directory(layout.projectDirectory.asFile)
-                .inheritIO()
-                .start()
-            check(process.waitFor() == 0) {
-                "grpc-shim unsupported API patcher failed for ${outputFile.absolutePath}"
-            }
-        }
-
-        val patchUnsupportedApiTask = tasks.register("patchGrpcShimUnsupportedApi${taskSuffix}") {
+        // Produces a patched local-packed KLIB under build/libs. This is useful for inspection and for keeping
+        // the build graph explicit around the post-cinterop metadata rewrite.
+        val patchInternalNativeRpcApiTask = tasks.register<PatchInternalNativeRpcApiTask>("patchInternalNativeRpcApi${taskSuffix}") {
             dependsOn(cinteropTask)
             dependsOn(":klib-patcher:jar")
-            inputs.file(unsupportedApiPluginJar)
-            inputs.dir(cinteropTask.flatMap { it.klibDirectory })
-            outputs.file(packedCinteropKlibFile)
-
-            doLast {
-                patchPackedKlib(packedCinteropKlibFile.get().asFile)
-            }
+            classpath(files(internalNativeRpcApiPatcherJar))
+            mainClass.set("kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher")
+            workingDir = layout.projectDirectory.asFile
+            inputs.file(internalNativeRpcApiPatcherJar)
+            inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
+            outputKlibFile.set(packedCinteropKlibFile)
         }
-        patchUnsupportedApiTasks += patchUnsupportedApiTask
-        tasks.withType<Zip>().matching { it.name == cinteropPublicationTaskName }.configureEach {
-            dependsOn(cinteropTask)
-            dependsOn(":klib-patcher:jar")
-            inputs.file(unsupportedApiPluginJar)
-            inputs.dir(cinteropTask.flatMap { it.klibDirectory })
+        patchInternalNativeRpcApiTasks.add(patchInternalNativeRpcApiTask)
 
-            doLast {
-                patchPackedKlib(archiveFile.get().asFile)
-            }
+        // Gradle also creates a separate zipped cinterop publication artifact. Patch that archive too so the
+        // actually published .klib carries the opt-in marker and annotation dependency metadata.
+        val patchPublishedInternalNativeRpcApiTask = tasks.register<PatchInternalNativeRpcApiTask>(
+            "patchPublishedInternalNativeRpcApi${taskSuffix}",
+        ) {
+            dependsOn(cinteropPublicationTask)
+            dependsOn(":klib-patcher:jar")
+            classpath(files(internalNativeRpcApiPatcherJar))
+            mainClass.set("kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher")
+            workingDir = layout.projectDirectory.asFile
+            inputs.file(internalNativeRpcApiPatcherJar)
+            inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
+            outputKlibFile.set(cinteropPublicationTask.flatMap { it.archiveFile })
         }
         tasks.matching { task ->
             task.name == "generateMetadataFileFor${publicationTaskSuffix}Publication" ||
                 task.name == "generatePomFileFor${publicationTaskSuffix}Publication" ||
                 task.name == "patchModuleJsonFor${publicationTaskSuffix}"
         }.configureEach {
-            dependsOn(patchUnsupportedApiTask)
+            // Publication metadata must be generated only after both patch steps have run, otherwise one build
+            // path can still publish an unpatched cinterop artifact.
+            dependsOn(patchInternalNativeRpcApiTask)
+            dependsOn(patchPublishedInternalNativeRpcApiTask)
         }
     }
 }
 
-tasks.register("patchGrpcShimUnsupportedApiArtifacts") {
+tasks.register("patchInternalNativeRpcApiArtifacts") {
     group = "build"
-    dependsOn(patchUnsupportedApiTasks)
+    dependsOn(patchInternalNativeRpcApiTasks)
 }
 
 tasks.named("assemble") {
-    dependsOn("patchGrpcShimUnsupportedApiArtifacts")
+    dependsOn("patchInternalNativeRpcApiArtifacts")
 }
 
 publishing {
     publications.withType(MavenPublication::class).configureEach {
-        artifactId = when {
-            artifactId == "core" ->
-                "kotlinx-rpc-grpc-core-shim"
-            artifactId.startsWith("core-") ->
-                artifactId.replaceFirst("core", "kotlinx-rpc-grpc-core-shim")
-            artifactId == "kotlinx-rpc-core" ->
-                "kotlinx-rpc-grpc-core-shim"
-            artifactId.startsWith("kotlinx-rpc-core-") ->
-                artifactId.replaceFirst("kotlinx-rpc-core", "kotlinx-rpc-grpc-core-shim")
-            else -> artifactId
-        }
+        remapPublicArtifactBaseId(
+            project = project,
+            publishedBaseId = "kotlinx-rpc-grpc-core-shim",
+        )
+    }
+}
+
+abstract class PatchInternalNativeRpcApiTask : JavaExec() {
+    @get:InputDirectory
+    abstract val inputKlibDir: DirectoryProperty
+
+    @get:OutputFile
+    abstract val outputKlibFile: RegularFileProperty
+
+    @TaskAction
+    override fun exec() {
+        // The patcher reads the unpacked cinterop KLIB directory and writes a packed .klib output.
+        args = listOf(
+            inputKlibDir.get().asFile.absolutePath,
+            outputKlibFile.get().asFile.absolutePath,
+        )
+        super.exec()
     }
 }

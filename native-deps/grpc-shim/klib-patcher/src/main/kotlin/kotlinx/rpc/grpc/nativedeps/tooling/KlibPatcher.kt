@@ -31,10 +31,10 @@ import java.util.zip.ZipOutputStream
  */
 internal object KlibPatcher {
     private const val targetPackageName = "grpcCoreInterop"
-    private const val unsupportedApiAnnotationClassName = "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi"
-    private const val unsupportedApiDependencyUniqueName =
+    private const val internalNativeRpcApiAnnotationClassName = "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi"
+    private const val internalNativeRpcApiDependencyUniqueName =
         "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation"
-    private val unsupportedApiAnnotation = KmAnnotation(unsupportedApiAnnotationClassName, emptyMap())
+    private val internalNativeRpcApiAnnotation = KmAnnotation(internalNativeRpcApiAnnotationClassName, emptyMap())
     private val fragmentPackageNameAccessor: Method = Class.forName("kotlinx.metadata.klib.KlibModuleMetadataKt")
         .getDeclaredMethod("access\$fqNameOrFail", KmModuleFragment::class.java)
 
@@ -102,7 +102,7 @@ internal object KlibPatcher {
     }
 
     private fun annotate(clazz: KmClass) {
-        clazz.annotations.addUnsupportedApiMarker()
+        clazz.annotations.addInternalNativeRpcApiMarker()
         clazz.constructors.forEach(::annotate)
         clazz.functions.forEach(::annotate)
         clazz.properties.forEach(::annotate)
@@ -110,24 +110,24 @@ internal object KlibPatcher {
     }
 
     private fun annotate(constructor: KmConstructor) {
-        constructor.annotations.addUnsupportedApiMarker()
+        constructor.annotations.addInternalNativeRpcApiMarker()
     }
 
     private fun annotate(function: KmFunction) {
-        function.annotations.addUnsupportedApiMarker()
+        function.annotations.addInternalNativeRpcApiMarker()
     }
 
     private fun annotate(property: KmProperty) {
-        property.annotations.addUnsupportedApiMarker()
+        property.annotations.addInternalNativeRpcApiMarker()
     }
 
     private fun annotate(typeAlias: KmTypeAlias) {
-        typeAlias.annotations.addUnsupportedApiMarker()
+        typeAlias.annotations.addInternalNativeRpcApiMarker()
     }
 
-    private fun MutableList<KmAnnotation>.addUnsupportedApiMarker() {
-        if (none { it.className == unsupportedApiAnnotationClassName }) {
-            add(unsupportedApiAnnotation)
+    private fun MutableList<KmAnnotation>.addInternalNativeRpcApiMarker() {
+        if (none { it.className == internalNativeRpcApiAnnotationClassName }) {
+            add(internalNativeRpcApiAnnotation)
         }
     }
 
@@ -175,8 +175,8 @@ internal object KlibPatcher {
                 .split(' ')
                 .filter(String::isNotBlank)
                 .toMutableList()
-            if (unsupportedApiDependencyUniqueName !in dependencies) {
-                dependencies += unsupportedApiDependencyUniqueName
+            if (internalNativeRpcApiDependencyUniqueName !in dependencies) {
+                dependencies += internalNativeRpcApiDependencyUniqueName
             }
             "depends=${dependencies.joinToString(" ")}"
         }

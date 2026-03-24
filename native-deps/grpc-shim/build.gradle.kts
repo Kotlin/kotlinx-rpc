@@ -6,7 +6,15 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
+
+// All real logic lives in subprojects:
+// - :core publishes the shim KLIBs and native interop artifacts
+// - :annotation publishes the InternalNativeRpcApi opt-in marker
+// - :klib-patcher is internal build tooling used only by :core
+// - :tests verifies the published-artifact behavior through throwaway consumer builds
+//
+// The root project only provides shared coordinates, shared verification-repository wiring, and
+// a single `check` entry point that runs the fixture-based verification suite.
 plugins {
     base
     alias(libs.plugins.kotlin.multiplatform) apply false
@@ -26,6 +34,9 @@ allprojects {
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
             repositories {
+                // Fixture tests publish grpc-shim artifacts here first and then consume them from isolated
+                // throwaway builds, so this repository is part of the verification flow rather than the
+                // normal external publishing story.
                 maven {
                     name = "verification"
                     url = uri(rootProject.layout.buildDirectory.dir("verification-repo"))
@@ -35,59 +46,6 @@ allprojects {
     }
 }
 
-tasks.named("assemble") {
-    dependsOn(":core:assemble")
-    dependsOn(":annotation:assemble")
-    dependsOn(":tests:assemble")
-}
-
-tasks.register("publishAllPublicationsToVerificationRepository") {
-    group = "publishing"
-    dependsOn(":core:publishAllPublicationsToVerificationRepository")
-    dependsOn(":annotation:publishAllPublicationsToVerificationRepository")
-}
-
-tasks.register("publishAllPublicationsToBuildRepoRepository") {
-    group = "publishing"
-    dependsOn(":core:publishAllPublicationsToBuildRepoRepository")
-    dependsOn(":annotation:publishAllPublicationsToBuildRepoRepository")
-}
-
-tasks.register("publishToBuildRepo") {
-    group = "publishing"
-    dependsOn("publishAllPublicationsToBuildRepoRepository")
-}
-
-val verifyUnsupportedApiNegative = tasks.register("verifyUnsupportedApiNegative") {
-    group = "verification"
-    dependsOn(":tests:negativeTest")
-}
-
-val verifyUnsupportedApiPositive = tasks.register("verifyUnsupportedApiPositive") {
-    group = "verification"
-    dependsOn(":tests:positiveTest")
-}
-
-val verifyUnsupportedApiScope = tasks.register("verifyUnsupportedApiScope") {
-    group = "verification"
-    dependsOn(":tests:scopeTest")
-}
-
-val verifyUnsupportedApiArtifact = tasks.register("verifyUnsupportedApiArtifact") {
-    group = "verification"
-    dependsOn(":tests:artifactTest")
-}
-
-tasks.register("verifyGrpcShimUnsupportedApiOptIn") {
-    group = "verification"
-    dependsOn(
-        verifyUnsupportedApiNegative,
-        verifyUnsupportedApiPositive,
-        verifyUnsupportedApiScope,
-        verifyUnsupportedApiArtifact,
-    )
-}
-
 tasks.named("check") {
-    dependsOn("verifyGrpcShimUnsupportedApiOptIn")
+    dependsOn(":tests:test")
 }
