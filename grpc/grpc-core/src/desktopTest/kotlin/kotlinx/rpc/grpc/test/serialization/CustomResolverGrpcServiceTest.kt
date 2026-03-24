@@ -152,8 +152,8 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
                 return Buffer()
             }
 
-            override fun decode(stream: Source, config: GrpcMarshallerConfig?) {
-                check(stream.exhausted())
+            override fun decode(source: Source, config: GrpcMarshallerConfig?) {
+                check(source.exhausted())
             }
         }
     }
