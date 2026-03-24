@@ -32,20 +32,20 @@ import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_byte_buffer
-import libkgrpc.grpc_byte_buffer_reader
-import libkgrpc.grpc_byte_buffer_reader_destroy
-import libkgrpc.grpc_byte_buffer_reader_init
-import libkgrpc.grpc_byte_buffer_reader_next
-import libkgrpc.grpc_metadata
-import libkgrpc.grpc_metadata_array
-import libkgrpc.grpc_raw_byte_buffer_create
-import libkgrpc.grpc_slice
-import libkgrpc.grpc_slice_from_copied_buffer
-import libkgrpc.grpc_slice_from_copied_string
-import libkgrpc.grpc_slice_malloc
-import libkgrpc.grpc_slice_unref
-import libkgrpc.grpc_status_code
+import grpcCoreInterop.grpc_byte_buffer
+import grpcCoreInterop.grpc_byte_buffer_reader
+import grpcCoreInterop.grpc_byte_buffer_reader_destroy
+import grpcCoreInterop.grpc_byte_buffer_reader_init
+import grpcCoreInterop.grpc_byte_buffer_reader_next
+import grpcCoreInterop.grpc_metadata
+import grpcCoreInterop.grpc_metadata_array
+import grpcCoreInterop.grpc_raw_byte_buffer_create
+import grpcCoreInterop.grpc_slice
+import grpcCoreInterop.grpc_slice_from_copied_buffer
+import grpcCoreInterop.grpc_slice_from_copied_string
+import grpcCoreInterop.grpc_slice_malloc
+import grpcCoreInterop.grpc_slice_unref
+import grpcCoreInterop.grpc_status_code
 import platform.posix.memcpy
 
 

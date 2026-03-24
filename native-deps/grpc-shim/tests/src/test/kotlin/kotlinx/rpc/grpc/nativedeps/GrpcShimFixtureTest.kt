@@ -86,10 +86,13 @@ class GrpcShimFixtureTest {
 
             val knmEntry = zip.entries().asSequence().firstOrNull { entry ->
                 !entry.isDirectory &&
-                    entry.name.startsWith("default/linkdata/package_grpcCoreInterop/") &&
+                    entry.name.startsWith("default/linkdata/package_kotlinx.rpc.grpc.internal.cinterop/") &&
                     entry.name.endsWith(".knm")
-            }
-            assertTrue(knmEntry != null, "Missing package_grpcCoreInterop knm entry in ${cinteropKlib.pathString}")
+                }
+            assertTrue(
+                knmEntry != null,
+                "Missing package_kotlinx.rpc.grpc.internal.cinterop knm entry in ${cinteropKlib.pathString}",
+            )
 
             val knmText = zip.getInputStream(knmEntry).readBytes().toString(StandardCharsets.ISO_8859_1)
             assertContains(knmText, "InternalNativeRpcApi")

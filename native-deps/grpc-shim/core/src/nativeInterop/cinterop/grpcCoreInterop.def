@@ -7,5 +7,6 @@ headerFilter = kgrpc.h grpc/slice.h grpc/byte_buffer.h grpc/grpc.h \
 
 noStringConversion = grpc_slice_from_copied_buffer my_grpc_slice_from_copied_buffer
 strictEnums = grpc_status_code grpc_connectivity_state grpc_call_error
+package = kotlinx.rpc.grpc.internal.cinterop
 
 __STATIC_LIBRARIES__

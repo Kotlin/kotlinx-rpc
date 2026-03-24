@@ -3,7 +3,7 @@
     kotlinx.rpc.grpc.nativedeps.InternalNativeRpcApi::class,
 )
 
-import grpcCoreInterop.grpc_init
+import kotlinx.rpc.grpc.internal.cinterop.grpc_init
 
 fun useGrpcShimWithOptIn() {
     grpc_init()

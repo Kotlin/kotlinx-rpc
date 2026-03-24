@@ -39,12 +39,12 @@ import java.util.zip.ZipOutputStream;
  * Patches the produced grpc-shim cinterop KLIB after cinterop finishes.
  *
  * <p>grpc-shim is published as a KLIB because the build needs it, but the declarations generated into the
- * {@code grpcCoreInterop} package are internal implementation detail, not supported public API. The cinterop
+ * {@code kotlinx.rpc.grpc.internal.cinterop} package are internal implementation detail, not supported public API. The cinterop
  * toolchain does not load compiler plugin registrars on this build path, so the narrow reliable hook is to rewrite
  * the produced KLIB metadata immediately after cinterop and before the artifact is consumed or published.
  */
 public final class KlibPatcher {
-    private static final String TARGET_PACKAGE_NAME = "grpcCoreInterop";
+    private static final String TARGET_PACKAGE_NAME = "kotlinx.rpc.grpc.internal.cinterop";
     private static final String INTERNAL_NATIVE_RPC_API_ANNOTATION_CLASS_NAME =
         "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi";
     private static final String INTERNAL_NATIVE_RPC_API_DEPENDENCY_UNIQUE_NAME =
@@ -320,7 +320,7 @@ public final class KlibPatcher {
 
         @Override
         public Set<String> packageMetadataParts(String fqName) {
-            return packagePartFiles(fqName).stream()
+            return packagePartFiles(fqName, false).stream()
                 .map(File::getName)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         }
@@ -335,19 +335,22 @@ public final class KlibPatcher {
         }
 
         private List<String> existingPartNames(String packageName) {
-            return packagePartFiles(packageName).stream().map(File::getName).collect(Collectors.toList());
+            return packagePartFiles(packageName, true).stream().map(File::getName).collect(Collectors.toList());
         }
 
         private String packageDirectoryName(String packageName) {
-            return "package_" + packageName.replace('.', '_');
+            return "package_" + packageName;
         }
 
-        private List<File> packagePartFiles(String packageName) {
+        private List<File> packagePartFiles(String packageName, boolean requireDirectory) {
             File packageDir = new File(linkdataDir, packageDirectoryName(packageName));
             if (!packageDir.isDirectory()) {
-                throw new IllegalStateException(
-                    "Missing package metadata directory for " + packageName + ": " + packageDir.getAbsolutePath()
-                );
+                if (requireDirectory) {
+                    throw new IllegalStateException(
+                        "Missing package metadata directory for " + packageName + ": " + packageDir.getAbsolutePath()
+                    );
+                }
+                return List.of();
             }
 
             File[] files = packageDir.listFiles(File::isFile);
