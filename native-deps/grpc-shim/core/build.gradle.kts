@@ -128,12 +128,6 @@ kotlin {
     registerNativeDependencyTargets()
 
     sourceSets {
-        commonMain {
-            dependencies {
-                api(project(":annotation"))
-            }
-        }
-
         nativeMain {
             dependencies {
                 // The cinterop dependency configuration resolves from the implementation side,

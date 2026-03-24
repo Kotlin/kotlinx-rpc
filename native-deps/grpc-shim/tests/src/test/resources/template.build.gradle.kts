@@ -9,23 +9,13 @@ plugins {
 val verificationRepositoryDir = file("<verification-repo-dir>")
 val verificationVersion = "<grpc-shim-version>"
 val verificationTargetSuffix = "<host-publication-suffix>"
-val grpcShimPublishedFiles = listOf(
-    verificationRepositoryDir.resolve(
-        "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix/" +
-            "$verificationVersion/" +
-            "kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix-$verificationVersion.klib",
-    ),
-    verificationRepositoryDir.resolve(
-        "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix/" +
-            "$verificationVersion/" +
-            "kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix-$verificationVersion-cinterop-grpcCoreInterop.klib",
-    ),
-    verificationRepositoryDir.resolve(
-        "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-annotation-$verificationTargetSuffix/" +
-            "$verificationVersion/" +
-            "kotlinx-rpc-grpc-core-shim-annotation-$verificationTargetSuffix-$verificationVersion.klib",
-    ),
-)
+
+repositories {
+    mavenCentral()
+    maven {
+        url = verificationRepositoryDir.toURI()
+    }
+}
 
 kotlin {
     <host-target-declaration>
@@ -35,7 +25,7 @@ kotlin {
     sourceSets {
         val nativeMain by getting {
             dependencies {
-                implementation(files(grpcShimPublishedFiles))
+                implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix:$verificationVersion")
             }
         }
     }
