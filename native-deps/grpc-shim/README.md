@@ -2,15 +2,14 @@
 
 Standalone Gradle build for publishing the Kotlin/Native gRPC core shim.
 
-Current shape:
-- resolves the published gRPC headers bundle and one target-specific gRPC archive bundle from `native-deps/grpc`
-- builds `libkgrpc` with Bazel against grpc headers from the grpc Bazel dependency
-- generates a target-specific cinterop `.def` file so the published klib bundles `libkgrpc` together with the grpc archives
-- uses the published grpc headers bundle only for Kotlin/Native cinterop include paths under `include/**`
-- versions the published artifacts as `<grpcVersion>-<shimVersion>`, so grpc bumps and shim-only bumps stay separate
+Layout:
+- `core/` contains the Bazel build, native sources, headers, and the published shim module
+- `annotation/` contains the opt-in marker published with the shim
+- `klib-patcher/` contains the internal metadata patcher used only while building `core`
+- `tests/` contains the artifact-consumption verification projects
 
 Useful tasks:
-- `../../gradlew -p native-deps/grpc-shim buildGrpcShimIosArm64`
+- `../../gradlew -p native-deps/grpc-shim :core:buildGrpcShimIosArm64`
 - `../../gradlew -p native-deps/grpc-shim publishToBuildRepo`
 
 Prerequisite:

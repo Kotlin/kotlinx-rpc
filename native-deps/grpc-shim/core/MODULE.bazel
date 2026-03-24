@@ -10,10 +10,10 @@ bazel_dep(name = "kotlinx_rpc_native_bazel_support", version = "0.1")
 
 local_path_override(
     module_name = "kotlinx_rpc_native_bazel_support",
-    path = "../bazel-support",
+    path = "../../bazel-support",
 )
 
-# This value is Gradle-managed. `native-deps/grpc-shim` rewrites it from `gradle.properties`
+# This value is Gradle-managed. `native-deps/grpc-shim/core` rewrites it from `gradle.properties`
 # before Bazel-backed build tasks, so change `grpcVersion` there instead of editing this line manually.
 GRPC_VERSION = "1.74.1"
 

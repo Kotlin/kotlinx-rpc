@@ -26,11 +26,15 @@ DST="${2:?need output destination}"
 KONAN_TARGET="${3:?need the konan_target name}"
 KONAN_HOME="${4:?need the konan_home path}"
 BAZEL="$(find_bazel)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p "$(dirname "$DST")"
 
 KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
-KONAN_LLVM_RESOURCE_DIR="$(KONAN_DEPS="$KONAN_DEPS" python3 ../bazel-support/toolchain/resolve_konan_llvm_resource_dir.py "$KONAN_HOME")"
+KONAN_LLVM_RESOURCE_DIR="$(
+  KONAN_DEPS="$KONAN_DEPS" \
+    python3 "$SCRIPT_DIR/../../bazel-support/toolchain/resolve_konan_llvm_resource_dir.py" "$KONAN_HOME"
+)"
 
 BAZEL_ARGS=(
   "--config=$KONAN_TARGET"

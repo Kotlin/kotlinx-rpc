@@ -32,7 +32,8 @@ import java.util.zip.ZipOutputStream
 internal object GrpcShimUnsupportedApiKlibPatcher {
     private const val targetPackageName = "libkgrpc"
     private const val unsupportedApiAnnotationClassName = "kotlinx/rpc/grpc/nativedeps/InternalNativeRpcApi"
-    private const val unsupportedApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-annotation"
+    private const val unsupportedApiDependencyUniqueName =
+        "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation"
     private val unsupportedApiAnnotation = KmAnnotation(unsupportedApiAnnotationClassName, emptyMap())
     private val fragmentPackageNameAccessor: Method = Class.forName("kotlinx.metadata.klib.KlibModuleMetadataKt")
         .getDeclaredMethod("access\$fqNameOrFail", KmModuleFragment::class.java)

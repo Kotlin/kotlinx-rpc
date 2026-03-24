@@ -18,11 +18,13 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-includeRootAsPublic()
+includePublic(":core")
 includePublic(":annotation")
-project(":annotation").projectDir = file("grpc-core-shim-internal-api")
 include(":klib-patcher")
-project(":klib-patcher").projectDir = file("grpc-shim-unsupported-api-plugin")
 include(":verification-negative")
 include(":verification-positive")
 include(":verification-scope")
+
+project(":verification-negative").projectDir = file("tests/verification-negative")
+project(":verification-positive").projectDir = file("tests/verification-positive")
+project(":verification-scope").projectDir = file("tests/verification-scope")

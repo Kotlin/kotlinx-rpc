@@ -34,9 +34,9 @@ val grpcShimPublishedFiles = listOf(
     },
     verificationRepositoryDir.map { repo ->
         repo.file(
-            "org/jetbrains/kotlinx/kotlinx-rpc-annotation-$verificationTargetSuffix/" +
+            "org/jetbrains/kotlinx/kotlinx-rpc-grpc-core-shim-annotation-$verificationTargetSuffix/" +
                 "$verificationVersion/" +
-                "kotlinx-rpc-annotation-$verificationTargetSuffix-$verificationVersion.klib",
+                "kotlinx-rpc-grpc-core-shim-annotation-$verificationTargetSuffix-$verificationVersion.klib",
         )
     },
 )
