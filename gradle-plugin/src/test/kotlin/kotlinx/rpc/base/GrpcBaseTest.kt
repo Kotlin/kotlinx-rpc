@@ -721,7 +721,9 @@ private fun SSets.compileTaskName(mode: PluginMode): String {
 
 private fun SSets.preBuildTaskName(mode: PluginMode): String? {
     return when (mode) {
-        PluginMode.Jvm, PluginMode.Kmp -> null
+        PluginMode.Jvm, PluginMode.Kmp -> {
+            null
+        }
 
         PluginMode.Android -> {
             // preX86FreeappDebugUnitTestBuild
