@@ -92,8 +92,7 @@ internal fun Project.registerGenerateBufYamlTask(
     properties: ProtoTask.Properties,
     configure: GenerateBufYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufYaml> {
-    val capitalizeName = name.replaceFirstChar { it.uppercase() }
-    val task = tasks.register("${GenerateBufYaml.NAME_PREFIX}$capitalizeName", GenerateBufYaml::class, properties)
+    val task = tasks.register("${GenerateBufYaml.NAME_PREFIX}$name", GenerateBufYaml::class, properties)
 
     task.configure {
         protoSourceDir.convention(buildSourceSetsProtoDir.name)

@@ -1538,4 +1538,49 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     ) {
         runGradle("test_tasks", "--no-configuration-cache")
     }
+
+    // ===== PreBuild Tasks =====
+    //
+    // Tests verify that the 'pre<SourceSet>build' tasks
+    // succeed for KMP projects with Android targets.
+    //
+    // Regression test: AGP's prepareXxxArtProfile tasks scan source directories
+    // for baseline profiles. When buf generate tasks produce outputs in directories
+    // added to Kotlin source sets feeding into Android compilations, the art profile
+    // tasks must depend on the buf generate tasks to avoid implicit dependency errors.
+    //
+    // Art profile tasks depend on pre build tasks, so it is easier to verify that.
+    //
+    // ==========================
+
+    @TestFactory
+    fun `PreBuild Android KMP Library`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() }
+    ) {
+        dryRunAndroidPreBuild(SSetsKmp.AndroidKmpLib.androidMain)
+        dryRunAndroidPreBuild(SSetsKmp.AndroidKmpLib.androidHostTest)
+        dryRunAndroidPreBuild(SSetsKmp.AndroidKmpLib.androidDeviceTest)
+    }
+
+    @TestFactory
+    fun `PreBuild Legacy Android Library`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidDebug)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidRelease)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+    }
+
+    @TestFactory
+    fun `PreBuild Legacy Android Application`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidDebug)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidRelease)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
+        dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+    }
 }

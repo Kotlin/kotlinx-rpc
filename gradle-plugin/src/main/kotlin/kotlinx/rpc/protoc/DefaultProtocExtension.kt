@@ -188,6 +188,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         val baseName = protoSourceSet.name
+        val capitalName = baseName.replaceFirstChar { it.uppercase() }
 
         val buildSourceSetsDir = project.protoBuildDirSourceSets.resolve(baseName)
             .ensureDirectoryExists()
@@ -217,14 +218,14 @@ internal open class DefaultProtocExtension @Inject constructor(
         val properties = protoSourceSet.protoTaskProperties()
 
         val processProtoTask = project.registerProcessProtoFilesTask(
-            name = baseName,
+            name = capitalName,
             destination = buildSourceSetsProtoDir,
             protoFilesDirectorySet = protoFilesDirectorySet,
             properties = properties,
         )
 
         val processImportProtoTask = project.registerProcessProtoFilesImportsTask(
-            name = baseName,
+            name = capitalName,
             destination = buildSourceSetsImportDir,
             importsProvider = protoSourceSet.imports,
             rawImports = protoSourceSet.fileImports,
@@ -234,7 +235,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
-            name = baseName,
+            name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
@@ -245,7 +246,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
 
         val generateBufGenYamlTask = project.registerGenerateBufGenYamlTask(
-            name = baseName,
+            name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             protocPlugins = includedProtocPlugins,
             properties = properties,
@@ -301,6 +302,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             includedProtocPlugins = includedProtocPlugins,
             bufGenerateTask = bufGenerateTask,
         )
+
+        configurePrebuildTasks(protoSourceSet)
 
         configureCustomTasks(
             protoSourceSet = protoSourceSet,
@@ -372,6 +375,46 @@ internal open class DefaultProtocExtension @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun configurePrebuildTasks(protoSourceSet: DefaultProtoSourceSet) {
+        if (project.hasLegacyAndroid) {
+            project.afterEvaluate {
+                configurePreBuildTasks(protoSourceSet) { props, variantCapital ->
+                    when {
+                        props.isUnitTest -> "pre${variantCapital}UnitTestBuild"
+                        props.isInstrumentedTest -> "pre${variantCapital}AndroidTestBuild"
+                        else -> "pre${variantCapital}Build"
+                    }
+                }
+            }
+        } else if (project.hasAndroidKmpLibrary) {
+            project.afterEvaluate {
+                configurePreBuildTasks(protoSourceSet) { props, variantCapital ->
+                    when {
+                        props.isUnitTest -> "pre${variantCapital}HostTestBuild"
+                        props.isInstrumentedTest -> "pre${variantCapital}DeviceTestBuild"
+                        else -> "pre${variantCapital}MainBuild"
+                    }
+                }
+            }
+        }
+    }
+
+    private fun Project.configurePreBuildTasks(
+        protoSourceSet: DefaultProtoSourceSet,
+        getName: (ProtoTask.AndroidProperties, String) -> String,
+    ) {
+        val props = protoSourceSet.androidProperties.orNull ?: return
+        val variantCapital = props.variant
+            ?.replaceFirstChar { it.uppercase() }
+            ?: "Android" // KMP lib name, e.g. AndroidMain, AndroidDeviceTest, AndroidHostTest
+
+        val preBuildTaskName = getName(props, variantCapital)
+
+        tasks.matching { it.name == preBuildTaskName }.configureEach {
+            dependsOn(protoSourceSet.generateTask)
         }
     }
 

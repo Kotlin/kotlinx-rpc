@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("RemoveRedundantBackticks")
+
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
@@ -439,5 +441,47 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     @TestFactory
     fun `Buf Tasks Extended No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
         runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `PreBuild`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsAndroid.Default.debug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.release)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testDebug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testRelease)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.androidTestDebug)
+    }
+
+    @TestFactory
+    fun `PreBuild No KGP`() = runGrpcTest(
+        versionsPredicate = { isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsAndroid.Default.debug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.release)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testDebug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.androidTestDebug)
+    }
+
+    @TestFactory
+    fun `PreBuild Library`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsAndroid.Default.debug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.release)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testDebug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testRelease)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.androidTestDebug)
+    }
+
+    @TestFactory
+    fun `PreBuild Library No KGP`() = runGrpcTest(
+        versionsPredicate = { isAgp9 },
+    ) {
+        dryRunAndroidPreBuild(SSetsAndroid.Default.debug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.release)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.testDebug)
+        dryRunAndroidPreBuild(SSetsAndroid.Default.androidTestDebug)
     }
 }
