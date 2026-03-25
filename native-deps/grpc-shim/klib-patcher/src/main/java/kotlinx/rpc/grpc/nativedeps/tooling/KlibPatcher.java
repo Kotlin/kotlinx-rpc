@@ -49,8 +49,6 @@ public final class KlibPatcher {
         "kotlinx/rpc/grpc/internal/InternalNativeRpcApi";
     private static final String INTERNAL_NATIVE_RPC_API_DEPENDENCY_UNIQUE_NAME =
         "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation";
-    private static final String GRPC_SHIM_UNIQUE_NAME =
-        "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim";
     private static final KmAnnotation INTERNAL_NATIVE_RPC_API_ANNOTATION =
         new KmAnnotation(INTERNAL_NATIVE_RPC_API_ANNOTATION_CLASS_NAME, Collections.emptyMap());
     private static final Method FRAGMENT_PACKAGE_NAME_ACCESSOR = createFragmentPackageNameAccessor();
@@ -239,11 +237,6 @@ public final class KlibPatcher {
 
         List<String> updatedLines = new ArrayList<>();
         for (String line : Files.readAllLines(manifestFile.toPath())) {
-            if (line.startsWith("unique_name=")) {
-                updatedLines.add("unique_name=" + GRPC_SHIM_UNIQUE_NAME);
-                continue;
-            }
-
             if (!line.startsWith("depends=")) {
                 updatedLines.add(line);
                 continue;

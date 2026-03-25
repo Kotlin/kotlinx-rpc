@@ -7,7 +7,6 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.OutputFile
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Sync
@@ -19,7 +18,6 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import util.konanHomeProvider
-import util.remapPublicArtifactBaseId
 import util.nativeDependencyTargets
 import util.configureSpacePackagesConsumerRepository
 import util.registerCheckBazelTask
@@ -132,7 +130,7 @@ kotlin {
             dependencies {
                 // The cinterop dependency configuration resolves from the implementation side,
                 // while downstream consumers still need the marker as a transitive API dependency.
-                implementation(project(":annotation"))
+                implementation(project(":kotlinx-rpc-grpc-core-shim-annotation"))
             }
         }
     }
@@ -282,6 +280,7 @@ kotlin {
             inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
             outputKlibFile.set(cinteropPublicationTask.flatMap { it.archiveFile })
         }
+
         tasks.matching { task ->
             task.name == "generateMetadataFileFor${publicationTaskSuffix}Publication" ||
                 task.name == "generatePomFileFor${publicationTaskSuffix}Publication" ||
@@ -302,15 +301,6 @@ tasks.register("patchInternalNativeRpcApiArtifacts") {
 
 tasks.named("assemble") {
     dependsOn("patchInternalNativeRpcApiArtifacts")
-}
-
-publishing {
-    publications.withType(MavenPublication::class).configureEach {
-        remapPublicArtifactBaseId(
-            project = project,
-            publishedBaseId = "kotlinx-rpc-grpc-core-shim",
-        )
-    }
 }
 
 abstract class PatchInternalNativeRpcApiTask : JavaExec() {

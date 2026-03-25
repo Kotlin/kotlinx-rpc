@@ -18,7 +18,11 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-includePublic(":core")
-includePublic(":annotation")
+includePublic(":kotlinx-rpc-grpc-core-shim")
+project(":kotlinx-rpc-grpc-core-shim").projectDir = file("./core")
+
+includePublic(":kotlinx-rpc-grpc-core-shim-annotation")
+project(":kotlinx-rpc-grpc-core-shim-annotation").projectDir = file("./annotation")
+
 include(":klib-patcher")
 include(":tests")
