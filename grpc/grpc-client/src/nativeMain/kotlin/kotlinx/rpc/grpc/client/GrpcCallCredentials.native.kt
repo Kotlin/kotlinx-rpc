@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.client
 
@@ -13,11 +13,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusException
+import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
-import libkgrpc.*
+import kotlinx.rpc.grpc.internal.cinterop.*
 import platform.posix.size_tVar
 import kotlin.coroutines.CoroutineContext
 

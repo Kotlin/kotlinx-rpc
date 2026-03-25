@@ -42,10 +42,7 @@ plugins {
     id("conventions-publishing")
 }
 
-// grpc-shim depends on the grpc artifacts published by native-deps/grpc. For local development we prefer
-// the workspace-local repository, but still fall back to the public grpc channel when needed.
 repositories {
-    // Fall back to the public grpc package repository when the local dev repo does not contain the bundle.
     configureSpacePackagesConsumerRepository(repoName = "grpc")
 }
 

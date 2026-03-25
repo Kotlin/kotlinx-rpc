@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.internal
 
@@ -32,20 +32,21 @@ import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import grpcCoreInterop.grpc_byte_buffer
-import grpcCoreInterop.grpc_byte_buffer_reader
-import grpcCoreInterop.grpc_byte_buffer_reader_destroy
-import grpcCoreInterop.grpc_byte_buffer_reader_init
-import grpcCoreInterop.grpc_byte_buffer_reader_next
-import grpcCoreInterop.grpc_metadata
-import grpcCoreInterop.grpc_metadata_array
-import grpcCoreInterop.grpc_raw_byte_buffer_create
-import grpcCoreInterop.grpc_slice
-import grpcCoreInterop.grpc_slice_from_copied_buffer
-import grpcCoreInterop.grpc_slice_from_copied_string
-import grpcCoreInterop.grpc_slice_malloc
-import grpcCoreInterop.grpc_slice_unref
-import grpcCoreInterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_init
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_next
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array
+import kotlinx.rpc.grpc.internal.cinterop.grpc_raw_byte_buffer_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_string
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_malloc
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import platform.posix.memcpy
 
 

@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.server.internal
 
@@ -19,16 +19,17 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
-import libkgrpc.gpr_timespec
-import libkgrpc.grpc_call_details
-import libkgrpc.grpc_call_details_destroy
-import libkgrpc.grpc_metadata_array
-import libkgrpc.grpc_metadata_array_destroy
-import libkgrpc.grpc_status_code
-import libkgrpc.kgrpc_batch_call_allocation
-import libkgrpc.kgrpc_registered_call_allocation
+import kotlinx.rpc.grpc.internal.cinterop.gpr_timespec
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_details
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_details_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_batch_call_allocation
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_registered_call_allocation
 import kotlin.experimental.ExperimentalNativeApi
 
 /**

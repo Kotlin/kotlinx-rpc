@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalStdlibApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalStdlibApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.internal
 
@@ -27,16 +28,17 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.staticCFunction
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
-import libkgrpc.grpc_call_error
-import libkgrpc.grpc_call_start_batch
-import libkgrpc.grpc_completion_queue_create_for_callback
-import libkgrpc.grpc_completion_queue_destroy
-import libkgrpc.grpc_completion_queue_functor
-import libkgrpc.grpc_completion_queue_shutdown
-import libkgrpc.grpc_op
-import libkgrpc.kgrpc_cb_tag
-import libkgrpc.kgrpc_iomgr_run_in_background
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_STATUS_ON_CLIENT
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_error
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_start_batch
+import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_create_for_callback
+import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_functor
+import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_shutdown
+import kotlinx.rpc.grpc.internal.cinterop.grpc_op
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_cb_tag
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_iomgr_run_in_background
+import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner

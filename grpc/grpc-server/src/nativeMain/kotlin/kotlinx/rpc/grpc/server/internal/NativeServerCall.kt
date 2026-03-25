@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.server.internal
 
@@ -30,6 +31,7 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -39,18 +41,18 @@ import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
-import libkgrpc.GRPC_OP_RECV_CLOSE_ON_SERVER
-import libkgrpc.GRPC_OP_RECV_MESSAGE
-import libkgrpc.GRPC_OP_SEND_INITIAL_METADATA
-import libkgrpc.GRPC_OP_SEND_MESSAGE
-import libkgrpc.GRPC_OP_SEND_STATUS_FROM_SERVER
-import libkgrpc.grpc_byte_buffer
-import libkgrpc.grpc_byte_buffer_destroy
-import libkgrpc.grpc_call_cancel_with_status
-import libkgrpc.grpc_call_unref
-import libkgrpc.grpc_op
-import libkgrpc.grpc_slice_unref
-import libkgrpc.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_CLOSE_ON_SERVER
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_MESSAGE
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_INITIAL_METADATA
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_MESSAGE
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_STATUS_FROM_SERVER
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_cancel_with_status
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_op
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
 import kotlin.concurrent.Volatile
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
