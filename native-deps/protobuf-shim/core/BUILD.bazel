@@ -1,0 +1,20 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_static_library(
+    name = "protowire_fat",
+    deps = [
+        ":protowire",
+    ],
+)
+
+cc_library(
+    name = "protowire",
+    srcs = ["src/cpp/protowire.cpp"],
+    hdrs = ["include/protowire.h"],
+    includes = ["include"],
+    deps = [
+        "@com_github_protobuffers_protobuf//:protobuf_lite",
+    ],
+)
