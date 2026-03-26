@@ -12,6 +12,9 @@ Layout:
 - `klib-patcher/` contains the internal metadata patcher used only while building `core`
 - `tests/` contains TestKit-based fixture tests that publish grpc-shim artifacts locally and compile throwaway consumer projects
 
+Shared toolchain notes:
+- Manual Bazel/Konan troubleshooting and LLVM bundle maintenance live in [../bazel-support/README.md](/Users/jozott/development/jetbrains/kotlinx-rpc/native-deps/bazel-support/README.md).
+
 Useful tasks:
 - `../../gradlew -p native-deps/grpc-shim :core:buildGrpcShimIosArm64`
 - `../../gradlew -p native-deps/grpc-shim :core:publishAllPublicationsToBuildRepoRepository :annotation:publishAllPublicationsToBuildRepoRepository`

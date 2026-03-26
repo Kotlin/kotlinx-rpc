@@ -12,6 +12,9 @@ Current shape:
 - Shared Bazel `platforms` and `toolchain` live in `../bazel-support`.
 - Gradle publishes one shared headers bundle and one native archive bundle per target.
 
+Shared toolchain notes:
+- Manual Bazel/Konan troubleshooting and LLVM bundle maintenance live in [../bazel-support/README.md](/Users/jozott/development/jetbrains/kotlinx-rpc/native-deps/bazel-support/README.md).
+
 Useful tasks:
 - `../../gradlew -p native-deps/grpc buildGrpcHeaders`
 - `../../gradlew -p native-deps/grpc packageGrpcHeaders`

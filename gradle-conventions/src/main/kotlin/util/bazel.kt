@@ -14,6 +14,10 @@ import org.gradle.kotlin.dsl.register
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.File
 
+// Shared Bazel/Konan helpers for native dependency builds.
+// These are used by active native-deps projects such as grpc, grpc-shim, and protobuf-shim.
+// Do not remove or simplify them as dead code without checking those builds first.
+
 data class NativeDependencyTarget(
     val kotlinName: String,
     val bazelName: String,

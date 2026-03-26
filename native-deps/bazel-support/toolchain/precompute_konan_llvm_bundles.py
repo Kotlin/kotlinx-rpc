@@ -2,6 +2,10 @@
 """
 Precompute LLVM Konan bundle names per Kotlin compiler version.
 
+This helper is part of the shared native-deps Bazel toolchain support used by
+active builds such as native-deps/grpc, native-deps/grpc-shim, and
+native-deps/protobuf-shim.
+
 Usage:
   ./toolchain/precompute_konan_llvm_bundles.py
   ./toolchain/precompute_konan_llvm_bundles.py 2.3.0
@@ -10,7 +14,7 @@ Usage:
 Context:
   - Writes toolchain/konan_llvm_bundles.json consumed by resolve_konan_llvm_resource_dir.py.
   - Verified in CI by .github/workflows/verify-konan-llvm-bundles.yml.
-  - Used indirectly by cinterop-c/build_target.sh and cinterop-c/extract_include_dir.sh.
+  - Used indirectly by Bazel-backed native dependency build scripts.
 """
 
 from __future__ import annotations

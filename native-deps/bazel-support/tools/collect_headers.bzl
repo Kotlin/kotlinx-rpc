@@ -1,4 +1,7 @@
 # This files contains Bazel rules to collect headers by Bazel CcInfo targets.
+# It is part of the shared native-deps Bazel support used by active builds such
+# as native-deps/grpc, native-deps/grpc-shim, and native-deps/protobuf-shim.
+# Do not remove it as dead code without checking those builds first.
 #
 # The 'include_dir' rule is used to extract the public include headers
 # from the dependency, so we can use them for our cinterop bindings.
@@ -8,9 +11,8 @@
 # header files of the compilation dependency. This allows a
 # library to depend on the header files, without compiling
 # the whole dependency.
-# E.g. it is used to bundle the
-# //prebuilt-deps/grpc_fat:grpc_core_prebuilt
-# target including the grpc headers.
+# E.g. it is used to bundle prebuilt native dependencies together with
+# their public headers for cinterop consumers.
 
 # determines if the file is in the given repository
 def _same_repo(file, repo_name):
