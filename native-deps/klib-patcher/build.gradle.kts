@@ -18,13 +18,16 @@ java {
     withSourcesJar()
 }
 
+val nativeDepsKonanDownloadTaskPath = providers.gradleProperty("nativeDepsKonanDownloadTaskPath").orNull
+    ?: error("Missing nativeDepsKonanDownloadTaskPath in ${rootProject.layout.projectDirectory.file("gradle.properties").asFile}")
+
 val nativeCompilerEmbeddable = file(
     findKonanHome() + "/konan/lib/kotlin-native-compiler-embeddable.jar",
 )
 
 val konanHome = konanHomeProvider()
 val prepareKonanHome = registerPrepareKonanHomeTask(
-    downloadTaskPath = ":grpc:grpc-core:downloadKotlinNativeDistribution",
+    downloadTaskPath = nativeDepsKonanDownloadTaskPath,
 )
 val checkKonanHome = registerCheckKonanHomeTask(
     prepareKonanHome = prepareKonanHome,

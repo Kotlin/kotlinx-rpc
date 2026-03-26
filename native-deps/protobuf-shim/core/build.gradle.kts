@@ -4,6 +4,7 @@
 
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.Task
 import org.gradle.api.tasks.Exec
@@ -44,6 +45,9 @@ val protobufVersion = providers.gradleProperty("protobufVersion").get()
 val protowireInteropName = "libprotowire"
 val protowireInteropTaskName = protowireInteropName.replaceFirstChar { it.uppercase() }
 val protowireInteropDefFile = layout.projectDirectory.file("src/nativeInterop/cinterop/libprotowire.def")
+val protobufInteropPackageName = "kotlinx.rpc.protobuf.internal.cinterop"
+val protobufInternalNativeRpcApiClassName = "kotlinx/rpc/protobuf/internal/InternalNativeRpcApi"
+val protobufInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-protobuf-shim-annotation"
 val protobufShimTargets = nativeDependencyTargets
 val protobufShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 
@@ -130,10 +134,13 @@ kotlin {
             dependsOn(":klib-patcher:jar")
 
             classpath(files(internalNativeRpcApiPatcherJar))
-            mainClass.set("kotlinx.rpc.protobuf.nativedeps.tooling.KlibPatcher")
+            mainClass.set("kotlinx.rpc.nativedeps.tooling.KlibPatcher")
 
             inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
             outputKlibFile.set(packedCinteropKlibFile)
+            targetPackageName.set(protobufInteropPackageName)
+            annotationClassName.set(protobufInternalNativeRpcApiClassName)
+            annotationDependencyUniqueName.set(protobufInternalNativeRpcApiDependencyUniqueName)
         }
         patchInternalNativeRpcApiTasks.add(patchInternalNativeRpcApiTask)
 
@@ -146,10 +153,13 @@ kotlin {
             dependsOn(":klib-patcher:jar")
 
             classpath(files(internalNativeRpcApiPatcherJar))
-            mainClass.set("kotlinx.rpc.protobuf.nativedeps.tooling.KlibPatcher")
+            mainClass.set("kotlinx.rpc.nativedeps.tooling.KlibPatcher")
 
             inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
             outputKlibFile.set(cinteropPublicationTask.flatMap { it.archiveFile })
+            targetPackageName.set(protobufInteropPackageName)
+            annotationClassName.set(protobufInternalNativeRpcApiClassName)
+            annotationDependencyUniqueName.set(protobufInternalNativeRpcApiDependencyUniqueName)
         }
 
         tasks.matching { task ->
@@ -181,12 +191,24 @@ abstract class PatchInternalNativeRpcApiTask : JavaExec() {
     @get:OutputFile
     abstract val outputKlibFile: RegularFileProperty
 
+    @get:org.gradle.api.tasks.Input
+    abstract val targetPackageName: Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val annotationClassName: Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val annotationDependencyUniqueName: Property<String>
+
     @TaskAction
     override fun exec() {
         // The patcher reads the unpacked cinterop KLIB directory and writes a packed .klib output.
         args(
             inputKlibDir.get().asFile.absolutePath,
             outputKlibFile.get().asFile.absolutePath,
+            targetPackageName.get(),
+            annotationClassName.get(),
+            annotationDependencyUniqueName.get(),
         )
         super.exec()
     }

@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.nativedeps.tooling;
+package kotlinx.rpc.nativedeps.tooling;
 
 import kotlin.metadata.KmAnnotation;
 import kotlin.metadata.KmClass;
@@ -36,39 +36,40 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Patches the produced grpc-shim cinterop KLIB after cinterop finishes.
+ * Patches produced cinterop KLIB metadata so declarations in one target package require explicit opt-in.
  *
- * <p>grpc-shim is published as a KLIB because the build needs it, but the declarations generated into the
- * {@code kotlinx.rpc.grpc.internal.cinterop} package are internal implementation detail, not supported public API. The cinterop
- * toolchain does not load compiler plugin registrars on this build path, so the narrow reliable hook is to rewrite
- * the produced KLIB metadata immediately after cinterop and before the artifact is consumed or published.
+ * <p>This is shared internal native-deps build tooling used by shim builds such as grpc-shim and
+ * protobuf-shim. It is intentionally parameter-driven so the fragile KLIB metadata rewrite logic lives in one place.
  */
 public final class KlibPatcher {
-    private static final String TARGET_PACKAGE_NAME = "kotlinx.rpc.grpc.internal.cinterop";
-    private static final String INTERNAL_NATIVE_RPC_API_ANNOTATION_CLASS_NAME =
-        "kotlinx/rpc/grpc/internal/InternalNativeRpcApi";
-    private static final String INTERNAL_NATIVE_RPC_API_DEPENDENCY_UNIQUE_NAME =
-        "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation";
-    private static final KmAnnotation INTERNAL_NATIVE_RPC_API_ANNOTATION =
-        new KmAnnotation(INTERNAL_NATIVE_RPC_API_ANNOTATION_CLASS_NAME, Collections.emptyMap());
     private static final Method FRAGMENT_PACKAGE_NAME_ACCESSOR = createFragmentPackageNameAccessor();
 
     private KlibPatcher() {
     }
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            throw new IllegalArgumentException("Expected <unpacked-klib-dir> <packed-klib-file>, got " + List.of(args));
+        if (args.length != 5) {
+            throw new IllegalArgumentException(
+                "Expected <unpacked-klib-dir> <packed-klib-file> <target-package> <annotation-class> " +
+                    "<dependency-unique-name>, got " + List.of(args)
+            );
         }
 
-        patch(new File(args[0]), new File(args[1]));
+        Configuration configuration = new Configuration(
+            new File(args[0]),
+            new File(args[1]),
+            args[2],
+            args[3],
+            args[4]
+        );
+        patch(configuration);
     }
 
-    public static void patch(File unpackedKlibDir, File packedKlibFile) {
+    public static void patch(Configuration configuration) {
         Path tempKlibDir = null;
         try {
-            tempKlibDir = Files.createTempDirectory("grpc-shim-internal-native-rpc-api-klib-");
-            copyRecursively(unpackedKlibDir.toPath(), tempKlibDir);
+            tempKlibDir = Files.createTempDirectory("native-deps-internal-native-rpc-api-klib-");
+            copyRecursively(configuration.unpackedKlibDir.toPath(), tempKlibDir);
 
             File archiveDir = resolveArchiveDir(tempKlibDir.toFile());
             File linkdataDir = new File(archiveDir, "linkdata");
@@ -83,19 +84,17 @@ public final class KlibPatcher {
             );
             List<KmModuleFragment> targetFragments = metadata.getFragments()
                 .stream()
-                .filter(fragment -> TARGET_PACKAGE_NAME.equals(fragmentPackageName(fragment)))
+                .filter(fragment -> configuration.targetPackageName.equals(fragmentPackageName(fragment)))
                 .collect(Collectors.toList());
 
             if (targetFragments.isEmpty()) {
                 throw new IllegalStateException(
-                    "Expected grpc-shim cinterop metadata for package " + TARGET_PACKAGE_NAME + " in " +
-                        unpackedKlibDir.getAbsolutePath()
+                    "Expected cinterop metadata for package " + configuration.targetPackageName + " in " +
+                        configuration.unpackedKlibDir.getAbsolutePath()
                 );
             }
 
-            // annotate all kotlin fragments (constructors, functions, properties, type aliases) with
-            // the @InternalNativeRpcApi annotation
-            targetFragments.forEach(KlibPatcher::annotateFragment);
+            targetFragments.forEach(fragment -> annotateFragment(fragment, configuration));
 
             writeLinkdata(
                 linkdataDir,
@@ -103,12 +102,10 @@ public final class KlibPatcher {
                 metadata.write(KlibModuleFragmentWriteStrategy.Companion.getDEFAULT())
             );
 
-            // add annotation as dependency in the manifest
-            patchManifest(new File(archiveDir, "manifest"));
-            // zips the new klib dir to the packed klib file
-            repackKlib(tempKlibDir, archiveDir.toPath(), packedKlibFile.toPath());
+            patchManifest(new File(archiveDir, "manifest"), configuration);
+            repackKlib(tempKlibDir, archiveDir.toPath(), configuration.packedKlibFile.toPath());
         } catch (IOException exception) {
-            throw new RuntimeException("Failed to patch " + packedKlibFile.getAbsolutePath(), exception);
+            throw new RuntimeException("Failed to patch " + configuration.packedKlibFile.getAbsolutePath(), exception);
         } finally {
             if (tempKlibDir != null) {
                 deleteRecursively(tempKlibDir);
@@ -135,46 +132,46 @@ public final class KlibPatcher {
         return unpackedKlibDir;
     }
 
-    private static void annotateFragment(KmModuleFragment fragment) {
+    private static void annotateFragment(KmModuleFragment fragment, Configuration configuration) {
         KmPackage packageFragment = Objects.requireNonNull(
             fragment.getPkg(),
             "Expected package metadata for " + fragmentPackageName(fragment)
         );
-        packageFragment.getFunctions().forEach(KlibPatcher::annotate);
-        packageFragment.getProperties().forEach(KlibPatcher::annotate);
-        packageFragment.getTypeAliases().forEach(KlibPatcher::annotate);
-        fragment.getClasses().forEach(KlibPatcher::annotate);
+        packageFragment.getFunctions().forEach(function -> annotate(function, configuration));
+        packageFragment.getProperties().forEach(property -> annotate(property, configuration));
+        packageFragment.getTypeAliases().forEach(typeAlias -> annotate(typeAlias, configuration));
+        fragment.getClasses().forEach(clazz -> annotate(clazz, configuration));
     }
 
-    private static void annotate(KmClass clazz) {
-        addInternalNativeRpcApiMarker(clazz.getAnnotations());
-        clazz.getConstructors().forEach(KlibPatcher::annotate);
-        clazz.getFunctions().forEach(KlibPatcher::annotate);
-        clazz.getProperties().forEach(KlibPatcher::annotate);
-        clazz.getTypeAliases().forEach(KlibPatcher::annotate);
+    private static void annotate(KmClass clazz, Configuration configuration) {
+        addInternalNativeRpcApiMarker(clazz.getAnnotations(), configuration);
+        clazz.getConstructors().forEach(constructor -> annotate(constructor, configuration));
+        clazz.getFunctions().forEach(function -> annotate(function, configuration));
+        clazz.getProperties().forEach(property -> annotate(property, configuration));
+        clazz.getTypeAliases().forEach(typeAlias -> annotate(typeAlias, configuration));
     }
 
-    private static void annotate(KmConstructor constructor) {
-        addInternalNativeRpcApiMarker(constructor.getAnnotations());
+    private static void annotate(KmConstructor constructor, Configuration configuration) {
+        addInternalNativeRpcApiMarker(constructor.getAnnotations(), configuration);
     }
 
-    private static void annotate(KmFunction function) {
-        addInternalNativeRpcApiMarker(function.getAnnotations());
+    private static void annotate(KmFunction function, Configuration configuration) {
+        addInternalNativeRpcApiMarker(function.getAnnotations(), configuration);
     }
 
-    private static void annotate(KmProperty property) {
-        addInternalNativeRpcApiMarker(property.getAnnotations());
+    private static void annotate(KmProperty property, Configuration configuration) {
+        addInternalNativeRpcApiMarker(property.getAnnotations(), configuration);
     }
 
-    private static void annotate(KmTypeAlias typeAlias) {
-        addInternalNativeRpcApiMarker(typeAlias.getAnnotations());
+    private static void annotate(KmTypeAlias typeAlias, Configuration configuration) {
+        addInternalNativeRpcApiMarker(typeAlias.getAnnotations(), configuration);
     }
 
-    private static void addInternalNativeRpcApiMarker(List<KmAnnotation> annotations) {
+    private static void addInternalNativeRpcApiMarker(List<KmAnnotation> annotations, Configuration configuration) {
         boolean present = annotations.stream()
-            .anyMatch(annotation -> INTERNAL_NATIVE_RPC_API_ANNOTATION_CLASS_NAME.equals(annotation.getClassName()));
+            .anyMatch(annotation -> configuration.annotationClassName.equals(annotation.getClassName()));
         if (!present) {
-            annotations.add(INTERNAL_NATIVE_RPC_API_ANNOTATION);
+            annotations.add(configuration.annotation);
         }
     }
 
@@ -230,7 +227,7 @@ public final class KlibPatcher {
         return names;
     }
 
-    private static void patchManifest(File manifestFile) throws IOException {
+    private static void patchManifest(File manifestFile, Configuration configuration) throws IOException {
         if (!manifestFile.isFile()) {
             throw new IllegalStateException("Missing KLIB manifest: " + manifestFile.getAbsolutePath());
         }
@@ -245,8 +242,8 @@ public final class KlibPatcher {
             List<String> dependencies = Stream.of(line.substring("depends=".length()).split(" "))
                 .filter(dependency -> !dependency.isBlank())
                 .collect(Collectors.toCollection(ArrayList::new));
-            if (!dependencies.contains(INTERNAL_NATIVE_RPC_API_DEPENDENCY_UNIQUE_NAME)) {
-                dependencies.add(INTERNAL_NATIVE_RPC_API_DEPENDENCY_UNIQUE_NAME);
+            if (!dependencies.contains(configuration.annotationDependencyUniqueName)) {
+                dependencies.add(configuration.annotationDependencyUniqueName);
             }
             updatedLines.add("depends=" + String.join(" ", dependencies));
         }
@@ -299,6 +296,30 @@ public final class KlibPatcher {
             }
         } catch (IOException exception) {
             throw new RuntimeException("Failed to delete " + path, exception);
+        }
+    }
+
+    public static final class Configuration {
+        private final File unpackedKlibDir;
+        private final File packedKlibFile;
+        private final String targetPackageName;
+        private final String annotationClassName;
+        private final String annotationDependencyUniqueName;
+        private final KmAnnotation annotation;
+
+        private Configuration(
+            File unpackedKlibDir,
+            File packedKlibFile,
+            String targetPackageName,
+            String annotationClassName,
+            String annotationDependencyUniqueName
+        ) {
+            this.unpackedKlibDir = unpackedKlibDir;
+            this.packedKlibFile = packedKlibFile;
+            this.targetPackageName = targetPackageName;
+            this.annotationClassName = annotationClassName;
+            this.annotationDependencyUniqueName = annotationDependencyUniqueName;
+            this.annotation = new KmAnnotation(annotationClassName, Collections.emptyMap());
         }
     }
 

@@ -25,4 +25,5 @@ includePublic(":kotlinx-rpc-grpc-core-shim-annotation")
 project(":kotlinx-rpc-grpc-core-shim-annotation").projectDir = file("./annotation")
 
 include(":klib-patcher")
+project(":klib-patcher").projectDir = file("../klib-patcher")
 include(":tests")

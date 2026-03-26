@@ -9,7 +9,7 @@ interop surface as unsupported internal implementation detail.
 Layout:
 - `core/` contains the Bazel build, native sources, headers, and the published shim module
 - `annotation/` contains the opt-in marker published with the shim
-- `klib-patcher/` contains the internal metadata patcher used only while building `core`
+- `../klib-patcher/` contains the shared internal metadata patcher used only while building `core`
 - `tests/` contains TestKit-based fixture tests that publish protobuf-shim artifacts locally and compile throwaway consumer projects
 
 Shared toolchain notes:

@@ -51,11 +51,12 @@ fun currentHostTarget(): HostTarget {
 val hostTarget = currentHostTarget()
 val verificationRepositoryDir = rootProject.layout.buildDirectory.dir("verification-repo")
 val publishHostCore = project(":kotlinx-rpc-grpc-core-shim").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
+val publishRootAnnotation = project(":kotlinx-rpc-grpc-core-shim-annotation").tasks.named("publishKotlinMultiplatformPublicationToVerificationRepository")
 val publishHostAnnotation = project(":kotlinx-rpc-grpc-core-shim-annotation").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
 val testSourceSet = the<SourceSetContainer>()["test"]
 
 fun Test.configureFixtureVerification() {
-    dependsOn(publishHostCore, publishHostAnnotation)
+    dependsOn(publishHostCore, publishRootAnnotation, publishHostAnnotation)
     useJUnitPlatform()
 
     systemProperty("grpcShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)

@@ -3,6 +3,7 @@
  */
 
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.JavaExec
@@ -49,6 +50,9 @@ repositories {
 val grpcVersion = requireGradleProperty("grpcVersion")
 val grpcCoreInteropName = "grpcCoreInterop"
 val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
+val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"
+val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/InternalNativeRpcApi"
+val grpcInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-grpc-core-shim-annotation"
 
 // The checked-in .def file stays small and stable. We derive a target-specific copy during the build with
 // the full static library list gathered from the unpacked grpc bundle.
@@ -255,11 +259,14 @@ kotlin {
             dependsOn(cinteropTask)
             dependsOn(":klib-patcher:jar")
             classpath(files(internalNativeRpcApiPatcherJar))
-            mainClass.set("kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher")
+            mainClass.set("kotlinx.rpc.nativedeps.tooling.KlibPatcher")
             workingDir = layout.projectDirectory.asFile
             inputs.file(internalNativeRpcApiPatcherJar)
             inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
             outputKlibFile.set(packedCinteropKlibFile)
+            targetPackageName.set(grpcInteropPackageName)
+            annotationClassName.set(grpcInternalNativeRpcApiClassName)
+            annotationDependencyUniqueName.set(grpcInternalNativeRpcApiDependencyUniqueName)
         }
         patchInternalNativeRpcApiTasks.add(patchInternalNativeRpcApiTask)
 
@@ -271,11 +278,14 @@ kotlin {
             dependsOn(cinteropPublicationTask)
             dependsOn(":klib-patcher:jar")
             classpath(files(internalNativeRpcApiPatcherJar))
-            mainClass.set("kotlinx.rpc.grpc.nativedeps.tooling.KlibPatcher")
+            mainClass.set("kotlinx.rpc.nativedeps.tooling.KlibPatcher")
             workingDir = layout.projectDirectory.asFile
             inputs.file(internalNativeRpcApiPatcherJar)
             inputKlibDir.set(cinteropTask.flatMap { it.klibDirectory })
             outputKlibFile.set(cinteropPublicationTask.flatMap { it.archiveFile })
+            targetPackageName.set(grpcInteropPackageName)
+            annotationClassName.set(grpcInternalNativeRpcApiClassName)
+            annotationDependencyUniqueName.set(grpcInternalNativeRpcApiDependencyUniqueName)
         }
 
         tasks.matching { task ->
@@ -307,12 +317,24 @@ abstract class PatchInternalNativeRpcApiTask : JavaExec() {
     @get:OutputFile
     abstract val outputKlibFile: RegularFileProperty
 
+    @get:org.gradle.api.tasks.Input
+    abstract val targetPackageName: Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val annotationClassName: Property<String>
+
+    @get:org.gradle.api.tasks.Input
+    abstract val annotationDependencyUniqueName: Property<String>
+
     @TaskAction
     override fun exec() {
         // The patcher reads the unpacked cinterop KLIB directory and writes a packed .klib output.
         args = listOf(
             inputKlibDir.get().asFile.absolutePath,
             outputKlibFile.get().asFile.absolutePath,
+            targetPackageName.get(),
+            annotationClassName.get(),
+            annotationDependencyUniqueName.get(),
         )
         super.exec()
     }
