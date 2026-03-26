@@ -11,12 +11,12 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import libprotowire.*
+import kotlinx.rpc.protobuf.internal.cinterop.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
 import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
 internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     override var recursionDepth: Int = 0
     override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT

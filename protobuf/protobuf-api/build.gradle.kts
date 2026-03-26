@@ -7,7 +7,6 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.proto
-import util.configureCLibCInterop
 import java.nio.file.Path as JavaPath
 
 plugins {
@@ -15,7 +14,12 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
+repositories {
+    mavenLocal()
+}
+
 val globalRootDir: String by project.extra
+val publishedProtobufShimVersion = "31.1-1"
 
 kotlin {
     compilerOptions {
@@ -67,17 +71,8 @@ kotlin {
         nativeMain {
             dependencies {
                 implementation(libs.kotlinx.collections.immutable)
+                implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-shim:$publishedProtobufShimVersion")
             }
-        }
-    }
-
-    configureCLibCInterop(project, ":protowire_fat") { cLibSource, cLibOutDir ->
-        @Suppress("unused")
-        val libprotowire by creating {
-            includeDirs(
-                cLibSource.resolve("include")
-            )
-            extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
 }
