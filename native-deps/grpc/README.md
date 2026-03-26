@@ -29,4 +29,4 @@ Each published target bundle contains:
 - `lib/**` with all transitive grpc dependency archives
 - `metadata/archives.txt`
 
-This is the initial standalone setup for the multi-archive packaging. It isolates gRPC build and publication from `kgrpc`, but it does not yet switch consumers over to the new bundle format.
+This is the initial standalone setup for the multi-archive packaging. It isolates gRPC build and publication from the shim consumers, but it does not yet switch every consumer over to the new bundle format.

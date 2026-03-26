@@ -5,10 +5,11 @@
 import util.registerNativeDependencyTargets
 
 plugins {
-    alias(libs.plugins.conventions.kmp)
+    alias(libs.plugins.kotlin.multiplatform)
     id("conventions-publishing")
 }
 
 kotlin {
+    explicitApi()
     registerNativeDependencyTargets()
 }
