@@ -35,9 +35,7 @@ internal fun Project.registerProcessProtoFilesTask(
     properties: ProtoTask.Properties,
     configure: ProcessProtoFiles.() -> Unit = {},
 ): TaskProvider<ProcessProtoFiles> {
-    val capitalName = name.replaceFirstChar { it.uppercase() }
-
-    val task = tasks.register("process${capitalName}ProtoFiles", ProcessProtoFiles::class, properties)
+    val task = tasks.register("process${name}ProtoFiles", ProcessProtoFiles::class, properties)
 
     task.configure {
         duplicatesStrategy = DuplicatesStrategy.FAIL
@@ -63,9 +61,7 @@ internal fun Project.registerProcessProtoFilesImportsTask(
     properties: ProtoTask.Properties,
     configure: ProcessProtoFiles.() -> Unit = {},
 ): TaskProvider<ProcessProtoFiles> {
-    val capitalName = name.replaceFirstChar { it.uppercase() }
-
-    val task = tasks.register("process${capitalName}ProtoFilesImports", ProcessProtoFiles::class, properties)
+    val task = tasks.register("process${name}ProtoFilesImports", ProcessProtoFiles::class, properties)
     task.configure {
         duplicatesStrategy = DuplicatesStrategy.FAIL
 

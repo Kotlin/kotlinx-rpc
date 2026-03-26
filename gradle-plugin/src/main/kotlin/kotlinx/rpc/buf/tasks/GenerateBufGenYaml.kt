@@ -139,9 +139,8 @@ internal fun Project.registerGenerateBufGenYamlTask(
     properties: ProtoTask.Properties,
     configure: GenerateBufGenYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufGenYaml> {
-    val capitalizeName = name.replaceFirstChar { it.uppercase() }
     val task = project.tasks.register(
-        "${GenerateBufGenYaml.NAME_PREFIX}$capitalizeName",
+        "${GenerateBufGenYaml.NAME_PREFIX}$name",
         GenerateBufGenYaml::class,
         properties,
     )
