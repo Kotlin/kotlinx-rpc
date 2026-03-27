@@ -36,6 +36,8 @@
         <code-block lang="protobuf">
             syntax = "proto3";
 
+            package com.example;
+
             message Image {
               bytes data = 1;
             }
@@ -111,6 +113,8 @@
         </p>
         <code-block lang="protobuf">
             syntax = "proto3";
+
+            package com.example;
 
             message Image {
               bytes data = 1;

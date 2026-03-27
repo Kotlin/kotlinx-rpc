@@ -13,7 +13,7 @@
         <path>.proto</path> files are the source of truth, built-in protoc plugins generate Kotlin declarations from
         them, and the <code>kotlinx.rpc</code> compiler plugin synthesizes the additional declarations required to make
         those generated files usable from Kotlin code and visible to runtime APIs such as <code>withService</code>,
-        <code>registerService</code>, <code>grpcMarshallerOf</code>, and <code>protoDescriptorOf</code>.
+        <code>registerService</code>, <code>grpcMarshallerOf</code>, and <code>serviceDescriptorOf</code>.
     </p>
     <warning>
         This is still a dev release with no stability guarantees.
@@ -135,6 +135,7 @@
                 <code>MARSHALLER</code> and <code>DESCRIPTOR</code> objects.
                 That is what makes <code>grpcMarshallerOf&lt;Message&gt;()</code> and <code>protoDescriptorOf&lt;Message&gt;()</code>
                 work on the public type.
+                Note that proto descriptor is an internal API for now.
             </def>
             <def title="Service metadata synthesis" id="grpc-codegen-service-metadata">
                 For <code>@Grpc</code> services, the compiler plugin synthesizes hidden stub metadata used by
@@ -148,6 +149,14 @@
             In practice, the generated API is used like this:
         </p>
         <code-block lang="Kotlin">
+            import kotlinx.rpc.descriptor.serviceDescriptorOf
+            import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+            import kotlinx.rpc.protobuf.ProtoConfig
+            import kotlinx.rpc.withService
+            import example.hello.HelloRequest
+            import example.hello.invoke
+            import example.hello.copy
+
             val request = HelloRequest {
                 name = "kotlinx.rpc"
             }
@@ -155,7 +164,7 @@
                 name = "grpc"
             }
             val marshaller = grpcMarshallerOf&lt;HelloRequest&gt;(ProtoConfig(discardUnknownFields = true))
-            val descriptor = protoDescriptorOf&lt;HelloRequest&gt;()
+            val descriptor = serviceDescriptorOf&lt;Greeter&gt;()
             val service = grpcClient.withService&lt;Greeter&gt;()
         </code-block>
         <p>
