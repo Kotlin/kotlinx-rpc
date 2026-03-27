@@ -13,6 +13,12 @@
         <code>GrpcClient</code> connects to a gRPC server and provides service stubs via <code>withService</code>.
     </p>
     <code-block lang="Kotlin">
+        import kotlinx.io.bytestring.ByteString
+        import kotlinx.rpc.grpc.client.GrpcClient
+        import kotlinx.rpc.withService
+        import ImageRecognizer
+        import invoke
+
         val client = GrpcClient("localhost", 8080) {
             credentials = plaintext()
         }
@@ -23,10 +29,6 @@
             data = ByteString(0, 1, 2, 3)
         }
         val result = recognizer.recognize(image)
-        println("Recognized category: ${result.category}")
-
-        client.shutdown()
-        client.awaitTermination()
     </code-block>
 
     <chapter title="Configuration" id="grpc-client-configuration">

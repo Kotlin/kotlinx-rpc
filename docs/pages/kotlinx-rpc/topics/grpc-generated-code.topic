@@ -21,9 +21,12 @@
 
     <chapter title="Building messages" id="grpc-building-messages">
         <p>
-            Every generated message has a builder DSL accessed through the <code>Companion.invoke</code> operator:
+            Every generated message has a builder DSL accessed through the extension <code>Companion.invoke</code> operator:
         </p>
         <code-block lang="Kotlin">
+            import com.example.HelloRequest
+            import com.example.invoke
+
             val request = HelloRequest {
                 name = "kotlinx.rpc"
             }
@@ -32,9 +35,11 @@
 
     <chapter title="Copying messages" id="grpc-copying-messages">
         <p>
-            Messages are immutable. Use <code>copy</code> to create a modified version:
+            Messages are immutable. Use <code>copy</code> extension to create a modified version:
         </p>
         <code-block lang="Kotlin">
+            import com.example.copy
+
             val updated = request.copy {
                 name = "grpc"
             }
@@ -47,6 +52,8 @@
             are represented as <code>UNRECOGNIZED</code>:
         </p>
         <code-block lang="protobuf">
+            package com.example;
+
             enum Priority {
               PRIORITY_UNSPECIFIED = 0;
               HIGH = 1;
@@ -54,10 +61,14 @@
             }
 
             message Task {
-              Priority priority = 1;
+              required Priority priority = 1;
             }
         </code-block>
         <code-block lang="Kotlin">
+            import com.example.Priority
+            import com.example.Task
+            import com.example.invoke
+
             val task = Task {
                 priority = Priority.HIGH
             }
@@ -69,12 +80,18 @@
             Repeated fields map to Kotlin <code>List</code>:
         </p>
         <code-block lang="protobuf">
+            package com.example;
+
             message Numbers {
               repeated int32 values = 1;
               repeated string labels = 2;
             }
         </code-block>
         <code-block lang="Kotlin">
+            import com.example.Numbers
+            import com.example.invoke
+            import com.example.copy
+
             val numbers = Numbers {
                 values = listOf(1, 2, 3)
                 labels = listOf("a", "b", "c")
@@ -91,11 +108,17 @@
             Map fields map to Kotlin <code>Map</code>:
         </p>
         <code-block lang="protobuf">
+            package com.example;
+
             message Config {
               map&lt;string, int64&gt; settings = 1;
             }
         </code-block>
         <code-block lang="Kotlin">
+            import com.example.Config
+            import com.example.invoke
+            import com.example.copy
+
             val config = Config {
                 settings = mapOf("timeout" to 30L, "retries" to 3L)
             }
@@ -112,6 +135,8 @@
             Each case is a data class wrapping the value:
         </p>
         <code-block lang="protobuf">
+            package com.example;
+
             message Event {
               oneof payload {
                 string text = 1;
@@ -120,6 +145,9 @@
             }
         </code-block>
         <code-block lang="Kotlin">
+            import com.example.Event
+            import com.example.invoke
+
             val event = Event {
                 payload = Event.Payload.Text("hello")
             }
@@ -137,15 +165,20 @@
             Nested message types are accessed through the parent type:
         </p>
         <code-block lang="protobuf">
+            package com.example;
+
             message Outer {
               message Inner {
-                int32 value = 1;
+                required int32 value = 1;
               }
 
-              Inner inner = 1;
+              required Inner inner = 1;
             }
         </code-block>
         <code-block lang="Kotlin">
+            import com.example.Outer
+            import com.example.invoke
+
             val outer = Outer {
                 inner = Outer.Inner {
                     value = 42
