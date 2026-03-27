@@ -2,11 +2,11 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Sync
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.register
 import util.configureNativeShimBuild
+import util.registerNativeShimBazelBuildTask
 import util.configureNativeShimTargets
 import util.configureSpacePackagesConsumerRepository
 import util.requireGradleProperty
@@ -108,19 +108,13 @@ kotlin {
             from({ zipTree(grpcTargetBundles.getValue(target).singleFile) })
         }
 
-        val buildGrpcShim = tasks.register<Exec>("buildGrpcShim${taskSuffix}") {
-            dependsOn(nativeShim.syncModuleVersionTask, nativeShim.checkBazel, nativeShim.checkKonanHome)
-            group = "build"
-            workingDir = layout.projectDirectory.asFile
-            outputs.file(shimLibFile)
-            commandLine(
-                "./build_target.sh",
-                ":grpc_shim",
-                shimLibFile.get().asFile.absolutePath,
-                target.bazelName,
-                nativeShim.konanHome.get(),
-            )
-        }
+        val buildGrpcShim = registerNativeShimBazelBuildTask(
+            taskName = "buildGrpcShim${taskSuffix}",
+            nativeShim = nativeShim,
+            target = target,
+            label = ":grpc_shim",
+            outputFile = shimLibFile,
+        )
 
         val prepareInterop = tasks.register("prepareGrpcShimInterop${taskSuffix}") {
             dependsOn(prepareGrpcBundle, buildGrpcShim)

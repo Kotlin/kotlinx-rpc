@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+# Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
 #
 
 set -Eeuo pipefail
 trap 'echo "ERROR: Build failed at ${BASH_SOURCE}:${LINENO}" >&2' ERR
 
-# Builds a target-specific grpc shim static library against grpc headers provided by Bazel.
+# Builds one Bazel target for one Kotlin/Native target and copies the produced static
+# library to the destination requested by the Gradle task.
 
 find_bazel() {
   if command -v bazel >/dev/null 2>&1; then
@@ -30,11 +31,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p "$(dirname "$DST")"
 
+echo "==> Building $LABEL to $DST" >&2
+echo "==> KONAN_HOME: $KONAN_HOME" >&2
+echo "==> KONAN_TARGET: $KONAN_TARGET" >&2
+
 KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
 KONAN_LLVM_RESOURCE_DIR="$(
   KONAN_DEPS="$KONAN_DEPS" \
-    python3 "$SCRIPT_DIR/../../bazel-support/toolchain/resolve_konan_llvm_resource_dir.py" "$KONAN_HOME"
+    python3 "$SCRIPT_DIR/../bazel-support/toolchain/resolve_konan_llvm_resource_dir.py" "$KONAN_HOME"
 )"
+
+echo "==> KONAN_DEPS: $KONAN_DEPS" >&2
+echo "==> KONAN_LLVM_RESOURCE_DIR: $KONAN_LLVM_RESOURCE_DIR" >&2
 
 BAZEL_ARGS=(
   "--config=$KONAN_TARGET"
@@ -44,9 +52,12 @@ BAZEL_ARGS=(
   "--define=KONAN_LLVM_RESOURCE_DIR=$KONAN_LLVM_RESOURCE_DIR"
 )
 
-"$BAZEL" build "$LABEL" "${BAZEL_ARGS[@]}" >/dev/null
+set -x
+"$BAZEL" build "$LABEL" "${BAZEL_ARGS[@]}"
+set +x
 
 out="$("$BAZEL" cquery "$LABEL" "${BAZEL_ARGS[@]}" --output=files | head -n1)"
-[[ -n "$out" ]] || { echo "No output for $LABEL"; exit 1; }
+[[ -n "$out" ]] || { echo "No output for $LABEL" >&2; exit 1; }
 
 cp -f "$out" "$DST"
+echo "Done. Binary written to: $DST" >&2

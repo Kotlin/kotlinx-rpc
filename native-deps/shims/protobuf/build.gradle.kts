@@ -2,10 +2,10 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.register
 import util.configureNativeShimBuild
 import util.configureNativeShimTargets
+import util.registerNativeShimBazelBuildTask
 
 /**
  * Configures the protobuf module inside native-deps/shims to build and publish the protobuf shim KLIB.
@@ -50,19 +50,13 @@ kotlin {
         val shimLibDir = layout.buildDirectory.dir("protobuf/${target.bazelName}")
         val shimLibFile = layout.buildDirectory.file("protobuf/${target.bazelName}/libprotowire_fat.${target.bazelName}.a")
 
-        val buildProtobufShim = tasks.register<Exec>("buildProtobufShim${taskSuffix}") {
-            dependsOn(nativeShim.syncModuleVersionTask, nativeShim.checkBazel, nativeShim.checkKonanHome)
-            group = "build"
-            workingDir = layout.projectDirectory.asFile
-            outputs.file(shimLibFile)
-            commandLine(
-                "./build_target.sh",
-                ":protowire_fat",
-                shimLibFile.get().asFile.absolutePath,
-                target.bazelName,
-                nativeShim.konanHome.get(),
-            )
-        }
+        val buildProtobufShim = registerNativeShimBazelBuildTask(
+            taskName = "buildProtobufShim${taskSuffix}",
+            nativeShim = nativeShim,
+            target = target,
+            label = ":protowire_fat",
+            outputFile = shimLibFile,
+        )
 
         compilations.getByName("main").cinterops.create(protowireInteropName) {
             defFile(protowireInteropDefFile.asFile)

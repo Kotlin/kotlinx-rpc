@@ -105,6 +105,33 @@ fun Project.configureNativeShimBuild(
 }
 
 /**
+ * Registers the standard Bazel-backed static library build task used by shim modules.
+ *
+ * The actual script lives once under native-deps/shims and expects to be run from
+ * the module directory that owns the Bazel workspace. This helper wires the common
+ * Gradle-side dependencies and command-line arguments for one target.
+ */
+fun Project.registerNativeShimBazelBuildTask(
+    taskName: String,
+    nativeShim: NativeShimBuildSupport,
+    target: NativeDependencyTarget,
+    label: String,
+    outputFile: Provider<RegularFile>,
+): TaskProvider<Exec> = tasks.register<Exec>(taskName) {
+    dependsOn(nativeShim.syncModuleVersionTask, nativeShim.checkBazel, nativeShim.checkKonanHome)
+    group = "build"
+    workingDir = layout.projectDirectory.asFile
+    outputs.file(outputFile)
+    commandLine(
+        layout.projectDirectory.dir("..").file("build_target.sh").asFile.absolutePath,
+        label,
+        outputFile.get().asFile.absolutePath,
+        target.bazelName,
+        nativeShim.konanHome.get(),
+    )
+}
+
+/**
  * Registers the two KLIB patching tasks for one target:
  *
  * 1. patch the unpacked cinterop output and repack it into build/libs for
