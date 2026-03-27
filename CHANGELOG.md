@@ -1,3 +1,29 @@
+# 0.11.0-grpc-186
+> Published 27 March 2026
+
+> **This is a development preview release.** APIs are subject to change and may break without notice in future versions.
+
+### Features 🎉
+* pb: Use ByteString for bytes field instead of ByteArray by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/621
+* pb: Use static defaults for generated protobuf messages (KRPC-520) by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/629
+
+### Bug fixes 🐛
+* protoc-gen: fix star imports issue by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/624
+* Fix dokka CC issues and xcode on CI by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/637
+* KRPC-522 Build is broken for AGP projects by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/636
+
+### Documentation 📗
+* Add Gradle Plugin APIs to dokka by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/628
+* Add version notes to gRPC related APIs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/631
+* Added imports to examples by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/638
+
+### Infra 🚧
+* Exporting issues to YT actions by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/625
+* Fix yt export by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/626
+* Add test retries plugin by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/632
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-185...0.11.0-grpc-186
+
 # 0.11.0-grpc-185
 > Published 12 March 2026
 
