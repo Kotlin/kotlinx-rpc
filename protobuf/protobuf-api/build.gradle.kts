@@ -8,18 +8,14 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.proto
 import java.nio.file.Path as JavaPath
+import util.configureSpacePackagesConsumerRepository
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
 }
 
-repositories {
-    mavenLocal()
-}
-
 val globalRootDir: String by project.extra
-val publishedProtobufShimVersion = "31.1-1"
 
 kotlin {
     compilerOptions {
@@ -71,7 +67,7 @@ kotlin {
         nativeMain {
             dependencies {
                 implementation(libs.kotlinx.collections.immutable)
-                implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-shim:$publishedProtobufShimVersion")
+                implementation(libs.kotlinx.rpc.protobuf.shim)
             }
         }
     }

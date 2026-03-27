@@ -6,6 +6,7 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import util.withBackgroundTask
+import util.configureSpacePackagesConsumerRepository
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -13,12 +14,6 @@ plugins {
     alias(libs.plugins.atomicfu)
     alias(libs.plugins.serialization) // for tests
 }
-
-repositories {
-    mavenLocal()
-}
-
-val publishedGrpcCoreShimVersion = "1.74.1-1"
 
 kotlin {
     compilerOptions {
@@ -94,7 +89,7 @@ kotlin {
             dependencies {
                 // required for status.proto
                 implementation(projects.protobuf.protobufApi)
-                implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim:$publishedGrpcCoreShimVersion")
+                implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
         }
 

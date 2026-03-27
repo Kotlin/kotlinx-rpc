@@ -187,6 +187,7 @@ fun RepositoryHandler.jbTeamPackages(repoName: String) {
 
 fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
 fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
+fun RepositoryHandler.grpc() = jbTeamPackages(repoName = "grpc")
 
 val localProps = getLocalProperties()
 
@@ -207,9 +208,6 @@ gradle.rootProject {
 
         buildscript {
             repositories {
-                // Temporary local development fallback while grpc-shim is still consumed from mavenLocal.
-                mavenLocal()
-
                 if (useProxy) {
                     buildDeps()
                     buildDepsEap()
@@ -223,9 +221,6 @@ gradle.rootProject {
             }
         }
         repositories {
-            // Temporary local development fallback while grpc-shim is still consumed from mavenLocal.
-            mavenLocal()
-
             if (useProxy) {
                 buildDeps()
                 buildDepsEap()
@@ -244,6 +239,10 @@ gradle.rootProject {
                 maven("https://packages.jetbrains.team/maven/p/ktor/eap")
             }
 
+            // Internal standalone shim artifacts are published here and can be resolved
+            // from any consumer project in this composite build.
+            // Remove it once we release them to maven central. (KRPC-539)
+            grpc()
             maven("$globalRootDir/lib-kotlin/")
         }
     }
