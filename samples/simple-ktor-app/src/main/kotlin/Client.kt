@@ -7,6 +7,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
@@ -40,7 +41,7 @@ fun main() = runBlocking {
         }
     }
 
-    val image = Image(byteArrayOf(0, 1, 2, 3))
+    val image = Image(ByteString(0, 1, 2, 3))
     val category = recognizer.recognize(image)
     println("Recognized category: $category")
 

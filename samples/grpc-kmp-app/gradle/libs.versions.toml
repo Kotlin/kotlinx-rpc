@@ -11,7 +11,7 @@ kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.4.1"
 logback = "1.5.32"
-kotlinx-rpc = "0.11.0-grpc-185"
+kotlinx-rpc = "0.11.0-grpc-186"
 grpc = "1.79.0"
 kotlinx-datatime = "0.7.1"
 
