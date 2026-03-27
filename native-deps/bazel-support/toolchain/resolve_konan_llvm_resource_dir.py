@@ -3,8 +3,7 @@
 Resolve the clang resource include directory for the active KONAN_HOME.
 
 This helper is part of the shared native-deps Bazel toolchain support used by
-active builds such as native-deps/grpc, native-deps/grpc-shim, and
-native-deps/protobuf-shim.
+active builds such as native-deps/grpc and native-deps/shims.
 
 Usage:
   ./toolchain/resolve_konan_llvm_resource_dir.py /path/to/kotlin-native-prebuilt-<host>-<arch>-<version>
@@ -12,7 +11,7 @@ Usage:
 
 Context:
   - Reads toolchain/konan_llvm_bundles.json produced by precompute_konan_llvm_bundles.py.
-  - Called by Bazel-backed native dependency build scripts such as grpc-shim and protobuf-shim.
+  - Called by Bazel-backed native dependency build scripts such as the shims build.
   - Its output is passed to Bazel as --define=KONAN_LLVM_RESOURCE_DIR and consumed in
     the Bazel C/C++ toolchain configuration.
 """

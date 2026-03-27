@@ -58,7 +58,7 @@ import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64_no_tag
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeProtobufApi::class)
 internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     /**
      * The context object provides a stable reference to the kotlin context.
@@ -255,7 +255,7 @@ public actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
 // which can be speed up in case of fixed sized types, that are not compressed. KRPC-183
-@OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
+@OptIn(ExperimentalForeignApi::class, InternalNativeProtobufApi::class)
 private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,

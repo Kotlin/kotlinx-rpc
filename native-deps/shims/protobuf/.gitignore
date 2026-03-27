@@ -1,0 +1,10 @@
+.gradle/
+.idea/
+/build/
+/bazel-*/
+/bazel-bin
+/bazel-core
+/bazel-out
+/bazel-protobuf
+/bazel-testlogs
+/MODULE.bazel.lock

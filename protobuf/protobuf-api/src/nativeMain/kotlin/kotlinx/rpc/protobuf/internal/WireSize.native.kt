@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, InternalNativeProtobufApi::class)
 
 package kotlinx.rpc.protobuf.internal
 
@@ -27,4 +27,3 @@ public actual fun WireSize.sInt32(value: Int): Int = pw_size_sint32(value).toInt
 
 @InternalRpcApi
 public actual fun WireSize.sInt64(value: Long): Int = pw_size_sint64(value).toInt()
-

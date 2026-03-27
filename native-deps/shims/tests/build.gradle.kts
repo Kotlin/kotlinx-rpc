@@ -1,0 +1,104 @@
+/*
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+
+plugins {
+    alias(libs.plugins.conventions.jvm)
+}
+
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
+    jvmToolchain(17)
+}
+
+dependencies {
+    testImplementation(gradleTestKit())
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.junit5.jupiter)
+    testImplementation(libs.junit5.jupiter.api)
+    testRuntimeOnly(libs.junit5.platform.launcher)
+}
+
+data class HostTarget(
+    val declaration: String,
+    val compileTask: String,
+    val publicationTaskSuffix: String,
+    val publicationSuffix: String,
+)
+
+fun currentHostTarget(): HostTarget {
+    val os = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    return when {
+        os.contains("mac") && (arch.contains("aarch64") || arch.contains("arm64")) ->
+            HostTarget("macosArm64()", "compileKotlinMacosArm64", "MacosArm64", "macosarm64")
+        os.contains("mac") ->
+            HostTarget("macosX64()", "compileKotlinMacosX64", "MacosX64", "macosx64")
+        os.contains("linux") && (arch.contains("aarch64") || arch.contains("arm64")) ->
+            HostTarget("linuxArm64()", "compileKotlinLinuxArm64", "LinuxArm64", "linuxarm64")
+        os.contains("linux") ->
+            HostTarget("linuxX64()", "compileKotlinLinuxX64", "LinuxX64", "linuxx64")
+        else -> error("Unsupported verification host: os=$os arch=$arch")
+    }
+}
+
+val hostTarget = currentHostTarget()
+val verificationRepositoryDir = rootProject.layout.buildDirectory.dir("verification-repo")
+val publishGrpcHost = project(":kotlinx-rpc-grpc-core-shim").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
+val publishProtobufHost = project(":kotlinx-rpc-protobuf-shim").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
+val publishRootAnnotation = project(":kotlinx-rpc-native-shims-annotation").tasks.named("publishKotlinMultiplatformPublicationToVerificationRepository")
+val publishHostAnnotation = project(":kotlinx-rpc-native-shims-annotation").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
+val testSourceSet = the<SourceSetContainer>()["test"]
+
+fun Test.configureFixtureVerification() {
+    dependsOn(publishGrpcHost, publishProtobufHost, publishRootAnnotation, publishHostAnnotation)
+    useJUnitPlatform()
+
+    systemProperty("grpcShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
+    systemProperty("grpcShimVersion", project(":kotlinx-rpc-grpc-core-shim").version.toString())
+    systemProperty("grpcShimKotlinVersion", rootProject.libs.versions.kotlin.lang.get())
+    systemProperty("grpcShimHostTargetDeclaration", hostTarget.declaration)
+    systemProperty("grpcShimHostCompileTask", hostTarget.compileTask)
+    systemProperty("grpcShimHostPublicationSuffix", hostTarget.publicationSuffix)
+
+    systemProperty("protobufShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
+    systemProperty("protobufShimVersion", project(":kotlinx-rpc-protobuf-shim").version.toString())
+    systemProperty("protobufShimKotlinVersion", rootProject.libs.versions.kotlin.lang.get())
+    systemProperty("protobufShimHostTargetDeclaration", hostTarget.declaration)
+    systemProperty("protobufShimHostCompileTask", hostTarget.compileTask)
+    systemProperty("protobufShimHostPublicationSuffix", hostTarget.publicationSuffix)
+}
+
+tasks.withType<Test>().configureEach {
+    configureFixtureVerification()
+}
+
+fun registerTaggedTest(name: String, className: String, tag: String) = tasks.register<Test>(name) {
+    group = "verification"
+    description = "Runs $className fixture tests tagged '$tag'."
+    testClassesDirs = testSourceSet.output.classesDirs
+    classpath = testSourceSet.runtimeClasspath
+    configureFixtureVerification()
+    filter {
+        includeTestsMatching(className)
+    }
+    useJUnitPlatform {
+        includeTags(tag)
+    }
+}
+
+registerTaggedTest("grpcNegativeTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "negative")
+registerTaggedTest("grpcPositiveTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "positive")
+registerTaggedTest("grpcScopeTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "scope")
+registerTaggedTest("grpcArtifactTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "artifact")
+
+registerTaggedTest("protobufNegativeTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "negative")
+registerTaggedTest("protobufPositiveTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "positive")
+registerTaggedTest("protobufScopeTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "scope")
+registerTaggedTest("protobufArtifactTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "artifact")

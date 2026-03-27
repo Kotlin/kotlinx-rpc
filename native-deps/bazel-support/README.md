@@ -9,8 +9,7 @@ Currently contains:
 
 Used by:
 - `native-deps/grpc`
-- `native-deps/grpc-shim`
-- `native-deps/protobuf-shim`
+- `native-deps/shims`
 
 Kotlin/Native toolchain notes:
 - Linux target builds use the Kotlin/Native toolchain via the shared Bazel toolchain in `toolchain/`.
