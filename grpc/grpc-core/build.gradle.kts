@@ -33,9 +33,9 @@ kotlin {
                 api(projects.utils)
                 api(libs.coroutines.core)
                 api(projects.grpc.grpcMarshaller)
+                api(libs.kotlinx.io.core)
 
                 implementation(libs.atomicfu)
-                implementation(libs.kotlinx.io.core)
             }
         }
 

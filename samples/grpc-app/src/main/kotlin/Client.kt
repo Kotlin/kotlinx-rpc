@@ -3,6 +3,7 @@
  */
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.withService
 
@@ -14,7 +15,7 @@ fun main(): Unit = runBlocking {
     val recognizer = grpcClient.withService<ImageRecognizer>()
 
     val image = Image {
-        data = byteArrayOf(0, 1, 2, 3)
+        data = ByteString(0, 1, 2, 3)
     }
     val result = recognizer.recognize(image)
     println("Recognized category: ${result.category}")

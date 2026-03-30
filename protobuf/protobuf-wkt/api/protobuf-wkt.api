@@ -1,14 +1,14 @@
 public abstract interface class com/google/protobuf/kotlin/Any {
 	public static final field Companion Lcom/google/protobuf/kotlin/Any$Companion;
 	public abstract fun getTypeUrl ()Ljava/lang/String;
-	public abstract fun getValue ()[B
+	public abstract fun getValue ()Lkotlinx/io/bytestring/ByteString;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Any$Builder : com/google/protobuf/kotlin/Any {
 	public abstract fun getTypeUrl ()Ljava/lang/String;
-	public abstract fun getValue ()[B
+	public abstract fun getValue ()Lkotlinx/io/bytestring/ByteString;
 	public abstract fun setTypeUrl (Ljava/lang/String;)V
-	public abstract fun setValue ([B)V
+	public abstract fun setValue (Lkotlinx/io/bytestring/ByteString;)V
 }
 
 public final class com/google/protobuf/kotlin/Any$Companion {
@@ -22,10 +22,10 @@ public final class com/google/protobuf/kotlin/AnyInternal : kotlinx/rpc/protobuf
 	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getTypeUrl ()Ljava/lang/String;
-	public fun getValue ()[B
+	public fun getValue ()Lkotlinx/io/bytestring/ByteString;
 	public fun hashCode ()I
 	public fun setTypeUrl (Ljava/lang/String;)V
-	public fun setValue ([B)V
+	public fun setValue (Lkotlinx/io/bytestring/ByteString;)V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -145,12 +145,12 @@ public final class com/google/protobuf/kotlin/BoolValueInternal : kotlinx/rpc/pr
 
 public abstract interface class com/google/protobuf/kotlin/BytesValue {
 	public static final field Companion Lcom/google/protobuf/kotlin/BytesValue$Companion;
-	public abstract fun getValue ()[B
+	public abstract fun getValue ()Lkotlinx/io/bytestring/ByteString;
 }
 
 public abstract interface class com/google/protobuf/kotlin/BytesValue$Builder : com/google/protobuf/kotlin/BytesValue {
-	public abstract fun getValue ()[B
-	public abstract fun setValue ([B)V
+	public abstract fun getValue ()Lkotlinx/io/bytestring/ByteString;
+	public abstract fun setValue (Lkotlinx/io/bytestring/ByteString;)V
 }
 
 public final class com/google/protobuf/kotlin/BytesValue$Companion {
@@ -163,9 +163,9 @@ public final class com/google/protobuf/kotlin/BytesValueInternal : kotlinx/rpc/p
 	public fun copyInternal ()Lcom/google/protobuf/kotlin/BytesValueInternal;
 	public synthetic fun copyInternal ()Lkotlinx/rpc/protobuf/internal/InternalMessage;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getValue ()[B
+	public fun getValue ()Lkotlinx/io/bytestring/ByteString;
 	public fun hashCode ()I
-	public fun setValue ([B)V
+	public fun setValue (Lkotlinx/io/bytestring/ByteString;)V
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -4180,7 +4180,7 @@ public abstract interface class com/google/protobuf/kotlin/UninterpretedOption {
 	public abstract fun getName ()Ljava/util/List;
 	public abstract fun getNegativeIntValue ()Ljava/lang/Long;
 	public abstract fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
-	public abstract fun getStringValue ()[B
+	public abstract fun getStringValue ()Lkotlinx/io/bytestring/ByteString;
 }
 
 public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$Builder : com/google/protobuf/kotlin/UninterpretedOption {
@@ -4190,14 +4190,14 @@ public abstract interface class com/google/protobuf/kotlin/UninterpretedOption$B
 	public abstract fun getName ()Ljava/util/List;
 	public abstract fun getNegativeIntValue ()Ljava/lang/Long;
 	public abstract fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
-	public abstract fun getStringValue ()[B
+	public abstract fun getStringValue ()Lkotlinx/io/bytestring/ByteString;
 	public abstract fun setAggregateValue (Ljava/lang/String;)V
 	public abstract fun setDoubleValue (Ljava/lang/Double;)V
 	public abstract fun setIdentifierValue (Ljava/lang/String;)V
 	public abstract fun setName (Ljava/util/List;)V
 	public abstract fun setNegativeIntValue (Ljava/lang/Long;)V
 	public abstract fun setPositiveIntValue-ADd3fzo (Lkotlin/ULong;)V
-	public abstract fun setStringValue ([B)V
+	public abstract fun setStringValue (Lkotlinx/io/bytestring/ByteString;)V
 }
 
 public final class com/google/protobuf/kotlin/UninterpretedOption$Companion {
@@ -4232,7 +4232,7 @@ public final class com/google/protobuf/kotlin/UninterpretedOptionInternal : kotl
 	public fun getName ()Ljava/util/List;
 	public fun getNegativeIntValue ()Ljava/lang/Long;
 	public fun getPositiveIntValue-6VbMDqA ()Lkotlin/ULong;
-	public fun getStringValue ()[B
+	public fun getStringValue ()Lkotlinx/io/bytestring/ByteString;
 	public fun hashCode ()I
 	public fun setAggregateValue (Ljava/lang/String;)V
 	public fun setDoubleValue (Ljava/lang/Double;)V
@@ -4240,7 +4240,7 @@ public final class com/google/protobuf/kotlin/UninterpretedOptionInternal : kotl
 	public fun setName (Ljava/util/List;)V
 	public fun setNegativeIntValue (Ljava/lang/Long;)V
 	public fun setPositiveIntValue-ADd3fzo (Lkotlin/ULong;)V
-	public fun setStringValue ([B)V
+	public fun setStringValue (Lkotlinx/io/bytestring/ByteString;)V
 	public fun toString ()Ljava/lang/String;
 }
 

@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.krpc.ktor.client.installKrpc
 import kotlinx.rpc.krpc.ktor.client.rpc
 import kotlinx.rpc.krpc.ktor.client.rpcConfig
@@ -49,8 +50,8 @@ class ApplicationTest {
             }
         }
 
-        assertEquals(Category.DOG, recognizer.recognize(Image(byteArrayOf(1, 2, 3))))
-        assertEquals(Category.CAT, recognizer.recognize(Image(byteArrayOf(0, 2, 3))))
+        assertEquals(Category.DOG, recognizer.recognize(Image(ByteString(1, 2, 3))))
+        assertEquals(Category.CAT, recognizer.recognize(Image(ByteString(0, 2, 3))))
 
         job.join()
 

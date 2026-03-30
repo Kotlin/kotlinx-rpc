@@ -59,14 +59,6 @@ abstract interface kotlinx.rpc.grpc.server/GrpcTlsServerCredentialsBuilder { // 
     abstract fun trustManager(kotlin/String): kotlinx.rpc.grpc.server/GrpcTlsServerCredentialsBuilder // kotlinx.rpc.grpc.server/GrpcTlsServerCredentialsBuilder.trustManager|trustManager(kotlin.String){}[0]
 }
 
-abstract class <#A: kotlinx.rpc.grpc.server.internal/ServerBuilder<#A>> kotlinx.rpc.grpc.server.internal/ServerBuilder { // kotlinx.rpc.grpc.server.internal/ServerBuilder|null[0]
-    constructor <init>() // kotlinx.rpc.grpc.server.internal/ServerBuilder.<init>|<init>(){}[0]
-
-    abstract fun addService(kotlinx.rpc.grpc.server/GrpcServerServiceDefinition): #A // kotlinx.rpc.grpc.server.internal/ServerBuilder.addService|addService(kotlinx.rpc.grpc.server.GrpcServerServiceDefinition){}[0]
-    abstract fun build(): kotlinx.rpc.grpc.server.internal/PlatformServer // kotlinx.rpc.grpc.server.internal/ServerBuilder.build|build(){}[0]
-    abstract fun fallbackHandlerRegistry(kotlinx.rpc.grpc.server/GrpcHandlerRegistry?): #A // kotlinx.rpc.grpc.server.internal/ServerBuilder.fallbackHandlerRegistry|fallbackHandlerRegistry(kotlinx.rpc.grpc.server.GrpcHandlerRegistry?){}[0]
-}
-
 abstract class kotlinx.rpc.grpc.server/GrpcHandlerRegistry { // kotlinx.rpc.grpc.server/GrpcHandlerRegistry|null[0]
     constructor <init>() // kotlinx.rpc.grpc.server/GrpcHandlerRegistry.<init>|<init>(){}[0]
 

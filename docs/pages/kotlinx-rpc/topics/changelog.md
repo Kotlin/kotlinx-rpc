@@ -2,6 +2,33 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.11.0-grpc-186
+> Published 27 March 2026
+
+**Full Changelog**: [0.11.0-grpc-185...0.11.0-grpc-186](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-185...0.11.0-grpc-186)
+
+> **This is a development preview release.** APIs are subject to change and may break without notice in future versions.
+
+#### Features 🎉 {id=Features_0_11_0-grpc-186}
+* pb: Use ByteString for bytes field instead of ByteArray by [@Jozott00](https://github.com/Jozott00) in [#621](https://github.com/Kotlin/kotlinx-rpc/pull/621)
+* pb: Use static defaults for generated protobuf messages (KRPC-520) by [@Jozott00](https://github.com/Jozott00) in [#629](https://github.com/Kotlin/kotlinx-rpc/pull/629)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_11_0-grpc-186}
+* protoc-gen: fix star imports issue by [@Mr3zee](https://github.com/Mr3zee) in [#624](https://github.com/Kotlin/kotlinx-rpc/pull/624)
+* Fix dokka CC issues and xcode on CI by [@Mr3zee](https://github.com/Mr3zee) in [#637](https://github.com/Kotlin/kotlinx-rpc/pull/637)
+* KRPC-522 Build is broken for AGP projects by [@Mr3zee](https://github.com/Mr3zee) in [#636](https://github.com/Kotlin/kotlinx-rpc/pull/636)
+
+#### Documentation 📗 {id=Documentation_0_11_0-grpc-186}
+* Add Gradle Plugin APIs to dokka by [@Mr3zee](https://github.com/Mr3zee) in [#628](https://github.com/Kotlin/kotlinx-rpc/pull/628)
+* Add version notes to gRPC related APIs by [@Mr3zee](https://github.com/Mr3zee) in [#631](https://github.com/Kotlin/kotlinx-rpc/pull/631)
+* Added imports to examples by [@Mr3zee](https://github.com/Mr3zee) in [#638](https://github.com/Kotlin/kotlinx-rpc/pull/638)
+
+#### Infra 🚧 {id=Infra_0_11_0-grpc-186}
+* Exporting issues to YT actions by [@Mr3zee](https://github.com/Mr3zee) in [#625](https://github.com/Kotlin/kotlinx-rpc/pull/625)
+* Fix yt export by [@Mr3zee](https://github.com/Mr3zee) in [#626](https://github.com/Kotlin/kotlinx-rpc/pull/626)
+* Add test retries plugin by [@Mr3zee](https://github.com/Mr3zee) in [#632](https://github.com/Kotlin/kotlinx-rpc/pull/632)
+
+
 ## 0.11.0-grpc-185
 > Published 12 March 2026
 
