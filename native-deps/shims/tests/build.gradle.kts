@@ -4,6 +4,7 @@
 
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
@@ -75,7 +76,7 @@ val shimVerificationConfigs = listOf(
     ),
 )
 
-fun Test.configureFixtureVerification(configs: List<ShimVerificationConfig> = shimVerificationConfigs) {
+fun Test.configureFixtureVerification(configs: List<ShimVerificationConfig>) {
     dependsOn(
         configs.map { config ->
             project(config.projectPath).tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
@@ -93,16 +94,21 @@ fun Test.configureFixtureVerification(configs: List<ShimVerificationConfig> = sh
     }
 }
 
-tasks.withType<Test>().configureEach {
-    configureFixtureVerification()
+tasks.named<Test>("test") {
+    configureFixtureVerification(shimVerificationConfigs)
 }
 
-fun registerTaggedTest(name: String, className: String, tag: String) = tasks.register<Test>(name) {
+fun registerTaggedTest(
+    name: String,
+    className: String,
+    tag: String,
+    config: ShimVerificationConfig,
+) = tasks.register<Test>(name) {
     group = "verification"
     description = "Runs $className fixture tests tagged '$tag'."
     testClassesDirs = testSourceSet.output.classesDirs
     classpath = testSourceSet.runtimeClasspath
-    configureFixtureVerification()
+    configureFixtureVerification(listOf(config))
     filter {
         includeTestsMatching(className)
     }
@@ -120,6 +126,7 @@ verificationTags.forEach { tag ->
             name = "${config.taskPrefix}${taskNameSuffix}Test",
             className = config.fixtureClassName,
             tag = tag,
+            config = config,
         )
     }
 }
