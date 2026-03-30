@@ -72,7 +72,7 @@ fun Project.requireGradleProperty(name: String): String = providers.gradleProper
 fun Project.registerCheckBazelTask(name: String = "checkBazel"): TaskProvider<Exec> =
     tasks.register<Exec>(name) {
         group = "verification"
-        description = "Checks that Bazel or Bazelisk is available on PATH"
+        description = "Checks that Bazelisk (bazel) is available on PATH"
         commandLine(
             "sh",
             "-c",

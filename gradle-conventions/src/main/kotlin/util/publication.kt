@@ -80,10 +80,13 @@ fun MavenPublication.fixModuleMetadata(project: Project) {
 private fun File.fixMetadata(projectName: String, projectVersion: String) {
     val text = readText()
 
-    val newText = text
-        .updateFilesNameField(projectName)
-        .updateAvailableAtModuleField(projectName)
-        .updateAvailableAtUrlField(projectName, projectVersion)
+    var newText = text
+    if (!projectName.startsWith(KOTLINX_RPC_PREFIX)) {
+        newText = text
+            .updateFilesNameField(projectName)
+            .updateAvailableAtModuleField(projectName)
+            .updateAvailableAtUrlField(projectName, projectVersion)
+    }
 
     writeText(newText)
 }
@@ -92,14 +95,9 @@ private fun File.fixMetadata(projectName: String, projectVersion: String) {
 // from: "name": "krpc-client-metadata-0.2.0.jar",
 // to: "name": "kotlinx-rpc-krpc-client-metadata-0.2.0.jar",
 private fun String.updateFilesNameField(projectName: String): String {
-    val prefixedName = if (projectName.startsWith(KOTLINX_RPC_PREFIX)) {
-        projectName
-    } else {
-        "$KOTLINX_RPC_PREFIX-$projectName"
-    }
     return replace(
         keyValue("name", projectName, openValue = true),
-        keyValue("name", prefixedName, openValue = true),
+        keyValue("name", "$KOTLINX_RPC_PREFIX-$projectName", openValue = true),
     )
 }
 
@@ -107,14 +105,9 @@ private fun String.updateFilesNameField(projectName: String): String {
 // from: "module": "krpc-client-iossimulatorarm64",
 // to: "module": "kotlinx-rpc-krpc-client-iossimulatorarm64",
 private fun String.updateAvailableAtModuleField(projectName: String): String {
-    val prefixedName = if (projectName.startsWith(KOTLINX_RPC_PREFIX)) {
-        projectName
-    } else {
-        "$KOTLINX_RPC_PREFIX-$projectName"
-    }
     return replace(
         keyValue("module", projectName, openValue = true),
-        keyValue("module", prefixedName, openValue = true),
+        keyValue("module", "$KOTLINX_RPC_PREFIX-$projectName", openValue = true),
     )
 }
 
@@ -124,14 +117,9 @@ private fun String.updateAvailableAtModuleField(projectName: String): String {
 //
 // and same idea for protoc-gen
 private fun String.updateAvailableAtUrlField(projectName: String, version: String): String {
-    val prefixedName = if (projectName.startsWith(KOTLINX_RPC_PREFIX)) {
-        projectName
-    } else {
-        "$KOTLINX_RPC_PREFIX-$projectName"
-    }
     return replace(
         availableAtUrl(projectName, version, "(\\w+)", "(.+)").toRegex(),
-        availableAtUrl(prefixedName, version, "$1", "$3"),
+        availableAtUrl("$KOTLINX_RPC_PREFIX-$projectName", version, "$1", "$3"),
     )
 }
 

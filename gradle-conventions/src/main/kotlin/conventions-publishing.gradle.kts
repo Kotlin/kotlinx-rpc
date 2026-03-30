@@ -11,10 +11,6 @@ import util.tasks.ValidatePublishedArtifactsTask
 
 val isGradlePlugin = project.name == "gradle-plugin"
 val isProtocGen = project.rootProject.name.startsWith(PROTOC_GEN)
-val shouldPublishEmptyJavadoc = project.findProperty("kotlinx.rpc.publishing.emptyJavadoc")
-    ?.toString()
-    ?.toBooleanStrictOrNull()
-    ?: true
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
 val globalRootDir: String by extra
 
@@ -59,7 +55,7 @@ fun PublishingExtension.configurePublication() {
 
     configureJvmPublicationIfNeeded()
 
-    val javadocJar = if (!isGradlePlugin && shouldPublishEmptyJavadoc) {
+    val javadocJar = if (!isGradlePlugin) {
         configureEmptyJavadocArtifact()
     } else {
         null
