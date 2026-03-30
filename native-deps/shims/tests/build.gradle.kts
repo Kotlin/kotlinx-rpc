@@ -32,6 +32,13 @@ data class HostTarget(
     val publicationSuffix: String,
 )
 
+data class ShimVerificationConfig(
+    val taskPrefix: String,
+    val systemPropertyPrefix: String,
+    val projectPath: String,
+    val fixtureClassName: String,
+)
+
 fun currentHostTarget(): HostTarget {
     val os = System.getProperty("os.name").lowercase()
     val arch = System.getProperty("os.arch").lowercase()
@@ -50,29 +57,40 @@ fun currentHostTarget(): HostTarget {
 
 val hostTarget = currentHostTarget()
 val verificationRepositoryDir = rootProject.layout.buildDirectory.dir("verification-repo")
-val publishGrpcHost = project(":kotlinx-rpc-grpc-core-shim").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
-val publishProtobufHost = project(":kotlinx-rpc-protobuf-shim").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
 val publishRootAnnotation = project(":kotlinx-rpc-native-shims-annotation").tasks.named("publishKotlinMultiplatformPublicationToVerificationRepository")
 val publishHostAnnotation = project(":kotlinx-rpc-native-shims-annotation").tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
 val testSourceSet = the<SourceSetContainer>()["test"]
+val shimVerificationConfigs = listOf(
+    ShimVerificationConfig(
+        taskPrefix = "grpc",
+        systemPropertyPrefix = "grpcShim",
+        projectPath = ":kotlinx-rpc-grpc-core-shim",
+        fixtureClassName = "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest",
+    ),
+    ShimVerificationConfig(
+        taskPrefix = "protobuf",
+        systemPropertyPrefix = "protobufShim",
+        projectPath = ":kotlinx-rpc-protobuf-shim",
+        fixtureClassName = "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest",
+    ),
+)
 
-fun Test.configureFixtureVerification() {
-    dependsOn(publishGrpcHost, publishProtobufHost, publishRootAnnotation, publishHostAnnotation)
+fun Test.configureFixtureVerification(configs: List<ShimVerificationConfig> = shimVerificationConfigs) {
+    dependsOn(
+        configs.map { config ->
+            project(config.projectPath).tasks.named("publish${hostTarget.publicationTaskSuffix}PublicationToVerificationRepository")
+        } + publishRootAnnotation + publishHostAnnotation,
+    )
     useJUnitPlatform()
 
-    systemProperty("grpcShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
-    systemProperty("grpcShimVersion", project(":kotlinx-rpc-grpc-core-shim").version.toString())
-    systemProperty("grpcShimKotlinVersion", rootProject.libs.versions.kotlin.lang.get())
-    systemProperty("grpcShimHostTargetDeclaration", hostTarget.declaration)
-    systemProperty("grpcShimHostCompileTask", hostTarget.compileTask)
-    systemProperty("grpcShimHostPublicationSuffix", hostTarget.publicationSuffix)
-
-    systemProperty("protobufShimVerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
-    systemProperty("protobufShimVersion", project(":kotlinx-rpc-protobuf-shim").version.toString())
-    systemProperty("protobufShimKotlinVersion", rootProject.libs.versions.kotlin.lang.get())
-    systemProperty("protobufShimHostTargetDeclaration", hostTarget.declaration)
-    systemProperty("protobufShimHostCompileTask", hostTarget.compileTask)
-    systemProperty("protobufShimHostPublicationSuffix", hostTarget.publicationSuffix)
+    configs.forEach { config ->
+        systemProperty("${config.systemPropertyPrefix}VerificationRepoDir", verificationRepositoryDir.get().asFile.absolutePath)
+        systemProperty("${config.systemPropertyPrefix}Version", project(config.projectPath).version.toString())
+        systemProperty("${config.systemPropertyPrefix}KotlinVersion", rootProject.libs.versions.kotlin.lang.get())
+        systemProperty("${config.systemPropertyPrefix}HostTargetDeclaration", hostTarget.declaration)
+        systemProperty("${config.systemPropertyPrefix}HostCompileTask", hostTarget.compileTask)
+        systemProperty("${config.systemPropertyPrefix}HostPublicationSuffix", hostTarget.publicationSuffix)
+    }
 }
 
 tasks.withType<Test>().configureEach {
@@ -93,12 +111,13 @@ fun registerTaggedTest(name: String, className: String, tag: String) = tasks.reg
     }
 }
 
-registerTaggedTest("grpcNegativeTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "negative")
-registerTaggedTest("grpcPositiveTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "positive")
-registerTaggedTest("grpcScopeTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "scope")
-registerTaggedTest("grpcArtifactTest", "kotlinx.rpc.grpc.internal.GrpcShimFixtureTest", "artifact")
-
-registerTaggedTest("protobufNegativeTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "negative")
-registerTaggedTest("protobufPositiveTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "positive")
-registerTaggedTest("protobufScopeTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "scope")
-registerTaggedTest("protobufArtifactTest", "kotlinx.rpc.protobuf.internal.ProtobufShimFixtureTest", "artifact")
+listOf("negative", "positive", "scope", "artifact").forEach { tag ->
+    val taskNameSuffix = tag.replaceFirstChar { it.uppercase() }
+    shimVerificationConfigs.forEach { config ->
+        registerTaggedTest(
+            name = "${config.taskPrefix}${taskNameSuffix}Test",
+            className = config.fixtureClassName,
+            tag = tag,
+        )
+    }
+}

@@ -7,8 +7,6 @@ plugins {
 }
 
 val verificationRepositoryDir = file("<verification-repo-dir>")
-val verificationVersion = "<grpc-shim-version>"
-val verificationTargetSuffix = "<host-publication-suffix>"
 
 repositories {
     mavenCentral()
@@ -25,7 +23,7 @@ kotlin {
     sourceSets {
         val nativeMain by getting {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim-$verificationTargetSuffix:$verificationVersion")
+                implementation("<verification-dependency-coordinate>")
             }
         }
     }
