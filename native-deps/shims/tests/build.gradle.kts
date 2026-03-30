@@ -111,13 +111,28 @@ fun registerTaggedTest(name: String, className: String, tag: String) = tasks.reg
     }
 }
 
-listOf("negative", "positive", "scope", "artifact").forEach { tag ->
+val verificationTags = listOf("negative", "positive", "scope", "artifact")
+
+verificationTags.forEach { tag ->
     val taskNameSuffix = tag.replaceFirstChar { it.uppercase() }
     shimVerificationConfigs.forEach { config ->
         registerTaggedTest(
             name = "${config.taskPrefix}${taskNameSuffix}Test",
             className = config.fixtureClassName,
             tag = tag,
+        )
+    }
+}
+
+shimVerificationConfigs.forEach { config ->
+    tasks.register("${config.taskPrefix}Test") {
+        group = "verification"
+        description = "Runs all ${config.taskPrefix} shim fixture verification tests."
+        dependsOn(
+            verificationTags.map { tag ->
+                val taskNameSuffix = tag.replaceFirstChar { it.uppercase() }
+                "${config.taskPrefix}${taskNameSuffix}Test"
+            },
         )
     }
 }
