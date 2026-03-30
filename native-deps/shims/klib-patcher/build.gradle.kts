@@ -2,20 +2,18 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import util.findKonanHome
 import util.konanHomeProvider
 import util.registerCheckKonanHomeTask
 import util.registerPrepareKonanHomeTask
 
 plugins {
-    // Keep this tool on javac. Compiling even a tiny Kotlin source set against the full
-    // kotlin-native-compiler-embeddable classpath was slow and hit heap OOMs in practice.
-    alias(libs.plugins.conventions.common)
-    java
+    alias(libs.plugins.conventions.jvm)
 }
 
-java {
-    withSourcesJar()
+kotlin {
+    explicitApi = ExplicitApiMode.Disabled
 }
 
 val nativeDepsKonanDownloadTaskPath = providers.gradleProperty("nativeDepsKonanDownloadTaskPath").orNull
@@ -38,7 +36,7 @@ dependencies {
     compileOnly(files(nativeCompilerEmbeddable))
 }
 
-tasks.compileJava {
+tasks.compileKotlin {
     dependsOn(checkKonanHome)
 }
 
