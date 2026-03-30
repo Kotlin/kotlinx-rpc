@@ -41,7 +41,7 @@ val grpcCoreInteropDefTemplate = layout.projectDirectory.file("src/nativeInterop
 val grpcShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 
 val nativeShim = configureNativeShimBuild(
-    downloadTaskPath = ":core:core:downloadKotlinNativeDistribution",
+    downloadTaskPath = ":core:downloadKotlinNativeDistribution",
     moduleFile = grpcShimModuleFile,
     moduleVersion = grpcVersion,
 )

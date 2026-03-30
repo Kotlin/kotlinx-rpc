@@ -30,7 +30,7 @@ val protobufInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:
 val protobufShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 
 val nativeShim = configureNativeShimBuild(
-    downloadTaskPath = ":core:core:downloadKotlinNativeDistribution",
+    downloadTaskPath = ":core:downloadKotlinNativeDistribution",
     moduleFile = protobufShimModuleFile,
     moduleVersion = protobufVersion,
     moduleVersionVariableName = "PROTOBUF_VERSION",
