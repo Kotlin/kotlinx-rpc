@@ -13,7 +13,7 @@ bazel_dep(name = "platforms", version = "1.0.0")
 # Protobuf
 bazel_dep(
     name = "protobuf",
-    version = "31.1",
+    version = "34.1",
     repo_name = "com_github_protobuffers_protobuf",
 )
 
