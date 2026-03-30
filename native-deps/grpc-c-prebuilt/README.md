@@ -1,4 +1,4 @@
-# native-deps/grpc
+# native-deps/grpc-c-prebuilt
 
 Standalone Gradle build for compiling and publishing prebuilt native gRPC artifacts.
 
@@ -16,11 +16,11 @@ Shared toolchain notes:
 - Manual Bazel/Konan troubleshooting and LLVM bundle maintenance live in [../bazel-support/README.md](/Users/jozott/development/jetbrains/kotlinx-rpc/native-deps/bazel-support/README.md).
 
 Useful tasks:
-- `../../gradlew -p native-deps/grpc buildGrpcHeaders`
-- `../../gradlew -p native-deps/grpc packageGrpcHeaders`
-- `../../gradlew -p native-deps/grpc buildGrpcIosArm64`
-- `../../gradlew -p native-deps/grpc buildAllGrpcBundles`
-- `../../gradlew -p native-deps/grpc publishAllPublicationsToBuildRepoRepository`
+- `../../gradlew -p native-deps/grpc-c-prebuilt buildGrpcHeaders`
+- `../../gradlew -p native-deps/grpc-c-prebuilt packageGrpcHeaders`
+- `../../gradlew -p native-deps/grpc-c-prebuilt buildGrpcIosArm64`
+- `../../gradlew -p native-deps/grpc-c-prebuilt buildAllGrpcBundles`
+- `../../gradlew -p native-deps/grpc-c-prebuilt publishAllPublicationsToBuildRepoRepository`
 
 Published headers bundle contains:
 - `include/**`

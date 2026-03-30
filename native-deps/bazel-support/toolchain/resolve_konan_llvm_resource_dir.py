@@ -3,7 +3,7 @@
 Resolve the clang resource include directory for the active KONAN_HOME.
 
 This helper is part of the shared native-deps Bazel toolchain support used by
-active builds such as native-deps/grpc and native-deps/shims.
+active builds such as native-deps/grpc-c-prebuilt and native-deps/shims.
 
 Usage:
   ./toolchain/resolve_konan_llvm_resource_dir.py /path/to/kotlin-native-prebuilt-<host>-<arch>-<version>

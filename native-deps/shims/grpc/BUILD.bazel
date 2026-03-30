@@ -9,7 +9,7 @@ cc_headers_only(
 )
 
 # Bazel compiles the shim against grpc headers directly from the grpc Bazel dependency.
-# The published native-deps/grpc bundles are still consumed later by Gradle for cinterop packaging.
+# The published native-deps/grpc-c-prebuilt bundles are still consumed later by Gradle for cinterop packaging.
 cc_library(
     name = "grpc_shim",
     srcs = ["src/cpp/kgrpc.cpp"],

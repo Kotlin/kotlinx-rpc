@@ -3,7 +3,7 @@
 Precompute LLVM Konan bundle names per Kotlin compiler version.
 
 This helper is part of the shared native-deps Bazel toolchain support used by
-active builds such as native-deps/grpc and native-deps/shims.
+active builds such as native-deps/grpc-c-prebuilt and native-deps/shims.
 
 Usage:
   ./toolchain/precompute_konan_llvm_bundles.py

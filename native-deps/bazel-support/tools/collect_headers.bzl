@@ -1,6 +1,6 @@
 # This files contains Bazel rules to collect headers by Bazel CcInfo targets.
 # It is part of the shared native-deps Bazel support used by active builds such
-# as native-deps/grpc and native-deps/shims.
+# as native-deps/grpc-c-prebuilt and native-deps/shims.
 # Do not remove it as dead code without checking those builds first.
 #
 # The 'include_dir' rule is used to extract the public include headers

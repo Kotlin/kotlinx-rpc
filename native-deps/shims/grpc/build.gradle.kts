@@ -15,7 +15,7 @@ import util.requireGradleProperty
  * Configures the gRPC module inside native-deps/shims to build and publish the gRPC shim KLIB.
  *
  * This build process includes assembling a KLIB from the following components:
- * 1. gRPC headers and prebuilt archives provided by native-deps/grpc.
+ * 1. gRPC headers and prebuilt archives provided by native-deps/grpc-c-prebuilt.
  * 2. A small target-specific native shim library built using Bazel.
  * 3. A post-processing step that applies the `InternalNativeRpcApi` marker.
  */

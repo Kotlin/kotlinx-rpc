@@ -3,7 +3,7 @@
 Standalone builds and shared tooling for native dependency artifacts used by Kotlin/Native parts of the repository.
 
 Structure:
-- `grpc/` builds and publishes raw native gRPC bundles and public headers.
+- `grpc-c-prebuilt/` builds and publishes raw native gRPC bundles and public headers.
 - `shims/` contains the Kotlin/Native shim build, including the gRPC shim, the protobuf shim, the shared shim annotations, and fixture tests.
 - `bazel-support/` contains shared Bazel and Kotlin/Native toolchain support used by the active native-deps builds.
 
