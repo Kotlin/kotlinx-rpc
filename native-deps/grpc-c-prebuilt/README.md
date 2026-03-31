@@ -1,6 +1,6 @@
 # native-deps/grpc-c-prebuilt
 
-Standalone Gradle build for compiling and publishing prebuilt native gRPC artifacts.
+Standalone Gradle build for compiling and publishing prebuilt native gRPC artifacts (static libraries `.a`).
 
 Versioning:
 - `gradle.properties` is the source of truth for `grpcVersion`.
