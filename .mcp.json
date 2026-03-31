@@ -6,6 +6,15 @@
       "headers": {
         "Authorization": "Bearer ${YOUTRACK_TOKEN}"
       }
+    },
+    "gradle": {
+      "command": "jbang",
+      "args": [
+        "run",
+        "--quiet",
+        "--fresh",
+        "gradle-mcp@rnett"
+      ]
     }
   }
 }
