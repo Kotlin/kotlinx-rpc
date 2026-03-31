@@ -38,7 +38,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_shutdown
 import kotlinx.rpc.grpc.internal.cinterop.grpc_op
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_cb_tag
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_iomgr_run_in_background
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.memset
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner

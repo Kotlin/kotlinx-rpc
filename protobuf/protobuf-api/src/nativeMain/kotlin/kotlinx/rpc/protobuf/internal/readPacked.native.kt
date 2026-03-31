@@ -10,6 +10,8 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.protobuf.internal.cinterop.pw_decoder_bytes_until_limit
 import kotlinx.rpc.protobuf.internal.cinterop.pw_decoder_pop_limit
 import kotlinx.rpc.protobuf.internal.cinterop.pw_decoder_push_limit
+import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
+
 
 internal actual fun WireDecoder.pushLimit(byteLen: Int): Int {
     return pw_decoder_push_limit((this as WireDecoderNative).raw, byteLen)

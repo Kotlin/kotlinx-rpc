@@ -9,13 +9,13 @@ package kotlinx.rpc.grpc.server
 import cnames.structs.grpc_server_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.grpc.internal.cinterop.grpc_insecure_server_credentials_create
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_credentials_release
 import kotlinx.rpc.grpc.internal.cinterop.grpc_ssl_client_certificate_request_type
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_server_credentials_create
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 

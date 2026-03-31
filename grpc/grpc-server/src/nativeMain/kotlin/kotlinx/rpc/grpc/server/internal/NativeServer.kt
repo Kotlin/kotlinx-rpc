@@ -20,7 +20,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
@@ -38,6 +37,7 @@ import kotlinx.rpc.grpc.internal.cinterop.kgrpc_batch_call_allocation
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_registered_call_allocation
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_batch_method_allocator
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_register_method_allocator
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.time.Duration
 

@@ -31,7 +31,6 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -53,6 +52,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_call_unref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_op
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.concurrent.Volatile
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner

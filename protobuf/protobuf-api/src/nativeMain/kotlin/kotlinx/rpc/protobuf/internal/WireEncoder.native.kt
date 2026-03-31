@@ -55,6 +55,7 @@ import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32_no_tag
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64_no_tag
+import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 

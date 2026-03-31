@@ -32,7 +32,6 @@ import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_PROPAGATE_DEFAULTS
@@ -44,6 +43,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create_call
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_credentials_release
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi

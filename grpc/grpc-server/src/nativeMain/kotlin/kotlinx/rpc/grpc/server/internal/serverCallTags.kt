@@ -19,7 +19,6 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
 import kotlinx.rpc.grpc.internal.cinterop.gpr_timespec
@@ -30,6 +29,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_batch_call_allocation
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_registered_call_allocation
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
 /**

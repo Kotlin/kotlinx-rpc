@@ -46,7 +46,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_string
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_malloc
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.memcpy
 
 

@@ -13,12 +13,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusException
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.internal.cinterop.*
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.size_tVar
 import kotlin.coroutines.CoroutineContext
 

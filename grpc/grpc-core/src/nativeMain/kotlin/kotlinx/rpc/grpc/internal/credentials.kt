@@ -20,7 +20,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_watch_ide
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_watch_root_certs
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_identity_pairs_add_pair
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_identity_pairs_create
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
 @InternalRpcApi

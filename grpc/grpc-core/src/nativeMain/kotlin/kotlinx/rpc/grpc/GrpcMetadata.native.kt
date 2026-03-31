@@ -32,7 +32,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_string
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_ref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_metadata_array_append
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi

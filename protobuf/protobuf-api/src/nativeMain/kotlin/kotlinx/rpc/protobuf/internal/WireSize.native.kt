@@ -9,6 +9,7 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.cinterop.*
+import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 
 @InternalRpcApi
 public actual fun WireSize.int32(value: Int): Int = pw_size_int32(value).toInt()

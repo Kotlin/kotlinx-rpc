@@ -8,7 +8,6 @@ package kotlinx.rpc.grpc.client
 
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.GPR_CLOCK_REALTIME
 import kotlinx.rpc.grpc.internal.cinterop.GPR_TIMESPAN
@@ -17,6 +16,7 @@ import kotlinx.rpc.grpc.internal.cinterop.gpr_now
 import kotlinx.rpc.grpc.internal.cinterop.gpr_time_add
 import kotlinx.rpc.grpc.internal.cinterop.gpr_time_from_millis
 import kotlinx.rpc.grpc.internal.cinterop.gpr_timespec
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 
 @InternalRpcApi
 public fun GrpcCallOptions.rawDeadline(): CValue<gpr_timespec> {

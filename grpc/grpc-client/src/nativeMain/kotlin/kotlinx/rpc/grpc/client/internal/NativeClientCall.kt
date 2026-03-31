@@ -42,7 +42,6 @@ import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.createRaw
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_INITIAL_METADATA
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_MESSAGE
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -64,6 +63,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_op
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner

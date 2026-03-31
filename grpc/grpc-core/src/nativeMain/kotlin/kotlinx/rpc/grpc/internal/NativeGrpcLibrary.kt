@@ -13,7 +13,7 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.grpc_init
 import kotlinx.rpc.grpc.internal.cinterop.grpc_shutdown
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
 @InternalRpcApi

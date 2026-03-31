@@ -20,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.rpc.grpc.internal.InternalNativeRpcApi
 import platform.posix.STDERR_FILENO
 import platform.posix.close
 import platform.posix.dup
@@ -30,6 +29,7 @@ import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tracer_set_enabled
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.unsetenv
 
 actual val runtime: Runtime
