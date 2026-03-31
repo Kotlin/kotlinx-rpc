@@ -105,7 +105,7 @@ publishing {
                 workingDir = layout.projectDirectory.asFile
                 outputs.dir(archivesDir)
                 commandLine(
-                    "./build_archives.sh",
+                    "./build_archives.py",
                     // Build the local wrapper target rather than @grpc//:grpc directly so Bazel materializes every
                     // transitive archive that the bundle publication needs to copy.
                     ":grpc_archive_outputs",
