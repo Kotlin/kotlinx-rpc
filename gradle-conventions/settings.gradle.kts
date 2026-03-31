@@ -74,8 +74,14 @@ val conventions_kmp = settingsDir
     .resolve("kotlin")
     .resolve("conventions-kmp.gradle.kts")
 
+val conventions_jvm = settingsDir
+    .resolve("src")
+    .resolve("main")
+    .resolve("kotlin")
+    .resolve("conventions-jvm.gradle.kts")
+
 // todo
-//  remove apiValidation_kt
+//  remove apiValidation_kt after 2.3.20
 //  remote everything after 2.4.0
 if (kotlinVersion.isAtLeast(2, 4, 0)) {
     rewrite(
@@ -105,6 +111,13 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
         file = conventions_kmp,
         markers = mapOf(
             "marker-klib" to "",
+        )
+    )
+    rewrite(
+        file = conventions_jvm,
+        // no trimIndent
+        markers = mapOf(
+            "marker-enabled-jvm" to ""
         )
     )
 } else {
@@ -137,9 +150,20 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
         // no trimIndent
         markers = mapOf(
             "marker-klib" to """
+        enabled = enableAbiValidation
+        
         klib {
             enabled = enableAbiValidation
         }
+            """
+        )
+    )
+    rewrite(
+        file = conventions_jvm,
+        // no trimIndent
+        markers = mapOf(
+            "marker-enabled-jvm" to """
+        enabled = enableAbiValidation
             """
         )
     )
