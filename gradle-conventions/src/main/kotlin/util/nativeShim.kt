@@ -18,6 +18,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Zip
+import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
@@ -89,9 +90,7 @@ fun Project.configureNativeShimBuild(
         name = syncTaskName,
     )
     val patcherProject = project(":klib-patcher")
-    val patcherJar = patcherProject.layout.buildDirectory.file(
-        "libs/${patcherProject.name}-${patcherProject.version}.jar",
-    )
+    val patcherJar = patcherProject.tasks.named<Jar>("jar").flatMap { it.archiveFile }
 
     return NativeShimBuildSupport(
         targets = nativeDependencyTargets,
