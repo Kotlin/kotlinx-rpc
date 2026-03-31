@@ -7,6 +7,7 @@ import util.registerNativeDependencyTargets
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("conventions-publishing")
+    id("conventions-common")
 }
 
 kotlin {
