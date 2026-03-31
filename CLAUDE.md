@@ -3,6 +3,16 @@
 kotlinx-rpc is a JetBrains Kotlin Multiplatform library for async RPC services. Experimental.
 Version catalog: `versions-root/libs.versions.toml`
 
+## Protocols
+
+EXTREMELY IMPORTANT.
+This library is a **protocol agnostic** library. It can be called a Kotlin RPC toolkit.
+It hosts different protocols:
+- kRPC (custom protocol)
+- gRPC (HTTP/2 + Protocol Buffers)
+
+They are not TRANSPORTS. Each protocol has its own client and server implementations, as well as code generation patterns.
+
 ## Build & Test
 
 ```bash
