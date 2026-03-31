@@ -129,7 +129,7 @@ def main() -> int:
     """Entry point: compute/update konan_llvm_bundles.json for requested Kotlin versions."""
     args = parse_args()
     script_dir = Path(__file__).resolve().parent
-    repo_root = script_dir.parent.parent
+    repo_root = script_dir.parent.parent.parent
     map_file = script_dir / "konan_llvm_bundles.json"
 
     if args.update_all_known and args.versions:
