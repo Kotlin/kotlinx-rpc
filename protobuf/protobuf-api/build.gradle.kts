@@ -8,7 +8,6 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.proto
 import java.nio.file.Path as JavaPath
-import util.configureSpacePackagesConsumerRepository
 
 plugins {
     alias(libs.plugins.conventions.kmp)

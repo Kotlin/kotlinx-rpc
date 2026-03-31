@@ -6,7 +6,6 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import util.withBackgroundTask
-import util.configureSpacePackagesConsumerRepository
 
 plugins {
     alias(libs.plugins.conventions.kmp)

@@ -34,12 +34,23 @@ mkdir -p "$(dirname "$DST")"
 echo "==> Building $LABEL to $DST" >&2
 echo "==> KONAN_HOME: $KONAN_HOME" >&2
 echo "==> KONAN_TARGET: $KONAN_TARGET" >&2
+# Ensure Bazel uses the full Xcode (not just CommandLineTools) so that
+# platform SDKs (iOS, watchOS, tvOS) are available for cross-compilation.
+if [[ -z "${DEVELOPER_DIR:-}" && -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+    export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+    echo "==> DEVELOPER_DIR set to $DEVELOPER_DIR" >&2
+fi
 
 KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
 KONAN_LLVM_RESOURCE_DIR="$(
   KONAN_DEPS="$KONAN_DEPS" \
     python3 "$SCRIPT_DIR/../bazel-support/toolchain/resolve_konan_llvm_resource_dir.py" "$KONAN_HOME"
 )"
+XCODE_ENV=()
+if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+    XCODE_ENV+=("--repo_env=DEVELOPER_DIR=$DEVELOPER_DIR")
+fi
+
 
 echo "==> KONAN_DEPS: $KONAN_DEPS" >&2
 echo "==> KONAN_LLVM_RESOURCE_DIR: $KONAN_LLVM_RESOURCE_DIR" >&2
@@ -50,6 +61,7 @@ BAZEL_ARGS=(
   "--define=KONAN_HOME=$KONAN_HOME"
   "--define=KONAN_DEPS=$KONAN_DEPS"
   "--define=KONAN_LLVM_RESOURCE_DIR=$KONAN_LLVM_RESOURCE_DIR"
+  "${XCODE_ENV[@]}"
 )
 
 set -x
