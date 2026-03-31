@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.internal
+package kotlinx.rpc.grpc.internal.shim
 
 /**
  * Marks declarations from the published grpc-shim native interop as internal implementation detail.

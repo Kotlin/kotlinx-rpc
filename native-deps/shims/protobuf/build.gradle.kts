@@ -25,7 +25,7 @@ val protowireInteropName = "libprotowire"
 val protowireInteropTaskName = protowireInteropName.replaceFirstChar { it.uppercase() }
 val protowireInteropDefFile = layout.projectDirectory.file("src/nativeInterop/cinterop/libprotowire.def")
 val protobufInteropPackageName = "kotlinx.rpc.protobuf.internal.cinterop"
-val protobufInternalNativeRpcApiClassName = "kotlinx/rpc/protobuf/internal/InternalNativeProtobufApi"
+val protobufInternalNativeRpcApiClassName = "kotlinx/rpc/protobuf/internal/shim/InternalNativeProtobufApi"
 val protobufInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
 val protobufShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 

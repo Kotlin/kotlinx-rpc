@@ -32,7 +32,7 @@ val grpcVersion = requireGradleProperty("grpcVersion")
 val grpcCoreInteropName = "grpcCoreInterop"
 val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
 val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"
-val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/InternalNativeRpcApi"
+val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/shim/InternalNativeRpcApi"
 val grpcInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
 
 // The checked-in .def file stays small and stable. We derive a target-specific copy during the build with

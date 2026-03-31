@@ -1,6 +1,6 @@
 @file:OptIn(
     kotlinx.cinterop.ExperimentalForeignApi::class,
-    kotlinx.rpc.protobuf.internal.InternalNativeProtobufApi::class,
+    kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi::class,
 )
 
 import kotlinx.rpc.protobuf.internal.cinterop.pw_size_int32

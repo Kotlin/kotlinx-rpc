@@ -4,4 +4,10 @@
 
 package kotlinx.rpc.grpc.nativedeps
 
+/**
+ * DON'T REMOVE THIS
+ *
+ * It is required for gradle to produce a valid KLib and publication,
+ * even though it is doing nothing functional.
+ */
 internal object KgrpcNative
