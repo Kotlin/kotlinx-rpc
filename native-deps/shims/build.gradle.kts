@@ -20,16 +20,9 @@ plugins {
 }
 
 group = "org.jetbrains.kotlinx"
-val grpcVersion = providers.gradleProperty("grpcVersion").get()
-val protobufVersion = providers.gradleProperty("protobufVersion").get()
-val grpcShimVersion = providers.gradleProperty("grpcShimVersion").get()
-val protobufShimVersion = providers.gradleProperty("protobufShimVersion").get()
-val annotationVersion = providers.gradleProperty("annotationVersion").get()
-version = annotationVersion
 
 allprojects {
     group = rootProject.group
-    version = rootProject.version
 
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
@@ -45,10 +38,6 @@ allprojects {
         }
     }
 }
-
-project(":kotlinx-rpc-grpc-core-shim").version = "$grpcVersion-$grpcShimVersion"
-project(":kotlinx-rpc-protobuf-shim").version = "$protobufVersion-$protobufShimVersion"
-project(":kotlinx-rpc-native-shims-annotation").version = annotationVersion
 
 tasks.named("check") {
     dependsOn(":tests:test")

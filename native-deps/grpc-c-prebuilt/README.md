@@ -3,7 +3,7 @@
 Standalone Gradle build for compiling and publishing prebuilt native gRPC artifacts (static libraries `.a`).
 
 Versioning:
-- `gradle.properties` is the source of truth for `grpcVersion`.
+- `versions-root/libs.versions.toml` is the source of truth for the gRPC version used here via `internal-native-grpc-shim`.
 - Gradle rewrites `MODULE.bazel` before Bazel-backed build/package/publish tasks so the Bazel `grpc` dependency stays in sync.
 - Manual edits to `GRPC_VERSION` in `MODULE.bazel` will be overwritten on the next Gradle run.
 

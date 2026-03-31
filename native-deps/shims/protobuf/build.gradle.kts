@@ -3,6 +3,7 @@
  */
 
 import org.gradle.kotlin.dsl.register
+import util.compositeCatalogVersion
 import util.configureNativeShimBuild
 import util.configureNativeShimTargets
 import util.registerNativeShimBazelBuildTask
@@ -20,7 +21,10 @@ plugins {
     id("conventions-native-shim")
 }
 
-val protobufVersion = providers.gradleProperty("protobufVersion").get()
+val protobufShimVersion = compositeCatalogVersion("internal-native-protobuf-shim")
+val protobufVersion = protobufShimVersion.base
+version = protobufShimVersion.full
+
 val protowireInteropName = "libprotowire"
 val protowireInteropTaskName = protowireInteropName.replaceFirstChar { it.uppercase() }
 val protowireInteropDefFile = layout.projectDirectory.file("src/nativeInterop/cinterop/libprotowire.def")

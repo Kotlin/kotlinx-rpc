@@ -5,11 +5,11 @@
 import org.gradle.api.tasks.Sync
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.register
+import util.compositeCatalogVersion
 import util.configureNativeShimBuild
 import util.registerNativeShimBazelBuildTask
 import util.configureNativeShimTargets
 import util.configureSpacePackagesConsumerRepository
-import util.requireGradleProperty
 
 /**
  * Configures the gRPC module inside native-deps/shims to build and publish the gRPC shim KLIB.
@@ -28,7 +28,10 @@ repositories {
     configureSpacePackagesConsumerRepository(repoName = "grpc")
 }
 
-val grpcVersion = requireGradleProperty("grpcVersion")
+val grpcShimVersion = compositeCatalogVersion("internal-native-grpc-shim")
+val grpcVersion = grpcShimVersion.base
+version = grpcShimVersion.full
+
 val grpcCoreInteropName = "grpcCoreInterop"
 val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
 val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"

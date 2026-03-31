@@ -7,9 +7,13 @@ grpc-dev = "0.11.0-grpc-186"
 kotlin-lang = "2.3.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION or -Pkotlin.compiler=<version>
 
-# internal standalone publications
-internal-grpc-core-shim = "1.74.1-2"
-internal-protobuf-shim = "31.1-2"
+# internal standalone publications.
+# the version scheme is "<upstream-grpc-version>-<shim-version>"
+internal-native-grpc-shim = "1.74.1-2"
+# the version scheme is "<upstream-protobuf-version>-<shim-version>"
+internal-native-protobuf-shim = "31.1-2"
+# the version numbers for the shim annotation
+internal-native-shim-annotation = "0.1.0"
 
 # kotlin independent versions
 detekt-analyzer = "1.23.8"
@@ -52,8 +56,8 @@ compiler-plugin-backend = { module = "org.jetbrains.kotlinx:compiler-plugin-back
 compiler-plugin-common = { module = "org.jetbrains.kotlinx:compiler-plugin-common" }
 
 # internal standalone publications
-kotlinx-rpc-grpc-core-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim", version.ref = "internal-grpc-core-shim" }
-kotlinx-rpc-protobuf-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-shim", version.ref = "internal-protobuf-shim" }
+kotlinx-rpc-grpc-core-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim", version.ref = "internal-native-grpc-shim" }
+kotlinx-rpc-protobuf-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-shim", version.ref = "internal-native-protobuf-shim" }
 
 # kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin-lang" }

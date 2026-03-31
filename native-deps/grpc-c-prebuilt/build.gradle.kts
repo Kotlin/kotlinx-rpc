@@ -7,13 +7,13 @@ import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.register
 import org.gradle.api.publish.maven.MavenPublication
+import util.compositeCatalogVersion
 import util.konanHomeProvider
 import util.nativeDependencyTargets
 import util.registerCheckBazelTask
 import util.registerCheckKonanHomeTask
 import util.registerPrepareKonanHomeTask
 import util.registerSyncBazelModuleVersionTask
-import util.requireGradleProperty
 import util.toTaskSuffix
 
 plugins {
@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "org.jetbrains.kotlinx"
-val grpcVersion = requireGradleProperty("grpcVersion")
+val grpcVersion = compositeCatalogVersion("internal-native-grpc-shim").base
 version = grpcVersion
 
 // Bazel target names and published artifact suffixes intentionally differ:

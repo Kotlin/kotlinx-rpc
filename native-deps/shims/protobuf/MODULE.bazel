@@ -13,8 +13,8 @@ local_path_override(
     path = "../../bazel-support",
 )
 
-# This value is Gradle-managed. `native-deps/shims/protobuf` rewrites it from `gradle.properties`
-# before Bazel-backed build tasks, so change `protobufVersion` there instead of editing this line manually.
+# This value is Gradle-managed. `native-deps/shims/protobuf` rewrites it from `versions-root/libs.versions.toml`
+# before Bazel-backed build tasks, so change `internal-native-protobuf-shim` there instead of editing this line manually.
 PROTOBUF_VERSION = "31.1"
 
 bazel_dep(
