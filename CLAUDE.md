@@ -109,6 +109,7 @@ HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`.
 - Module families: common prefix + `core` for shared (e.g., `krpc-core`, `krpc-client`, `krpc-server`)
 - Filesystem paths: OS-agnostic only -- `Path.of("a", "b")` not `Path.of("a/b")`
 - Disable KMP targets per module: `kotlinx.rpc.exclude.<target>=true` in module's `gradle.properties`
+- Use [gradle-conventions](gradle-conventions) and [gradle-conventions-settings](gradle-conventions-settings) for all Gradle project changes when the change is either large or is intended for more than one subproject. Keep actual build files clean. 
 
 ## Testing
 
@@ -123,9 +124,7 @@ Uses Writerside, lives in `docs/pages/`.
 
 - **Gradle**: `./gradlew clean` -> `./gradlew --stop` -> `./gradlew <task> --rerun-tasks --no-configuration-cache --no-build-cache`
 - **JS/WASM**: delete `package-lock.json` + `build/{js,wasm}`, then run `kotlinUpgradeYarnLock`/`kotlinWasmUpgradeYarnLock`
-- Full reference: `docs/environment.md`
 
 ## References
 
-- Full dev environment guide: `docs/environment.md`
 - Documentation site: https://kotlin.github.io/kotlinx-rpc/
