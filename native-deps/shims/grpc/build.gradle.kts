@@ -37,6 +37,14 @@ val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercas
 val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"
 val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/shim/InternalNativeRpcApi"
 val grpcInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
+// grpc-core already depends on protobuf-api, so grpc consumers see the protobuf shim transitively.
+// Keep an explicit exclusion list here so the grpc shim can drop bundle archives whose symbols are
+// already owned by the protobuf shim and avoid duplicate native definitions at final link time.
+//
+// The overlap is target-specific: for example, excluding libsymbolize helps on Linux where it
+// collides with protobuf-shim, but it breaks macOS where grpc still needs absl::Symbolize from its
+// own bundle. The excludes file therefore supports both `all:` and `<target>:` entries.
+val grpcOverlapArchiveExcludesFile = layout.projectDirectory.file("overlap-archive-excludes.txt")
 
 // The checked-in .def file stays small and stable. We derive a target-specific copy during the build with
 // the full static library list gathered from the unpacked grpc bundle.
@@ -80,6 +88,36 @@ fun String.toInteropArchiveName(): String = normalizeGrpcArchivePath()
     .removePrefix("lib/")
     .replace("/", "__")
 
+// The excludes file is intentionally human-editable and is also consumed by the overlap analysis
+// helper script. Allow entries in either the bundle-manifest form (lib/foo/bar.a) or the flattened
+// interop KLIB form (foo+__bar.a) so the build script can match both stages naturally.
+//
+// Valid lines are:
+// - `all:<archive>` for exclusions that apply to every target
+// - `<target>:<archive>` for target-specific exclusions, where target matches the KLIB target name
+//   such as linux_x64, linux_arm64, macos_arm64, or ios_arm64
+fun loadGrpcOverlapArchiveExcludes(targetName: String): Set<String> = grpcOverlapArchiveExcludesFile.asFile
+    .takeIf { it.isFile }
+    ?.readLines()
+    ?.mapNotNull { rawLine ->
+        val line = rawLine.substringBefore('#').trim()
+        if (line.isEmpty()) {
+            return@mapNotNull null
+        }
+        val separatorIndex = line.indexOf(':')
+        check(separatorIndex > 0) {
+            "Invalid grpc overlap archive exclude entry '$line'. Expected all:<archive> or <target>:<archive>."
+        }
+        val scope = line.substring(0, separatorIndex).trim()
+        val archiveName = line.substring(separatorIndex + 1).trim()
+        check(archiveName.isNotEmpty()) {
+            "Invalid grpc overlap archive exclude entry '$line'. Archive name must not be empty."
+        }
+        if (scope == "all" || scope == targetName) archiveName else null
+    }
+    ?.toSet()
+    ?: emptySet()
+
 val grpcHeadersDir = layout.buildDirectory.dir("grpc/headers")
 val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
     group = "build"
@@ -121,11 +159,13 @@ kotlin {
 
         val prepareInterop = tasks.register("prepareGrpcShimInterop${taskSuffix}") {
             dependsOn(prepareGrpcBundle, buildGrpcShim)
+            inputs.file(grpcOverlapArchiveExcludesFile)
             outputs.dir(interopLibDir)
 
             doLast {
                 val prebuiltDir = grpcPrebuiltDir.get().asFile
                 val manifestFile = prebuiltDir.resolve("metadata/archives.txt")
+                val excludedArchives = loadGrpcOverlapArchiveExcludes(target.bazelName)
                 check(manifestFile.isFile) {
                     "Missing grpc archive manifest: ${manifestFile.absolutePath}"
                 }
@@ -146,11 +186,16 @@ kotlin {
                     .filter { it.isNotBlank() }
                     .forEach { relativePath ->
                         val normalizedPath = relativePath.normalizeGrpcArchivePath()
+                        val targetName = normalizedPath.toInteropArchiveName()
+                        // Exclude protobuf-owned archives before copying them into the grpc shim KLIB.
+                        // The final binary will still get those symbols from protobuf-api -> protobuf-shim.
+                        if (relativePath in excludedArchives || normalizedPath in excludedArchives || targetName in excludedArchives) {
+                            return@forEach
+                        }
                         val source = prebuiltDir.resolve(relativePath)
                         check(source.isFile) {
                             "Missing grpc archive from manifest: ${source.absolutePath}"
                         }
-                        val targetName = normalizedPath.toInteropArchiveName()
                         source.copyTo(interopDir.resolve(targetName), overwrite = true)
                     }
             }
@@ -161,16 +206,28 @@ kotlin {
             inputs.file(grpcCoreInteropDefTemplate)
             inputs.file(shimLibFile)
             inputs.file(grpcPrebuiltDir.map { it.file("metadata/archives.txt") })
+            inputs.file(grpcOverlapArchiveExcludesFile)
             outputs.file(generatedDefFile)
 
             doLast {
                 // Keep the checked-in .def file small and stable, and derive the long archive list from
                 // the published grpc bundle that was just unpacked for this target.
                 val prebuiltDir = grpcPrebuiltDir.get().asFile
+                val excludedArchives = loadGrpcOverlapArchiveExcludes(target.bazelName)
                 val archives = prebuiltDir.resolve("metadata/archives.txt")
                     .readLines()
                     .filter { it.isNotBlank() }
-                    .map { it.normalizeGrpcArchivePath() }
+                    .mapNotNull { relativePath ->
+                        val normalizedPath = relativePath.normalizeGrpcArchivePath()
+                        val targetName = normalizedPath.toInteropArchiveName()
+                        // Mirror the prepareInterop filtering here so staticLibraries references only the
+                        // archives that were actually copied into interop-libs for this target.
+                        if (relativePath in excludedArchives || normalizedPath in excludedArchives || targetName in excludedArchives) {
+                            null
+                        } else {
+                            normalizedPath
+                        }
+                    }
                     .map { it.toInteropArchiveName() }
                 val staticLibraries = buildList {
                     add("lib$grpcCoreInteropTaskName.${target.bazelName}.a")

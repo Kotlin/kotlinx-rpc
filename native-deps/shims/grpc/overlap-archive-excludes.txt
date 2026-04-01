@@ -1,0 +1,18 @@
+# Archives listed here are omitted from the grpc shim cinterop payload when the
+# same symbols are already shipped by the protobuf shim used transitively by grpc-core.
+#
+# Prefix each entry with either:
+# - all: for exclusions that apply to every target
+# - <target>: for target-specific exclusions, for example linux_x64 or macos_arm64
+#
+# Archive names can use either the repo-qualified bundle path from metadata/archives.txt
+# (for example lib/abseil-cpp/__absl__/debugging/libsymbolize.a) or the flattened
+# interop archive name used inside the KLIB (for example
+# abseil-cpp+__absl__debugging__libsymbolize.a).
+
+# KRPC-540 temporary workaround notes:
+# Do not exclude libsymbolize here. grpc and protobuf currently bundle different Abseil LTS
+# namespaces on Linux, so both Symbolize implementations must remain linkable.
+# The duplicate plain C helper symbol is rewritten in the protobuf shim build instead.
+# Remove this note and the related protobuf-shim symbol rewrite once protobuf becomes Kotlin-only.
+all:protobuf+__third_party__utf8_range__libutf8_range.a
