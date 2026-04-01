@@ -7,7 +7,6 @@
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.proto
-import util.configureCLibCInterop
 import java.nio.file.Path as JavaPath
 
 plugins {
@@ -67,17 +66,8 @@ kotlin {
         nativeMain {
             dependencies {
                 implementation(libs.kotlinx.collections.immutable)
+                implementation(libs.kotlinx.rpc.protobuf.shim)
             }
-        }
-    }
-
-    configureCLibCInterop(project, ":protowire_fat") { cLibSource, cLibOutDir ->
-        @Suppress("unused")
-        val libprotowire by creating {
-            includeDirs(
-                cLibSource.resolve("include")
-            )
-            extraOpts("-libraryPath", "$cLibOutDir")
         }
     }
 }

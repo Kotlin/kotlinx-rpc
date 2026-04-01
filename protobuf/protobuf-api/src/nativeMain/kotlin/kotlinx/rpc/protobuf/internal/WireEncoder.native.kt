@@ -20,45 +20,46 @@ import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import libprotowire.pw_encoder_delete
-import libprotowire.pw_encoder_flush
-import libprotowire.pw_encoder_new
-import libprotowire.pw_encoder_t
-import libprotowire.pw_encoder_write_bool
-import libprotowire.pw_encoder_write_bool_no_tag
-import libprotowire.pw_encoder_write_bytes
-import libprotowire.pw_encoder_write_double
-import libprotowire.pw_encoder_write_double_no_tag
-import libprotowire.pw_encoder_write_enum
-import libprotowire.pw_encoder_write_fixed32
-import libprotowire.pw_encoder_write_fixed32_no_tag
-import libprotowire.pw_encoder_write_fixed64
-import libprotowire.pw_encoder_write_fixed64_no_tag
-import libprotowire.pw_encoder_write_float
-import libprotowire.pw_encoder_write_float_no_tag
-import libprotowire.pw_encoder_write_int32
-import libprotowire.pw_encoder_write_int32_no_tag
-import libprotowire.pw_encoder_write_int64
-import libprotowire.pw_encoder_write_int64_no_tag
-import libprotowire.pw_encoder_write_raw_bytes
-import libprotowire.pw_encoder_write_sfixed32
-import libprotowire.pw_encoder_write_sfixed32_no_tag
-import libprotowire.pw_encoder_write_sfixed64
-import libprotowire.pw_encoder_write_sfixed64_no_tag
-import libprotowire.pw_encoder_write_sint32
-import libprotowire.pw_encoder_write_sint32_no_tag
-import libprotowire.pw_encoder_write_sint64
-import libprotowire.pw_encoder_write_sint64_no_tag
-import libprotowire.pw_encoder_write_string
-import libprotowire.pw_encoder_write_tag
-import libprotowire.pw_encoder_write_uint32
-import libprotowire.pw_encoder_write_uint32_no_tag
-import libprotowire.pw_encoder_write_uint64
-import libprotowire.pw_encoder_write_uint64_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_delete
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_flush
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_new
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_t
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_bool
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_bool_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_bytes
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_double
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_double_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_enum
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_fixed32
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_fixed32_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_fixed64
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_fixed64_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_float
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_float_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_int32
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_int32_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_int64
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_int64_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_raw_bytes
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sfixed32
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sfixed32_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sfixed64
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sfixed64_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sint32
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sint32_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sint64
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_sint64_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_string
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32_no_tag
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64
+import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64_no_tag
+import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeProtobufApi::class)
 internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     /**
      * The context object provides a stable reference to the kotlin context.
@@ -255,7 +256,7 @@ public actual fun WireEncoder(sink: Sink): WireEncoder = WireEncoderNative(sink)
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
 // which can be speed up in case of fixed sized types, that are not compressed. KRPC-183
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, InternalNativeProtobufApi::class)
 private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,

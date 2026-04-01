@@ -1,0 +1,17 @@
+load("//:archive_outputs.bzl", "grpc_archive_outputs")
+load("@kotlinx_rpc_native_bazel_support//tools:collect_headers.bzl", "include_dir")
+
+package(default_visibility = ["//visibility:public"])
+
+# Wrap gRPC's CcInfo so all transitive static archives become top-level build outputs. This is needed for the Gradle
+# packaging step, which must copy the concrete .a files into the published bundle, including archives that Bazel would
+# otherwise keep as logical link inputs only.
+grpc_archive_outputs(
+    name = "grpc_archive_outputs",
+    dep = "@com_github_grpc_grpc//:grpc",
+)
+
+include_dir(
+    name = "grpc_include_dir",
+    target = "@com_github_grpc_grpc//:grpc",
+)

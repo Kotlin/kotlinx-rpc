@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -41,27 +42,28 @@ import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.createRaw
-import libkgrpc.GRPC_OP_RECV_INITIAL_METADATA
-import libkgrpc.GRPC_OP_RECV_MESSAGE
-import libkgrpc.GRPC_OP_RECV_STATUS_ON_CLIENT
-import libkgrpc.GRPC_OP_SEND_CLOSE_FROM_CLIENT
-import libkgrpc.GRPC_OP_SEND_INITIAL_METADATA
-import libkgrpc.GRPC_OP_SEND_MESSAGE
-import libkgrpc.gpr_free
-import libkgrpc.grpc_byte_buffer
-import libkgrpc.grpc_byte_buffer_destroy
-import libkgrpc.grpc_call_cancel_with_status
-import libkgrpc.grpc_call_credentials_release
-import libkgrpc.grpc_call_error
-import libkgrpc.grpc_call_set_credentials
-import libkgrpc.grpc_call_unref
-import libkgrpc.grpc_metadata_array
-import libkgrpc.grpc_metadata_array_destroy
-import libkgrpc.grpc_metadata_array_init
-import libkgrpc.grpc_op
-import libkgrpc.grpc_slice
-import libkgrpc.grpc_slice_unref
-import libkgrpc.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_INITIAL_METADATA
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_MESSAGE
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_STATUS_ON_CLIENT
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_CLOSE_FROM_CLIENT
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_INITIAL_METADATA
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_SEND_MESSAGE
+import kotlinx.rpc.grpc.internal.cinterop.gpr_free
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_cancel_with_status
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_credentials_release
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_error
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_set_credentials
+import kotlinx.rpc.grpc.internal.cinterop.grpc_call_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array_init
+import kotlinx.rpc.grpc.internal.cinterop.grpc_op
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner

@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.server.internal
 
@@ -24,19 +24,20 @@ import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
-import libkgrpc.grpc_server_add_http2_port
-import libkgrpc.grpc_server_cancel_all_calls
-import libkgrpc.grpc_server_create
-import libkgrpc.grpc_server_destroy
-import libkgrpc.grpc_server_register_completion_queue
-import libkgrpc.grpc_server_register_method
-import libkgrpc.grpc_server_register_method_payload_handling
-import libkgrpc.grpc_server_shutdown_and_notify
-import libkgrpc.grpc_server_start
-import libkgrpc.kgrpc_batch_call_allocation
-import libkgrpc.kgrpc_registered_call_allocation
-import libkgrpc.kgrpc_server_set_batch_method_allocator
-import libkgrpc.kgrpc_server_set_register_method_allocator
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_add_http2_port
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_cancel_all_calls
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_register_completion_queue
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_register_method
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_register_method_payload_handling
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_shutdown_and_notify
+import kotlinx.rpc.grpc.internal.cinterop.grpc_server_start
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_batch_call_allocation
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_registered_call_allocation
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_batch_method_allocator
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_register_method_allocator
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.time.Duration
 

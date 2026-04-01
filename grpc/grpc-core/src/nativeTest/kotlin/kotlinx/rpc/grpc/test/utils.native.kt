@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.test
 
@@ -28,7 +28,8 @@ import platform.posix.fflush
 import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
-import libkgrpc.grpc_tracer_set_enabled
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tracer_set_enabled
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.unsetenv
 
 actual val runtime: Runtime

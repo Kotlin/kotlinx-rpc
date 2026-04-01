@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.client
 
@@ -11,9 +11,10 @@ import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.grpc.internal.internalError
-import libkgrpc.grpc_insecure_credentials_create
-import libkgrpc.grpc_tls_credentials_create
-import libkgrpc.grpc_tls_credentials_options_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_insecure_credentials_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_destroy
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
 internal fun GrpcClientCredentials.createRaw(): CPointer<grpc_channel_credentials> {

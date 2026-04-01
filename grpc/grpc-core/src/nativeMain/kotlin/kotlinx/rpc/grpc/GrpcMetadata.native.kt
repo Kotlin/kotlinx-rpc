@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc
 
@@ -23,14 +24,15 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_metadata
-import libkgrpc.grpc_metadata_array
-import libkgrpc.grpc_metadata_array_init
-import libkgrpc.grpc_slice_from_copied_buffer
-import libkgrpc.grpc_slice_from_copied_string
-import libkgrpc.grpc_slice_ref
-import libkgrpc.grpc_slice_unref
-import libkgrpc.kgrpc_metadata_array_append
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array_init
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_string
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_ref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_metadata_array_append
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi

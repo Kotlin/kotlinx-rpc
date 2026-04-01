@@ -80,10 +80,13 @@ fun MavenPublication.fixModuleMetadata(project: Project) {
 private fun File.fixMetadata(projectName: String, projectVersion: String) {
     val text = readText()
 
-    val newText = text
-        .updateFilesNameField(projectName)
-        .updateAvailableAtModuleField(projectName)
-        .updateAvailableAtUrlField(projectName, projectVersion)
+    var newText = text
+    if (!projectName.startsWith(KOTLINX_RPC_PREFIX)) {
+        newText = text
+            .updateFilesNameField(projectName)
+            .updateAvailableAtModuleField(projectName)
+            .updateAvailableAtUrlField(projectName, projectVersion)
+    }
 
     writeText(newText)
 }
@@ -140,6 +143,14 @@ class PublicationRepositoryConfig {
     var name: String? = null
     var username: String? = null
     var password: String? = null
+}
+
+fun RepositoryHandler.configureSpacePackagesConsumerRepository(
+    repoName: String,
+) {
+    maven(url = "https://packages.jetbrains.team/maven/p/krpc/$repoName") {
+        name = repoName
+    }
 }
 
 fun RepositoryHandler.configureRepository(

@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.internal
 
@@ -10,16 +10,17 @@ import cnames.structs.grpc_tls_credentials_options
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_ssl_client_certificate_request_type
-import libkgrpc.grpc_tls_certificate_provider_release
-import libkgrpc.grpc_tls_certificate_provider_static_data_create
-import libkgrpc.grpc_tls_credentials_options_create
-import libkgrpc.grpc_tls_credentials_options_set_cert_request_type
-import libkgrpc.grpc_tls_credentials_options_set_certificate_provider
-import libkgrpc.grpc_tls_credentials_options_watch_identity_key_cert_pairs
-import libkgrpc.grpc_tls_credentials_options_watch_root_certs
-import libkgrpc.grpc_tls_identity_pairs_add_pair
-import libkgrpc.grpc_tls_identity_pairs_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_ssl_client_certificate_request_type
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_certificate_provider_release
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_certificate_provider_static_data_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_set_cert_request_type
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_set_certificate_provider
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_watch_identity_key_cert_pairs
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_watch_root_certs
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_identity_pairs_add_pair
+import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_identity_pairs_create
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 
 @InternalRpcApi

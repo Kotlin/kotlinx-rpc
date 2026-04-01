@@ -5,10 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import util.configureCLibCInterop
-import util.configureCLibDependency
 import util.withBackgroundTask
-import util.registerBuildCLibIncludeDirTask
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -89,8 +86,9 @@ kotlin {
 
         nativeMain {
             dependencies {
-                // required for status.proto
+                // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
                 implementation(projects.protobuf.protobufApi)
+                implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
         }
 
@@ -103,34 +101,6 @@ kotlin {
         }
     }
 
-
-    // configure task to extract the include dir from the gRPC core library
-    val grpcIncludeDir = project.layout.buildDirectory.dir("bazel-out/grpc-include")
-    val grpcIncludeDirTask = project.registerBuildCLibIncludeDirTask(
-        "//prebuilt-deps/grpc_fat:grpc_include_dir",
-        grpcIncludeDir
-    )
-
-    // configure pre-built gRPC core library
-    configureCLibDependency(project, "//prebuilt-deps/grpc_fat:grpc_fat")
-
-    configureCLibCInterop(
-        project, ":kgrpc",
-        // depends on the grpc include dir
-        cinteropTaskDependsOn = listOf(grpcIncludeDirTask)
-    ) { cLibSource, cLibOutDir ->
-        val grpcPrebuiltDir = cLibSource.resolve("prebuilt-deps/grpc_fat")
-
-        @Suppress("unused")
-        val libkgrpc by creating {
-            includeDirs(
-                cLibSource.resolve("include"),
-                cLibSource.resolve("${grpcIncludeDir.get()}/include"),
-            )
-            extraOpts("-libraryPath", "$grpcPrebuiltDir")
-            extraOpts("-libraryPath", "$cLibOutDir")
-        }
-    }
 
     // configures linkReleaseTest task to build and link the test binary in RELEASE mode.
     // this can be useful for performance analysis.

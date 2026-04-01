@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class, InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.internal
 
@@ -32,20 +32,21 @@ import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import libkgrpc.grpc_byte_buffer
-import libkgrpc.grpc_byte_buffer_reader
-import libkgrpc.grpc_byte_buffer_reader_destroy
-import libkgrpc.grpc_byte_buffer_reader_init
-import libkgrpc.grpc_byte_buffer_reader_next
-import libkgrpc.grpc_metadata
-import libkgrpc.grpc_metadata_array
-import libkgrpc.grpc_raw_byte_buffer_create
-import libkgrpc.grpc_slice
-import libkgrpc.grpc_slice_from_copied_buffer
-import libkgrpc.grpc_slice_from_copied_string
-import libkgrpc.grpc_slice_malloc
-import libkgrpc.grpc_slice_unref
-import libkgrpc.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_destroy
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_init
+import kotlinx.rpc.grpc.internal.cinterop.grpc_byte_buffer_reader_next
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata
+import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata_array
+import kotlinx.rpc.grpc.internal.cinterop.grpc_raw_byte_buffer_create
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_buffer
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_from_copied_string
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_malloc
+import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
+import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.memcpy
 
 

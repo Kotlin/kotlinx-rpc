@@ -1,0 +1,19 @@
+load("@kotlinx_rpc_native_bazel_support//tools:collect_headers.bzl", "cc_headers_only")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_headers_only(
+    name = "grpc_hdrs_ccinfo",
+    dep = "@com_github_grpc_grpc//:grpc",
+)
+
+# Bazel compiles the shim against grpc headers directly from the grpc Bazel dependency.
+# The published native-deps/grpc-c-prebuilt bundles are still consumed later by Gradle for cinterop packaging.
+cc_library(
+    name = "grpc_shim",
+    srcs = ["src/cpp/kgrpc.cpp"],
+    hdrs = ["include/kgrpc.h"],
+    includes = ["include"],
+    deps = [":grpc_hdrs_ccinfo"],
+)

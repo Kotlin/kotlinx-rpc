@@ -4,9 +4,9 @@ on:
   pull_request:
     paths:
       - 'versions-root/libs.versions.toml'
-      - 'cinterop-c/toolchain/konan_llvm_bundles.json'
-      - 'cinterop-c/toolchain/precompute_konan_llvm_bundles.py'
-      - 'cinterop-c/toolchain/resolve_konan_llvm_resource_dir.py'
+      - 'native-deps/bazel-support/toolchain/konan_llvm_bundles.json'
+      - 'native-deps/bazel-support/toolchain/precompute_konan_llvm_bundles.py'
+      - 'native-deps/bazel-support/toolchain/resolve_konan_llvm_resource_dir.py'
       - '.github/workflows/verify-konan-llvm-bundles.yml'
   workflow_dispatch:
 
@@ -23,12 +23,12 @@ jobs:
 
       - name: Generate Konan LLVM bundle mapping
         run: |
-          cd cinterop-c
+          cd native-deps/bazel-support
           ./toolchain/precompute_konan_llvm_bundles.py
       - name: Check if Konan LLVM bundle mapping is up-to-date
         run: |
-          if [[ -n "$(git status --porcelain | grep cinterop-c/toolchain/konan_llvm_bundles.json)" ]]; then
-            echo "Konan LLVM bundle mapping is not up to date. Please run './cinterop-c/toolchain/precompute_konan_llvm_bundles.py' and commit changes"
+          if [[ -n "$(git status --porcelain | grep native-deps/bazel-support/toolchain/konan_llvm_bundles.json)" ]]; then
+            echo "Konan LLVM bundle mapping is not up to date. Please run './native-deps/bazel-support/toolchain/precompute_konan_llvm_bundles.py' and commit changes"
             git status --porcelain
             git diff --minimal | cat
             exit 1
