@@ -86,7 +86,7 @@ kotlin {
 
         nativeMain {
             dependencies {
-                // required for status.proto
+                // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
                 implementation(projects.protobuf.protobufApi)
                 implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
