@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-kotlinx-rpc is a JetBrains Kotlin Multiplatform library for async RPC services. Experimental.
+kotlinx-rpc is a Kotlin Multiplatform library for building RPC services.
 Version catalog: `versions-root/libs.versions.toml`
 
 ## Protocols
