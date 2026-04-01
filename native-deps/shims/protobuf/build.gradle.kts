@@ -62,6 +62,36 @@ fun findRequiredExecutable(vararg names: String): String {
     error("Required executable not found on PATH. Expected one of: ${names.joinToString()}")
 }
 
+fun findRequiredFile(baseDir: File, relativePaths: List<String>, description: String): String =
+    relativePaths.firstNotNullOfOrNull { relativePath ->
+        baseDir.resolve(relativePath).takeIf { it.isFile && it.canExecute() }?.absolutePath
+    } ?: error("Required $description not found under ${baseDir.absolutePath}. Checked: ${relativePaths.joinToString()}")
+
+fun findKonanManagedLlvmAr(konanHome: String): String {
+    val konanDepsDir = File(konanHome).resolve("../dependencies").normalize()
+    val llvmBundle = konanDepsDir.listFiles()
+        ?.filter { it.isDirectory && it.name.startsWith("llvm-") }
+        ?.sortedByDescending { it.name }
+        ?.firstOrNull()
+        ?: error("Could not find an llvm-* bundle under ${konanDepsDir.absolutePath}")
+    return findRequiredFile(llvmBundle, listOf("bin/llvm-ar"), "llvm-ar executable")
+}
+
+fun findKonanManagedObjcopy(konanHome: String, targetName: String): String {
+    val konanDepsDir = File(konanHome).resolve("../dependencies").normalize()
+    val targetTriple = when (targetName) {
+        "linux_x64" -> "x86_64-unknown-linux-gnu"
+        "linux_arm64" -> "aarch64-unknown-linux-gnu"
+        else -> error("No KONAN-managed objcopy expected for target $targetName")
+    }
+    val gccBundle = konanDepsDir.listFiles()
+        ?.filter { it.isDirectory && it.name.startsWith("$targetTriple-gcc-") }
+        ?.sortedByDescending { it.name }
+        ?.firstOrNull()
+        ?: error("Could not find a $targetTriple-gcc-* bundle under ${konanDepsDir.absolutePath}")
+    return findRequiredFile(gccBundle, listOf("$targetTriple/bin/objcopy"), "objcopy executable")
+}
+
 // KRPC-540 temporary helper for the protobuf-shim archive rewrite.
 // Remove together with the Linux symbol rewrite once protobuf becomes Kotlin-only.
 fun runCheckedCommand(workingDir: File, vararg args: String) {
@@ -132,8 +162,15 @@ kotlin {
                     return@doLast
                 }
 
-                val llvmAr = findRequiredExecutable("llvm-ar", "ar")
-                val llvmObjcopy = findRequiredExecutable("llvm-objcopy", "objcopy")
+                val konanHome = nativeShim.konanHome.get()
+                // KRPC-540 temporary Linux linker workaround.
+                // Prefer the Kotlin/Native-managed toolchain locations because CI runners do not
+                // necessarily expose llvm-objcopy/objcopy on PATH. Remove together with the symbol
+                // rewrite once protobuf becomes Kotlin-only.
+                val llvmAr = runCatching { findKonanManagedLlvmAr(konanHome) }
+                    .getOrElse { findRequiredExecutable("llvm-ar", "ar") }
+                val llvmObjcopy = runCatching { findKonanManagedObjcopy(konanHome, target.bazelName) }
+                    .getOrElse { findRequiredExecutable("llvm-objcopy", "objcopy") }
                 val extractedObject = interopDir.resolve("symbolize.o")
 
                 runCheckedCommand(interopDir, llvmAr, "x", interopArchive.absolutePath, extractedObject.name)
