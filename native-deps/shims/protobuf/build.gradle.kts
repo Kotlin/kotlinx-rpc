@@ -92,6 +92,20 @@ fun findKonanManagedObjcopy(konanHome: String, targetName: String): String {
     return findRequiredFile(gccBundle, listOf("$targetTriple/bin/objcopy"), "objcopy executable")
 }
 
+fun findHostManagedLlvmObjcopy(): String {
+    val xcrunLlvmObjcopy = runCatching {
+        val process = ProcessBuilder("xcrun", "--find", "llvm-objcopy")
+            .redirectErrorStream(true)
+            .start()
+        val output = process.inputStream.bufferedReader().readText().trim()
+        val exitCode = process.waitFor()
+        if (exitCode == 0 && output.isNotBlank()) output else null
+    }.getOrNull()
+    return xcrunLlvmObjcopy
+        ?: runCatching { findRequiredExecutable("llvm-objcopy", "objcopy") }.getOrNull()
+        ?: error("Required host objcopy executable not found. Expected llvm-objcopy or objcopy on PATH, or xcrun --find llvm-objcopy to succeed.")
+}
+
 // KRPC-540 temporary helper for the protobuf-shim archive rewrite.
 // Remove together with the Linux symbol rewrite once protobuf becomes Kotlin-only.
 fun runCheckedCommand(workingDir: File, vararg args: String) {
@@ -169,8 +183,17 @@ kotlin {
                 // rewrite once protobuf becomes Kotlin-only.
                 val llvmAr = runCatching { findKonanManagedLlvmAr(konanHome) }
                     .getOrElse { findRequiredExecutable("llvm-ar", "ar") }
-                val llvmObjcopy = runCatching { findKonanManagedObjcopy(konanHome, target.bazelName) }
-                    .getOrElse { findRequiredExecutable("llvm-objcopy", "objcopy") }
+                val hostOs = System.getProperty("os.name").lowercase()
+                val llvmObjcopy = runCatching { findHostManagedLlvmObjcopy() }
+                    .getOrElse {
+                        // KRPC-540 fallback for Linux hosts only. The KONAN GCC bundles ship Linux-hosted
+                        // objcopy binaries, so they are not executable on macOS runners.
+                        if (hostOs.contains("linux")) {
+                            findKonanManagedObjcopy(konanHome, target.bazelName)
+                        } else {
+                            throw it
+                        }
+                    }
                 val extractedObject = interopDir.resolve("symbolize.o")
 
                 runCheckedCommand(interopDir, llvmAr, "x", interopArchive.absolutePath, extractedObject.name)
