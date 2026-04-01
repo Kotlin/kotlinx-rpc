@@ -15,26 +15,36 @@ They are not TRANSPORTS. Each protocol has its own client and server implementat
 
 ## Build & Test
 
-```bash
-./gradlew <module>:jvmTest --tests "TestClass.testMethod"  # Single test
-```
+**IMPORTANT: Always use Gradle skills** (`running_gradle_builds`, `running_gradle_tests`, `managing_gradle_dependencies`, `introspecting_gradle_projects`, `gradle_expert`, etc.) instead of running `./gradlew` directly. 
+Gradle skills provide structured feedback, failure diagnostics, and background orchestration that raw shell commands lack.
+
+### Testing
+Use the `running_gradle_tests` skill. Example tasks:
+- `<module>:jvmTest --tests "TestClass.testMethod"` -- Single test
+- `<module>:jvmTest` -- All JVM tests for a module
+
+### Building
+Use the `running_gradle_builds` skill. Example tasks:
+- `<module>:build` -- Build a module
+- `assemble` -- Assemble all modules
 
 ### Validation
+Use the `running_gradle_builds` skill for these tasks:
+- `checkLegacyAbi` -- Binary compatibility (formerly BCV apiCheck)
+- `detekt` -- Static analysis (does NOT fail build, check console)
+- `:jpms-check:compileJava` -- Java module system check
+- `kotlinUpgradeYarnLock` -- Fix JS dependency locks
+- `kotlinWasmUpgradeYarnLock` -- Fix WASM dependency locks
 
+Non-Gradle validation:
 ```bash
-./gradlew checkLegacyAbi          # Binary compatibility (formerly BCV apiCheck)
-./gradlew detekt                  # Static analysis (does NOT fail build, check console)
-./gradlew :jpms-check:compileJava # Java module system check
 ./validatePublishedArtifacts.sh -s # Artifact validation (-v verbose, --dump update)
 ```
 
-### Specialized commands
+### Other specialized commands
 
 ```bash
 ./publishLocal.sh                  # Publish to build/repo/ for local testing
-./gradlew kotlinUpgradeYarnLock    # Fix JS dependency locks
-./gradlew kotlinWasmUpgradeYarnLock # Fix WASM dependency locks
-./gradlew htmlDependencyReport     # Debug dependency issues
 ```
 
 ## Module Map
@@ -124,8 +134,8 @@ Uses Writerside, lives in `docs/pages/`.
 
 ## Troubleshooting
 
-- **Gradle**: `./gradlew clean` -> `./gradlew --stop` -> `./gradlew <task> --rerun-tasks --no-configuration-cache --no-build-cache`
-- **JS/WASM**: delete `package-lock.json` + `build/{js,wasm}`, then run `kotlinUpgradeYarnLock`/`kotlinWasmUpgradeYarnLock`
+- **Gradle**: Use the `running_gradle_builds` skill with `clean`, then `--stop` via Bash, then re-run the task with `--rerun-tasks --no-configuration-cache --no-build-cache` flags via the skill
+- **JS/WASM**: delete `package-lock.json` + `build/{js,wasm}`, then use the `running_gradle_builds` skill to run `kotlinUpgradeYarnLock`/`kotlinWasmUpgradeYarnLock`
 
 ## References
 
