@@ -39,6 +39,8 @@ They are not TRANSPORTS. Each protocol has its own client and server implementat
 
 ## Module Map
 
+The most important modules have brief READMEs in their directories, read when you need to work with the module.
+
 ### Core (multiplatform)
 - `:core` -- RPC abstractions (`@Rpc`, `RpcClient`, `RpcServer`, `RpcCall`, descriptors)
 - `:utils` -- Shared utilities
@@ -102,7 +104,7 @@ HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`.
 
 - All published modules require **explicit return types and visibility**
 - All public types require **KDoc**
-- Internal shared APIs: annotate with `@InternalRpcApi`
+- Internal APIs shared across modules: annotate with `@InternalRpcApi`
 - Dependencies go in `versions-root/libs.versions.toml`, never inline
 - New modules: `includePublic()` in `settings.gradle.kts` for published, `include()` for internal
 - Published modules auto-prefixed with `kotlinx-rpc-`
