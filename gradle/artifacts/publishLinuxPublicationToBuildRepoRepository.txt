@@ -11,11 +11,9 @@ org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-linuxx64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-linuxx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-linuxx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxarm64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxarm64/cinterop-libkgrpc.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxarm64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxx64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxx64/cinterop-libkgrpc.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-linuxx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-linuxarm64/.klib
@@ -109,11 +107,9 @@ org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-server-linuxx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxarm64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxarm64/cinterop-libprotowire.klib
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxarm64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxx64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxx64/cinterop-libprotowire.klib
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxx64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api-linuxx64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core-linuxarm64/.klib
