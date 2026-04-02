@@ -6,6 +6,9 @@ FILE: module_main_protoMessage.kt
         public abstract val field: R|kotlin/Int|
             public get(): R|kotlin/Int|
 
+        public abstract val optionalField: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
         public final companion object Companion : R|kotlin/Any| {
         }
 
@@ -14,7 +17,11 @@ FILE: module_main_protoMessage.kt
                 public get(): R|kotlin/Int|
                 public set(value: R|kotlin/Int|): R|kotlin/Unit|
 
-            public abstract fun clearField(): R|kotlin/Unit|
+            public abstract override var optionalField: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+            public abstract fun clearOptionalField(): R|kotlin/Unit|
 
         }
 
@@ -28,7 +35,21 @@ FILE: module_main_protoMessage.kt
             public get(): R|kotlin/Int|
             public set(value: R|kotlin/Int|): R|kotlin/Unit|
 
-        public open override fun clearField(): R|kotlin/Unit| {
+        public open override var optionalField: R|kotlin/Int| = Int(2)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public open override fun clearOptionalField(): R|kotlin/Unit| {
+        }
+
+        private final object PresenceIndices : R|kotlin/Any| {
+            private constructor(): R|test/my_message/MyMessageInternal.PresenceIndices| {
+                super<R|kotlin/Any|>()
+            }
+
+            public final const val optionalField: R|kotlin/Int| = Int(0)
+                public get(): R|kotlin/Int|
+
         }
 
         public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<test/my_message/MyMessage>| {

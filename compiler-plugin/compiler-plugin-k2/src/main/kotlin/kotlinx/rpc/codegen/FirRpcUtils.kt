@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.common.ProtoNames
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirClassLikeDeclaration
@@ -96,4 +97,17 @@ private fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation
 fun FirClassLikeDeclaration.markAsDeprecatedHidden(session: FirSession) {
     replaceAnnotations(annotations + listOf(createDeprecatedHiddenAnnotation(session)))
     replaceDeprecationsProvider(getDeprecationsProvider(session))
+}
+
+
+/**
+ * Returns the [ClassId] corresponding to the generated internal message class for this [ClassId].
+ */
+fun ClassId.internalMessageClassId(): ClassId {
+    val names = relativeClassName.pathSegments()
+        .map { Name.identifier(ProtoNames.internalName(it.asString())) }
+
+    return ClassId(packageFqName, names.first()).let { topLevel ->
+        names.drop(1).fold(topLevel) { acc, name -> acc.createNestedClassId(name) }
+    }
 }

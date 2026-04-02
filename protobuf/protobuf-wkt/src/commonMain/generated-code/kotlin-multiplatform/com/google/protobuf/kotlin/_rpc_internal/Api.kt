@@ -59,6 +59,10 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     public override var version: String by __versionDelegate
     internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
     public override var sourceContext: SourceContext by __sourceContextDelegate
+    public override fun clearSourceContext() {
+        __sourceContextDelegate.clearField(this)
+    }
+
     internal val __mixinsDelegate: MsgFieldDelegate<List<Mixin>> = MsgFieldDelegate { emptyList() }
     public override var mixins: List<Mixin> by __mixinsDelegate
     internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }

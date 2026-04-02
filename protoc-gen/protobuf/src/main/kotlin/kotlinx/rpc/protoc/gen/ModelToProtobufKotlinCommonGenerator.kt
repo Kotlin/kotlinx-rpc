@@ -225,6 +225,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             declaration.actualFields.forEachIndexed { i, field ->
                 generatedInternalFieldPropertyDeclaration(i, field, declaration)
+                generateInternalFieldClearFunction(field, declaration)
             }
 
             generateInternalPresenceObjectProperty(declaration)
@@ -302,6 +303,28 @@ class ModelToProtobufKotlinCommonGenerator(
             },
             needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
         )
+    }
+
+    /**
+     * Generates the clear<Field>() functions that are defined by the compiler plugin generated
+     * Builder interface for fields that have a presence Idx (and therefore are presence tracked).
+     *
+     * The function access uses the delegate `clearField()` method to unset the value and clear the
+     * presence bit in the presence mask of the internal message.
+     */
+    private fun CodeGenerator.generateInternalFieldClearFunction(field: FieldDeclaration, msg: MessageDeclaration) {
+        // if the field must always be present, we don't have a clear function
+        if (field.presenceIdx == null
+            || field.type is FieldType.OneOf
+            || field.isPartOfMapEntry) return
+
+        function(
+            name = "clear${field.rawName.capitalize()}",
+            modifiers = "override",
+            returnType = "".scoped(),
+        ) {
+            code("${field.internalDelegateName}.clearField(this)".scoped())
+        }
     }
 
     /**
@@ -863,28 +886,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 """.trimIndent()
             )
         )
-    }
-
-    // TODO: Remove
-    private fun CodeGenerator.generatePublicBuilderFieldClearFunctions(msg: MessageDeclaration) {
-        msg.actualFields.forEach { field ->
-            // if the field must always be present, we don't have a clear function
-            if (field.presenceIdx == null) return@forEach
-            if (field.type is FieldType.OneOf) return@forEach
-
-            function(
-                name = "clear${field.name.capitalize()}",
-                contextReceiver = msg.builderClassName.scoped(),
-                returnType = "".scoped(),
-                comment = Comment.leading(
-                    """
-                        Clears the [${field.name}] field.
-                    """.trimIndent()
-                )
-            ) {
-                code("asInternal().${field.internalDelegateName}.clear()".scoped())
-            }
-        }
     }
 
     private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, packageName: FqName.Package) {

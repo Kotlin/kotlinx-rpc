@@ -45,4 +45,5 @@ object ProtoNames {
 
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
     val MARSHALLER_NAME = Name.identifier("MARSHALLER")
+    val PRESENCE_INDICES_NAME = Name.identifier("PresenceIndices")
 }
