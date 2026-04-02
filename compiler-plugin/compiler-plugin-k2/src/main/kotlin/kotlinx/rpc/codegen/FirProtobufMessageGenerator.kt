@@ -26,7 +26,9 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 
@@ -45,17 +47,21 @@ class FirProtobufMessageGenerator(
         session.firCachesFactory.createCache { messageClassSymbol: FirClassSymbol<*>, _ ->
             val propertyNames = mutableMapOf<Name, FirPropertySymbol>()
             val functionNames = mutableMapOf<Name, FirPropertySymbol>()
+            val presenceTrackedPropertyNames = messageClassSymbol.presenceTrackedPropertyNames(session)
             vsApi {
                 messageClassSymbol.forAllCallablesVS(session) { it ->
                     if (it is FirPropertySymbol) {
                         propertyNames[it.name] = it
-                        // construct clear<PropertyName> function
-                        val functionName = Name.identifier(
-                            "clear${
-                            it.name.asString()
-                                .replaceFirstChar { char -> char.uppercase() }
-                        }")
-                        functionNames[functionName] = it
+
+                        if (it.name in presenceTrackedPropertyNames) {
+                            // if the property is presence tracked, construct clear<PropertyName> function
+                            val functionName = Name.identifier(
+                                "clear${
+                                it.name.asString()
+                                    .replaceFirstChar { char -> char.uppercase() }
+                            }")
+                            functionNames[functionName] = it
+                        }
                     }
                 }
             }
@@ -197,5 +203,32 @@ class FirProtobufMessageGenerator(
                 }
             }.symbol
         )
+    }
+}
+
+/**
+ * Returns the names of all proto fields of this generated proto message class that are presence tracked.
+ *
+ * It finds those names, by searching for the presence indices object in the internal message class.
+ * The presence indices the object contains a field for each presence-tracked field.
+ * The field name is the same as the proto field name.
+ */
+private fun FirClassSymbol<*>.presenceTrackedPropertyNames(session: FirSession): Set<Name> {
+    val internalClass = vsApi {
+        session.getRegularClassSymbolByClassIdVS(
+            classId.internalMessageClassId()
+        )
+    } ?: return emptySet()
+
+    val presenceIndices = vsApi {
+        internalClass.declarationsVS(session)
+            .filterIsInstance<FirRegularClassSymbol>()
+            .find { it.classKind == ClassKind.OBJECT && it.name == ProtoNames.PRESENCE_INDICES_NAME }
+    } ?: return emptySet()
+
+    return vsApi {
+        presenceIndices.declarationsVS(session)
+            .filterIsInstance<FirPropertySymbol>()
+            .mapTo(mutableSetOf()) { it.name }
     }
 }

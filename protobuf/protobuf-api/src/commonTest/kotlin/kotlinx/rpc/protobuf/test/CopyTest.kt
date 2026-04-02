@@ -9,6 +9,8 @@ import OneOfMsg
 import copy
 import invoke
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import presence
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.test.Test
@@ -150,6 +152,69 @@ class CopyTest {
         val cp2 = p.copy { OptionalPresence = 5f }
         assertEquals(1, cp2.RequiredPresence)
         assertEquals(5f, cp2.OptionalPresence)
+    }
+
+    @Test
+    fun `copy clear optional scalar removes presence and stays cleared after round trip`() {
+        val original = PresenceCheck {
+            RequiredPresence = 1
+            OptionalPresence = 5f
+        }
+
+        val cleared = original.copy {
+            clearOptionalPresence()
+        }
+
+        assertTrue(original.presence.hasOptionalPresence)
+        assertEquals(5f, original.OptionalPresence)
+
+        assertFalse(cleared.presence.hasOptionalPresence)
+        assertEquals(0f, cleared.OptionalPresence)
+
+        val decoded = cleared.encodeDecode(grpcMarshallerOf<PresenceCheck>())
+        assertEquals(1, decoded.RequiredPresence)
+        assertFalse(decoded.presence.hasOptionalPresence)
+        assertEquals(0f, decoded.OptionalPresence)
+    }
+
+    @Test
+    fun `copy clear defaulted and nested fields removes presence and survives round trip`() {
+        val original = Equals {
+            str1 = "root"
+            bytes1 = byteArrayOf(1, 2, 3).asByteString()
+            someEnum2 = Equals.SomeEnum.VALUE1
+            str2 = "set"
+            bytes2 = byteArrayOf(9, 8, 7).asByteString()
+            nested = Equals.Nested { content = "leaf" }
+        }
+
+        val cleared = original.copy {
+            clearStr2()
+            clearBytes2()
+            clearNested()
+        }
+
+        assertTrue(original.presence.hasStr2)
+        assertTrue(original.presence.hasBytes2)
+        assertTrue(original.presence.hasNested)
+        assertEquals("set", original.str2)
+        assertByteStringContentEquals(byteArrayOf(9, 8, 7), original.bytes2)
+        assertEquals("leaf", original.nested.content)
+
+        assertFalse(cleared.presence.hasStr2)
+        assertFalse(cleared.presence.hasBytes2)
+        assertFalse(cleared.presence.hasNested)
+        assertEquals("abc", cleared.str2)
+        assertByteStringContentEquals("abc".encodeToByteArray(), cleared.bytes2)
+        assertEquals("", cleared.nested.content)
+
+        val decoded = cleared.encodeDecode(grpcMarshallerOf<Equals>())
+        assertFalse(decoded.presence.hasStr2)
+        assertFalse(decoded.presence.hasBytes2)
+        assertFalse(decoded.presence.hasNested)
+        assertEquals("abc", decoded.str2)
+        assertByteStringContentEquals("abc".encodeToByteArray(), decoded.bytes2)
+        assertEquals("", decoded.nested.content)
     }
 
     @Test

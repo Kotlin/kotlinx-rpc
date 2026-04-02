@@ -404,9 +404,9 @@ class ProtosTest {
         assertEquals("second", decodedReference.other.arg2)
 
         val emptyReference = referenceMarshaller.decode(Buffer())
-        assertNull(emptyReference.other.arg1)
-        assertNull(emptyReference.other.arg2)
-        assertNull(emptyReference.other.arg3)
+        assertEquals("", emptyReference.other.arg1)
+        assertEquals("", emptyReference.other.arg2)
+        assertEquals("", emptyReference.other.arg3)
 
         val repeatedMarshaller = grpcMarshallerOf<Repeated>()
         val populatedRepeated = Repeated {

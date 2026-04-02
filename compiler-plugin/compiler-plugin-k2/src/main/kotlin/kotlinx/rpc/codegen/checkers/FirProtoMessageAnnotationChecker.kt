@@ -125,6 +125,7 @@ object FirProtoMessageAnnotationChecker {
             }
     }
 
+    // TODO: Remove and use `internalMessageClassId` instead
     private fun transformClassId(
         declaration: FirRegularClass,
         parentClasses: List<FirRegularClass>,
