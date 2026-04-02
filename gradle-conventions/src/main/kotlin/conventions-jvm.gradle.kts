@@ -30,7 +30,9 @@ kotlin {
     explicitApi()
 
     abiValidation {
+        // marker-enabled-jvm
         enabled = enableAbiValidation
+        // /marker-enabled-jvm
 
         configureAbiFilters()
     }

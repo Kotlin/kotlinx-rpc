@@ -22,9 +22,8 @@ kotlin {
     explicitApi()
 
     abiValidation {
-        enabled = enableAbiValidation
-
         // marker-klib
+        enabled = enableAbiValidation
         klib {
             enabled = enableAbiValidation
         }
