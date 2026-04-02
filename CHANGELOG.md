@@ -1,3 +1,18 @@
+# 0.11.0-grpc-187
+> Published 2 April 2026
+
+### Bug fixes 🐛
+* pb: Add `this` qualifier for fields in generated `hashCode` methods by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/642
+
+### Infra 🚧
+* pb+grpc: Prebuild c-interop binaries by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/635
+
+### Other Changes 🧹
+* Added AI guidelines for ... everything? (#640, KRPC-530, KRPC-529) by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/640
+* Updated Yarn deps for Kotlin/Js/Wasm by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/641
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-186...0.11.0-grpc-187
+
 # 0.11.0-grpc-186
 > Published 27 March 2026
 
