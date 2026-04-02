@@ -20,7 +20,8 @@ This project has several documentation surfaces:
 - **Writerside** — User-facing docs at `docs/pages/kotlinx-rpc/`
 - **KDoc + Dokka** — API reference generated from source code
 - **README.md** — Project overview and quick start
-- **Internal workflows** — `CLAUDE.md`, `.claude/skills/`, `docs/environment.md` 
+- **Internal workflows** — `CLAUDE.md`, `.claude/skills/`, `docs/workflow.md`
+- **Human-only** — `docs/environment.md`, `docs/workflow.md`, `docs/troubleshooting.md` (edit when asked, but do not use as a reference for agent work)
 
 ## Documentation Structure
 
