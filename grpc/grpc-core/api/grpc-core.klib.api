@@ -119,9 +119,6 @@ final class <#A: kotlin/Any?> kotlinx.rpc.grpc/GrpcMetadataKey { // kotlinx.rpc.
 }
 
 final class kotlinx.rpc.grpc/GrpcMetadata { // kotlinx.rpc.grpc/GrpcMetadata|null[0]
-    constructor <init>() // kotlinx.rpc.grpc/GrpcMetadata.<init>|<init>(){}[0]
-    constructor <init>(libkgrpc/grpc_metadata_array) // kotlinx.rpc.grpc/GrpcMetadata.<init>|<init>(libkgrpc.grpc_metadata_array){}[0]
-
     final fun toString(): kotlin/String // kotlinx.rpc.grpc/GrpcMetadata.toString|toString(){}[0]
 }
 

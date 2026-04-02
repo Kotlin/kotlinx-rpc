@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Provides access to read and write metadata values to be exchanged during a gRPC call.
@@ -48,8 +49,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
  * val allValues = metadata.getAll("custom-header") // returns ["value1", "value2"]
  * ```
  */
-@Suppress("RedundantConstructorKeyword")
-public expect class GrpcMetadata constructor()
+public expect class GrpcMetadata @InternalRpcApi constructor()
 
 /**
  * Constructs and configures a new [GrpcMetadata] instance.

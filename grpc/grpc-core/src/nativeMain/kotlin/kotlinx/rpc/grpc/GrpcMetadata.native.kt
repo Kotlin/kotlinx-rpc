@@ -64,10 +64,11 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
 }
 
 @Suppress(names = ["RedundantConstructorKeyword"])
-public actual class GrpcMetadata actual constructor() {
+public actual class GrpcMetadata @InternalRpcApi actual constructor() {
     internal val map: LinkedHashMap<String, MutableList<ByteArray>> = linkedMapOf()
 
     @OptIn(UnsafeNumber::class)
+    @InternalRpcApi
     public constructor(raw: grpc_metadata_array) : this() {
         for (i in 0 until raw.count.toInt()) {
             val metadata = raw.metadata?.get(i)
