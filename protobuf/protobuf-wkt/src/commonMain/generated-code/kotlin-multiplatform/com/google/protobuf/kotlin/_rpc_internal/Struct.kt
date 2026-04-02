@@ -48,7 +48,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = fields.hashCode()
+        var result = this.fields.hashCode()
         return result
     }
 
@@ -111,8 +111,8 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
         public override fun hashCode(): Int {
             checkRequiredFields()
-            var result = key.hashCode()
-            result = 31 * result + if (presenceMask[0]) value.hashCode() else 0
+            var result = this.key.hashCode()
+            result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
             return result
         }
 
@@ -208,7 +208,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = (kind?.oneOfHashCode() ?: 0)
+        var result = (this.kind?.oneOfHashCode() ?: 0)
         return result
     }
 
@@ -351,7 +351,7 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = values.hashCode()
+        var result = this.values.hashCode()
         return result
     }
 
@@ -498,7 +498,7 @@ public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: Wir
 private fun StructInternal.computeSize(): Int {
     var __result = 0
     if (this.fields.isNotEmpty()) {
-        __result += fields.entries.sumOf { kEntry ->
+        __result += this.fields.entries.sumOf { kEntry ->
             StructInternal.FieldsEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value

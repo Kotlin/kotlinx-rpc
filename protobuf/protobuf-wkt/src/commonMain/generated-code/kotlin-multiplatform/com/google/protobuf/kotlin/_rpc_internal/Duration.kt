@@ -46,8 +46,8 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = seconds.hashCode()
-        result = 31 * result + nanos.hashCode()
+        var result = this.seconds.hashCode()
+        result = 31 * result + this.nanos.hashCode()
         return result
     }
 

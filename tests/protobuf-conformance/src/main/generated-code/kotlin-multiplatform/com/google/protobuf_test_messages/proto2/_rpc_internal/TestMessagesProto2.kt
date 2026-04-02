@@ -516,135 +516,135 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (optionalInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (optionalInt64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[2]) (optionalUint32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[3]) (optionalUint64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[4]) (optionalSint32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[5]) (optionalSint64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[6]) (optionalFixed32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[7]) (optionalFixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[8]) (optionalSfixed32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[9]) (optionalSfixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[10]) (optionalFloat?.toBits()?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[11]) (optionalDouble?.toBits()?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[12]) (optionalBool?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[13]) (optionalString?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[14]) (optionalBytes?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[15]) optionalNestedMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[16]) optionalForeignMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[17]) (optionalNestedEnum?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[18]) (optionalForeignEnum?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[19]) (optionalStringPiece?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[20]) (optionalCord?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[21]) recursiveMessage.hashCode() else 0
-        result = 31 * result + repeatedInt32.hashCode()
-        result = 31 * result + repeatedInt64.hashCode()
-        result = 31 * result + repeatedUint32.hashCode()
-        result = 31 * result + repeatedUint64.hashCode()
-        result = 31 * result + repeatedSint32.hashCode()
-        result = 31 * result + repeatedSint64.hashCode()
-        result = 31 * result + repeatedFixed32.hashCode()
-        result = 31 * result + repeatedFixed64.hashCode()
-        result = 31 * result + repeatedSfixed32.hashCode()
-        result = 31 * result + repeatedSfixed64.hashCode()
-        result = 31 * result + repeatedFloat.hashCode()
-        result = 31 * result + repeatedDouble.hashCode()
-        result = 31 * result + repeatedBool.hashCode()
-        result = 31 * result + repeatedString.hashCode()
-        result = 31 * result + repeatedBytes.hashCode()
-        result = 31 * result + repeatedNestedMessage.hashCode()
-        result = 31 * result + repeatedForeignMessage.hashCode()
-        result = 31 * result + repeatedNestedEnum.hashCode()
-        result = 31 * result + repeatedForeignEnum.hashCode()
-        result = 31 * result + repeatedStringPiece.hashCode()
-        result = 31 * result + repeatedCord.hashCode()
-        result = 31 * result + packedInt32.hashCode()
-        result = 31 * result + packedInt64.hashCode()
-        result = 31 * result + packedUint32.hashCode()
-        result = 31 * result + packedUint64.hashCode()
-        result = 31 * result + packedSint32.hashCode()
-        result = 31 * result + packedSint64.hashCode()
-        result = 31 * result + packedFixed32.hashCode()
-        result = 31 * result + packedFixed64.hashCode()
-        result = 31 * result + packedSfixed32.hashCode()
-        result = 31 * result + packedSfixed64.hashCode()
-        result = 31 * result + packedFloat.hashCode()
-        result = 31 * result + packedDouble.hashCode()
-        result = 31 * result + packedBool.hashCode()
-        result = 31 * result + packedNestedEnum.hashCode()
-        result = 31 * result + unpackedInt32.hashCode()
-        result = 31 * result + unpackedInt64.hashCode()
-        result = 31 * result + unpackedUint32.hashCode()
-        result = 31 * result + unpackedUint64.hashCode()
-        result = 31 * result + unpackedSint32.hashCode()
-        result = 31 * result + unpackedSint64.hashCode()
-        result = 31 * result + unpackedFixed32.hashCode()
-        result = 31 * result + unpackedFixed64.hashCode()
-        result = 31 * result + unpackedSfixed32.hashCode()
-        result = 31 * result + unpackedSfixed64.hashCode()
-        result = 31 * result + unpackedFloat.hashCode()
-        result = 31 * result + unpackedDouble.hashCode()
-        result = 31 * result + unpackedBool.hashCode()
-        result = 31 * result + unpackedNestedEnum.hashCode()
-        result = 31 * result + mapInt32Int32.hashCode()
-        result = 31 * result + mapInt64Int64.hashCode()
-        result = 31 * result + mapUint32Uint32.hashCode()
-        result = 31 * result + mapUint64Uint64.hashCode()
-        result = 31 * result + mapSint32Sint32.hashCode()
-        result = 31 * result + mapSint64Sint64.hashCode()
-        result = 31 * result + mapFixed32Fixed32.hashCode()
-        result = 31 * result + mapFixed64Fixed64.hashCode()
-        result = 31 * result + mapSfixed32Sfixed32.hashCode()
-        result = 31 * result + mapSfixed64Sfixed64.hashCode()
-        result = 31 * result + mapInt32Bool.hashCode()
-        result = 31 * result + mapInt32Float.hashCode()
-        result = 31 * result + mapInt32Double.hashCode()
-        result = 31 * result + mapInt32NestedMessage.hashCode()
-        result = 31 * result + mapBoolBool.hashCode()
-        result = 31 * result + mapStringString.hashCode()
-        result = 31 * result + mapStringBytes.hashCode()
-        result = 31 * result + mapStringNestedMessage.hashCode()
-        result = 31 * result + mapStringForeignMessage.hashCode()
-        result = 31 * result + mapStringNestedEnum.hashCode()
-        result = 31 * result + mapStringForeignEnum.hashCode()
-        result = 31 * result + if (presenceMask[22]) data.hashCode() else 0
-        result = 31 * result + if (presenceMask[23]) multiwordgroupfield.hashCode() else 0
-        result = 31 * result + if (presenceMask[24]) defaultInt32.hashCode() else 0
-        result = 31 * result + if (presenceMask[25]) defaultInt64.hashCode() else 0
-        result = 31 * result + if (presenceMask[26]) defaultUint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[27]) defaultUint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[28]) defaultSint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[29]) defaultSint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[30]) defaultFixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[34]) defaultFloat.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
-        result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
-        result = 31 * result + if (presenceMask[38]) defaultBytes.hashCode() else 0
-        result = 31 * result + if (presenceMask[39]) (fieldname1?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[40]) (fieldName2?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[41]) (FieldName3?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[42]) (field_Name4_?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[43]) (field0name5?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[44]) (field_0Name6?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[45]) (fieldName7?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[46]) (FieldName8?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[47]) (field_Name9?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[48]) (Field_Name10?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[49]) (FIELD_NAME11?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[50]) (FIELDName12?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[51]) (_FieldName13?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[52]) (__FieldName14?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[53]) (field_Name15?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[54]) (field__Name16?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[55]) (fieldName17__?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[56]) (FieldName18__?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[57]) messageSetCorrect.hashCode() else 0
-        result = 31 * result + (oneofField?.oneOfHashCode() ?: 0)
+        var result = if (presenceMask[0]) (this.optionalInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (this.optionalInt64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[2]) (this.optionalUint32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[3]) (this.optionalUint64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[4]) (this.optionalSint32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[5]) (this.optionalSint64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[6]) (this.optionalFixed32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[7]) (this.optionalFixed64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[8]) (this.optionalSfixed32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[9]) (this.optionalSfixed64?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[10]) (this.optionalFloat?.toBits()?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[11]) (this.optionalDouble?.toBits()?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[12]) (this.optionalBool?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[13]) (this.optionalString?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[14]) (this.optionalBytes?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[15]) this.optionalNestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[16]) this.optionalForeignMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[17]) (this.optionalNestedEnum?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[18]) (this.optionalForeignEnum?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[19]) (this.optionalStringPiece?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[20]) (this.optionalCord?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[21]) this.recursiveMessage.hashCode() else 0
+        result = 31 * result + this.repeatedInt32.hashCode()
+        result = 31 * result + this.repeatedInt64.hashCode()
+        result = 31 * result + this.repeatedUint32.hashCode()
+        result = 31 * result + this.repeatedUint64.hashCode()
+        result = 31 * result + this.repeatedSint32.hashCode()
+        result = 31 * result + this.repeatedSint64.hashCode()
+        result = 31 * result + this.repeatedFixed32.hashCode()
+        result = 31 * result + this.repeatedFixed64.hashCode()
+        result = 31 * result + this.repeatedSfixed32.hashCode()
+        result = 31 * result + this.repeatedSfixed64.hashCode()
+        result = 31 * result + this.repeatedFloat.hashCode()
+        result = 31 * result + this.repeatedDouble.hashCode()
+        result = 31 * result + this.repeatedBool.hashCode()
+        result = 31 * result + this.repeatedString.hashCode()
+        result = 31 * result + this.repeatedBytes.hashCode()
+        result = 31 * result + this.repeatedNestedMessage.hashCode()
+        result = 31 * result + this.repeatedForeignMessage.hashCode()
+        result = 31 * result + this.repeatedNestedEnum.hashCode()
+        result = 31 * result + this.repeatedForeignEnum.hashCode()
+        result = 31 * result + this.repeatedStringPiece.hashCode()
+        result = 31 * result + this.repeatedCord.hashCode()
+        result = 31 * result + this.packedInt32.hashCode()
+        result = 31 * result + this.packedInt64.hashCode()
+        result = 31 * result + this.packedUint32.hashCode()
+        result = 31 * result + this.packedUint64.hashCode()
+        result = 31 * result + this.packedSint32.hashCode()
+        result = 31 * result + this.packedSint64.hashCode()
+        result = 31 * result + this.packedFixed32.hashCode()
+        result = 31 * result + this.packedFixed64.hashCode()
+        result = 31 * result + this.packedSfixed32.hashCode()
+        result = 31 * result + this.packedSfixed64.hashCode()
+        result = 31 * result + this.packedFloat.hashCode()
+        result = 31 * result + this.packedDouble.hashCode()
+        result = 31 * result + this.packedBool.hashCode()
+        result = 31 * result + this.packedNestedEnum.hashCode()
+        result = 31 * result + this.unpackedInt32.hashCode()
+        result = 31 * result + this.unpackedInt64.hashCode()
+        result = 31 * result + this.unpackedUint32.hashCode()
+        result = 31 * result + this.unpackedUint64.hashCode()
+        result = 31 * result + this.unpackedSint32.hashCode()
+        result = 31 * result + this.unpackedSint64.hashCode()
+        result = 31 * result + this.unpackedFixed32.hashCode()
+        result = 31 * result + this.unpackedFixed64.hashCode()
+        result = 31 * result + this.unpackedSfixed32.hashCode()
+        result = 31 * result + this.unpackedSfixed64.hashCode()
+        result = 31 * result + this.unpackedFloat.hashCode()
+        result = 31 * result + this.unpackedDouble.hashCode()
+        result = 31 * result + this.unpackedBool.hashCode()
+        result = 31 * result + this.unpackedNestedEnum.hashCode()
+        result = 31 * result + this.mapInt32Int32.hashCode()
+        result = 31 * result + this.mapInt64Int64.hashCode()
+        result = 31 * result + this.mapUint32Uint32.hashCode()
+        result = 31 * result + this.mapUint64Uint64.hashCode()
+        result = 31 * result + this.mapSint32Sint32.hashCode()
+        result = 31 * result + this.mapSint64Sint64.hashCode()
+        result = 31 * result + this.mapFixed32Fixed32.hashCode()
+        result = 31 * result + this.mapFixed64Fixed64.hashCode()
+        result = 31 * result + this.mapSfixed32Sfixed32.hashCode()
+        result = 31 * result + this.mapSfixed64Sfixed64.hashCode()
+        result = 31 * result + this.mapInt32Bool.hashCode()
+        result = 31 * result + this.mapInt32Float.hashCode()
+        result = 31 * result + this.mapInt32Double.hashCode()
+        result = 31 * result + this.mapInt32NestedMessage.hashCode()
+        result = 31 * result + this.mapBoolBool.hashCode()
+        result = 31 * result + this.mapStringString.hashCode()
+        result = 31 * result + this.mapStringBytes.hashCode()
+        result = 31 * result + this.mapStringNestedMessage.hashCode()
+        result = 31 * result + this.mapStringForeignMessage.hashCode()
+        result = 31 * result + this.mapStringNestedEnum.hashCode()
+        result = 31 * result + this.mapStringForeignEnum.hashCode()
+        result = 31 * result + if (presenceMask[22]) this.data.hashCode() else 0
+        result = 31 * result + if (presenceMask[23]) this.multiwordgroupfield.hashCode() else 0
+        result = 31 * result + if (presenceMask[24]) this.defaultInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[25]) this.defaultInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[26]) this.defaultUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[27]) this.defaultUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[28]) this.defaultSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[29]) this.defaultSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[30]) this.defaultFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[31]) this.defaultFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[32]) this.defaultSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[33]) this.defaultSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) this.defaultFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) this.defaultDouble.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[36]) this.defaultBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[37]) this.defaultString.hashCode() else 0
+        result = 31 * result + if (presenceMask[38]) this.defaultBytes.hashCode() else 0
+        result = 31 * result + if (presenceMask[39]) (this.fieldname1?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[40]) (this.fieldName2?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[41]) (this.FieldName3?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[42]) (this.field_Name4_?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[43]) (this.field0name5?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[44]) (this.field_0Name6?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[45]) (this.fieldName7?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[46]) (this.FieldName8?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[47]) (this.field_Name9?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[48]) (this.Field_Name10?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[49]) (this.FIELD_NAME11?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[50]) (this.FIELDName12?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[51]) (this._FieldName13?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[52]) (this.__FieldName14?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[53]) (this.field_Name15?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[54]) (this.field__Name16?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[55]) (this.fieldName17__?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[56]) (this.FieldName18__?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[57]) this.messageSetCorrect.hashCode() else 0
+        result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
         result = 31 * result + extensionsHashCode()
         return result
     }
@@ -1636,8 +1636,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
-            result = 31 * result + if (presenceMask[1]) corecursive.hashCode() else 0
+            var result = if (presenceMask[0]) (this.a?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) this.corecursive.hashCode() else 0
             return result
         }
 
@@ -1758,8 +1758,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -1831,8 +1831,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -1904,8 +1904,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -1977,8 +1977,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2050,8 +2050,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2123,8 +2123,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2196,8 +2196,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2269,8 +2269,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2342,8 +2342,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2415,8 +2415,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2488,8 +2488,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2561,8 +2561,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.toBits().hashCode() else 0
             return result
         }
 
@@ -2634,8 +2634,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.toBits().hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.toBits().hashCode() else 0
             return result
         }
 
@@ -2707,8 +2707,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2780,8 +2780,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2853,8 +2853,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2926,8 +2926,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -2999,8 +2999,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -3072,8 +3072,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -3145,8 +3145,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -3218,8 +3218,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) key.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) value.hashCode() else 0
+            var result = if (presenceMask[0]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.value.hashCode() else 0
             return result
         }
 
@@ -3302,8 +3302,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
-            result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
             return result
         }
 
@@ -3435,8 +3435,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
-            result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
+            result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
             return result
         }
 
@@ -3662,7 +3662,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (str?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (this.str?.hashCode() ?: 0) else 0
             return result
         }
 
@@ -3778,7 +3778,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (i?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (this.i?.hashCode() ?: 0) else 0
             return result
         }
 
@@ -3880,7 +3880,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = (oneofField?.oneOfHashCode() ?: 0)
+            var result = (this.oneofField?.oneOfHashCode() ?: 0)
             return result
         }
 
@@ -4038,7 +4038,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (c?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (this.c?.hashCode() ?: 0) else 0
         return result
     }
 
@@ -4159,8 +4159,8 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (groupInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (groupUint32?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
         return result
     }
 
@@ -4309,12 +4309,12 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (optionalInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (optionalString?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[2]) nestedMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[3]) optionalgroup.hashCode() else 0
-        result = 31 * result + if (presenceMask[4]) (optionalBool?.hashCode() ?: 0) else 0
-        result = 31 * result + repeatedInt32.hashCode()
+        var result = if (presenceMask[0]) (this.optionalInt32?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (this.optionalString?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[2]) this.nestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[3]) this.optionalgroup.hashCode() else 0
+        result = 31 * result + if (presenceMask[4]) (this.optionalBool?.hashCode() ?: 0) else 0
+        result = 31 * result + this.repeatedInt32.hashCode()
         return result
     }
 
@@ -4440,7 +4440,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (a?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) (this.a?.hashCode() ?: 0) else 0
             return result
         }
 
@@ -4769,7 +4769,7 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (data?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) (this.data?.hashCode() ?: 0) else 0
         return result
     }
 
@@ -4892,9 +4892,9 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (inline?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (concept?.hashCode() ?: 0) else 0
-        result = 31 * result + requires.hashCode()
+        var result = if (presenceMask[0]) (this.inline?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[1]) (this.concept?.hashCode() ?: 0) else 0
+        result = 31 * result + this.requires.hashCode()
         return result
     }
 
@@ -5218,45 +5218,45 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) requiredInt32.hashCode() else 0
-        result = 31 * result + if (presenceMask[1]) requiredInt64.hashCode() else 0
-        result = 31 * result + if (presenceMask[2]) requiredUint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[3]) requiredUint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[4]) requiredSint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[5]) requiredSint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[6]) requiredFixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[7]) requiredFixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[8]) requiredSfixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[9]) requiredSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[10]) requiredFloat.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[11]) requiredDouble.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[12]) requiredBool.hashCode() else 0
-        result = 31 * result + if (presenceMask[13]) requiredString.hashCode() else 0
-        result = 31 * result + if (presenceMask[14]) requiredBytes.hashCode() else 0
-        result = 31 * result + if (presenceMask[15]) requiredNestedMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[16]) requiredForeignMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[17]) requiredNestedEnum.hashCode() else 0
-        result = 31 * result + if (presenceMask[18]) requiredForeignEnum.hashCode() else 0
-        result = 31 * result + if (presenceMask[19]) requiredStringPiece.hashCode() else 0
-        result = 31 * result + if (presenceMask[20]) requiredCord.hashCode() else 0
-        result = 31 * result + if (presenceMask[21]) recursiveMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[22]) optionalRecursiveMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[23]) data.hashCode() else 0
-        result = 31 * result + if (presenceMask[24]) defaultInt32.hashCode() else 0
-        result = 31 * result + if (presenceMask[25]) defaultInt64.hashCode() else 0
-        result = 31 * result + if (presenceMask[26]) defaultUint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[27]) defaultUint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[28]) defaultSint32.hashCode() else 0
-        result = 31 * result + if (presenceMask[29]) defaultSint64.hashCode() else 0
-        result = 31 * result + if (presenceMask[30]) defaultFixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[31]) defaultFixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[32]) defaultSfixed32.hashCode() else 0
-        result = 31 * result + if (presenceMask[33]) defaultSfixed64.hashCode() else 0
-        result = 31 * result + if (presenceMask[34]) defaultFloat.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[35]) defaultDouble.toBits().hashCode() else 0
-        result = 31 * result + if (presenceMask[36]) defaultBool.hashCode() else 0
-        result = 31 * result + if (presenceMask[37]) defaultString.hashCode() else 0
-        result = 31 * result + if (presenceMask[38]) defaultBytes.hashCode() else 0
+        var result = if (presenceMask[0]) this.requiredInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) this.requiredInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[2]) this.requiredUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[3]) this.requiredUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[4]) this.requiredSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[5]) this.requiredSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[6]) this.requiredFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[7]) this.requiredFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[8]) this.requiredSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[9]) this.requiredSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[10]) this.requiredFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[11]) this.requiredDouble.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[12]) this.requiredBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[13]) this.requiredString.hashCode() else 0
+        result = 31 * result + if (presenceMask[14]) this.requiredBytes.hashCode() else 0
+        result = 31 * result + if (presenceMask[15]) this.requiredNestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[16]) this.requiredForeignMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[17]) this.requiredNestedEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[18]) this.requiredForeignEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[19]) this.requiredStringPiece.hashCode() else 0
+        result = 31 * result + if (presenceMask[20]) this.requiredCord.hashCode() else 0
+        result = 31 * result + if (presenceMask[21]) this.recursiveMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[22]) this.optionalRecursiveMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[23]) this.data.hashCode() else 0
+        result = 31 * result + if (presenceMask[24]) this.defaultInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[25]) this.defaultInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[26]) this.defaultUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[27]) this.defaultUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[28]) this.defaultSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[29]) this.defaultSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[30]) this.defaultFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[31]) this.defaultFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[32]) this.defaultSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[33]) this.defaultSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[34]) this.defaultFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[35]) this.defaultDouble.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[36]) this.defaultBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[37]) this.defaultString.hashCode() else 0
+        result = 31 * result + if (presenceMask[38]) this.defaultBytes.hashCode() else 0
         result = 31 * result + extensionsHashCode()
         return result
     }
@@ -5767,9 +5767,9 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) a.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) corecursive.hashCode() else 0
-            result = 31 * result + if (presenceMask[2]) optionalCorecursive.hashCode() else 0
+            var result = if (presenceMask[0]) this.a.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.corecursive.hashCode() else 0
+            result = 31 * result + if (presenceMask[2]) this.optionalCorecursive.hashCode() else 0
             return result
         }
 
@@ -5912,8 +5912,8 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) groupInt32.hashCode() else 0
-            result = 31 * result + if (presenceMask[1]) groupUint32.hashCode() else 0
+            var result = if (presenceMask[0]) this.groupInt32.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.groupUint32.hashCode() else 0
             return result
         }
 
@@ -6139,7 +6139,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) str.hashCode() else 0
+            var result = if (presenceMask[0]) this.str.hashCode() else 0
             return result
         }
 
@@ -6255,7 +6255,7 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) i.hashCode() else 0
+            var result = if (presenceMask[0]) this.i.hashCode() else 0
             return result
         }
 
@@ -6394,7 +6394,7 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = (largeOneof?.oneOfHashCode() ?: 0)
+        var result = (this.largeOneof?.oneOfHashCode() ?: 0)
         return result
     }
 
@@ -8895,7 +8895,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt32Int32.isNotEmpty()) {
-        __result += mapInt32Int32.entries.sumOf { kEntry ->
+        __result += this.mapInt32Int32.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt32Int32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8905,7 +8905,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt64Int64.isNotEmpty()) {
-        __result += mapInt64Int64.entries.sumOf { kEntry ->
+        __result += this.mapInt64Int64.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt64Int64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8915,7 +8915,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapUint32Uint32.isNotEmpty()) {
-        __result += mapUint32Uint32.entries.sumOf { kEntry ->
+        __result += this.mapUint32Uint32.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapUint32Uint32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8925,7 +8925,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapUint64Uint64.isNotEmpty()) {
-        __result += mapUint64Uint64.entries.sumOf { kEntry ->
+        __result += this.mapUint64Uint64.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapUint64Uint64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8935,7 +8935,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapSint32Sint32.isNotEmpty()) {
-        __result += mapSint32Sint32.entries.sumOf { kEntry ->
+        __result += this.mapSint32Sint32.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapSint32Sint32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8945,7 +8945,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapSint64Sint64.isNotEmpty()) {
-        __result += mapSint64Sint64.entries.sumOf { kEntry ->
+        __result += this.mapSint64Sint64.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapSint64Sint64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8955,7 +8955,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapFixed32Fixed32.isNotEmpty()) {
-        __result += mapFixed32Fixed32.entries.sumOf { kEntry ->
+        __result += this.mapFixed32Fixed32.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapFixed32Fixed32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8965,7 +8965,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapFixed64Fixed64.isNotEmpty()) {
-        __result += mapFixed64Fixed64.entries.sumOf { kEntry ->
+        __result += this.mapFixed64Fixed64.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapFixed64Fixed64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8975,7 +8975,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapSfixed32Sfixed32.isNotEmpty()) {
-        __result += mapSfixed32Sfixed32.entries.sumOf { kEntry ->
+        __result += this.mapSfixed32Sfixed32.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapSfixed32Sfixed32EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8985,7 +8985,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapSfixed64Sfixed64.isNotEmpty()) {
-        __result += mapSfixed64Sfixed64.entries.sumOf { kEntry ->
+        __result += this.mapSfixed64Sfixed64.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapSfixed64Sfixed64EntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -8995,7 +8995,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt32Bool.isNotEmpty()) {
-        __result += mapInt32Bool.entries.sumOf { kEntry ->
+        __result += this.mapInt32Bool.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt32BoolEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9005,7 +9005,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt32Float.isNotEmpty()) {
-        __result += mapInt32Float.entries.sumOf { kEntry ->
+        __result += this.mapInt32Float.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt32FloatEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9015,7 +9015,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt32Double.isNotEmpty()) {
-        __result += mapInt32Double.entries.sumOf { kEntry ->
+        __result += this.mapInt32Double.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt32DoubleEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9025,7 +9025,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapInt32NestedMessage.isNotEmpty()) {
-        __result += mapInt32NestedMessage.entries.sumOf { kEntry ->
+        __result += this.mapInt32NestedMessage.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapInt32NestedMessageEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9035,7 +9035,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapBoolBool.isNotEmpty()) {
-        __result += mapBoolBool.entries.sumOf { kEntry ->
+        __result += this.mapBoolBool.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapBoolBoolEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9045,7 +9045,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringString.isNotEmpty()) {
-        __result += mapStringString.entries.sumOf { kEntry ->
+        __result += this.mapStringString.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringStringEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9055,7 +9055,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringBytes.isNotEmpty()) {
-        __result += mapStringBytes.entries.sumOf { kEntry ->
+        __result += this.mapStringBytes.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringBytesEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9065,7 +9065,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringNestedMessage.isNotEmpty()) {
-        __result += mapStringNestedMessage.entries.sumOf { kEntry ->
+        __result += this.mapStringNestedMessage.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringNestedMessageEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9075,7 +9075,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringForeignMessage.isNotEmpty()) {
-        __result += mapStringForeignMessage.entries.sumOf { kEntry ->
+        __result += this.mapStringForeignMessage.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringForeignMessageEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9085,7 +9085,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringNestedEnum.isNotEmpty()) {
-        __result += mapStringNestedEnum.entries.sumOf { kEntry ->
+        __result += this.mapStringNestedEnum.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringNestedEnumEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value
@@ -9095,7 +9095,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.mapStringForeignEnum.isNotEmpty()) {
-        __result += mapStringForeignEnum.entries.sumOf { kEntry ->
+        __result += this.mapStringForeignEnum.entries.sumOf { kEntry ->
             TestAllTypesProto2Internal.MapStringForeignEnumEntryInternal().apply {
                 key = kEntry.key
                 value = kEntry.value

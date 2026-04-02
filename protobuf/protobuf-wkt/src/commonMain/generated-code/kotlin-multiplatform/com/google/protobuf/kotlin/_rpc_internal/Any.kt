@@ -44,8 +44,8 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = typeUrl.hashCode()
-        result = 31 * result + value.hashCode()
+        var result = this.typeUrl.hashCode()
+        result = 31 * result + this.value.hashCode()
         return result
     }
 

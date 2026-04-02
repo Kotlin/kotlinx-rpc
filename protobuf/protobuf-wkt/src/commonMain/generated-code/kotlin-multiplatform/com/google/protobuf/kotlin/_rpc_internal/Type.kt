@@ -74,13 +74,13 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + fields.hashCode()
-        result = 31 * result + oneofs.hashCode()
-        result = 31 * result + options.hashCode()
-        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
-        result = 31 * result + syntax.hashCode()
-        result = 31 * result + edition.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.fields.hashCode()
+        result = 31 * result + this.oneofs.hashCode()
+        result = 31 * result + this.options.hashCode()
+        result = 31 * result + if (presenceMask[0]) this.sourceContext.hashCode() else 0
+        result = 31 * result + this.syntax.hashCode()
+        result = 31 * result + this.edition.hashCode()
         return result
     }
 
@@ -219,16 +219,16 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = kind.hashCode()
-        result = 31 * result + cardinality.hashCode()
-        result = 31 * result + number.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + typeUrl.hashCode()
-        result = 31 * result + oneofIndex.hashCode()
-        result = 31 * result + packed.hashCode()
-        result = 31 * result + options.hashCode()
-        result = 31 * result + jsonName.hashCode()
-        result = 31 * result + defaultValue.hashCode()
+        var result = this.kind.hashCode()
+        result = 31 * result + this.cardinality.hashCode()
+        result = 31 * result + this.number.hashCode()
+        result = 31 * result + this.name.hashCode()
+        result = 31 * result + this.typeUrl.hashCode()
+        result = 31 * result + this.oneofIndex.hashCode()
+        result = 31 * result + this.packed.hashCode()
+        result = 31 * result + this.options.hashCode()
+        result = 31 * result + this.jsonName.hashCode()
+        result = 31 * result + this.defaultValue.hashCode()
         return result
     }
 
@@ -372,12 +372,12 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + enumvalue.hashCode()
-        result = 31 * result + options.hashCode()
-        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
-        result = 31 * result + syntax.hashCode()
-        result = 31 * result + edition.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.enumvalue.hashCode()
+        result = 31 * result + this.options.hashCode()
+        result = 31 * result + if (presenceMask[0]) this.sourceContext.hashCode() else 0
+        result = 31 * result + this.syntax.hashCode()
+        result = 31 * result + this.edition.hashCode()
         return result
     }
 
@@ -499,9 +499,9 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + number.hashCode()
-        result = 31 * result + options.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.number.hashCode()
+        result = 31 * result + this.options.hashCode()
         return result
     }
 
@@ -616,8 +616,8 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + if (presenceMask[0]) value.hashCode() else 0
+        var result = this.name.hashCode()
+        result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
         return result
     }
 

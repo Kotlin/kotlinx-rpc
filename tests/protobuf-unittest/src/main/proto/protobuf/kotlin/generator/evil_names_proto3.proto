@@ -67,6 +67,9 @@ message EvilNamesProto3 {
   optional string a_b_notification = 37;
   optional string __DEPRECATED_Bar = 38;
   optional string not_DEPRECATED_foo = 39;
+  oneof result {
+    string result_field = 40;
+  };
 }
 
 message HardKeywordsAllTypesProto3 {

@@ -104,6 +104,7 @@ class EvilNamesProto3Test {
             key = mapOf("k" to 1)
             map = mapOf(1 to "one")
             pairs = mapOf("p" to 2)
+            result = EvilNamesProto3.Result.ResultField("result")
         }
         assertEquals("val", msg.value)
         assertEquals(42L, msg.index)
@@ -115,6 +116,7 @@ class EvilNamesProto3Test {
         assertEquals(mapOf("k" to 1), msg.key)
         assertEquals(mapOf(1 to "one"), msg.map)
         assertEquals(mapOf("p" to 2), msg.pairs)
+        assertEquals(EvilNamesProto3.Result.ResultField("result"), msg.result)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
