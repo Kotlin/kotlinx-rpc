@@ -12,12 +12,13 @@ Standard project structure with a root project and multiple subprojects.
 root/
 ├── build.gradle.kts
 ├── settings.gradle.kts
-├── libs.versions.toml
+├── versions-root
+│   └── libs.versions.toml
 ├── app/
 │   └── build.gradle.kts
 ├── core/
 │   └── build.gradle.kts
-└── build-logic/
+└── gradle-convetions/
     ├── build.gradle.kts
     └── settings.gradle.kts
 ```
@@ -26,29 +27,24 @@ root/
 
 ```kotlin
 pluginManagement {
-    includeBuild("build-logic")
+    includeBuild("gradle-convetions")
 }
 
 rootProject.name = "my-project"
 include(":app", ":core")
 
 dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("gradle/libs.versions.toml"))
-        }
-    }
     repositories {
         mavenCentral()
     }
 }
 ```
 
-## 2. Convention Plugins (The `build-logic` Pattern)
+## 2. Convention Plugins (The `gradle-convetions` Pattern)
 
 Move common project configuration logic into separate plugins to reduce duplication in `build.gradle.kts` files.
 
-### `build-logic/build.gradle.kts`
+### `gradle-convetions/build.gradle.kts`
 
 ```kotlin
 plugins {
@@ -60,7 +56,7 @@ dependencies {
 }
 ```
 
-### `build-logic/src/main/kotlin/my-convention.gradle.kts`
+### `gradle-convetions/src/main/kotlin/my-convention.gradle.kts`
 
 ```kotlin
 plugins {

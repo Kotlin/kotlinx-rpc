@@ -84,7 +84,7 @@ API against stored API dumps. Internal APIs (annotated `@InternalRpcApi` or in
 `*.internal.**` packages) are excluded.
 
 **If it fails**:
-- If you intentionally changed the API, run task `legacyApiDump` and commit the updated dumps
+- If you intentionally changed the API, run task `updateLegacyAbi` and commit the updated dumps
 - If the change was unintentional, revert the public API change
 - For KMP modules, klib dumps are also validated
 
@@ -224,7 +224,7 @@ then re-run the upgrade tasks.
 ## Common Scenarios
 
 ### "I changed a public API in `:core`"
-1. Run `checkLegacyAbi` via `running_gradle_builds` -- if it fails, run `legacyApiDump` and commit
+1. Run `checkLegacyAbi` via `running_gradle_builds` -- if it fails, run `updateLegacyAbi` and commit
 2. Run `detekt` via `running_gradle_builds` -- check output
 3. Run `:jpms-check:compileJava` via `running_gradle_builds`
 4. Run `:core:jvmTest` via `running_gradle_tests`
@@ -256,12 +256,11 @@ then re-run the upgrade tasks.
 5. Run relevant module `jvmTest` via `running_gradle_tests`
 
 ### "I updated the Kotlin version"
-1. Run `cd cinterop-c && ./toolchain/precompute_konan_llvm_bundles.py` via shell then commit if changed
-2. Use `verify-compiler-plugin-compatibility` skill
-3. Run `kotlinUpgradeYarnLock` and `kotlinWasmUpgradeYarnLock` via `running_gradle_builds`
-4. Run `checkLegacyAbi` via `running_gradle_builds` -- API dumps may need updating
-5. Run `:jpms-check:compileJava` via `running_gradle_builds`
-6. Full test suite
+1. Use `verify-compiler-plugin-compatibility` skill
+2. Run `kotlinUpgradeYarnLock` and `kotlinWasmUpgradeYarnLock` via `running_gradle_builds`
+3. Run `checkLegacyAbi` via `running_gradle_builds` -- API dumps may need updating
+4. Run `:jpms-check:compileJava` via `running_gradle_builds`
+5. Full test suite
 
 ### "I only changed documentation"
 1. Verify Writerside markup is valid (CI will build it, not runnable locally)

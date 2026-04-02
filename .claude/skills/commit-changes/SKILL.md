@@ -34,7 +34,6 @@ Use **lowercase** for the prefix. Common prefixes from the project history:
 | `pb:` | Protobuf modules |
 | `protoc-gen:` | Protobuf code generator |
 | `compiler-plugin:` | Kotlin compiler plugin |
-| `cinterop:` / `cinterop-c:` | C interop / native bindings |
 
 After the prefix, capitalize the first word:
 
