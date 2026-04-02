@@ -84,28 +84,15 @@ class KmpConfig(
 
     val kotlinMasterBuild by optionalProperty()
 
-    private val isAppleOnLinuxByRequirement: Boolean by lazy {
-        // Disabling Apple targets on Linux hosts for grpc:* and protobuf:* modules
-        // due to missing native libraries/compilers for these targets on Linux.
-        HostManager.hostIsLinux
-    }
-
     fun nativeTargets(kmp: KotlinMultiplatformExtension) = kmp::class.memberFunctions
         .filter { targetFunction ->
-            val isApple = APPLE_TARGET_PREFIXES.any { targetFunction.name.startsWith(it) }
-
             !kotlinMasterBuild &&
                 targetFunction.parameters.size == 1 &&
                 isIncluded(
                     targetName = targetFunction.name,
                     lookupTable = nativeLookup,
                 ) &&
-                !optionalPropertyValue(targetFunction.name, "exclude") &&
-                    // shenanigans explanation:
-                    // DumpPlatformsTask must collect all targets.
-                    // But we can't enable all targets on Linux because compilation will fail.
-                    // But we don't run compilation when we run DumpPlatformsTask, so it works lol
-                !(isAppleOnLinuxByRequirement && isApple && !gradle.startParameter.taskNames.contains(DumpPlatformsTask.NAME))
+                !optionalPropertyValue(targetFunction.name, "exclude")
         }.map { function ->
             function.call(kmp) as KotlinTarget
         }
