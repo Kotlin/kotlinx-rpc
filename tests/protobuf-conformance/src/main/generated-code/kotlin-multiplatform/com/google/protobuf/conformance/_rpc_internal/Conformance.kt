@@ -48,9 +48,9 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + failureMessage.hashCode()
-        result = 31 * result + matchedName.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.failureMessage.hashCode()
+        result = 31 * result + this.matchedName.hashCode()
         return result
     }
 
@@ -150,7 +150,7 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = test.hashCode()
+        var result = this.test.hashCode()
         return result
     }
 
@@ -266,12 +266,12 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = requestedOutputFormat.hashCode()
-        result = 31 * result + messageType.hashCode()
-        result = 31 * result + testCategory.hashCode()
-        result = 31 * result + if (presenceMask[0]) jspbEncodingOptions.hashCode() else 0
-        result = 31 * result + printUnknownFields.hashCode()
-        result = 31 * result + (payload?.oneOfHashCode() ?: 0)
+        var result = this.requestedOutputFormat.hashCode()
+        result = 31 * result + this.messageType.hashCode()
+        result = 31 * result + this.testCategory.hashCode()
+        result = 31 * result + if (presenceMask[0]) this.jspbEncodingOptions.hashCode() else 0
+        result = 31 * result + this.printUnknownFields.hashCode()
+        result = 31 * result + (this.payload?.oneOfHashCode() ?: 0)
         return result
     }
 
@@ -404,7 +404,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = (result?.oneOfHashCode() ?: 0)
+        var result = (this.result?.oneOfHashCode() ?: 0)
         return result
     }
 
@@ -519,7 +519,7 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = useJspbArrayAnyFormat.hashCode()
+        var result = this.useJspbArrayAnyFormat.hashCode()
         return result
     }
 

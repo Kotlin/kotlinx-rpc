@@ -380,33 +380,34 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun FieldDeclaration.hashExprForHashCode(): ScopedFormattedString {
+        val thisField = "this.$name"
         return when (val t = type) {
             is FieldType.IntegralType -> {
                 when (t) {
                     FieldType.IntegralType.FLOAT -> {
-                        if (nullable) "(${name}?.toBits()?.hashCode() ?: 0)" else "${name}.toBits().hashCode()"
+                        if (nullable) "($thisField?.toBits()?.hashCode() ?: 0)" else "$thisField.toBits().hashCode()"
                     }
 
                     FieldType.IntegralType.DOUBLE -> {
-                        if (nullable) "(${name}?.toBits()?.hashCode() ?: 0)" else "${name}.toBits().hashCode()"
+                        if (nullable) "($thisField?.toBits()?.hashCode() ?: 0)" else "$thisField.toBits().hashCode()"
                     }
 
                     else -> {
-                        if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+                        if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
                     }
                 }
             }
 
             is FieldType.OneOf -> {
-                if (nullable) "(${name}?.oneOfHashCode() ?: 0)" else "${name}.oneOfHashCode() + "
+                if (nullable) "($thisField?.oneOfHashCode() ?: 0)" else "$thisField.oneOfHashCode() + "
             }
 
             is FieldType.List -> {
-                if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+                if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
             }
 
             is FieldType.Message, is FieldType.Enum, is FieldType.Map -> {
-                if (nullable) "(${name}?.hashCode() ?: 0)" else "${name}.hashCode()"
+                if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
             }
         }.let {
             if (presenceIdx != null) {
@@ -1868,7 +1869,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Map -> {
-                scope("__result += ${field.name}.entries.sumOf".scoped(), paramDecl = "kEntry ->".scoped()) {
+                scope(variable.wrapIn { "__result += $it.entries.sumOf" }, paramDecl = "kEntry ->".scoped()) {
                     generateMapConstruction(field.type as FieldType.Map, "kEntry.key".scoped(), "kEntry.value".scoped())
                     code(
                         tagSize.merge(int32SizeCall("it".scoped())) { tagSize, int32SizeCall ->

@@ -41,7 +41,7 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = fileName.hashCode()
+        var result = this.fileName.hashCode()
         return result
     }
 

@@ -49,7 +49,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.toBits().hashCode()
+        var result = this.value.toBits().hashCode()
         return result
     }
 
@@ -143,7 +143,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.toBits().hashCode()
+        var result = this.value.toBits().hashCode()
         return result
     }
 
@@ -237,7 +237,7 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -331,7 +331,7 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -425,7 +425,7 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -519,7 +519,7 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -613,7 +613,7 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -707,7 +707,7 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 
@@ -801,7 +801,7 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = value.hashCode()
+        var result = this.value.hashCode()
         return result
     }
 

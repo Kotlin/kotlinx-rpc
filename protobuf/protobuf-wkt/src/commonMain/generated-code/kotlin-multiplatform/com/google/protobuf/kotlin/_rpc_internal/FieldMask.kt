@@ -48,7 +48,7 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = paths.hashCode()
+        var result = this.paths.hashCode()
         return result
     }
 

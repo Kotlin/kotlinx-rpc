@@ -75,13 +75,13 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + methods.hashCode()
-        result = 31 * result + options.hashCode()
-        result = 31 * result + version.hashCode()
-        result = 31 * result + if (presenceMask[0]) sourceContext.hashCode() else 0
-        result = 31 * result + mixins.hashCode()
-        result = 31 * result + syntax.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.methods.hashCode()
+        result = 31 * result + this.options.hashCode()
+        result = 31 * result + this.version.hashCode()
+        result = 31 * result + if (presenceMask[0]) this.sourceContext.hashCode() else 0
+        result = 31 * result + this.mixins.hashCode()
+        result = 31 * result + this.syntax.hashCode()
         return result
     }
 
@@ -214,13 +214,13 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + requestTypeUrl.hashCode()
-        result = 31 * result + requestStreaming.hashCode()
-        result = 31 * result + responseTypeUrl.hashCode()
-        result = 31 * result + responseStreaming.hashCode()
-        result = 31 * result + options.hashCode()
-        result = 31 * result + syntax.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.requestTypeUrl.hashCode()
+        result = 31 * result + this.requestStreaming.hashCode()
+        result = 31 * result + this.responseTypeUrl.hashCode()
+        result = 31 * result + this.responseStreaming.hashCode()
+        result = 31 * result + this.options.hashCode()
+        result = 31 * result + this.syntax.hashCode()
         return result
     }
 
@@ -334,8 +334,8 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
 
     public override fun hashCode(): Int {
         checkRequiredFields()
-        var result = name.hashCode()
-        result = 31 * result + root.hashCode()
+        var result = this.name.hashCode()
+        result = 31 * result + this.root.hashCode()
         return result
     }
 
