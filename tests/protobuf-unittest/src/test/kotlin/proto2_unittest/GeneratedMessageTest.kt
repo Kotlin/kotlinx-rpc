@@ -286,7 +286,8 @@ class GeneratedMessageTest {
     @Test
     fun testRecursiveMessageDefaultInstance() {
         val msg = TestRecursiveMessage {}
-        assertNull(msg.i)
+        assertNull(msg.iOrNull)
+        assertEquals(0, msg.i)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testParsePackedToUnpacked
@@ -396,10 +397,12 @@ class GeneratedMessageTest {
     @Test
     fun testPresenceTracking() {
         val empty = TestAllTypes {}
-        assertNull(empty.optionalInt32)
+        assertNull(empty.optionalInt32OrNull)
+        assertEquals(0, empty.optionalInt32)
         kotlin.test.assertFalse(empty.presence.hasOptionalInt32)
 
         val withField = TestAllTypes { optionalInt32 = 0 }
+        assertEquals(0, withField.optionalInt32OrNull)
         assertEquals(0, withField.optionalInt32)
         assertTrue(withField.presence.hasOptionalInt32)
     }
@@ -469,7 +472,7 @@ class GeneratedMessageTest {
             optionalInt32Extension = 1
         }
         val cleared = msg.copy {
-            optionalInt32Extension = null
+            clearOptionalInt32Extension()
         }
         assertFalse(cleared.presence.hasOptionalInt32Extension)
 

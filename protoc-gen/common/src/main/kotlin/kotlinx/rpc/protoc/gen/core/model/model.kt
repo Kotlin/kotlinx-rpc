@@ -186,6 +186,7 @@ data class FieldDeclaration(
         && !isPartOfMapEntry  // map entry fields cannot be null
 
     val presenceGetterName = "has${rawName.replaceFirstChar { it.uppercase() }}"
+    val clearFunctionName = "clear${rawName.replaceFirstChar { it.uppercase() }}"
 }
 
 data class ServiceDeclaration(

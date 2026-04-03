@@ -350,9 +350,12 @@ class EvilNamesProto2Test {
         val msg = EvilNamesProto2 {}
         val encoded = marshaller.encode(msg)
         val decoded = marshaller.decode(encoded)
-        assertNull(decoded.hasFoo)
-        assertNull(decoded.int)
-        assertNull(decoded.long)
+        assertNull(decoded.hasFooOrNull)
+        assertNull(decoded.intOrNull)
+        assertNull(decoded.longOrNull)
+        assertEquals(false, decoded.hasFoo)
+        assertEquals(0.0, decoded.int)
+        assertEquals(false, decoded.long)
         assertEquals(emptyList(), decoded.`class`)
     }
 }
