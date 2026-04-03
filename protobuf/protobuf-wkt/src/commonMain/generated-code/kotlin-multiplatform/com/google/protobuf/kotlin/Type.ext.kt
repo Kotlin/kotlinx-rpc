@@ -36,6 +36,11 @@ public fun Type.copy(body: Type.Builder.() -> Unit = {}): Type {
 public val Type.presence: TypePresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `sourceContext` field if present, otherwise null.
+*/
+public val Type.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = Field {
@@ -93,6 +98,11 @@ public fun Enum.copy(body: Enum.Builder.() -> Unit = {}): Enum {
 public val Enum.presence: EnumPresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `sourceContext` field if present, otherwise null.
+*/
+public val Enum.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = EnumValue {
@@ -148,6 +158,11 @@ public fun Option.copy(body: Option.Builder.() -> Unit = {}): Option {
 * Returns the field-presence view for this [com.google.protobuf.kotlin.Option] instance.
 */
 public val Option.presence: OptionPresence get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `value` field if present, otherwise null.
+*/
+public val Option.valueOrNull: Any? get() = if (this.presence.hasValue) this.value else null
 
 /**
 * Interface providing field-presence information for [com.google.protobuf.kotlin.Type] messages.

@@ -36,6 +36,11 @@ public fun Api.copy(body: Api.Builder.() -> Unit = {}): Api {
 public val Api.presence: ApiPresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `sourceContext` field if present, otherwise null.
+*/
+public val Api.sourceContextOrNull: SourceContext? get() = if (this.presence.hasSourceContext) this.sourceContext else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = Method {

@@ -6,11 +6,14 @@ package kotlinx.rpc.protobuf.test
 
 import Equals
 import OneOfMsg
+import bytes2OrNull
 import copy
 import invoke
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import nestedOrNull
 import presence
+import str2OrNull
 import test.submsg.Other
 import test.submsg.invoke
 import kotlin.test.Test
@@ -147,11 +150,13 @@ class CopyTest {
         val cp = p.copy()
         assertEquals(1, cp.RequiredPresence)
         assertEquals(0f, cp.OptionalPresence)
+        assertNull(cp.OptionalPresenceOrNull)
         assertFalse(cp.presence.hasOptionalPresence)
 
         val cp2 = p.copy { OptionalPresence = 5f }
         assertEquals(1, cp2.RequiredPresence)
         assertEquals(5f, cp2.OptionalPresence)
+        assertEquals(5f, cp2.OptionalPresenceOrNull)
     }
 
     @Test
@@ -167,14 +172,17 @@ class CopyTest {
 
         assertTrue(original.presence.hasOptionalPresence)
         assertEquals(5f, original.OptionalPresence)
+        assertEquals(5f, original.OptionalPresenceOrNull)
 
         assertFalse(cleared.presence.hasOptionalPresence)
         assertEquals(0f, cleared.OptionalPresence)
+        assertNull(cleared.OptionalPresenceOrNull)
 
         val decoded = cleared.encodeDecode(grpcMarshallerOf<PresenceCheck>())
         assertEquals(1, decoded.RequiredPresence)
         assertFalse(decoded.presence.hasOptionalPresence)
         assertEquals(0f, decoded.OptionalPresence)
+        assertNull(decoded.OptionalPresenceOrNull)
     }
 
     @Test
@@ -200,6 +208,9 @@ class CopyTest {
         assertEquals("set", original.str2)
         assertByteStringContentEquals(byteArrayOf(9, 8, 7), original.bytes2)
         assertEquals("leaf", original.nested.content)
+        assertEquals("set", original.str2OrNull)
+        assertByteStringContentEquals(byteArrayOf(9, 8, 7), original.bytes2OrNull)
+        assertEquals("leaf", original.nestedOrNull?.content)
 
         assertFalse(cleared.presence.hasStr2)
         assertFalse(cleared.presence.hasBytes2)
@@ -207,6 +218,9 @@ class CopyTest {
         assertEquals("abc", cleared.str2)
         assertByteStringContentEquals("abc".encodeToByteArray(), cleared.bytes2)
         assertEquals("", cleared.nested.content)
+        assertNull(cleared.str2OrNull)
+        assertNull(cleared.bytes2OrNull)
+        assertNull(cleared.nestedOrNull)
 
         val decoded = cleared.encodeDecode(grpcMarshallerOf<Equals>())
         assertFalse(decoded.presence.hasStr2)
@@ -215,6 +229,9 @@ class CopyTest {
         assertEquals("abc", decoded.str2)
         assertByteStringContentEquals("abc".encodeToByteArray(), decoded.bytes2)
         assertEquals("", decoded.nested.content)
+        assertNull(decoded.str2OrNull)
+        assertNull(decoded.bytes2OrNull)
+        assertNull(decoded.nestedOrNull)
     }
 
     @Test

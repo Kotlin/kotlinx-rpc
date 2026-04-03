@@ -123,6 +123,8 @@ class ModelToProtobufKotlinCommonGenerator(
             generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
+            // generates orNull getters for optional fields
+            generatePublicOrNullFieldGetters(it)
         }
 
         // the presence interfaces are not generated in the flattened list
@@ -888,6 +890,25 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
+    private fun CodeGenerator.generatePublicOrNullFieldGetters(declaration: MessageDeclaration) {
+        declaration.actualFields
+            .filter { it.hasOrNullGetter }
+            .forEach { field ->
+                property(
+                    name = "${field.rawName}OrNull",
+                    type = field.typeFqName().wrapIn { "$it?" },
+                    propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                    contextReceiver = declaration.name.scoped(),
+                    value = "if (this.presence.${field.presenceGetterName}) this.${field.name} else null".scoped(),
+                    comment = Comment.leading(
+                        """
+                    Returns the value of the `${field.rawName}` field if present, otherwise null.
+                    """.trimIndent()
+                    )
+                )
+            }
+    }
+
     private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, packageName: FqName.Package) {
         val name = declaration.name
         val extendee = declaration.containingType.value
@@ -1014,7 +1035,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
                     property(
-                        name = "has${field.rawName.capitalize()}",
+                        name = field.presenceGetterName,
                         modifiers = "override",
                         type = FqName.Implicits.Boolean.scoped(),
                         propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
