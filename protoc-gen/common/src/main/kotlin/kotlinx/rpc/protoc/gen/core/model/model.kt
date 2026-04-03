@@ -171,10 +171,21 @@ data class FieldDeclaration(
 
     val isPartOfMapEntry = dec.containingType.options.mapEntry
 
+    val number: Int = dec.number
+
     // all normal fields are non-nullable (KRPC-262)
     // only oneof fields are nullable.
     val nullable: Boolean = type is FieldType.OneOf
-    val number: Int = dec.number
+    // if the field may have an `orNull` extension getter
+    val hasOrNullGetter: Boolean =
+        !nullable              // nullable fields don't need a nullable getter
+        && dec.hasPresence()
+        && !dec.isRequired
+        && !dec.isRepeated    // repeated fields cannot be nullable (just empty)
+        && !isPartOfOneof     // upper conditions would match oneof inner fields
+        && !isPartOfMapEntry  // map entry fields cannot be null
+
+    val presenceGetterName = "has${rawName.replaceFirstChar { it.uppercase() }}"
 }
 
 data class ServiceDeclaration(
