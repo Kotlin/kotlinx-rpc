@@ -88,6 +88,11 @@ fun ConformanceRequest.copy(body: ConformanceRequest.Builder.() -> Unit = {}): C
 val ConformanceRequest.presence: ConformanceRequestPresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `jspbEncodingOptions` field if present, otherwise null.
+*/
+val ConformanceRequest.jspbEncodingOptionsOrNull: JspbEncodingConfig? get() = if (this.presence.hasJspbEncodingOptions) this.jspbEncodingOptions else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = ConformanceResponse {

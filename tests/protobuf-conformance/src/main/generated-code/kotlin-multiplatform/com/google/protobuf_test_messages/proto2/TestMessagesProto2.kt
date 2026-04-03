@@ -20,27 +20,27 @@ interface TestAllTypesProto2 {
     /**
     * Singular
     */
-    val optionalInt32: Int?
-    val optionalInt64: Long?
-    val optionalUint32: UInt?
-    val optionalUint64: ULong?
-    val optionalSint32: Int?
-    val optionalSint64: Long?
-    val optionalFixed32: UInt?
-    val optionalFixed64: ULong?
-    val optionalSfixed32: Int?
-    val optionalSfixed64: Long?
-    val optionalFloat: Float?
-    val optionalDouble: Double?
-    val optionalBool: Boolean?
-    val optionalString: String?
-    val optionalBytes: ByteString?
+    val optionalInt32: Int
+    val optionalInt64: Long
+    val optionalUint32: UInt
+    val optionalUint64: ULong
+    val optionalSint32: Int
+    val optionalSint64: Long
+    val optionalFixed32: UInt
+    val optionalFixed64: ULong
+    val optionalSfixed32: Int
+    val optionalSfixed64: Long
+    val optionalFloat: Float
+    val optionalDouble: Double
+    val optionalBool: Boolean
+    val optionalString: String
+    val optionalBytes: ByteString
     val optionalNestedMessage: NestedMessage
     val optionalForeignMessage: ForeignMessageProto2
-    val optionalNestedEnum: NestedEnum?
-    val optionalForeignEnum: ForeignEnumProto2?
-    val optionalStringPiece: String?
-    val optionalCord: String?
+    val optionalNestedEnum: NestedEnum
+    val optionalForeignEnum: ForeignEnumProto2
+    val optionalStringPiece: String
+    val optionalCord: String
     val recursiveMessage: TestAllTypesProto2
     /**
     * Repeated
@@ -148,24 +148,24 @@ interface TestAllTypesProto2 {
     * Test field-name-to-JSON-name convention.
     * (protobuf says names can be any valid C/C++ identifier.)
     */
-    val fieldname1: Int?
-    val fieldName2: Int?
-    val FieldName3: Int?
-    val field_Name4_: Int?
-    val field0name5: Int?
-    val field_0Name6: Int?
-    val fieldName7: Int?
-    val FieldName8: Int?
-    val field_Name9: Int?
-    val Field_Name10: Int?
-    val FIELD_NAME11: Int?
-    val FIELDName12: Int?
-    val _FieldName13: Int?
-    val __FieldName14: Int?
-    val field_Name15: Int?
-    val field__Name16: Int?
-    val fieldName17__: Int?
-    val FieldName18__: Int?
+    val fieldname1: Int
+    val fieldName2: Int
+    val FieldName3: Int
+    val field_Name4_: Int
+    val field0name5: Int
+    val field_0Name6: Int
+    val fieldName7: Int
+    val FieldName8: Int
+    val field_Name9: Int
+    val Field_Name10: Int
+    val FIELD_NAME11: Int
+    val FIELDName12: Int
+    val _FieldName13: Int
+    val __FieldName14: Int
+    val field_Name15: Int
+    val field__Name16: Int
+    val fieldName17__: Int
+    val FieldName18__: Int
     val messageSetCorrect: MessageSetCorrect
     val oneofField: OneofField?
 
@@ -200,7 +200,7 @@ interface TestAllTypesProto2 {
 
     @GeneratedProtoMessage
     interface NestedMessage {
-        val a: Int?
+        val a: Int
         val corecursive: TestAllTypesProto2
     }
 
@@ -209,14 +209,14 @@ interface TestAllTypesProto2 {
     */
     @GeneratedProtoMessage
     interface Data {
-        val groupInt32: Int?
-        val groupUint32: UInt?
+        val groupInt32: Int
+        val groupUint32: UInt
     }
 
     @GeneratedProtoMessage
     interface MultiWordGroupField {
-        val groupInt32: Int?
-        val groupUint32: UInt?
+        val groupInt32: Int
+        val groupUint32: UInt
     }
 
     /**
@@ -227,12 +227,12 @@ interface TestAllTypesProto2 {
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension1 {
-        val str: String?
+        val str: String
     }
 
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension2 {
-        val i: Int?
+        val i: Int
     }
 
     @GeneratedProtoMessage
@@ -270,27 +270,27 @@ interface TestAllTypesProto2 {
 
 @GeneratedProtoMessage
 interface ForeignMessageProto2 {
-    val c: Int?
+    val c: Int
 }
 
 @GeneratedProtoMessage
 interface GroupField {
-    val groupInt32: Int?
-    val groupUint32: UInt?
+    val groupInt32: Int
+    val groupUint32: UInt
 }
 
 @GeneratedProtoMessage
 interface UnknownToTestAllTypes {
-    val optionalInt32: Int?
-    val optionalString: String?
+    val optionalInt32: Int
+    val optionalString: String
     val nestedMessage: ForeignMessageProto2
     val optionalgroup: OptionalGroup
-    val optionalBool: Boolean?
+    val optionalBool: Boolean
     val repeatedInt32: List<Int>
 
     @GeneratedProtoMessage
     interface OptionalGroup {
-        val a: Int?
+        val a: Int
     }
 }
 
@@ -314,13 +314,13 @@ interface EnumOnlyProto2 {
 
 @GeneratedProtoMessage
 interface OneStringProto2 {
-    val data: String?
+    val data: String
 }
 
 @GeneratedProtoMessage
 interface ProtoWithKeywords {
-    val inline: Int?
-    val concept: String?
+    val inline: Int
+    val concept: String
     val requires: List<String>
 }
 

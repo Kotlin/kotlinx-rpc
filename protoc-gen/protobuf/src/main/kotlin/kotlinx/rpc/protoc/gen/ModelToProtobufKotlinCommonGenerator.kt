@@ -959,7 +959,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // val MyMessage.hasMyExtensionField: Boolean get() =
         //  (this as InternalPresenceObject).hasExtension(MyProtoFileKtExtensions.int32)
         property(
-            name = "has" + name.capitalize(),
+            name = declaration.presenceGetterName,
             contextReceiver = extendee.presenceInterfaceName.scoped(),
             type = FqName.Implicits.Boolean.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
@@ -969,6 +969,9 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         )
 
+        // val MyMessage.Builder.myExtensionField: Boolean
+        //      get()      = // ...
+        //      set(value) = // ...
         property(
             name = name,
             contextReceiver = extendee.builderClassName.scoped(),
@@ -978,6 +981,15 @@ class ModelToProtobufKotlinCommonGenerator(
             value = value,
             setter = "asInternal().setExtensionValue(%T, value)".scoped(descriptorRef)
         )
+
+        // fun MyMessage.Builder.clearMyExtensionField { /* ... */ }
+        function(
+            name = declaration.clearFunctionName,
+            contextReceiver = extendee.builderClassName.scoped(),
+            returnType = "".scoped()
+        ) {
+            code("asInternal().setExtensionValue(%T, null)".scoped(descriptorRef))
+        }
     }
 
     private fun CodeGenerator.generateMessageExtensionNamespace(

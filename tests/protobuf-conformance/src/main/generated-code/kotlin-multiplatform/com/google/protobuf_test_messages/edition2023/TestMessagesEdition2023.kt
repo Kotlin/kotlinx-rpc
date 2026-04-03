@@ -8,7 +8,7 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 @GeneratedProtoMessage
 interface ComplexMessage {
-    val d: Int?
+    val d: Int
 }
 
 @GeneratedProtoMessage
@@ -16,27 +16,27 @@ interface TestAllTypesEdition2023 {
     /**
     * Singular
     */
-    val optionalInt32: Int?
-    val optionalInt64: Long?
-    val optionalUint32: UInt?
-    val optionalUint64: ULong?
-    val optionalSint32: Int?
-    val optionalSint64: Long?
-    val optionalFixed32: UInt?
-    val optionalFixed64: ULong?
-    val optionalSfixed32: Int?
-    val optionalSfixed64: Long?
-    val optionalFloat: Float?
-    val optionalDouble: Double?
-    val optionalBool: Boolean?
-    val optionalString: String?
-    val optionalBytes: ByteString?
+    val optionalInt32: Int
+    val optionalInt64: Long
+    val optionalUint32: UInt
+    val optionalUint64: ULong
+    val optionalSint32: Int
+    val optionalSint64: Long
+    val optionalFixed32: UInt
+    val optionalFixed64: ULong
+    val optionalSfixed32: Int
+    val optionalSfixed64: Long
+    val optionalFloat: Float
+    val optionalDouble: Double
+    val optionalBool: Boolean
+    val optionalString: String
+    val optionalBytes: ByteString
     val optionalNestedMessage: NestedMessage
     val optionalForeignMessage: ForeignMessageEdition2023
-    val optionalNestedEnum: NestedEnum?
-    val optionalForeignEnum: ForeignEnumEdition2023?
-    val optionalStringPiece: String?
-    val optionalCord: String?
+    val optionalNestedEnum: NestedEnum
+    val optionalForeignEnum: ForeignEnumEdition2023
+    val optionalStringPiece: String
+    val optionalCord: String
     val recursiveMessage: TestAllTypesEdition2023
     /**
     * Repeated
@@ -153,7 +153,7 @@ interface TestAllTypesEdition2023 {
 
     @GeneratedProtoMessage
     interface NestedMessage {
-        val a: Int?
+        val a: Int
         val corecursive: TestAllTypesEdition2023
     }
 
@@ -162,8 +162,8 @@ interface TestAllTypesEdition2023 {
     */
     @GeneratedProtoMessage
     interface GroupLikeType {
-        val groupInt32: Int?
-        val groupUint32: UInt?
+        val groupInt32: Int
+        val groupUint32: UInt
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -188,12 +188,12 @@ interface TestAllTypesEdition2023 {
 
 @GeneratedProtoMessage
 interface ForeignMessageEdition2023 {
-    val c: Int?
+    val c: Int
 }
 
 @GeneratedProtoMessage
 interface GroupLikeType {
-    val c: Int?
+    val c: Int
 }
 
 sealed class ForeignEnumEdition2023(open val number: Int) {

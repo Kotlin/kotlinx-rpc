@@ -39,6 +39,296 @@ fun TestAllTypesProto2.copy(body: TestAllTypesProto2.Builder.() -> Unit = {}): T
 val TestAllTypesProto2.presence: TestAllTypesProto2Presence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `optionalInt32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalInt32OrNull: Int? get() = if (this.presence.hasOptionalInt32) this.optionalInt32 else null
+
+/**
+* Returns the value of the `optionalInt64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalInt64OrNull: Long? get() = if (this.presence.hasOptionalInt64) this.optionalInt64 else null
+
+/**
+* Returns the value of the `optionalUint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalUint32OrNull: UInt? get() = if (this.presence.hasOptionalUint32) this.optionalUint32 else null
+
+/**
+* Returns the value of the `optionalUint64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalUint64OrNull: ULong? get() = if (this.presence.hasOptionalUint64) this.optionalUint64 else null
+
+/**
+* Returns the value of the `optionalSint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalSint32OrNull: Int? get() = if (this.presence.hasOptionalSint32) this.optionalSint32 else null
+
+/**
+* Returns the value of the `optionalSint64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalSint64OrNull: Long? get() = if (this.presence.hasOptionalSint64) this.optionalSint64 else null
+
+/**
+* Returns the value of the `optionalFixed32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalFixed32OrNull: UInt? get() = if (this.presence.hasOptionalFixed32) this.optionalFixed32 else null
+
+/**
+* Returns the value of the `optionalFixed64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalFixed64OrNull: ULong? get() = if (this.presence.hasOptionalFixed64) this.optionalFixed64 else null
+
+/**
+* Returns the value of the `optionalSfixed32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalSfixed32OrNull: Int? get() = if (this.presence.hasOptionalSfixed32) this.optionalSfixed32 else null
+
+/**
+* Returns the value of the `optionalSfixed64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalSfixed64OrNull: Long? get() = if (this.presence.hasOptionalSfixed64) this.optionalSfixed64 else null
+
+/**
+* Returns the value of the `optionalFloat` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalFloatOrNull: Float? get() = if (this.presence.hasOptionalFloat) this.optionalFloat else null
+
+/**
+* Returns the value of the `optionalDouble` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalDoubleOrNull: Double? get() = if (this.presence.hasOptionalDouble) this.optionalDouble else null
+
+/**
+* Returns the value of the `optionalBool` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalBoolOrNull: Boolean? get() = if (this.presence.hasOptionalBool) this.optionalBool else null
+
+/**
+* Returns the value of the `optionalString` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalStringOrNull: String? get() = if (this.presence.hasOptionalString) this.optionalString else null
+
+/**
+* Returns the value of the `optionalBytes` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalBytesOrNull: ByteString? get() = if (this.presence.hasOptionalBytes) this.optionalBytes else null
+
+/**
+* Returns the value of the `optionalNestedMessage` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalNestedMessageOrNull: TestAllTypesProto2.NestedMessage? get() = if (this.presence.hasOptionalNestedMessage) this.optionalNestedMessage else null
+
+/**
+* Returns the value of the `optionalForeignMessage` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalForeignMessageOrNull: ForeignMessageProto2? get() = if (this.presence.hasOptionalForeignMessage) this.optionalForeignMessage else null
+
+/**
+* Returns the value of the `optionalNestedEnum` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalNestedEnumOrNull: TestAllTypesProto2.NestedEnum? get() = if (this.presence.hasOptionalNestedEnum) this.optionalNestedEnum else null
+
+/**
+* Returns the value of the `optionalForeignEnum` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalForeignEnumOrNull: ForeignEnumProto2? get() = if (this.presence.hasOptionalForeignEnum) this.optionalForeignEnum else null
+
+/**
+* Returns the value of the `optionalStringPiece` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalStringPieceOrNull: String? get() = if (this.presence.hasOptionalStringPiece) this.optionalStringPiece else null
+
+/**
+* Returns the value of the `optionalCord` field if present, otherwise null.
+*/
+val TestAllTypesProto2.optionalCordOrNull: String? get() = if (this.presence.hasOptionalCord) this.optionalCord else null
+
+/**
+* Returns the value of the `recursiveMessage` field if present, otherwise null.
+*/
+val TestAllTypesProto2.recursiveMessageOrNull: TestAllTypesProto2? get() = if (this.presence.hasRecursiveMessage) this.recursiveMessage else null
+
+/**
+* Returns the value of the `data` field if present, otherwise null.
+*/
+val TestAllTypesProto2.dataOrNull: TestAllTypesProto2.Data? get() = if (this.presence.hasData) this.data else null
+
+/**
+* Returns the value of the `multiwordgroupfield` field if present, otherwise null.
+*/
+val TestAllTypesProto2.multiwordgroupfieldOrNull: TestAllTypesProto2.MultiWordGroupField? get() = if (this.presence.hasMultiwordgroupfield) this.multiwordgroupfield else null
+
+/**
+* Returns the value of the `defaultInt32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultInt32OrNull: Int? get() = if (this.presence.hasDefaultInt32) this.defaultInt32 else null
+
+/**
+* Returns the value of the `defaultInt64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultInt64OrNull: Long? get() = if (this.presence.hasDefaultInt64) this.defaultInt64 else null
+
+/**
+* Returns the value of the `defaultUint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultUint32OrNull: UInt? get() = if (this.presence.hasDefaultUint32) this.defaultUint32 else null
+
+/**
+* Returns the value of the `defaultUint64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultUint64OrNull: ULong? get() = if (this.presence.hasDefaultUint64) this.defaultUint64 else null
+
+/**
+* Returns the value of the `defaultSint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultSint32OrNull: Int? get() = if (this.presence.hasDefaultSint32) this.defaultSint32 else null
+
+/**
+* Returns the value of the `defaultSint64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultSint64OrNull: Long? get() = if (this.presence.hasDefaultSint64) this.defaultSint64 else null
+
+/**
+* Returns the value of the `defaultFixed32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultFixed32OrNull: UInt? get() = if (this.presence.hasDefaultFixed32) this.defaultFixed32 else null
+
+/**
+* Returns the value of the `defaultFixed64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultFixed64OrNull: ULong? get() = if (this.presence.hasDefaultFixed64) this.defaultFixed64 else null
+
+/**
+* Returns the value of the `defaultSfixed32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultSfixed32OrNull: Int? get() = if (this.presence.hasDefaultSfixed32) this.defaultSfixed32 else null
+
+/**
+* Returns the value of the `defaultSfixed64` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultSfixed64OrNull: Long? get() = if (this.presence.hasDefaultSfixed64) this.defaultSfixed64 else null
+
+/**
+* Returns the value of the `defaultFloat` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultFloatOrNull: Float? get() = if (this.presence.hasDefaultFloat) this.defaultFloat else null
+
+/**
+* Returns the value of the `defaultDouble` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultDoubleOrNull: Double? get() = if (this.presence.hasDefaultDouble) this.defaultDouble else null
+
+/**
+* Returns the value of the `defaultBool` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultBoolOrNull: Boolean? get() = if (this.presence.hasDefaultBool) this.defaultBool else null
+
+/**
+* Returns the value of the `defaultString` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultStringOrNull: String? get() = if (this.presence.hasDefaultString) this.defaultString else null
+
+/**
+* Returns the value of the `defaultBytes` field if present, otherwise null.
+*/
+val TestAllTypesProto2.defaultBytesOrNull: ByteString? get() = if (this.presence.hasDefaultBytes) this.defaultBytes else null
+
+/**
+* Returns the value of the `fieldname1` field if present, otherwise null.
+*/
+val TestAllTypesProto2.fieldname1OrNull: Int? get() = if (this.presence.hasFieldname1) this.fieldname1 else null
+
+/**
+* Returns the value of the `fieldName2` field if present, otherwise null.
+*/
+val TestAllTypesProto2.fieldName2OrNull: Int? get() = if (this.presence.hasFieldName2) this.fieldName2 else null
+
+/**
+* Returns the value of the `FieldName3` field if present, otherwise null.
+*/
+val TestAllTypesProto2.FieldName3OrNull: Int? get() = if (this.presence.hasFieldName3) this.FieldName3 else null
+
+/**
+* Returns the value of the `field_Name4_` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field_Name4_OrNull: Int? get() = if (this.presence.hasField_Name4_) this.field_Name4_ else null
+
+/**
+* Returns the value of the `field0name5` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field0name5OrNull: Int? get() = if (this.presence.hasField0name5) this.field0name5 else null
+
+/**
+* Returns the value of the `field_0Name6` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field_0Name6OrNull: Int? get() = if (this.presence.hasField_0Name6) this.field_0Name6 else null
+
+/**
+* Returns the value of the `fieldName7` field if present, otherwise null.
+*/
+val TestAllTypesProto2.fieldName7OrNull: Int? get() = if (this.presence.hasFieldName7) this.fieldName7 else null
+
+/**
+* Returns the value of the `FieldName8` field if present, otherwise null.
+*/
+val TestAllTypesProto2.FieldName8OrNull: Int? get() = if (this.presence.hasFieldName8) this.FieldName8 else null
+
+/**
+* Returns the value of the `field_Name9` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field_Name9OrNull: Int? get() = if (this.presence.hasField_Name9) this.field_Name9 else null
+
+/**
+* Returns the value of the `Field_Name10` field if present, otherwise null.
+*/
+val TestAllTypesProto2.Field_Name10OrNull: Int? get() = if (this.presence.hasField_Name10) this.Field_Name10 else null
+
+/**
+* Returns the value of the `FIELD_NAME11` field if present, otherwise null.
+*/
+val TestAllTypesProto2.FIELD_NAME11OrNull: Int? get() = if (this.presence.hasFIELD_NAME11) this.FIELD_NAME11 else null
+
+/**
+* Returns the value of the `FIELDName12` field if present, otherwise null.
+*/
+val TestAllTypesProto2.FIELDName12OrNull: Int? get() = if (this.presence.hasFIELDName12) this.FIELDName12 else null
+
+/**
+* Returns the value of the `_FieldName13` field if present, otherwise null.
+*/
+val TestAllTypesProto2._FieldName13OrNull: Int? get() = if (this.presence.has_FieldName13) this._FieldName13 else null
+
+/**
+* Returns the value of the `__FieldName14` field if present, otherwise null.
+*/
+val TestAllTypesProto2.__FieldName14OrNull: Int? get() = if (this.presence.has__FieldName14) this.__FieldName14 else null
+
+/**
+* Returns the value of the `field_Name15` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field_Name15OrNull: Int? get() = if (this.presence.hasField_Name15) this.field_Name15 else null
+
+/**
+* Returns the value of the `field__Name16` field if present, otherwise null.
+*/
+val TestAllTypesProto2.field__Name16OrNull: Int? get() = if (this.presence.hasField__Name16) this.field__Name16 else null
+
+/**
+* Returns the value of the `fieldName17__` field if present, otherwise null.
+*/
+val TestAllTypesProto2.fieldName17__OrNull: Int? get() = if (this.presence.hasFieldName17__) this.fieldName17__ else null
+
+/**
+* Returns the value of the `FieldName18__` field if present, otherwise null.
+*/
+val TestAllTypesProto2.FieldName18__OrNull: Int? get() = if (this.presence.hasFieldName18__) this.FieldName18__ else null
+
+/**
+* Returns the value of the `messageSetCorrect` field if present, otherwise null.
+*/
+val TestAllTypesProto2.messageSetCorrectOrNull: TestAllTypesProto2.MessageSetCorrect? get() = if (this.presence.hasMessageSetCorrect) this.messageSetCorrect else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = ForeignMessageProto2 {
@@ -68,6 +358,11 @@ fun ForeignMessageProto2.copy(body: ForeignMessageProto2.Builder.() -> Unit = {}
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.ForeignMessageProto2] instance.
 */
 val ForeignMessageProto2.presence: ForeignMessageProto2Presence get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `c` field if present, otherwise null.
+*/
+val ForeignMessageProto2.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
 
 /**
 * Constructs a new message.
@@ -101,6 +396,16 @@ fun GroupField.copy(body: GroupField.Builder.() -> Unit = {}): GroupField {
 val GroupField.presence: GroupFieldPresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `groupInt32` field if present, otherwise null.
+*/
+val GroupField.groupInt32OrNull: Int? get() = if (this.presence.hasGroupInt32) this.groupInt32 else null
+
+/**
+* Returns the value of the `groupUint32` field if present, otherwise null.
+*/
+val GroupField.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = UnknownToTestAllTypes {
@@ -130,6 +435,31 @@ fun UnknownToTestAllTypes.copy(body: UnknownToTestAllTypes.Builder.() -> Unit = 
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.UnknownToTestAllTypes] instance.
 */
 val UnknownToTestAllTypes.presence: UnknownToTestAllTypesPresence get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `optionalInt32` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.optionalInt32OrNull: Int? get() = if (this.presence.hasOptionalInt32) this.optionalInt32 else null
+
+/**
+* Returns the value of the `optionalString` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.optionalStringOrNull: String? get() = if (this.presence.hasOptionalString) this.optionalString else null
+
+/**
+* Returns the value of the `nestedMessage` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.nestedMessageOrNull: ForeignMessageProto2? get() = if (this.presence.hasNestedMessage) this.nestedMessage else null
+
+/**
+* Returns the value of the `optionalgroup` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.optionalgroupOrNull: UnknownToTestAllTypes.OptionalGroup? get() = if (this.presence.hasOptionalgroup) this.optionalgroup else null
+
+/**
+* Returns the value of the `optionalBool` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.optionalBoolOrNull: Boolean? get() = if (this.presence.hasOptionalBool) this.optionalBool else null
 
 /**
 * Constructs a new message.
@@ -207,6 +537,11 @@ fun OneStringProto2.copy(body: OneStringProto2.Builder.() -> Unit = {}): OneStri
 val OneStringProto2.presence: OneStringProto2Presence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `data` field if present, otherwise null.
+*/
+val OneStringProto2.dataOrNull: String? get() = if (this.presence.hasData) this.data else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = ProtoWithKeywords {
@@ -238,6 +573,16 @@ fun ProtoWithKeywords.copy(body: ProtoWithKeywords.Builder.() -> Unit = {}): Pro
 val ProtoWithKeywords.presence: ProtoWithKeywordsPresence get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `inline` field if present, otherwise null.
+*/
+val ProtoWithKeywords.inlineOrNull: Int? get() = if (this.presence.hasInline) this.inline else null
+
+/**
+* Returns the value of the `concept` field if present, otherwise null.
+*/
+val ProtoWithKeywords.conceptOrNull: String? get() = if (this.presence.hasConcept) this.concept else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = TestAllRequiredTypesProto2 {
@@ -267,6 +612,11 @@ fun TestAllRequiredTypesProto2.copy(body: TestAllRequiredTypesProto2.Builder.() 
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2] instance.
 */
 val TestAllRequiredTypesProto2.presence: TestAllRequiredTypesProto2Presence get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `optionalRecursiveMessage` field if present, otherwise null.
+*/
+val TestAllRequiredTypesProto2.optionalRecursiveMessageOrNull: TestAllRequiredTypesProto2? get() = if (this.presence.hasOptionalRecursiveMessage) this.optionalRecursiveMessage else null
 
 /**
 * Constructs a new message.
@@ -326,6 +676,16 @@ fun TestAllTypesProto2.NestedMessage.copy(body: TestAllTypesProto2.NestedMessage
 val TestAllTypesProto2.NestedMessage.presence: TestAllTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `a` field if present, otherwise null.
+*/
+val TestAllTypesProto2.NestedMessage.aOrNull: Int? get() = if (this.presence.hasA) this.a else null
+
+/**
+* Returns the value of the `corecursive` field if present, otherwise null.
+*/
+val TestAllTypesProto2.NestedMessage.corecursiveOrNull: TestAllTypesProto2? get() = if (this.presence.hasCorecursive) this.corecursive else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = Data {
@@ -357,6 +717,16 @@ fun TestAllTypesProto2.Data.copy(body: TestAllTypesProto2.Data.Builder.() -> Uni
 val TestAllTypesProto2.Data.presence: TestAllTypesProto2Presence.Data get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `groupInt32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.Data.groupInt32OrNull: Int? get() = if (this.presence.hasGroupInt32) this.groupInt32 else null
+
+/**
+* Returns the value of the `groupUint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.Data.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = MultiWordGroupField {
@@ -386,6 +756,16 @@ fun TestAllTypesProto2.MultiWordGroupField.copy(body: TestAllTypesProto2.MultiWo
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MultiWordGroupField] instance.
 */
 val TestAllTypesProto2.MultiWordGroupField.presence: TestAllTypesProto2Presence.MultiWordGroupField get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `groupInt32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.MultiWordGroupField.groupInt32OrNull: Int? get() = if (this.presence.hasGroupInt32) this.groupInt32 else null
+
+/**
+* Returns the value of the `groupUint32` field if present, otherwise null.
+*/
+val TestAllTypesProto2.MultiWordGroupField.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32) this.groupUint32 else null
 
 /**
 * Constructs a new message.
@@ -446,6 +826,11 @@ fun TestAllTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllTypesProto2
 val TestAllTypesProto2.MessageSetCorrectExtension1.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `str` field if present, otherwise null.
+*/
+val TestAllTypesProto2.MessageSetCorrectExtension1.strOrNull: String? get() = if (this.presence.hasStr) this.str else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = MessageSetCorrectExtension2 {
@@ -475,6 +860,11 @@ fun TestAllTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllTypesProto2
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2] instance.
 */
 val TestAllTypesProto2.MessageSetCorrectExtension2.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `i` field if present, otherwise null.
+*/
+val TestAllTypesProto2.MessageSetCorrectExtension2.iOrNull: Int? get() = if (this.presence.hasI) this.i else null
 
 /**
 * Constructs a new message.
@@ -534,6 +924,11 @@ fun UnknownToTestAllTypes.OptionalGroup.copy(body: UnknownToTestAllTypes.Optiona
 val UnknownToTestAllTypes.OptionalGroup.presence: UnknownToTestAllTypesPresence.OptionalGroup get() = this.asInternal()._presence
 
 /**
+* Returns the value of the `a` field if present, otherwise null.
+*/
+val UnknownToTestAllTypes.OptionalGroup.aOrNull: Int? get() = if (this.presence.hasA) this.a else null
+
+/**
 * Constructs a new message.
 * ```
 * val message = NestedMessage {
@@ -563,6 +958,11 @@ fun TestAllRequiredTypesProto2.NestedMessage.copy(body: TestAllRequiredTypesProt
 * Returns the field-presence view for this [com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.NestedMessage] instance.
 */
 val TestAllRequiredTypesProto2.NestedMessage.presence: TestAllRequiredTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
+
+/**
+* Returns the value of the `optionalCorecursive` field if present, otherwise null.
+*/
+val TestAllRequiredTypesProto2.NestedMessage.optionalCorecursiveOrNull: TestAllRequiredTypesProto2? get() = if (this.presence.hasOptionalCorecursive) this.optionalCorecursive else null
 
 /**
 * Constructs a new message.
@@ -1148,34 +1548,34 @@ interface TestAllRequiredTypesProto2Presence {
     }
 }
 
-val TestAllTypesProto2.extensionInt32: Int? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32)
+val TestAllTypesProto2.extensionInt32: Int get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32) ?: TestMessagesProto2EditionsKtExtensions.extensionInt32.defaultValue.value
 
 val TestAllTypesProto2.Companion.extensionInt32: ProtoExtensionDescriptor<TestAllTypesProto2, Int> get() = TestMessagesProto2EditionsKtExtensions.extensionInt32
 
 val TestAllTypesProto2Presence.hasExtensionInt32: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionInt32)
 
-var TestAllTypesProto2.Builder.extensionInt32: Int?
-    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32)
+var TestAllTypesProto2.Builder.extensionInt32: Int
+    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32) ?: TestMessagesProto2EditionsKtExtensions.extensionInt32.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32, value) }
 
-val TestAllTypesProto2.extensionString: String? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString)
+val TestAllTypesProto2.extensionString: String get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString) ?: TestMessagesProto2EditionsKtExtensions.extensionString.defaultValue.value
 
 val TestAllTypesProto2.Companion.extensionString: ProtoExtensionDescriptor<TestAllTypesProto2, String> get() = TestMessagesProto2EditionsKtExtensions.extensionString
 
 val TestAllTypesProto2Presence.hasExtensionString: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionString)
 
-var TestAllTypesProto2.Builder.extensionString: String?
-    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString)
+var TestAllTypesProto2.Builder.extensionString: String
+    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString) ?: TestMessagesProto2EditionsKtExtensions.extensionString.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString, value) }
 
-val TestAllTypesProto2.extensionBytes: ByteString? get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+val TestAllTypesProto2.extensionBytes: ByteString get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes) ?: TestMessagesProto2EditionsKtExtensions.extensionBytes.defaultValue.value
 
 val TestAllTypesProto2.Companion.extensionBytes: ProtoExtensionDescriptor<TestAllTypesProto2, ByteString> get() = TestMessagesProto2EditionsKtExtensions.extensionBytes
 
 val TestAllTypesProto2Presence.hasExtensionBytes: Boolean get() = (this as InternalPresenceObject).hasExtension(TestMessagesProto2EditionsKtExtensions.extensionBytes)
 
-var TestAllTypesProto2.Builder.extensionBytes: ByteString?
-    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes)
+var TestAllTypesProto2.Builder.extensionBytes: ByteString
+    get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes) ?: TestMessagesProto2EditionsKtExtensions.extensionBytes.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes, value) }
 
 val TestAllTypesProto2.groupfield: GroupField get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield) ?: TestMessagesProto2EditionsKtExtensions.groupfield.defaultValue.value

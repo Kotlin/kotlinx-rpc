@@ -64,7 +64,8 @@ class ParserTest {
         val marshaller = grpcMarshallerOf<TestAllTypes>()
         val msg = TestAllTypes {}
         val decoded = TestUtil.encodeDecode(msg, marshaller)
-        assertNull(decoded.optionalInt32)
+        assertNull(decoded.optionalInt32OrNull)
+        assertEquals(0, decoded.optionalInt32)
         assertEquals(0, decoded.repeatedInt32.size)
     }
 
@@ -78,7 +79,8 @@ class ParserTest {
         val decoded = TestUtil.encodeDecode(msg, marshaller)
         assertEquals(42, decoded.optionalInt32)
         assertEquals("hello", decoded.optionalString)
-        assertNull(decoded.optionalInt64)
+        assertNull(decoded.optionalInt64OrNull)
+        assertEquals(0L, decoded.optionalInt64)
     }
 
     @Test
