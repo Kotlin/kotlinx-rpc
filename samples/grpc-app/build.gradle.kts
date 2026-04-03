@@ -4,7 +4,7 @@
 
 plugins {
     kotlin("jvm") version "2.3.0"
-    id("org.jetbrains.kotlinx.rpc.plugin") version "0.11.0-grpc-186"
+    id("org.jetbrains.kotlinx.rpc.plugin") version "0.11.0-grpc-187"
 }
 
 group = "kotlinx.rpc.sample"
@@ -20,9 +20,9 @@ kotlin {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:0.11.0-grpc-186")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-client:0.11.0-grpc-186")
-    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-server:0.11.0-grpc-186")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:0.11.0-grpc-187")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-client:0.11.0-grpc-187")
+    implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-server:0.11.0-grpc-187")
     implementation("ch.qos.logback:logback-classic:1.5.20")
     implementation("io.grpc:grpc-netty:1.79.0")
 }

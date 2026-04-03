@@ -2,6 +2,22 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.11.0-grpc-187
+> Published 2 April 2026
+
+**Full Changelog**: [0.11.0-grpc-186...0.11.0-grpc-187](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-186...0.11.0-grpc-187)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_11_0-grpc-187}
+* pb: Add `this` qualifier for fields in generated `hashCode` methods by [@Jozott00](https://github.com/Jozott00) in [#642](https://github.com/Kotlin/kotlinx-rpc/pull/642)
+
+#### Infra 🚧 {id=Infra_0_11_0-grpc-187}
+* pb+grpc: Prebuild c-interop binaries by [@Jozott00](https://github.com/Jozott00) in [#635](https://github.com/Kotlin/kotlinx-rpc/pull/635)
+
+#### Other Changes 🧹 {id=Other_Changes_0_11_0-grpc-187}
+* Added AI guidelines for ... everything? (#640, KRPC-530, KRPC-529) by [@Mr3zee](https://github.com/Mr3zee) in [#640](https://github.com/Kotlin/kotlinx-rpc/pull/640)
+* Updated Yarn deps for Kotlin/Js/Wasm by [@Mr3zee](https://github.com/Mr3zee) in [#641](https://github.com/Kotlin/kotlinx-rpc/pull/641)
+
+
 ## 0.11.0-grpc-186
 > Published 27 March 2026
 

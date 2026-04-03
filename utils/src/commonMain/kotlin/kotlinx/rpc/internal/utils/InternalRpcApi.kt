@@ -8,5 +8,11 @@ package kotlinx.rpc.internal.utils
     message = "This is internal kotlinx.rpc api that is subject to change and should not be used",
     level = RequiresOptIn.Level.ERROR,
 )
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.TYPEALIAS, AnnotationTarget.PROPERTY)
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.TYPEALIAS,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CONSTRUCTOR,
+)
 public annotation class InternalRpcApi

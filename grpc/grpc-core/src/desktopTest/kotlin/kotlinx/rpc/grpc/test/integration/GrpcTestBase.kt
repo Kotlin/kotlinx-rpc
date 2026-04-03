@@ -65,7 +65,7 @@ abstract class GrpcTestBase {
     }
 
     companion object {
-        const val PORT = 8080
+        const val PORT = 49656
     }
 
     internal fun serverInterceptor(
