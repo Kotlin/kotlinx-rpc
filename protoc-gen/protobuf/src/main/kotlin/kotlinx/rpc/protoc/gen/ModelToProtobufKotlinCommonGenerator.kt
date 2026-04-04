@@ -123,8 +123,10 @@ class ModelToProtobufKotlinCommonGenerator(
             generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
-            // generates orNull getters for optional fields
-            generatePublicOrNullFieldGetters(it)
+            if (config.generateOptionalFieldOrNullGetters) {
+                // generates orNull getters for optional fields
+                generatePublicOrNullFieldGetters(it)
+            }
         }
 
         // the presence interfaces are not generated in the flattened list

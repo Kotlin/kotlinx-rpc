@@ -69,8 +69,11 @@ fun generatedCodeDir(sourceSetName: String): File = project.layout.projectDirect
 
 rpc {
     protoc {
-        buf.generate.comments {
-            includeFileLevelComments = false
+        buf.generate {
+            optionalFieldOrNullGetters = true
+            comments {
+                includeFileLevelComments = false
+            }
         }
     }
 }

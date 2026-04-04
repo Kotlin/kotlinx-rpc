@@ -33,6 +33,7 @@ class Config(
     val explicitApiModeEnabled: Boolean,
     val generateComments: Boolean,
     val generateFileLevelComments: Boolean,
+    val generateOptionalFieldOrNullGetters: Boolean,
     val indentSize: Int,
     val platform: Platform,
     val protoNamesOutput: String?,
@@ -45,6 +46,7 @@ abstract class ProtocGenPlugin {
         private const val EXPLICIT_API_MODE_ENABLED_OPTION = "explicitApiModeEnabled"
         private const val GENERATE_COMMENTS_OPTION = "generateComments"
         private const val GENERATE_FILE_LEVEL_COMMENTS_OPTION = "generateFileLevelComments"
+        private const val GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS = "generateOptionalFieldOrNullGetters"
         private const val INDENT_SIZE_OPTION = "indentSize"
         private const val PLATFORM_OPTION = "platform"
     }
@@ -86,6 +88,7 @@ abstract class ProtocGenPlugin {
 
         val generateComments = parameters[GENERATE_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
         val generateFileLevelComments = parameters[GENERATE_FILE_LEVEL_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
+        val generateOptionalFieldOrNullGetters = parameters[GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS]?.toBooleanStrictOrNull() ?: false
 
         val indentSize = parameters[INDENT_SIZE_OPTION]?.toIntOrNull() ?: 4
 
@@ -97,6 +100,7 @@ abstract class ProtocGenPlugin {
             explicitApiModeEnabled = explicitApiModeEnabled,
             generateComments = generateComments,
             generateFileLevelComments = generateFileLevelComments,
+            generateOptionalFieldOrNullGetters = generateOptionalFieldOrNullGetters,
             indentSize = indentSize,
             platform = Platform.fromString(platform),
             protoNamesOutput = protoNamesOutput,

@@ -218,6 +218,25 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
     public fun comments(configure: Action<BufCommentsExtension>) {
         configure.execute(comments)
     }
+
+    /**
+     * Option to additionally generate nullable getters for optional message fields.
+     *
+     * Example:
+     * ```proto
+     * message Foo {
+     *     optional string bar = 1;
+     * }
+     * ```
+     * ```kotlin
+     * val foo: Foo = ...
+     * val bar: String? = foo.barOrNull
+     * ```
+     *
+     * Default value: `false`.
+     */
+    public val optionalFieldOrNullGetters: Property<Boolean> = project.objects.property<Boolean>()
+        .convention(false)
 }
 
 /**
