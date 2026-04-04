@@ -46,6 +46,56 @@
         </code-block>
     </chapter>
 
+    <chapter title="Optional fields and clearing" id="grpc-optional-fields-and-clearing">
+        <p>
+            Optional protobuf fields are generated as non-null Kotlin properties.
+            When such a field is absent, the generated property returns the protobuf default value for that field.
+            To check whether the field is actually present, use <code>presence.has&lt;Field&gt;</code>.
+            Generated builders and <code>copy { ... }</code> blocks also provide
+            <code>clear&lt;Field&gt;()</code>, which removes the field from the message instead of assigning its default value.
+        </p>
+        <p>
+            If you enable
+            <a href="grpc-configuration.topic" anchor="grpc-buf-generate-optional-field-or-null-getters">
+                <code>rpc.protoc.buf.generate.optionalFieldOrNullGetters</code>
+            </a>,
+            the generator also adds <code>&lt;field&gt;OrNull</code> accessors for optional fields.
+        </p>
+        <code-block lang="protobuf">
+            package com.example;
+
+            message User {
+              optional string nickname = 1;
+            }
+        </code-block>
+        <code-block lang="Kotlin">
+            import com.example.User
+            import com.example.copy
+            import com.example.invoke
+
+            val original = User {
+                nickname = "neo"
+            }
+
+            check(original.presence.hasNickname)
+            check(original.nickname == "neo")
+
+            val cleared = original.copy {
+                clearNickname()
+            }
+
+            check(!cleared.presence.hasNickname)
+            check(cleared.nickname == "")
+
+            // Available only when optionalFieldOrNullGetters is enabled:
+            check(cleared.nicknameOrNull == null)
+        </code-block>
+        <p>
+            Clearing a field affects subsequent serialization as well: once cleared, the field is absent from newly
+            encoded data and stays absent after decode.
+        </p>
+    </chapter>
+
     <chapter title="Enums" id="grpc-enums">
         <p>
             Proto enums become Kotlin sealed types. Unknown values received over the wire

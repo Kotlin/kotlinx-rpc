@@ -456,6 +456,10 @@ var TestAllTypesEdition2023.Builder.extensionInt32: Int
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32) ?: TestMessagesEdition2023KtExtensions.extensionInt32.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32, value) }
 
+fun TestAllTypesEdition2023.Builder.clearExtensionInt32() {
+    asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32, null)
+}
+
 val TestAllTypesEdition2023.extensionString: String get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionString) ?: TestMessagesEdition2023KtExtensions.extensionString.defaultValue.value
 
 val TestAllTypesEdition2023.Companion.extensionString: ProtoExtensionDescriptor<TestAllTypesEdition2023, String> get() = TestMessagesEdition2023KtExtensions.extensionString
@@ -465,6 +469,10 @@ val TestAllTypesEdition2023Presence.hasExtensionString: Boolean get() = (this as
 var TestAllTypesEdition2023.Builder.extensionString: String
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionString) ?: TestMessagesEdition2023KtExtensions.extensionString.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionString, value) }
+
+fun TestAllTypesEdition2023.Builder.clearExtensionString() {
+    asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionString, null)
+}
 
 val TestAllTypesEdition2023.extensionBytes: ByteString get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes) ?: TestMessagesEdition2023KtExtensions.extensionBytes.defaultValue.value
 
@@ -476,6 +484,10 @@ var TestAllTypesEdition2023.Builder.extensionBytes: ByteString
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes) ?: TestMessagesEdition2023KtExtensions.extensionBytes.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes, value) }
 
+fun TestAllTypesEdition2023.Builder.clearExtensionBytes() {
+    asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.extensionBytes, null)
+}
+
 val TestAllTypesEdition2023.groupliketype: GroupLikeType get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype) ?: TestMessagesEdition2023KtExtensions.groupliketype.defaultValue.value
 
 val TestAllTypesEdition2023.Companion.groupliketype: ProtoExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> get() = TestMessagesEdition2023KtExtensions.groupliketype
@@ -485,6 +497,10 @@ val TestAllTypesEdition2023Presence.hasGroupliketype: Boolean get() = (this as I
 var TestAllTypesEdition2023.Builder.groupliketype: GroupLikeType
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype) ?: TestMessagesEdition2023KtExtensions.groupliketype.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype, value) }
+
+fun TestAllTypesEdition2023.Builder.clearGroupliketype() {
+    asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.groupliketype, null)
+}
 
 val TestAllTypesEdition2023.delimitedExt: GroupLikeType get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt) ?: TestMessagesEdition2023KtExtensions.delimitedExt.defaultValue.value
 
@@ -496,3 +512,6 @@ var TestAllTypesEdition2023.Builder.delimitedExt: GroupLikeType
     get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt) ?: TestMessagesEdition2023KtExtensions.delimitedExt.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt, value) }
 
+fun TestAllTypesEdition2023.Builder.clearDelimitedExt() {
+    asInternal().setExtensionValue(TestMessagesEdition2023KtExtensions.delimitedExt, null)
+}

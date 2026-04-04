@@ -1558,6 +1558,10 @@ var TestAllTypesProto2.Builder.extensionInt32: Int
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32) ?: TestMessagesProto2EditionsKtExtensions.extensionInt32.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32, value) }
 
+fun TestAllTypesProto2.Builder.clearExtensionInt32() {
+    asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32, null)
+}
+
 val TestAllTypesProto2.extensionString: String get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString) ?: TestMessagesProto2EditionsKtExtensions.extensionString.defaultValue.value
 
 val TestAllTypesProto2.Companion.extensionString: ProtoExtensionDescriptor<TestAllTypesProto2, String> get() = TestMessagesProto2EditionsKtExtensions.extensionString
@@ -1567,6 +1571,10 @@ val TestAllTypesProto2Presence.hasExtensionString: Boolean get() = (this as Inte
 var TestAllTypesProto2.Builder.extensionString: String
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString) ?: TestMessagesProto2EditionsKtExtensions.extensionString.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString, value) }
+
+fun TestAllTypesProto2.Builder.clearExtensionString() {
+    asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionString, null)
+}
 
 val TestAllTypesProto2.extensionBytes: ByteString get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes) ?: TestMessagesProto2EditionsKtExtensions.extensionBytes.defaultValue.value
 
@@ -1578,6 +1586,10 @@ var TestAllTypesProto2.Builder.extensionBytes: ByteString
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes) ?: TestMessagesProto2EditionsKtExtensions.extensionBytes.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes, value) }
 
+fun TestAllTypesProto2.Builder.clearExtensionBytes() {
+    asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionBytes, null)
+}
+
 val TestAllTypesProto2.groupfield: GroupField get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield) ?: TestMessagesProto2EditionsKtExtensions.groupfield.defaultValue.value
 
 val TestAllTypesProto2.Companion.groupfield: ProtoExtensionDescriptor<TestAllTypesProto2, GroupField> get() = TestMessagesProto2EditionsKtExtensions.groupfield
@@ -1587,6 +1599,10 @@ val TestAllTypesProto2Presence.hasGroupfield: Boolean get() = (this as InternalP
 var TestAllTypesProto2.Builder.groupfield: GroupField
     get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield) ?: TestMessagesProto2EditionsKtExtensions.groupfield.defaultValue.value
     set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield, value) }
+
+fun TestAllTypesProto2.Builder.clearGroupfield() {
+    asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.groupfield, null)
+}
 
 object TestAllTypesProto2Extensions {
     object MessageSetCorrectExtension1Extensions {
@@ -1599,6 +1615,10 @@ object TestAllTypesProto2Extensions {
         var TestAllTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension1
             get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
             set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension, value) }
+
+        fun TestAllTypesProto2.MessageSetCorrect.Builder.clearMessageSetExtension() {
+            asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension, null)
+        }
     }
 
     object MessageSetCorrectExtension2Extensions {
@@ -1611,6 +1631,10 @@ object TestAllTypesProto2Extensions {
         var TestAllTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllTypesProto2.MessageSetCorrectExtension2
             get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
             set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension, value) }
+
+        fun TestAllTypesProto2.MessageSetCorrect.Builder.clearMessageSetExtension() {
+            asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension, null)
+        }
     }
 
     object ExtensionWithOneofExtensions {
@@ -1623,6 +1647,10 @@ object TestAllTypesProto2Extensions {
         var TestAllTypesProto2.MessageSetCorrect.Builder.extensionWithOneof: TestAllTypesProto2.ExtensionWithOneof
             get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof) ?: TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof.defaultValue.value
             set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof, value) }
+
+        fun TestAllTypesProto2.MessageSetCorrect.Builder.clearExtensionWithOneof() {
+            asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof, null)
+        }
     }
 }
 
@@ -1637,6 +1665,10 @@ object TestAllRequiredTypesProto2Extensions {
         var TestAllRequiredTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension1
             get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension) ?: TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension.defaultValue.value
             set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension, value) }
+
+        fun TestAllRequiredTypesProto2.MessageSetCorrect.Builder.clearMessageSetExtension() {
+            asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension, null)
+        }
     }
 
     object MessageSetCorrectExtension2Extensions {
@@ -1649,5 +1681,9 @@ object TestAllRequiredTypesProto2Extensions {
         var TestAllRequiredTypesProto2.MessageSetCorrect.Builder.messageSetExtension: TestAllRequiredTypesProto2.MessageSetCorrectExtension2
             get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension) ?: TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension.defaultValue.value
             set(value) { asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension, value) }
+
+        fun TestAllRequiredTypesProto2.MessageSetCorrect.Builder.clearMessageSetExtension() {
+            asInternal().setExtensionValue(TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension, null)
+        }
     }
 }
