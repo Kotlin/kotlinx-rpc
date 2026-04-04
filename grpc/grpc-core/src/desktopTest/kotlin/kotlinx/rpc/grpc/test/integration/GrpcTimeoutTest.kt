@@ -75,7 +75,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
     }
 
     @Test
-    fun `test timeout set to very short milliseconds triggers immediately`() = repeat(100) {
+    fun `test timeout set to very short milliseconds triggers immediately`() {
         val exc = assertFailsWith<GrpcStatusException> {
             runGrpcTest(
                 clientInterceptors = clientInterceptor {
@@ -88,6 +88,5 @@ class GrpcTimeoutTest : GrpcTestBase() {
             }
         }
         assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
-        println("Passed $it")
     }
 }

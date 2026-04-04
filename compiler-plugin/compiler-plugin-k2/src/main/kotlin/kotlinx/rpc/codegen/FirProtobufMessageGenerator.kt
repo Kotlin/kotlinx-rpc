@@ -209,8 +209,8 @@ class FirProtobufMessageGenerator(
 /**
  * Returns the names of all proto fields of this generated proto message class that are presence tracked.
  *
- * It finds those names, by searching for the presence indices object in the internal message class.
- * The presence indices the object contains a field for each presence-tracked field.
+ * It finds those names by searching for the `PresenceIndices` object in the internal message class.
+ * The `PresenceIndices` object contains a field for each presence-tracked field.
  * The field name is the same as the proto field name.
  */
 private fun FirClassSymbol<*>.presenceTrackedPropertyNames(session: FirSession): Set<Name> {
