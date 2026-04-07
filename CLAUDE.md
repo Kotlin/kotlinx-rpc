@@ -3,6 +3,9 @@
 kotlinx-rpc is a Kotlin Multiplatform library for building RPC services.
 Version catalog: `versions-root/libs.versions.toml`
 
+## Effort Level
+Always operate at maximum effort level. Do not ask about effort preferences.
+
 ## Protocols
 
 EXTREMELY IMPORTANT.
