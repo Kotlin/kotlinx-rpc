@@ -15,6 +15,7 @@ import kotlinx.rpc.protobuf.internal.cinterop.*
 import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
+import kotlin.native.Platform
 import kotlin.native.ref.createCleaner
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeProtobufApi::class)
@@ -307,11 +308,19 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 }
 
+@OptIn(ExperimentalNativeApi::class)
+private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
+    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
+}
+
 /**
  * This constructor takes a [Source] (which must be a [Buffer]) because
  * the implementation ([WireDecoderNative]) depends on [Buffer]'s internal structure.
  */
-public actual fun WireDecoder(source: Source): WireDecoder = WireDecoderNative(source as Buffer)
+public actual fun WireDecoder(source: Source): WireDecoder {
+    ensureLittleEndian
+    return WireDecoderNative(source as Buffer)
+}
 
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     block()
