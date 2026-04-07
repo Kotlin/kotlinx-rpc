@@ -16,5 +16,3 @@ Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
 Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberTooHigh
 Required.Editions_Proto3.ProtobufInput.BadTag_OverlongVarint
 
-# UTF-8 validation for extensions not yet implemented (KRPC-275)
-Recommended.Editions.ProtobufInput.RejectInvalidUtf8.String.Extension
