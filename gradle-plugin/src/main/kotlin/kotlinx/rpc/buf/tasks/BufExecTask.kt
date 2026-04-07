@@ -132,7 +132,13 @@ internal fun <T : BufExecTask> Project.registerBufExecTask(
 ): TaskProvider<T> = tasks.register(name, clazz, properties).apply {
     configure {
         val executableConfiguration = configurations.named(BUF_EXECUTABLE_CONFIGURATION)
-        bufExecutable.convention(project.provider { executableConfiguration.get().singleFile })
+        bufExecutable.convention(
+            executableConfiguration.flatMap { config ->
+                config.elements.map { elements ->
+                    elements.single().asFile
+                }
+            }
+        )
         this.workingDir.convention(workingDir)
 
         val buf = provider { rpcExtension().protoc.get().buf }
