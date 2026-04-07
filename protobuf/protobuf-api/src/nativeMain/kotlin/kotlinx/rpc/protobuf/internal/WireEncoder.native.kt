@@ -253,10 +253,12 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
 }
 
 @OptIn(ExperimentalNativeApi::class)
+private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
+    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
+}
+
 public actual fun WireEncoder(sink: Sink): WireEncoder {
-    require(Platform.isLittleEndian) {
-        "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-    }
+    ensureLittleEndian
     return WireEncoderNative(sink)
 }
 

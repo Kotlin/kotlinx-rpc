@@ -308,15 +308,17 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 }
 
+@OptIn(ExperimentalNativeApi::class)
+private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
+    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
+}
+
 /**
  * This constructor takes a [Source] (which must be a [Buffer]) because
  * the implementation ([WireDecoderNative]) depends on [Buffer]'s internal structure.
  */
-@OptIn(ExperimentalNativeApi::class)
 public actual fun WireDecoder(source: Source): WireDecoder {
-    require(Platform.isLittleEndian) {
-        "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-    }
+    ensureLittleEndian
     return WireDecoderNative(source as Buffer)
 }
 
