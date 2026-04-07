@@ -18,6 +18,16 @@ Project key: **KRPC** | URL: `https://youtrack.jetbrains.com/issue/KRPC-*`
 
 For **creating new issues**, use the `file-youtrack-issue` skill instead.
 
+## Agent workflow override
+
+When this skill is invoked from the `fix-issue` skill (autonomous issue-fixing workflow),
+**all YouTrack operations must use the agent identity** instead of the user's:
+- MCP tools: `mcp__youtrack_agent__*` (not `mcp__youtrack__*`)
+- REST API token: `$YOUTRACK_AGENT_TOKEN` (not `$YOUTRACK_TOKEN`)
+
+The `fix-issue` skill's Authentication section has full details. Outside of `fix-issue`,
+the defaults below apply.
+
 ## Tools Available
 
 Use `mcp__youtrack__*` MCP tools for standard operations. When MCP tools lack a capability

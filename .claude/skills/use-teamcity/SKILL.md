@@ -22,6 +22,13 @@ to be installed at `/opt/homebrew/bin/teamcity`).
 For **local** Gradle builds and tests, use `running_gradle_builds` /
 `running_gradle_tests` skills instead.
 
+## Agent workflow override
+
+When this skill is invoked from the `fix-issue` skill (autonomous issue-fixing workflow),
+**never run `teamcity auth status` or `teamcity auth login`**. Instead, prefix every
+`teamcity` command with `TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN`. The `fix-issue` skill's
+Authentication section has full details. Outside of `fix-issue`, the defaults below apply.
+
 ## Prerequisites
 
 Before running any commands, verify authentication:
