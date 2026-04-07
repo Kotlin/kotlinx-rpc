@@ -33,6 +33,23 @@ final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcM
     final val recursionLimit // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit|{}recursionLimit[0]
         final fun <get-recursionLimit>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.recursionLimit.<get-recursionLimit>|<get-recursionLimit>(){}[0]
 
+    final class Builder { // kotlinx.rpc.protobuf/ProtoConfig.Builder|null[0]
+        constructor <init>() // kotlinx.rpc.protobuf/ProtoConfig.Builder.<init>|<init>(){}[0]
+
+        final var discardUnknownFields // kotlinx.rpc.protobuf/ProtoConfig.Builder.discardUnknownFields|{}discardUnknownFields[0]
+            final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtoConfig.Builder.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
+            final fun <set-discardUnknownFields>(kotlin/Boolean) // kotlinx.rpc.protobuf/ProtoConfig.Builder.discardUnknownFields.<set-discardUnknownFields>|<set-discardUnknownFields>(kotlin.Boolean){}[0]
+        final var extensionRegistry // kotlinx.rpc.protobuf/ProtoConfig.Builder.extensionRegistry|{}extensionRegistry[0]
+            final fun <get-extensionRegistry>(): kotlinx.rpc.protobuf/ProtoExtensionRegistry? // kotlinx.rpc.protobuf/ProtoConfig.Builder.extensionRegistry.<get-extensionRegistry>|<get-extensionRegistry>(){}[0]
+            final fun <set-extensionRegistry>(kotlinx.rpc.protobuf/ProtoExtensionRegistry?) // kotlinx.rpc.protobuf/ProtoConfig.Builder.extensionRegistry.<set-extensionRegistry>|<set-extensionRegistry>(kotlinx.rpc.protobuf.ProtoExtensionRegistry?){}[0]
+        final var recursionLimit // kotlinx.rpc.protobuf/ProtoConfig.Builder.recursionLimit|{}recursionLimit[0]
+            final fun <get-recursionLimit>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.Builder.recursionLimit.<get-recursionLimit>|<get-recursionLimit>(){}[0]
+            final fun <set-recursionLimit>(kotlin/Int) // kotlinx.rpc.protobuf/ProtoConfig.Builder.recursionLimit.<set-recursionLimit>|<set-recursionLimit>(kotlin.Int){}[0]
+
+        final fun build(): kotlinx.rpc.protobuf/ProtoConfig // kotlinx.rpc.protobuf/ProtoConfig.Builder.build|build(){}[0]
+        final fun extensions(kotlin/Function1<kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder, kotlin/Unit>) // kotlinx.rpc.protobuf/ProtoConfig.Builder.extensions|extensions(kotlin.Function1<kotlinx.rpc.protobuf.ProtoExtensionRegistry.Builder,kotlin.Unit>){}[0]
+    }
+
     final object Companion { // kotlinx.rpc.protobuf/ProtoConfig.Companion|null[0]
         final const val DEFAULT_RECURSION_LIMIT // kotlinx.rpc.protobuf/ProtoConfig.Companion.DEFAULT_RECURSION_LIMIT|{}DEFAULT_RECURSION_LIMIT[0]
             final fun <get-DEFAULT_RECURSION_LIMIT>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoConfig.Companion.DEFAULT_RECURSION_LIMIT.<get-DEFAULT_RECURSION_LIMIT>|<get-DEFAULT_RECURSION_LIMIT>(){}[0]
@@ -55,6 +72,7 @@ sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeExc
 
 final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.io/Source): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.io.Source){}[0]
 final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
+final fun kotlinx.rpc.protobuf/ProtoConfig(kotlin/Function1<kotlinx.rpc.protobuf/ProtoConfig.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoConfig // kotlinx.rpc.protobuf/ProtoConfig|ProtoConfig(kotlin.Function1<kotlinx.rpc.protobuf.ProtoConfig.Builder,kotlin.Unit>){}[0]
 final fun kotlinx.rpc.protobuf/ProtoExtensionRegistry(kotlin/Function1<kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoExtensionRegistry // kotlinx.rpc.protobuf/ProtoExtensionRegistry|ProtoExtensionRegistry(kotlin.Function1<kotlinx.rpc.protobuf.ProtoExtensionRegistry.Builder,kotlin.Unit>){}[0]
 final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException|checkForPlatformDecodeException(kotlin.Function0<kotlin.Unit>){}[0]
 final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException|checkForPlatformEncodeException(kotlin.Function0<kotlin.Unit>){}[0]

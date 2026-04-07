@@ -9,6 +9,18 @@ public final class kotlinx/rpc/protobuf/ProtoConfig : kotlinx/rpc/grpc/marshalle
 	public final fun getRecursionLimit ()I
 }
 
+public final class kotlinx/rpc/protobuf/ProtoConfig$Builder {
+	public fun <init> ()V
+	public final fun build ()Lkotlinx/rpc/protobuf/ProtoConfig;
+	public final fun extensions (Lkotlin/jvm/functions/Function1;)V
+	public final fun getDiscardUnknownFields ()Z
+	public final fun getExtensionRegistry ()Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;
+	public final fun getRecursionLimit ()I
+	public final fun setDiscardUnknownFields (Z)V
+	public final fun setExtensionRegistry (Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
+	public final fun setRecursionLimit (I)V
+}
+
 public final class kotlinx/rpc/protobuf/ProtoConfig$Companion {
 }
 
@@ -30,6 +42,10 @@ public final class kotlinx/rpc/protobuf/ProtoExtensionRegistry$Builder {
 	public final fun register (Lkotlinx/rpc/protobuf/ProtoExtensionDescriptor;)V
 	public final fun registerAll (Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
 	public final fun unaryPlus (Lkotlinx/rpc/protobuf/ProtoExtensionDescriptor;)V
+}
+
+public final class kotlinx/rpc/protobuf/ProtobufConfigKt {
+	public static final fun ProtoConfig (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/protobuf/ProtoConfig;
 }
 
 public final class kotlinx/rpc/protobuf/internal/ProtobufDecodingException : kotlinx/rpc/protobuf/internal/ProtobufException {
