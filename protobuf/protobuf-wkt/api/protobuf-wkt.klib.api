@@ -1191,33 +1191,33 @@ abstract interface com.google.protobuf.kotlin/Field { // com.google.protobuf.kot
             final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.UNRECOGNIZED.toString|toString(){}[0]
         }
 
-        final object CARDINALITY_OPTIONAL : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_OPTIONAL.toString|toString(){}[0]
-        }
-
-        final object CARDINALITY_REPEATED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REPEATED.toString|toString(){}[0]
-        }
-
-        final object CARDINALITY_REQUIRED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_REQUIRED.toString|toString(){}[0]
-        }
-
-        final object CARDINALITY_UNKNOWN : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.CARDINALITY_UNKNOWN.toString|toString(){}[0]
-        }
-
         final object Companion { // com.google.protobuf.kotlin/Field.Cardinality.Companion|null[0]
             final val entries // com.google.protobuf.kotlin/Field.Cardinality.Companion.entries|{}entries[0]
                 final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/Field.Cardinality> // com.google.protobuf.kotlin/Field.Cardinality.Companion.entries.<get-entries>|<get-entries>(){}[0]
+        }
+
+        final object OPTIONAL : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.OPTIONAL|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.OPTIONAL.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.OPTIONAL.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.OPTIONAL.toString|toString(){}[0]
+        }
+
+        final object REPEATED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.REPEATED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.REPEATED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.REPEATED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.REPEATED.toString|toString(){}[0]
+        }
+
+        final object REQUIRED : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.REQUIRED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.REQUIRED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.REQUIRED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.REQUIRED.toString|toString(){}[0]
+        }
+
+        final object UNKNOWN : com.google.protobuf.kotlin/Field.Cardinality { // com.google.protobuf.kotlin/Field.Cardinality.UNKNOWN|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Field.Cardinality.UNKNOWN.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Field.Cardinality.UNKNOWN.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Field.Cardinality.UNKNOWN.toString|toString(){}[0]
         }
     }
 
@@ -1443,22 +1443,22 @@ abstract interface com.google.protobuf.kotlin/FieldDescriptorProto { // com.goog
                 final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/FieldDescriptorProto.Label> // com.google.protobuf.kotlin/FieldDescriptorProto.Label.Companion.entries.<get-entries>|<get-entries>(){}[0]
         }
 
-        final object LABEL_OPTIONAL : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_OPTIONAL|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_OPTIONAL.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_OPTIONAL.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_OPTIONAL.toString|toString(){}[0]
+        final object OPTIONAL : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.OPTIONAL|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.OPTIONAL.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.OPTIONAL.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.OPTIONAL.toString|toString(){}[0]
         }
 
-        final object LABEL_REPEATED : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REPEATED|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REPEATED.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REPEATED.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REPEATED.toString|toString(){}[0]
+        final object REPEATED : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REPEATED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REPEATED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REPEATED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REPEATED.toString|toString(){}[0]
         }
 
-        final object LABEL_REQUIRED : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REQUIRED|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REQUIRED.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REQUIRED.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.LABEL_REQUIRED.toString|toString(){}[0]
+        final object REQUIRED : com.google.protobuf.kotlin/FieldDescriptorProto.Label { // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REQUIRED|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REQUIRED.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REQUIRED.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Label.REQUIRED.toString|toString(){}[0]
         }
     }
 
@@ -1479,117 +1479,117 @@ abstract interface com.google.protobuf.kotlin/FieldDescriptorProto { // com.goog
             final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UNRECOGNIZED.toString|toString(){}[0]
         }
 
+        final object BOOL : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BOOL|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BOOL.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BOOL.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BOOL.toString|toString(){}[0]
+        }
+
+        final object BYTES : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BYTES|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BYTES.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BYTES.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.BYTES.toString|toString(){}[0]
+        }
+
         final object Companion { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.Companion|null[0]
             final val entries // com.google.protobuf.kotlin/FieldDescriptorProto.Type.Companion.entries|{}entries[0]
                 final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/FieldDescriptorProto.Type> // com.google.protobuf.kotlin/FieldDescriptorProto.Type.Companion.entries.<get-entries>|<get-entries>(){}[0]
         }
 
-        final object TYPE_BOOL : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BOOL|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BOOL.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BOOL.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BOOL.toString|toString(){}[0]
+        final object DOUBLE : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.DOUBLE|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.DOUBLE.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.DOUBLE.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.DOUBLE.toString|toString(){}[0]
         }
 
-        final object TYPE_BYTES : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BYTES|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BYTES.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BYTES.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_BYTES.toString|toString(){}[0]
+        final object ENUM : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.ENUM|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.ENUM.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.ENUM.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.ENUM.toString|toString(){}[0]
         }
 
-        final object TYPE_DOUBLE : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_DOUBLE|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_DOUBLE.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_DOUBLE.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_DOUBLE.toString|toString(){}[0]
+        final object FIXED32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED32.toString|toString(){}[0]
         }
 
-        final object TYPE_ENUM : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_ENUM|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_ENUM.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_ENUM.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_ENUM.toString|toString(){}[0]
+        final object FIXED64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FIXED64.toString|toString(){}[0]
         }
 
-        final object TYPE_FIXED32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED32|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED32.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED32.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED32.toString|toString(){}[0]
+        final object FLOAT : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FLOAT|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FLOAT.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FLOAT.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.FLOAT.toString|toString(){}[0]
         }
 
-        final object TYPE_FIXED64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED64|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED64.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED64.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FIXED64.toString|toString(){}[0]
+        final object GROUP : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.GROUP|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.GROUP.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.GROUP.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.GROUP.toString|toString(){}[0]
         }
 
-        final object TYPE_FLOAT : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FLOAT|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FLOAT.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FLOAT.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_FLOAT.toString|toString(){}[0]
+        final object INT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT32.toString|toString(){}[0]
         }
 
-        final object TYPE_GROUP : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_GROUP|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_GROUP.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_GROUP.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_GROUP.toString|toString(){}[0]
+        final object INT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.INT64.toString|toString(){}[0]
         }
 
-        final object TYPE_INT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT32|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT32.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT32.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT32.toString|toString(){}[0]
+        final object MESSAGE : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.MESSAGE|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.MESSAGE.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.MESSAGE.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.MESSAGE.toString|toString(){}[0]
         }
 
-        final object TYPE_INT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT64|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT64.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT64.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_INT64.toString|toString(){}[0]
+        final object SFIXED32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED32.toString|toString(){}[0]
         }
 
-        final object TYPE_MESSAGE : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_MESSAGE|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_MESSAGE.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_MESSAGE.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_MESSAGE.toString|toString(){}[0]
+        final object SFIXED64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SFIXED64.toString|toString(){}[0]
         }
 
-        final object TYPE_SFIXED32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED32|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED32.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED32.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED32.toString|toString(){}[0]
+        final object SINT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT32.toString|toString(){}[0]
         }
 
-        final object TYPE_SFIXED64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED64|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED64.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED64.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SFIXED64.toString|toString(){}[0]
+        final object SINT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.SINT64.toString|toString(){}[0]
         }
 
-        final object TYPE_SINT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT32|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT32.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT32.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT32.toString|toString(){}[0]
+        final object STRING : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.STRING|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.STRING.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.STRING.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.STRING.toString|toString(){}[0]
         }
 
-        final object TYPE_SINT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT64|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT64.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT64.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_SINT64.toString|toString(){}[0]
+        final object UINT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT32|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT32.toString|toString(){}[0]
         }
 
-        final object TYPE_STRING : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_STRING|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_STRING.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_STRING.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_STRING.toString|toString(){}[0]
-        }
-
-        final object TYPE_UINT32 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT32|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT32.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT32.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT32.toString|toString(){}[0]
-        }
-
-        final object TYPE_UINT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT64|null[0]
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT64.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT64.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.TYPE_UINT64.toString|toString(){}[0]
+        final object UINT64 : com.google.protobuf.kotlin/FieldDescriptorProto.Type { // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT64|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT64.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT64.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FieldDescriptorProto.Type.UINT64.toString|toString(){}[0]
         }
     }
 
@@ -4776,22 +4776,22 @@ sealed class com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/S
             final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/Syntax> // com.google.protobuf.kotlin/Syntax.Companion.entries.<get-entries>|<get-entries>(){}[0]
     }
 
-    final object SYNTAX_EDITIONS : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS|null[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_EDITIONS.toString|toString(){}[0]
+    final object EDITIONS : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.EDITIONS|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.EDITIONS.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.EDITIONS.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.EDITIONS.toString|toString(){}[0]
     }
 
-    final object SYNTAX_PROTO2 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2|null[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO2.toString|toString(){}[0]
+    final object PROTO2 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.PROTO2|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.PROTO2.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.PROTO2.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.PROTO2.toString|toString(){}[0]
     }
 
-    final object SYNTAX_PROTO3 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3|null[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.SYNTAX_PROTO3.toString|toString(){}[0]
+    final object PROTO3 : com.google.protobuf.kotlin/Syntax { // com.google.protobuf.kotlin/Syntax.PROTO3|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Syntax.PROTO3.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Syntax.PROTO3.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Syntax.PROTO3.toString|toString(){}[0]
     }
 }
 

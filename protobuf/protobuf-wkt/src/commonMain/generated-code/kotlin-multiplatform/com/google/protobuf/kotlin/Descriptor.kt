@@ -283,31 +283,31 @@ public interface FieldDescriptorProto {
         * 0 is reserved for errors.
         * Order is weird for historical reasons.
         */
-        public data object TYPE_DOUBLE: Type(number = 1)
+        public data object DOUBLE: Type(number = 1)
 
-        public data object TYPE_FLOAT: Type(number = 2)
+        public data object FLOAT: Type(number = 2)
 
         /**
         * Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT64 if
         * negative values are likely.
         */
-        public data object TYPE_INT64: Type(number = 3)
+        public data object INT64: Type(number = 3)
 
-        public data object TYPE_UINT64: Type(number = 4)
+        public data object UINT64: Type(number = 4)
 
         /**
         * Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT32 if
         * negative values are likely.
         */
-        public data object TYPE_INT32: Type(number = 5)
+        public data object INT32: Type(number = 5)
 
-        public data object TYPE_FIXED64: Type(number = 6)
+        public data object FIXED64: Type(number = 6)
 
-        public data object TYPE_FIXED32: Type(number = 7)
+        public data object FIXED32: Type(number = 7)
 
-        public data object TYPE_BOOL: Type(number = 8)
+        public data object BOOL: Type(number = 8)
 
-        public data object TYPE_STRING: Type(number = 9)
+        public data object STRING: Type(number = 9)
 
         /**
         * Tag-delimited aggregate.
@@ -316,40 +316,40 @@ public interface FieldDescriptorProto {
         * treat group fields as unknown fields.  In Editions, the group wire format
         * can be enabled via the `message_encoding` feature.
         */
-        public data object TYPE_GROUP: Type(number = 10)
+        public data object GROUP: Type(number = 10)
 
         /**
         * Length-delimited aggregate.
         */
-        public data object TYPE_MESSAGE: Type(number = 11)
+        public data object MESSAGE: Type(number = 11)
 
         /**
         * New in version 2.
         */
-        public data object TYPE_BYTES: Type(number = 12)
+        public data object BYTES: Type(number = 12)
 
-        public data object TYPE_UINT32: Type(number = 13)
+        public data object UINT32: Type(number = 13)
 
-        public data object TYPE_ENUM: Type(number = 14)
+        public data object ENUM: Type(number = 14)
 
-        public data object TYPE_SFIXED32: Type(number = 15)
+        public data object SFIXED32: Type(number = 15)
 
-        public data object TYPE_SFIXED64: Type(number = 16)
-
-        /**
-        * Uses ZigZag encoding.
-        */
-        public data object TYPE_SINT32: Type(number = 17)
+        public data object SFIXED64: Type(number = 16)
 
         /**
         * Uses ZigZag encoding.
         */
-        public data object TYPE_SINT64: Type(number = 18)
+        public data object SINT32: Type(number = 17)
+
+        /**
+        * Uses ZigZag encoding.
+        */
+        public data object SINT64: Type(number = 18)
 
         public data class UNRECOGNIZED(override val number: Int): Type(number)
 
         public companion object {
-            public val entries: List<Type> by lazy { listOf(TYPE_DOUBLE, TYPE_FLOAT, TYPE_INT64, TYPE_UINT64, TYPE_INT32, TYPE_FIXED64, TYPE_FIXED32, TYPE_BOOL, TYPE_STRING, TYPE_GROUP, TYPE_MESSAGE, TYPE_BYTES, TYPE_UINT32, TYPE_ENUM, TYPE_SFIXED32, TYPE_SFIXED64, TYPE_SINT32, TYPE_SINT64) }
+            public val entries: List<Type> by lazy { listOf(DOUBLE, FLOAT, INT64, UINT64, INT32, FIXED64, FIXED32, BOOL, STRING, GROUP, MESSAGE, BYTES, UINT32, ENUM, SFIXED32, SFIXED64, SINT32, SINT64) }
         }
     }
 
@@ -357,21 +357,21 @@ public interface FieldDescriptorProto {
         /**
         * 0 is reserved for errors
         */
-        public data object LABEL_OPTIONAL: Label(number = 1)
+        public data object OPTIONAL: Label(number = 1)
 
-        public data object LABEL_REPEATED: Label(number = 3)
+        public data object REPEATED: Label(number = 3)
 
         /**
         * The required label is only allowed in google.protobuf.  In proto3 and Editions
         * it's explicitly prohibited.  In Editions, the `field_presence` feature
         * can be used to get this behavior.
         */
-        public data object LABEL_REQUIRED: Label(number = 2)
+        public data object REQUIRED: Label(number = 2)
 
         public data class UNRECOGNIZED(override val number: Int): Label(number)
 
         public companion object {
-            public val entries: List<Label> by lazy { listOf(LABEL_OPTIONAL, LABEL_REQUIRED, LABEL_REPEATED) }
+            public val entries: List<Label> by lazy { listOf(OPTIONAL, REQUIRED, REPEATED) }
         }
     }
 }

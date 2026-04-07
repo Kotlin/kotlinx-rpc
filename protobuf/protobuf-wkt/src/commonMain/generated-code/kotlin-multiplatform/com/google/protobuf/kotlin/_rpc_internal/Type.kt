@@ -58,7 +58,7 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var options: List<Option> by __optionsDelegate
     internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
     public override var sourceContext: SourceContext by __sourceContextDelegate
-    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
     internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var edition: String by __editionDelegate
@@ -198,7 +198,7 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 
     internal val __kindDelegate: MsgFieldDelegate<Field.Kind> = MsgFieldDelegate { Field.Kind.TYPE_UNKNOWN }
     public override var kind: Field.Kind by __kindDelegate
-    internal val __cardinalityDelegate: MsgFieldDelegate<Field.Cardinality> = MsgFieldDelegate { Field.Cardinality.CARDINALITY_UNKNOWN }
+    internal val __cardinalityDelegate: MsgFieldDelegate<Field.Cardinality> = MsgFieldDelegate { Field.Cardinality.UNKNOWN }
     public override var cardinality: Field.Cardinality by __cardinalityDelegate
     internal val __numberDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     public override var number: Int by __numberDelegate
@@ -356,7 +356,7 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var options: List<Option> by __optionsDelegate
     internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
     public override var sourceContext: SourceContext by __sourceContextDelegate
-    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
     internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var edition: String by __editionDelegate
@@ -752,7 +752,7 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
         encoder.writeMessage(fieldNr = 5, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         encoder.writeEnum(fieldNr = 6, value = this.syntax.number)
     }
 
@@ -848,7 +848,7 @@ private fun TypeInternal.computeSize(): Int {
         __result += this.sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         __result += (WireSize.tag(6, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
@@ -879,7 +879,7 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
         encoder.writeEnum(fieldNr = 1, value = this.kind.number)
     }
 
-    if (this.cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
+    if (this.cardinality != Field.Cardinality.UNKNOWN) {
         encoder.writeEnum(fieldNr = 2, value = this.cardinality.number)
     }
 
@@ -992,7 +992,7 @@ private fun FieldInternal.computeSize(): Int {
         __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(this.kind.number))
     }
 
-    if (this.cardinality != Field.Cardinality.CARDINALITY_UNKNOWN) {
+    if (this.cardinality != Field.Cardinality.UNKNOWN) {
         __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.cardinality.number))
     }
 
@@ -1075,7 +1075,7 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
         encoder.writeMessage(fieldNr = 4, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         encoder.writeEnum(fieldNr = 5, value = this.syntax.number)
     }
 
@@ -1162,7 +1162,7 @@ private fun EnumInternal.computeSize(): Int {
         __result += this.sourceContext.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         __result += (WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
@@ -1358,13 +1358,13 @@ public fun Option.asInternal(): OptionInternal {
 public fun Syntax.Companion.fromNumber(number: Int): Syntax {
     return when (number) {
         0 -> {
-            Syntax.SYNTAX_PROTO2
+            Syntax.PROTO2
         }
         1 -> {
-            Syntax.SYNTAX_PROTO3
+            Syntax.PROTO3
         }
         2 -> {
-            Syntax.SYNTAX_EDITIONS
+            Syntax.EDITIONS
         }
         else -> {
             Syntax.UNRECOGNIZED(number)
@@ -1442,16 +1442,16 @@ public fun Field.Kind.Companion.fromNumber(number: Int): Field.Kind {
 public fun Field.Cardinality.Companion.fromNumber(number: Int): Field.Cardinality {
     return when (number) {
         0 -> {
-            Field.Cardinality.CARDINALITY_UNKNOWN
+            Field.Cardinality.UNKNOWN
         }
         1 -> {
-            Field.Cardinality.CARDINALITY_OPTIONAL
+            Field.Cardinality.OPTIONAL
         }
         2 -> {
-            Field.Cardinality.CARDINALITY_REQUIRED
+            Field.Cardinality.REQUIRED
         }
         3 -> {
-            Field.Cardinality.CARDINALITY_REPEATED
+            Field.Cardinality.REPEATED
         }
         else -> {
             Field.Cardinality.UNRECOGNIZED(number)

@@ -201,27 +201,27 @@ public interface Field {
         /**
         * For fields with unknown cardinality.
         */
-        public data object CARDINALITY_UNKNOWN: Cardinality(number = 0)
+        public data object UNKNOWN: Cardinality(number = 0)
 
         /**
         * For optional fields.
         */
-        public data object CARDINALITY_OPTIONAL: Cardinality(number = 1)
+        public data object OPTIONAL: Cardinality(number = 1)
 
         /**
         * For required fields. Proto2 syntax only.
         */
-        public data object CARDINALITY_REQUIRED: Cardinality(number = 2)
+        public data object REQUIRED: Cardinality(number = 2)
 
         /**
         * For repeated fields.
         */
-        public data object CARDINALITY_REPEATED: Cardinality(number = 3)
+        public data object REPEATED: Cardinality(number = 3)
 
         public data class UNRECOGNIZED(override val number: Int): Cardinality(number)
 
         public companion object {
-            public val entries: List<Cardinality> by lazy { listOf(CARDINALITY_UNKNOWN, CARDINALITY_OPTIONAL, CARDINALITY_REQUIRED, CARDINALITY_REPEATED) }
+            public val entries: List<Cardinality> by lazy { listOf(UNKNOWN, OPTIONAL, REQUIRED, REPEATED) }
         }
     }
 }
@@ -305,21 +305,21 @@ public sealed class Syntax(public open val number: Int) {
     /**
     * Syntax `proto2`.
     */
-    public data object SYNTAX_PROTO2: Syntax(number = 0)
+    public data object PROTO2: Syntax(number = 0)
 
     /**
     * Syntax `proto3`.
     */
-    public data object SYNTAX_PROTO3: Syntax(number = 1)
+    public data object PROTO3: Syntax(number = 1)
 
     /**
     * Syntax `editions`.
     */
-    public data object SYNTAX_EDITIONS: Syntax(number = 2)
+    public data object EDITIONS: Syntax(number = 2)
 
     public data class UNRECOGNIZED(override val number: Int): Syntax(number)
 
     public companion object {
-        public val entries: List<Syntax> by lazy { listOf(SYNTAX_PROTO2, SYNTAX_PROTO3, SYNTAX_EDITIONS) }
+        public val entries: List<Syntax> by lazy { listOf(PROTO2, PROTO3, EDITIONS) }
     }
 }
