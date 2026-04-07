@@ -25,6 +25,7 @@ import kotlin.contracts.contract
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
+private val enumPrefixCache = mutableMapOf<Descriptors.EnumDescriptor, String?>()
 
 /**
  * Converts a [CodeGeneratorRequest] into the protoc plugin [Model] of the protobuf.
@@ -202,7 +203,10 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
 
         is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
-        is Descriptors.EnumValueDescriptor -> FqName.Declaration(KotlinKeywords.escapeIfKeyword(name), type.fqName())
+        is Descriptors.EnumValueDescriptor -> {
+            val strippedName = type.enumValuePrefix()?.let { prefix -> name.removePrefix(prefix) } ?: name
+            FqName.Declaration(KotlinKeywords.escapeIfKeyword(strippedName), type.fqName())
+        }
         is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file.fqName())
         is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
@@ -578,4 +582,44 @@ private fun String.simpleProtoNameToKotlinRaw(firstLetterUpper: Boolean = false)
 
 private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
     return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(firstLetterUpper))
+}
+
+private val camelToSnakeRegex1 = "([a-z0-9])([A-Z])".toRegex()
+private val camelToSnakeRegex2 = "([A-Z]+)([A-Z][a-z])".toRegex()
+
+/**
+ * Converts a PascalCase or camelCase string to UPPER_SNAKE_CASE.
+ *
+ * Examples: `Cardinality` → `CARDINALITY`, `FieldKind` → `FIELD_KIND`, `MyHTTPRequest` → `MY_HTTP_REQUEST`.
+ */
+internal fun String.camelToUpperSnakeCase(): String {
+    return replace(camelToSnakeRegex1, "$1_$2")
+        .replace(camelToSnakeRegex2, "$1_$2")
+        .uppercase()
+}
+
+/**
+ * Detects a common prefix that can be stripped from all enum value names.
+ *
+ * Protobuf convention prefixes enum values with the UPPER_SNAKE_CASE version
+ * of the enum type name (e.g., `CARDINALITY_UNKNOWN` for enum `Cardinality`).
+ * This prefix is redundant in Kotlin where values are scoped by the enclosing type.
+ *
+ * Returns the prefix (including trailing underscore) if ALL values share it
+ * and stripping is safe, or `null` otherwise.
+ */
+private fun Descriptors.EnumDescriptor.enumValuePrefix(): String? {
+    return enumPrefixCache.getOrPut(this) {
+        val prefix = "${name.camelToUpperSnakeCase()}_"
+
+        val allValid = values.all { value ->
+            if (!value.name.startsWith(prefix)) return@all false
+            val stripped = value.name.removePrefix(prefix)
+            stripped.isNotEmpty()
+                && stripped[0].isLetter()
+                && stripped != "UNRECOGNIZED"
+        }
+
+        if (allValid) prefix else null
+    }
 }

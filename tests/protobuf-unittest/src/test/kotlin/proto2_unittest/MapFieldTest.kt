@@ -84,7 +84,7 @@ class MapFieldTest {
             mapBoolBool = mapOf(true to true)
             mapInt32Double = mapOf(1 to 1.5, 2 to 2.5)
             mapInt32Float = mapOf(3 to 3.5f)
-            mapInt32Enum = mapOf(1 to MapEnum.MAP_ENUM_FOO, 2 to MapEnum.MAP_ENUM_BAR)
+            mapInt32Enum = mapOf(1 to MapEnum.FOO, 2 to MapEnum.BAR)
         }
 
         val encoded = marshaller.encode(msg)
@@ -204,14 +204,14 @@ class MapFieldTest {
     fun testMapEnumValues() {
         val msg = TestMap {
             mapInt32Enum = mapOf(
-                1 to MapEnum.MAP_ENUM_FOO,
-                2 to MapEnum.MAP_ENUM_BAR,
-                3 to MapEnum.MAP_ENUM_BAZ,
+                1 to MapEnum.FOO,
+                2 to MapEnum.BAR,
+                3 to MapEnum.BAZ,
             )
         }
-        assertEquals(MapEnum.MAP_ENUM_FOO, msg.mapInt32Enum[1])
-        assertEquals(MapEnum.MAP_ENUM_BAR, msg.mapInt32Enum[2])
-        assertEquals(MapEnum.MAP_ENUM_BAZ, msg.mapInt32Enum[3])
+        assertEquals(MapEnum.FOO, msg.mapInt32Enum[1])
+        assertEquals(MapEnum.BAR, msg.mapInt32Enum[2])
+        assertEquals(MapEnum.BAZ, msg.mapInt32Enum[3])
     }
 
     @Test
