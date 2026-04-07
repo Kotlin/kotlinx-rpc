@@ -82,6 +82,9 @@ internal open class DefaultProtoSourceSet(
         isMain && project.the<KotlinProjectExtension>().explicitApi == ExplicitApiMode.Strict
     }
 
+    override val includeDefaultProtobufPlugin: Property<Boolean> = project.objects.property<Boolean>().convention(true)
+    override val includeDefaultGrpcPlugin: Property<Boolean> = project.objects.property<Boolean>().convention(true)
+
     override val plugins = project.objects.setProperty<ProtocPlugin>()
 
     override fun plugin(plugin: ProtocPlugin, configure: Action<ProtocPlugin>?) {

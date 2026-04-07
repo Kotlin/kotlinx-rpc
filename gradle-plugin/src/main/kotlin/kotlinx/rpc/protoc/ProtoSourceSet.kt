@@ -9,6 +9,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
@@ -22,6 +23,7 @@ public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
  * Acts like a [SourceDirectorySet] but also allows configuring protoc plugins.
  *
  * All source sets have [kotlinMultiplatform] and [grpcKotlinMultiplatform] plugins by default.
+ * Use [includeDefaultProtobufPlugin] and [includeDefaultGrpcPlugin] to opt out.
  *
  * Example:
  * ```kotlin
@@ -36,6 +38,48 @@ public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
  * ```
  */
 public sealed interface ProtoSourceSet : SourceDirectorySet {
+    /**
+     * Whether to include the default [kotlinMultiplatform][ProtocPlugin.KOTLIN_MULTIPLATFORM] protoc plugin
+     * for this source set.
+     *
+     * Default is `true`.
+     *
+     * This setting applies per source set and is not inherited via [extendsFrom].
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             includeDefaultProtobufPlugin.set(false)
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public val includeDefaultProtobufPlugin: Property<Boolean>
+
+    /**
+     * Whether to include the default [grpcKotlinMultiplatform][ProtocPlugin.GRPC_KOTLIN_MULTIPLATFORM] protoc plugin
+     * for this source set.
+     *
+     * Default is `true`.
+     *
+     * This setting applies per source set and is not inherited via [extendsFrom].
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             includeDefaultGrpcPlugin.set(false)
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public val includeDefaultGrpcPlugin: Property<Boolean>
+
     /**
      * Add a plugin to this source set and allows to configure it specifically for this source set.
      *
