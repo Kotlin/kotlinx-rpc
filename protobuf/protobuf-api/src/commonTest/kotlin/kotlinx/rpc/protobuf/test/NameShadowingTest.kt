@@ -133,9 +133,9 @@ class NameShadowingTest {
 
     @Test
     fun testCollectionEnum() {
-        assertEquals(0, Collection.COLLECTION_UNSPECIFIED.number)
-        assertEquals(1, Collection.COLLECTION_LIST.number)
-        assertEquals(2, Collection.COLLECTION_MAP.number)
+        assertEquals(0, Collection.UNSPECIFIED.number)
+        assertEquals(1, Collection.LIST.number)
+        assertEquals(2, Collection.MAP.number)
     }
 
     @Test
