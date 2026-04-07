@@ -22,7 +22,7 @@ For **creating new issues**, use the `file-youtrack-issue` skill instead.
 
 When this skill is invoked from the `fix-issue` skill (autonomous issue-fixing workflow),
 **all YouTrack operations must use the agent identity** instead of the user's:
-- MCP tools: `mcp__youtrack_agent__*` (not `mcp__youtrack__*`)
+- MCP server: `youtrack-agent` (not `youtrack`)
 - REST API token: `$YOUTRACK_AGENT_TOKEN` (not `$YOUTRACK_TOKEN`)
 
 The `fix-issue` skill's Authentication section has full details. Outside of `fix-issue`,
