@@ -100,10 +100,6 @@ Read the issue via `youtrack-agent` MCP. Then do **all three** — none are opti
    non-checkmarked `[Kxrpc] Planning Period` is typically active. If ambiguous, check
    which period has `In progress` issues.
 
-**Post the workflow checklist** as the first comment on the issue. Use the template
-in `assets/yt-workflow-checklist.md`. This checklist tracks your progress — update it
-by editing the comment as you complete each step throughout the workflow.
-
 ## Step 2: Analyze the Problem
 
 Read the issue body **and all comments** — comments often contain critical context,
@@ -335,7 +331,6 @@ verify actual state, do not assume previous steps succeeded:
 1. `gh pr view <pr-number> --json isDraft,reviewRequests` — draft removed, reviewer assigned
 2. Verify CI report comment exists on the PR
 3. Verify YT issue state is `Fixed in Branch` via `youtrack-agent`
-4. Verify the workflow checklist comment is fully checked off
 
 If any check fails, fix it before reporting. Then report:
 PR URL, YT status, brief fix summary, worktree path.
@@ -388,5 +383,3 @@ Brief status at each milestone:
 - "PR #42 created as draft"
 - "CI passing, marking PR ready and adding reviewers"
 - "Done — PR: <url>, YT status: Fixed in Branch"
-
-And always update the progress checklist as per `assets/yt-workflow-checklist.md`.
