@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(InternalRpcApi::class, ExperimentalRpcApi::class)
+
 package kotlinx.rpc.protoc.gen.test
 
 import com.google.protobuf.conformance.ConformanceRequest
@@ -13,11 +15,18 @@ import com.google.protobuf.conformance.FailureSetInternal
 import com.google.protobuf.conformance.TestCategory
 import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
+import com.google.protobuf_test_messages.edition2023.TestMessagesEdition2023KtExtensions
+import com.google.protobuf_test_messages.editions.proto2.TestMessagesProto2EditionsKtExtensions
+import com.google.protobuf_test_messages.proto2.TestMessagesProto2KtExtensions
 import kotlinx.io.Buffer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.ProtobufException
 import java.nio.file.Path
@@ -32,6 +41,37 @@ import kotlin.reflect.KClass
 internal class ConformanceClient {
     // todo text and json formats
 //    private var typeRegistry: TypeRegistry? = null
+
+    private val extensionRegistry = ProtoExtensionRegistry {
+        // Edition 2023 extensions
+        +TestMessagesEdition2023KtExtensions.extensionInt32
+        +TestMessagesEdition2023KtExtensions.extensionString
+        +TestMessagesEdition2023KtExtensions.extensionBytes
+        +TestMessagesEdition2023KtExtensions.groupliketype
+        +TestMessagesEdition2023KtExtensions.delimitedExt
+        // Proto2 extensions
+        +TestMessagesProto2KtExtensions.extensionInt32
+        +TestMessagesProto2KtExtensions.extensionString
+        +TestMessagesProto2KtExtensions.extensionBytes
+        +TestMessagesProto2KtExtensions.groupfield
+        +TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+        +TestMessagesProto2KtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+        +TestMessagesProto2KtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof
+        +TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+        +TestMessagesProto2KtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+        // Editions Proto2 extensions
+        +TestMessagesProto2EditionsKtExtensions.extensionInt32
+        +TestMessagesProto2EditionsKtExtensions.extensionString
+        +TestMessagesProto2EditionsKtExtensions.extensionBytes
+        +TestMessagesProto2EditionsKtExtensions.groupfield
+        +TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+        +TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+        +TestMessagesProto2EditionsKtExtensions.TestAllTypesProto2.ExtensionWithOneof.extensionWithOneof
+        +TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.messageSetExtension
+        +TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension
+    }
+
+    private val config = ProtoConfig(extensionRegistry = extensionRegistry)
 
     private fun readFromStdin(buf: ByteArray, len: Int): Boolean {
         var len = len
@@ -94,12 +134,6 @@ internal class ConformanceClient {
                 result = ConformanceResponse.Result.Skipped("Unsupported message type: $messageType")
             }
 
-        // todo support extensions
-//        val extensions: ExtensionRegistry? = ExtensionRegistry.newInstance()
-//        createTestFile(messageType)
-//            .getMethod("registerAllExtensions", ExtensionRegistry::class.java)
-//            .invoke(null, extensions)
-
         when (request.payload) {
             is ConformanceRequest.Payload.ProtobufPayload -> {
                 try {
@@ -114,7 +148,7 @@ internal class ConformanceClient {
 
                     val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
 
-                    testMessage = marshaller.decode(binary.toByteArray().buffered()) as InternalMessage
+                    testMessage = marshaller.decode(binary.toByteArray().buffered(), config) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
                         result = ConformanceResponse.Result.ParseError(
