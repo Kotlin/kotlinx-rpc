@@ -7,7 +7,8 @@ Update checkboxes by editing this comment as each step completes.
 ## Template
 
 ```markdown
-### Workflow Checklist
+<details>
+<summary><b>Workflow Checklist</b></summary>
 
 - [ ] **Claim**
   - [ ] Assigned to AI Agent [Kxrpc]
@@ -58,6 +59,8 @@ Update checkboxes by editing this comment as each step completes.
   - [ ] State -> Fixed in Branch
   - [ ] Body updated with any new findings
 - [ ] **Done**
+
+</details>
 ```
 
 ## Guidelines

@@ -15,11 +15,13 @@ its analysis section underneath.
 
 ---
 
-## Agent Analysis
+<details>
+<summary><b>Agent Analysis</b></summary>
 
 **Affected modules**: {{comma-separated list of modules, e.g., `:krpc:krpc-client`, `:core`}}
 **Root cause**: {{root cause explanation - keep it to the point, assuming the reader knows the project context}}
 
+</details>
 ```
 
 ## Step 13 updates (only if new findings)
