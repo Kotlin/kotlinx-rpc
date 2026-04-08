@@ -14,6 +14,7 @@ import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -75,6 +76,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
     }
 
     @Test
+    @Ignore // KRPC-549 flaky on macosArm64 — 1ms timeout races with request completion
     fun `test timeout set to very short milliseconds triggers immediately`() {
         val exc = assertFailsWith<GrpcStatusException> {
             runGrpcTest(
