@@ -28,7 +28,23 @@ These overrides take precedence over defaults in `use-youtrack` and `use-teamcit
   fallback, use `$YOUTRACK_AGENT_TOKEN` (not `$YOUTRACK_TOKEN`).
 - **TeamCity**: **Never** run `teamcity auth status/login`. Prefix every command with
   `TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN`.
-- **GitHub**: Standard `gh` CLI auth.
+- **GitHub**: Uses the **AI Agent [Kxrpc]** GitHub App. The private key PEM path
+  must be in `$GITHUB_APP_KEY_PATH`. **Never** use the user's `gh` CLI auth —
+  always generate a fresh installation token from the App key (see below).
+
+### GitHub App Token Generation
+
+Installation tokens expire after 1 hour. Generate one at workflow start and refresh
+if any GitHub API call returns 401. The script manages its own venv and deps.
+
+```bash
+export GH_TOKEN=$(scripts/gh-app-token.sh)
+```
+
+(Path is relative to this skill's directory: `.claude/skills/fix-issue/scripts/gh-app-token.sh`)
+
+Once `GH_TOKEN` is set, all `gh` CLI commands automatically use it. If you get a
+401 mid-workflow, re-run the script to refresh.
 
 ### Pre-flight Access Check — MANDATORY
 
@@ -38,13 +54,14 @@ report to the user**. Do NOT proceed — not even reading the issue.
 1. **YouTrack**: `get_current_user` on `youtrack-agent` MCP. If MCP fails, try REST:
    `curl -sf -H "Authorization: Bearer $YOUTRACK_AGENT_TOKEN" "https://youtrack.jetbrains.com/api/users/me?fields=login,name"`
 2. **TeamCity**: `TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity project list --limit 1`
-3. **GitHub**: `gh auth status`
+3. **GitHub**: Generate the App installation token (see above), then verify:
+   `GH_TOKEN=$GH_TOKEN gh api /repos/Kotlin/kotlinx-rpc --jq .full_name`
 
 ### No silent fallback policy
 
 If a service becomes unreachable mid-workflow:
 - YouTrack MCP → REST via `$YOUTRACK_AGENT_TOKEN` is the only permitted fallback
-- TC CLI or GH CLI fails → **stop and report** (no fallback)
+- TC CLI or GitHub App token generation fails → **stop and report** (no fallback)
 
 Never silently skip a step. Never invent data. Stop, report what failed and at which
 phase, wait for instructions.
