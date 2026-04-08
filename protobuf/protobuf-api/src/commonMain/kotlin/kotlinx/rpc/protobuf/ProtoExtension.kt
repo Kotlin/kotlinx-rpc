@@ -53,7 +53,9 @@ public fun ProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> 
  *     +MyFileExtensions.myExtension
  *     +MyFileExtensions.anotherExtension
  * }
- * val config = ProtoConfig(extensionRegistry = registry)
+ * val config = ProtoConfig {
+ *     extensionRegistry = registry
+ * }
  * ```
  */
 public class ProtoExtensionRegistry internal constructor() {

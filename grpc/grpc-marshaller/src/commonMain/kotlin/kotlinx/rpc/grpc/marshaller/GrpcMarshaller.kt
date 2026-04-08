@@ -44,10 +44,11 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  * ```kotlin
  * // Per-operation config
  * val marshaller = grpcMarshallerOf<MyProtoMessage>()
- * val encoded = marshaller.encode(message, ProtoConfig(discardUnknownFields = true))
+ * val config = ProtoConfig { discardUnknownFields = true }
+ * val encoded = marshaller.encode(message, config)
  *
  * // Default config
- * val marshallerWithConfig = grpcMarshallerOf<MyProtoMessage>(ProtoConfig(discardUnknownFields = true))
+ * val marshallerWithConfig = grpcMarshallerOf<MyProtoMessage>(ProtoConfig { discardUnknownFields = true })
  * val encoded = marshallerWithConfig.encode(message) // uses the default config
  * ```
  *

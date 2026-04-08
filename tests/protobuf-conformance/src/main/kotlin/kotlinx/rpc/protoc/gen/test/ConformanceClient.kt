@@ -71,7 +71,7 @@ internal class ConformanceClient {
         +TestMessagesProto2EditionsKtExtensions.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.messageSetExtension
     }
 
-    private val config = ProtoConfig(extensionRegistry = extensionRegistry)
+    private val config = ProtoConfig { extensionRegistry = this@ConformanceClient.extensionRegistry }
 
     private fun readFromStdin(buf: ByteArray, len: Int): Boolean {
         var len = len

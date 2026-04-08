@@ -133,7 +133,7 @@ class WireFormatTest {
     fun testSerializeExtensions() {
         // Extension round-trip: encode with extensions, decode with extension registry
         val message = TestUtil.getAllExtensionsSet()
-        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val config = ProtoConfig { extensionRegistry = TestUtil.getExtensionRegistry() }
         val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllExtensionsSet(decoded)
@@ -159,7 +159,7 @@ class WireFormatTest {
         val message = TestUtil.getPackedSet()
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
         val encoded = packedMarshaller.encode(message)
-        val config = ProtoConfig(extensionRegistry = TestUtil.getPackedExtensionRegistry())
+        val config = ProtoConfig { extensionRegistry = TestUtil.getPackedExtensionRegistry() }
         val packedExtMarshaller = grpcMarshallerOf<TestPackedExtensions>(config)
         val decoded = packedExtMarshaller.decode(encoded)
         TestUtil.assertPackedExtensionsSet(decoded)
@@ -169,7 +169,7 @@ class WireFormatTest {
     @Test
     fun testParsePackedExtensions() {
         val message = TestUtil.getPackedExtensionsSet()
-        val config = ProtoConfig(extensionRegistry = TestUtil.getPackedExtensionRegistry())
+        val config = ProtoConfig { extensionRegistry = TestUtil.getPackedExtensionRegistry() }
         val marshaller = grpcMarshallerOf<TestPackedExtensions>(config)
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertPackedExtensionsSet(decoded)
@@ -189,7 +189,7 @@ class WireFormatTest {
             +TestFieldOrderings.myExtensionInt
             +TestFieldOrderings.myExtensionString
         }
-        val config = ProtoConfig(extensionRegistry = registry)
+        val config = ProtoConfig { extensionRegistry = registry }
         val marshaller = grpcMarshallerOf<TestFieldOrderings>(config)
         val dest = TestUtil.encodeDecode(source, marshaller)
         assertEquals(source, dest)
@@ -205,7 +205,7 @@ class WireFormatTest {
         val registry = ProtoExtensionRegistry {
             +TestExtensionInsideTable.testExtensionInsideTableExtension
         }
-        val config = ProtoConfig(extensionRegistry = registry)
+        val config = ProtoConfig { extensionRegistry = registry }
         val marshaller = grpcMarshallerOf<TestExtensionInsideTable>(config)
         val dest = TestUtil.encodeDecode(source, marshaller)
         assertEquals(source, dest)

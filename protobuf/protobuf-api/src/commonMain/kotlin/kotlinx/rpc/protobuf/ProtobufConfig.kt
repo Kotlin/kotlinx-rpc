@@ -7,6 +7,26 @@ package kotlinx.rpc.protobuf
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 
 /**
+ * Creates a [ProtoConfig] using a DSL-style builder block.
+ *
+ * Example:
+ * ```kotlin
+ * val config = ProtoConfig {
+ *     discardUnknownFields = true
+ *     recursionLimit = 50
+ *     extensions {
+ *         +MyMessage.myExtension
+ *     }
+ * }
+ * ```
+ *
+ * @see ProtoConfig
+ */
+public fun ProtoConfig(builder: ProtoConfig.Builder.() -> Unit): ProtoConfig {
+    return ProtoConfig.Builder().apply(builder).build()
+}
+
+/**
  * Configuration options for Protobuf message encoding and decoding.
  *
  * This class implements [GrpcMarshallerConfig] to provide Protobuf-specific configuration that controls
@@ -15,8 +35,13 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
  *
  * Example:
  * ```kotlin
- * // Create a marshaller with custom config
- * val config = ProtoConfig(discardUnknownFields = true)
+ * // Create config using the DSL builder
+ * val config = ProtoConfig {
+ *     discardUnknownFields = true
+ *     extensions {
+ *         +MyMessage.myExtension
+ *     }
+ * }
  * val myMarshaller = grpcMarshallerOf<MyMessage>(config)
  *
  * // Or pass config per-operation
@@ -35,11 +60,10 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
  * @see GrpcMarshallerConfig
  * @see kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
  */
-// TODO make DSL KRPC-264
-public class ProtoConfig(
+public class ProtoConfig internal constructor(
     public val discardUnknownFields: Boolean = false,
     public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
-    public val extensionRegistry: ProtoExtensionRegistry? = null
+    public val extensionRegistry: ProtoExtensionRegistry? = null,
 ) : GrpcMarshallerConfig {
     public companion object {
         /**
@@ -47,5 +71,70 @@ public class ProtoConfig(
          * Matches the default used by Google's Java protobuf library.
          */
         public const val DEFAULT_RECURSION_LIMIT: Int = 100
+    }
+
+    /**
+     * Mutable builder for [ProtoConfig].
+     *
+     * Example:
+     * ```kotlin
+     * val config = ProtoConfig {
+     *     discardUnknownFields = true
+     *     recursionLimit = 50
+     *     extensions {
+     *         +MyMessage.myExtension
+     *     }
+     * }
+     * ```
+     */
+    public class Builder {
+        /**
+         * When `true`, unknown fields encountered during deserialization
+         * are silently discarded. When `false` (default), unknown fields are preserved.
+         */
+        public var discardUnknownFields: Boolean = false
+
+        /**
+         * The maximum allowed nesting depth when decoding protobuf messages.
+         * Defaults to [DEFAULT_RECURSION_LIMIT] (100).
+         */
+        public var recursionLimit: Int = DEFAULT_RECURSION_LIMIT
+
+        /**
+         * Registry of known protobuf extensions used during decoding.
+         * If `null` (default), extension fields are treated as unknown fields.
+         *
+         * Can be set directly or configured via the [extensions] DSL.
+         */
+        public var extensionRegistry: ProtoExtensionRegistry? = null
+
+        /**
+         * Configures the [extensionRegistry] using a DSL-style builder block.
+         *
+         * Example:
+         * ```kotlin
+         * val config = ProtoConfig {
+         *     extensions {
+         *         +MyMessage.myExtension
+         *     }
+         * }
+         * ```
+         *
+         * @see ProtoExtensionRegistry
+         */
+        public fun extensions(builder: ProtoExtensionRegistry.Builder.() -> Unit) {
+            extensionRegistry = ProtoExtensionRegistry(builder)
+        }
+
+        /**
+         * Builds an immutable [ProtoConfig] from this builder's current state.
+         */
+        public fun build(): ProtoConfig {
+            return ProtoConfig(
+                discardUnknownFields = discardUnknownFields,
+                recursionLimit = recursionLimit,
+                extensionRegistry = extensionRegistry,
+            )
+        }
     }
 }

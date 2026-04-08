@@ -121,7 +121,7 @@ class ParserTest {
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/ParserTest.java#testParseExtensions
     @Test
     fun testParseExtensions() {
-        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val config = ProtoConfig { extensionRegistry = TestUtil.getExtensionRegistry() }
         val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
         val message = TestUtil.getAllExtensionsSet()
         val decoded = TestUtil.encodeDecode(message, marshaller)
