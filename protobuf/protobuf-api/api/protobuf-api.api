@@ -2,8 +2,6 @@ public final class kotlinx/rpc/protobuf/ProtoConfig : kotlinx/rpc/grpc/marshalle
 	public static final field Companion Lkotlinx/rpc/protobuf/ProtoConfig$Companion;
 	public static final field DEFAULT_RECURSION_LIMIT I
 	public fun <init> ()V
-	public fun <init> (ZILkotlinx/rpc/protobuf/ProtoExtensionRegistry;)V
-	public synthetic fun <init> (ZILkotlinx/rpc/protobuf/ProtoExtensionRegistry;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getDiscardUnknownFields ()Z
 	public final fun getExtensionRegistry ()Lkotlinx/rpc/protobuf/ProtoExtensionRegistry;
 	public final fun getRecursionLimit ()I

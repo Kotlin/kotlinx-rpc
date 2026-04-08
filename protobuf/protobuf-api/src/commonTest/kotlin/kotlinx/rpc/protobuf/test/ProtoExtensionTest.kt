@@ -154,7 +154,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedEnum
             +ExtensionBase.repeatedMsg
         }
-        val config = ProtoConfig(extensionRegistry = registry)
+        val config = ProtoConfig { extensionRegistry = registry }
         val extensionCodec = grpcMarshallerOf<ExtensionBase>(config)
 
         val decoded = extensionCodec.decode(encoded)
@@ -183,7 +183,7 @@ class ProtoExtensionTest {
             +ExtensionBase.int32
             +ExtensionBase.subExt
         }
-        val config = ProtoConfig(extensionRegistry = registry)
+        val config = ProtoConfig { extensionRegistry = registry }
         val extensionCodec = grpcMarshallerOf<ExtensionBase>(config)
 
         val decoded = extensionCodec.decode(encoded)
@@ -196,7 +196,7 @@ class ProtoExtensionTest {
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.msg
         }
-        val codec = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry))
+        val codec = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
         val populated = ExtensionBase {
             msg = AllPrimitives {
                 int32 = 123
@@ -261,7 +261,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedMsg
             +ExtensionBase.repeatedSubExt
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -290,7 +290,7 @@ class ProtoExtensionTest {
                 +ExtensionBase.testgroup
             }
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
 
         assertEquals(message.testgroup, decoded.testgroup)
         with(MessageScopedExtensions) {
@@ -312,7 +312,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -335,7 +335,7 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(buffer)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(buffer)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -363,7 +363,7 @@ class ProtoExtensionTest {
                 }
             }
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig(extensionRegistry = registry)).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
 
         assertEquals("apfelstrudel", decoded.conflicting)
         with(MessageScopedExtensions) {

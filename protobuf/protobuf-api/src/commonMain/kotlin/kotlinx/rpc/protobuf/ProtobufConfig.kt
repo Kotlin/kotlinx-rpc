@@ -60,7 +60,7 @@ public fun ProtoConfig(builder: ProtoConfig.Builder.() -> Unit): ProtoConfig {
  * @see GrpcMarshallerConfig
  * @see kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
  */
-public class ProtoConfig(
+public class ProtoConfig internal constructor(
     public val discardUnknownFields: Boolean = false,
     public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
     public val extensionRegistry: ProtoExtensionRegistry? = null,

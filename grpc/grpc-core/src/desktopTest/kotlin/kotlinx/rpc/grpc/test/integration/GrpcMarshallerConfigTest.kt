@@ -60,7 +60,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test protobuf discardUnknownFields marshaller config in server config`() = runGrpcTest(
-        serverConfiguration = { marshallerConfig = ProtoConfig(discardUnknownFields = true) }
+        serverConfiguration = { marshallerConfig = ProtoConfig { discardUnknownFields = true } }
     ) { client ->
         val service = client.withService<ClientTestService>()
         val message = unknownFieldsAllMessage
@@ -88,7 +88,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test protobuf discardUnknownFields marshaller config in client config`() = runGrpcTest(
-        clientConfiguration = { marshallerConfig = ProtoConfig(discardUnknownFields = true) }
+        clientConfiguration = { marshallerConfig = ProtoConfig { discardUnknownFields = true } }
     ) { client ->
         val service = client.withService<ClientTestService>()
         val message = unknownFieldsAllMessage

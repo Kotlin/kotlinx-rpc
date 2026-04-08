@@ -44,7 +44,7 @@ class UnknownFieldsTest {
         }
 
         val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(all)
-        val discardMarshaller = grpcMarshallerOf<UnknownFieldsSubset>(ProtoConfig(discardUnknownFields = true))
+        val discardMarshaller = grpcMarshallerOf<UnknownFieldsSubset>(ProtoConfig { discardUnknownFields = true })
 
         val subsetDiscarded = discardMarshaller.decode(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)

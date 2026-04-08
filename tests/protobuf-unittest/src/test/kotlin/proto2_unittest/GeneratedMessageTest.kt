@@ -520,7 +520,7 @@ class GeneratedMessageTest {
     @Test
     fun testExtensionSerializeRoundTrip() {
         val message = TestUtil.getAllExtensionsSet()
-        val config = ProtoConfig(extensionRegistry = TestUtil.getExtensionRegistry())
+        val config = ProtoConfig { extensionRegistry = TestUtil.getExtensionRegistry() }
         val marshaller = grpcMarshallerOf<TestAllExtensions>(config)
         val decoded = TestUtil.encodeDecode(message, marshaller)
         TestUtil.assertAllExtensionsSet(decoded)

@@ -24,8 +24,6 @@ final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rp
 }
 
 final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig { // kotlinx.rpc.protobuf/ProtoConfig|null[0]
-    constructor <init>(kotlin/Boolean = ..., kotlin/Int = ..., kotlinx.rpc.protobuf/ProtoExtensionRegistry? = ...) // kotlinx.rpc.protobuf/ProtoConfig.<init>|<init>(kotlin.Boolean;kotlin.Int;kotlinx.rpc.protobuf.ProtoExtensionRegistry?){}[0]
-
     final val discardUnknownFields // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields|{}discardUnknownFields[0]
         final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
     final val extensionRegistry // kotlinx.rpc.protobuf/ProtoConfig.extensionRegistry|{}extensionRegistry[0]
