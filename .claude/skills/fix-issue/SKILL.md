@@ -48,14 +48,23 @@ Once `GH_TOKEN` is set, all `gh` CLI commands automatically use it. If you get a
 
 ### Pre-flight Access Check — MANDATORY
 
-Before any work, verify **all three services** in parallel. If any fails → **stop and
-report to the user**. Do NOT proceed — not even reading the issue.
+Before any work, run the pre-flight script. It checks connectivity **and identity**
+for all three services — verifying that the tokens belong to the AI Agent accounts,
+not the human user's personal credentials. If any check fails → **stop and report
+to the user**. Do NOT proceed — not even reading the issue.
 
-1. **YouTrack**: `get_current_user` on `youtrack-agent` MCP. If MCP fails, try REST:
-   `curl -sf -H "Authorization: Bearer $YOUTRACK_AGENT_TOKEN" "https://youtrack.jetbrains.com/api/users/me?fields=login,name"`
-2. **TeamCity**: `TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity project list --limit 1`
-3. **GitHub**: Generate the App installation token (see above), then verify:
-   `GH_TOKEN=$GH_TOKEN gh api /repos/Kotlin/kotlinx-rpc --jq .full_name`
+```bash
+.claude/skills/fix-issue/scripts/preflight-check.sh
+```
+
+The script verifies:
+1. **YouTrack** — token works AND authenticated user is `AI Agent [Kxrpc]`
+2. **TeamCity** — token works AND reports the authenticated identity
+3. **GitHub** — App token generation succeeds, repo access works, AND authenticated
+   entity is a `[bot]` account (not a human user)
+
+Exit code 0 = all passed. Non-zero = at least one check failed — read the output
+for details on which service and why.
 
 ### No silent fallback policy
 
