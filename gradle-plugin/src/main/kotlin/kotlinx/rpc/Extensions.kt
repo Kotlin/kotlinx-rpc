@@ -52,20 +52,27 @@ public open class RpcExtension @Inject internal constructor(objects: ObjectFacto
     /**
      * Protoc settings.
      *
+     * Protoc must be enabled either via [protoc] DSL call or by setting
+     * the `kotlinx.rpc.protoc=true` Gradle property.
+     *
      * Can't be called in a lazy context if not initialized.
      */
     public val protoc: Provider<ProtocExtension> = project.provider {
         if (!protocApplied.get()) {
             error("""
-                Protoc extension was not initialized. 
-                Please, apply the plugin by using the following declaration:
-                
+                Protoc extension was not initialized.
+                Please, enable it using one of the following options:
+
+                  // Option 1: DSL in build.gradle.kts
                   rpc {
                       protoc()
                   }
-                
-                If the error persists, check if you are using this property lazily, 
-                i.e. by calling 'protoc.map { }' and not 'protoc.get()', 
+
+                  // Option 2: Gradle property in gradle.properties
+                  kotlinx.rpc.protoc=true
+
+                If the error persists, check if you are using this property lazily,
+                i.e. by calling 'protoc.map { }' and not 'protoc.get()',
                 otherwise the order of initialization may be wrong.
             """.trimIndent())
         }

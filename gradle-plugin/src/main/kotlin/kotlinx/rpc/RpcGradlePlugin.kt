@@ -21,6 +21,11 @@ public class RpcGradlePlugin : Plugin<Project> {
         applyCompilerPlugin(target)
 
         target.createProtoExtensions()
+
+        if (target.isProtocEnabled) {
+            target.rpcExtension().protoc()
+        }
+
         target.configurePluginProtections()
     }
 
