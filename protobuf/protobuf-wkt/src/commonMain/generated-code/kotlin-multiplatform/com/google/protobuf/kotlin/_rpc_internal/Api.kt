@@ -61,7 +61,7 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     public override var sourceContext: SourceContext by __sourceContextDelegate
     internal val __mixinsDelegate: MsgFieldDelegate<List<Mixin>> = MsgFieldDelegate { emptyList() }
     public override var mixins: List<Mixin> by __mixinsDelegate
-    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
 
     private val _owner: ApiInternal = this
@@ -209,7 +209,7 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     public override var responseStreaming: Boolean by __responseStreamingDelegate
     internal val __optionsDelegate: MsgFieldDelegate<List<Option>> = MsgFieldDelegate { emptyList() }
     public override var options: List<Option> by __optionsDelegate
-    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
+    internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
 
     public override fun hashCode(): Int {
@@ -469,7 +469,7 @@ public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
         }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 
@@ -566,7 +566,7 @@ private fun ApiInternal.computeSize(): Int {
         __result += this.mixins.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 
@@ -615,7 +615,7 @@ public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
         }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 
@@ -705,7 +705,7 @@ private fun MethodInternal.computeSize(): Int {
         __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (this.syntax != Syntax.SYNTAX_PROTO2) {
+    if (this.syntax != Syntax.PROTO2) {
         __result += (WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number))
     }
 

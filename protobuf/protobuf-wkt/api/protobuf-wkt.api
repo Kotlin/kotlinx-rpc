@@ -1709,36 +1709,36 @@ public abstract class com/google/protobuf/kotlin/Field$Cardinality {
 	public fun getNumber ()I
 }
 
-public final class com/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_OPTIONAL : com/google/protobuf/kotlin/Field$Cardinality {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_OPTIONAL;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_REPEATED : com/google/protobuf/kotlin/Field$Cardinality {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_REPEATED;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_REQUIRED : com/google/protobuf/kotlin/Field$Cardinality {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_REQUIRED;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_UNKNOWN : com/google/protobuf/kotlin/Field$Cardinality {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$CARDINALITY_UNKNOWN;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
 public final class com/google/protobuf/kotlin/Field$Cardinality$Companion {
 	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/Field$Cardinality$OPTIONAL : com/google/protobuf/kotlin/Field$Cardinality {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$OPTIONAL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Field$Cardinality$REPEATED : com/google/protobuf/kotlin/Field$Cardinality {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$REPEATED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Field$Cardinality$REQUIRED : com/google/protobuf/kotlin/Field$Cardinality {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$REQUIRED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Field$Cardinality$UNKNOWN : com/google/protobuf/kotlin/Field$Cardinality {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Field$Cardinality$UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/google/protobuf/kotlin/Field$Cardinality$UNRECOGNIZED : com/google/protobuf/kotlin/Field$Cardinality {
@@ -1962,22 +1962,22 @@ public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$Compani
 	public final fun getEntries ()Ljava/util/List;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_OPTIONAL : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_OPTIONAL;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$OPTIONAL : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$OPTIONAL;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REPEATED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REPEATED;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$REPEATED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$REPEATED;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REQUIRED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$LABEL_REQUIRED;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Label$REQUIRED : com/google/protobuf/kotlin/FieldDescriptorProto$Label {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Label$REQUIRED;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -2000,131 +2000,131 @@ public abstract class com/google/protobuf/kotlin/FieldDescriptorProto$Type {
 	public fun getNumber ()I
 }
 
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$BOOL : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$BOOL;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$BYTES : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$BYTES;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$Companion {
 	public final fun getEntries ()Ljava/util/List;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BOOL : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BOOL;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$DOUBLE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$DOUBLE;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BYTES : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_BYTES;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$ENUM : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$ENUM;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_DOUBLE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_DOUBLE;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$FIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$FIXED32;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_ENUM : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_ENUM;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$FIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$FIXED64;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED32;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$FLOAT : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$FLOAT;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FIXED64;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$GROUP : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$GROUP;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FLOAT : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_FLOAT;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$INT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$INT32;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_GROUP : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_GROUP;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$INT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$INT64;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT32;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$MESSAGE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$MESSAGE;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_INT64;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$SFIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$SFIXED32;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_MESSAGE : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_MESSAGE;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$SFIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$SFIXED64;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED32;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$SINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$SINT32;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SFIXED64;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$SINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$SINT64;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT32;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$STRING : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$STRING;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_SINT64;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$UINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$UINT32;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_STRING : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_STRING;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT32 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT32;
-	public fun equals (Ljava/lang/Object;)Z
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$TYPE_UINT64;
+public final class com/google/protobuf/kotlin/FieldDescriptorProto$Type$UINT64 : com/google/protobuf/kotlin/FieldDescriptorProto$Type {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FieldDescriptorProto$Type$UINT64;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -3965,22 +3965,22 @@ public final class com/google/protobuf/kotlin/Syntax$Companion {
 	public final fun getEntries ()Ljava/util/List;
 }
 
-public final class com/google/protobuf/kotlin/Syntax$SYNTAX_EDITIONS : com/google/protobuf/kotlin/Syntax {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$SYNTAX_EDITIONS;
+public final class com/google/protobuf/kotlin/Syntax$EDITIONS : com/google/protobuf/kotlin/Syntax {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$EDITIONS;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/Syntax$SYNTAX_PROTO2 : com/google/protobuf/kotlin/Syntax {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$SYNTAX_PROTO2;
+public final class com/google/protobuf/kotlin/Syntax$PROTO2 : com/google/protobuf/kotlin/Syntax {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$PROTO2;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/google/protobuf/kotlin/Syntax$SYNTAX_PROTO3 : com/google/protobuf/kotlin/Syntax {
-	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$SYNTAX_PROTO3;
+public final class com/google/protobuf/kotlin/Syntax$PROTO3 : com/google/protobuf/kotlin/Syntax {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Syntax$PROTO3;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;

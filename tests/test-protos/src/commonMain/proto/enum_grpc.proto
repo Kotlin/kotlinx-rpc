@@ -11,6 +11,38 @@ enum Enum {
   THREE = 3;
 }
 
+// All values share the CARDINALITY_ prefix matching the enum name — should be stripped.
+enum Cardinality {
+  CARDINALITY_UNKNOWN = 0;
+  CARDINALITY_OPTIONAL = 1;
+  CARDINALITY_REQUIRED = 2;
+  CARDINALITY_REPEATED = 3;
+}
+
+// All values share the FIELD_KIND_ prefix matching the enum name — should be stripped.
+enum FieldKind {
+  FIELD_KIND_UNKNOWN = 0;
+  FIELD_KIND_DOUBLE = 1;
+  FIELD_KIND_FLOAT = 2;
+  FIELD_KIND_INT64 = 3;
+}
+
+// Not all values share a matching prefix — should NOT be stripped.
+enum MixedPrefix {
+  MIXED_PREFIX_A = 0;
+  OTHER_B = 1;
+}
+
+// No prefix at all — should NOT be stripped.
+enum NoPrefix {
+  ALPHA = 0;
+  BETA = 1;
+}
+
 message UsingEnum {
   Enum enum = 1;
+  Cardinality cardinality = 2;
+  FieldKind field_kind = 3;
+  MixedPrefix mixed = 4;
+  NoPrefix no_prefix = 5;
 }

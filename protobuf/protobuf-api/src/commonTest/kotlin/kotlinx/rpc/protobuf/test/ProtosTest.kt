@@ -329,12 +329,12 @@ class ProtosTest {
         val outer = NestedOuter {
             deep = inner
             deepEnum =
-                NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED
+                NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.UNSPECIFIED
         }
 
         assertEquals(123456789, outer.deep.num)
         assertEquals(
-            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED,
+            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.UNSPECIFIED,
             outer.deepEnum
         )
         assertEquals(-12, notInside.num)
@@ -342,7 +342,7 @@ class ProtosTest {
         val decodedOuter = encodeDecode(outer, grpcMarshallerOf<NestedOuter>())
         assertEquals(123456789, decodedOuter.deep.num)
         assertEquals(
-            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.JUST_WAY_TOO_INNER_UNSPECIFIED,
+            NestedOuter.Inner.SuperInner.DuperInner.EvenMoreInner.JustWayTooInner.UNSPECIFIED,
             decodedOuter.deepEnum
         )
         assertEquals(-12, notInside.num)
