@@ -8,8 +8,7 @@ exports.rule = entities.Issue.onChange({
   action: (ctx) => {
     const issue = ctx.issue;
     issue.pullRequests.forEach(function (pr) {
-      if (pr.state === entities.PullRequestState.MERGED
-        && pr.previousState !== entities.PullRequestState.MERGED) {
+      if (pr.state && pr.state.name === 'MERGED' && (!pr.previousState || pr.previousState.name !== 'MERGED')) {
         issue.fields.State = ctx.State.Fixed;
       }
     });
