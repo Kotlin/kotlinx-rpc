@@ -10,6 +10,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import kotlin.io.path.Path
+import kotlin.io.path.appendText
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -36,6 +37,23 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
         SSetsJvm.entries.forEach {
             runNonExistentTasksForSourceSet(it)
         }
+    }
+
+    @TestFactory
+    fun `Protoc Enabled Via Gradle Property`() = runGrpcTest {
+        projectDir.resolve("gradle.properties").appendText("\nkotlinx.rpc.protoc=true\n")
+
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+            )
+        )
     }
 
     @TestFactory
