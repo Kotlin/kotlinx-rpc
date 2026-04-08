@@ -85,7 +85,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
                     proceed(it)
                 }
             ) {
-                val request = EchoRequest { message = "Echo"; timeout = 2u }
+                val request = EchoRequest { message = "Echo"; timeout = 200u }
                 it.withService<EchoService>().UnaryEcho(request)
             }
         }

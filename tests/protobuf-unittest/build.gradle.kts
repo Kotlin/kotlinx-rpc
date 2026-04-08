@@ -85,7 +85,10 @@ sourceSets.main.get().proto {
 }
 
 rpc.protoc {
-    buf.generate.comments.includeFileLevelComments = false
+    buf.generate {
+        optionalFieldOrNullGetters = true
+        comments.includeFileLevelComments = false
+    }
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {

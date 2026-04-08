@@ -120,7 +120,8 @@ class WireFormatTest {
         val msg = TestAllTypes {}
         val marshaller = grpcMarshallerOf<TestAllTypes>()
         val decoded = TestUtil.encodeDecode(msg, marshaller)
-        assertNull(decoded.optionalInt32)
+        assertNull(decoded.optionalInt32OrNull)
+        assertEquals(0, decoded.optionalInt32)
         assertEquals(0, decoded.repeatedInt32.size)
     }
 

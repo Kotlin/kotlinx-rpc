@@ -159,8 +159,16 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var optionalBytes: ByteString by __optionalBytesDelegate
     internal val __optionalNestedMessageDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedMessage> = MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal.DEFAULT }
     override var optionalNestedMessage: TestAllTypesProto3.NestedMessage by __optionalNestedMessageDelegate
+    override fun clearOptionalNestedMessage() {
+        __optionalNestedMessageDelegate.clearField(this)
+    }
+
     internal val __optionalForeignMessageDelegate: MsgFieldDelegate<ForeignMessage> = MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageInternal.DEFAULT }
     override var optionalForeignMessage: ForeignMessage by __optionalForeignMessageDelegate
+    override fun clearOptionalForeignMessage() {
+        __optionalForeignMessageDelegate.clearField(this)
+    }
+
     internal val __optionalNestedEnumDelegate: MsgFieldDelegate<TestAllTypesProto3.NestedEnum> = MsgFieldDelegate { TestAllTypesProto3.NestedEnum.FOO }
     override var optionalNestedEnum: TestAllTypesProto3.NestedEnum by __optionalNestedEnumDelegate
     internal val __optionalForeignEnumDelegate: MsgFieldDelegate<ForeignEnum> = MsgFieldDelegate { ForeignEnum.FOREIGN_FOO }
@@ -173,6 +181,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var optionalCord: String by __optionalCordDelegate
     internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllTypesProto3Internal.DEFAULT }
     override var recursiveMessage: TestAllTypesProto3 by __recursiveMessageDelegate
+    override fun clearRecursiveMessage() {
+        __recursiveMessageDelegate.clearField(this)
+    }
+
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var repeatedInt32: List<Int> by __repeatedInt32Delegate
     internal val __repeatedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
@@ -311,22 +323,58 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var mapStringForeignEnum: Map<String, ForeignEnum> by __mapStringForeignEnumDelegate
     internal val __optionalBoolWrapperDelegate: MsgFieldDelegate<BoolValue> = MsgFieldDelegate(PresenceIndices.optionalBoolWrapper) { BoolValueInternal.DEFAULT }
     override var optionalBoolWrapper: BoolValue by __optionalBoolWrapperDelegate
+    override fun clearOptionalBoolWrapper() {
+        __optionalBoolWrapperDelegate.clearField(this)
+    }
+
     internal val __optionalInt32WrapperDelegate: MsgFieldDelegate<Int32Value> = MsgFieldDelegate(PresenceIndices.optionalInt32Wrapper) { Int32ValueInternal.DEFAULT }
     override var optionalInt32Wrapper: Int32Value by __optionalInt32WrapperDelegate
+    override fun clearOptionalInt32Wrapper() {
+        __optionalInt32WrapperDelegate.clearField(this)
+    }
+
     internal val __optionalInt64WrapperDelegate: MsgFieldDelegate<Int64Value> = MsgFieldDelegate(PresenceIndices.optionalInt64Wrapper) { Int64ValueInternal.DEFAULT }
     override var optionalInt64Wrapper: Int64Value by __optionalInt64WrapperDelegate
+    override fun clearOptionalInt64Wrapper() {
+        __optionalInt64WrapperDelegate.clearField(this)
+    }
+
     internal val __optionalUint32WrapperDelegate: MsgFieldDelegate<UInt32Value> = MsgFieldDelegate(PresenceIndices.optionalUint32Wrapper) { UInt32ValueInternal.DEFAULT }
     override var optionalUint32Wrapper: UInt32Value by __optionalUint32WrapperDelegate
+    override fun clearOptionalUint32Wrapper() {
+        __optionalUint32WrapperDelegate.clearField(this)
+    }
+
     internal val __optionalUint64WrapperDelegate: MsgFieldDelegate<UInt64Value> = MsgFieldDelegate(PresenceIndices.optionalUint64Wrapper) { UInt64ValueInternal.DEFAULT }
     override var optionalUint64Wrapper: UInt64Value by __optionalUint64WrapperDelegate
+    override fun clearOptionalUint64Wrapper() {
+        __optionalUint64WrapperDelegate.clearField(this)
+    }
+
     internal val __optionalFloatWrapperDelegate: MsgFieldDelegate<FloatValue> = MsgFieldDelegate(PresenceIndices.optionalFloatWrapper) { FloatValueInternal.DEFAULT }
     override var optionalFloatWrapper: FloatValue by __optionalFloatWrapperDelegate
+    override fun clearOptionalFloatWrapper() {
+        __optionalFloatWrapperDelegate.clearField(this)
+    }
+
     internal val __optionalDoubleWrapperDelegate: MsgFieldDelegate<DoubleValue> = MsgFieldDelegate(PresenceIndices.optionalDoubleWrapper) { DoubleValueInternal.DEFAULT }
     override var optionalDoubleWrapper: DoubleValue by __optionalDoubleWrapperDelegate
+    override fun clearOptionalDoubleWrapper() {
+        __optionalDoubleWrapperDelegate.clearField(this)
+    }
+
     internal val __optionalStringWrapperDelegate: MsgFieldDelegate<StringValue> = MsgFieldDelegate(PresenceIndices.optionalStringWrapper) { StringValueInternal.DEFAULT }
     override var optionalStringWrapper: StringValue by __optionalStringWrapperDelegate
+    override fun clearOptionalStringWrapper() {
+        __optionalStringWrapperDelegate.clearField(this)
+    }
+
     internal val __optionalBytesWrapperDelegate: MsgFieldDelegate<BytesValue> = MsgFieldDelegate(PresenceIndices.optionalBytesWrapper) { BytesValueInternal.DEFAULT }
     override var optionalBytesWrapper: BytesValue by __optionalBytesWrapperDelegate
+    override fun clearOptionalBytesWrapper() {
+        __optionalBytesWrapperDelegate.clearField(this)
+    }
+
     internal val __repeatedBoolWrapperDelegate: MsgFieldDelegate<List<BoolValue>> = MsgFieldDelegate { emptyList() }
     override var repeatedBoolWrapper: List<BoolValue> by __repeatedBoolWrapperDelegate
     internal val __repeatedInt32WrapperDelegate: MsgFieldDelegate<List<Int32Value>> = MsgFieldDelegate { emptyList() }
@@ -347,20 +395,48 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var repeatedBytesWrapper: List<BytesValue> by __repeatedBytesWrapperDelegate
     internal val __optionalDurationDelegate: MsgFieldDelegate<Duration> = MsgFieldDelegate(PresenceIndices.optionalDuration) { DurationInternal.DEFAULT }
     override var optionalDuration: Duration by __optionalDurationDelegate
+    override fun clearOptionalDuration() {
+        __optionalDurationDelegate.clearField(this)
+    }
+
     internal val __optionalTimestampDelegate: MsgFieldDelegate<Timestamp> = MsgFieldDelegate(PresenceIndices.optionalTimestamp) { TimestampInternal.DEFAULT }
     override var optionalTimestamp: Timestamp by __optionalTimestampDelegate
+    override fun clearOptionalTimestamp() {
+        __optionalTimestampDelegate.clearField(this)
+    }
+
     internal val __optionalFieldMaskDelegate: MsgFieldDelegate<FieldMask> = MsgFieldDelegate(PresenceIndices.optionalFieldMask) { FieldMaskInternal.DEFAULT }
     override var optionalFieldMask: FieldMask by __optionalFieldMaskDelegate
+    override fun clearOptionalFieldMask() {
+        __optionalFieldMaskDelegate.clearField(this)
+    }
+
     internal val __optionalStructDelegate: MsgFieldDelegate<Struct> = MsgFieldDelegate(PresenceIndices.optionalStruct) { StructInternal.DEFAULT }
     override var optionalStruct: Struct by __optionalStructDelegate
+    override fun clearOptionalStruct() {
+        __optionalStructDelegate.clearField(this)
+    }
+
     internal val __optionalAnyDelegate: MsgFieldDelegate<com.google.protobuf.kotlin.Any> = MsgFieldDelegate(PresenceIndices.optionalAny) { AnyInternal.DEFAULT }
     override var optionalAny: com.google.protobuf.kotlin.Any by __optionalAnyDelegate
+    override fun clearOptionalAny() {
+        __optionalAnyDelegate.clearField(this)
+    }
+
     internal val __optionalValueDelegate: MsgFieldDelegate<Value> = MsgFieldDelegate(PresenceIndices.optionalValue) { ValueInternal.DEFAULT }
     override var optionalValue: Value by __optionalValueDelegate
+    override fun clearOptionalValue() {
+        __optionalValueDelegate.clearField(this)
+    }
+
     internal val __optionalNullValueDelegate: MsgFieldDelegate<NullValue> = MsgFieldDelegate { NullValue.NULL_VALUE }
     override var optionalNullValue: NullValue by __optionalNullValueDelegate
     internal val __optionalEmptyDelegate: MsgFieldDelegate<Empty> = MsgFieldDelegate(PresenceIndices.optionalEmpty) { EmptyInternal.DEFAULT }
     override var optionalEmpty: Empty by __optionalEmptyDelegate
+    override fun clearOptionalEmpty() {
+        __optionalEmptyDelegate.clearField(this)
+    }
+
     internal val __repeatedDurationDelegate: MsgFieldDelegate<List<Duration>> = MsgFieldDelegate { emptyList() }
     override var repeatedDuration: List<Duration> by __repeatedDurationDelegate
     internal val __repeatedTimestampDelegate: MsgFieldDelegate<List<Timestamp>> = MsgFieldDelegate { emptyList() }
@@ -1316,6 +1392,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override var a: Int by __aDelegate
         internal val __corecursiveDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto3Internal.DEFAULT }
         override var corecursive: TestAllTypesProto3 by __corecursiveDelegate
+
+        override fun clearCorecursive() {
+            __corecursiveDelegate.clearField(this)
+        }
 
         private val _owner: NestedMessageInternal = this
 

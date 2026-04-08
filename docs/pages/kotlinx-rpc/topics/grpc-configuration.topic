@@ -417,6 +417,7 @@
                             includeWkt = true
                             errorFormat = BufGenerateExtension.ErrorFormat.Json
                             indentSize = 4
+                            optionalFieldOrNullGetters = true
 
                             comments {
                                 copyComments = true
@@ -465,6 +466,12 @@
             <def title="generate.indentSize" id="grpc-buf-generate-indent-size">
                 Controls the indentation size used by the built-in Kotlin generators.
                 This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
+            </def>
+            <def title="generate.optionalFieldOrNullGetters" id="grpc-buf-generate-optional-field-or-null-getters">
+                Generates additional <code>fooOrNull</code> accessors for optional protobuf fields.
+                The main generated property keeps returning the protobuf default value when the field is absent,
+                while the generated <code>OrNull</code> accessor returns <code>null</code> when the field is not present.
+                Default value: <code>false</code>. This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
             </def>
             <def title="generate.comments.copyComments" id="grpc-buf-generate-copy-comments">
                 Controls whether comments from the original <path>.proto</path> files are copied to generated Kotlin

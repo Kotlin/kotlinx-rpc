@@ -58,6 +58,10 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var options: List<Option> by __optionsDelegate
     internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
     public override var sourceContext: SourceContext by __sourceContextDelegate
+    public override fun clearSourceContext() {
+        __sourceContextDelegate.clearField(this)
+    }
+
     internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
     internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
@@ -356,6 +360,10 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     public override var options: List<Option> by __optionsDelegate
     internal val __sourceContextDelegate: MsgFieldDelegate<SourceContext> = MsgFieldDelegate(PresenceIndices.sourceContext) { SourceContextInternal.DEFAULT }
     public override var sourceContext: SourceContext by __sourceContextDelegate
+    public override fun clearSourceContext() {
+        __sourceContextDelegate.clearField(this)
+    }
+
     internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.SYNTAX_PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
     internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
@@ -604,6 +612,10 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     public override var name: String by __nameDelegate
     internal val __valueDelegate: MsgFieldDelegate<Any> = MsgFieldDelegate(PresenceIndices.value) { AnyInternal.DEFAULT }
     public override var value: Any by __valueDelegate
+
+    public override fun clearValue() {
+        __valueDelegate.clearField(this)
+    }
 
     private val _owner: OptionInternal = this
 

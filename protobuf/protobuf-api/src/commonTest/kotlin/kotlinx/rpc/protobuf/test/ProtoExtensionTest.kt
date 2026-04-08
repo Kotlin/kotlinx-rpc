@@ -85,7 +85,7 @@ class ProtoExtensionTest {
         }
 
         assertEquals(42, message.int32)
-        assertEquals(null, message.enum)
+        assertEquals(MyEnum.ZERO, message.enum)
     }
 
     @Test

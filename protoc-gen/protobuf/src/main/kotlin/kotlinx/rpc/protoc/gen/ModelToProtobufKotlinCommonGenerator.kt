@@ -117,17 +117,21 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateExtensionMessageEntities(message: List<MessageDeclaration>) {
-        val allMessages = message + message.flatMap(MessageDeclaration::allNestedRecursively)
+    private fun CodeGenerator.generateExtensionMessageEntities(messages: List<MessageDeclaration>) {
+        val allMessages = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
         allMessages.forEach {
             generateMessageConstructor(it)
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
+            if (config.generateOptionalFieldOrNullGetters) {
+                // generates orNull getters for optional fields
+                generatePublicOrNullFieldGetters(it)
+            }
         }
 
         // the presence interfaces are not generated in the flattened list
         // as nested classes are generated as nested presence interfaces
-        message.forEach { generatePresenceInterface(it) }
+        messages.forEach { generatePresenceInterface(it) }
     }
 
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
@@ -225,6 +229,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             declaration.actualFields.forEachIndexed { i, field ->
                 generatedInternalFieldPropertyDeclaration(i, field, declaration)
+                generateInternalFieldClearFunction(field, declaration)
             }
 
             generateInternalPresenceObjectProperty(declaration)
@@ -302,6 +307,28 @@ class ModelToProtobufKotlinCommonGenerator(
             },
             needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
         )
+    }
+
+    /**
+     * Generates the clear<Field>() functions that are defined by the compiler plugin generated
+     * Builder interface for fields that have a presence Idx (and therefore are presence tracked).
+     *
+     * The function access uses the delegate `clearField()` method to unset the value and clear the
+     * presence bit in the presence mask of the internal message.
+     */
+    private fun CodeGenerator.generateInternalFieldClearFunction(field: FieldDeclaration, msg: MessageDeclaration) {
+        // if the field must always be present, we don't have a clear function
+        if (field.presenceIdx == null
+            || field.type is FieldType.OneOf
+            || field.isPartOfMapEntry) return
+
+        function(
+            name = "clear${field.rawName.capitalize()}",
+            modifiers = "override",
+            returnType = "".scoped(),
+        ) {
+            code("${field.internalDelegateName}.clearField(this)".scoped())
+        }
     }
 
     /**
@@ -865,6 +892,25 @@ class ModelToProtobufKotlinCommonGenerator(
         )
     }
 
+    private fun CodeGenerator.generatePublicOrNullFieldGetters(declaration: MessageDeclaration) {
+        declaration.actualFields
+            .filter { it.hasOrNullGetter }
+            .forEach { field ->
+                property(
+                    name = "${field.rawName}OrNull",
+                    type = field.typeFqName().wrapIn { "$it?" },
+                    propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                    contextReceiver = declaration.name.scoped(),
+                    value = "if (this.presence.${field.presenceGetterName}) this.${field.name} else null".scoped(),
+                    comment = Comment.leading(
+                        """
+                    Returns the value of the `${field.rawName}` field if present, otherwise null.
+                    """.trimIndent()
+                    )
+                )
+            }
+    }
+
     private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration, packageName: FqName.Package) {
         val name = declaration.name
         val extendee = declaration.containingType.value
@@ -915,7 +961,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // val MyMessage.hasMyExtensionField: Boolean get() =
         //  (this as InternalPresenceObject).hasExtension(MyProtoFileKtExtensions.int32)
         property(
-            name = "has" + name.capitalize(),
+            name = declaration.presenceGetterName,
             contextReceiver = extendee.presenceInterfaceName.scoped(),
             type = FqName.Implicits.Boolean.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
@@ -925,6 +971,9 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         )
 
+        // val MyMessage.Builder.myExtensionField: Boolean
+        //      get()      = // ...
+        //      set(value) = // ...
         property(
             name = name,
             contextReceiver = extendee.builderClassName.scoped(),
@@ -934,6 +983,15 @@ class ModelToProtobufKotlinCommonGenerator(
             value = value,
             setter = "asInternal().setExtensionValue(%T, value)".scoped(descriptorRef)
         )
+
+        // fun MyMessage.Builder.clearMyExtensionField { /* ... */ }
+        function(
+            name = declaration.clearFunctionName,
+            contextReceiver = extendee.builderClassName.scoped(),
+            returnType = "".scoped()
+        ) {
+            code("asInternal().setExtensionValue(%T, null)".scoped(descriptorRef))
+        }
     }
 
     private fun CodeGenerator.generateMessageExtensionNamespace(
@@ -991,7 +1049,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEach { field ->
                 if (field.presenceIdx != null) {
                     property(
-                        name = "has${field.rawName.capitalize()}",
+                        name = field.presenceGetterName,
                         modifiers = "override",
                         type = FqName.Implicits.Boolean.scoped(),
                         propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,

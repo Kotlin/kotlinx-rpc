@@ -28,9 +28,11 @@ import test.submsg.OtherInternal
 import test.submsg.Reference
 import test.submsg.encodeWith
 import test.submsg.invoke
+import test.submsg.presence
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -59,7 +61,8 @@ class ProtosTest {
 
         val decoded = grpcMarshallerOf<AllPrimitives>().decode(buffer)
         assertEquals(12, decoded.sint32)
-        assertNull(decoded.sint64)
+        assertFalse(decoded.presence.hasSint64)
+        assertEquals(0, decoded.sint64)
         assertEquals(1234u, decoded.fixed32)
     }
 
@@ -202,9 +205,12 @@ class ProtosTest {
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
             assertIs<OneOfMsg.Field.Other>(decoded.field)
-            assertNull((decoded.field as OneOfMsg.Field.Other).value.arg1)
-            assertEquals("test", (decoded.field as OneOfMsg.Field.Other).value.arg2)
-            assertNull((decoded.field as OneOfMsg.Field.Other).value.arg3)
+            val decodedOtherField = (decoded.field as OneOfMsg.Field.Other).value
+            assertFalse(decodedOtherField.presence.hasArg1)
+            assertEquals("", decodedOtherField.arg1)
+            assertEquals("test", decodedOtherField.arg2)
+            assertFalse(decodedOtherField.presence.hasArg1)
+            assertEquals("", decodedOtherField.arg3)
         }
 
         run {
@@ -237,7 +243,7 @@ class ProtosTest {
         val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
         assertEquals("arg2", decodedOther.arg2)
         assertEquals("arg1", decodedOther.arg1)
-        assertEquals(null, decodedOther.arg3)
+        assertEquals("", decodedOther.arg3)
     }
 
     @Test
@@ -308,13 +314,13 @@ class ProtosTest {
             }
         }
 
-        assertEquals(null, msg.rec.rec.rec.rec.num)
+        assertEquals(0, msg.rec.rec.rec.rec.num)
         assertEquals(3, msg.rec.num)
 
         val decoded = encodeDecode(msg, grpcMarshallerOf<Recursive>())
 
         assertEquals(3, decoded.rec.num)
-        assertEquals(null, decoded.rec.rec.rec.rec.num)
+        assertEquals(0, decoded.rec.rec.rec.rec.num)
     }
 
     @Test
@@ -398,9 +404,9 @@ class ProtosTest {
         assertEquals("second", decodedReference.other.arg2)
 
         val emptyReference = referenceMarshaller.decode(Buffer())
-        assertNull(emptyReference.other.arg1)
-        assertNull(emptyReference.other.arg2)
-        assertNull(emptyReference.other.arg3)
+        assertEquals("", emptyReference.other.arg1)
+        assertEquals("", emptyReference.other.arg2)
+        assertEquals("", emptyReference.other.arg3)
 
         val repeatedMarshaller = grpcMarshallerOf<Repeated>()
         val populatedRepeated = Repeated {

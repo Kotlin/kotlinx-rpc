@@ -10,6 +10,7 @@ import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.doesMatchesClassId
+import kotlinx.rpc.codegen.internalMessageClassId
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -62,12 +63,7 @@ object FirProtoMessageAnnotationChecker {
             containingDeclarations = listOf()
         )?.filterIsInstance<FirRegularClass>()?.toList()?.reversed() ?: emptyList()
 
-        val internalClassId = transformClassId(
-            declaration = declaration,
-            parentClasses = parentClasses,
-            transformer = ProtoNames::internalName,
-        )
-
+        val internalClassId = declaration.symbol.classId.internalMessageClassId()
         val internalDeclaration = vsApi {
             context.session.getRegularClassSymbolByClassIdVS(internalClassId)
         }
@@ -123,24 +119,5 @@ object FirProtoMessageAnnotationChecker {
                         superType.doesMatchesClassId(session, requiredSuperType)
                     }
             }
-    }
-
-    private fun transformClassId(
-        declaration: FirRegularClass,
-        parentClasses: List<FirRegularClass>,
-        transformer: (String) -> String,
-    ): ClassId {
-        val topLevelNames = (parentClasses + listOf(declaration))
-            .map { Name.identifier(transformer(it.name.asString())) }
-
-        // for nested classes, we need to construct ClassId properly using createNestedClassId for each level
-        return ClassId(
-            packageFqName = declaration.symbol.classId.packageFqName,
-            topLevelName = topLevelNames.first()
-        ).let {
-            topLevelNames.drop(1).fold(it) { acc, name ->
-                acc.createNestedClassId(name)
-            }
-        }
     }
 }

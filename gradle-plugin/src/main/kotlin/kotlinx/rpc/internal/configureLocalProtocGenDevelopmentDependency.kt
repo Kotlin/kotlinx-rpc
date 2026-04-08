@@ -22,6 +22,13 @@ public fun Project.configureLocalProtocGenDevelopmentDependency(
 
     // init
     rpcExtension().protoc {
+
+        buf {
+            generate {
+                optionalFieldOrNullGetters.set(true)
+            }
+        }
+
         plugins {
             kotlinMultiplatform {
                 local {
