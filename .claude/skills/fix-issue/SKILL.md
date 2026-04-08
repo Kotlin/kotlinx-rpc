@@ -87,6 +87,15 @@ Understand:
 - Is this a bug, feature, or task?
 - Are there linked issues?
 
+### For bugs: investigate root cause
+
+Apply the `superpowers:systematic-debugging` discipline before posting the reproducer:
+- Reproduce the issue (or confirm it from the description)
+- Trace the data flow backward from the error to find where incorrect state originates
+- Form a specific, concrete hypothesis — not "something with serialization" but
+  "Field X is null because `deserialize()` silently drops the payload when..."
+- The reproducer you post should confirm or demonstrate this hypothesis
+
 ### Post a reproducer
 
 If the issue is a bug and reproduction steps are unclear or missing, post a
@@ -121,9 +130,15 @@ already cover the scenario.
 
 When needed — may be a **new test** or **modification of an existing one**:
 1. Identify the correct test module
-2. Write/modify a test that **fails** now and **passes** after the fix
-3. Run via `running_gradle_tests` to confirm failure
+2. Write/modify a test that captures the buggy behavior or missing feature
+3. Run via `running_gradle_tests` and verify the failure is a valid RED state per
+   `superpowers:test-driven-development` — the test must compile and run, then fail
+   on the assertion that captures the actual bug. A compilation error or setup crash
+   is not a valid RED.
 4. Follow existing test patterns in the same module
+
+After the fix is applied (Step 5), re-run to confirm GREEN. If it still fails, the
+fix is incomplete — do not move on.
 
 ## Step 5: Apply the Fix
 
@@ -135,10 +150,12 @@ When needed — may be a **new test** or **modification of an existing one**:
 Start executing immediately — no user approval needed.
 
 **Complex** (architectural, multi-module, public API, unclear tradeoffs):
-1. Plan agent → detailed plan (root cause, approach, alternatives, files, risks, verification)
-2. Spawn a **review agent** to critique the plan before coding (edge cases, simpler
+1. Use `superpowers:brainstorming` to explore approaches — this surfaces alternatives
+   and tradeoffs before committing to a plan.
+2. Plan agent → detailed plan (root cause, approach, alternatives, files, risks, verification)
+3. Spawn a **review agent** to critique the plan before coding (edge cases, simpler
    alternatives, binary compat risks, architectural patterns)
-3. Incorporate feedback, then execute. Still no user approval — the review is for
+4. Incorporate feedback, then execute. Still no user approval — the review is for
    correctness, not permission.
 
 ### Coding guidelines
@@ -169,11 +186,24 @@ code, ABI check is irrelevant for internal-only logic changes). Never run Gradle
 in parallel against the same worktree — builds share state and will corrupt
 each other.
 
+All relevant checks must pass before proceeding to Step 8. If a check fails, fix
+and re-run — do not proceed to code review with known failures.
+
 ## Step 8: Code Review
 
 Spawn **at least 2 independent review agents in parallel** on the full diff.
-See `references/code-review-agents.md` for the reviewer menu, prompting guide,
-and severity handling. Errors must be fixed; warnings/nits are your judgment call.
+See `references/code-review-agents.md` for the reviewer menu and prompting guide.
+
+Use the `superpowers:requesting-code-review` discipline: capture the git range,
+provide each reviewer with structured context (what changed, why, which requirements
+it addresses). Then handle feedback in priority order:
+
+1. **Errors/Critical** — fix immediately. Do not proceed to Step 9 with unfixed errors.
+2. **Warnings/Important** — fix unless you have a concrete reason to skip (document it).
+3. **Nits/Minor** — fix if trivial, skip if it would bloat the diff.
+
+After applying error/warning fixes, re-run the tests from Step 4 to confirm no
+regressions.
 
 ## Step 9: Commit Changes
 
@@ -222,9 +252,15 @@ for build IDs). May skip if trivial and local verifications covered it.
 **Monitor both via subagents**: Spawn two background subagents — one polling
 GitHub, one polling TeamCity. Each reports back on completion.
 
-On failure: read the report, fix, commit, push (GH Actions restart automatically),
-re-trigger TC if needed, spawn monitoring subagents again. Iterate until both pass.
-Unrelated failures (flaky tests) → note in the CI comment (see below).
+On failure — apply `superpowers:systematic-debugging` discipline, not blind retries:
+1. Read the full error/stack trace, not just the test name.
+2. Check if pre-existing — run the same test against `main` (or check recent TC
+   history). Pre-existing failures get noted in the CI comment, not fixed.
+3. Reproduce locally if feasible via `running_gradle_tests` — faster than CI round-trips.
+4. Form a hypothesis before fixing. If your first fix doesn't work, return to the
+   error output — do not stack guesses.
+5. Fix, commit, push. GH Actions restart automatically; re-trigger TC if needed.
+   Spawn monitoring subagents again.
 
 **Post a CI report comment on the PR** — this is mandatory, not optional. The
 reviewer needs to see pipeline status directly on the PR. Use the template in
@@ -240,6 +276,8 @@ Once all CI passes:
 1. Rebase on latest main: `git rebase origin/main` + `git push --force-with-lease`
 2. Remove draft: `gh pr ready <pr-number>`
 3. Add reviewer: `gh pr edit <pr-number> --add-reviewer Mr3zee`
+4. Verify: `gh pr view <pr-number> --json isDraft,reviewRequests,headRefOid` — confirm
+   draft removed, reviewer assigned, and head SHA matches local HEAD.
 
 ## Step 13: Update YouTrack
 
@@ -252,7 +290,17 @@ Once all CI passes:
 
 ## Step 14: The Main Cycle is Done
 
-Report: PR URL, YT status, brief fix summary, worktree path.
+Before reporting completion, apply `superpowers:verification-before-completion` —
+verify actual state, do not assume previous steps succeeded:
+
+1. `gh pr view <pr-number> --json isDraft,reviewRequests` — draft removed, reviewer assigned
+2. Verify CI report comment exists on the PR
+3. Verify YT issue state is `Fixed in Branch` via `youtrack-agent`
+4. Verify the workflow checklist comment is fully checked off
+
+If any check fails, fix it before reporting. Then report:
+PR URL, YT status, brief fix summary, worktree path.
+
 Do NOT wait for review feedback in the session, feedback would be posted in the PR,
 and you will be notified by a user.
 
@@ -262,7 +310,11 @@ This may take **multiple turns**. Each turn:
 
 1. Read all PR comments (human reviews + internal checkbox comment)
 2. Human reviewer comments take priority. For the checkbox comment, `[x]` = fix, `[ ]` = skip.
-3. Fix all: human comments + checked checkboxes
+3. **Before implementing feedback, apply `superpowers:receiving-code-review` discipline**:
+   - Verify the reviewer's claim against the actual codebase — don't assume they're correct
+   - If the suggestion would break existing functionality, violate YAGNI, or conflict
+     with project conventions, push back with technical reasoning in a PR comment reply
+   - Implement in priority order: blocking issues first, then simple fixes, then complex
 4. Re-run tests/verifications, commit, push, re-trigger CI if needed
 5. Update the review checkbox comment per `assets/gh-code-review-comment.md`
 6. Update the CI checkbox comment per `assets/gh-ci-report-comment.md`

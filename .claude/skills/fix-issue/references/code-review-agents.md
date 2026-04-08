@@ -18,12 +18,12 @@ Spawn unlisted reviewers too if warranted (docs, performance, etc.).
 
 ## How to prompt each agent
 
-Collect the diff (`git diff HEAD` in the worktree, or `git diff` + `git diff --staged`
-if some changes are staged), then spawn each agent with:
+Spawn each reviewer as a `superpowers:code-reviewer` agent type. Collect the diff
+(`git diff HEAD` in the worktree, or `git diff` + `git diff --staged` if some changes
+are staged), then spawn each agent with:
 
 > You are reviewing a code change for the kotlinx-rpc library. Focus ONLY on
-> **[your focus area]**. Review the diff below and report issues as a list.
-> For each issue: file path, line(s), severity (error/warning/nit), and explanation.
+> **[your focus area]**. Review the diff below.
 > If you find no issues in your area, say so explicitly.
 >
 > \<the diff\>
