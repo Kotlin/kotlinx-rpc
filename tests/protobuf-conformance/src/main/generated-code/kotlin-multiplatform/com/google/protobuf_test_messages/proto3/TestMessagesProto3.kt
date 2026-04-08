@@ -24,20 +24,20 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
-* This proto includes every type of field in both singular and repeated
-* forms.
-* 
-* Also, crucially, all messages and enums in this file are eventually
-* submessages of this message.  So for example, a fuzz test of TestAllTypes
-* could trigger bugs that occur in any message type in this file.  We verify
-* this stays true in a unit test.
-*/
+ * This proto includes every type of field in both singular and repeated
+ * forms.
+ * 
+ * Also, crucially, all messages and enums in this file are eventually
+ * submessages of this message.  So for example, a fuzz test of TestAllTypes
+ * could trigger bugs that occur in any message type in this file.  We verify
+ * this stays true in a unit test.
+ */
 @GeneratedProtoMessage
 interface TestAllTypesProto3 {
     /**
-    * Singular
-    * test [kotlin] comment
-    */
+     * Singular
+     * test [kotlin] comment
+     */
     val optionalInt32: Int
     val optionalInt64: Long
     val optionalUint32: UInt
@@ -62,8 +62,8 @@ interface TestAllTypesProto3 {
     val optionalCord: String
     val recursiveMessage: TestAllTypesProto3
     /**
-    * Repeated
-    */
+     * Repeated
+     */
     val repeatedInt32: List<Int>
     val repeatedInt64: List<Long>
     val repeatedUint32: List<UInt>
@@ -86,8 +86,8 @@ interface TestAllTypesProto3 {
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
     /**
-    * Packed
-    */
+     * Packed
+     */
     val packedInt32: List<Int>
     val packedInt64: List<Long>
     val packedUint32: List<UInt>
@@ -103,8 +103,8 @@ interface TestAllTypesProto3 {
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
     /**
-    * Unpacked
-    */
+     * Unpacked
+     */
     val unpackedInt32: List<Int>
     val unpackedInt64: List<Long>
     val unpackedUint32: List<UInt>
@@ -120,8 +120,8 @@ interface TestAllTypesProto3 {
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
     /**
-    * Map
-    */
+     * Map
+     */
     val mapInt32Int32: Map<Int, Int>
     val mapInt64Int64: Map<Long, Long>
     val mapUint32Uint32: Map<UInt, UInt>
@@ -142,8 +142,8 @@ interface TestAllTypesProto3 {
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnum>
     /**
-    * Well-known types
-    */
+     * Well-known types
+     */
     val optionalBoolWrapper: BoolValue
     val optionalInt32Wrapper: Int32Value
     val optionalInt64Wrapper: Int64Value
@@ -179,9 +179,9 @@ interface TestAllTypesProto3 {
     val repeatedListValue: List<ListValue>
     val repeatedEmpty: List<Empty>
     /**
-    * Test field-name-to-JSON-name convention.
-    * (protobuf says names can be any valid C/C++ identifier.)
-    */
+     * Test field-name-to-JSON-name convention.
+     * (protobuf says names can be any valid C/C++ identifier.)
+     */
     val fieldname1: Int
     val fieldName2: Int
     val FieldName3: Int
@@ -248,8 +248,8 @@ interface TestAllTypesProto3 {
         data object BAZ: NestedEnum(number = 2)
 
         /**
-        * Intentionally negative.
-        */
+         * Intentionally negative.
+         */
         data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)

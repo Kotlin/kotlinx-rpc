@@ -7,19 +7,19 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
-* This proto includes every type of field in both singular and repeated
-* forms.
-* 
-* Also, crucially, all messages and enums in this file are eventually
-* submessages of this message.  So for example, a fuzz test of TestAllTypes
-* could trigger bugs that occur in any message type in this file.  We verify
-* this stays true in a unit test.
-*/
+ * This proto includes every type of field in both singular and repeated
+ * forms.
+ * 
+ * Also, crucially, all messages and enums in this file are eventually
+ * submessages of this message.  So for example, a fuzz test of TestAllTypes
+ * could trigger bugs that occur in any message type in this file.  We verify
+ * this stays true in a unit test.
+ */
 @GeneratedProtoMessage
 interface TestAllTypesProto2 {
     /**
-    * Singular
-    */
+     * Singular
+     */
     val optionalInt32: Int?
     val optionalInt64: Long?
     val optionalUint32: UInt?
@@ -43,8 +43,8 @@ interface TestAllTypesProto2 {
     val optionalCord: String?
     val recursiveMessage: TestAllTypesProto2
     /**
-    * Repeated
-    */
+     * Repeated
+     */
     val repeatedInt32: List<Int>
     val repeatedInt64: List<Long>
     val repeatedUint32: List<UInt>
@@ -67,8 +67,8 @@ interface TestAllTypesProto2 {
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
     /**
-    * Packed
-    */
+     * Packed
+     */
     val packedInt32: List<Int>
     val packedInt64: List<Long>
     val packedUint32: List<UInt>
@@ -84,8 +84,8 @@ interface TestAllTypesProto2 {
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
     /**
-    * Unpacked
-    */
+     * Unpacked
+     */
     val unpackedInt32: List<Int>
     val unpackedInt64: List<Long>
     val unpackedUint32: List<UInt>
@@ -101,8 +101,8 @@ interface TestAllTypesProto2 {
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
     /**
-    * Map
-    */
+     * Map
+     */
     val mapInt32Int32: Map<Int, Int>
     val mapInt64Int64: Map<Long, Long>
     val mapUint32Uint32: Map<UInt, UInt>
@@ -127,8 +127,8 @@ interface TestAllTypesProto2 {
     val data: Data
     val multiwordgroupfield: MultiWordGroupField
     /**
-    * default values
-    */
+     * default values
+     */
     val defaultInt32: Int
     val defaultInt64: Long
     val defaultUint32: UInt
@@ -145,9 +145,9 @@ interface TestAllTypesProto2 {
     val defaultString: String
     val defaultBytes: ByteString
     /**
-    * Test field-name-to-JSON-name convention.
-    * (protobuf says names can be any valid C/C++ identifier.)
-    */
+     * Test field-name-to-JSON-name convention.
+     * (protobuf says names can be any valid C/C++ identifier.)
+     */
     val fieldname1: Int?
     val fieldName2: Int?
     val FieldName3: Int?
@@ -205,8 +205,8 @@ interface TestAllTypesProto2 {
     }
 
     /**
-    * groups
-    */
+     * groups
+     */
     @GeneratedProtoMessage
     interface Data {
         val groupInt32: Int?
@@ -220,8 +220,8 @@ interface TestAllTypesProto2 {
     }
 
     /**
-    * message_set test case.
-    */
+     * message_set test case.
+     */
     @GeneratedProtoMessage
     interface MessageSetCorrect
 
@@ -256,8 +256,8 @@ interface TestAllTypesProto2 {
         data object BAZ: NestedEnum(number = 2)
 
         /**
-        * Intentionally negative.
-        */
+         * Intentionally negative.
+         */
         data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)
@@ -327,8 +327,8 @@ interface ProtoWithKeywords {
 @GeneratedProtoMessage
 interface TestAllRequiredTypesProto2 {
     /**
-    * Singular
-    */
+     * Singular
+     */
     val requiredInt32: Int
     val requiredInt64: Long
     val requiredUint32: UInt
@@ -354,8 +354,8 @@ interface TestAllRequiredTypesProto2 {
     val optionalRecursiveMessage: TestAllRequiredTypesProto2
     val data: Data
     /**
-    * default values
-    */
+     * default values
+     */
     val defaultInt32: Int
     val defaultInt64: Long
     val defaultUint32: UInt
@@ -380,8 +380,8 @@ interface TestAllRequiredTypesProto2 {
     }
 
     /**
-    * groups
-    */
+     * groups
+     */
     @GeneratedProtoMessage
     interface Data {
         val groupInt32: Int
@@ -389,8 +389,8 @@ interface TestAllRequiredTypesProto2 {
     }
 
     /**
-    * message_set test case.
-    */
+     * message_set test case.
+     */
     @GeneratedProtoMessage
     interface MessageSetCorrect
 
@@ -412,8 +412,8 @@ interface TestAllRequiredTypesProto2 {
         data object BAZ: NestedEnum(number = 2)
 
         /**
-        * Intentionally negative.
-        */
+         * Intentionally negative.
+         */
         data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)

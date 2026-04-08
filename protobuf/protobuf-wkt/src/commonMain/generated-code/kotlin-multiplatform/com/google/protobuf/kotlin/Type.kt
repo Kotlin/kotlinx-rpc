@@ -6,185 +6,185 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
-* A protocol buffer message type.
-*/
+ * A protocol buffer message type.
+ */
 @GeneratedProtoMessage
 public interface Type {
     /**
-    * The fully qualified message name.
-    */
+     * The fully qualified message name.
+     */
     public val name: String
     /**
-    * The list of fields.
-    */
+     * The list of fields.
+     */
     public val fields: List<Field>
     /**
-    * The list of types appearing in `oneof` definitions in this type.
-    */
+     * The list of types appearing in `oneof` definitions in this type.
+     */
     public val oneofs: List<String>
     /**
-    * The protocol buffer options.
-    */
+     * The protocol buffer options.
+     */
     public val options: List<Option>
     /**
-    * The source context.
-    */
+     * The source context.
+     */
     public val sourceContext: SourceContext
     /**
-    * The source syntax.
-    */
+     * The source syntax.
+     */
     public val syntax: Syntax
     /**
-    * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
-    */
+     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+     */
     public val edition: String
 }
 
 /**
-* A single field of a message type.
-*/
+ * A single field of a message type.
+ */
 @GeneratedProtoMessage
 public interface Field {
     /**
-    * The field type.
-    */
+     * The field type.
+     */
     public val kind: Kind
     /**
-    * The field cardinality.
-    */
+     * The field cardinality.
+     */
     public val cardinality: Cardinality
     /**
-    * The field number.
-    */
+     * The field number.
+     */
     public val number: Int
     /**
-    * The field name.
-    */
+     * The field name.
+     */
     public val name: String
     /**
-    * The field type URL, without the scheme, for message or enumeration
-    * types. Example: `"type.googleapis.com/google.protobuf.Timestamp"`.
-    */
+     * The field type URL, without the scheme, for message or enumeration
+     * types. Example: `"type.googleapis.com/google.protobuf.Timestamp"`.
+     */
     public val typeUrl: String
     /**
-    * The index of the field type in `Type.oneofs`, for message or enumeration
-    * types. The first type has index 1; zero means the type is not in the list.
-    */
+     * The index of the field type in `Type.oneofs`, for message or enumeration
+     * types. The first type has index 1; zero means the type is not in the list.
+     */
     public val oneofIndex: Int
     /**
-    * Whether to use alternative packed wire representation.
-    */
+     * Whether to use alternative packed wire representation.
+     */
     public val packed: Boolean
     /**
-    * The protocol buffer options.
-    */
+     * The protocol buffer options.
+     */
     public val options: List<Option>
     /**
-    * The field JSON name.
-    */
+     * The field JSON name.
+     */
     public val jsonName: String
     /**
-    * The string value of the default value of this field. Proto2 syntax only.
-    */
+     * The string value of the default value of this field. Proto2 syntax only.
+     */
     public val defaultValue: String
 
     /**
-    * Basic field types.
-    */
+     * Basic field types.
+     */
     public sealed class Kind(public open val number: Int) {
         /**
-        * Field type unknown.
-        */
+         * Field type unknown.
+         */
         public data object TYPE_UNKNOWN: Kind(number = 0)
 
         /**
-        * Field type double.
-        */
+         * Field type double.
+         */
         public data object TYPE_DOUBLE: Kind(number = 1)
 
         /**
-        * Field type float.
-        */
+         * Field type float.
+         */
         public data object TYPE_FLOAT: Kind(number = 2)
 
         /**
-        * Field type int64.
-        */
+         * Field type int64.
+         */
         public data object TYPE_INT64: Kind(number = 3)
 
         /**
-        * Field type uint64.
-        */
+         * Field type uint64.
+         */
         public data object TYPE_UINT64: Kind(number = 4)
 
         /**
-        * Field type int32.
-        */
+         * Field type int32.
+         */
         public data object TYPE_INT32: Kind(number = 5)
 
         /**
-        * Field type fixed64.
-        */
+         * Field type fixed64.
+         */
         public data object TYPE_FIXED64: Kind(number = 6)
 
         /**
-        * Field type fixed32.
-        */
+         * Field type fixed32.
+         */
         public data object TYPE_FIXED32: Kind(number = 7)
 
         /**
-        * Field type bool.
-        */
+         * Field type bool.
+         */
         public data object TYPE_BOOL: Kind(number = 8)
 
         /**
-        * Field type string.
-        */
+         * Field type string.
+         */
         public data object TYPE_STRING: Kind(number = 9)
 
         /**
-        * Field type group. Proto2 syntax only, and deprecated.
-        */
+         * Field type group. Proto2 syntax only, and deprecated.
+         */
         public data object TYPE_GROUP: Kind(number = 10)
 
         /**
-        * Field type message.
-        */
+         * Field type message.
+         */
         public data object TYPE_MESSAGE: Kind(number = 11)
 
         /**
-        * Field type bytes.
-        */
+         * Field type bytes.
+         */
         public data object TYPE_BYTES: Kind(number = 12)
 
         /**
-        * Field type uint32.
-        */
+         * Field type uint32.
+         */
         public data object TYPE_UINT32: Kind(number = 13)
 
         /**
-        * Field type enum.
-        */
+         * Field type enum.
+         */
         public data object TYPE_ENUM: Kind(number = 14)
 
         /**
-        * Field type sfixed32.
-        */
+         * Field type sfixed32.
+         */
         public data object TYPE_SFIXED32: Kind(number = 15)
 
         /**
-        * Field type sfixed64.
-        */
+         * Field type sfixed64.
+         */
         public data object TYPE_SFIXED64: Kind(number = 16)
 
         /**
-        * Field type sint32.
-        */
+         * Field type sint32.
+         */
         public data object TYPE_SINT32: Kind(number = 17)
 
         /**
-        * Field type sint64.
-        */
+         * Field type sint64.
+         */
         public data object TYPE_SINT64: Kind(number = 18)
 
         public data class UNRECOGNIZED(override val number: Int): Kind(number)
@@ -195,27 +195,27 @@ public interface Field {
     }
 
     /**
-    * Whether a field is optional, required, or repeated.
-    */
+     * Whether a field is optional, required, or repeated.
+     */
     public sealed class Cardinality(public open val number: Int) {
         /**
-        * For fields with unknown cardinality.
-        */
+         * For fields with unknown cardinality.
+         */
         public data object UNKNOWN: Cardinality(number = 0)
 
         /**
-        * For optional fields.
-        */
+         * For optional fields.
+         */
         public data object OPTIONAL: Cardinality(number = 1)
 
         /**
-        * For required fields. Proto2 syntax only.
-        */
+         * For required fields. Proto2 syntax only.
+         */
         public data object REQUIRED: Cardinality(number = 2)
 
         /**
-        * For repeated fields.
-        */
+         * For repeated fields.
+         */
         public data object REPEATED: Cardinality(number = 3)
 
         public data class UNRECOGNIZED(override val number: Int): Cardinality(number)
@@ -227,94 +227,94 @@ public interface Field {
 }
 
 /**
-* Enum type definition.
-*/
+ * Enum type definition.
+ */
 @GeneratedProtoMessage
 public interface Enum {
     /**
-    * Enum type name.
-    */
+     * Enum type name.
+     */
     public val name: String
     /**
-    * Enum value definitions.
-    */
+     * Enum value definitions.
+     */
     public val enumvalue: List<EnumValue>
     /**
-    * Protocol buffer options.
-    */
+     * Protocol buffer options.
+     */
     public val options: List<Option>
     /**
-    * The source context.
-    */
+     * The source context.
+     */
     public val sourceContext: SourceContext
     /**
-    * The source syntax.
-    */
+     * The source syntax.
+     */
     public val syntax: Syntax
     /**
-    * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
-    */
+     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+     */
     public val edition: String
 }
 
 /**
-* Enum value definition.
-*/
+ * Enum value definition.
+ */
 @GeneratedProtoMessage
 public interface EnumValue {
     /**
-    * Enum value name.
-    */
+     * Enum value name.
+     */
     public val name: String
     /**
-    * Enum value number.
-    */
+     * Enum value number.
+     */
     public val number: Int
     /**
-    * Protocol buffer options.
-    */
+     * Protocol buffer options.
+     */
     public val options: List<Option>
 }
 
 /**
-* A protocol buffer option, which can be attached to a message, field,
-* enumeration, etc.
-*/
+ * A protocol buffer option, which can be attached to a message, field,
+ * enumeration, etc.
+ */
 @GeneratedProtoMessage
 public interface Option {
     /**
-    * The option's name. For protobuf built-in options (options defined in
-    * descriptor.proto), this is the short name. For example, `"map_entry"`.
-    * For custom options, it should be the fully-qualified name. For example,
-    * `"google.api.http"`.
-    */
+     * The option's name. For protobuf built-in options (options defined in
+     * descriptor.proto), this is the short name. For example, `"map_entry"`.
+     * For custom options, it should be the fully-qualified name. For example,
+     * `"google.api.http"`.
+     */
     public val name: String
     /**
-    * The option's value packed in an Any message. If the value is a primitive,
-    * the corresponding wrapper type defined in google/protobuf/wrappers.proto
-    * should be used. If the value is an enum, it should be stored as an int32
-    * value using the google.protobuf.Int32Value type.
-    */
+     * The option's value packed in an Any message. If the value is a primitive,
+     * the corresponding wrapper type defined in google/protobuf/wrappers.proto
+     * should be used. If the value is an enum, it should be stored as an int32
+     * value using the google.protobuf.Int32Value type.
+     */
     public val value: Any
 }
 
 /**
-* The syntax in which a protocol buffer element is defined.
-*/
+ * The syntax in which a protocol buffer element is defined.
+ */
 public sealed class Syntax(public open val number: Int) {
     /**
-    * Syntax `proto2`.
-    */
+     * Syntax `proto2`.
+     */
     public data object PROTO2: Syntax(number = 0)
 
     /**
-    * Syntax `proto3`.
-    */
+     * Syntax `proto3`.
+     */
     public data object PROTO3: Syntax(number = 1)
 
     /**
-    * Syntax `editions`.
-    */
+     * Syntax `editions`.
+     */
     public data object EDITIONS: Syntax(number = 2)
 
     public data class UNRECOGNIZED(override val number: Int): Syntax(number)

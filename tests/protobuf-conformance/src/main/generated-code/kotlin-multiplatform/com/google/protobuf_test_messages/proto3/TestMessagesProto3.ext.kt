@@ -5,13 +5,13 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
-* Constructs a new message.
-* ```
-* val message = TestAllTypesProto3 {
-*    optionalInt32 = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = TestAllTypesProto3 {
+ *    optionalInt32 = ...
+ * }
+ * ```
+ */
 operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3.Builder.() -> Unit): TestAllTypesProto3 {
     val msg = TestAllTypesProto3Internal().apply(body)
     msg.checkRequiredFields()
@@ -19,30 +19,30 @@ operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3.Builde
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    optionalInt32 = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    optionalInt32 = ...
+ * }
+ * ```
+ */
 fun TestAllTypesProto3.copy(body: TestAllTypesProto3.Builder.() -> Unit = {}): TestAllTypesProto3 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
-* Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] instance.
-*/
+ * Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] instance.
+ */
 val TestAllTypesProto3.presence: TestAllTypesProto3Presence get() = this.asInternal()._presence
 
 /**
-* Constructs a new message.
-* ```
-* val message = ForeignMessage {
-*    c = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = ForeignMessage {
+ *    c = ...
+ * }
+ * ```
+ */
 operator fun ForeignMessage.Companion.invoke(body: ForeignMessage.Builder.() -> Unit): ForeignMessage {
     val msg = ForeignMessageInternal().apply(body)
     msg.checkRequiredFields()
@@ -50,23 +50,23 @@ operator fun ForeignMessage.Companion.invoke(body: ForeignMessage.Builder.() -> 
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    c = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    c = ...
+ * }
+ * ```
+ */
 fun ForeignMessage.copy(body: ForeignMessage.Builder.() -> Unit = {}): ForeignMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
-* Constructs a new message.
-* ```
-* val message = NullHypothesisProto3 { }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = NullHypothesisProto3 { }
+ * ```
+ */
 operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Builder.() -> Unit): NullHypothesisProto3 {
     val msg = NullHypothesisProto3Internal().apply(body)
     msg.checkRequiredFields()
@@ -74,21 +74,21 @@ operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Bu
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy()
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy()
+ * ```
+ */
 fun NullHypothesisProto3.copy(body: NullHypothesisProto3.Builder.() -> Unit = {}): NullHypothesisProto3 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
-* Constructs a new message.
-* ```
-* val message = EnumOnlyProto3 { }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = EnumOnlyProto3 { }
+ * ```
+ */
 operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3.Builder.() -> Unit): EnumOnlyProto3 {
     val msg = EnumOnlyProto3Internal().apply(body)
     msg.checkRequiredFields()
@@ -96,23 +96,23 @@ operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3.Builder.() -> 
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy()
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy()
+ * ```
+ */
 fun EnumOnlyProto3.copy(body: EnumOnlyProto3.Builder.() -> Unit = {}): EnumOnlyProto3 {
     return this.asInternal().copyInternal(body)
 }
 
 /**
-* Constructs a new message.
-* ```
-* val message = NestedMessage {
-*    a = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = NestedMessage {
+ *    a = ...
+ * }
+ * ```
+ */
 operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit): TestAllTypesProto3.NestedMessage {
     val msg = TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
     msg.checkRequiredFields()
@@ -120,26 +120,26 @@ operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllType
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    a = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    a = ...
+ * }
+ * ```
+ */
 fun TestAllTypesProto3.NestedMessage.copy(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit = {}): TestAllTypesProto3.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
 /**
-* Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] instance.
-*/
+ * Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] instance.
+ */
 val TestAllTypesProto3.NestedMessage.presence: TestAllTypesProto3Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
-* Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] messages.
-* Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.presence] extension property.
-*/
+ * Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] messages.
+ * Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.presence] extension property.
+ */
 interface TestAllTypesProto3Presence {
     val hasOptionalNestedMessage: Boolean
 
@@ -180,9 +180,9 @@ interface TestAllTypesProto3Presence {
     val hasOptionalEmpty: Boolean
 
     /**
-    * Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] messages.
-    * Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage.presence] extension property.
-    */
+     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] messages.
+     * Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage.presence] extension property.
+     */
     interface NestedMessage {
         val hasCorecursive: Boolean
     }

@@ -5,13 +5,13 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
-* Constructs a new message.
-* ```
-* val message = SourceContext {
-*    fileName = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = SourceContext {
+ *    fileName = ...
+ * }
+ * ```
+ */
 public operator fun SourceContext.Companion.invoke(body: SourceContext.Builder.() -> Unit): SourceContext {
     val msg = SourceContextInternal().apply(body)
     msg.checkRequiredFields()
@@ -19,13 +19,13 @@ public operator fun SourceContext.Companion.invoke(body: SourceContext.Builder.(
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    fileName = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    fileName = ...
+ * }
+ * ```
+ */
 public fun SourceContext.copy(body: SourceContext.Builder.() -> Unit = {}): SourceContext {
     return this.asInternal().copyInternal(body)
 }
