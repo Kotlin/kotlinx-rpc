@@ -13,7 +13,7 @@ import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
-import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
 import test.groups.invoke

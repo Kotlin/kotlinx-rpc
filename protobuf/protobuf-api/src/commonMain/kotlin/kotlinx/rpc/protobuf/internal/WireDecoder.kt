@@ -7,6 +7,7 @@ package kotlinx.rpc.protobuf.internal
 import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 
 // TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
 // maximum buffer size to allocate as contiguous memory in bytes

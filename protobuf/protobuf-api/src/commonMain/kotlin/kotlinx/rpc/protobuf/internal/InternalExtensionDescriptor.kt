@@ -6,8 +6,9 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
 import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 import kotlin.reflect.safeCast

@@ -5,6 +5,7 @@
 package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 
 @InternalRpcApi
 public enum class WireType {

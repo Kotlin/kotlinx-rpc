@@ -11,6 +11,7 @@ import kotlinx.io.asInputStream
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 
 internal class WireDecoderJvm(source: Source) : WireDecoder {
     override var recursionDepth: Int = 0

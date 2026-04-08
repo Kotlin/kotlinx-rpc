@@ -13,16 +13,6 @@ abstract interface <#A: kotlin/Any, #B: kotlin/Any> kotlinx.rpc.protobuf/ProtoEx
         abstract fun <get-messageType>(): kotlin.reflect/KClass<#A> // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.messageType.<get-messageType>|<get-messageType>(){}[0]
 }
 
-final class kotlinx.rpc.protobuf.internal/ProtobufDecodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufDecodingException|null[0]
-    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
-
-    final object Companion // kotlinx.rpc.protobuf.internal/ProtobufDecodingException.Companion|null[0]
-}
-
-final class kotlinx.rpc.protobuf.internal/ProtobufEncodingException : kotlinx.rpc.protobuf.internal/ProtobufException { // kotlinx.rpc.protobuf.internal/ProtobufEncodingException|null[0]
-    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf.internal/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
-}
-
 final class kotlinx.rpc.protobuf/ProtoConfig : kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig { // kotlinx.rpc.protobuf/ProtoConfig|null[0]
     final val discardUnknownFields // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields|{}discardUnknownFields[0]
         final fun <get-discardUnknownFields>(): kotlin/Boolean // kotlinx.rpc.protobuf/ProtoConfig.discardUnknownFields.<get-discardUnknownFields>|<get-discardUnknownFields>(){}[0]
@@ -66,7 +56,17 @@ final class kotlinx.rpc.protobuf/ProtoExtensionRegistry { // kotlinx.rpc.protobu
     }
 }
 
-sealed class kotlinx.rpc.protobuf.internal/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf.internal/ProtobufException|null[0]
+final class kotlinx.rpc.protobuf/ProtobufDecodingException : kotlinx.rpc.protobuf/ProtobufException { // kotlinx.rpc.protobuf/ProtobufDecodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf/ProtobufDecodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+
+    final object Companion // kotlinx.rpc.protobuf/ProtobufDecodingException.Companion|null[0]
+}
+
+final class kotlinx.rpc.protobuf/ProtobufEncodingException : kotlinx.rpc.protobuf/ProtobufException { // kotlinx.rpc.protobuf/ProtobufEncodingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
+sealed class kotlinx.rpc.protobuf/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf/ProtobufException|null[0]
 
 final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.io/Source): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.io.Source){}[0]
 final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
