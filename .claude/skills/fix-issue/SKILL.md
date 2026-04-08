@@ -53,6 +53,8 @@ for all three services — verifying that the tokens belong to the AI Agent acco
 not the human user's personal credentials. If any check fails → **stop and report
 to the user**. Do NOT proceed — not even reading the issue.
 
+Note: make sure to generate the GitHub token before running the pre-flight check script.
+
 ```bash
 .claude/skills/fix-issue/scripts/preflight-check.sh
 ```
@@ -146,6 +148,15 @@ git worktree add -b <branch-name> /tmp/krpc-<issue-id> origin/main
 ```
 
 Branch naming: `fix/KRPC-<N>` (bugs), `feat/KRPC-<N>` (features), `task/KRPC-<N>` (tasks).
+
+**Create `local.properties` in the worktree** — Gradle builds require it.
+Use the template at `assets/local.properties.template` (relative to this skill's directory),
+replacing `<User>` with the actual macOS username from `$HOME`.
+
+```bash
+sed "s|<User>|$(whoami)|g" .claude/skills/fix-issue/assets/local.properties.template \
+  > /tmp/krpc-<issue-id>/local.properties
+```
 
 When using Gradle skills, specify the worktree path as `projectRoot`.
 

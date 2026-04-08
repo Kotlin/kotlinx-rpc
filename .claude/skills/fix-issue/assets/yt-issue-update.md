@@ -18,8 +18,11 @@ its analysis section underneath.
 <details>
 <summary><b>Agent Analysis</b></summary>
 
-**Affected modules**: {{comma-separated list of modules, e.g., `:krpc:krpc-client`, `:core`}}
-**Root cause**: {{root cause explanation - keep it to the point, assuming the reader knows the project context}}
+### Affected modules
+{{comma-separated list of modules, e.g., `:krpc:krpc-client`, `:core`}}
+
+### Root cause
+{{root cause explanation - keep it to the point, assume the reader knows the project context}}
 
 </details>
 ```
