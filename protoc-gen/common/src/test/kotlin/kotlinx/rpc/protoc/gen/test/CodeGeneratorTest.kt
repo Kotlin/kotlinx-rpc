@@ -5,6 +5,7 @@
 package kotlinx.rpc.protoc.gen.test
 
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
+import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FqNameTable
 import kotlinx.rpc.protoc.gen.core.Platform
@@ -164,6 +165,48 @@ class CodeGeneratorTest {
         assertTrue { imports.isEmpty() }
     }
 
+    @Test
+    fun testBlockCommentFormatting() = codeGeneratorTest(generateComments = true) {
+        val (_, generated) = generate {
+            appendComment(Comment.leading("A simple comment"))
+        }
+
+        assertEquals(
+            """
+            /**
+             * A simple comment
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
+    @Test
+    fun testMultiLineBlockCommentFormatting() = codeGeneratorTest(generateComments = true) {
+        val (_, generated) = generate {
+            appendComment(
+                Comment(
+                    leadingDetached = listOf("Detached comment"),
+                    leading = listOf("Leading comment"),
+                    trailing = listOf("Trailing comment"),
+                )
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * Detached comment
+             *
+             * Leading comment
+             *
+             * Trailing comment
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
     private class Env(
         private val generator: CodeGenerator,
     ) {
@@ -175,13 +218,14 @@ class CodeGeneratorTest {
     private fun codeGeneratorTest(
         packageFqName: FqName.Package = fq("com.example", "") as FqName.Package,
         platform: Platform = Platform.Common,
+        generateComments: Boolean = false,
         body: Env.(FqNameTable) -> Unit,
     ) {
         val nameTable = FqNameTable(platform)
         val generator = CodeGenerator(
             config = Config(
                 explicitApiModeEnabled = false,
-                generateComments = false,
+                generateComments = generateComments,
                 generateFileLevelComments = false,
                 indentSize = 4,
                 platform = platform,
