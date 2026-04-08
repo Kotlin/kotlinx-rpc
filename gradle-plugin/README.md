@@ -12,7 +12,7 @@ Only run all tests when explicitly asked.
 1. Verifies Kotlin Gradle Plugin is on the classpath
 2. Creates the `rpc {}` DSL extension (`RpcExtension`)
 3. Applies compiler plugin
-4. Creates protobuf/gRPC code generation infrastructure (`createProtoExtensions()`) on demand (only when `rpc { protoc() }` is called in the build script)
+4. Creates protobuf/gRPC code generation infrastructure (`createProtoExtensions()`) on demand (when `rpc { protoc() }` is called in the build script or `kotlinx.rpc.protoc=true` is set in `gradle.properties`)
 
 ## Two concerns in one plugin
 

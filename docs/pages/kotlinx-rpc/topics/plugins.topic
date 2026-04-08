@@ -46,6 +46,7 @@
         </def>
         <def title="protoc() / protoc { ... }" id="plugins-protoc">
             Enables Buf/protoc integration for schema-first protobuf and gRPC code generation.
+            Alternatively, set <code>kotlinx.rpc.protoc=true</code> in <path>gradle.properties</path>.
             See <a href="grpc-configuration.topic"/>.
         </def>
     </deflist>
