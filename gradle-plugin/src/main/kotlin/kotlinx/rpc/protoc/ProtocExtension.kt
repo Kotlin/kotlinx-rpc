@@ -11,11 +11,18 @@ import org.gradle.api.NamedDomainObjectContainer
 /**
  * Configuration for the Protoc capabilities.
  *
- * To enable the Protoc capabilities, add the following minimal code to your `build.gradle.kts`:
+ * To enable the Protoc capabilities, use one of the following options:
+ *
+ * Option 1: DSL in `build.gradle.kts`:
  * ```kotlin
  * rpc {
  *     protoc()
  * }
+ * ```
+ *
+ * Option 2: Gradle property in `gradle.properties`:
+ * ```properties
+ * kotlinx.rpc.protoc=true
  * ```
  */
 public sealed interface ProtocExtension {

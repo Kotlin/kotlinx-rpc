@@ -190,6 +190,15 @@
             </a>
         </p>
     </chapter>
+    <tip>
+        Instead of adding <code>rpc { protoc() }</code> to each build script, you can enable protoc
+        for all modules by setting the <code>kotlinx.rpc.protoc</code> Gradle property to <code>true</code>
+        in your <path>gradle.properties</path> file:
+        <code-block>
+            kotlinx.rpc.protoc=true
+        </code-block>
+        The DSL form is still available for per-module configuration via <code>rpc { protoc { ... } }</code>.
+    </tip>
     <chapter title="Source sets and tasks" id="grpc-source-sets-and-tasks">
         <p>
             Once <code>protoc()</code> is enabled, the plugin creates matching proto source sets, a generated Buf
