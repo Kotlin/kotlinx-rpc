@@ -365,7 +365,7 @@ internal class NativeServerCall<Request, Response>(
         try {
             return block()
         } catch (e: Throwable) {
-            // TODO: Log internal error as warning
+            // TODO KRPC-551: Log internal error as warning
             val status = when (e) {
                 is GrpcStatusException -> e.status
                 else -> GrpcStatus(

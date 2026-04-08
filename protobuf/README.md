@@ -17,4 +17,4 @@ protobuf-core  -- Aggregator; re-exports api + wkt + grpc-marshaller
 
 ## Generated code contract
 
-[//]: # (TODO see the generation reference in protoc-gen)
+See [protoc-gen codegen reference](../protoc-gen/codegen.md) for details on generated code.
