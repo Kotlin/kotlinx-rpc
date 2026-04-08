@@ -447,6 +447,78 @@ inputs:
     }
 
     @TestFactory
+    fun `Disable Default Grpc Plugin`() = runGrpcTest {
+        runGradle(generateBufGenYamlCommonMain)
+
+        assertBufGenYaml(
+            sourceSet = mainSourceSet,
+            content = """
+version: v2
+clean: true
+plugins:
+  - local: [protoc-gen-kotlin-multiplatform]
+    out: kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+      - explicitApiModeEnabled=false
+      - platform=${PlatformOption.JVM}
+inputs:
+  - directory: proto
+            """.trimIndent()
+        )
+    }
+
+    @TestFactory
+    fun `Disable Default Protobuf Plugin`() = runGrpcTest {
+        runGradle(generateBufGenYamlCommonMain)
+
+        assertBufGenYaml(
+            sourceSet = mainSourceSet,
+            content = """
+version: v2
+clean: true
+plugins:
+  - local: [protoc-gen-grpc-kotlin-multiplatform]
+    out: grpc-kotlin-multiplatform
+    opt:
+      - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
+      - generateComments=true
+      - generateFileLevelComments=true
+      - indentSize=4
+      - explicitApiModeEnabled=false
+      - platform=${PlatformOption.JVM}
+inputs:
+  - directory: proto
+            """.trimIndent()
+        )
+    }
+
+    @TestFactory
+    fun `Disable Both Default Plugins`() = runGrpcTest {
+        runGradle(generateBufGenYamlCommonMain)
+
+        assertBufGenYaml(
+            sourceSet = mainSourceSet,
+            content = """
+version: v2
+clean: true
+plugins:
+  - local: [path, to, protoc-gen-myplugin.exe]
+    out: myPlugin
+    opt:
+      - hello=world
+      - explicitApiModeEnabled=false
+      - platform=${PlatformOption.JVM}
+inputs:
+  - directory: proto
+            """.trimIndent()
+        )
+    }
+
+    @TestFactory
     fun `Buf Tasks`() = runGrpcTest {
         runGradle("test_tasks", "--no-configuration-cache")
     }

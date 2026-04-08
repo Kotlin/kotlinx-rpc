@@ -202,16 +202,25 @@ internal open class DefaultProtocExtension @Inject constructor(
         protoSourceSet.setupDefaultImports(project.protoSourceSets)
 
         val includedProtocPlugins = project.provider {
-            protoSourceSet.plugins.get().also { list ->
-                list.forEach { plugin ->
-                    if (!plugin.artifact.isPresent) {
-                        throw GradleException(
-                            "Artifact is not specified for protoc plugin ${plugin.name}. " +
-                                "Use `local {}` or `remote {}` to specify it."
-                        )
+            protoSourceSet.plugins.get()
+                .filter { plugin ->
+                    when (plugin.name) {
+                        KOTLIN_MULTIPLATFORM -> protoSourceSet.includeDefaultProtobufPlugin.get()
+                        GRPC_KOTLIN_MULTIPLATFORM -> protoSourceSet.includeDefaultGrpcPlugin.get()
+                        else -> true
                     }
                 }
-            }
+                .toSet()
+                .also { list ->
+                    list.forEach { plugin ->
+                        if (!plugin.artifact.isPresent) {
+                            throw GradleException(
+                                "Artifact is not specified for protoc plugin ${plugin.name}. " +
+                                    "Use `local {}` or `remote {}` to specify it."
+                            )
+                        }
+                    }
+                }
         }
 
         val protoFilesDirectorySet = protoSourceSet as SourceDirectorySet
