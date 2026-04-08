@@ -21,7 +21,7 @@ Check the box to request a fix:
 
 ## After Fixing Checked Items
 
-Edit the comment via `gh api` to split into two sections — remaining items on top,
+Edit the comment to split into two sections — remaining items on top,
 fixed items below with strikethrough and commit reference:
 
 ```markdown
@@ -39,10 +39,19 @@ Check the box to request a fix:
 - ~~`{{file-path}}:{{line}}` — ({{severity}}) {{description}}~~ (fixed in {{short-sha}})
 ```
 
+## If all issues were fixed during review
+
+Post a comment to the PR saying that all issues were fixed.
+```markdown
+## Internal code review
+
+All issues identified by agent reviewers were fixed.
+```
+
 ## Rules
 
 - Group items by reviewer agent name.
-- Severities: `error`, `warning`, `nit`. Errors should already be fixed — only
+- Severities: `warning`, `nit`. Errors should already be fixed — only
   warnings and nits appear here.
 - `- [x]` = user wants this fixed. `- [ ]` = skip for now.
 - Keep the comment as a living document — update it across review rounds rather

@@ -1,6 +1,6 @@
 # GitHub CI Report Comment Template
 
-Posted on the PR after all CI pipelines have completed (Phase 11). Shows the final
+Posted on the PR after all CI pipelines have completed (Step 11). Shows the final
 status of every CI run — both TeamCity builds and GitHub Actions workflows — so that
 the reviewer sees the full picture at a glance.
 
@@ -9,37 +9,39 @@ the reviewer sees the full picture at a glance.
 ```markdown
 ## CI Report
 
-| Pipeline | Status | Details |
-|----------|--------|---------|
-| {{pipeline-name}} | {{status-emoji}} {{Passed / Failed}} | {{details}} |
+### Passed
 
-{{if any failures not retried — add section below}}
+| Pipeline | Details |
+|----------|---------|
+| {{pipeline-name}} | [build #NNN](url) |
 
-### Failed — not retried
+### Failed
 
-- **{{pipeline-name}}**: {{reason}}
+{{if no failures}}
+None
+{{else}}
+Check a box to request a retry/fix from the agent.
+
+- [ ] **{{pipeline-name}}** — {{brief failure description}} | [build #NNN](url)
+  {{reason why agent did not retry — flaky test, pre-existing on main, etc.}}
+{{end-if}}
 ```
 
-## Status values
+## How it works
 
-- Passed: use the checkmark emoji followed by "Passed"
-- Failed (retried and now passing): use the checkmark emoji followed by "Passed (retry)"
-- Failed (not retried): use the cross mark emoji followed by "Failed"
+**Passed table**: Simple table with pipeline name and link. No status column needed —
+everything in this table passed.
 
-## Details column
+**Failed list**: Checkbox format — the agent posts all failures as unchecked `[ ]`
+with a reason why it didn't retry. The **reviewer** checks a box `[x]` to request
+the agent retry or fix that pipeline. When the agent sees checked boxes on a
+subsequent pass, it retries/fixes those pipelines and moves them to the Passed table
+once green.
 
-- **Passed**: link to the build/run (TC build URL or GH Actions run URL)
-- **Failed**: brief failure description + link to the build log
-
-## "Failed — not retried" section
-
-Only include this section if there are failures the agent chose not to retry.
-Each entry needs a clear reason, for example:
+## Common "not retrying" reasons
 
 - "Flaky test `SomeTest.testFoo` — known intermittent failure unrelated to this PR"
-- "Infrastructure timeout — TC agent disconnected, not a code issue"
 - "Pre-existing failure on `main` — same test fails without this PR's changes"
-- "Unrelated module — failure in `:some-module` not touched by this PR"
 
 The goal is transparency: the reviewer should understand exactly what failed and why
 the agent decided it was safe to proceed without fixing it.
@@ -49,20 +51,23 @@ the agent decided it was safe to proceed without fixing it.
 ```markdown
 ## CI Report
 
-| Pipeline | Status | Details |
-|----------|--------|---------|
-| TC: KRPC All Tests (JVM) | :white_check_mark: Passed | [build #1234](https://tc.example.com/...) |
-| TC: KRPC All Tests (JS) | :white_check_mark: Passed (retry) | [build #1236](https://tc.example.com/...) |
-| GH: Build & Test | :white_check_mark: Passed | [run #567](https://github.com/...) |
-| TC: KRPC Native Tests | :x: Failed | [build #1235](https://tc.example.com/...) |
+### Passed
 
-### Failed — not retried
+| Pipeline | Details |
+|----------|---------|
+| TC: KRPC All Tests (JVM) | [build #1234](https://tc.example.com/...) |
+| TC: KRPC All Tests (JS) | [build #1236](https://tc.example.com/...) (retry) |
+| GH: Build & Test | [run #567](https://github.com/...) |
+| GH: Gradle Wrapper Validation | [run #568](https://github.com/...) |
 
-- **TC: KRPC Native Tests**: Pre-existing failure — `NativeProtobufCodecTest.testLittleEndian` fails on `main` as well ([main build #1200](https://tc.example.com/...)). Not related to this PR.
+### Failed
+
+- [ ] **TC: KRPC Native Tests** — `NativeProtobufCodecTest.testLittleEndian` | [build #1237](https://tc.example.com/...)
+  Reason: pre-existing failure on `main` ([main build #1200](https://tc.example.com/...)), not related to this PR
 ```
 
 ## When to post
 
 Post this comment once CI is fully resolved (all builds finished, retries exhausted).
 If CI is re-triggered after a fix-and-push cycle, update the existing comment rather
-than posting a new one.
+than posting a new one. Move pipelines between sections as their status changes.

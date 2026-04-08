@@ -64,13 +64,17 @@ Prioritize `Open` over `Submitted`, higher priority first. Take the top one.
 
 ## Step 1: Claim the Issue
 
-Read the issue via `youtrack-agent` MCP. Then:
+Read the issue via `youtrack-agent` MCP. Then do **all three** — none are optional:
 
 1. **Assign** to `AI Agent [Kxrpc]` (look up the login once, cache it).
 2. **Set state** to `In progress`.
 3. **Set sprint** to the current active planning period if none set. The last
    non-checkmarked `[Kxrpc] Planning Period` is typically active. If ambiguous, check
    which period has `In progress` issues.
+
+**Post the workflow checklist** as the first comment on the issue. Use the template
+in `assets/yt-workflow-checklist.md`. This checklist tracks your progress — update it
+by editing the comment as you complete each step throughout the workflow.
 
 ## Step 2: Analyze the Problem
 
@@ -83,28 +87,19 @@ Understand:
 - Is this a bug, feature, or task?
 - Are there linked issues?
 
-### Determine if a reproducer is needed
+### Post a reproducer
 
-A reproducer is needed when:
-- The issue is a **bug** and the steps to reproduce are unclear or missing
-- The issue describes unexpected behavior but doesn't include code that triggers it
-- You need to confirm the bug exists before fixing it
+If the issue is a bug and reproduction steps are unclear or missing, post a
+reproducer comment using the template in `assets/yt-reproducer-comment.md`.
+If no reproducer is needed (feature request, task, obvious fix, already has one),
+post the explanation why.
 
-A reproducer is NOT needed when:
-- The issue is a **feature request** or **task** (nothing to reproduce)
-- The issue already includes a clear, verified reproducer
-- The fix is obvious from the description (e.g., typo in docs, missing null check
-  visible in the code, configuration issue)
-- The issue is about build/infra changes
+### Update the issue body with Agent Analysis
 
-### Post a triage comment
-
-Always post a triage comment using the template in `assets/yt-triage-comment.md`.
-This serves as both a decision record and a signal to maintainers:
-
-- **Triage not needed** → post the assessment and continue to Step 3.
-- **Triage needed** → post the comment (with reproducer if applicable), then **pause**
-  and report to the user that human input is required before proceeding.
+Append your analysis to the issue body using the template in
+`assets/yt-issue-update.md`. Fill in affected modules and root cause. This is the
+problem analysis — do not include the fix or solution here. Reproducers belong in
+the triage comment, not the issue body.
 
 ## Step 3: Set Up the Worktree
 
@@ -146,14 +141,6 @@ Start executing immediately — no user approval needed.
 3. Incorporate feedback, then execute. Still no user approval — the review is for
    correctness, not permission.
 
-### Post the plan to YouTrack
-
-**Small/medium**: Post as a comment (root cause, fix, test, files).
-
-**Large/complex**: Attach full plan as `.md` file via REST (see
-`references/youtrack-attachments.md` for the exact curl command),
-post a TL;DR comment referencing it.
-
 ### Coding guidelines
 
 - Follow project's conventions
@@ -168,13 +155,18 @@ Use the `update-doc` skill's conventions. Evaluate:
 - Changed config/setup → update Writerside topics
 - Deprecations → update/create migration guide
 
+Even if no documentation changes are needed, **state why explicitly** before moving
+on (e.g., "No docs changes — internal implementation only, no public API affected").
+Do not silently skip this step.
+
 ## Step 7: Run Local Verifications
 
-Use the `run-local-verifications` skill. Before running any check, reason about whether
+**Always** use the `run-local-verifications` skill to check your work. 
+Before running any check, reason about whether
 your specific change actually falls within its scope — don't run checks mechanically
 just because the file is in a published module (e.g., JPMS is irrelevant for native-only
 code, ABI check is irrelevant for internal-only logic changes). Never run Gradle builds
-in parallel against the same worktree — included builds share state and will corrupt
+in parallel against the same worktree — builds share state and will corrupt
 each other.
 
 ## Step 8: Code Review
@@ -182,10 +174,6 @@ each other.
 Spawn **at least 2 independent review agents in parallel** on the full diff.
 See `references/code-review-agents.md` for the reviewer menu, prompting guide,
 and severity handling. Errors must be fixed; warnings/nits are your judgment call.
-
-After creating the PR (Step 10), post any skipped warnings/nits as a checkbox
-comment on the PR. See `assets/gh-code-review-comment.md` for the template.
-If all issues were fixed, skip this.
 
 ## Step 9: Commit Changes
 
@@ -195,8 +183,19 @@ Separate commits logically:
 3. **Docs** — if updated
 4. **Other** — ABI dumps, generated files, infra
 
-Use the `commit-changes` skill for conventions. Always include the YT ticket ID;
-include GH issue number if the YT ticket references one.
+### Commit message format
+
+**Subject line only — no body.** Keep under 72 characters. Include the YT ticket ID
+and GH issue number (if the YT ticket references one). Use imperative mood, present
+tense, no trailing period.
+
+```
+KRPC-NNN: <Imperative verb> <what changed> (#GH-issue if exists)
+```
+
+Message examples:
+- `KRPC-123 Add DSL builder for ProtoConfig`
+- `KRPC-245: Strip common enum value prefixes (#12345)`
 
 ## Step 10: Create a Draft PR
 
@@ -207,6 +206,9 @@ include GH issue number if the YT ticket references one.
    analysis or root cause (those belong in the YT issue). Include `Fixes #NNN` if a
    linked GH issue exists.
 4. Add label. At least one label must be set.
+5. Post any skipped review warnings/nits as a checkbox comment on the PR
+   (see `assets/gh-code-review-comment.md`). If all review issues were fixed,
+   don't skip the comment, just post that all internal comments were addressed.
 
 ## Step 11: Run CI Checks (TeamCity + GitHub Actions in parallel)
 
@@ -215,20 +217,22 @@ Both must pass. GH Actions trigger on push; TeamCity you trigger manually.
 **TeamCity**: Use `use-teamcity` skill. Pick builds based on what changed (see skill
 for build IDs). May skip if trivial and local verifications covered it.
 
-**GH Actions**: Run automatically. Label check activates when draft is removed.
+**GH Actions**: Are run automatically. 
 
 **Monitor both via subagents**: Spawn two background subagents — one polling
 GitHub, one polling TeamCity. Each reports back on completion.
 
 On failure: read the report, fix, commit, push (GH Actions restart automatically),
 re-trigger TC if needed, spawn monitoring subagents again. Iterate until both pass.
-Unrelated failures (flaky tests) → note in PR description and proceed.
+Unrelated failures (flaky tests) → note in the CI comment (see below).
 
-**Post a CI report comment** on the PR once all pipelines have finished. Use the
-template in `assets/gh-ci-report-comment.md`. Every pipeline gets a row — passed
-pipelines get a checkmark, failed ones that weren't retried get a cross mark with
-an explanation of why the agent chose not to retry. Update this comment (don't post
-a new one) if CI is re-triggered after fixes.
+**Post a CI report comment on the PR** — this is mandatory, not optional. The
+reviewer needs to see pipeline status directly on the PR. Use the template in
+`assets/gh-ci-report-comment.md`. Every pipeline gets a row. 
+Failed ones that weren't retried get an explanation
+of why the agent chose not to retry. Update this comment (don't post a new one) if
+CI is re-triggered after fixes. Do not just report CI results in the conversation —
+the PR comment is the deliverable.
 
 ## Step 12: Finalize the PR
 
@@ -239,15 +243,16 @@ Once all CI passes:
 
 ## Step 13: Update YouTrack
 
-1. **Update the issue body** — append the AI analysis below the original description
-   using the template in `assets/yt-issue-update.md`. The original content is preserved
-   verbatim; a separator divides it from the analysis (root cause, reproducer, fix
-   summary, PR link).
-2. **Set state** to `Fixed in Branch` via `youtrack-agent`.
+1. **Set state** to `Fixed in Branch` via `youtrack-agent`.
+2. **Update the issue body** — if you uncovered new information about the issue during
+   the fix (e.g., deeper root cause, additional affected modules, edge cases found
+   during testing), append those findings to the Agent Analysis section from Step 2.
+   Do not duplicate the fix summary or solution here — those belong in the PR body.
+   If nothing new was discovered, skip the body update.
 
-## Step 14: Done
+## Step 14: The Main Cycle is Done
 
-Report: PR URL, YT status, brief fix summary, worktree path (if kept).
+Report: PR URL, YT status, brief fix summary, worktree path.
 Do NOT wait for review feedback in the session, feedback would be posted in the PR,
 and you will be notified by a user.
 
@@ -259,7 +264,9 @@ This may take **multiple turns**. Each turn:
 2. Human reviewer comments take priority. For the checkbox comment, `[x]` = fix, `[ ]` = skip.
 3. Fix all: human comments + checked checkboxes
 4. Re-run tests/verifications, commit, push, re-trigger CI if needed
-5. Update the checkbox comment per `assets/gh-code-review-comment.md`
+5. Update the review checkbox comment per `assets/gh-code-review-comment.md`
+6. Update the CI checkbox comment per `assets/gh-ci-report-comment.md`
+7. Update the issue body per `assets/yt-issue-update.md` if new information was discovered
 
 ## Rebase Discipline
 
@@ -290,3 +297,5 @@ Brief status at each milestone:
 - "PR #42 created as draft"
 - "CI passing, marking PR ready and adding reviewers"
 - "Done — PR: <url>, YT status: Fixed in Branch"
+
+And always update the progress checklist as per `assets/yt-workflow-checklist.md`.

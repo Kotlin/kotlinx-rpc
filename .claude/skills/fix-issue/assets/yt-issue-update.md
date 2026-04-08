@@ -1,51 +1,39 @@
 # YouTrack Issue Body Update Template
 
-When the agent analyzes an issue, it updates the issue body to append its analysis
-below the original description. The original content is always preserved verbatim —
-the agent adds a separator and its analysis section underneath.
+When the agent works on an issue, it updates the issue body to append its analysis
+below the original description. The update happens in two phases:
+1. **Step 2 (Analyze)** — initial analysis
+2. **Step 13 (Update YouTrack)** — only if new findings emerged during the fix
 
-Use the `youtrack-agent` MCP `update_issue` tool to update the `description` field,
-or fall back to the REST API.
+The original content is always preserved verbatim — the agent adds a separator and
+its analysis section underneath.
 
-## Template
+## Template (Step 2)
 
 ```markdown
 {{original-issue-body — preserved exactly as-is, no edits}}
 
 ---
 
-## AI Analysis
+## Agent Analysis
 
-**Type**: {{Bug / Feature / Task}}
 **Affected modules**: {{comma-separated list of modules, e.g., `:krpc:krpc-client`, `:core`}}
-**Root cause**: {{concise root cause explanation — 1-3 sentences}}
+**Root cause**: {{root cause explanation - keep it to the point, assuming the reader knows the project context}}
 
-{{if-reproducer-was-created}}
-### Reproducer
-
-{{code block or step-by-step reproduction, including the test class/method name if a
-test was written as the reproducer}}
-{{end-if}}
-
-### Fix summary
-
-{{what was changed and why — mirrors the PR Solution section but can be more technical
-since this audience is internal. Include file paths and key decisions.}}
-
-### References
-
-- PR: {{pr-url}}
-- Branch: `{{branch-name}}`
-{{if-linked-gh-issue}}- GitHub issue: #{{number}}{{end-if}}
 ```
+
+## Step 13 updates (only if new findings)
+
+If during the fix you discovered things not known at Step 2 — append them below the
+existing Agent Analysis section. Examples:
+- Root cause was deeper than initially assessed
+- Additional modules turned out to be affected
+- Edge cases found during testing
+- Related issues discovered
 
 ## Guidelines
 
 - **Never modify the original description.** The separator (`---`) clearly marks where
-  the human-written content ends and the AI analysis begins.
-- **Root cause** should be specific: name the function, the condition, the missing
-  check — not vague statements like "a bug in the logic."
-- **Affected modules** use Gradle module paths (`:module:submodule`), not file paths.
-- Update the issue body once at the end of the workflow (Phase 13), not incrementally.
-  All information should be available by then (root cause, fix, PR link).
+  the human-written content ends and the Agent analysis begins.
 - If the issue body is empty or very short, still preserve it and add the separator.
+- Do not add fix summary or solution — those belong in the PR body.
