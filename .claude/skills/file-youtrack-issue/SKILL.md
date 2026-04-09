@@ -210,7 +210,7 @@ description: "<markdown description following patterns above>"
 customFields: {
   "Type": "<one of the types above>",
   "Priority": "<priority>",
-  "Scope": "<comma-separated scopes>"
+  "Scope": ["<scope1>", "<scope2>"]   # MUST be a JSON array, not a comma-separated string
 }
 ```
 

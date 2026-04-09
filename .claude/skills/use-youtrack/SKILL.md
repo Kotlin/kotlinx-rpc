@@ -109,6 +109,9 @@ For full comment history, use `mcp__youtrack__get_issue_comments`.
 ### Change fields
 Use `mcp__youtrack__update_issue` to modify summary, description, or custom fields.
 
+**Important:** `Scope` is an array-typed field — always pass it as a JSON array
+(e.g., `["Housekeeping", "Infra"]`), never as a comma-separated string.
+
 ### Change assignee
 Use `mcp__youtrack__change_issue_assignee` with the user login.
 Find user logins with `mcp__youtrack__find_user`.
