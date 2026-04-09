@@ -54,6 +54,10 @@ Non-Gradle validation:
 
 Several checked-in files are machine-generated. 
 **Never modify them by hand** — always run the appropriate regeneration task and commit the output.
+This includes `.api` and `.klib.api` ABI dump files (use `updateLegacyAbi`),
+conformance test output, WKT generated code, implicit import lists, and other.
+Hand-editing these files produces incorrect results (e.g., klib dump sort order
+differs from what's intuitive).
 
 ## Module Map
 

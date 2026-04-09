@@ -125,19 +125,25 @@ structured checklist must be followed, not approximated:
   "Field X is null because `deserialize()` silently drops the payload when..."
 - The reproducer you post should confirm or demonstrate this hypothesis
 
-### Post a reproducer comment — MANDATORY for bugs
+### Dependency source investigation tip
 
-Every bug **must** get a YT comment at this step — no exceptions, no silent skips:
+When researching library internals via `search_dependency_sources`, FULL_TEXT mode
+may return "no dependencies found with indices" for method-level searches even when
+the class exists. Workaround: use DECLARATION mode to find the class first, then
+use `read_dependency_sources` with pagination to read the specific section you need.
 
-- **Reproducer needed**: Post a reproducer comment using the template in
-  `assets/yt-reproducer-comment.md`.
-- **Reproducer not needed** (obvious fix, already has one, trivially reproducible
-  from description): Post a comment **explicitly stating why** a reproducer is
-  unnecessary (e.g., "Reproducer not needed — the bug is visible in any generated
-  KDoc block comment; the issue description itself serves as the reproduction").
+### Post a triage comment — MANDATORY (every issue type)
 
-For non-bugs (feature request, task): post the explanation why a reproducer
-doesn't apply.
+**Always post a YT comment at this step** — this is unconditional, not optional.
+The comment is the proof that analysis happened. One of:
+
+- **Bug with reproducer**: Post using the template in `assets/yt-reproducer-comment.md`.
+- **Bug without reproducer** (obvious fix, already has one, trivially reproducible):
+  Post a comment **explicitly stating why** (e.g., "Reproducer not needed — the bug
+  is visible in any generated KDoc block comment; the issue description itself serves
+  as the reproduction").
+- **Non-bug** (feature request, task): Post what the analysis found and the planned
+  approach.
 
 ### Update the issue body with Agent Analysis
 
@@ -166,7 +172,13 @@ sed "s|<User>|$(whoami)|g" .claude/skills/fix-issue/assets/local.properties.temp
   > /tmp/krpc-<issue-id>/local.properties
 ```
 
-When using Gradle skills, specify the worktree path as `projectRoot`.
+When using Gradle skills, **always use the worktree root** (e.g., `/tmp/krpc-KRPC-NNN`)
+as `projectRoot` — even for included builds (`compiler-plugin/`, `gradle-plugin/`,
+`protoc-gen/`, `dokka-plugin/`). The Gradle MCP rejects included build subdirectories
+as `projectRoot` because they have no Gradle wrapper. Address included build tasks
+from the root with their composite prefix (the directory name passed to `includeBuild()`):
+`:protoc-gen:common:test`, `:compiler-plugin:compiler-plugin-backend:build`,
+`:dokka-plugin:build`, etc.
 
 ## Step 4: Write a Failing Test (if applicable)
 
@@ -175,12 +187,16 @@ already cover the scenario.
 
 When needed — may be a **new test** or **modification of an existing one**:
 1. Identify the correct test module
-2. Write/modify a test that captures the buggy behavior or missing feature
-3. Run via `running_gradle_tests` and verify the failure is a valid RED state invoking the
+2. **Build smoke test first**: Before writing any test code, verify the target test
+   module compiles (`<module>:compileTestKotlin` or equivalent). If it doesn't,
+   diagnose the build issue first — a broken build dependency or missing task wiring
+   can block ALL test compilation, and you'll waste cycles writing tests you can't run.
+3. Write/modify a test that captures the buggy behavior or missing feature
+4. Run via `running_gradle_tests` and verify the failure is a valid RED state invoking the
    `superpowers:test-driven-development` skill — the test must compile and run, then fail
    on the assertion that captures the actual bug. A compilation error or setup crash
    is not a valid RED.
-4. Follow existing test patterns in the same module
+5. Follow existing test patterns in the same module
 
 After the fix is applied (Step 5), re-run to confirm GREEN. If it still fails, the
 fix is incomplete — do not move on.
@@ -189,10 +205,12 @@ fix is incomplete — do not move on.
 
 ### Plan before coding (depth scales with complexity)
 
-**Simple** (single file, obvious): Brief inline bullet points.
+**Simple** (single file, obvious approach): Brief inline bullet points.
 
-**Medium** (2-5 files, clear approach): Use the Plan agent for a structured plan.
-Start executing immediately — no user approval needed.
+**Medium** (approach has alternatives worth evaluating, regardless of file count):
+Use the Plan agent for a structured plan. A 2-file change with an obvious fix
+doesn't need a plan; a 2-file change where you're choosing between two valid
+approaches does. Start executing immediately — no user approval needed.
 
 **Complex** (architectural, multi-module, public API, unclear tradeoffs):
 1. Invoke the `superpowers:brainstorming` skill to explore approaches — this surfaces alternatives
@@ -256,15 +274,20 @@ regressions.
 
 ## Step 9: Commit Changes
 
-Separate commits logically — this applies even for simple changes:
-1. **Fix** — the code change (source files only)
-2. **Tests** — if added/modified
-3. **Docs** — if updated
-4. **Generated / infra** — ABI dumps, regenerated conformance/WKT files, build config
+Separate commits **logically** — what matters is that each commit tells a coherent
+story, not that categories are mechanically split:
+- **Default split**: fix (source), tests, docs, generated/infra — when each is
+  independently meaningful.
+- **Single commit preferred** for atomic refactorings where all changes form one
+  logical unit (e.g., package relocation touching 34 files). Splitting would create
+  noise without aiding review.
+- **Always separate** generated files / ABI dumps from human-authored code.
+  Reviewers need to see the fix isolated from mechanical regeneration output.
 
-Do NOT bundle generated files or ABI dumps into the fix commit. Reviewers need to
-see the human-authored change isolated from mechanical regeneration output.
-**Never hand-edit generated files** — always run the appropriate regeneration task and commit the output as-is.
+**Never hand-edit generated files** (`.api`, `.klib.api`, conformance code, WKT,
+etc.) — always run the appropriate regeneration task and commit the output as-is.
+The klib dump sort order, for instance, differs from what's intuitive; manual edits
+will produce wrong output.
 
 ### Commit message format
 
@@ -306,10 +329,17 @@ if the change is trivial and local verifications covered it.
 **Monitor both via subagents**: Spawn two background subagents — one polling
 GitHub, one polling TeamCity. Each reports back on completion.
 
+**TC build canceled** (not failed): If a TeamCity build shows "canceled" status
+rather than "failed" (can happen due to external cancellation, agent issues, or
+queue management), retry it once before investigating. Cancellation ≠ failure.
+
 On failure — invoke the `superpowers:systematic-debugging` skill, not blind retries:
 1. Read the full error/stack trace, not just the test name.
 2. Check if pre-existing — run the same test against `main` (or check recent TC
-   history). Pre-existing failures get noted in the CI comment, not fixed.
+   history). **If TC fails on a task that also fails on main**, you may fix it if the
+   fix is trivial and within scope of this issue — otherwise note it as pre-existing
+   in the CI report comment and move on. Do not block the PR on failures unrelated
+   to your change.
 3. Reproduce locally if feasible via `running_gradle_tests` — faster than CI round-trips.
 4. Form a hypothesis before fixing. If your first fix doesn't work, return to the
    error output — do not stack guesses.
@@ -389,6 +419,9 @@ branched off, so it's fresh" — always fetch and rebase.
 
 - **Build fails locally**: Read the error, fix, re-run. Don't just retry.
 - **TC build fails**: Investigate with `teamcity run log <id> --failed`, fix and push.
+- **TC build canceled** (not failed): Retry once. External cancellation (agent issues,
+  queue management) is common and doesn't indicate a code problem. Only investigate
+  if it cancels again.
 - **Rebase conflicts**: Resolve. No user intervention is expected.
 
 Service outages follow the No Silent Fallback policy above.
