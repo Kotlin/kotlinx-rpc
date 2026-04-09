@@ -8,11 +8,12 @@ import CONFORMANCE_OUTPUT_DIR
 import kotlinx.rpc.protoc.gen.test.runner.createConformanceTestFiles
 import kotlinx.rpc.protoc.gen.test.runner.execConformanceTestRunner
 import kotlinx.rpc.protoc.gen.test.runner.getJavaClient
-import org.junit.jupiter.api.Assumptions
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermission
 import java.util.stream.Stream
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -39,13 +40,18 @@ class ConformanceTest {
     @TestFactory
     fun nativeConformance(): Stream<DynamicTest> {
         val nativeBinary = System.getenv("NATIVE_CLIENT_BINARY")
-        Assumptions.assumeTrue(nativeBinary != null, "NATIVE_CLIENT_BINARY not set — skipping native conformance tests")
+            ?: error(
+                "Expected environment variable 'NATIVE_CLIENT_BINARY' to be set. " +
+                    "Native conformance tests are not available on: ${System.getProperty("os.name")} " +
+                    "(${System.getProperty("os.arch")}). " +
+                    "Supported platforms: macosArm64, macosX64, linuxX64, linuxArm64."
+            )
 
         // The native binary takes args directly: <binary> conformance
         // conformance_test_runner spawns it as a subprocess, so we need a wrapper script
         // that passes the "conformance" argument
-        val wrapper = java.nio.file.Files.createTempFile("nativeClientRunner", ".sh")
-        java.nio.file.Files.setPosixFilePermissions(wrapper, java.nio.file.attribute.PosixFilePermission.entries.toSet())
+        val wrapper = Files.createTempFile("nativeClientRunner", ".sh")
+        Files.setPosixFilePermissions(wrapper, PosixFilePermission.entries.toSet())
         wrapper.toFile().writeText(
             """
                 #!/bin/bash
