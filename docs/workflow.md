@@ -251,7 +251,7 @@ IMPORTANT: `protoscope` only works with proto3 and not 'editions' messages.
 For proto2 and editions this won't work.
 
 To debug tests, 
-use [ConformanceClient.kt](../tests/protobuf-conformance/src/main/kotlin/kotlinx/rpc/protoc/gen/test/ConformanceClient.kt)
+use [ConformanceClient.kt](../tests/protobuf-conformance/src/commonMain/kotlin/kotlinx/rpc/protoc/gen/test/ConformanceClient.kt)
 and this command:
 ```bash
 gradle :tests:protobuf-conformance:runConformanceTest -Pconformance.test.debug='true' -Pconformance.test='<test_name>'

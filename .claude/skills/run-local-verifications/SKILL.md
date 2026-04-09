@@ -46,7 +46,7 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | `gradle.properties` in any module                                                      | Properties sync         | `updateProperties` then check git status                                                  | Keeps all module gradle.properties in sync with root                               |
 | `compiler-plugin/` sources or templates                                                | Compiler plugin tests   | `:tests:compiler-plugin-tests:test` (use `running_gradle_tests`)                          | Validates codegen and diagnostics                                                  |
 | `compiler-plugin/` CSM templates                                                       | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
-| `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateMain` then check git status                        | Codegen changes may affect conformance test output                                 |
+| `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
 | `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:jvmTest` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
 | `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
 | `protoc-gen/` sources (any change)                                                     | Implicit imports        | Shell: `./update_implicit_types.sh` then check git status                                 | Keeps protoc-gen implicit import list current                                      |
@@ -206,7 +206,7 @@ serious issue -- discuss with the team before proceeding.
 
 All four checks should be run together because protoc-gen is the code generator that
 produces output consumed by conformance tests, unit tests, WKT, and implicit imports:
-1. Task `tests:protobuf-conformance:bufGenerateMain` (use `running_gradle_builds`) then check git status
+1. Task `tests:protobuf-conformance:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
 2. Task `:tests:protobuf-unittest:jvmTest` (use `running_gradle_tests`)
 3. Task `:protobuf:protobuf-wkt:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
 4. Shell: `./update_implicit_types.sh` then check git status
@@ -242,7 +242,7 @@ then re-run the upgrade tasks.
 
 ### "I changed protobuf/gRPC code"
 1. Run `:protobuf:protobuf-wkt:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
-2. Run `tests:protobuf-conformance:bufGenerateMain` via `running_gradle_builds` then commit if changed
+2. Run `tests:protobuf-conformance:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
 3. Run `:tests:protobuf-unittest:jvmTest` via `running_gradle_tests`
 4. Run `./update_implicit_types.sh` via shell then commit if changed (if protoc-gen changed)
 5. Run `checkLegacyAbi` via `running_gradle_builds`
