@@ -2,17 +2,3 @@
 # Tests listed here are excluded from JUnit assertions.
 # Each line is a test name (text after '#' is a comment).
 
-# Bad tag field number validation not yet implemented (KRPC-274)
-Required.Proto2.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
-Required.Proto2.ProtobufInput.BadTag_FieldNumberTooHigh
-Required.Proto2.ProtobufInput.BadTag_OverlongVarint
-Required.Proto3.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
-Required.Proto3.ProtobufInput.BadTag_FieldNumberTooHigh
-Required.Proto3.ProtobufInput.BadTag_OverlongVarint
-Required.Editions_Proto2.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
-Required.Editions_Proto2.ProtobufInput.BadTag_FieldNumberTooHigh
-Required.Editions_Proto2.ProtobufInput.BadTag_OverlongVarint
-Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
-Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberTooHigh
-Required.Editions_Proto3.ProtobufInput.BadTag_OverlongVarint
-

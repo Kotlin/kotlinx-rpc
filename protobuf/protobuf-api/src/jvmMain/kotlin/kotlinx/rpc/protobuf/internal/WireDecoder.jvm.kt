@@ -21,10 +21,37 @@ internal class WireDecoderJvm(source: Source) : WireDecoder {
     internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 
     override fun readTag(): KTag? {
-        val tag = codedInputStream.readTag().toUInt()
-        if (tag == 0u) {
-            return null
+        if (codedInputStream.isAtEnd) return null
+
+        val posBefore = codedInputStream.totalBytesRead
+        val raw64 = codedInputStream.readRawVarint64()
+        val bytesUsed = codedInputStream.totalBytesRead - posBefore
+
+        // A valid tag must fit in 32 bits (29-bit field number + 3-bit wire type).
+        if (raw64 < 0 || raw64 > UInt.MAX_VALUE.toLong()) {
+            throw ProtobufDecodingException("Tag field number out of range")
         }
+
+        // Reject overlong varint encodings: the varint used more bytes than the
+        // minimum required for its value. Each varint byte carries 7 payload bits,
+        // so the minimum number of bytes is ceil(bitsNeeded / 7), with 0 needing 1 byte.
+        val minBytes = when {
+            raw64 == 0L -> 1
+            raw64 < (1L shl 7) -> 1
+            raw64 < (1L shl 14) -> 2
+            raw64 < (1L shl 21) -> 3
+            raw64 < (1L shl 28) -> 4
+            else -> 5
+        }
+        if (bytesUsed > minBytes) {
+            throw ProtobufDecodingException("Overlong varint encoding for tag")
+        }
+
+        val tag = raw64.toUInt()
+        if (tag == 0u) {
+            throw ProtobufDecodingException.invalidTag()
+        }
+
         return KTag.from(tag)
     }
 
