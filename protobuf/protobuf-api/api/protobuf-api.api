@@ -65,6 +65,9 @@ public abstract class kotlinx/rpc/protobuf/ProtobufException : java/lang/Runtime
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
+public abstract interface annotation class kotlinx/rpc/protobuf/internal/ProtobufMessagesInheritance : java/lang/annotation/Annotation {
+}
+
 public final class kotlinx/rpc/protobuf/internal/WireDecoder_jvmKt {
 	public static final fun WireDecoder (Lkotlinx/io/Source;)Lkotlinx/rpc/protobuf/internal/WireDecoder;
 	public static final fun checkForPlatformDecodeException (Lkotlin/jvm/functions/Function0;)V

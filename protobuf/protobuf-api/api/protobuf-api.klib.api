@@ -6,6 +6,10 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:protobuf-api>
+open annotation class kotlinx.rpc.protobuf.internal/ProtobufMessagesInheritance : kotlin/Annotation { // kotlinx.rpc.protobuf.internal/ProtobufMessagesInheritance|null[0]
+    constructor <init>() // kotlinx.rpc.protobuf.internal/ProtobufMessagesInheritance.<init>|<init>(){}[0]
+}
+
 abstract interface <#A: kotlin/Any, #B: kotlin/Any> kotlinx.rpc.protobuf/ProtoExtensionDescriptor { // kotlinx.rpc.protobuf/ProtoExtensionDescriptor|null[0]
     abstract val fieldNumber // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.fieldNumber|{}fieldNumber[0]
         abstract fun <get-fieldNumber>(): kotlin/Int // kotlinx.rpc.protobuf/ProtoExtensionDescriptor.fieldNumber.<get-fieldNumber>|<get-fieldNumber>(){}[0]
