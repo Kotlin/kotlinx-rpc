@@ -101,6 +101,7 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
                             byNames.add("kotlinx.rpc.internal.**")
                             byNames.add("kotlinx.rpc.krpc.internal.**")
                             byNames.add("kotlinx.rpc.grpc.internal.**")
+                            byNames.add("kotlinx.rpc.protobuf.internal.**")
                         }
                     }
                 }
@@ -139,6 +140,7 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
                             byNames.add("kotlinx.rpc.internal.**")
                             byNames.add("kotlinx.rpc.krpc.internal.**")
                             byNames.add("kotlinx.rpc.grpc.internal.**")
+                            byNames.add("kotlinx.rpc.protobuf.internal.**")
                         }
                     }
                 }
