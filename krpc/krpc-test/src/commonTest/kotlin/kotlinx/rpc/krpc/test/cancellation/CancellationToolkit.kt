@@ -45,7 +45,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
         }
     }
 
-    val transport = LocalTransport(this.coroutineContext.job)
+    val transport = LocalTransport(this.coroutineContext)
 
     val client by lazy {
         KrpcTestClient(rpcClientConfig {

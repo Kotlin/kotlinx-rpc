@@ -227,7 +227,6 @@ class CancellationTest {
     }
 
     @Test
-    @Ignore // KRPC-548 flaky on native targets (mingwX64, linuxX64) — 30s coroutine timeout
     fun testCancelServer() = runCancellationTest {
         val firstRequestJob = launch {
             println("[testCancelServer] firstRequestJob started")
