@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package util.tasks
@@ -20,7 +20,7 @@ import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.the
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.other.libs
 import java.io.File
 
@@ -233,7 +233,7 @@ fun Project.setupProtobufConformanceResources() {
 
         val destDir = project.layout.projectDirectory
             .dir("src")
-            .dir("main")
+            .dir("commonMain")
             .dir("proto")
 
         into(destDir)
@@ -295,7 +295,7 @@ fun Project.setupProtobufConformanceResources() {
             kotlinTestDir.set(
                 project.layout.projectDirectory
                     .dir("src")
-                    .dir("test")
+                    .dir("jvmTest")
                     .dir("kotlin")
                     .asFile
             )
@@ -311,12 +311,13 @@ fun Project.setupProtobufConformanceResources() {
             )
         }
 
-    tasks.matching { it.name == "processMainProtoFiles" || it.name == "processTestProtoFilesImports" }.all {
+    // Proto processing tasks for all source sets need to depend on the proto extraction task
+    tasks.matching { it.name.startsWith("process") && it.name.contains("ProtoFiles") }.all {
         dependsOn(unzipProtobufConformance)
     }
 
-    the<KotlinJvmExtension>().apply {
-        sourceSets.getByName("main") {
+    the<KotlinMultiplatformExtension>().apply {
+        sourceSets.getByName("jvmMain") {
             kotlin.srcDir(writeConformanceExecutablePath.map { it.destination.get().parentFile })
         }
     }

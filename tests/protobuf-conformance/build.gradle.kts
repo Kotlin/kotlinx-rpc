@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(InternalRpcApi::class)
@@ -10,6 +10,7 @@ import kotlinx.rpc.protoc.buf
 import kotlinx.rpc.protoc.generate
 import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import util.other.localProperties
 import util.tasks.CONFORMANCE_PB
 import util.tasks.GenerateConformanceFileDescriptorSet
@@ -17,26 +18,45 @@ import util.tasks.PAYLOAD_PB
 import util.tasks.setupProtobufConformanceResources
 
 plugins {
-    alias(libs.plugins.conventions.jvm)
+    alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
 }
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
-}
 
-dependencies {
-    implementation(libs.coroutines.core)
-    implementation(libs.kotlin.reflect)
-    implementation(projects.grpc.grpcMarshaller)
-    implementation(projects.protobuf.protobufCore)
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.executable {
+            entryPoint = "kotlinx.rpc.protoc.gen.test.main"
+        }
+    }
 
-    testImplementation(libs.kotlin.test.junit5)
-    testImplementation(libs.coroutines.test)
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation(libs.coroutines.core)
+                implementation(projects.grpc.grpcMarshaller)
+                implementation(projects.protobuf.protobufCore)
+            }
+        }
+
+        jvmMain {
+            dependencies {
+                implementation(libs.kotlin.reflect)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(libs.kotlin.test.junit5)
+                implementation(libs.coroutines.test)
+            }
+        }
+    }
 }
 
 setupProtobufConformanceResources()
-configureLocalProtocGenDevelopmentDependency("Main")
+configureLocalProtocGenDevelopmentDependency("CommonMain")
 
 fun generatedCodeDir(sourceSetName: String): File = project.layout.projectDirectory
     .dir("src")
@@ -56,6 +76,9 @@ protoTasks.buf.generate.nonTestTasks().configureEach {
     outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
+// Use lazy configuration references to avoid premature resolution of jvmRuntimeClasspath
+val jvmRuntimeClasspath = configurations.named("jvmRuntimeClasspath")
+
 val mockClientJar = tasks.register<Jar>("mockClientJar") {
     archiveBaseName.set("mockClient")
     archiveVersion.set("")
@@ -64,22 +87,24 @@ val mockClientJar = tasks.register<Jar>("mockClientJar") {
         attributes["Main-Class"] = "kotlinx.rpc.protoc.gen.test.ConformanceClientKt"
     }
 
+    dependsOn(tasks.named("jvmMainClasses"))
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(
-        configurations.runtimeClasspath.map { prop ->
-            prop.map { if (it.isDirectory()) it else zipTree(it) }
+        jvmRuntimeClasspath.map { config ->
+            config.map { if (it.isDirectory()) it else zipTree(it) }
         }
     )
-
-    with(tasks.jar.get())
+    from(tasks.named("compileKotlinJvm").map { it.outputs.files })
+    from(tasks.named("jvmProcessResources").map { it.outputs.files })
 }
 
-
 val generateConformanceTests = tasks.register<JavaExec>("generateConformanceTests") {
-    classpath = sourceSets.main.get().runtimeClasspath
+    classpath = files(jvmRuntimeClasspath, tasks.named("compileKotlinJvm").map { it.outputs.files })
 
     dependsOn(mockClientJar)
-    dependsOn(protoTasks.buf.generate.matchingSourceSet("main"))
+    dependsOn(protoTasks.buf.generate.matchingSourceSet("commonMain"))
+    dependsOn(tasks.named("jvmMainClasses"))
 
     args = listOf(
         mockClientJar.get().archiveFile.get().asFile.absolutePath
@@ -96,11 +121,12 @@ val generateConformanceFileDescriptorSet = tasks
     .withType<GenerateConformanceFileDescriptorSet>()
 
 tasks.register<JavaExec>("runConformanceTest") {
-    classpath = sourceSets.main.get().runtimeClasspath
+    classpath = files(jvmRuntimeClasspath, tasks.named("compileKotlinJvm").map { it.outputs.files })
 
     dependsOn(mockClientJar)
-    dependsOn(protoTasks.buf.generate.matchingSourceSet("main"))
+    dependsOn(protoTasks.buf.generate.matchingSourceSet("commonMain"))
     dependsOn(generateConformanceFileDescriptorSet)
+    dependsOn(tasks.named("jvmMainClasses"))
 
     args = listOfNotNull(
         mockClientJar.get().archiveFile.get().asFile.absolutePath,
@@ -134,7 +160,7 @@ tasks.register<JavaExec>("runConformanceTest") {
     }
 }
 
-tasks.test {
+tasks.named<Test>("jvmTest") {
     environment("MOCK_CLIENT_JAR", mockClientJar.get().archiveFile.get().asFile.absolutePath)
 
     useJUnitPlatform()
