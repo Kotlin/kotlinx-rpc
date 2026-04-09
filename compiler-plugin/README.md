@@ -27,6 +27,14 @@ Protocol-specific codegen and diagnostics details live alongside each protocol m
 - [gRPC codegen](../grpc/codegen.md) -- gRPC-specific additions: `delegate()`, `MethodDescriptor`, streaming types
 - [Protobuf codegen](../protobuf/codegen.md) -- `Builder` interface, `@WithProtoDescriptor`/`@WithGrpcMarshaller` annotations
 
+## Generated test runners — Do not edit manually
+
+`tests/compiler-plugin-tests/src/test-gen/` contains auto-generated Java test classes (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`). 
+**Do not edit them manually.** Regenerate after adding, removing, or renaming test data files:
+```
+:tests:compiler-plugin-tests:generateTests
+```
+
 ## Version Compatibility
 
 See `verify-compiler-plugin-compatibility` skill.

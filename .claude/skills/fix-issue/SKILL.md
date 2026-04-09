@@ -92,13 +92,16 @@ Prioritize `Open` over `Submitted`, higher priority first. Take the top one.
 
 ## Step 1: Claim the Issue
 
-Read the issue via `youtrack-agent` MCP. Then do **all three** — none are optional:
+Read the issue via `youtrack-agent` MCP. Then do **all four** — none are optional:
 
 1. **Assign** to `AI Agent [Kxrpc]` (look up the login once, cache it).
 2. **Set state** to `In progress`.
 3. **Set sprint** to the current active planning period if none set. The last
    non-checkmarked `[Kxrpc] Planning Period` is typically active. If ambiguous, check
    which period has `In progress` issues.
+4. **Check for linked GH issue** — look for a `github-issue` tag on the ticket. If
+   present, find and note the GH issue number now. You will need it in Step 9
+   (commit message) and Step 10 (PR body `Fixes #NNN`).
 
 ## Step 2: Analyze the Problem
 
@@ -113,19 +116,28 @@ Understand:
 
 ### For bugs: investigate root cause
 
-Apply the `superpowers:systematic-debugging` discipline before posting the reproducer:
+**Invoke** `superpowers:systematic-debugging` (via the Skill tool — not just
+mentally following its ideas) before posting the triage comment. The skill's
+structured checklist must be followed, not approximated:
 - Reproduce the issue (or confirm it from the description)
 - Trace the data flow backward from the error to find where incorrect state originates
 - Form a specific, concrete hypothesis — not "something with serialization" but
   "Field X is null because `deserialize()` silently drops the payload when..."
 - The reproducer you post should confirm or demonstrate this hypothesis
 
-### Post a reproducer
+### Post a reproducer comment — MANDATORY for bugs
 
-If the issue is a bug and reproduction steps are unclear or missing, post a
-reproducer comment using the template in `assets/yt-reproducer-comment.md`.
-If no reproducer is needed (feature request, task, obvious fix, already has one),
-post the explanation why.
+Every bug **must** get a YT comment at this step — no exceptions, no silent skips:
+
+- **Reproducer needed**: Post a reproducer comment using the template in
+  `assets/yt-reproducer-comment.md`.
+- **Reproducer not needed** (obvious fix, already has one, trivially reproducible
+  from description): Post a comment **explicitly stating why** a reproducer is
+  unnecessary (e.g., "Reproducer not needed — the bug is visible in any generated
+  KDoc block comment; the issue description itself serves as the reproduction").
+
+For non-bugs (feature request, task): post the explanation why a reproducer
+doesn't apply.
 
 ### Update the issue body with Agent Analysis
 
@@ -164,8 +176,8 @@ already cover the scenario.
 When needed — may be a **new test** or **modification of an existing one**:
 1. Identify the correct test module
 2. Write/modify a test that captures the buggy behavior or missing feature
-3. Run via `running_gradle_tests` and verify the failure is a valid RED state per
-   `superpowers:test-driven-development` — the test must compile and run, then fail
+3. Run via `running_gradle_tests` and verify the failure is a valid RED state invoking the
+   `superpowers:test-driven-development` skill — the test must compile and run, then fail
    on the assertion that captures the actual bug. A compilation error or setup crash
    is not a valid RED.
 4. Follow existing test patterns in the same module
@@ -183,7 +195,7 @@ fix is incomplete — do not move on.
 Start executing immediately — no user approval needed.
 
 **Complex** (architectural, multi-module, public API, unclear tradeoffs):
-1. Use `superpowers:brainstorming` to explore approaches — this surfaces alternatives
+1. Invoke the `superpowers:brainstorming` skill to explore approaches — this surfaces alternatives
    and tradeoffs before committing to a plan.
 2. Plan agent → detailed plan (root cause, approach, alternatives, files, risks, verification)
 3. Spawn a **review agent** to critique the plan before coding (edge cases, simpler
@@ -219,6 +231,10 @@ code, ABI check is irrelevant for internal-only logic changes). Never run Gradle
 in parallel against the same worktree — builds share state and will corrupt
 each other.
 
+**Generated code**: If verifications produce updated generated files (ABI dumps, WKT,
+conformance code, platform table, etc.), **do not hand-edit them** — commit the
+regenerated output as-is. These go into a separate commit (Step 9).
+
 All relevant checks must pass before proceeding to Step 8. If a check fails, fix
 and re-run — do not proceed to code review with known failures.
 
@@ -227,7 +243,7 @@ and re-run — do not proceed to code review with known failures.
 Spawn **at least 2 independent review agents in parallel** on the full diff.
 See `references/code-review-agents.md` for the reviewer menu and prompting guide.
 
-Use the `superpowers:requesting-code-review` discipline: capture the git range,
+Invoke the `superpowers:requesting-code-review` skill: capture the git range,
 provide each reviewer with structured context (what changed, why, which requirements
 it addresses). Then handle feedback in priority order:
 
@@ -240,11 +256,15 @@ regressions.
 
 ## Step 9: Commit Changes
 
-Separate commits logically:
-1. **Fix** — the code change
+Separate commits logically — this applies even for simple changes:
+1. **Fix** — the code change (source files only)
 2. **Tests** — if added/modified
 3. **Docs** — if updated
-4. **Other** — ABI dumps, generated files, infra
+4. **Generated / infra** — ABI dumps, regenerated conformance/WKT files, build config
+
+Do NOT bundle generated files or ABI dumps into the fix commit. Reviewers need to
+see the human-authored change isolated from mechanical regeneration output.
+**Never hand-edit generated files** — always run the appropriate regeneration task and commit the output as-is.
 
 ### Commit message format
 
@@ -263,13 +283,12 @@ Message examples:
 ## Step 10: Create a Draft PR
 
 1. Push: `git push -u origin <branch-name>`
-2. Check if the YT ticket has a `github-issue` tag → find the GH issue number
-3. Create draft PR with `gh pr create --draft`. Use the template in
+2. Create draft PR with `gh pr create --draft`. Use the template in
    `assets/gh-pr-body.md` — the PR body contains only the **solution**, not problem
    analysis or root cause (those belong in the YT issue). Include `Fixes #NNN` if a
-   linked GH issue exists.
-4. Add label. At least one label must be set.
-5. Post any skipped review warnings/nits as a checkbox comment on the PR
+   linked GH issue was found in Step 1.
+3. Add label. At least one label must be set.
+4. Post any skipped review warnings/nits as a checkbox comment on the PR
    (see `assets/gh-code-review-comment.md`). If all review issues were fixed,
    don't skip the comment, just post that all internal comments were addressed.
 
@@ -287,7 +306,7 @@ if the change is trivial and local verifications covered it.
 **Monitor both via subagents**: Spawn two background subagents — one polling
 GitHub, one polling TeamCity. Each reports back on completion.
 
-On failure — apply `superpowers:systematic-debugging` discipline, not blind retries:
+On failure — invoke the `superpowers:systematic-debugging` skill, not blind retries:
 1. Read the full error/stack trace, not just the test name.
 2. Check if pre-existing — run the same test against `main` (or check recent TC
    history). Pre-existing failures get noted in the CI comment, not fixed.
@@ -325,8 +344,9 @@ Once all CI passes:
 
 ## Step 14: The Main Cycle is Done
 
-Before reporting completion, apply `superpowers:verification-before-completion` —
-verify actual state, do not assume previous steps succeeded:
+Before reporting completion, **invoke** `superpowers:verification-before-completion`
+(via the Skill tool — not just manually checking). Verify actual state, do not
+assume previous steps succeeded:
 
 1. `gh pr view <pr-number> --json isDraft,reviewRequests` — draft removed, reviewer assigned
 2. Verify CI report comment exists on the PR
@@ -344,7 +364,7 @@ This may take **multiple turns**. Each turn:
 
 1. Read all PR comments (human reviews + internal checkbox comment)
 2. Human reviewer comments take priority. For the checkbox comment, `[x]` = fix, `[ ]` = skip.
-3. **Before implementing feedback, apply `superpowers:receiving-code-review` discipline**:
+3. **Before implementing feedback, invoke the `superpowers:receiving-code-review` skill**:
    - Verify the reviewer's claim against the actual codebase — don't assume they're correct
    - If the suggestion would break existing functionality, violate YAGNI, or conflict
      with project conventions, push back with technical reasoning in a PR comment reply

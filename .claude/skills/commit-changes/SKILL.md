@@ -108,6 +108,15 @@ These follow a simple pattern:
 - `Bump version to X.Y.Z-SNAPSHOT`
 - `CHANGELOG.md` (for changelog-only updates)
 
+## Generated Files
+
+**Never hand-edit generated files.** Always run the appropriate regeneration task and
+commit the output.
+
+Generated file changes (ABI dumps, WKT, conformance code, platform table, etc.) should
+be committed **separately** from hand-authored code so reviewers can distinguish human
+changes from mechanical regeneration output.
+
 ## Quick Reference
 
 ```

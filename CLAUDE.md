@@ -50,6 +50,11 @@ Non-Gradle validation:
 ./publishLocal.sh                  # Publish to build/repo/ for local testing
 ```
 
+## Generated Code — Do Not Edit Manually
+
+Several checked-in files are machine-generated. 
+**Never modify them by hand** — always run the appropriate regeneration task and commit the output.
+
 ## Module Map
 
 The most important modules have brief READMEs in their directories, read when you need to work with the module.

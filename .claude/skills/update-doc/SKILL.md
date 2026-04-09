@@ -147,6 +147,11 @@ Key settings:
 Generate API docs by running the `dokkaGenerate` Gradle task (use the
 `running_gradle_builds` skill). Output goes to `docs/pages/api/` — don't edit by hand.
 
+### Generated documentation files — Do not edit manually
+
+Several documentation files are machine-generated. **Never edit them by hand** — run the
+regeneration task and commit the output.
+
 The custom Dokka plugin at `dokka-plugin/` also adds version badges to gRPC/protobuf
 module pages, configured via `rpc-dokka-config.properties` (auto-generated at build time
 with `coreVersion` and `grpcDevVersion`).
