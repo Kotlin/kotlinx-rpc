@@ -1,0 +1,15 @@
+FILE: module_main_protoMessageSubclass.kt
+    package test.user_code
+
+    public final class UserImplementation : R|test/compiler/plugin/SimpleMessage| {
+        public constructor(): R|test/user_code/UserImplementation| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override val name: R|kotlin/String| = String()
+            public get(): R|kotlin/String|
+
+        public open override val value: R|kotlin/Int| = Int(0)
+            public get(): R|kotlin/Int|
+
+    }

@@ -439,6 +439,27 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         //##csm /addAnnotationVS
     }
 
+    override fun addMetadataVisibleAnnotationVS(
+        context: IrPluginContext,
+        declaration: IrDeclaration,
+        annotation: IrMemberAccessExpression<*>,
+    ) {
+        //##csm addMetadataVisibleAnnotationVS
+        //##csm specific=[2.1.0...2.3.99]
+        context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(
+            declaration,
+            listOf(annotation as IrConstructorCall),
+        )
+        //##csm /specific
+        //##csm default
+        context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(
+            declaration,
+            listOf(annotation as IrAnnotationImpl),
+        )
+        //##csm /default
+        //##csm /addMetadataVisibleAnnotationVS
+    }
+
     override fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression? {
         //##csm IrConstructorCall.valueArgumentAt
         //##csm specific=[2.1.0...2.1.10]

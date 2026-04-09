@@ -7,6 +7,7 @@ package kotlinx.rpc.codegen.extension
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.types.defaultType
 import org.jetbrains.kotlin.ir.types.typeWith
@@ -43,6 +44,7 @@ internal class ProtoDescriptorGenerator(
     fun generate() {
         addWithProtoDescriptorAnnotation()
         addWithGrpcMarshallerAnnotation()
+        addSubclassOptInRequiredAnnotation()
 
         declaration.message.companionObject()?.apply {
             generateCompanionObjectConstructor(ctx.pluginContext)
@@ -75,6 +77,58 @@ internal class ProtoDescriptorGenerator(
      */
     private fun addWithGrpcMarshallerAnnotation() {
         addWithSomethingAnnotation(ctx.withGrpcMarshallerAnnotation, ProtoDeclaration::marshaller)
+    }
+
+    /**
+     * Add the @SubclassOptInRequired(ProtobufMessagesInheritance::class) annotation
+     * to the message interface. Uses [IrPluginContext.metadataDeclarationRegistrar]
+     * so the annotation is serialized into metadata and visible to downstream modules.
+     */
+    private fun addSubclassOptInRequiredAnnotation() {
+        val message = declaration.message
+        val annotationSymbol = ctx.subclassOptInRequired
+        val markerClass = ctx.protobufMessagesInheritance
+
+        ctx.vsApi {
+            val annotation = IrAnnotationVS(
+                startOffset = message.startOffset,
+                endOffset = message.endOffset,
+                type = annotationSymbol.defaultType,
+                symbol = annotationSymbol.constructors.single(),
+                typeArgumentsCount = 0,
+                constructorTypeArgumentsCount = 0,
+                valueArgumentsCount = 1,
+            ).apply {
+                val markerType = markerClass.defaultType
+                arguments(this@vsApi) {
+                    values {
+                        +IrVarargImpl(
+                            startOffset = message.startOffset,
+                            endOffset = message.endOffset,
+                            type = ctx.irBuiltIns.arrayClass.typeWith(
+                                ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType)
+                            ),
+                            varargElementType = ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType),
+                            elements = listOf(
+                                IrClassReferenceImpl(
+                                    startOffset = message.startOffset,
+                                    endOffset = message.endOffset,
+                                    type = ctx.irBuiltIns.kClassClass.typeWith(markerType),
+                                    symbol = markerClass,
+                                    classType = markerType,
+                                )
+                            ),
+                        )
+                    }
+                }
+            }
+
+            addMetadataVisibleAnnotationVS(
+                context = ctx.pluginContext,
+                declaration = message,
+                annotation = annotation,
+            )
+        }
     }
 
     /**
