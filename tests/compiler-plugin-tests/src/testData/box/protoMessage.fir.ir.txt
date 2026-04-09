@@ -119,6 +119,7 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       GeneratedProtoMessage
       WithProtoDescriptor(descriptor = CLASS_REFERENCE 'CLASS OBJECT name:DESCRIPTOR modality:FINAL visibility:public superTypes:[kotlinx.rpc.protobuf.internal.ProtoDescriptor<test.my_message.MyMessage>]' type=kotlin.reflect.KClass<test.my_message.MyMessageInternal.DESCRIPTOR>)
       WithGrpcMarshaller(marshaller = CLASS_REFERENCE 'CLASS OBJECT name:MARSHALLER modality:FINAL visibility:public superTypes:[kotlinx.rpc.grpc.marshaller.GrpcMarshaller<test.my_message.MyMessage>]' type=kotlin.reflect.KClass<test.my_message.MyMessageInternal.MARSHALLER>)
+      SubclassOptInRequired(markerClass = [CLASS_REFERENCE 'CLASS IR_EXTERNAL_DECLARATION_STUB ANNOTATION_CLASS name:ProtobufMessagesInheritance modality:OPEN visibility:public superTypes:[kotlin.Annotation]' type=kotlin.reflect.KClass<kotlinx.rpc.protobuf.internal.ProtobufMessagesInheritance>] type=kotlin.Array<kotlin.reflect.KClass<kotlin.Annotation>> varargElementType=kotlin.reflect.KClass<kotlin.Annotation>)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage
     CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderKey] INTERFACE name:Builder modality:ABSTRACT visibility:public superTypes:[test.my_message.MyMessage]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage.Builder

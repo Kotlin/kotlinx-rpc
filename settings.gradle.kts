@@ -86,6 +86,7 @@ val kotlinMasterBuild = providers.gradleProperty("kotlinx.rpc.kotlinMasterBuild"
 
 if (!kotlinMasterBuild) {
     include(":tests:compiler-plugin-tests")
+    include(":tests:compiler-plugin-tests:compiler-plugin-protos")
 }
 
 include(":jpms-check")
