@@ -109,6 +109,12 @@ interface VersionSpecificApi {
 
     fun IrMutableAnnotationContainer.addAnnotationVS(annotation: IrMemberAccessExpression<*>)
 
+    fun addMetadataVisibleAnnotationVS(
+        context: IrPluginContext,
+        declaration: IrDeclaration,
+        annotation: IrMemberAccessExpression<*>,
+    )
+
     fun IrFunction.valueParametersVS(): List<IrValueParameter>
     var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
 

@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen.extension
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
-import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -124,9 +123,10 @@ internal class ProtoDescriptorGenerator(
                 }
             }
 
-            ctx.pluginContext.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(
+            addMetadataVisibleAnnotationVS(
+                context = ctx.pluginContext,
                 declaration = message,
-                annotations = listOf(annotation as IrConstructorCall),
+                annotation = annotation,
             )
         }
     }
