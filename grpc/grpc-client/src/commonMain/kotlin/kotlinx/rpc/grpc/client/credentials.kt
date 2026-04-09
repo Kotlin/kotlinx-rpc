@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.client
 
+import kotlinx.rpc.internal.utils.RpcTypeInheritance
+
 /**
  * Base class for client channel credentials.
  *
@@ -25,8 +27,7 @@ package kotlinx.rpc.grpc.client
  * @see GrpcInsecureClientCredentials
  * @see GrpcCallCredentials
  */
-@OptIn(ExperimentalSubclassOptIn::class)
-@SubclassOptInRequired
+@SubclassOptInRequired(RpcTypeInheritance::class)
 public interface GrpcClientCredentials
 
 /**

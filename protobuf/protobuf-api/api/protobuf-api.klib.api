@@ -68,9 +68,5 @@ final class kotlinx.rpc.protobuf/ProtobufEncodingException : kotlinx.rpc.protobu
 
 sealed class kotlinx.rpc.protobuf/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf/ProtobufException|null[0]
 
-final fun kotlinx.rpc.protobuf.internal/WireDecoder(kotlinx.io/Source): kotlinx.rpc.protobuf.internal/WireDecoder // kotlinx.rpc.protobuf.internal/WireDecoder|WireDecoder(kotlinx.io.Source){}[0]
-final fun kotlinx.rpc.protobuf.internal/WireEncoder(kotlinx.io/Sink): kotlinx.rpc.protobuf.internal/WireEncoder // kotlinx.rpc.protobuf.internal/WireEncoder|WireEncoder(kotlinx.io.Sink){}[0]
 final fun kotlinx.rpc.protobuf/ProtoConfig(kotlin/Function1<kotlinx.rpc.protobuf/ProtoConfig.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoConfig // kotlinx.rpc.protobuf/ProtoConfig|ProtoConfig(kotlin.Function1<kotlinx.rpc.protobuf.ProtoConfig.Builder,kotlin.Unit>){}[0]
 final fun kotlinx.rpc.protobuf/ProtoExtensionRegistry(kotlin/Function1<kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoExtensionRegistry // kotlinx.rpc.protobuf/ProtoExtensionRegistry|ProtoExtensionRegistry(kotlin.Function1<kotlinx.rpc.protobuf.ProtoExtensionRegistry.Builder,kotlin.Unit>){}[0]
-final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformDecodeException|checkForPlatformDecodeException(kotlin.Function0<kotlin.Unit>){}[0]
-final inline fun kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException(kotlin/Function0<kotlin/Unit>) // kotlinx.rpc.protobuf.internal/checkForPlatformEncodeException|checkForPlatformEncodeException(kotlin.Function0<kotlin.Unit>){}[0]
