@@ -5,13 +5,13 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
-* Constructs a new message.
-* ```
-* val message = Duration {
-*    seconds = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = Duration {
+ *    seconds = ...
+ * }
+ * ```
+ */
 public operator fun Duration.Companion.invoke(body: Duration.Builder.() -> Unit): Duration {
     val msg = DurationInternal().apply(body)
     msg.checkRequiredFields()
@@ -19,13 +19,13 @@ public operator fun Duration.Companion.invoke(body: Duration.Builder.() -> Unit)
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    seconds = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    seconds = ...
+ * }
+ * ```
+ */
 public fun Duration.copy(body: Duration.Builder.() -> Unit = {}): Duration {
     return this.asInternal().copyInternal(body)
 }

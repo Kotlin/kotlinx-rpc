@@ -673,29 +673,29 @@ open class CodeGenerator(
         if (first) {
             addLine("/**".escapeComment())
         } else {
-            addLine("* ".escapeComment())
+            addLine(" *".escapeComment())
         }
 
         leadingDetached.forEach {
-            addLine("* $it".escapeComment())
+            addLine(" * $it".escapeComment())
         }
 
         if (leadingDetached.isNotEmpty() && (leading.isNotEmpty() || trailing.isNotEmpty())) {
-            addLine("* ".escapeComment())
+            addLine(" *".escapeComment())
         }
         leading.forEach {
-            addLine("* $it".escapeComment())
+            addLine(" * $it".escapeComment())
         }
 
         if ((leadingDetached.isNotEmpty() || leading.isNotEmpty()) && trailing.isNotEmpty()) {
-            addLine("* ".escapeComment())
+            addLine(" *".escapeComment())
         }
         trailing.forEach {
-            addLine("* $it".escapeComment())
+            addLine(" * $it".escapeComment())
         }
 
         if (final) {
-            addLine("*/".escapeComment())
+            addLine(" */".escapeComment())
         }
     }
 

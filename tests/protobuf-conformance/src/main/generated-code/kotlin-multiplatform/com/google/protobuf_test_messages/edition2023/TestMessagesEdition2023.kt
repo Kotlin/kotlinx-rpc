@@ -14,8 +14,8 @@ interface ComplexMessage {
 @GeneratedProtoMessage
 interface TestAllTypesEdition2023 {
     /**
-    * Singular
-    */
+     * Singular
+     */
     val optionalInt32: Int?
     val optionalInt64: Long?
     val optionalUint32: UInt?
@@ -39,8 +39,8 @@ interface TestAllTypesEdition2023 {
     val optionalCord: String?
     val recursiveMessage: TestAllTypesEdition2023
     /**
-    * Repeated
-    */
+     * Repeated
+     */
     val repeatedInt32: List<Int>
     val repeatedInt64: List<Long>
     val repeatedUint32: List<UInt>
@@ -63,8 +63,8 @@ interface TestAllTypesEdition2023 {
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
     /**
-    * Packed
-    */
+     * Packed
+     */
     val packedInt32: List<Int>
     val packedInt64: List<Long>
     val packedUint32: List<UInt>
@@ -80,8 +80,8 @@ interface TestAllTypesEdition2023 {
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
     /**
-    * Unpacked
-    */
+     * Unpacked
+     */
     val unpackedInt32: List<Int>
     val unpackedInt64: List<Long>
     val unpackedUint32: List<UInt>
@@ -97,8 +97,8 @@ interface TestAllTypesEdition2023 {
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
     /**
-    * Map
-    */
+     * Map
+     */
     val mapInt32Int32: Map<Int, Int>
     val mapInt64Int64: Map<Long, Long>
     val mapUint32Uint32: Map<UInt, UInt>
@@ -158,8 +158,8 @@ interface TestAllTypesEdition2023 {
     }
 
     /**
-    * groups
-    */
+     * groups
+     */
     @GeneratedProtoMessage
     interface GroupLikeType {
         val groupInt32: Int?
@@ -174,8 +174,8 @@ interface TestAllTypesEdition2023 {
         data object BAZ: NestedEnum(number = 2)
 
         /**
-        * Intentionally negative.
-        */
+         * Intentionally negative.
+         */
         data object NEG: NestedEnum(number = -1)
 
         data class UNRECOGNIZED(override val number: Int): NestedEnum(number)

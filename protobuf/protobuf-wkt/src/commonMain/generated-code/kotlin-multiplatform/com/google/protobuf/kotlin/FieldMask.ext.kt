@@ -5,13 +5,13 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
-* Constructs a new message.
-* ```
-* val message = FieldMask {
-*    paths = ...
-* }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = FieldMask {
+ *    paths = ...
+ * }
+ * ```
+ */
 public operator fun FieldMask.Companion.invoke(body: FieldMask.Builder.() -> Unit): FieldMask {
     val msg = FieldMaskInternal().apply(body)
     msg.checkRequiredFields()
@@ -19,13 +19,13 @@ public operator fun FieldMask.Companion.invoke(body: FieldMask.Builder.() -> Uni
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy {
-*    paths = ...
-* }
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy {
+ *    paths = ...
+ * }
+ * ```
+ */
 public fun FieldMask.copy(body: FieldMask.Builder.() -> Unit = {}): FieldMask {
     return this.asInternal().copyInternal(body)
 }

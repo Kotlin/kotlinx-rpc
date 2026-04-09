@@ -5,11 +5,11 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
-* Constructs a new message.
-* ```
-* val message = Empty { }
-* ```
-*/
+ * Constructs a new message.
+ * ```
+ * val message = Empty { }
+ * ```
+ */
 public operator fun Empty.Companion.invoke(body: Empty.Builder.() -> Unit): Empty {
     val msg = EmptyInternal().apply(body)
     msg.checkRequiredFields()
@@ -17,11 +17,11 @@ public operator fun Empty.Companion.invoke(body: Empty.Builder.() -> Unit): Empt
 }
 
 /**
-* Copies the original message, including unknown fields.
-* ```
-* val copy = original.copy()
-* ```
-*/
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy()
+ * ```
+ */
 public fun Empty.copy(body: Empty.Builder.() -> Unit = {}): Empty {
     return this.asInternal().copyInternal(body)
 }
