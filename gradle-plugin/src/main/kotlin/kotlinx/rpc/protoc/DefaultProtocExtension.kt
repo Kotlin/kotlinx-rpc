@@ -252,6 +252,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             properties = properties,
         ) {
             dependsOn(processProtoTask)
+            dependsOn(processImportProtoTask)
         }
 
         val generateBufGenYamlTask = project.registerGenerateBufGenYamlTask(
