@@ -160,12 +160,42 @@ tasks.register<JavaExec>("runConformanceTest") {
     }
 }
 
+// Resolve the host native target for running native conformance tests
+val hostNativeTarget: KotlinNativeTarget? = run {
+    val os = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    val targetName = when {
+        os.startsWith("mac") && arch == "aarch64" -> "macosArm64"
+        os.startsWith("mac") -> "macosX64"
+        os.startsWith("linux") && arch == "aarch64" -> "linuxArm64"
+        os.startsWith("linux") -> "linuxX64"
+        else -> null
+    }
+    targetName?.let { name ->
+        kotlin.targets.findByName(name) as? KotlinNativeTarget
+    }
+}
+
+val hostLinkTask = hostNativeTarget?.let { target ->
+    tasks.named("linkReleaseExecutable${target.name.replaceFirstChar { it.uppercase() }}")
+}
+
+val hostNativeBinaryPath = hostNativeTarget?.binaries
+    ?.getExecutable("release")
+    ?.outputFile
+    ?.absolutePath
+
 tasks.named<Test>("jvmTest") {
     environment("MOCK_CLIENT_JAR", mockClientJar.get().archiveFile.get().asFile.absolutePath)
+
+    if (hostNativeBinaryPath != null) {
+        environment("NATIVE_CLIENT_BINARY", hostNativeBinaryPath)
+    }
 
     useJUnitPlatform()
 
     dependsOn(generateConformanceTests)
+    hostLinkTask?.let { dependsOn(it) }
 }
 
 tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {

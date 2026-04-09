@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protoc.gen.test
@@ -8,6 +8,7 @@ import CONFORMANCE_OUTPUT_DIR
 import kotlinx.rpc.protoc.gen.test.runner.createConformanceTestFiles
 import kotlinx.rpc.protoc.gen.test.runner.execConformanceTestRunner
 import kotlinx.rpc.protoc.gen.test.runner.getJavaClient
+import org.junit.jupiter.api.Assumptions
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
@@ -28,13 +29,51 @@ class ConformanceTest {
 
         val executable = getJavaClient(jarPath, "conformance", outputDir)
 
+        return runConformanceWith(
+            executable = executable.absolutePathString(),
+            outputDirName = "conformance",
+            knownFailuresResource = "/known_failures.txt",
+        )
+    }
+
+    @TestFactory
+    fun nativeConformance(): Stream<DynamicTest> {
+        val nativeBinary = System.getenv("NATIVE_CLIENT_BINARY")
+        Assumptions.assumeTrue(nativeBinary != null, "NATIVE_CLIENT_BINARY not set — skipping native conformance tests")
+
+        // The native binary takes args directly: <binary> conformance
+        // conformance_test_runner spawns it as a subprocess, so we need a wrapper script
+        // that passes the "conformance" argument
+        val wrapper = java.nio.file.Files.createTempFile("nativeClientRunner", ".sh")
+        java.nio.file.Files.setPosixFilePermissions(wrapper, java.nio.file.attribute.PosixFilePermission.entries.toSet())
+        wrapper.toFile().writeText(
+            """
+                #!/bin/bash
+                exec $nativeBinary conformance
+            """.trimIndent()
+        )
+
+        return runConformanceWith(
+            executable = wrapper.absolutePathString(),
+            outputDirName = "native-conformance",
+            knownFailuresResource = "/native_known_failures.txt",
+        )
+    }
+
+    private fun runConformanceWith(
+        executable: String,
+        outputDirName: String,
+        knownFailuresResource: String,
+    ): Stream<DynamicTest> {
+        val outputDir = Path(CONFORMANCE_OUTPUT_DIR).resolve(outputDirName)
+
         val (failingTestsFile, textFormatFailingTestsFile) = createConformanceTestFiles(outputDir)
 
         val result = execConformanceTestRunner(
             outputDir = outputDir,
             failingTestsFile = failingTestsFile,
             textFormatFailingTestsFile = textFormatFailingTestsFile,
-            executable = executable.absolutePathString(),
+            executable = executable,
         )
 
         result.fold(
@@ -44,9 +83,9 @@ class ConformanceTest {
                         """
                             |Conformance tests failed with non 1 exit code: ${run.exitCode}
                             |
-                            |stdout: 
+                            |stdout:
                             |    ${run.stdout.joinToString("${System.lineSeparator()}|    ")}
-                            |stderr: 
+                            |stderr:
                             |    ${run.stderr.joinToString("${System.lineSeparator()}|    ")}
                         """.trimMargin()
                     )
@@ -61,7 +100,7 @@ class ConformanceTest {
         val (baselineFile, _) = createConformanceTestFiles(mockDir, createBlank = false)
 
         val knownFailures = ConformanceTest::class.java
-            .getResourceAsStream("/known_failures.txt")!!
+            .getResourceAsStream(knownFailuresResource)!!
             .bufferedReader()
             .readLines()
             .map { it.substringBefore('#').trim() }
@@ -92,8 +131,8 @@ class ConformanceTest {
 
         println(
             """
-                
-                === Conformance Test Results (filtered) ===
+
+                === Conformance Test Results ($outputDirName, filtered) ===
                 Total baseline tests (filtered):   ${baseline.size}
                 [+] Passed tests:                  ${passed.size}
                 [-] Failed tests:                  ${fails.size}
