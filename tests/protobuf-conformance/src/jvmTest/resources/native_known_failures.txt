@@ -1,0 +1,30 @@
+# Known conformance test failures specific to Kotlin/Native.
+# Tests listed here are excluded from native conformance JUnit assertions.
+# Each line is a test name (text after '#' is a comment).
+
+# Bad tag field number validation not yet implemented on native (KRPC-554)
+Required.Proto2.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
+Required.Proto2.ProtobufInput.BadTag_FieldNumberTooHigh
+Required.Proto2.ProtobufInput.BadTag_OverlongVarint
+Required.Proto3.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
+Required.Proto3.ProtobufInput.BadTag_FieldNumberTooHigh
+Required.Proto3.ProtobufInput.BadTag_OverlongVarint
+Required.Editions_Proto2.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
+Required.Editions_Proto2.ProtobufInput.BadTag_FieldNumberTooHigh
+Required.Editions_Proto2.ProtobufInput.BadTag_OverlongVarint
+Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberSlightlyTooHigh
+Required.Editions_Proto3.ProtobufInput.BadTag_FieldNumberTooHigh
+Required.Editions_Proto3.ProtobufInput.BadTag_OverlongVarint
+
+# UTF-8 validation not yet implemented on native (KRPC-558)
+Recommended.Editions.ProtobufInput.RejectInvalidUtf8.String.Extension
+Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.MapKey
+Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.MapValue
+Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Oneof
+Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Repeated
+Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Singular
+Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.MapKey
+Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.MapValue
+Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Oneof
+Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Repeated
+Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Singular
