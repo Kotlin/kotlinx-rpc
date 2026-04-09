@@ -8,6 +8,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /**
  * A platform-specific class that encodes values into protobuf's wire format.

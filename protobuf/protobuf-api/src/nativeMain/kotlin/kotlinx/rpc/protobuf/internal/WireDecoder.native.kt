@@ -11,6 +11,7 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
 import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 import kotlin.experimental.ExperimentalNativeApi

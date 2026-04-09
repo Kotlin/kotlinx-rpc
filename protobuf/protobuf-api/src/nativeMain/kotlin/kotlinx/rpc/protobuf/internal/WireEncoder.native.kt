@@ -20,6 +20,7 @@ import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_delete
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_flush
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_new

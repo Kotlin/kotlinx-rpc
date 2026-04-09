@@ -5,7 +5,7 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
-import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize

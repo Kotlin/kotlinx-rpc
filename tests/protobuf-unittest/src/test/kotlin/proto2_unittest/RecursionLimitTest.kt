@@ -7,7 +7,7 @@ package proto2_unittest
 import kotlinx.io.Buffer
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
-import kotlinx.rpc.protobuf.internal.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlin.test.Test

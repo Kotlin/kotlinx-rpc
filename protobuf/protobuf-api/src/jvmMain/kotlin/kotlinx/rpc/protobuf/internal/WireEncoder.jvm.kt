@@ -11,6 +11,7 @@ import kotlinx.io.asOutputStream
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 private class WireEncoderJvm(sink: Sink) : WireEncoder {
     private val codedOutputStream = CodedOutputStream.newInstance(sink.asOutputStream())

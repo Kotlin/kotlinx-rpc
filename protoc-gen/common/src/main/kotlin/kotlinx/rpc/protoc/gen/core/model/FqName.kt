@@ -91,7 +91,7 @@ sealed interface FqName {
         val MsgFieldDelegate = fqDec("kotlinx.rpc.protobuf.internal", "MsgFieldDelegate")
         val GrpcMarshaller = fqDec("kotlinx.rpc.grpc.marshaller", "GrpcMarshaller")
         val KTag = fqDec("kotlinx.rpc.protobuf.internal", "KTag")
-        val ProtobufDecodingException = fqDec("kotlinx.rpc.protobuf.internal", "ProtobufDecodingException")
+        val ProtobufDecodingException = fqDec("kotlinx.rpc.protobuf", "ProtobufDecodingException")
         val GrpcMarshallerConfig = fqDec("kotlinx.rpc.grpc.marshaller", "GrpcMarshallerConfig")
         val ProtoConfig = fqDec("kotlinx.rpc.protobuf", "ProtoConfig")
         val WireSize = fqDec("kotlinx.rpc.protobuf.internal", "WireSize")

@@ -28,7 +28,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.InternalMessage
-import kotlinx.rpc.protobuf.internal.ProtobufException
+import kotlinx.rpc.protobuf.ProtobufException
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.writeBytes
