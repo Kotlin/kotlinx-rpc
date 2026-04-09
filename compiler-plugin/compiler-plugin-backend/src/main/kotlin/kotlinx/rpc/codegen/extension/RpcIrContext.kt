@@ -139,6 +139,14 @@ internal class RpcIrContext(
         referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.marshaller", "WithGrpcMarshaller")
     }
 
+    val subclassOptInRequired by lazy {
+        referenceIrBuiltinClassSymbol("kotlin", "SubclassOptInRequired")
+    }
+
+    val protobufMessagesInheritance by lazy {
+        referenceRpcIrClassSymbol("ProtobufMessagesInheritance", "protobuf.internal")
+    }
+
     val rpcType by lazy {
         referenceRpcIrClassSymbol("RpcType", "descriptor")
     }
