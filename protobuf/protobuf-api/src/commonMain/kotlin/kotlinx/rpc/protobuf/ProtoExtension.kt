@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protobuf
 
+import kotlinx.rpc.internal.utils.RpcTypeInheritance
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlin.reflect.KClass
 
@@ -13,7 +14,7 @@ import kotlin.reflect.KClass
  * This interface is not meant to be implemented by users.
  * But is used by the protoc plugin to generate extension descriptors.
  */
-@SubclassOptInRequired
+@SubclassOptInRequired(RpcTypeInheritance::class)
 public interface ProtoExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> {
     /** Message type that can be extended by this descriptor. */
     public val messageType: KClass<T>

@@ -12,6 +12,7 @@ fun KotlinProjectExtension.optInForRpcApi() {
     sourceSets.all {
         languageSettings.optIn("kotlinx.rpc.internal.utils.InternalRpcApi")
         languageSettings.optIn("kotlinx.rpc.internal.utils.ExperimentalRpcApi")
+        languageSettings.optIn("kotlinx.rpc.internal.utils.RpcTypeInheritance")
     }
 }
 
