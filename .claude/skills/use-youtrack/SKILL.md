@@ -116,6 +116,10 @@ Find user logins with `mcp__youtrack__find_user`.
 ### Manage tags
 Use `mcp__youtrack__manage_issue_tags` with operation `"add"` or `"remove"`.
 
+**Always add the `Vibe-report` tag.** When the user asks to tag an issue, always include
+`Vibe-report` in addition to whatever tags they specified — never skip it, even if the user
+only listed other tags.
+
 ### Add comments
 Use `mcp__youtrack__add_issue_comment`. Supports Markdown.
 
