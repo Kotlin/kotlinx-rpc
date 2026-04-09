@@ -43,7 +43,8 @@ or want full coverage before merge.
 | What changed | Build ID | What it covers |
 |---|---|---|
 | `compiler-plugin/` (any source or template) | `Build_kRPC_Plugins<V>_KotlinVersion_` | Single Kotlin version (fastest feedback) |
-| `compiler-plugin/` CSM templates (`//##csm`) | `Build_kRPC_All_Compiler_Plugins` | All 11 Kotlin versions (use after single-version passes) |
+| `compiler-plugin/` (any source or template) | `Build_kRPC_All_Compiler_Plugins` | All 11 Kotlin versions (use after single-version passes) |
+| `compiler-plugin/` (any source or template) | `Build_kRPC_Plugins_Kotlin_Master` | Compiler plugin against Kotlin Master |
 
 **Version ID pattern**: dots replaced by underscores, e.g.:
 - Kotlin 2.3.20 -> `Build_kRPC_Plugins2_3_20_KotlinVersion_`
@@ -52,6 +53,10 @@ or want full coverage before merge.
 **Tip**: Start with the current project Kotlin version build. If it passes and the change
 doesn't touch CSM templates, skip the `_All` composite. If CSM templates changed,
 `Build_kRPC_All_Compiler_Plugins` is required.
+
+**Kotlin Master**: `Build_kRPC_Plugins_Kotlin_Master` downloads the latest Kotlin master
+artifacts and builds only the compiler plugin against them. Use this to verify forward
+compatibility with unreleased Kotlin versions.
 
 ### Gradle plugin
 

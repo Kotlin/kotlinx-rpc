@@ -91,14 +91,25 @@ Example: Kotlin 2.3.20 -> `Build_kRPC_Plugins2_3_20_KotlinVersion_`
 
 Check TeamCity for currently supported Kotlin versions.
 
+#### Kotlin Master 
+
+There is also a special version – **Kotlin Master**: `Build_kRPC_Plugins_Kotlin_Master` downloads the latest Kotlin master
+artifacts and builds only the compiler plugin against them. Use this to verify forward
+compatibility with unreleased Kotlin versions. 
+
+Differences between this and `Build_Compiler_Plugins_Latest_Kotlin_Master`:
+- `Build_kRPC_Plugins_Kotlin_Master` is not scheduled, `Build_Compiler_Plugins_Latest_Kotlin_Master` is scheduled.
+- `Build_kRPC_Plugins_Kotlin_Master` builds only the compiler plugin, `Build_Compiler_Plugins_Latest_Kotlin_Master` builds the full project.
+
 ### Special Builds
 
-| Build ID                                        | Purpose                              | Trigger            |
-|-------------------------------------------------|--------------------------------------|--------------------|
-| `Build_Compiler_Plugins_Latest_Public_Unstable` | Build against latest Kotlin unstable | Nightly            |
-| `Build_Compiler_Plugins_Latest_Kotlin_Master`   | Build against Kotlin master          | Daily 10:00 Berlin |
-| `Build_kRPC_Plugins_For_IDE`                    | IDE plugin artifacts                 | On demand          |
-| `Build_kRPC_New_Ide_Versions_Checker`           | Detect new IntelliJ/Android Studio   | Every 20 mins      |
+| Build ID                                        | Purpose                                        | Trigger            |
+|-------------------------------------------------|------------------------------------------------|--------------------|
+| `Build_Compiler_Plugins_Latest_Public_Unstable` | Full project against latest Kotlin unstable     | Nightly            |
+| `Build_Compiler_Plugins_Latest_Kotlin_Master`   | Full project against Kotlin master              | Daily 10:00 Berlin |
+| `Build_kRPC_Plugins_Kotlin_Master`              | Compiler plugin only against Kotlin master      | On demand          |
+| `Build_kRPC_Plugins_For_IDE`                    | IDE plugin artifacts                            | On demand          |
+| `Build_kRPC_New_Ide_Versions_Checker`           | Detect new IntelliJ/Android Studio              | Every 20 mins      |
 
 ### Release Builds
 

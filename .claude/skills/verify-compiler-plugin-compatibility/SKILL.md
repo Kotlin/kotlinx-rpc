@@ -201,6 +201,8 @@ All versions verified successfully:
 
 ## Testing with Kotlin Master
 
+**This is a mandatory test for all changes to the compiler plugin,.**
+
 Kotlin Master is the latest dev/nightly build from the Kotlin team. It is used to catch
 incompatibilities before a Kotlin version is officially released.
 
@@ -242,15 +244,14 @@ Use the `running_gradle_builds` skill to build the compiler plugin with the mast
 version:
 - Tasks: `clean compileKotlin`
 - Extra args: `-Pkotlin.compiler=<MASTER_VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`
-- Project root: absolute path to the `compiler-plugin/` directory
 
-### Step 4: Fix and Re-verify
+#### Step 4: Fix and Re-verify
 
 Follow the same Phase 2-4 workflow as for released versions. When adding CSM blocks for
 Kotlin Master, the new code goes in `default` (since Master represents the future), and
 the previous release's code moves into a `specific` block with a bounded range.
 
-### Important: Kotlin Master Caveats
+### Kotlin Master Caveats
 
 - Master versions have dev suffixes like `2.4.0-dev-12345`. Exact prefix matches work
   fine (e.g., `2.4.0-dev-*`), but version ranges strip the suffix before comparison, so

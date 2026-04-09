@@ -249,6 +249,15 @@ code, ABI check is irrelevant for internal-only logic changes). Never run Gradle
 in parallel against the same worktree — builds share state and will corrupt
 each other.
 
+### Compiler plugin changes — MANDATORY extra verification
+
+If your change touches **any** file under `compiler-plugin/` (sources, templates, CSM
+blocks, or build scripts), you **must invoke** the `verify-compiler-plugin-compatibility`
+skill. This is not optional and cannot be skipped regardless of how small the change
+appears. The compiler plugin must compile against all supported Kotlin versions and
+Kotlin Master. A single-version local build is not sufficient — CSM template interactions
+across versions are the most common source of regressions.
+
 **Generated code**: If verifications produce updated generated files (ABI dumps, WKT,
 conformance code, platform table, etc.), **do not hand-edit them** — commit the
 regenerated output as-is. These go into a separate commit (Step 9).
@@ -414,6 +423,27 @@ Keep the branch on latest `main`. Always `git fetch origin main` then
 Even if you just created the worktree from `origin/main`, always re-verify before
 pushing — changes may have landed on main in the meantime. Don't reason that "I just
 branched off, so it's fresh" — always fetch and rebase.
+
+## Course Correction Protocol
+
+If the user corrects your approach or you realize mid-workflow that the implementation
+direction is wrong, **reset cleanly** rather than layering fixes on top of stale work:
+
+1. **Branch**: If commits from the old approach are already pushed, consider
+   `git reset --soft` to the last clean commit and recommit with the new approach.
+   Do not leave dead-end commits in the history.
+2. **Build artifacts**: Run a clean build (`clean` task) after pivoting — cached
+   artifacts from the old approach can mask issues in the new one.
+3. **PR body/comments**: Update the PR description and any CI report comments to
+   reflect the new approach. Old approach details should be removed, not left as
+   archaeological layers.
+4. **Re-run Steps 7-8**: After a significant approach change, verification and code
+   review must be re-run from scratch. A review of the old approach does not transfer
+   to the new one. Same for CI — re-trigger all relevant builds after the pivot.
+
+The workflow is designed for the common case (linear progress), but real implementation
+is iterative. When the approach changes significantly, **loop back** to the appropriate
+step rather than pushing forward with stale verification results.
 
 ## Error Recovery
 
