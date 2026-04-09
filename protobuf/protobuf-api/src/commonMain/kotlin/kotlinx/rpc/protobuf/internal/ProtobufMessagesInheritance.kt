@@ -10,6 +10,6 @@ package kotlinx.rpc.protobuf.internal
         "Generated protobuf messages are not intended to be inherited from, " +
             "as the library may handle predefined instances of this in a special manner. " +
             "If you need to inherit from this, please describe your use case in " +
-            "https://github.com/Kotlin/kotlinx-rpc/issues, so that we can provide a stable API for inheritance. "
+            "https://github.com/Kotlin/kotlinx-rpc/issues/new?template=feature_request.md"
 )
 public annotation class ProtobufMessagesInheritance
