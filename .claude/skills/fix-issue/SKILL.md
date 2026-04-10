@@ -116,7 +116,7 @@ Understand:
 
 ### For bugs: investigate root cause
 
-**Invoke** `superpowers:systematic-debugging` (via the Skill tool — not just
+**Always Invoke** `superpowers:systematic-debugging` (via the Skill tool — not just
 mentally following its ideas) before posting the triage comment. The skill's
 structured checklist must be followed, not approximated:
 - Reproduce the issue (or confirm it from the description)
@@ -192,10 +192,11 @@ When needed — may be a **new test** or **modification of an existing one**:
    diagnose the build issue first — a broken build dependency or missing task wiring
    can block ALL test compilation, and you'll waste cycles writing tests you can't run.
 3. Write/modify a test that captures the buggy behavior or missing feature
-4. Run via `running_gradle_tests` and verify the failure is a valid RED state invoking the
-   `superpowers:test-driven-development` skill — the test must compile and run, then fail
-   on the assertion that captures the actual bug. A compilation error or setup crash
-   is not a valid RED.
+4. **Always Invoke** `superpowers:test-driven-development` (via the Skill tool — not just
+   running the test and eyeballing the output). Then run via `running_gradle_tests`
+   and verify the failure is a valid RED state — the test must compile and run, then
+   fail on the assertion that captures the actual bug. A compilation error or setup
+   crash is not a valid RED.
 5. Follow existing test patterns in the same module
 
 After the fix is applied (Step 5), re-run to confirm GREEN. If it still fails, the
@@ -213,8 +214,9 @@ doesn't need a plan; a 2-file change where you're choosing between two valid
 approaches does. Start executing immediately — no user approval needed.
 
 **Complex** (architectural, multi-module, public API, unclear tradeoffs):
-1. Invoke the `superpowers:brainstorming` skill to explore approaches — this surfaces alternatives
-   and tradeoffs before committing to a plan.
+1. **Alway Invoke** `superpowers:brainstorming` (via the Skill tool — not just thinking
+   through alternatives yourself). This surfaces approaches and tradeoffs before
+   committing to a plan.
 2. Plan agent → detailed plan (root cause, approach, alternatives, files, risks, verification)
 3. Spawn a **review agent** to critique the plan before coding (edge cases, simpler
    alternatives, binary compat risks, architectural patterns)
@@ -270,9 +272,13 @@ and re-run — do not proceed to code review with known failures.
 Spawn **at least 2 independent review agents in parallel** on the full diff.
 See `references/code-review-agents.md` for the reviewer menu and prompting guide.
 
-Invoke the `superpowers:requesting-code-review` skill: capture the git range,
-provide each reviewer with structured context (what changed, why, which requirements
-it addresses). Then handle feedback in priority order:
+**Always Invoke** `superpowers:requesting-code-review` (via the Skill tool — not just
+spawning reviewers directly). The skill structures the review request: capture the
+git range, provide each reviewer with structured context (what changed, why, which
+requirements it addresses). 
+
+When they are done **always invoke** the `superpowers:receiving-code-review` (via the Skill tool — 
+not just blantly going through the reviews) and handle feedback in priority order:
 
 1. **Errors/Critical** — fix immediately. Do not proceed to Step 9 with unfixed errors.
 2. **Warnings/Important** — fix unless you have a concrete reason to skip (document it).
@@ -342,7 +348,8 @@ GitHub, one polling TeamCity. Each reports back on completion.
 rather than "failed" (can happen due to external cancellation, agent issues, or
 queue management), retry it once before investigating. Cancellation ≠ failure.
 
-On failure — invoke the `superpowers:systematic-debugging` skill, not blind retries:
+On failure — **always invoke** `superpowers:systematic-debugging` (via the Skill tool —
+not just reading the log and guessing), not blind retries:
 1. Read the full error/stack trace, not just the test name.
 2. Check if pre-existing — run the same test against `main` (or check recent TC
    history). **If TC fails on a task that also fails on main**, you may fix it if the
@@ -383,7 +390,7 @@ Once all CI passes:
 
 ## Step 14: The Main Cycle is Done
 
-Before reporting completion, **invoke** `superpowers:verification-before-completion`
+Before reporting completion, **always invoke** `superpowers:verification-before-completion`
 (via the Skill tool — not just manually checking). Verify actual state, do not
 assume previous steps succeeded:
 
@@ -403,7 +410,8 @@ This may take **multiple turns**. Each turn:
 
 1. Read all PR comments (human reviews + internal checkbox comment)
 2. Human reviewer comments take priority. For the checkbox comment, `[x]` = fix, `[ ]` = skip.
-3. **Before implementing feedback, invoke the `superpowers:receiving-code-review` skill**:
+3. **Always Invoke** `superpowers:receiving-code-review` (via the Skill tool — not just
+   reading comments and implementing them). The skill enforces critical verification:
    - Verify the reviewer's claim against the actual codebase — don't assume they're correct
    - If the suggestion would break existing functionality, violate YAGNI, or conflict
      with project conventions, push back with technical reasoning in a PR comment reply
