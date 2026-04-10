@@ -105,7 +105,7 @@ Read the issue via `youtrack-agent` MCP. Then do **all four** — none are optio
 
 ## Step 2: Analyze the Problem
 
-Read the issue body **and all comments** — comments often contain critical context,
+Read the issue body, **all comments**, and **all linked issues** — comments and linked issues often contain critical context,
 reproductions, workarounds, or scope changes that aren't in the original description.
 
 Understand:
@@ -113,6 +113,25 @@ Understand:
 - Which modules/files are likely involved?
 - Is this a bug, feature, or task?
 - Are there linked issues?
+
+### Search for similar issues — MANDATORY
+
+Before diving into root cause or planning, check whether this problem has been
+seen before or is related to other tracked work. Search **both** YouTrack and
+GitHub — prior issues may contain root cause analysis, attempted fixes, or
+workarounds that save significant time.
+
+1. **YouTrack**: Search for issues with similar keywords,
+   affected modules, or error messages. Look at both open and resolved issues —
+   a resolved issue may contain the exact fix pattern you need, and an open
+   duplicate means you should link rather than duplicate effort.
+2. **GitHub**: Search issues and PRs in the repo (`gh search issues`, `gh search prs`)
+   for related keywords and error messages. Closed PRs may contain relevant
+   discussion or reverted approaches worth knowing about.
+
+If you find related issues, **always note them** in the triage comment (Step 2) and
+**always link them** in YouTrack. If you find an exact duplicate,
+stop and report to the user rather than doing redundant work.
 
 ### For bugs: investigate root cause
 
@@ -182,8 +201,26 @@ from the root with their composite prefix (the directory name passed to `include
 
 ## Step 4: Write a Failing Test (if applicable)
 
-Skip for: docs-only, build/infra, trivial/obvious fixes, or when existing tests
+Skip **formal tests** for: docs-only, trivial/obvious fixes, or when existing tests
 already cover the scenario.
+
+### Demonstrate-it-works principle
+
+Even when formal tests are skipped, **every new capability must be demonstrated
+end-to-end before you can claim it works.** If you add a native binary, a script,
+a code generator, a new build task, or any other executable artifact — you must
+actually run it and show it produces the expected output. "It compiled" or "the
+file exists" is not verification. The build/infra exemption from formal tests does
+NOT exempt you from proving the thing works. If you can't demonstrate it works,
+you can't move on.
+
+Examples of what "demonstrate" means:
+- New native binary → execute it with representative input, verify output
+- New Gradle task → run the task, verify it produces the expected artifact
+- New script → execute it, verify it does what it's supposed to do
+- New code generator → run generation, verify the output compiles and is correct
+
+### Writing formal tests
 
 When needed — may be a **new test** or **modification of an existing one**:
 1. Identify the correct test module
@@ -204,17 +241,28 @@ fix is incomplete — do not move on.
 
 ## Step 5: Apply the Fix
 
-### Plan before coding (depth scales with complexity)
+### Plan before coding (depth scales with complexity and issue type)
 
-**Simple** (single file, obvious approach): Brief inline bullet points.
+**Features always use the Complex path** — regardless of apparent size. A feature
+adds new capability, which means design decisions about API surface, naming,
+extensibility, and integration points. Even a "small" feature benefits from
+brainstorming alternatives and having a plan reviewed before coding. Do not
+downgrade a feature to Simple or Medium based on file count or simplicity alone.
 
-**Medium** (approach has alternatives worth evaluating, regardless of file count):
-Use the Plan agent for a structured plan. A 2-file change with an obvious fix
-doesn't need a plan; a 2-file change where you're choosing between two valid
-approaches does. Start executing immediately — no user approval needed.
+#### Types of plannings
 
-**Complex** (architectural, multi-module, public API, unclear tradeoffs):
-1. **Alway Invoke** `superpowers:brainstorming` (via the Skill tool — not just thinking
+**Simple** (single file, obvious approach — bugs and tasks only): Brief inline
+bullet points.
+
+**Medium** (approach has alternatives worth evaluating, regardless of file count —
+bugs and tasks only): Use the Plan agent for a structured plan. A 2-file change
+with an obvious fix doesn't need a plan; a 2-file change where you're choosing
+between two valid approaches does. Start executing immediately — no user approval
+needed.
+
+**Complex** (all features, OR bugs/tasks that are architectural, multi-module,
+public API, or have unclear tradeoffs):
+1. **Always Invoke** `superpowers:brainstorming` (via the Skill tool — not just thinking
    through alternatives yourself). This surfaces approaches and tradeoffs before
    committing to a plan.
 2. Plan agent → detailed plan (root cause, approach, alternatives, files, risks, verification)
@@ -417,9 +465,17 @@ This may take **multiple turns**. Each turn:
      with project conventions, push back with technical reasoning in a PR comment reply
    - Implement in priority order: blocking issues first, then simple fixes, then complex
 4. Re-run tests/verifications, commit, push, re-trigger CI if needed
-5. Update the review checkbox comment per `assets/gh-code-review-comment.md`
-6. Update the CI checkbox comment per `assets/gh-ci-report-comment.md`
-7. Update the issue body per `assets/yt-issue-update.md` if new information was discovered
+5. **Mark comments as handled on GitHub**:
+   - Code review comments that were addressed → **resolve the conversation**
+   - Regular (non-code-review) comments with addressed feedback → add a **thumbs-up
+     reaction** (👍) to acknowledge
+6. Update the review checkbox comment per `assets/gh-code-review-comment.md`
+7. Update the CI checkbox comment per `assets/gh-ci-report-comment.md`
+8. Update the issue body per `assets/yt-issue-update.md` if new information was discovered
+
+"Address the feedback" always means **all of the above** — implementing the fixes,
+resolving/reacting to comments, AND updating the checkbox comments. Never treat
+the checkboxes as optional when the user asks to address feedback.
 
 ## Rebase Discipline
 
@@ -472,5 +528,5 @@ Brief status at each milestone:
 - "Fix applied, test passing"
 - "Code review done — 2 agents, 1 warning fixed"
 - "PR #42 created as draft"
-- "CI passing, marking PR ready and adding reviewers"
+- "CI passing, marking PR ready, and adding reviewers"
 - "Done — PR: <url>, YT status: Fixed in Branch"
