@@ -21,5 +21,6 @@ public class GrpcServiceDelegate(
     private val methodDescriptorMap: Map<String, GrpcMethodDescriptor<*, *>>,
     public val serviceDescriptor: ServiceDescriptor,
 ) {
+    public val methodNames: Set<String> get() = methodDescriptorMap.keys
     public fun getMethodDescriptor(methodName: String): GrpcMethodDescriptor<*, *>? = methodDescriptorMap[methodName]
 }

@@ -107,14 +107,17 @@ public class GrpcServerImpl internal constructor(
 
         val delegate = descriptor.delegate(messageMarshallerResolver, marshallerConfig)
 
-        val methods = descriptor.callables.values.map {
+        val methods = delegate.methodNames.map { methodName ->
+            val callable = descriptor.getCallable(methodName)
+                ?: error("No callable found for method $methodName")
+
             @Suppress("UNCHECKED_CAST")
-            val methodDescriptor = delegate.getMethodDescriptor(it.name)
+            val methodDescriptor = delegate.getMethodDescriptor(methodName)
                 as? GrpcMethodDescriptor<RequestType, ResponseType>
                 ?: error("Expected a gRPC method descriptor")
 
             // TODO: support per service and per method interceptors (KRPC-222)
-            it.toDefinitionOn(methodDescriptor, service, interceptors)
+            callable.toDefinitionOn(methodDescriptor, service, interceptors)
         }
 
         return serverServiceDefinition(delegate.serviceDescriptor, methods)
