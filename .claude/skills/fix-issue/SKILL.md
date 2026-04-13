@@ -94,6 +94,10 @@ rather than pushing forward with stale verification results — reset the branch
 cleanly (see Error Recovery), re-run verifications from scratch, and update any
 PR/comment descriptions to reflect the new approach.
 
+If context is running low mid-workflow, commit your current state, update the YT
+issue with progress (which phase you're in, what's done, what remains), and tell
+the user which phase to resume from. The worktree and branch preserve all work.
+
 ## Phase A: Claim & Analyze
 
 ### A.1: Claim the Issue
@@ -395,6 +399,21 @@ the checkboxes as optional when the user asks to address feedback.
   task), update PR/comment descriptions, and re-run Phase C from scratch.
 
 Service outages follow the No Silent Fallback policy above.
+
+## Escalate to User
+
+Stop and report instead of continuing to grind when:
+- **Ambiguous root cause** — thorough investigation yields multiple plausible
+  explanations and you cannot confidently pick the right one
+- **CI fails 3+ times** on the same pipeline after distinct fix attempts (not
+  retries — actual code changes that still fail)
+- **Scope exceeds the ticket** — you discovered a bigger problem than the issue
+  describes and the fix would span unrelated modules or concerns
+- **Blocked on external input** — needs a library update, infrastructure change,
+  or another team's decision
+
+When escalating, include: what you tried, what you learned, where the worktree is,
+and a specific question or decision for the user to unblock you.
 
 ## Progress Communication
 
