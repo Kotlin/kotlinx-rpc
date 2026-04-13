@@ -113,13 +113,21 @@ internal class NativeManagedChannel(
             ?: error("Failed to create channel")
     }
 
+    // Guards to prevent double-free between explicit shutdown cleanup and GC cleaners.
+    private val channelGuard = ResourceGuard()
+    private val credentialsGuard = ResourceGuard()
+
     @Suppress("unused")
-    private val rawCleaner = createCleaner(raw) {
-        grpc_channel_destroy(it)
+    private val rawCleaner = createCleaner(Pair(raw, channelGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_channel_destroy(ptr)
+        }
     }
     @Suppress("unused")
-    internal val rawCredentialsCleaner = createCleaner(rawChannelCredentials) {
-        grpc_channel_credentials_release(it)
+    internal val rawCredentialsCleaner = createCleaner(Pair(rawChannelCredentials, credentialsGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_channel_credentials_release(ptr)
+        }
     }
 
     override val platformApi: ManagedChannelPlatform = this
@@ -164,7 +172,16 @@ internal class NativeManagedChannel(
         // therefore, we don't have to wait for the callJobs to be completed.
         cq.shutdown(force).onComplete {
             if (isTerminatedInternal.complete(Unit)) {
-                // release the grpc runtime, so it might call grpc_shutdown()
+                // Destroy the channel and release credentials BEFORE closing the runtime reference.
+                // GrpcRuntime.close() may call grpc_shutdown() when this is the last ref,
+                // and the grpc C API requires channels to be destroyed before grpc_shutdown().
+                // The guards prevent double-free if the GC cleaners also fire.
+                if (channelGuard.released.compareAndSet(expect = false, update = true)) {
+                    grpc_channel_destroy(raw)
+                }
+                if (credentialsGuard.released.compareAndSet(expect = false, update = true)) {
+                    grpc_channel_credentials_release(rawChannelCredentials)
+                }
                 rt.close()
             }
         }
@@ -205,6 +222,15 @@ internal class NativeManagedChannel(
         )
     }
 
+}
+
+/**
+ * Guards a native resource against double-free between explicit shutdown cleanup
+ * and the GC cleaner fallback. Used with [createCleaner] — must not capture
+ * the enclosing [NativeManagedChannel] instance.
+ */
+private class ResourceGuard {
+    val released = atomic(false)
 }
 
 internal sealed class GrpcArg(val key: String) {
