@@ -46,14 +46,11 @@ For each CSM range, find the lowest published Kotlin release that falls within i
 3. Pick the first published version that falls within the range.
 4. If the range's lower bound hasn't been published yet and no published version falls
    within it, that range covers a future Kotlin version — test it via the **Kotlin Master**
-   workflow below, not by guessing a version number.
+   workflow (see `references/kotlin-master.md`), not by guessing a version number.
 
 Kotlin publishes in a pattern: `X.Y.0`, then `X.Y.10`, `X.Y.20`, etc. (not sequential
 patches). For example, after `2.1.0` the next release was `2.1.10`, then `2.1.20`,
 then `2.1.21` — there was never a `2.1.1` through `2.1.9` or a `2.1.11` through `2.1.19`.
-
-The user may also request testing against **Kotlin Master** -- see the dedicated section
-below.
 
 ## Build Execution: Use Gradle Skills
 
@@ -123,87 +120,12 @@ to search the Kotlin compiler sources for the class or method name.
 
 ### Phase 3: Fix Incompatibilities
 
-Apply fixes using the project's established patterns. All version-dependent code lives in
-CSM template files (under `src/main/templates/` in each module). The key principle:
-**`default` blocks hold the latest version's code; `specific` blocks hold older versions.**
+Read `references/csm-fix-patterns.md` for the CSM template system, fix patterns (import
+changes, signature changes, new VS methods, checker signatures), and the template files
+reference table listing all CSM files that may need changes.
 
-#### The CSM Template System
-
-Template files use `//##csm` directives that the build processes based on the active
-Kotlin version. Only one code path is selected per section.
-
-```kotlin
-//##csm <section-name>
-//##csm specific=[<version-range>]
-// code for older version range
-//##csm /specific
-//##csm default
-// code for latest/current versions
-//##csm /default
-//##csm /<section-name>
-```
-
-Version ranges: `2.1.0...2.1.21` (inclusive), `2.3.0...2.*` (wildcard), comma-separated
-for multiple: `[2.1.0...2.1.10, 2.1.20-ij243-*]`.
-
-#### Fix Pattern: New Kotlin Version Breaks Existing Code
-
-Move the current `default` code into a `specific` block bounded to its working range,
-then write the new version's code as the new `default`:
-
-```kotlin
-//##csm someSection
-//##csm specific=[<old-lower>...<old-upper>]
-// old code (was previously in default)
-//##csm /specific
-//##csm default
-// new code for the new Kotlin version
-//##csm /default
-//##csm /someSection
-```
-
-If there were already `specific` blocks, keep them and adjust ranges as needed.
-
-#### Fix Pattern: Import Changes
-
-Import sections use a `<filename>-import` naming convention. Each `specific` block must
-contain the COMPLETE set of imports for that version -- not just the diff:
-
-```kotlin
-//##csm MyFile.kt-import
-//##csm specific=[2.1.0...2.3.*]
-import org.jetbrains.kotlin.old.package.SomeClass
-import org.jetbrains.kotlin.other.Thing  // unchanged but still listed
-//##csm /specific
-//##csm default
-import org.jetbrains.kotlin.new.package.SomeClass
-import org.jetbrains.kotlin.other.Thing  // unchanged but still listed
-//##csm /default
-//##csm /MyFile.kt-import
-```
-
-#### Fix Pattern: New VersionSpecificApi Method
-
-When a non-template source file needs version-dependent behavior, add a method to the
-abstraction layer:
-
-**For IR backend:**
-1. Add method to interface: `compiler-plugin-backend/src/main/kotlin/kotlinx/rpc/codegen/VersionSpecificApi.kt`
-2. Implement with CSM blocks in: `compiler-plugin-backend/src/main/templates/kotlinx/rpc/codegen/VersionSpecificApiImpl.kt`
-3. Name convention: append `VS` suffix (e.g., `referenceClassVS`)
-4. Call sites use: `context.vsApi { myNewMethodVS(...) }`
-
-**For FIR K2:**
-1. Add method to interface: `compiler-plugin-k2/src/main/kotlin/kotlinx/rpc/codegen/FirVersionSpecificApi.kt`
-2. Implement with CSM blocks in: `compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/FirVersionSpecificApiImpl.kt`
-3. Call sites use: `vsApi { myNewMethodVS(...) }`
-
-#### Fix Pattern: FIR Checker Signature Changes
-
-Kotlin periodically changes how FIR checkers receive `CheckerContext` and
-`DiagnosticReporter` (explicit params vs context receivers). The VS wrapper classes in
-`compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/checkers/FirRpcCheckersVS.kt`
-adapt between versions. All wrappers follow the same pattern -- fix them all consistently.
+The key principle: **`default` blocks hold the latest version's code; `specific` blocks
+hold older versions.**
 
 ### Phase 4: Re-verify
 
@@ -225,113 +147,17 @@ All versions verified successfully:
 
 ## Testing with Kotlin Master
 
-**This is a mandatory test for all changes to the compiler plugin,.**
+**This is a mandatory test for all changes to the compiler plugin.**
 
-Kotlin Master is the latest dev/nightly build from the Kotlin team. It is used to catch
-incompatibilities before a Kotlin version is officially released.
-
-### Step 1: Download Kotlin Master Artifacts
-
-Run the `dowload_kotlin_master.sh` script in the project root:
-
-```bash
-./dowload_kotlin_master.sh
-```
-
-This requires a `BUILD_SERVER_TOKEN` -- either as an environment variable or in
-`~/.gradle/gradle.properties` as `buildserver.token=<token>`. The script:
-1. Queries JetBrains TeamCity for the latest successful `Kotlin_KotlinPublic_Artifacts` build
-2. Downloads the Maven artifacts archive
-3. Extracts them into a `lib-kotlin/` directory at the project root
-
-The script prints the build ID and the Kotlin version number (e.g., `2.4.0-dev-12345`).
-Note this version -- it is the value to pass as `-Pkotlin.compiler=<VERSION>`.
-
-### Step 2: Enable Kotlin Master Mode
-
-Set the Gradle property `kotlinx.rpc.kotlinMasterBuild=true`. This does two things:
-- Adds the `lib-kotlin/` directory as a Maven repository so Gradle resolves the
-  downloaded artifacts
-- **Skips** `:tests:compiler-plugin-tests` (box/diagnostic tests), which typically do not
-  compile against unreleased Kotlin versions
-
-You can set this property via:
-- Command-line: `-Pkotlinx.rpc.kotlinMasterBuild=true`
-- Or uncomment the line in `gradle.properties`:
-  ```properties
-  kotlinx.rpc.kotlinMasterBuild=true
-  ```
-
-### Step 3: Build
-
-Use the `running_gradle_builds` skill to build the compiler plugin with the master
-version:
-- Tasks: `clean compileKotlin`
-- Extra args: `-Pkotlin.compiler=<MASTER_VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`
-
-#### Step 4: Fix and Re-verify
-
-Follow the same Phase 2-4 workflow as for released versions. When adding CSM blocks for
-Kotlin Master, the new code goes in `default` (since Master represents the future), and
-the previous release's code moves into a `specific` block with a bounded range.
-
-### Kotlin Master Caveats
-
-- Master versions have dev suffixes like `2.4.0-dev-12345`. Exact prefix matches work
-  fine (e.g., `2.4.0-dev-*`), but version ranges strip the suffix before comparison, so
-  a range like `2.4.0...2.4.*` will match `2.4.0-dev-12345` as `2.4.0`. Non-stable
-  suffixes are not allowed inside range bounds -- use prefix patterns instead for dev
-  versions.
-- Kotlin Master APIs may change again before release. Fixes for Master should be
-  considered provisional until the Kotlin version is released.
-- Remember to clean up: when done, you can remove the `lib-kotlin/` directory and
-  re-comment `kotlinx.rpc.kotlinMasterBuild` in `gradle.properties`.
-
-## Template Files Reference
-
-All CSM template files that may need changes:
-
-| Module | File | What it handles |
-|--------|------|-----------------|
-| backend | `templates/.../VersionSpecificApiImpl.kt` | IR API abstraction (symbol lookup, constructors, parameters, annotations) |
-| backend | `templates/.../RpcIrServiceProcessorDelegate.kt` | IR visitor base class (`IrElementTransformer` vs `IrTransformer`) |
-| backend | `templates/.../RpcIrProtoProcessorDelegate.kt` | Protobuf IR visitor base class |
-| k2 | `templates/.../FirVersionSpecificApiImpl.kt` | FIR API abstraction (type resolution, declarations, annotations) |
-| k2 | `templates/.../checkers/FirRpcCheckersVS.kt` | FIR checker method signatures |
-| k2 | `templates/.../checkers/diagnostics/RpcKtDiagnosticsContainer.kt` | Diagnostic renderer registration |
-| k2 | `templates/.../checkers/diagnostics/RpcKtDiagnosticFactoryToRendererMap.kt` | Diagnostic map construction |
-| cli | `templates/.../CompilerPluginRegistrar.kt` | Plugin registration (`pluginId` property) |
+If the user requests Kotlin Master testing, or after fixing incompatibilities for released
+versions, read `references/kotlin-master.md` for the full download, build, and verification
+workflow.
 
 ## Updating Golden Test Data
 
-After fixing CSM templates, the compiler plugin's generated IR/FIR output may change,
-causing golden file mismatches in `:tests:compiler-plugin-tests`. Update them with:
-
-```bash
-./updateTestData.sh <TestRunner> [testMethod]
-```
-
-Examples:
-- `./updateTestData.sh BoxTest` -- update all box test golden files
-- `./updateTestData.sh DiagnosticTest` -- update all diagnostic test golden files
-- `./updateTestData.sh BoxTest mySpecificTest` -- update a single test's golden file
-
-The script passes `-Pkotlin.test.update.test.data=true` to Gradle, which the build script
-forwards to the test JVM as a system property. The test framework then overwrites golden
-files (`.fir.txt`, `.fir.ir.txt`) with actual output instead of asserting against them.
-
-**Important**: The Gradle MCP's `additionalSystemProps` sets properties on the Gradle
-daemon, NOT on the forked test JVM. Do not try to pass `kotlin.test.update.test.data`
-that way -- it will have no effect. The property must go through `-P` (Gradle project
-property), which the build script at `tests/compiler-plugin-tests/build.gradle.kts:117-139`
-explicitly reads and forwards via `systemProperty()`.
-
-If you need to run this through the `running_gradle_tests` skill instead of the shell
-script, pass the property as a Gradle `-P` flag in the additional arguments:
-`-Pkotlin.test.update.test.data=true`
-
-After updating, review the golden file diffs with `git diff` to confirm the changes match
-your expectations, then commit the updated files alongside your CSM template changes.
+After fixing CSM templates, golden file mismatches may occur in
+`:tests:compiler-plugin-tests`. Read `references/golden-test-data.md` for the
+`updateTestData.sh` usage and important caveats about passing properties to the test JVM.
 
 ## Debugging Tips
 
