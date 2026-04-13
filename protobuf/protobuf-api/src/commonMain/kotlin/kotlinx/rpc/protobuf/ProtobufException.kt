@@ -45,6 +45,8 @@ public class ProtobufDecodingException : ProtobufException {
 
         internal fun genericParsingError() = ProtobufDecodingException("Failed to parse the message.")
 
+        internal fun invalidUtf8() = ProtobufDecodingException("String field contains invalid UTF-8.")
+
         internal fun recursionLimitExceeded(limit: Int) = ProtobufDecodingException(
             "Protocol message had too many levels of nesting. May be malicious. " +
                 "Use ProtoConfig.recursionLimit to increase the depth limit. Current limit: $limit"
