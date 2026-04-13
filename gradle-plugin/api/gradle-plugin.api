@@ -141,6 +141,7 @@ public final class kotlinx/rpc/protoc/ConstsKt {
 	public static final field PROTO_BUILD_DIR Ljava/lang/String;
 	public static final field PROTO_BUILD_GENERATED Ljava/lang/String;
 	public static final field PROTO_BUILD_SOURCE_SETS Ljava/lang/String;
+	public static final field PROTO_FILES_DEPENDENCY_IMPORT_DIR Ljava/lang/String;
 	public static final field PROTO_FILES_DIR Ljava/lang/String;
 	public static final field PROTO_FILES_IMPORT_DIR Ljava/lang/String;
 	public static final field PROTO_GROUP Ljava/lang/String;
@@ -154,6 +155,10 @@ public abstract class kotlinx/rpc/protoc/DefaultProtoTask : org/gradle/api/Defau
 	public final fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
 }
 
+public abstract class kotlinx/rpc/protoc/ExtractDependencyProtoImports : org/gradle/api/tasks/Sync, kotlinx/rpc/protoc/ProtoTask {
+	public fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
+}
+
 public final class kotlinx/rpc/protoc/PluginJarsKt {
 	public static final fun getGrpcKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun getKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
@@ -165,6 +170,7 @@ public abstract class kotlinx/rpc/protoc/ProcessProtoFiles : org/gradle/api/task
 
 public abstract interface class kotlinx/rpc/protoc/ProtoSourceSet : org/gradle/api/file/SourceDirectorySet {
 	public abstract fun extendsFrom (Lkotlinx/rpc/protoc/ProtoSourceSet;)V
+	public abstract fun getDependencyImports ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getFileImports ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getImports ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getIncludeDefaultGrpcPlugin ()Lorg/gradle/api/provider/Property;
