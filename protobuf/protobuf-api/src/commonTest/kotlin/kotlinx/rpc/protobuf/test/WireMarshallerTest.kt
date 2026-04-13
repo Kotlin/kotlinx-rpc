@@ -840,4 +840,125 @@ class WireMarshallerTest {
         }
     }
 
+    /**
+     * Writes a raw protobuf LENGTH_DELIMITED field with the given [data] bytes
+     * at field number [fieldNr] into the buffer.
+     */
+    private fun Buffer.writeRawStringField(fieldNr: Int, data: ByteArray) {
+        // Tag: (fieldNr << 3) | 2 (wire type LENGTH_DELIMITED)
+        writeVarint32((fieldNr shl 3) or 2)
+        // Length prefix
+        writeVarint32(data.size)
+        // Raw data
+        write(data)
+    }
+
+    private fun Buffer.writeVarint32(value: Int) {
+        var v = value
+        while (v and 0x7F.inv() != 0) {
+            writeByte((v and 0x7F or 0x80).toByte())
+            v = v ushr 7
+        }
+        writeByte(v.toByte())
+    }
+
+    @Test
+    fun testReadStringRejectsInvalidUtf8SingleByte() {
+        // 0xFF is never valid in UTF-8
+        val buffer = Buffer()
+        buffer.writeRawStringField(1, byteArrayOf(0xFF.toByte()))
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                decoder.readString()
+            }
+        }
+    }
+
+    @Test
+    fun testReadStringRejectsInvalidUtf8Surrogate() {
+        // 0xED 0xA0 0x80 encodes U+D800 (surrogate half, invalid in UTF-8)
+        val buffer = Buffer()
+        buffer.writeRawStringField(1, byteArrayOf(0xED.toByte(), 0xA0.toByte(), 0x80.toByte()))
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                decoder.readString()
+            }
+        }
+    }
+
+    @Test
+    fun testReadStringRejectsOverlongEncoding() {
+        // 0xC0 0x80 is an overlong encoding of U+0000 (must use single byte 0x00)
+        val buffer = Buffer()
+        buffer.writeRawStringField(1, byteArrayOf(0xC0.toByte(), 0x80.toByte()))
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                decoder.readString()
+            }
+        }
+    }
+
+    @Test
+    fun testReadStringRejectsTruncatedMultiByteSequence() {
+        // 0xE2 0x82 is a truncated 3-byte sequence (missing third continuation byte)
+        val buffer = Buffer()
+        buffer.writeRawStringField(1, byteArrayOf(0xE2.toByte(), 0x82.toByte()))
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                decoder.readString()
+            }
+        }
+    }
+
+    @Test
+    fun testReadStringAcceptsValidUtf8() {
+        // Valid multi-byte UTF-8: U+00E9 (é) = 0xC3 0xA9, U+1F600 (😀) = 0xF0 0x9F 0x98 0x80
+        val validUtf8 = byteArrayOf(
+            0xC3.toByte(), 0xA9.toByte(),                         // é
+            0xF0.toByte(), 0x9F.toByte(), 0x98.toByte(), 0x80.toByte()  // 😀
+        )
+        val buffer = Buffer()
+        buffer.writeRawStringField(1, validUtf8)
+
+        val decoder = WireDecoder(buffer)
+        val tag = decoder.readTag()
+        assertNotNull(tag)
+        assertEquals(1, tag.fieldNr)
+        assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
+
+        val str = decoder.readString()
+        assertEquals("é😀", str)
+
+        decoder.close()
+        assertTrue(buffer.exhausted())
+    }
+
 }

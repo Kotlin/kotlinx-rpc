@@ -8,15 +8,3 @@ Required.Proto3.ProtobufInput.BadTag_VarintMoreThanTenBytes
 Required.Editions_Proto2.ProtobufInput.BadTag_VarintMoreThanTenBytes
 Required.Editions_Proto3.ProtobufInput.BadTag_VarintMoreThanTenBytes
 
-# UTF-8 validation not yet implemented on native (KRPC-558)
-Recommended.Editions.ProtobufInput.RejectInvalidUtf8.String.Extension
-Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.MapKey
-Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.MapValue
-Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Oneof
-Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Repeated
-Recommended.Proto3.ProtobufInput.RejectInvalidUtf8.String.Singular
-Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.MapKey
-Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.MapValue
-Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Oneof
-Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Repeated
-Recommended.Editions_Proto3.ProtobufInput.RejectInvalidUtf8.String.Singular

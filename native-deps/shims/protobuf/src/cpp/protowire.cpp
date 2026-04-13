@@ -308,6 +308,49 @@ extern "C" {
         return WireFormatLite::ReadString(&self->codedInputStream, &(*string_ref)->str);
     }
 
+    /// Validates that [data] of length [len] is structurally valid UTF-8 per RFC 3629.
+    /// Rejects overlong encodings, surrogates (U+D800..U+DFFF), and code points above U+10FFFF.
+    static bool is_structurally_valid_utf8(const char *data, size_t len) {
+        auto *bytes = reinterpret_cast<const unsigned char *>(data);
+        size_t i = 0;
+        while (i < len) {
+            unsigned char b0 = bytes[i];
+            if (b0 <= 0x7F) {
+                // 1-byte (ASCII)
+                i++;
+            } else if (b0 >= 0xC2 && b0 <= 0xDF) {
+                // 2-byte: 110xxxxx 10xxxxxx (U+0080..U+07FF)
+                if (i + 1 >= len) return false;
+                if ((bytes[i + 1] & 0xC0) != 0x80) return false;
+                i += 2;
+            } else if (b0 >= 0xE0 && b0 <= 0xEF) {
+                // 3-byte: 1110xxxx 10xxxxxx 10xxxxxx (U+0800..U+FFFF, excluding surrogates)
+                if (i + 2 >= len) return false;
+                unsigned char b1 = bytes[i + 1], b2 = bytes[i + 2];
+                if ((b1 & 0xC0) != 0x80 || (b2 & 0xC0) != 0x80) return false;
+                if (b0 == 0xE0 && b1 < 0xA0) return false;  // overlong
+                if (b0 == 0xED && b1 >= 0xA0) return false;  // surrogates
+                i += 3;
+            } else if (b0 >= 0xF0 && b0 <= 0xF4) {
+                // 4-byte: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx (U+10000..U+10FFFF)
+                if (i + 3 >= len) return false;
+                unsigned char b1 = bytes[i + 1], b2 = bytes[i + 2], b3 = bytes[i + 3];
+                if ((b1 & 0xC0) != 0x80 || (b2 & 0xC0) != 0x80 || (b3 & 0xC0) != 0x80) return false;
+                if (b0 == 0xF0 && b1 < 0x90) return false;   // overlong
+                if (b0 == 0xF4 && b1 >= 0x90) return false;   // above U+10FFFF
+                i += 4;
+            } else {
+                // Invalid lead byte (0x80..0xBF, 0xC0..0xC1, 0xF5..0xFF)
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool pw_string_is_valid_utf8(pw_string_t *self) {
+        return is_structurally_valid_utf8(self->str.data(), self->str.size());
+    }
+
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size) {
         return self->codedInputStream.ReadRaw(buffer, size);
     }

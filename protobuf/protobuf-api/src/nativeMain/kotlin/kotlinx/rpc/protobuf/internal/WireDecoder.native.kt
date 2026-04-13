@@ -164,6 +164,9 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         val str = alloc<CPointerVar<pw_string_t>>()
         pw_decoder_read_string(raw, str.ptr).checkError()
         try {
+            if (!pw_string_is_valid_utf8(str.value)) {
+                throw ProtobufDecodingException.invalidUtf8()
+            }
             return pw_string_c_str(str.value)?.toKString()
                 ?: throw ProtobufDecodingException.genericParsingError()
         } finally {
