@@ -212,8 +212,11 @@ private fun shutdownCb(functor: CPointer<grpc_completion_queue_functor>?, ok: In
     val tag = functor!!.reinterpret<kgrpc_cb_tag>()
     val cq = tag.pointed.user_data!!.asStableRef<CompletionQueue>().get()
     cq._state.value = CompletionQueue.State.CLOSED
-    cq._shutdownDone.complete(Unit)
+    // Destroy the CQ BEFORE completing the future. CallbackFuture.complete() synchronously
+    // invokes onComplete callbacks, which may call GrpcRuntime.close() → grpc_shutdown().
+    // The grpc C API requires all CQs to be destroyed before grpc_shutdown().
     grpc_completion_queue_destroy(cq.raw)
+    cq._shutdownDone.complete(Unit)
 }
 
 private val OPS_COMPLETE_CB = staticCFunction(::opsCompleteCb)
