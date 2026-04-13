@@ -51,7 +51,7 @@ Message examples:
 Both must pass. GH Actions trigger on push; TeamCity you trigger manually.
 
 **TeamCity**: Use `use-teamcity` skill. Pick builds based on what changed — consult
-the decision table in `use-teamcity/remote-verification-table.md` to select the
+the decision table in `use-teamcity/references/remote-verification-table.md` to select the
 minimal set of targeted builds. Never use `_All` composites. May skip TC entirely
 if the change is trivial and local verifications covered it.
 

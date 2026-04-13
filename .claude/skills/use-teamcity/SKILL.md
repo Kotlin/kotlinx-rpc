@@ -48,86 +48,20 @@ The root project is **kRPC**. It has two main branches:
 - **Build** (`Build_kRPC`) -- CI builds triggered on PRs and commits
 - **Release** (`Release_kRPC`) -- Publication to Maven Central, Space, GitHub
 
-### Build Pipeline
+## Reference Files
 
-| Composite Build                   | What it runs                                  |
-|-----------------------------------|-----------------------------------------------|
-| `Build_kRPC_All`                  | Everything below                              |
-| `Build_Code_All`                  | All platform code builds                      |
-| `Build_Checks_All`                | ABI check, Detekt, JPMS, Artifacts, Changelog |
-| `Build_kRPC_All_Compiler_Plugins` | Compiler plugin for all Kotlin versions       |
-| `Build_kRPC_All_Gradle_Plugin`    | Gradle plugin build + tests                   |
+Read these as needed -- don't load them all upfront:
 
-### Platform-Specific Code Builds
+- **`references/build-ids.md`** -- Full catalog of build configuration IDs
+  (composite builds, platform builds, quality checks, compiler plugin builds,
+  special/scheduled builds). Read when you need to look up a specific build ID.
 
-| Build ID | Platforms | Agent |
-|---|---|---|
-| `Build_kRPC_Apple` | macOS, iOS, tvOS, watchOS | macOS |
-| `Build_kRPC_Windows` | mingwX64 | Windows |
-| `Build_kRPC_Java_JS_WASM_and_Linux` | JVM, JS, WASM, linuxX64/Arm64 | Linux |
-| `Build_kRPC_StressTests` | JVM stress tests | Linux |
+- **`references/remote-verification-table.md`** -- Decision table mapping changed
+  file paths to the minimal set of TeamCity builds to trigger. Read when deciding
+  which builds to run for a set of changes.
 
-### Quality Checks
-
-| Build ID | What |
-|---|---|
-| `Build_kRPC_CheckApi` | Binary compatibility (ABI) |
-| `Build_kRPC_DetektVerify` | Static analysis |
-| `Build_kRPC_JPMS` | Java module system |
-| `Build_kRPC_ArtifactsValidation` | Published artifact list |
-| `Build_kRPC_Changelog` | Changelog validation |
-| `Build_kRPC_Samples` | Sample projects |
-| `Build_kRPC_Protoc_Plugin_Test` | Protoc plugin tests |
-| `Build_kRPC_Gradle_Plugin_Test` | Gradle plugin tests |
-| `Build_kRPC_Gradle_Plugin_CheckApi` | Gradle plugin ABI |
-| `Build_kRPC_Gradle_Plugin_DetektVerify` | Gradle plugin Detekt |
-
-### Compiler Plugin Builds
-
-Build IDs follow the pattern `Build_kRPC_Plugins_<version>_KotlinVersion_` where
-`<version>` is the Kotlin version with dots replaced by underscores.
-
-Example: Kotlin 2.3.20 -> `Build_kRPC_Plugins2_3_20_KotlinVersion_`
-
-Check TeamCity for currently supported Kotlin versions.
-
-#### Kotlin Master 
-
-There is also a special version – **Kotlin Master**: `Build_kRPC_Plugins_Kotlin_Master` downloads the latest Kotlin master
-artifacts and builds only the compiler plugin against them. Use this to verify forward
-compatibility with unreleased Kotlin versions. 
-
-Differences between this and `Build_Compiler_Plugins_Latest_Kotlin_Master`:
-- `Build_kRPC_Plugins_Kotlin_Master` is not scheduled, `Build_Compiler_Plugins_Latest_Kotlin_Master` is scheduled.
-- `Build_kRPC_Plugins_Kotlin_Master` builds only the compiler plugin, `Build_Compiler_Plugins_Latest_Kotlin_Master` builds the full project.
-
-### Special Builds
-
-| Build ID                                        | Purpose                                        | Trigger            |
-|-------------------------------------------------|------------------------------------------------|--------------------|
-| `Build_Compiler_Plugins_Latest_Public_Unstable` | Full project against latest Kotlin unstable     | Nightly            |
-| `Build_Compiler_Plugins_Latest_Kotlin_Master`   | Full project against Kotlin master              | Daily 10:00 Berlin |
-| `Build_kRPC_Plugins_Kotlin_Master`              | Compiler plugin only against Kotlin master      | On demand          |
-| `Build_kRPC_Plugins_For_IDE`                    | IDE plugin artifacts                            | On demand          |
-| `Build_kRPC_New_Ide_Versions_Checker`           | Detect new IntelliJ/Android Studio              | Every 20 mins      |
-
-### Release Builds
-
-Release builds publish to three repositories. IDs follow patterns:
-
-- **Sonatype** (Maven Central): `Release_kRPC_ToSonatype_*`
-- **Space EAP**: `Release_kRPC_ToSpace_*`
-- **Space gRPC**: `Release_kRPC_ToGrpc_*`
-
-Key release configurations:
-
-| Build ID                                | Purpose                                                                 |
-|-----------------------------------------|-------------------------------------------------------------------------|
-| `Release_kRPC_ToSonatype_All`           | Assemble all artifacts to later release to Sonatype                     |
-| `Release_kRPC_Upload_To_Central_Portal` | Upload assembled artifacts (from sonatype type build) to Central Portal |
-| `Release_kRPC_ToSpace_All`              | Release everything to Space EAP                                         |
-| `Release_kRPC_ToGrpc_All`               | Release everything to Space gRPC.                                       |
-| `Release_kRPC_Produce`                  | Generate Dokka documentation                                            |
+- **`references/release-builds.md`** -- Release pipeline build IDs for Sonatype,
+  Space EAP, and Space gRPC. Read only during release workflows.
 
 ## Common Workflows
 
@@ -137,7 +71,7 @@ Key release configurations:
 teamcity run start Build_kRPC_All --branch feature/my-branch
 ```
 
-You can add the `--watch` flag to streams progress in real-time. Without it, the command returns
+Add `--watch` to stream progress in real-time. Without it, the command returns
 immediately after queuing.
 
 To trigger with custom parameters (e.g., override Kotlin version):
@@ -272,7 +206,7 @@ how a specific build is configured or wants to modify CI behavior.
 
 ## Tips
 
-- Build IDs are case-sensitive -- use them exactly as listed above.
+- Build IDs are case-sensitive -- use them exactly as listed in `references/build-ids.md`.
 - For composite builds (like `Build_kRPC_All`), failures in any dependency build
   will show in the composite. Use `run log <id> --failed` on the specific
   dependency build that failed, not the composite.
