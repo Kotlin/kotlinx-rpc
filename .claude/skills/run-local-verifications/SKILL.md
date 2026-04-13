@@ -47,13 +47,14 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | `compiler-plugin/` sources or templates                                                | Compiler plugin tests   | `:tests:compiler-plugin-tests:test` (use `running_gradle_tests`)                          | Validates codegen and diagnostics                                                  |
 | `compiler-plugin/` CSM templates                                                       | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
 | `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
-| `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:jvmTest` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
+| `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:test` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
 | `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
 | `protoc-gen/` sources (any change)                                                     | Implicit imports        | Shell: `./update_implicit_types.sh` then check git status                                 | Keeps protoc-gen implicit import list current                                      |
 | `protobuf/protobuf-wkt/` sources                                                       | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Regenerates WKT code                                                               |
 | `krpc/` protocol wire format or serialization                                          | Protocol compat tests   | `:tests:krpc-protocol-compatibility-tests:jvmTest` (use `running_gradle_tests`)           | Ensures wire format backward compatibility                                         |
 | `krpc/` any changes                                                                    | kRPC compat tests       | `:tests:krpc-compatibility-tests:jvmTest` (use `running_gradle_tests`)                    | Ensures old/new API compatibility                                                  |
 | JS/WASM npm dependency changes or Kotlin version update                                | Yarn lock update        | `kotlinUpgradeYarnLock` and/or `kotlinWasmUpgradeYarnLock`                                | Keeps JS/WASM lock files in sync                                                   |
+| `tests/protobuf-conformance/**/known_failures.txt`                                     | Conformance known-failures | `:tests:protobuf-conformance:jvmTest` (see §12 below)                                    | Removed entries must actually pass now; added entries must actually fail            |
 
 ## Module-Specific Tests
 
@@ -204,12 +205,16 @@ serious issue -- discuss with the team before proceeding.
 
 **When**: Any changes to `protoc-gen/` sources.
 
-All four checks should be run together because protoc-gen is the code generator that
+All five checks should be run together because protoc-gen is the code generator that
 produces output consumed by conformance tests, unit tests, WKT, and implicit imports:
 1. Task `tests:protobuf-conformance:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
-2. Task `:tests:protobuf-unittest:jvmTest` (use `running_gradle_tests`)
-3. Task `:protobuf:protobuf-wkt:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
-4. Shell: `./update_implicit_types.sh` then check git status
+2. Task `:tests:protobuf-unittest:test` (use `running_gradle_tests`)
+3. Task `:tests:protobuf-conformance:jvmTest` (use `running_gradle_tests`)
+   **Native coverage**: `jvmTest` runs both `conformance()` (JVM client) and
+   `nativeConformance()` (builds and executes the host native binary). No separate
+   native test task is needed.
+4. Task `:protobuf:protobuf-wkt:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
+5. Shell: `./update_implicit_types.sh` then check git status
 
 ### 11. Yarn Lock Updates
 
@@ -220,6 +225,30 @@ can change the Kotlin/JS or Kotlin/WASM runtime).
 
 **If builds fail after**: Delete `build/js/` and `build/wasm/` plus any `package-lock.json`,
 then re-run the upgrade tasks.
+
+### 12. Conformance Known-Failures Check
+
+**Files** (both under `tests/protobuf-conformance/`):
+- `src/jvmTest/resources/known_failures.txt` — JVM conformance failures
+- `src/jvmTest/resources/native_known_failures.txt` — native-specific conformance failures
+
+**Task**: `:tests:protobuf-conformance:jvmTest` (use `running_gradle_tests`)
+
+**When**: Any change to either known-failures file. Each file is a contract — listed
+tests are expected to fail, unlisted tests are expected to pass. When you remove an
+entry (claiming the fix makes it pass) or add an entry (acknowledging a new failure),
+the conformance test suite must confirm reality matches the file.
+
+**How to verify**:
+1. Run `:tests:protobuf-conformance:jvmTest` via `running_gradle_tests`
+2. Check that **removed entries now pass** and **added entries actually fail**
+3. If a removed entry still fails, either the fix is incomplete or the wrong entry
+   was removed — investigate before proceeding
+
+**Native coverage**: `jvmTest` runs two `@TestFactory` methods: `conformance()` (JVM
+client, uses `known_failures.txt`) and `nativeConformance()` (native binary, uses
+`native_known_failures.txt`). The native binary is built and executed as part of
+`jvmTest` — no separate native test task is needed.
 
 ## Common Scenarios
 
@@ -243,7 +272,7 @@ then re-run the upgrade tasks.
 ### "I changed protobuf/gRPC code"
 1. Run `:protobuf:protobuf-wkt:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
 2. Run `tests:protobuf-conformance:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
-3. Run `:tests:protobuf-unittest:jvmTest` via `running_gradle_tests`
+3. Run `:tests:protobuf-unittest:test` via `running_gradle_tests`
 4. Run `./update_implicit_types.sh` via shell then commit if changed (if protoc-gen changed)
 5. Run `checkLegacyAbi` via `running_gradle_builds`
 6. Run relevant module `jvmTest` via `running_gradle_tests`

@@ -250,6 +250,15 @@ Examples of what "demonstrate" means:
 - New script → execute it, verify it does what it's supposed to do
 - New code generator → run generation, verify the output compiles and is correct
 
+#### Demonstrate-it-works for bug fixes with reproducers
+
+When the issue includes an **external reproducer** (a separate project, repo, or
+code sample that triggers the bug), end-to-end verification against that reproducer
+is **mandatory** — follow `references/reproducer-verification.md`. The protocol
+requires publishing locally before and after the fix, confirming the bug exists
+and then confirming it's gone, and posting a before/after verification matrix as
+a YT comment. This matrix is the primary evidence artifact for the fix.
+
 #### Writing formal tests
 
 When needed — may be a **new test** or **modification of an existing one**:
@@ -324,6 +333,15 @@ just because the file is in a published module (e.g., JPMS is irrelevant for nat
 code, ABI check is irrelevant for internal-only logic changes). Never run Gradle builds
 in parallel against the same worktree — builds share state and will corrupt
 each other.
+
+#### Conformance known_failures changes — MANDATORY extra verification
+
+If you modified `known_failures.txt` or `native_known_failures.txt` under
+`tests/protobuf-conformance/` (removed or added entries), run
+`:tests:protobuf-conformance:jvmTest` to confirm that removed entries now pass and
+added entries actually fail. The `run-local-verifications` skill has the full
+procedure (§12). This single `jvmTest` run covers both JVM and native conformance
+(it builds and invokes the native binary too).
 
 #### Compiler plugin changes — MANDATORY extra verification
 
