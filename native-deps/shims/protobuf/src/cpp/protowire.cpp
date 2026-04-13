@@ -234,6 +234,51 @@ extern "C" {
         return self->codedInputStream.ReadTag();
     }
 
+    int pw_decoder_read_validated_tag(pw_decoder_t *self, uint32_t *tag_out) {
+        int pos_before = self->codedInputStream.CurrentPosition();
+
+        uint64_t raw64;
+        if (!self->codedInputStream.ReadVarint64(&raw64)) {
+            // Use ConsumedEntireMessage() to distinguish
+            // legitimate end-of-stream from actual errors (like >10-byte varints).
+            // Note: CurrentPosition() alone is insufficient because ReadVarint64's
+            // fast-path array reader does not advance the buffer pointer on failure.
+            if (self->codedInputStream.ConsumedEntireMessage()) {
+                return 0; // legitimate end of stream
+            }
+            return -1; // error (>10-byte varint, truncated varint, etc.)
+        }
+
+        int pos_after = self->codedInputStream.CurrentPosition();
+        int bytes_used = pos_after - pos_before;
+
+        // A zero tag value read from actual bytes is invalid (field number 0).
+        if (raw64 == 0) {
+            return -1;
+        }
+
+        // Tag must fit in 32 bits (29-bit field number + 3-bit wire type).
+        if (raw64 > UINT32_MAX) {
+            return -1;
+        }
+
+        // Reject overlong varint encoding: the varint used more bytes than the
+        // minimum required for its value. Each varint byte carries 7 payload bits.
+        int min_bytes;
+        if      (raw64 < (1ULL <<  7)) min_bytes = 1;
+        else if (raw64 < (1ULL << 14)) min_bytes = 2;
+        else if (raw64 < (1ULL << 21)) min_bytes = 3;
+        else if (raw64 < (1ULL << 28)) min_bytes = 4;
+        else                           min_bytes = 5;
+
+        if (bytes_used > min_bytes) {
+            return -1;
+        }
+
+        *tag_out = static_cast<uint32_t>(raw64);
+        return 1;
+    }
+
     bool pw_decoder_consumed_entire_msg(pw_decoder_t *self) {
         return self->codedInputStream.ConsumedEntireMessage();
     }

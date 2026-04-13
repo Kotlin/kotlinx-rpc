@@ -101,6 +101,17 @@ extern "C" {
     void pw_decoder_close(pw_decoder_t *self);
 
     uint32_t pw_decoder_read_tag(pw_decoder_t *self);
+
+    /**
+     * Reads a tag with full validation: rejects overlong varint encodings and
+     * field numbers that don't fit in 32 bits.
+     *
+     * @param tag_out on success (return 1), receives the validated 32-bit tag value.
+     * @return 0 = end of stream, 1 = valid tag written to *tag_out,
+     *        -1 = error (field number out of range, overlong varint, or I/O error).
+     */
+    int pw_decoder_read_validated_tag(pw_decoder_t *self, uint32_t *tag_out);
+
     bool pw_decoder_consumed_entire_msg(pw_decoder_t *self);
     bool pw_decoder_read_bool(pw_decoder_t *self, bool *value);
     bool pw_decoder_read_int32(pw_decoder_t *self, int32_t *value);
