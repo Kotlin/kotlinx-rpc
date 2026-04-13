@@ -381,10 +381,14 @@ This may take **multiple turns**. Each turn:
 6. Update the review checkbox comment per `assets/gh-code-review-comment.md`
 7. Update the CI checkbox comment per `assets/gh-ci-report-comment.md`
 8. Update the issue body per `assets/yt-issue-update.md` if new information was discovered
+9. **Re-request review from all reviewers** — after all fixes are pushed and comments
+   resolved, re-request review so reviewers are notified the PR is ready for another
+   look.
 
 "Address the feedback" always means **all of the above** — implementing the fixes,
-resolving/reacting to comments, AND updating the checkbox comments. Never treat
-the checkboxes as optional when the user asks to address feedback.
+resolving/reacting to comments, updating the checkbox comments, AND re-requesting
+review from all reviewers. Never treat the checkboxes or re-request as optional
+when the user asks to address feedback.
 
 ## Error Recovery
 
