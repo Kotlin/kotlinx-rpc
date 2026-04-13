@@ -243,6 +243,9 @@ gradle.rootProject {
             // from any consumer project in this composite build.
             // Remove it once we release them to maven central. (KRPC-539)
             grpc()
+            // Local development repository for native-deps shim artifacts.
+            // Shims are published here via publishAllPublicationsToNativeDepsBuildRepoRepository.
+            maven("$globalRootDir/native-deps/build/repo")
             maven("$globalRootDir/lib-kotlin/")
         }
     }
