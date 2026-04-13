@@ -29,7 +29,7 @@ abstract class  BaseGrpcServiceTest {
         block: suspend (Service) -> Unit,
     ) = runTest {
         val server = GrpcServer(
-            port = PORT,
+            port = 0,
             parentContext = coroutineContext,
         ) {
             messageMarshallerResolver = resolver
@@ -40,7 +40,7 @@ abstract class  BaseGrpcServiceTest {
 
         server.start()
 
-        val client = GrpcClient("localhost", PORT) {
+        val client = GrpcClient("localhost", server.port) {
             messageMarshallerResolver = resolver
             credentials = plaintext()
         }
@@ -53,10 +53,6 @@ abstract class  BaseGrpcServiceTest {
         client.awaitTermination()
         server.shutdown()
         server.awaitTermination()
-    }
-
-    companion object {
-        const val PORT = 8082
     }
 }
 

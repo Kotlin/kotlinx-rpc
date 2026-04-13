@@ -130,7 +130,6 @@ public fun GrpcServer(
     }
 
     return GrpcServerImpl(
-        port = port,
         serverBuilder = serverBuilder,
         interceptors = config.interceptors,
         messageMarshallerResolver = config.messageMarshallerResolver,

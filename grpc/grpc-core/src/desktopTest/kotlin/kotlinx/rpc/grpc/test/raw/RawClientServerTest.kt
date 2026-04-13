@@ -37,8 +37,6 @@ import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-private const val PORT = 8082
-
 class RawClientServerTest {
     @Test
     fun unaryCall() = runTest(
@@ -110,10 +108,6 @@ class RawClientServerTest {
         val serverJob = Job()
         val serverScope = CoroutineScope(serverJob)
 
-        val client = GrpcClient("localhost", PORT) {
-            credentials = plaintext()
-        }
-
         val descriptor = methodDescriptor(
             fullMethodName = "${SERVICE_NAME}/$methodName",
             requestMarshaller = simpleMarshaller,
@@ -127,7 +121,7 @@ class RawClientServerTest {
 
         val methods = listOf(descriptor)
 
-        val builder = ServerBuilder(PORT).addService(
+        val builder = ServerBuilder(0).addService(
             serverServiceDefinition(
                 serviceDescriptor = serviceDescriptor(
                     name = SERVICE_NAME,
@@ -139,6 +133,10 @@ class RawClientServerTest {
         )
         val server = PlatformServer(builder)
         server.start()
+
+        val client = GrpcClient("localhost", server.port) {
+            credentials = plaintext()
+        }
 
         block(client, descriptor)
 

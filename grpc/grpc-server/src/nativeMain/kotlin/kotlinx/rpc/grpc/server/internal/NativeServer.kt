@@ -42,7 +42,7 @@ import kotlin.experimental.ExperimentalNativeApi
 import kotlin.time.Duration
 
 internal class NativeServer(
-    override val port: Int,
+    requestedPort: Int,
     // we must reference them, otherwise the credentials are getting garbage collected
     @Suppress("Redundant")
     private val credentials: GrpcServerCredentials,
@@ -63,9 +63,11 @@ internal class NativeServer(
     // the stable references must eventually be disposed.
     private val callAllocationCtxs = mutableSetOf<StableRef<CallAllocationCtx>>()
 
+    override val port: Int
+
     init {
         grpc_server_register_completion_queue(raw, cq.raw, null)
-        grpc_server_add_http2_port(raw, "0.0.0.0:$port", credentials.raw)
+        port = grpc_server_add_http2_port(raw, "0.0.0.0:$requestedPort", credentials.raw)
         registerServices(services)
         setLookupCallAllocatorCallback()
     }
