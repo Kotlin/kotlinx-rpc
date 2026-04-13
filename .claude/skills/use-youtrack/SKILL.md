@@ -44,55 +44,11 @@ Docs: [YouTrack REST API](https://www.jetbrains.com/help/youtrack/devportal/api-
 
 ## Searching Issues
 
-YouTrack has **no semantic search** — it matches exact keywords only. Always run multiple
-queries with different keyword combinations to get good coverage.
+Read `references/query-syntax.md` for the full query syntax reference and common search
+patterns (sprint work, backlog, recently closed, etc.).
 
-### Query syntax quick reference
-
-```
-project: KRPC                          # All KRPC issues
-project: KRPC State: Open             # Open issues
-project: KRPC for: me                 # Assigned to current user
-project: KRPC for: alexander.sysoev   # Assigned to specific user
-project: KRPC reporter: me            # Reported by current user
-project: KRPC tag: {kRPC 2.0}         # By tag (braces for multi-word)
-project: KRPC Scope: {kRPC. Client}   # By scope (braces for values with dots/spaces)
-project: KRPC Type: Bug State: Open   # Combine filters
-project: KRPC created: {this week}    # Recent issues
-project: KRPC updated: today          # Updated today
-project: KRPC sort by: created desc   # Sort order
-project: KRPC #resolved              # Resolved issues
-project: KRPC #unresolved            # Unresolved issues
-```
-
-### Common search patterns
-
-**Current sprint work** (use the latest planning period value):
-```
-project: KRPC [Kxrpc] Planning Period: {20.03-24.04 (2026)} sort by: updated desc
-```
-To find the current sprint, look for the most recent planning period that has issues
-in progress. You can check with `mcp__youtrack__get_issue_fields_schema` — the last
-non-checkmarked period in the enum is typically the active one.
-
-**Backlog for a specific scope:**
-```
-project: KRPC tag: {Kxrpc Backlog} Scope: {kRPC}
-```
-
-**Recently closed:**
-```
-project: KRPC State: Fixed updated: {this week} sort by: updated desc
-```
-
-**Issues by sprint (Planning Period):**
-```
-project: KRPC [Kxrpc] Planning Period: {20.03-24.04 (2026)}
-```
-
-Use `mcp__youtrack__search_issues` for these queries. Request relevant custom fields via
-`customFieldsToReturn` — the defaults are `["Type", "State", "Assignee"]` but you can add
-`"Priority"`, `"Scope"`, `"[Kxrpc] Target Release"`, `"[Kxrpc] Planning Period"` (sprint) as needed.
+Key point: YouTrack has **no semantic search** — always run multiple queries with different
+keywords to get good coverage.
 
 ## Reading Issues
 
@@ -106,41 +62,21 @@ For full comment history, use `mcp__youtrack__get_issue_comments`.
 
 ## Updating Issues
 
-### Change fields
-Use `mcp__youtrack__update_issue` to modify summary, description, or custom fields.
+Read `references/update-operations.md` for the full reference on changing fields, assignees,
+tags, comments, links, and logging work.
 
-**Important:** `Scope` is an array-typed field — always pass it as a JSON array
-(e.g., `["Housekeeping", "Infra"]`), never as a comma-separated string.
-
-**Multiline text fields (`description`, `summary`):** The parameter value must contain
-actual newlines, not literal `\n` escape sequences. YouTrack stores the string as-is —
-literal `\n` will render as visible `\n` characters instead of line breaks.
-
-### Change assignee
-Use `mcp__youtrack__change_issue_assignee` with the user login.
-Find user logins with `mcp__youtrack__find_user`.
-
-### Manage tags
-Use `mcp__youtrack__manage_issue_tags` with operation `"add"` or `"remove"`.
-
-**Always add the `Vibe-report` tag.** When the user asks to tag an issue, always include
-`Vibe-report` in addition to whatever tags they specified — never skip it, even if the user
-only listed other tags.
-
-### Add comments
-Use `mcp__youtrack__add_issue_comment`. Supports Markdown.
-
-### Link issues
-Use `mcp__youtrack__link_issues`. Common link types in KRPC:
-- `relates to` — general relationship
-- `subtask of` / `parent for` — parent-child hierarchy
-- `depends on` / `is required for` — dependency chain
-- `duplicates` / `is duplicated by` — duplicate tracking
-
-### Log work
-Use `mcp__youtrack__log_work` to add time tracking entries.
+Key rules:
+- `Scope` must be a **JSON array**, even for a single value
+- Multiline text fields need **actual newlines**, not literal `\n` escape sequences
+- **Always add the `Vibe-report` tag** alongside any other tags the user requests
 
 ## KRPC Project Reference
+
+For full field definitions (scopes with determination logic, types, priorities, tags,
+optional fields, team members), read
+`file-youtrack-issue/references/krpc-fields.md` (relative to `.claude/skills/`).
+
+Quick lists for common lookups:
 
 ### Scopes
 Compiler Plugin, kRPC, kRPC. Client, kRPC. Server, kRPC. Transport,
@@ -154,13 +90,6 @@ Wait for reply, Duplicate, Closed
 ### Types
 Bug, Feature, Task, Usability Problem, Performance Problem, Meta Issue,
 Security Problem
-
-### Tags (common)
-`Vibe-report`, `kRPC 2.0`, `Icebox`, `Kxrpc Backlog`, `github-issue` (auto-imported)
-
-### Team members
-Use `mcp__youtrack__find_user` to look up logins, or
-`mcp__youtrack__get_user_group_members` with group name `"kotlinx.rpc Team"`.
 
 ## Knowledge Base Articles
 
