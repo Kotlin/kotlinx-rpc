@@ -161,12 +161,16 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         return value.value
     }
 
+    // TODO: Is it possible to avoid copying the c_str, by directly allocating a K/N String (as in readBytes)? KRPC-187
     override fun readString(): String = memScoped {
         val str = alloc<CPointerVar<pw_string_t>>()
-        pw_decoder_read_string_utf8(raw, str.ptr).checkError()
+        pw_decoder_read_string(raw, str.ptr).checkError()
         try {
+            if (!pw_string_is_valid_utf8(str.value)) {
+                throw ProtobufDecodingException.invalidUtf8()
+            }
             return pw_string_c_str(str.value)?.toKString()
-                ?: throw ProtobufDecodingException.invalidUtf8()
+                ?: throw ProtobufDecodingException.genericParsingError()
         } finally {
             pw_string_delete(str.value)
         }

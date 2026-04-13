@@ -302,19 +302,8 @@ extern "C" {
         return true;
     }
 
-    bool pw_decoder_read_string_utf8(pw_decoder_t *self, pw_string_t **string_ref) {
-        *string_ref = new pw_string_t;
-        if (!WireFormatLite::ReadString(&self->codedInputStream, &(*string_ref)->str)) {
-            delete *string_ref;
-            *string_ref = nullptr;
-            return false;
-        }
-        if (!is_structurally_valid_utf8((*string_ref)->str.data(), (*string_ref)->str.size())) {
-            delete *string_ref;
-            *string_ref = nullptr;
-            return false;
-        }
-        return true;
+    bool pw_string_is_valid_utf8(pw_string_t *self) {
+        return is_structurally_valid_utf8(self->str.data(), self->str.size());
     }
 
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size) {

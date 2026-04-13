@@ -117,9 +117,9 @@ extern "C" {
     bool pw_decoder_read_double(pw_decoder_t *self, double *value);
     bool pw_decoder_read_enum(pw_decoder_t *self, int *value);
     bool pw_decoder_read_string(pw_decoder_t *self, pw_string_t **opaque_string);
-    /// Like pw_decoder_read_string, but validates that the string is structurally valid UTF-8.
-    /// Returns false (and sets *opaque_string to NULL) if the string contains invalid UTF-8.
-    bool pw_decoder_read_string_utf8(pw_decoder_t *self, pw_string_t **opaque_string);
+
+    /// Returns true if the string is structurally valid UTF-8 per RFC 3629.
+    bool pw_string_is_valid_utf8(pw_string_t *self);
     // To read an actual bytes field, you must combine read_int32 and this function
     bool pw_decoder_read_raw_bytes(pw_decoder_t *self, void* buffer, int size);
 
