@@ -24,28 +24,34 @@ public interface FileDescriptorProto {
      * file name, relative to root of source tree
      */
     public val name: String?
+
     /**
      * e.g. "foo", "foo.bar", etc.
      */
     public val `package`: String?
+
     /**
      * Names of files imported by this file.
      */
     public val dependency: List<String>
+
     /**
      * Indexes of the public imported files in the dependency list above.
      */
     public val publicDependency: List<Int>
+
     /**
      * Indexes of the weak imported files in the dependency list.
      * For Google-internal migration only. Do not use.
      */
     public val weakDependency: List<Int>
+
     /**
      * Names of files imported by this file purely for the purpose of providing
      * option extensions. These are excluded from the dependency list above.
      */
     public val optionDependency: List<String>
+
     /**
      * All top-level definitions in this file.
      */
@@ -54,6 +60,7 @@ public interface FileDescriptorProto {
     public val service: List<ServiceDescriptorProto>
     public val extension: List<FieldDescriptorProto>
     public val options: FileOptions
+
     /**
      * This field contains optional information about the original source code.
      * You may safely remove this entire field without harming runtime
@@ -61,6 +68,7 @@ public interface FileDescriptorProto {
      * development tools.
      */
     public val sourceCodeInfo: SourceCodeInfo
+
     /**
      * The syntax of the proto file.
      * The supported values are "proto2", "proto3", and "editions".
@@ -71,6 +79,7 @@ public interface FileDescriptorProto {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val syntax: String?
+
     /**
      * The edition of the proto file.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -94,11 +103,13 @@ public interface DescriptorProto {
     public val oneofDecl: List<OneofDescriptorProto>
     public val options: MessageOptions
     public val reservedRange: List<ReservedRange>
+
     /**
      * Reserved field names, which may not be used by fields in the same message.
      * A given name may only be reserved once.
      */
     public val reservedName: List<String>
+
     /**
      * Support for `export` and `local` keywords on enums.
      */
@@ -110,6 +121,7 @@ public interface DescriptorProto {
          * Inclusive.
          */
         public val start: Int?
+
         /**
          * Exclusive.
          */
@@ -128,6 +140,7 @@ public interface DescriptorProto {
          * Inclusive.
          */
         public val start: Int?
+
         /**
          * Exclusive.
          */
@@ -141,16 +154,19 @@ public interface ExtensionRangeOptions {
      * The parser stores options it doesn't recognize here. See above.
      */
     public val uninterpretedOption: List<UninterpretedOption>
+
     /**
      * For external users: DO NOT USE. We are in the process of open sourcing
      * extension declaration and executing internal cleanups before it can be
      * used externally.
      */
     public val declaration: List<Declaration>
+
     /**
      * Any features defined in the specific edition.
      */
     public val features: FeatureSet
+
     /**
      * The verification state of the range.
      * TODO: flip the default to DECLARATION once all empty ranges
@@ -164,23 +180,27 @@ public interface ExtensionRangeOptions {
          * The extension number declared within the extension range.
          */
         public val number: Int?
+
         /**
          * The fully-qualified name of the extension field. There must be a leading
          * dot in front of the full name.
          */
         public val fullName: String?
+
         /**
          * The fully-qualified type name of the extension field. Unlike
          * Metadata.type, Declaration.type must have a leading dot for messages
          * and enums.
          */
         public val type: String?
+
         /**
          * If true, indicates that the number is reserved in the extension range,
          * and any extension field with the number will fail to compile. Set this
          * when a declared extension field is deleted.
          */
         public val reserved: Boolean?
+
         /**
          * If true, indicates that the extension must be defined as repeated.
          * Otherwise the extension must be defined as optional.
@@ -215,11 +235,13 @@ public interface FieldDescriptorProto {
     public val name: String?
     public val number: Int?
     public val label: Label?
+
     /**
      * If type_name is set, this need not be set.  If both this and type_name
      * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
      */
     public val type: Type?
+
     /**
      * For message and enum types, this is the name of the type.  If the name
      * starts with a '.', it is fully-qualified.  Otherwise, C++-like scoping
@@ -228,11 +250,13 @@ public interface FieldDescriptorProto {
      * namespace).
      */
     public val typeName: String?
+
     /**
      * For extensions, this is the name of the type being extended.  It is
      * resolved in the same manner as type_name.
      */
     public val extendee: String?
+
     /**
      * For numeric types, contains the original text representation of the value.
      * For booleans, "true" or "false".
@@ -240,11 +264,13 @@ public interface FieldDescriptorProto {
      * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
      */
     public val defaultValue: String?
+
     /**
      * If set, gives the index of a oneof in the containing type's oneof_decl
      * list.  This field is a member of that oneof.
      */
     public val oneofIndex: Int?
+
     /**
      * JSON name of this field. The value is set by protocol compiler. If the
      * user has set a "json_name" option on this field, that option's value
@@ -253,6 +279,7 @@ public interface FieldDescriptorProto {
      */
     public val jsonName: String?
     public val options: FieldOptions
+
     /**
      * If true, this is a proto3 "optional". When a proto3 field is optional, it
      * tracks presence regardless of field type.
@@ -393,17 +420,20 @@ public interface EnumDescriptorProto {
     public val name: String?
     public val value: List<EnumValueDescriptorProto>
     public val options: EnumOptions
+
     /**
      * Range of reserved numeric values. Reserved numeric values may not be used
      * by enum values in the same enum declaration. Reserved ranges may not
      * overlap.
      */
     public val reservedRange: List<EnumReservedRange>
+
     /**
      * Reserved enum value names, which may not be reused. A given name may only
      * be reserved once.
      */
     public val reservedName: List<String>
+
     /**
      * Support for `export` and `local` keywords on enums.
      */
@@ -423,6 +453,7 @@ public interface EnumDescriptorProto {
          * Inclusive.
          */
         public val start: Int?
+
         /**
          * Inclusive.
          */
@@ -456,6 +487,7 @@ public interface ServiceDescriptorProto {
 @GeneratedProtoMessage
 public interface MethodDescriptorProto {
     public val name: String?
+
     /**
      * Input and output type names.  These are resolved in the same way as
      * FieldDescriptorProto.type_name, but must refer to a message type.
@@ -463,10 +495,12 @@ public interface MethodDescriptorProto {
     public val inputType: String?
     public val outputType: String?
     public val options: MethodOptions
+
     /**
      * Identifies if client streams multiple client messages
      */
     public val clientStreaming: Boolean
+
     /**
      * Identifies if server streams multiple server messages
      */
@@ -515,6 +549,7 @@ public interface FileOptions {
      * domain names.
      */
     public val javaPackage: String?
+
     /**
      * Controls the name of the wrapper Java class generated for the .proto file.
      * That class will always contain the .proto file's getDescriptor() method as
@@ -523,6 +558,7 @@ public interface FileOptions {
      * .proto file will be nested inside the single wrapper outer class.
      */
     public val javaOuterClassname: String?
+
     /**
      * If enabled, then the Java code generator will generate a separate .java
      * file for each top-level message, enum, and service defined in the .proto
@@ -532,11 +568,13 @@ public interface FileOptions {
      * top-level extensions defined in the file.
      */
     public val javaMultipleFiles: Boolean
+
     /**
      * This option does nothing.
      */
     @Deprecated("This declaration is deprecated in .proto file")
     public val javaGenerateEqualsAndHash: Boolean?
+
     /**
      * A proto2 file can set this to true to opt in to UTF-8 checking for Java,
      * which will throw an exception if invalid UTF-8 is parsed from the wire or
@@ -551,6 +589,7 @@ public interface FileOptions {
      */
     public val javaStringCheckUtf8: Boolean
     public val optimizeFor: OptimizeMode
+
     /**
      * Sets the Go package where structs generated from this .proto will be
      * placed. If omitted, the Go package will be derived from the following:
@@ -559,6 +598,7 @@ public interface FileOptions {
      *   - Otherwise, the basename of the .proto file, without extension.
      */
     public val goPackage: String?
+
     /**
      * Should generic services be generated in each language?  "Generic" services
      * are not specific to any particular RPC system.  They are generated by the
@@ -574,6 +614,7 @@ public interface FileOptions {
     public val ccGenericServices: Boolean
     public val javaGenericServices: Boolean
     public val pyGenericServices: Boolean
+
     /**
      * Is this file deprecated?
      * Depending on the target platform, this can emit Deprecated annotations
@@ -581,20 +622,24 @@ public interface FileOptions {
      * least, this is a formalization for deprecating files.
      */
     public val deprecated: Boolean
+
     /**
      * Enables the use of arenas for the proto messages in this file. This applies
      * only to generated classes for C++.
      */
     public val ccEnableArenas: Boolean
+
     /**
      * Sets the objective c class prefix which is prepended to all objective c
      * generated classes from this .proto. There is no default.
      */
     public val objcClassPrefix: String?
+
     /**
      * Namespace for generated classes; defaults to the package.
      */
     public val csharpNamespace: String?
+
     /**
      * By default Swift generators will take the proto package and CamelCase it
      * replacing '.' with underscore and use that to prefix the types/symbols
@@ -602,29 +647,34 @@ public interface FileOptions {
      * to prefix the types/symbols defined.
      */
     public val swiftPrefix: String?
+
     /**
      * Sets the php class prefix which is prepended to all php generated classes
      * from this .proto. Default is empty.
      */
     public val phpClassPrefix: String?
+
     /**
      * Use this option to change the namespace of php generated classes. Default
      * is empty. When this option is empty, the package name will be used for
      * determining the namespace.
      */
     public val phpNamespace: String?
+
     /**
      * Use this option to change the namespace of php generated metadata classes.
      * Default is empty. When this option is empty, the proto file name will be
      * used for determining the namespace.
      */
     public val phpMetadataNamespace: String?
+
     /**
      * Use this option to change the package of ruby generated classes. Default
      * is empty. When this option is not set, the package name will be used for
      * determining the ruby package.
      */
     public val rubyPackage: String?
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -632,6 +682,7 @@ public interface FileOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * The parser stores options it doesn't recognize here.
      * See the documentation for the "Options" section above.
@@ -690,12 +741,14 @@ public interface MessageOptions {
      * the protocol compiler.
      */
     public val messageSetWireFormat: Boolean
+
     /**
      * Disables the generation of the standard "descriptor()" accessor, which can
      * conflict with a field of the same name.  This is meant to make migration
      * from proto1 easier; new code should avoid fields named "descriptor".
      */
     public val noStandardDescriptorAccessor: Boolean
+
     /**
      * Is this message deprecated?
      * Depending on the target platform, this can emit Deprecated annotations
@@ -703,6 +756,7 @@ public interface MessageOptions {
      * this is a formalization for deprecating messages.
      */
     public val deprecated: Boolean
+
     /**
      * Whether the message is an automatically generated map entry type for the
      * maps field.
@@ -727,6 +781,7 @@ public interface MessageOptions {
      * parser.
      */
     public val mapEntry: Boolean?
+
     /**
      * Enable the legacy handling of JSON field name conflicts.  This lowercases
      * and strips underscored from the fields before comparison in proto3 only.
@@ -741,6 +796,7 @@ public interface MessageOptions {
      */
     @Deprecated("This declaration is deprecated in .proto file")
     public val deprecatedLegacyJsonFieldConflicts: Boolean?
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -748,6 +804,7 @@ public interface MessageOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -766,6 +823,7 @@ public interface FieldOptions {
      * TODO: make ctype actually deprecated.
      */
     public val ctype: CType
+
     /**
      * The packed option can be enabled for repeated primitive fields to enable
      * a more efficient representation on the wire. Rather than repeatedly
@@ -776,6 +834,7 @@ public interface FieldOptions {
      * the behavior.
      */
     public val packed: Boolean?
+
     /**
      * The jstype option determines the JavaScript type used for values of the
      * field.  The option is permitted only for 64 bit integral and fixed types
@@ -790,6 +849,7 @@ public interface FieldOptions {
      * goog.math.Integer.
      */
     public val jstype: JSType
+
     /**
      * Should this field be parsed lazily?  Lazy applies only to message-type
      * fields.  It means that when the outer message is initially parsed, the
@@ -815,12 +875,14 @@ public interface FieldOptions {
      * uninitialized messages are acceptable).
      */
     public val lazy: Boolean
+
     /**
      * unverified_lazy does no correctness checks on the byte stream. This should
      * only be used where lazy with verification is prohibitive for performance
      * reasons.
      */
     public val unverifiedLazy: Boolean
+
     /**
      * Is this field deprecated?
      * Depending on the target platform, this can emit Deprecated annotations
@@ -828,10 +890,12 @@ public interface FieldOptions {
      * is a formalization for deprecating fields.
      */
     public val deprecated: Boolean
+
     /**
      * For Google-internal migration only. Do not use.
      */
     public val weak: Boolean
+
     /**
      * Indicate that the field value should not be printed out when using debug
      * formats, e.g. when the field contains sensitive credentials.
@@ -840,6 +904,7 @@ public interface FieldOptions {
     public val retention: OptionRetention?
     public val targets: List<OptionTargetType>
     public val editionDefaults: List<EditionDefault>
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -848,6 +913,7 @@ public interface FieldOptions {
      */
     public val features: FeatureSet
     public val featureSupport: FeatureSupport
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -856,6 +922,7 @@ public interface FieldOptions {
     @GeneratedProtoMessage
     public interface EditionDefault {
         public val edition: Edition?
+
         /**
          * Textproto value.
          */
@@ -873,16 +940,19 @@ public interface FieldOptions {
          * used, and proto files will not be able to override it.
          */
         public val editionIntroduced: Edition?
+
         /**
          * The edition this feature becomes deprecated in.  Using this after this
          * edition may trigger warnings.
          */
         public val editionDeprecated: Edition?
+
         /**
          * The deprecation warning text if this feature is used after the edition it
          * was marked deprecated in.
          */
         public val deprecationWarning: String?
+
         /**
          * The edition this feature is no longer available in.  In editions after
          * this one, the last default assigned will be used, and proto files will
@@ -999,6 +1069,7 @@ public interface OneofOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -1012,6 +1083,7 @@ public interface EnumOptions {
      * value.
      */
     public val allowAlias: Boolean?
+
     /**
      * Is this enum deprecated?
      * Depending on the target platform, this can emit Deprecated annotations
@@ -1019,6 +1091,7 @@ public interface EnumOptions {
      * is a formalization for deprecating enums.
      */
     public val deprecated: Boolean
+
     /**
      * Enable the legacy handling of JSON field name conflicts.  This lowercases
      * and strips underscored from the fields before comparison in proto3 only.
@@ -1029,6 +1102,7 @@ public interface EnumOptions {
      */
     @Deprecated("This declaration is deprecated in .proto file")
     public val deprecatedLegacyJsonFieldConflicts: Boolean?
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -1036,6 +1110,7 @@ public interface EnumOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -1051,6 +1126,7 @@ public interface EnumValueOptions {
      * this is a formalization for deprecating enum values.
      */
     public val deprecated: Boolean
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -1058,16 +1134,19 @@ public interface EnumValueOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * Indicate that fields annotated with this enum value should not be printed
      * out when using debug formats, e.g. when the field contains sensitive
      * credentials.
      */
     public val debugRedact: Boolean
+
     /**
      * Information about the support window of a feature value.
      */
     public val featureSupport: FieldOptions.FeatureSupport
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -1083,6 +1162,7 @@ public interface ServiceOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * Note:  Field numbers 1 through 32 are reserved for Google's internal RPC
      *   framework.  We apologize for hoarding these numbers to ourselves, but
@@ -1095,6 +1175,7 @@ public interface ServiceOptions {
      * this is a formalization for deprecating services.
      */
     public val deprecated: Boolean
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -1116,6 +1197,7 @@ public interface MethodOptions {
      */
     public val deprecated: Boolean
     public val idempotencyLevel: IdempotencyLevel
+
     /**
      * Any features defined in the specific edition.
      * WARNING: This field should only be used by protobuf plugins or special
@@ -1123,6 +1205,7 @@ public interface MethodOptions {
      * developers should rely on the protoreflect APIs for their client language.
      */
     public val features: FeatureSet
+
     /**
      * The parser stores options it doesn't recognize here. See above.
      */
@@ -1165,6 +1248,7 @@ public interface MethodOptions {
 @GeneratedProtoMessage
 public interface UninterpretedOption {
     public val name: List<NamePart>
+
     /**
      * The value of the uninterpreted option, in whatever type the tokenizer
      * identified it as during parsing. Exactly one of these should be set.
@@ -1357,11 +1441,13 @@ public interface FeatureSet {
 @GeneratedProtoMessage
 public interface FeatureSetDefaults {
     public val defaults: List<FeatureSetEditionDefault>
+
     /**
      * The minimum supported edition (inclusive) when this was constructed.
      * Editions before this will not have defaults.
      */
     public val minimumEdition: Edition?
+
     /**
      * The maximum known edition (inclusive) when this was constructed. Editions
      * after this will not have reliable defaults.
@@ -1377,10 +1463,12 @@ public interface FeatureSetDefaults {
     @GeneratedProtoMessage
     public interface FeatureSetEditionDefault {
         public val edition: Edition?
+
         /**
          * Defaults of features that can be overridden in this edition.
          */
         public val overridableFeatures: FeatureSet
+
         /**
          * Defaults of features that can't be overridden in this edition.
          */
@@ -1472,6 +1560,7 @@ public interface SourceCodeInfo {
          * of the label to the terminating semicolon).
          */
         public val path: List<Int>
+
         /**
          * Always has exactly three or four elements: start line, start column,
          * end line (optional, otherwise assumed same as start line), end column.
@@ -1480,6 +1569,7 @@ public interface SourceCodeInfo {
          * 1 to each before displaying to a user.
          */
         public val span: List<Int>
+
         /**
          * If this SourceCodeInfo represents a complete declaration, these are any
          * comments appearing before and after the declaration which appear to be
@@ -1555,15 +1645,18 @@ public interface GeneratedCodeInfo {
          * is formatted the same as SourceCodeInfo.Location.path.
          */
         public val path: List<Int>
+
         /**
          * Identifies the filesystem path to the original source .proto.
          */
         public val sourceFile: String?
+
         /**
          * Identifies the starting offset in bytes in the generated code
          * that relates to the identified object.
          */
         public val begin: Int?
+
         /**
          * Identifies the ending offset in bytes in the generated code that
          * relates to the identified object. The end offset should be one past

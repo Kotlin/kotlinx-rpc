@@ -104,6 +104,7 @@ public interface Timestamp {
      * 9999-12-31T23:59:59Z inclusive.
      */
     public val seconds: Long
+
     /**
      * Non-negative fractions of a second at nanosecond resolution. Negative
      * second values with fractions must still have non-negative nanos values

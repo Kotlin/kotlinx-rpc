@@ -23,14 +23,17 @@ public interface Api {
      * followed by the interface's simple name.
      */
     public val name: String
+
     /**
      * The methods of this interface, in unspecified order.
      */
     public val methods: List<Method>
+
     /**
      * Any metadata attached to the interface.
      */
     public val options: List<Option>
+
     /**
      * A version string for this interface. If specified, must have the form
      * `major-version.minor-version`, as in `1.10`. If the minor version is
@@ -53,15 +56,18 @@ public interface Api {
      * experimental, non-GA interfaces.
      */
     public val version: String
+
     /**
      * Source context for the protocol buffer service represented by this
      * message.
      */
     public val sourceContext: SourceContext
+
     /**
      * Included interfaces. See [Mixin][].
      */
     public val mixins: List<Mixin>
+
     /**
      * The source syntax of the service.
      */
@@ -77,26 +83,32 @@ public interface Method {
      * The simple name of this method.
      */
     public val name: String
+
     /**
      * A URL of the input message type.
      */
     public val requestTypeUrl: String
+
     /**
      * If true, the request is streamed.
      */
     public val requestStreaming: Boolean
+
     /**
      * The URL of the output message type.
      */
     public val responseTypeUrl: String
+
     /**
      * If true, the response is streamed.
      */
     public val responseStreaming: Boolean
+
     /**
      * Any metadata attached to the method.
      */
     public val options: List<Option>
+
     /**
      * The source syntax of this method.
      */
@@ -189,6 +201,7 @@ public interface Mixin {
      * The fully qualified name of the interface which is included.
      */
     public val name: String
+
     /**
      * If non-empty specifies a path under which inherited HTTP paths
      * are rooted.

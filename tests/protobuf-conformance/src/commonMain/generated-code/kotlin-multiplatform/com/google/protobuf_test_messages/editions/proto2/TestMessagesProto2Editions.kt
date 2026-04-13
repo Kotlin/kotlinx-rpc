@@ -43,6 +43,7 @@ interface TestAllTypesProto2 {
     val optionalStringPiece: String?
     val optionalCord: String?
     val recursiveMessage: TestAllTypesProto2
+
     /**
      * Repeated
      */
@@ -67,6 +68,7 @@ interface TestAllTypesProto2 {
     val repeatedForeignEnum: List<ForeignEnumProto2>
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
+
     /**
      * Packed
      */
@@ -84,6 +86,7 @@ interface TestAllTypesProto2 {
     val packedDouble: List<Double>
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
+
     /**
      * Unpacked
      */
@@ -101,6 +104,7 @@ interface TestAllTypesProto2 {
     val unpackedDouble: List<Double>
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
+
     /**
      * Map
      */
@@ -127,6 +131,7 @@ interface TestAllTypesProto2 {
     val mapStringForeignEnum: Map<String, ForeignEnumProto2>
     val data: Data
     val multiwordgroupfield: MultiWordGroupField
+
     /**
      * default values
      */
@@ -145,6 +150,7 @@ interface TestAllTypesProto2 {
     val defaultBool: Boolean
     val defaultString: String
     val defaultBytes: ByteString
+
     /**
      * Test field-name-to-JSON-name convention.
      * (protobuf says names can be any valid C/C++ identifier.)
@@ -354,6 +360,7 @@ interface TestAllRequiredTypesProto2 {
     val recursiveMessage: TestAllRequiredTypesProto2
     val optionalRecursiveMessage: TestAllRequiredTypesProto2
     val data: Data
+
     /**
      * default values
      */

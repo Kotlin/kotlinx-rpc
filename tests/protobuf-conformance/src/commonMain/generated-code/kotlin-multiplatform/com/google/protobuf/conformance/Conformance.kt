@@ -16,6 +16,7 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 interface TestStatus {
     val name: String
     val failureMessage: String
+
     /**
      * What an actual test name matched to in a failure list. Can be wildcarded or
      * an exact match without wildcards.
@@ -46,6 +47,7 @@ interface ConformanceRequest {
      * Which format should the testee serialize its message to?
      */
     val requestedOutputFormat: WireFormat
+
     /**
      * The full name for the test message to use; for the moment, either:
      * protobuf_test_messages.proto3.TestAllTypesProto3 or
@@ -56,21 +58,25 @@ interface ConformanceRequest {
      * protobuf_test_messages.edition_unstable.TestAllTypesEditionUnstable.
      */
     val messageType: String
+
     /**
      * Each test is given a specific test category. Some category may need
      * specific support in testee programs. Refer to the definition of
      * TestCategory for more information.
      */
     val testCategory: TestCategory
+
     /**
      * Specify details for how to encode jspb.
      */
     val jspbEncodingOptions: JspbEncodingConfig
+
     /**
      * This can be used in json and text format. If true, testee should print
      * unknown fields instead of ignore. This feature is optional.
      */
     val printUnknownFields: Boolean
+
     /**
      * The payload (whether protobuf of JSON) is always for a
      * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
