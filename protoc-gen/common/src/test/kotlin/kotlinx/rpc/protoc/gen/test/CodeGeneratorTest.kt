@@ -9,9 +9,11 @@ import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FqNameTable
 import kotlinx.rpc.protoc.gen.core.Platform
+import kotlinx.rpc.protoc.gen.core.ProtoTypeResolver
 import kotlinx.rpc.protoc.gen.core.merge
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.fq
+import kotlinx.rpc.protoc.gen.core.model.fqDec
 import kotlinx.rpc.protoc.gen.core.scoped
 import kotlinx.rpc.protoc.gen.core.wrapIn
 import kotlin.test.Test
@@ -218,7 +220,7 @@ class CodeGeneratorTest {
     fun testMultiLineBlockCommentFormatting() = codeGeneratorTest(generateComments = true) {
         val (_, generated) = generate {
             appendComment(
-                Comment(
+                Comment.fromProto(
                     leadingDetached = listOf("Detached comment"),
                     leading = listOf("Leading comment"),
                     trailing = listOf("Trailing comment"),
@@ -234,6 +236,170 @@ class CodeGeneratorTest {
              * Leading comment
              *
              * Trailing comment
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
+    @Test
+    fun testCommentWithTypeReference() = codeGeneratorTest(generateComments = true) { table ->
+        val myClass = fqDec("com.example", "MyClass")
+        table.register(myClass)
+
+        val (imports, generated) = generate {
+            appendComment(
+                Comment.leading(myClass.scoped().wrapIn { "Returns a [$it] instance." })
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * Returns a [MyClass] instance.
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertTrue { imports.isEmpty() }
+    }
+
+    @Test
+    fun testCommentWithTypeReferenceFromDifferentPackage() = codeGeneratorTest(generateComments = true) { table ->
+        val otherType = fqDec("com.other", "OtherType")
+        table.register(otherType)
+
+        val (imports, generated) = generate {
+            appendComment(
+                Comment.leading(otherType.scoped().wrapIn { "See [$it] for details." })
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * See [OtherType] for details.
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertEquals(setOf("com.other.OtherType"), imports)
+    }
+
+    @Test
+    fun testProtoCommentTypeResolution() = codeGeneratorTest(generateComments = true) { table ->
+        val timestamp = fqDec("com.google.protobuf.kotlin", "Timestamp")
+        table.register(timestamp)
+
+        val resolver = ProtoTypeResolver(
+            fullNameMap = mapOf("google.protobuf.Timestamp" to timestamp),
+            currentPackage = "my.package",
+        )
+
+        val (imports, generated) = generate {
+            appendComment(
+                Comment.fromProto(
+                    leadingDetached = emptyList(),
+                    leading = listOf("Example using [google.protobuf.Timestamp][] values."),
+                    trailing = emptyList(),
+                    resolver = resolver,
+                )
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * Example using [Timestamp] values.
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertEquals(setOf("com.google.protobuf.kotlin.Timestamp"), imports)
+    }
+
+    @Test
+    fun testProtoCommentUnresolvableRefLeftAsIs() = codeGeneratorTest(generateComments = true) {
+        val resolver = ProtoTypeResolver(
+            fullNameMap = emptyMap(),
+            currentPackage = "my.package",
+        )
+
+        val (_, generated) = generate {
+            appendComment(
+                Comment.fromProto(
+                    leadingDetached = emptyList(),
+                    leading = listOf("See [unknown_type][] and [just_text] for details."),
+                    trailing = emptyList(),
+                    resolver = resolver,
+                )
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * See [unknown_type] and [just_text] for details.
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
+    @Test
+    fun testProtoCommentRelativeTypeResolution() = codeGeneratorTest(generateComments = true) { table ->
+        val nestedMsg = fqDec("com.other", "NestedMessage")
+        table.register(nestedMsg)
+
+        val resolver = ProtoTypeResolver(
+            fullNameMap = mapOf("my.package.NestedMessage" to nestedMsg),
+            currentPackage = "my.package",
+        )
+
+        val (imports, generated) = generate {
+            appendComment(
+                Comment.fromProto(
+                    leadingDetached = emptyList(),
+                    leading = listOf("See [NestedMessage] for details."),
+                    trailing = emptyList(),
+                    resolver = resolver,
+                )
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * See [NestedMessage] for details.
+             */
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertEquals(setOf("com.other.NestedMessage"), imports)
+    }
+
+    @Test
+    fun testProtoCommentPercentEscaping() = codeGeneratorTest(generateComments = true) {
+        val resolver = ProtoTypeResolver(
+            fullNameMap = emptyMap(),
+            currentPackage = "my.package",
+        )
+
+        val (_, generated) = generate {
+            appendComment(
+                Comment.fromProto(
+                    leadingDetached = emptyList(),
+                    leading = listOf("Increases throughput by 50%."),
+                    trailing = emptyList(),
+                    resolver = resolver,
+                )
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * Increases throughput by 50%.
              */
             """.trimIndent(),
             generated.trim(),
