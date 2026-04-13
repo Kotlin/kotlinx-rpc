@@ -34,7 +34,7 @@ fun TestAllTypesProto2.copy(body: TestAllTypesProto2.Builder.() -> Unit = {}): T
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2] instance.
  */
 val TestAllTypesProto2.presence: TestAllTypesProto2Presence get() = this.asInternal()._presence
 
@@ -65,7 +65,7 @@ fun ForeignMessageProto2.copy(body: ForeignMessageProto2.Builder.() -> Unit = {}
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.ForeignMessageProto2] instance.
+ * Returns the field-presence view for this [ForeignMessageProto2] instance.
  */
 val ForeignMessageProto2.presence: ForeignMessageProto2Presence get() = this.asInternal()._presence
 
@@ -96,7 +96,7 @@ fun GroupField.copy(body: GroupField.Builder.() -> Unit = {}): GroupField {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.GroupField] instance.
+ * Returns the field-presence view for this [GroupField] instance.
  */
 val GroupField.presence: GroupFieldPresence get() = this.asInternal()._presence
 
@@ -127,7 +127,7 @@ fun UnknownToTestAllTypes.copy(body: UnknownToTestAllTypes.Builder.() -> Unit = 
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes] instance.
+ * Returns the field-presence view for this [UnknownToTestAllTypes] instance.
  */
 val UnknownToTestAllTypes.presence: UnknownToTestAllTypesPresence get() = this.asInternal()._presence
 
@@ -202,7 +202,7 @@ fun OneStringProto2.copy(body: OneStringProto2.Builder.() -> Unit = {}): OneStri
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.OneStringProto2] instance.
+ * Returns the field-presence view for this [OneStringProto2] instance.
  */
 val OneStringProto2.presence: OneStringProto2Presence get() = this.asInternal()._presence
 
@@ -233,7 +233,7 @@ fun ProtoWithKeywords.copy(body: ProtoWithKeywords.Builder.() -> Unit = {}): Pro
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.ProtoWithKeywords] instance.
+ * Returns the field-presence view for this [ProtoWithKeywords] instance.
  */
 val ProtoWithKeywords.presence: ProtoWithKeywordsPresence get() = this.asInternal()._presence
 
@@ -264,7 +264,7 @@ fun TestAllRequiredTypesProto2.copy(body: TestAllRequiredTypesProto2.Builder.() 
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2] instance.
  */
 val TestAllRequiredTypesProto2.presence: TestAllRequiredTypesProto2Presence get() = this.asInternal()._presence
 
@@ -321,7 +321,7 @@ fun TestAllTypesProto2.NestedMessage.copy(body: TestAllTypesProto2.NestedMessage
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.NestedMessage] instance.
  */
 val TestAllTypesProto2.NestedMessage.presence: TestAllTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
 
@@ -352,7 +352,7 @@ fun TestAllTypesProto2.Data.copy(body: TestAllTypesProto2.Data.Builder.() -> Uni
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.Data] instance.
  */
 val TestAllTypesProto2.Data.presence: TestAllTypesProto2Presence.Data get() = this.asInternal()._presence
 
@@ -383,7 +383,7 @@ fun TestAllTypesProto2.MultiWordGroupField.copy(body: TestAllTypesProto2.MultiWo
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.MultiWordGroupField] instance.
  */
 val TestAllTypesProto2.MultiWordGroupField.presence: TestAllTypesProto2Presence.MultiWordGroupField get() = this.asInternal()._presence
 
@@ -410,7 +410,7 @@ fun TestAllTypesProto2.MessageSetCorrect.copy(body: TestAllTypesProto2.MessageSe
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrect] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.MessageSetCorrect] instance.
  */
 val TestAllTypesProto2.MessageSetCorrect.presence: TestAllTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
 
@@ -441,7 +441,7 @@ fun TestAllTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllTypesProto2
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.MessageSetCorrectExtension1] instance.
  */
 val TestAllTypesProto2.MessageSetCorrectExtension1.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
@@ -472,7 +472,7 @@ fun TestAllTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllTypesProto2
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2] instance.
+ * Returns the field-presence view for this [TestAllTypesProto2.MessageSetCorrectExtension2] instance.
  */
 val TestAllTypesProto2.MessageSetCorrectExtension2.presence: TestAllTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
 
@@ -529,7 +529,7 @@ fun UnknownToTestAllTypes.OptionalGroup.copy(body: UnknownToTestAllTypes.Optiona
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup] instance.
+ * Returns the field-presence view for this [UnknownToTestAllTypes.OptionalGroup] instance.
  */
 val UnknownToTestAllTypes.OptionalGroup.presence: UnknownToTestAllTypesPresence.OptionalGroup get() = this.asInternal()._presence
 
@@ -560,7 +560,7 @@ fun TestAllRequiredTypesProto2.NestedMessage.copy(body: TestAllRequiredTypesProt
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2.NestedMessage] instance.
  */
 val TestAllRequiredTypesProto2.NestedMessage.presence: TestAllRequiredTypesProto2Presence.NestedMessage get() = this.asInternal()._presence
 
@@ -591,7 +591,7 @@ fun TestAllRequiredTypesProto2.Data.copy(body: TestAllRequiredTypesProto2.Data.B
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2.Data] instance.
  */
 val TestAllRequiredTypesProto2.Data.presence: TestAllRequiredTypesProto2Presence.Data get() = this.asInternal()._presence
 
@@ -618,7 +618,7 @@ fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(body: TestAllRequiredTypes
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrect] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2.MessageSetCorrect] instance.
  */
 val TestAllRequiredTypesProto2.MessageSetCorrect.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrect get() = this.asInternal()._presence
 
@@ -649,7 +649,7 @@ fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllReq
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2.MessageSetCorrectExtension1] instance.
  */
 val TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension1 get() = this.asInternal()._presence
 
@@ -680,7 +680,7 @@ fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllReq
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2] instance.
+ * Returns the field-presence view for this [TestAllRequiredTypesProto2.MessageSetCorrectExtension2] instance.
  */
 val TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence: TestAllRequiredTypesProto2Presence.MessageSetCorrectExtension2 get() = this.asInternal()._presence
 
@@ -795,8 +795,8 @@ fun TestLargeOneof.A5.copy(body: TestLargeOneof.A5.Builder.() -> Unit = {}): Tes
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.presence] extension property.
+ * Interface providing field-presence information for [TestAllTypesProto2] messages.
+ * Retrieve it via the [TestAllTypesProto2.presence] extension property.
  */
 interface TestAllTypesProto2Presence {
     val hasOptionalInt32: Boolean
@@ -916,8 +916,8 @@ interface TestAllTypesProto2Presence {
     val hasMessageSetCorrect: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.NestedMessage.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto2.NestedMessage] messages.
+     * Retrieve it via the [TestAllTypesProto2.NestedMessage.presence] extension property.
      */
     interface NestedMessage {
         val hasA: Boolean
@@ -926,8 +926,8 @@ interface TestAllTypesProto2Presence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.Data.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto2.Data] messages.
+     * Retrieve it via the [TestAllTypesProto2.Data.presence] extension property.
      */
     interface Data {
         val hasGroupInt32: Boolean
@@ -936,8 +936,8 @@ interface TestAllTypesProto2Presence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MultiWordGroupField.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto2.MultiWordGroupField] messages.
+     * Retrieve it via the [TestAllTypesProto2.MultiWordGroupField.presence] extension property.
      */
     interface MultiWordGroupField {
         val hasGroupInt32: Boolean
@@ -948,16 +948,16 @@ interface TestAllTypesProto2Presence {
     interface MessageSetCorrect
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension1.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto2.MessageSetCorrectExtension1] messages.
+     * Retrieve it via the [TestAllTypesProto2.MessageSetCorrectExtension1.presence] extension property.
      */
     interface MessageSetCorrectExtension1 {
         val hasStr: Boolean
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllTypesProto2.MessageSetCorrectExtension2.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto2.MessageSetCorrectExtension2] messages.
+     * Retrieve it via the [TestAllTypesProto2.MessageSetCorrectExtension2.presence] extension property.
      */
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
@@ -965,16 +965,16 @@ interface TestAllTypesProto2Presence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.ForeignMessageProto2] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.ForeignMessageProto2.presence] extension property.
+ * Interface providing field-presence information for [ForeignMessageProto2] messages.
+ * Retrieve it via the [ForeignMessageProto2.presence] extension property.
  */
 interface ForeignMessageProto2Presence {
     val hasC: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.GroupField] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.GroupField.presence] extension property.
+ * Interface providing field-presence information for [GroupField] messages.
+ * Retrieve it via the [GroupField.presence] extension property.
  */
 interface GroupFieldPresence {
     val hasGroupInt32: Boolean
@@ -983,8 +983,8 @@ interface GroupFieldPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.presence] extension property.
+ * Interface providing field-presence information for [UnknownToTestAllTypes] messages.
+ * Retrieve it via the [UnknownToTestAllTypes.presence] extension property.
  */
 interface UnknownToTestAllTypesPresence {
     val hasOptionalInt32: Boolean
@@ -998,8 +998,8 @@ interface UnknownToTestAllTypesPresence {
     val hasOptionalBool: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.UnknownToTestAllTypes.OptionalGroup.presence] extension property.
+     * Interface providing field-presence information for [UnknownToTestAllTypes.OptionalGroup] messages.
+     * Retrieve it via the [UnknownToTestAllTypes.OptionalGroup.presence] extension property.
      */
     interface OptionalGroup {
         val hasA: Boolean
@@ -1007,16 +1007,16 @@ interface UnknownToTestAllTypesPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.OneStringProto2] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.OneStringProto2.presence] extension property.
+ * Interface providing field-presence information for [OneStringProto2] messages.
+ * Retrieve it via the [OneStringProto2.presence] extension property.
  */
 interface OneStringProto2Presence {
     val hasData: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.ProtoWithKeywords] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.ProtoWithKeywords.presence] extension property.
+ * Interface providing field-presence information for [ProtoWithKeywords] messages.
+ * Retrieve it via the [ProtoWithKeywords.presence] extension property.
  */
 interface ProtoWithKeywordsPresence {
     val hasInline: Boolean
@@ -1025,8 +1025,8 @@ interface ProtoWithKeywordsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.presence] extension property.
+ * Interface providing field-presence information for [TestAllRequiredTypesProto2] messages.
+ * Retrieve it via the [TestAllRequiredTypesProto2.presence] extension property.
  */
 interface TestAllRequiredTypesProto2Presence {
     val hasRequiredInt32: Boolean
@@ -1108,8 +1108,8 @@ interface TestAllRequiredTypesProto2Presence {
     val hasDefaultBytes: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.NestedMessage.presence] extension property.
+     * Interface providing field-presence information for [TestAllRequiredTypesProto2.NestedMessage] messages.
+     * Retrieve it via the [TestAllRequiredTypesProto2.NestedMessage.presence] extension property.
      */
     interface NestedMessage {
         val hasA: Boolean
@@ -1120,8 +1120,8 @@ interface TestAllRequiredTypesProto2Presence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.Data.presence] extension property.
+     * Interface providing field-presence information for [TestAllRequiredTypesProto2.Data] messages.
+     * Retrieve it via the [TestAllRequiredTypesProto2.Data.presence] extension property.
      */
     interface Data {
         val hasGroupInt32: Boolean
@@ -1132,16 +1132,16 @@ interface TestAllRequiredTypesProto2Presence {
     interface MessageSetCorrect
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence] extension property.
+     * Interface providing field-presence information for [TestAllRequiredTypesProto2.MessageSetCorrectExtension1] messages.
+     * Retrieve it via the [TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence] extension property.
      */
     interface MessageSetCorrectExtension1 {
         val hasStr: Boolean
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence] extension property.
+     * Interface providing field-presence information for [TestAllRequiredTypesProto2.MessageSetCorrectExtension2] messages.
+     * Retrieve it via the [TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence] extension property.
      */
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
