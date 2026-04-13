@@ -75,7 +75,7 @@ The key signal is which annotation/API the code uses, **not** the serialization 
 | `Documentation`   | Docs site, Writerside pages, examples                                                                                                                                                                                                                                                |
 | `Other`           | Anything that doesn't fit above                                                                                                                                                                                                                                                      |
 
-Multiple scopes are fine when an issue spans areas (e.g., `"Compiler Plugin, kRPC, Core"`).
+Multiple scopes are fine when an issue spans areas (e.g., `["Compiler Plugin", "kRPC", "Core"]`).
 
 ### Type (pick one)
 
@@ -210,7 +210,7 @@ description: "<markdown description following patterns above>"
 customFields: {
   "Type": "<one of the types above>",
   "Priority": "<priority>",
-  "Scope": ["<scope1>", "<scope2>"]   # MUST be a JSON array, not a comma-separated string
+  "Scope": ["<scope1>", "<scope2>"]   # MUST be a JSON array, not a comma-separated string, even if there's only one
 }
 ```
 

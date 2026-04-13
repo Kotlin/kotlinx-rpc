@@ -400,6 +400,13 @@ the checkboxes as optional when the user asks to address feedback.
 
 Service outages follow the No Silent Fallback policy above.
 
+## Filing Follow-Up Issues
+
+If you discover related bugs, latent risks, or follow-up work during any phase, file
+them as YouTrack issues immediately rather than losing the context. Follow the rules
+in `references/filing-follow-up-issues.md` — especially the **mandatory `Vibe-report`
+tag** for all AI-created issues.
+
 ## Escalate to User
 
 Stop and report instead of continuing to grind when:
