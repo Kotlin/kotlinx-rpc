@@ -14,26 +14,32 @@ public interface Type {
      * The fully qualified message name.
      */
     public val name: String
+
     /**
      * The list of fields.
      */
     public val fields: List<Field>
+
     /**
      * The list of types appearing in `oneof` definitions in this type.
      */
     public val oneofs: List<String>
+
     /**
      * The protocol buffer options.
      */
     public val options: List<Option>
+
     /**
      * The source context.
      */
     public val sourceContext: SourceContext
+
     /**
      * The source syntax.
      */
     public val syntax: Syntax
+
     /**
      * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
      */
@@ -49,40 +55,49 @@ public interface Field {
      * The field type.
      */
     public val kind: Kind
+
     /**
      * The field cardinality.
      */
     public val cardinality: Cardinality
+
     /**
      * The field number.
      */
     public val number: Int
+
     /**
      * The field name.
      */
     public val name: String
+
     /**
      * The field type URL, without the scheme, for message or enumeration
      * types. Example: `"type.googleapis.com/google.protobuf.Timestamp"`.
      */
     public val typeUrl: String
+
     /**
      * The index of the field type in `Type.oneofs`, for message or enumeration
      * types. The first type has index 1; zero means the type is not in the list.
      */
     public val oneofIndex: Int
+
     /**
      * Whether to use alternative packed wire representation.
      */
     public val packed: Boolean
+
     /**
      * The protocol buffer options.
      */
     public val options: List<Option>
+
     /**
      * The field JSON name.
      */
     public val jsonName: String
+
     /**
      * The string value of the default value of this field. Proto2 syntax only.
      */
@@ -235,22 +250,27 @@ public interface Enum {
      * Enum type name.
      */
     public val name: String
+
     /**
      * Enum value definitions.
      */
     public val enumvalue: List<EnumValue>
+
     /**
      * Protocol buffer options.
      */
     public val options: List<Option>
+
     /**
      * The source context.
      */
     public val sourceContext: SourceContext
+
     /**
      * The source syntax.
      */
     public val syntax: Syntax
+
     /**
      * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
      */
@@ -266,10 +286,12 @@ public interface EnumValue {
      * Enum value name.
      */
     public val name: String
+
     /**
      * Enum value number.
      */
     public val number: Int
+
     /**
      * Protocol buffer options.
      */
@@ -289,6 +311,7 @@ public interface Option {
      * `"google.api.http"`.
      */
     public val name: String
+
     /**
      * The option's value packed in an Any message. If the value is a primitive,
      * the corresponding wrapper type defined in google/protobuf/wrappers.proto

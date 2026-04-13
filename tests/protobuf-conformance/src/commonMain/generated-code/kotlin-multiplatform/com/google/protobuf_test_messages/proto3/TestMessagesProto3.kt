@@ -62,6 +62,7 @@ interface TestAllTypesProto3 {
     val optionalStringPiece: String
     val optionalCord: String
     val recursiveMessage: TestAllTypesProto3
+
     /**
      * Repeated
      */
@@ -86,6 +87,7 @@ interface TestAllTypesProto3 {
     val repeatedForeignEnum: List<ForeignEnum>
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
+
     /**
      * Packed
      */
@@ -103,6 +105,7 @@ interface TestAllTypesProto3 {
     val packedDouble: List<Double>
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
+
     /**
      * Unpacked
      */
@@ -120,6 +123,7 @@ interface TestAllTypesProto3 {
     val unpackedDouble: List<Double>
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
+
     /**
      * Map
      */
@@ -142,6 +146,7 @@ interface TestAllTypesProto3 {
     val mapStringForeignMessage: Map<String, ForeignMessage>
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnum>
+
     /**
      * Well-known types
      */
@@ -179,6 +184,7 @@ interface TestAllTypesProto3 {
     val repeatedValue: List<Value>
     val repeatedListValue: List<ListValue>
     val repeatedEmpty: List<Empty>
+
     /**
      * Test field-name-to-JSON-name convention.
      * (protobuf says names can be any valid C/C++ identifier.)

@@ -39,6 +39,7 @@ interface TestAllTypesEdition2023 {
     val optionalStringPiece: String?
     val optionalCord: String?
     val recursiveMessage: TestAllTypesEdition2023
+
     /**
      * Repeated
      */
@@ -63,6 +64,7 @@ interface TestAllTypesEdition2023 {
     val repeatedForeignEnum: List<ForeignEnumEdition2023>
     val repeatedStringPiece: List<String>
     val repeatedCord: List<String>
+
     /**
      * Packed
      */
@@ -80,6 +82,7 @@ interface TestAllTypesEdition2023 {
     val packedDouble: List<Double>
     val packedBool: List<Boolean>
     val packedNestedEnum: List<NestedEnum>
+
     /**
      * Unpacked
      */
@@ -97,6 +100,7 @@ interface TestAllTypesEdition2023 {
     val unpackedDouble: List<Double>
     val unpackedBool: List<Boolean>
     val unpackedNestedEnum: List<NestedEnum>
+
     /**
      * Map
      */

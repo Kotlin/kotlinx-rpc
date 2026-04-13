@@ -126,6 +126,7 @@ public interface Any {
      * used with implementation specific semantics.
      */
     public val typeUrl: String
+
     /**
      * Must be a valid serialized protocol buffer of the above specified type.
      */

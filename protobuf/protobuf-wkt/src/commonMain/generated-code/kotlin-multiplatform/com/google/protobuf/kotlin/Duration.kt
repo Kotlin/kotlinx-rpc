@@ -73,6 +73,7 @@ public interface Duration {
      * 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
      */
     public val seconds: Long
+
     /**
      * Signed fractions of a second at nanosecond resolution of the span
      * of time. Durations less than one second are represented with a 0

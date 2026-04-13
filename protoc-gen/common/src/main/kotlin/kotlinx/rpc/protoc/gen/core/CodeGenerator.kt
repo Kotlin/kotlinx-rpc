@@ -320,6 +320,9 @@ open class CodeGenerator(
             "If property is mutable, with a PropertyInitializer.GETTER, it should have a setter as well"
         }
 
+        if (config.generateComments && comment != null && !comment.isEmpty()) {
+            this.needsNewLineAfterDeclaration = true
+        }
         appendComment(comment)
         for (annotation in annotations) {
             selectNames {
@@ -375,6 +378,9 @@ open class CodeGenerator(
         needsNewLineAfterDeclaration: Boolean = true,
         initializer: CodeGenerator.() -> Unit,
     ) {
+        if (config.generateComments && comment != null && !comment.isEmpty()) {
+            this.needsNewLineAfterDeclaration = true
+        }
         appendComment(comment)
         for (annotation in annotations) {
             selectNames {

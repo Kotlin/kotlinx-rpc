@@ -182,6 +182,39 @@ class CodeGeneratorTest {
     }
 
     @Test
+    fun testBlankLineBeforePropertyWithComment() = codeGeneratorTest(generateComments = true) {
+        val (_, generated) = generate {
+            property(
+                name = "name",
+                comment = Comment.leading("file name, relative to root of source tree"),
+                type = FqName.Implicits.String.scoped().wrapIn { "$it?" },
+                needsNewLineAfterDeclaration = false,
+            )
+            property(
+                name = "`package`",
+                comment = Comment.leading("e.g. \"foo\", \"foo.bar\", etc."),
+                type = FqName.Implicits.String.scoped().wrapIn { "$it?" },
+                needsNewLineAfterDeclaration = true,
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * file name, relative to root of source tree
+             */
+            val name: String?
+
+            /**
+             * e.g. "foo", "foo.bar", etc.
+             */
+            val `package`: String?
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
+    @Test
     fun testMultiLineBlockCommentFormatting() = codeGeneratorTest(generateComments = true) {
         val (_, generated) = generate {
             appendComment(
