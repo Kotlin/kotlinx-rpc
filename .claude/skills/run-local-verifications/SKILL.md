@@ -166,7 +166,25 @@ Diagnostic tests verify the compiler plugin reports errors/warnings correctly.
 
 **Test data**: `tests/compiler-plugin-tests/src/testData/box/` and `.../diagnostics/`
 
-**Updating golden files**: pass system property `kotlin.test.update.test.data=true`
+**Updating golden files**: Use the `updateTestData.sh` script:
+```bash
+./updateTestData.sh BoxTest           # update all box test golden files
+./updateTestData.sh DiagnosticTest    # update all diagnostic test golden files
+./updateTestData.sh BoxTest testName  # update a single test's golden file
+```
+
+The script passes `-Pkotlin.test.update.test.data=true` to Gradle. The build script at
+`tests/compiler-plugin-tests/build.gradle.kts` reads this Gradle project property and
+forwards it to the test JVM via `systemProperty()`. The test framework then overwrites
+golden files (`.fir.txt`, `.fir.ir.txt`) with actual output instead of asserting.
+
+**Do NOT use the Gradle MCP's `additionalSystemProps`** to pass this property -- that
+sets properties on the Gradle daemon process, not on the forked test JVM, so it has no
+effect. The property must be passed as a `-P` Gradle project property (either via the
+shell script or by adding `-Pkotlin.test.update.test.data=true` to the Gradle arguments
+when using the `running_gradle_tests` skill).
+
+After updating, review diffs with `git diff` to confirm changes match expectations.
 
 **Note**: These tests are skipped for Kotlin master builds.
 

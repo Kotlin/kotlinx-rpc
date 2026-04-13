@@ -18,15 +18,39 @@ identify compilation failures, and fix them.
 
 ## Input
 
-The user provides one or more Kotlin versions to verify. If none are given, check all
-currently known supported versions by inspecting the CSM template version ranges in
-these files:
+The user provides one or more Kotlin versions to verify. If none are given, determine
+the set of versions to test by inspecting the CSM template version ranges in these files:
 - `compiler-plugin/compiler-plugin-backend/src/main/templates/kotlinx/rpc/codegen/VersionSpecificApiImpl.kt`
 - `compiler-plugin/compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/FirVersionSpecificApiImpl.kt`
 
-Extract the distinct version ranges from `//##csm specific=[...]` directives and pick
-one representative version per range (the lower bound), plus the current default from
-`versions-root/libs.versions.toml` `kotlin-lang`. These are the versions to verify.
+Extract the distinct version ranges from `//##csm specific=[...]` directives. For each
+range, pick one **actually published** Kotlin release that falls within it. Also include
+the current default from `versions-root/libs.versions.toml` `kotlin-lang`.
+
+### CSM range boundaries are NOT real Kotlin versions
+
+CSM range lower bounds (e.g., `2.1.22`, `2.1.11`, `2.4.0`) represent the Kotlin version
+that introduced an API change, but that exact version may never have been published as a
+stable release. Kotlin publishes specific patch versions (like `2.1.0`, `2.1.20`, `2.2.0`,
+`2.2.20`), not every number in sequence. **Never use CSM boundary values directly as build
+versions** — they will fail to resolve from Maven Central.
+
+### Resolving real versions for each range
+
+For each CSM range, find the lowest published Kotlin release that falls within it:
+
+1. Read the range bounds (e.g., `2.1.22...2.3.*`)
+2. Look up actual published Kotlin releases. Use the `managing_gradle_dependencies` skill
+   to query Maven Central for available versions of `org.jetbrains.kotlin:kotlin-stdlib`
+   if you are unsure which versions exist.
+3. Pick the first published version that falls within the range.
+4. If the range's lower bound hasn't been published yet and no published version falls
+   within it, that range covers a future Kotlin version — test it via the **Kotlin Master**
+   workflow below, not by guessing a version number.
+
+Kotlin publishes in a pattern: `X.Y.0`, then `X.Y.10`, `X.Y.20`, etc. (not sequential
+patches). For example, after `2.1.0` the next release was `2.1.10`, then `2.1.20`,
+then `2.1.21` — there was never a `2.1.1` through `2.1.9` or a `2.1.11` through `2.1.19`.
 
 The user may also request testing against **Kotlin Master** -- see the dedicated section
 below.
@@ -70,9 +94,9 @@ After testing all versions, present a summary table:
 | Version | Status | Errors |
 |---------|--------|--------|
 | 2.1.0   | PASS   |        |
-| 2.2.0   | PASS   |        |
-| 2.3.0   | FAIL   | 3 errors in FirVersionSpecificApiImpl.kt |
-| 2.4.0   | FAIL   | 5 errors in VersionSpecificApiImpl.kt    |
+| 2.1.20  | PASS   |        |
+| 2.2.0   | FAIL   | 3 errors in FirVersionSpecificApiImpl.kt |
+| 2.3.0   | FAIL   | 5 errors in VersionSpecificApiImpl.kt    |
 ```
 
 If everything passes, report success and stop.
@@ -194,9 +218,9 @@ All versions verified successfully:
 | Version | Status |
 |---------|--------|
 | 2.1.0   | PASS   |
+| 2.1.20  | PASS   |
 | 2.2.0   | PASS   |
 | 2.3.0   | PASS   |
-| 2.4.0   | PASS   |
 ```
 
 ## Testing with Kotlin Master
@@ -277,6 +301,37 @@ All CSM template files that may need changes:
 | k2 | `templates/.../checkers/diagnostics/RpcKtDiagnosticsContainer.kt` | Diagnostic renderer registration |
 | k2 | `templates/.../checkers/diagnostics/RpcKtDiagnosticFactoryToRendererMap.kt` | Diagnostic map construction |
 | cli | `templates/.../CompilerPluginRegistrar.kt` | Plugin registration (`pluginId` property) |
+
+## Updating Golden Test Data
+
+After fixing CSM templates, the compiler plugin's generated IR/FIR output may change,
+causing golden file mismatches in `:tests:compiler-plugin-tests`. Update them with:
+
+```bash
+./updateTestData.sh <TestRunner> [testMethod]
+```
+
+Examples:
+- `./updateTestData.sh BoxTest` -- update all box test golden files
+- `./updateTestData.sh DiagnosticTest` -- update all diagnostic test golden files
+- `./updateTestData.sh BoxTest mySpecificTest` -- update a single test's golden file
+
+The script passes `-Pkotlin.test.update.test.data=true` to Gradle, which the build script
+forwards to the test JVM as a system property. The test framework then overwrites golden
+files (`.fir.txt`, `.fir.ir.txt`) with actual output instead of asserting against them.
+
+**Important**: The Gradle MCP's `additionalSystemProps` sets properties on the Gradle
+daemon, NOT on the forked test JVM. Do not try to pass `kotlin.test.update.test.data`
+that way -- it will have no effect. The property must go through `-P` (Gradle project
+property), which the build script at `tests/compiler-plugin-tests/build.gradle.kts:117-139`
+explicitly reads and forwards via `systemProperty()`.
+
+If you need to run this through the `running_gradle_tests` skill instead of the shell
+script, pass the property as a Gradle `-P` flag in the additional arguments:
+`-Pkotlin.test.update.test.data=true`
+
+After updating, review the golden file diffs with `git diff` to confirm the changes match
+your expectations, then commit the updated files alongside your CSM template changes.
 
 ## Debugging Tips
 

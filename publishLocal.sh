@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-./gradlew publishAllPublicationsToBuildRepoRepository
-./gradlew -p compiler-plugin publishAllPublicationsToBuildRepoRepository --no-configuration-cache
-./gradlew -p gradle-plugin publishAllPublicationsToBuildRepoRepository --no-configuration-cache
-./gradlew -p protoc-gen publishAllPublicationsToBuildRepoRepository --no-configuration-cache
+./gradlew publishAllPublicationsToBuildRepoRepository "$@"
+./gradlew -p compiler-plugin publishAllPublicationsToBuildRepoRepository --no-configuration-cache "$@"
+./gradlew -p gradle-plugin publishAllPublicationsToBuildRepoRepository --no-configuration-cache "$@"
+./gradlew -p protoc-gen publishAllPublicationsToBuildRepoRepository --no-configuration-cache "$@"
