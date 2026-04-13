@@ -10,6 +10,9 @@ its analysis section underneath.
 
 ## Template (Step 2)
 
+Follow the `<details>` template format exactly — do not substitute it with plain
+`##` headings or other layouts, no exceptions.
+
 ```markdown
 {{original-issue-body — preserved exactly as-is, no edits}}
 
@@ -35,6 +38,27 @@ existing Agent Analysis section. Examples:
 - Additional modules turned out to be affected
 - Edge cases found during testing
 - Related issues discovered
+
+## Formatting — CRITICAL
+
+When passing the `description` parameter to the YouTrack MCP tool, the value must
+contain **actual newlines** — not literal `\n` escape sequences. If you write `\n`
+in the parameter string, YouTrack will store and render it as the literal characters
+`\n`, producing a wall of unformatted text.
+
+**Wrong** (literal escape sequences — renders as one line):
+```
+"First line\n\nSecond line\n\n## Heading"
+```
+
+**Correct** (actual newlines in the parameter value):
+```
+"First line
+
+Second line
+
+## Heading"
+```
 
 ## Guidelines
 

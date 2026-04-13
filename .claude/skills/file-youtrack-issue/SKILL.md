@@ -214,6 +214,10 @@ customFields: {
 }
 ```
 
+**Multiline text fields (`description`, `summary`):** The parameter value must contain
+actual newlines, not literal `\n` escape sequences. YouTrack stores the string as-is —
+literal `\n` will render as visible `\n` characters instead of line breaks.
+
 Then immediately add the `Vibe-report` tag (mandatory for AI-created issues) plus any other
 relevant tags with `mcp__youtrack__manage_issue_tags`.
 

@@ -112,6 +112,10 @@ Use `mcp__youtrack__update_issue` to modify summary, description, or custom fiel
 **Important:** `Scope` is an array-typed field — always pass it as a JSON array
 (e.g., `["Housekeeping", "Infra"]`), never as a comma-separated string.
 
+**Multiline text fields (`description`, `summary`):** The parameter value must contain
+actual newlines, not literal `\n` escape sequences. YouTrack stores the string as-is —
+literal `\n` will render as visible `\n` characters instead of line breaks.
+
 ### Change assignee
 Use `mcp__youtrack__change_issue_assignee` with the user login.
 Find user logins with `mcp__youtrack__find_user`.
