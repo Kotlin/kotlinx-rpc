@@ -26,12 +26,12 @@
         </tr>
         <tr>
             <td>Core</td>
-            <td>Jvm, Js, WasmJs, WasmWasi, Apple, Linux, Windows</td>
+            <td>Jvm (incl. Android), Js, WasmJs, WasmWasi, Apple, Linux, Windows</td>
             <td></td>
         </tr>
         <tr>
             <td>kRPC</td>
-            <td>Jvm, Js, WasmJs, Apple, Linux, Windows</td>
+            <td>Jvm (incl. Android), Js, WasmJs, Apple, Linux, Windows</td>
             <td>
                 WasmWasi is blocked by <a href="https://github.com/oshai/kotlin-logging/issues/433">kotlin-logging</a>.
             </td>
@@ -42,6 +42,16 @@
             <td></td>
         </tr>
     </table>
+
+    <note>
+        <b>Android:</b>
+        Core and kRPC modules publish Jvm artifacts that can be used as dependencies in Android projects.
+        The gRPC subsystem additionally provides first-class Android integration through the Gradle plugin,
+        including support for Android source sets, build variants, product flavors,
+        and AGP 9.x projects with built-in Kotlin support.
+        See <a href="grpc-configuration.topic" anchor="grpc-android-setup">gRPC Configuration</a>
+        for Android setup details.
+    </note>
 
     <p>
         The following table contains a list of all published modules and their supported platforms.
