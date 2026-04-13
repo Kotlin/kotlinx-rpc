@@ -24,7 +24,13 @@ internal class WireDecoderJvm(source: Source) : WireDecoder {
         if (codedInputStream.isAtEnd) return null
 
         val posBefore = codedInputStream.totalBytesRead
-        val raw64 = codedInputStream.readRawVarint64()
+        val raw64 = try {
+            codedInputStream.readRawVarint64()
+        } catch (e: InvalidProtocolBufferException) {
+            // readRawVarint64() throws for varints exceeding 10 bytes.
+            // Convert to ProtobufDecodingException so callers only need to handle one type.
+            throw ProtobufDecodingException(e.message ?: "Malformed varint", e)
+        }
         val bytesUsed = codedInputStream.totalBytesRead - posBefore
 
         // A valid tag must fit in 32 bits (29-bit field number + 3-bit wire type).

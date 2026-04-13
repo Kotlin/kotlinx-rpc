@@ -235,17 +235,18 @@ extern "C" {
     }
 
     int pw_decoder_read_validated_tag(pw_decoder_t *self, uint32_t *tag_out) {
+        // Check for end-of-stream BEFORE attempting to read. ReadVarint64's
+        // fast-path array reader (ReadVarint64FromArray) does not advance the
+        // internal buffer pointer on failure (e.g., >10-byte varints), making
+        // post-failure ConsumedEntireMessage() unreliable.
+        if (self->codedInputStream.ConsumedEntireMessage()) {
+            return 0; // legitimate end of stream
+        }
+
         int pos_before = self->codedInputStream.CurrentPosition();
 
         uint64_t raw64;
         if (!self->codedInputStream.ReadVarint64(&raw64)) {
-            // Use ConsumedEntireMessage() to distinguish
-            // legitimate end-of-stream from actual errors (like >10-byte varints).
-            // Note: CurrentPosition() alone is insufficient because ReadVarint64's
-            // fast-path array reader does not advance the buffer pointer on failure.
-            if (self->codedInputStream.ConsumedEntireMessage()) {
-                return 0; // legitimate end of stream
-            }
             return -1; // error (>10-byte varint, truncated varint, etc.)
         }
 
