@@ -153,6 +153,7 @@ internal open class DefaultProtoSourceSet(
 
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
+    override val dependencyImports: ConfigurableFileCollection = project.objects.fileCollection()
 
     override fun importsFrom(protoSourceSet: ProtoSourceSet) {
         imports.add(protoSourceSet.checkSelfImport())

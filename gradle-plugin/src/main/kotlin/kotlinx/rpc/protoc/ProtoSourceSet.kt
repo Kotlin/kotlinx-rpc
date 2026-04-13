@@ -260,6 +260,36 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
     public val fileImports: ConfigurableFileCollection
 
     /**
+     * A collection of archive files (JARs, ZIPs) that contain proto files to import.
+     * Proto files (`.proto`) will be extracted from all archives and made available as imports
+     * for code generation, but will not be used for code generation themselves.
+     *
+     * Accepts Gradle [org.gradle.api.artifacts.Configuration]s, [org.gradle.api.file.FileCollection]s,
+     * or individual archive files.
+     *
+     * Unlike [fileImports] which expects individual `.proto` files, this property expects archive files.
+     * Non-archive files will cause a build error.
+     *
+     * When multiple archives contain the same `.proto` file, only one copy is kept and a warning is emitted.
+     *
+     * Example:
+     * ```kotlin
+     * val protoImport by configurations.creating
+     * dependencies {
+     *     protoImport("com.example:shared-protos:1.0")
+     * }
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             dependencyImports.from(protoImport)
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public val dependencyImports: ConfigurableFileCollection
+
+    /**
      * Proto source sets that this source set extends from.
      * All proto files from [protoSourceSet] will be used for code generation.
      * All imports [protoSourceSet] will be included as well.

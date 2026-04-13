@@ -57,6 +57,14 @@ public const val PROTO_FILES_DIR: String = "proto"
 public const val PROTO_FILES_IMPORT_DIR: String = "import"
 
 /**
+ * Source directory for proto files extracted from dependency archives (JARs, ZIPs)
+ * in [PROTO_BUILD_SOURCE_SETS].
+ *
+ * These files are included as imports in the `buf generate` task, but don't get processed by it.
+ */
+public const val PROTO_FILES_DEPENDENCY_IMPORT_DIR: String = "dependencyImport"
+
+/**
  * [Configuration] name for the `protoc-gen-kotlin-multiplatform` protoc plugin artifact.
  *
  * MUST be a single file.

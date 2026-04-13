@@ -32,7 +32,13 @@ public abstract class GenerateBufYaml @Inject internal constructor(
     internal abstract val importSourceDir: Property<String>
 
     @get:Input
+    internal abstract val dependencyImportSourceDir: Property<String>
+
+    @get:Input
     internal abstract val withImport: Property<Boolean>
+
+    @get:Input
+    internal abstract val withDependencyImport: Property<Boolean>
 
     /**
      * The `buf.yaml` file to generate/update.
@@ -74,6 +80,13 @@ public abstract class GenerateBufYaml @Inject internal constructor(
                 writer.appendLine("  - path: $modulePath")
             }
 
+            val dependencyImportDirName = dependencyImportSourceDir.get()
+            val dependencyImportDir = file.parentFile.resolve(dependencyImportDirName)
+            if (withDependencyImport.get() && dependencyImportDir.exists()) {
+                val modulePath = dependencyImportDir.relativeTo(file.parentFile)
+                writer.appendLine("  - path: $modulePath")
+            }
+
             writer.flush()
         }
     }
@@ -88,7 +101,9 @@ internal fun Project.registerGenerateBufYamlTask(
     buildSourceSetsDir: File,
     buildSourceSetsProtoDir: File,
     buildSourceSetsImportDir: File,
+    buildSourceSetsDependencyImportDir: File,
     withImport: Provider<Boolean>,
+    withDependencyImport: Provider<Boolean>,
     properties: ProtoTask.Properties,
     configure: GenerateBufYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufYaml> {
@@ -97,7 +112,9 @@ internal fun Project.registerGenerateBufYamlTask(
     task.configure {
         protoSourceDir.convention(buildSourceSetsProtoDir.name)
         importSourceDir.convention(buildSourceSetsImportDir.name)
+        dependencyImportSourceDir.convention(buildSourceSetsDependencyImportDir.name)
         this.withImport.convention(withImport)
+        this.withDependencyImport.convention(withDependencyImport)
 
         val bufYamlFile = buildSourceSetsDir
             .resolve(BUF_YAML)

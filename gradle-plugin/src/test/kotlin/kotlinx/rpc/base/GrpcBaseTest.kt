@@ -32,6 +32,7 @@ abstract class GrpcBaseTest : BaseTest() {
         runNonExistentTask(bufGenerate(set))
         runNonExistentTask(processProtoFiles(set))
         runNonExistentTask(processProtoFilesImports(set))
+        runNonExistentTask(extractDependencyProtoImports(set))
         runNonExistentTask(generateBufYaml(set))
         runNonExistentTask(generateBufGenYaml(set))
     }
@@ -165,6 +166,10 @@ abstract class GrpcBaseTest : BaseTest() {
 
         fun assertWorkspaceImportProtoFilesCopied(sourceSet: SSets, vararg files: Path) {
             assertWorkspaceProtoFilesCopiedInternal(*files, sourceSet = sourceSet, dir = "import")
+        }
+
+        fun assertWorkspaceDependencyImportProtoFilesCopied(sourceSet: SSets, vararg files: Path) {
+            assertWorkspaceProtoFilesCopiedInternal(*files, sourceSet = sourceSet, dir = "dependencyImport")
         }
 
         @OptIn(ExperimentalPathApi::class)
@@ -442,6 +447,7 @@ inputs:
         fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
         fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
         fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
+        fun extractDependencyProtoImports(sourceSet: SSets) = "extract${sourceSet.capital}DependencyProtoImports"
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
 

@@ -33,6 +33,28 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependency Imports`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractDependencyProtoImports(mainSourceSet))
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceDependencyImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.main)
+    }
+
+    @TestFactory
     fun `No gRPC`() = runGrpcTest {
         SSetsJvm.entries.forEach {
             runNonExistentTasksForSourceSet(it)
