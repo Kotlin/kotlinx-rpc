@@ -106,14 +106,49 @@ Read the issue via `youtrack-agent` MCP. Then do **all four** — none are optio
 
 1. **Assign** to `AI Agent [Kxrpc]` (look up the login once, cache it).
 2. **Set state** to `In progress`.
-3. **Set sprint** to the current active planning period if none set. The last
-   non-checkmarked `[Kxrpc] Planning Period` is typically active. If ambiguous, check
-   which period has `In progress` issues.
+3. **Set sprint** to the current active planning period if none set. To find it,
+   use `get_issue_fields_schema` for the KRPC project and look at the sprint/planning
+   period field — it enumerates all periods. The last non-checkmarked `[Kxrpc]
+   Planning Period` is typically active. If ambiguous, check which period has
+   `In progress` issues. Do **not** search for planning periods as tags — they are
+   custom fields, not tags.
 4. **Check for linked GH issue** — look for a `github-issue` tag on the ticket. If
    present, find and note the GH issue number now. You will need it in Phase D
    (commit message and PR body `Fixes #NNN`).
 
-### A.2: Analyze the Problem
+### A.2: Set Up the Worktree
+
+Create the worktree **before** exploring code so that all analysis runs against the
+latest `origin/main`, not whatever the original repo happens to have checked out.
+
+```bash
+git fetch origin main
+git worktree add -b <branch-name> /tmp/krpc-<issue-id> origin/main
+```
+
+Branch naming: `fix/KRPC-<N>` (bugs), `feat/KRPC-<N>` (features), `task/KRPC-<N>` (tasks).
+
+**Create `local.properties` in the worktree** — Gradle builds require it.
+Use the template at `assets/local.properties.template` (relative to this skill's directory),
+replacing `<User>` with the actual macOS username from `$HOME`.
+
+```bash
+sed "s|<User>|$(whoami)|g" .claude/skills/fix-issue/assets/local.properties.template \
+  > /tmp/krpc-<issue-id>/local.properties
+```
+
+When using Gradle skills, **always use the worktree root** (e.g., `/tmp/krpc-KRPC-NNN`)
+as `projectRoot` — even for included builds (`compiler-plugin/`, `gradle-plugin/`,
+`protoc-gen/`, `dokka-plugin/`). The Gradle MCP rejects included build subdirectories
+as `projectRoot` because they have no Gradle wrapper. Address included build tasks
+from the root with their composite prefix (the directory name passed to `includeBuild()`):
+`:protoc-gen:common:test`, `:compiler-plugin:compiler-plugin-backend:build`,
+`:dokka-plugin:build`, etc.
+
+All subsequent operations — code exploration, searches, builds, tests — use the
+worktree path.
+
+### A.3: Analyze the Problem
 
 Read the issue body, **all comments**, and **all linked issues** — comments and linked issues often contain critical context,
 reproductions, workarounds, or scope changes that aren't in the original description.
@@ -145,9 +180,14 @@ stop and report to the user rather than doing redundant work.
 
 #### For bugs: investigate root cause
 
-**Always Invoke** `superpowers:systematic-debugging` (via the Skill tool — not just
-mentally following its ideas) before posting the triage comment. The skill's
-structured checklist must be followed, not approximated:
+**Usability problems** (confusing behavior, poor defaults, rough ergonomics) with an
+obvious root cause are not bugs in the systematic-debugging sense — they don't need
+reproduction or data-flow tracing. Treat them like tasks: document the problem and
+planned approach in the triage comment, then follow the Standard path in B.2.
+
+For all other bugs, **Always Invoke** `superpowers:systematic-debugging` (via the
+Skill tool — not just mentally following its ideas) before posting the triage
+comment. The skill's structured checklist must be followed, not approximated:
 - Reproduce the issue (or confirm it from the description)
 - Trace the data flow backward from the error to find where incorrect state originates
 - Form a specific, concrete hypothesis — not "something with serialization" but
@@ -177,7 +217,8 @@ The comment is the proof that analysis happened. One of:
 #### Update the issue body with Agent Analysis
 
 Append your analysis to the issue body using the template in
-`assets/yt-issue-update.md`. Fill in affected modules and root cause. This is the
+`assets/yt-issue-update.md`. **Re-read the template before writing — do not
+reconstruct from memory.** Fill in affected modules and root cause. This is the
 problem analysis — do not include the fix or solution here. Reproducers belong in
 the triage comment, not the issue body.
 
@@ -185,38 +226,10 @@ the triage comment, not the issue body.
 
 ## Phase B: Implement
 
-Entry: Phase A complete. Always `git fetch origin main` and rebase on latest
-`origin/main` before pushing any commits — even if you just created the worktree.
+Entry: Phase A complete, worktree already set up in A.2. Always `git fetch origin main`
+and rebase on latest `origin/main` before pushing any commits.
 
-### B.1: Set Up the Worktree
-
-Work in an isolated worktree. All subsequent operations use the worktree path.
-
-```bash
-git fetch origin main
-git worktree add -b <branch-name> /tmp/krpc-<issue-id> origin/main
-```
-
-Branch naming: `fix/KRPC-<N>` (bugs), `feat/KRPC-<N>` (features), `task/KRPC-<N>` (tasks).
-
-**Create `local.properties` in the worktree** — Gradle builds require it.
-Use the template at `assets/local.properties.template` (relative to this skill's directory),
-replacing `<User>` with the actual macOS username from `$HOME`.
-
-```bash
-sed "s|<User>|$(whoami)|g" .claude/skills/fix-issue/assets/local.properties.template \
-  > /tmp/krpc-<issue-id>/local.properties
-```
-
-When using Gradle skills, **always use the worktree root** (e.g., `/tmp/krpc-KRPC-NNN`)
-as `projectRoot` — even for included builds (`compiler-plugin/`, `gradle-plugin/`,
-`protoc-gen/`, `dokka-plugin/`). The Gradle MCP rejects included build subdirectories
-as `projectRoot` because they have no Gradle wrapper. Address included build tasks
-from the root with their composite prefix (the directory name passed to `includeBuild()`):
-`:protoc-gen:common:test`, `:compiler-plugin:compiler-plugin-backend:build`,
-`:dokka-plugin:build`, etc.
-
-### B.2: Write a Failing Test (if applicable)
+### B.1: Write a Failing Test (if applicable)
 
 Skip **formal tests** for: docs-only, trivial/obvious fixes, or when existing tests
 already cover the scenario.
@@ -253,10 +266,10 @@ When needed — may be a **new test** or **modification of an existing one**:
    crash is not a valid RED.
 5. Follow existing test patterns in the same module
 
-After the fix is applied (B.3), re-run to confirm GREEN. If it still fails, the
+After the fix is applied (B.2), re-run to confirm GREEN. If it still fails, the
 fix is incomplete — do not move on.
 
-### B.3: Apply the Fix
+### B.2: Apply the Fix
 
 #### Plan before coding (depth scales with complexity and issue type)
 
@@ -284,7 +297,7 @@ public API, or have unclear tradeoffs):
 
 - Follow project's conventions
 - Keep changes minimal and focused — don't refactor surrounding code
-- After fixing, run tests from B.2 + related module tests
+- After fixing, run tests from B.1 + related module tests
 
 **Exit condition**: All tests pass (both new and existing module tests). Fix is complete.
 
@@ -345,7 +358,7 @@ not just blantly going through the reviews) and handle feedback in priority orde
 2. **Warnings/Important** — fix unless you have a concrete reason to skip (document it).
 3. **Nits/Minor** — fix if trivial, skip if it would bloat the diff.
 
-After applying error/warning fixes, re-run the tests from B.2 to confirm no
+After applying error/warning fixes, re-run the tests from B.1 to confirm no
 regressions.
 
 **Exit condition**: All local verifications pass, all review errors fixed, tests
