@@ -195,7 +195,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
               RETURN type=kotlin.Nothing from='private final fun <get-test2Invokator> (): kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> declared in <root>.BoxService.$rpcServiceStub.Companion'
                 GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:test2Invokator type:kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> visibility:private [final]' type=kotlinx.rpc.descriptor.RpcInvokator.UnaryResponse<<root>.BoxService> origin=null
                   receiver: GET_VAR '<this>: <root>.BoxService.$rpcServiceStub.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.<get-test2Invokator>' type=<root>.BoxService.$rpcServiceStub.Companion origin=null
-        PROPERTY name:callables visibility:private modality:FINAL [val]
+        PROPERTY name:callables visibility:public modality:FINAL [val]
           overridden:
             public abstract callables: kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
           FIELD PROPERTY_BACKING_FIELD name:callables type:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>> visibility:private [final]
@@ -260,7 +260,7 @@ FILE fqName:<root> fileName:/customParameterTypes.kt
                               TYPE_ARG T: kotlin.Annotation
           FUN DEFAULT_PROPERTY_ACCESSOR name:<get-callables> visibility:public modality:FINAL returnType:kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<<root>.BoxService>>
             VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.BoxService.$rpcServiceStub.Companion
-            correspondingProperty: PROPERTY name:callables visibility:private modality:FINAL [val]
+            correspondingProperty: PROPERTY name:callables visibility:public modality:FINAL [val]
             overridden:
               public abstract fun <get-callables> (): kotlin.collections.Map<kotlin.String, kotlinx.rpc.descriptor.RpcCallable<Service of kotlinx.rpc.descriptor.RpcServiceDescriptor>> declared in kotlinx.rpc.descriptor.RpcServiceDescriptor
             BLOCK_BODY

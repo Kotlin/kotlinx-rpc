@@ -83,7 +83,6 @@ import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.getAnnotation
-import org.jetbrains.kotlin.ir.util.getPropertyGetter
 import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.isObject
 import org.jetbrains.kotlin.ir.util.kotlinFqName
@@ -769,15 +768,15 @@ internal class RpcStubGenerator(
             valueType = ctx.rpcCallable.typeWith(declaration.serviceType),
             addDefaultGetter = false,
         ).apply {
+            // The property must be PUBLIC to match the interface declaration.
+            // On Kotlin/Native, a PRIVATE property with a PUBLIC getter does not get
+            // a proper itable entry, causing a segfault on interface dispatch (KRPC-560).
+            visibility = DescriptorVisibilities.PUBLIC
             overriddenSymbols = listOf(interfaceProperty)
 
             addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
                 visibility = DescriptorVisibilities.PUBLIC
-
-                val propertyGetter = ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)
-                    ?: error("Expected RpcServiceDescriptor.callables property getter to exist")
-
-                overriddenSymbols = listOf(propertyGetter)
+                overriddenSymbols = listOf(interfaceProperty.owner.getterOrFail.symbol)
             }
         }
     }
