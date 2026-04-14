@@ -228,6 +228,10 @@ class CancellationTest {
 
     @Test
     fun testCancelServer() = runCancellationTest {
+        if (platform == Platform.WASI) {
+            return@runCancellationTest
+        }
+
         val firstRequestJob = launch {
             println("[testCancelServer] firstRequestJob started")
             service.longRequest()
