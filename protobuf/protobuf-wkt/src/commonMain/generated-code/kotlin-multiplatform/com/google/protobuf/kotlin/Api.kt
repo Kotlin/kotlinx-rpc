@@ -64,7 +64,7 @@ public interface Api {
     public val sourceContext: SourceContext
 
     /**
-     * Included interfaces. See [Mixin][].
+     * Included interfaces. See [Mixin].
      */
     public val mixins: List<Mixin>
 
@@ -130,7 +130,7 @@ public interface Method {
  * 
  * - If an http annotation is inherited, the path pattern will be
  *   modified as follows. Any version prefix will be replaced by the
- *   version of the including interface plus the [root][] path if
+ *   version of the including interface plus the [root] path if
  *   specified.
  * 
  * Example of a simple mixin:

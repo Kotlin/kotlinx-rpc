@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protoc.gen.core
@@ -40,10 +40,17 @@ fun CodeGeneratorRequest.toModel(config: Config): Model {
     val files = fileToGenerateList.map { protoFileMap[it]!! }
         .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
+    // Build a lookup from proto fully-qualified names to Kotlin FqNames.
+    // This must happen after all descriptors are resolved but before model building,
+    // so that comment type references can be resolved during extraction.
+    // Note: fileDescriptors includes transitive dependencies because toDescriptor()
+    // recursively resolves and caches all dependency descriptors into this map.
+    val protoNameMap = buildProtoNameMap(fileDescriptors.values)
+
     val nameTable = FqNameTable(config.platform)
     initNameTable(nameTable)
 
-    return Model(files.map { it.toModel(nameTable) }, nameTable).also { model ->
+    return Model(files.map { it.toModel(nameTable, protoNameMap) }, nameTable).also { model ->
         val typeNames = nameCache
             .filterKeys {
                 it !is Descriptors.FieldDescriptor &&
@@ -152,6 +159,31 @@ private fun initNameTable(nameTable: FqNameTable) {
 }
 
 /**
+ * Builds a map from proto fully-qualified type names to their Kotlin [FqName]s.
+ * This covers all message types, enum types, and services across all resolved files
+ * (including dependencies), enabling type reference resolution in proto comments.
+ */
+private fun buildProtoNameMap(files: Collection<Descriptors.FileDescriptor>): Map<String, FqName> {
+    val result = mutableMapOf<String, FqName>()
+
+    fun addMessage(descriptor: Descriptors.Descriptor) {
+        result[descriptor.fullName] = descriptor.fqName()
+        descriptor.nestedTypes.forEach { addMessage(it) }
+        descriptor.enumTypes.forEach { result[it.fullName] = it.fqName() }
+    }
+
+    fun addFile(fd: Descriptors.FileDescriptor) {
+        fd.messageTypes.forEach { addMessage(it) }
+        fd.enumTypes.forEach { result[it.fullName] = it.fqName() }
+        fd.services.forEach { result[it.fullName] = it.fqName() }
+    }
+
+    files.forEach { addFile(it) }
+
+    return result
+}
+
+/**
  * Converts a [DescriptorProtos.FileDescriptorProto] instance to a [Descriptors.FileDescriptor],
  * resolving its dependencies.
  *
@@ -231,15 +263,19 @@ private inline fun <D, reified T> D.cached(crossinline block: (D) -> T): T
     return declaration
 }
 
-private fun Descriptors.FileDescriptor.toModel(nameTable: FqNameTable): FileDeclaration = cached {
-    val comments = Comments(extractComments(), ObjectPath.empty)
+private fun Descriptors.FileDescriptor.toModel(
+    nameTable: FqNameTable,
+    protoNameMap: Map<String, FqName>,
+): FileDeclaration = cached {
+    val resolver = ProtoTypeResolver(protoNameMap, `package`)
+    val comments = Comments(extractComments(resolver), ObjectPath.empty)
 
     val ktPackage = FqName.Package.fromString(kotlinPackage())
 
     FileDeclaration(
         name = kotlinFileName(),
         packageName = ktPackage,
-        dependencies = dependencies.map { it.toModel(nameTable) }, // only for name resolution
+        dependencies = dependencies.map { it.toModel(nameTable, protoNameMap) }, // only for name resolution
         messageDeclarations = messageTypes.map {
             it.toModel(
                 comments = comments + Paths.messageCommentPath + it.index,

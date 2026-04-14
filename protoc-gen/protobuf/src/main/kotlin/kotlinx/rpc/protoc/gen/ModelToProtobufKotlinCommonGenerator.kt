@@ -815,12 +815,14 @@ class ModelToProtobufKotlinCommonGenerator(
         if (!(declaration.hasPresenceFieldsRecursive())) return
 
         val comment = if (declaration.hasPresenceFields) {
-            // TODO KRPC-252 protoc-gen: Support type resolution in comments
-            Comment.leading(
-                """
-                    Interface providing field-presence information for [${declaration.name.fullName()}] messages.
-                    Retrieve it via the [${declaration.name.fullName()}.presence] extension property.
-                """.trimIndent()
+            val nameRef = declaration.name.scoped()
+            Comment(
+                leadingDetached = emptyList(),
+                leading = listOf(
+                    nameRef.wrapIn { "Interface providing field-presence information for [$it] messages." },
+                    nameRef.wrapIn { "Retrieve it via the [$it.presence] extension property." },
+                ),
+                trailing = emptyList(),
             )
         } else {
             null
@@ -856,11 +858,10 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             contextReceiver = declaration.name.scoped(),
             value = "this.asInternal()._presence".scoped(),
-            // TODO KRPC-252 protoc-gen: Support type resolution in comments
             comment = Comment.leading(
-                """
-                    Returns the field-presence view for this [${declaration.name.fullName()}] instance.
-                """.trimIndent()
+                declaration.name.scoped().wrapIn {
+                    "Returns the field-presence view for this [$it] instance."
+                }
             )
         )
     }

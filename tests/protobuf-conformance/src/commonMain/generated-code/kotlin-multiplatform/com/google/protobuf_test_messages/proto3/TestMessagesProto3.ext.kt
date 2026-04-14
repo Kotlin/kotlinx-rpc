@@ -31,7 +31,7 @@ fun TestAllTypesProto3.copy(body: TestAllTypesProto3.Builder.() -> Unit = {}): T
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] instance.
+ * Returns the field-presence view for this [TestAllTypesProto3] instance.
  */
 val TestAllTypesProto3.presence: TestAllTypesProto3Presence get() = this.asInternal()._presence
 
@@ -132,13 +132,13 @@ fun TestAllTypesProto3.NestedMessage.copy(body: TestAllTypesProto3.NestedMessage
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] instance.
+ * Returns the field-presence view for this [TestAllTypesProto3.NestedMessage] instance.
  */
 val TestAllTypesProto3.NestedMessage.presence: TestAllTypesProto3Presence.NestedMessage get() = this.asInternal()._presence
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.presence] extension property.
+ * Interface providing field-presence information for [TestAllTypesProto3] messages.
+ * Retrieve it via the [TestAllTypesProto3.presence] extension property.
  */
 interface TestAllTypesProto3Presence {
     val hasOptionalNestedMessage: Boolean
@@ -180,8 +180,8 @@ interface TestAllTypesProto3Presence {
     val hasOptionalEmpty: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.proto3.TestAllTypesProto3.NestedMessage.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesProto3.NestedMessage] messages.
+     * Retrieve it via the [TestAllTypesProto3.NestedMessage.presence] extension property.
      */
     interface NestedMessage {
         val hasCorecursive: Boolean

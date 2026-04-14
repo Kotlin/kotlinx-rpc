@@ -86,7 +86,7 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
  * If the embedded message type is well-known and has a custom JSON
  * representation, that representation will be embedded adding a field
  * `value` which holds the custom JSON in addition to the `@type`
- * field. Example (for message [google.protobuf.Duration][]):
+ * field. Example (for message [Duration]):
  * 
  *     {
  *       "@type": "type.googleapis.com/google.protobuf.Duration",
@@ -109,7 +109,7 @@ public interface Any {
      * server that maps type URLs to message definitions as follows:
      * 
      * * If no scheme is provided, `https` is assumed.
-     * * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+     * * An HTTP GET on the URL must yield a [Type]
      *   value in binary format, or produce an error.
      * * Applications are allowed to cache lookup results based on the
      *   URL, or have them precompiled into a binary to avoid any

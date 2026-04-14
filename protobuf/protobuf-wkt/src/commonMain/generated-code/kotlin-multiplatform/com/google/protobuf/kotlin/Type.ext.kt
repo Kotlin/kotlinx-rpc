@@ -31,7 +31,7 @@ public fun Type.copy(body: Type.Builder.() -> Unit = {}): Type {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.Type] instance.
+ * Returns the field-presence view for this [Type] instance.
  */
 public val Type.presence: TypePresence get() = this.asInternal()._presence
 
@@ -88,7 +88,7 @@ public fun Enum.copy(body: Enum.Builder.() -> Unit = {}): Enum {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.Enum] instance.
+ * Returns the field-presence view for this [Enum] instance.
  */
 public val Enum.presence: EnumPresence get() = this.asInternal()._presence
 
@@ -145,29 +145,29 @@ public fun Option.copy(body: Option.Builder.() -> Unit = {}): Option {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.Option] instance.
+ * Returns the field-presence view for this [Option] instance.
  */
 public val Option.presence: OptionPresence get() = this.asInternal()._presence
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.Type] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.Type.presence] extension property.
+ * Interface providing field-presence information for [Type] messages.
+ * Retrieve it via the [Type.presence] extension property.
  */
 public interface TypePresence {
     public val hasSourceContext: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.Enum] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.Enum.presence] extension property.
+ * Interface providing field-presence information for [Enum] messages.
+ * Retrieve it via the [Enum.presence] extension property.
  */
 public interface EnumPresence {
     public val hasSourceContext: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.Option] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.Option.presence] extension property.
+ * Interface providing field-presence information for [Option] messages.
+ * Retrieve it via the [Option.presence] extension property.
  */
 public interface OptionPresence {
     public val hasValue: Boolean

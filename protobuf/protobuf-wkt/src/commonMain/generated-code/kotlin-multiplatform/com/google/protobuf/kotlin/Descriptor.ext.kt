@@ -31,7 +31,7 @@ public fun FileDescriptorSet.copy(body: FileDescriptorSet.Builder.() -> Unit = {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FileDescriptorSet] instance.
+ * Returns the field-presence view for this [FileDescriptorSet] instance.
  */
 public val FileDescriptorSet.presence: FileDescriptorSetPresence get() = this.asInternal()._presence
 
@@ -62,7 +62,7 @@ public fun FileDescriptorProto.copy(body: FileDescriptorProto.Builder.() -> Unit
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FileDescriptorProto] instance.
+ * Returns the field-presence view for this [FileDescriptorProto] instance.
  */
 public val FileDescriptorProto.presence: FileDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -93,7 +93,7 @@ public fun DescriptorProto.copy(body: DescriptorProto.Builder.() -> Unit = {}): 
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.DescriptorProto] instance.
+ * Returns the field-presence view for this [DescriptorProto] instance.
  */
 public val DescriptorProto.presence: DescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -124,7 +124,7 @@ public fun ExtensionRangeOptions.copy(body: ExtensionRangeOptions.Builder.() -> 
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.ExtensionRangeOptions] instance.
+ * Returns the field-presence view for this [ExtensionRangeOptions] instance.
  */
 public val ExtensionRangeOptions.presence: ExtensionRangeOptionsPresence get() = this.asInternal()._presence
 
@@ -155,7 +155,7 @@ public fun FieldDescriptorProto.copy(body: FieldDescriptorProto.Builder.() -> Un
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FieldDescriptorProto] instance.
+ * Returns the field-presence view for this [FieldDescriptorProto] instance.
  */
 public val FieldDescriptorProto.presence: FieldDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -186,7 +186,7 @@ public fun OneofDescriptorProto.copy(body: OneofDescriptorProto.Builder.() -> Un
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.OneofDescriptorProto] instance.
+ * Returns the field-presence view for this [OneofDescriptorProto] instance.
  */
 public val OneofDescriptorProto.presence: OneofDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -217,7 +217,7 @@ public fun EnumDescriptorProto.copy(body: EnumDescriptorProto.Builder.() -> Unit
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.EnumDescriptorProto] instance.
+ * Returns the field-presence view for this [EnumDescriptorProto] instance.
  */
 public val EnumDescriptorProto.presence: EnumDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -248,7 +248,7 @@ public fun EnumValueDescriptorProto.copy(body: EnumValueDescriptorProto.Builder.
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.EnumValueDescriptorProto] instance.
+ * Returns the field-presence view for this [EnumValueDescriptorProto] instance.
  */
 public val EnumValueDescriptorProto.presence: EnumValueDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -279,7 +279,7 @@ public fun ServiceDescriptorProto.copy(body: ServiceDescriptorProto.Builder.() -
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.ServiceDescriptorProto] instance.
+ * Returns the field-presence view for this [ServiceDescriptorProto] instance.
  */
 public val ServiceDescriptorProto.presence: ServiceDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -310,7 +310,7 @@ public fun MethodDescriptorProto.copy(body: MethodDescriptorProto.Builder.() -> 
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.MethodDescriptorProto] instance.
+ * Returns the field-presence view for this [MethodDescriptorProto] instance.
  */
 public val MethodDescriptorProto.presence: MethodDescriptorProtoPresence get() = this.asInternal()._presence
 
@@ -341,7 +341,7 @@ public fun FileOptions.copy(body: FileOptions.Builder.() -> Unit = {}): FileOpti
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FileOptions] instance.
+ * Returns the field-presence view for this [FileOptions] instance.
  */
 public val FileOptions.presence: FileOptionsPresence get() = this.asInternal()._presence
 
@@ -372,7 +372,7 @@ public fun MessageOptions.copy(body: MessageOptions.Builder.() -> Unit = {}): Me
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.MessageOptions] instance.
+ * Returns the field-presence view for this [MessageOptions] instance.
  */
 public val MessageOptions.presence: MessageOptionsPresence get() = this.asInternal()._presence
 
@@ -403,7 +403,7 @@ public fun FieldOptions.copy(body: FieldOptions.Builder.() -> Unit = {}): FieldO
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FieldOptions] instance.
+ * Returns the field-presence view for this [FieldOptions] instance.
  */
 public val FieldOptions.presence: FieldOptionsPresence get() = this.asInternal()._presence
 
@@ -434,7 +434,7 @@ public fun OneofOptions.copy(body: OneofOptions.Builder.() -> Unit = {}): OneofO
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.OneofOptions] instance.
+ * Returns the field-presence view for this [OneofOptions] instance.
  */
 public val OneofOptions.presence: OneofOptionsPresence get() = this.asInternal()._presence
 
@@ -465,7 +465,7 @@ public fun EnumOptions.copy(body: EnumOptions.Builder.() -> Unit = {}): EnumOpti
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.EnumOptions] instance.
+ * Returns the field-presence view for this [EnumOptions] instance.
  */
 public val EnumOptions.presence: EnumOptionsPresence get() = this.asInternal()._presence
 
@@ -496,7 +496,7 @@ public fun EnumValueOptions.copy(body: EnumValueOptions.Builder.() -> Unit = {})
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.EnumValueOptions] instance.
+ * Returns the field-presence view for this [EnumValueOptions] instance.
  */
 public val EnumValueOptions.presence: EnumValueOptionsPresence get() = this.asInternal()._presence
 
@@ -527,7 +527,7 @@ public fun ServiceOptions.copy(body: ServiceOptions.Builder.() -> Unit = {}): Se
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.ServiceOptions] instance.
+ * Returns the field-presence view for this [ServiceOptions] instance.
  */
 public val ServiceOptions.presence: ServiceOptionsPresence get() = this.asInternal()._presence
 
@@ -558,7 +558,7 @@ public fun MethodOptions.copy(body: MethodOptions.Builder.() -> Unit = {}): Meth
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.MethodOptions] instance.
+ * Returns the field-presence view for this [MethodOptions] instance.
  */
 public val MethodOptions.presence: MethodOptionsPresence get() = this.asInternal()._presence
 
@@ -589,7 +589,7 @@ public fun UninterpretedOption.copy(body: UninterpretedOption.Builder.() -> Unit
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.UninterpretedOption] instance.
+ * Returns the field-presence view for this [UninterpretedOption] instance.
  */
 public val UninterpretedOption.presence: UninterpretedOptionPresence get() = this.asInternal()._presence
 
@@ -620,7 +620,7 @@ public fun FeatureSet.copy(body: FeatureSet.Builder.() -> Unit = {}): FeatureSet
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FeatureSet] instance.
+ * Returns the field-presence view for this [FeatureSet] instance.
  */
 public val FeatureSet.presence: FeatureSetPresence get() = this.asInternal()._presence
 
@@ -651,7 +651,7 @@ public fun FeatureSetDefaults.copy(body: FeatureSetDefaults.Builder.() -> Unit =
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FeatureSetDefaults] instance.
+ * Returns the field-presence view for this [FeatureSetDefaults] instance.
  */
 public val FeatureSetDefaults.presence: FeatureSetDefaultsPresence get() = this.asInternal()._presence
 
@@ -682,7 +682,7 @@ public fun SourceCodeInfo.copy(body: SourceCodeInfo.Builder.() -> Unit = {}): So
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.SourceCodeInfo] instance.
+ * Returns the field-presence view for this [SourceCodeInfo] instance.
  */
 public val SourceCodeInfo.presence: SourceCodeInfoPresence get() = this.asInternal()._presence
 
@@ -739,7 +739,7 @@ public fun DescriptorProto.ExtensionRange.copy(body: DescriptorProto.ExtensionRa
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.DescriptorProto.ExtensionRange] instance.
+ * Returns the field-presence view for this [DescriptorProto.ExtensionRange] instance.
  */
 public val DescriptorProto.ExtensionRange.presence: DescriptorProtoPresence.ExtensionRange get() = this.asInternal()._presence
 
@@ -770,7 +770,7 @@ public fun DescriptorProto.ReservedRange.copy(body: DescriptorProto.ReservedRang
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.DescriptorProto.ReservedRange] instance.
+ * Returns the field-presence view for this [DescriptorProto.ReservedRange] instance.
  */
 public val DescriptorProto.ReservedRange.presence: DescriptorProtoPresence.ReservedRange get() = this.asInternal()._presence
 
@@ -801,7 +801,7 @@ public fun ExtensionRangeOptions.Declaration.copy(body: ExtensionRangeOptions.De
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration] instance.
+ * Returns the field-presence view for this [ExtensionRangeOptions.Declaration] instance.
  */
 public val ExtensionRangeOptions.Declaration.presence: ExtensionRangeOptionsPresence.Declaration get() = this.asInternal()._presence
 
@@ -832,7 +832,7 @@ public fun EnumDescriptorProto.EnumReservedRange.copy(body: EnumDescriptorProto.
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange] instance.
+ * Returns the field-presence view for this [EnumDescriptorProto.EnumReservedRange] instance.
  */
 public val EnumDescriptorProto.EnumReservedRange.presence: EnumDescriptorProtoPresence.EnumReservedRange get() = this.asInternal()._presence
 
@@ -863,7 +863,7 @@ public fun FieldOptions.EditionDefault.copy(body: FieldOptions.EditionDefault.Bu
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FieldOptions.EditionDefault] instance.
+ * Returns the field-presence view for this [FieldOptions.EditionDefault] instance.
  */
 public val FieldOptions.EditionDefault.presence: FieldOptionsPresence.EditionDefault get() = this.asInternal()._presence
 
@@ -894,7 +894,7 @@ public fun FieldOptions.FeatureSupport.copy(body: FieldOptions.FeatureSupport.Bu
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FieldOptions.FeatureSupport] instance.
+ * Returns the field-presence view for this [FieldOptions.FeatureSupport] instance.
  */
 public val FieldOptions.FeatureSupport.presence: FieldOptionsPresence.FeatureSupport get() = this.asInternal()._presence
 
@@ -925,7 +925,7 @@ public fun UninterpretedOption.NamePart.copy(body: UninterpretedOption.NamePart.
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.UninterpretedOption.NamePart] instance.
+ * Returns the field-presence view for this [UninterpretedOption.NamePart] instance.
  */
 public val UninterpretedOption.NamePart.presence: UninterpretedOptionPresence.NamePart get() = this.asInternal()._presence
 
@@ -978,7 +978,7 @@ public fun FeatureSetDefaults.FeatureSetEditionDefault.copy(body: FeatureSetDefa
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault] instance.
+ * Returns the field-presence view for this [FeatureSetDefaults.FeatureSetEditionDefault] instance.
  */
 public val FeatureSetDefaults.FeatureSetEditionDefault.presence: FeatureSetDefaultsPresence.FeatureSetEditionDefault get() = this.asInternal()._presence
 
@@ -1009,7 +1009,7 @@ public fun SourceCodeInfo.Location.copy(body: SourceCodeInfo.Location.Builder.()
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.SourceCodeInfo.Location] instance.
+ * Returns the field-presence view for this [SourceCodeInfo.Location] instance.
  */
 public val SourceCodeInfo.Location.presence: SourceCodeInfoPresence.Location get() = this.asInternal()._presence
 
@@ -1040,15 +1040,15 @@ public fun GeneratedCodeInfo.Annotation.copy(body: GeneratedCodeInfo.Annotation.
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation] instance.
+ * Returns the field-presence view for this [GeneratedCodeInfo.Annotation] instance.
  */
 public val GeneratedCodeInfo.Annotation.presence: GeneratedCodeInfoPresence.Annotation get() = this.asInternal()._presence
 
 public interface FileDescriptorSetPresence
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FileDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FileDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [FileDescriptorProto] messages.
+ * Retrieve it via the [FileDescriptorProto.presence] extension property.
  */
 public interface FileDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1065,8 +1065,8 @@ public interface FileDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.DescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.DescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [DescriptorProto] messages.
+ * Retrieve it via the [DescriptorProto.presence] extension property.
  */
 public interface DescriptorProtoPresence {
     public val hasName: Boolean
@@ -1076,8 +1076,8 @@ public interface DescriptorProtoPresence {
     public val hasVisibility: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.DescriptorProto.ExtensionRange] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.DescriptorProto.ExtensionRange.presence] extension property.
+     * Interface providing field-presence information for [DescriptorProto.ExtensionRange] messages.
+     * Retrieve it via the [DescriptorProto.ExtensionRange.presence] extension property.
      */
     public interface ExtensionRange {
         public val hasStart: Boolean
@@ -1088,8 +1088,8 @@ public interface DescriptorProtoPresence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.DescriptorProto.ReservedRange] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.DescriptorProto.ReservedRange.presence] extension property.
+     * Interface providing field-presence information for [DescriptorProto.ReservedRange] messages.
+     * Retrieve it via the [DescriptorProto.ReservedRange.presence] extension property.
      */
     public interface ReservedRange {
         public val hasStart: Boolean
@@ -1099,8 +1099,8 @@ public interface DescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.ExtensionRangeOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.ExtensionRangeOptions.presence] extension property.
+ * Interface providing field-presence information for [ExtensionRangeOptions] messages.
+ * Retrieve it via the [ExtensionRangeOptions.presence] extension property.
  */
 public interface ExtensionRangeOptionsPresence {
     public val hasFeatures: Boolean
@@ -1108,8 +1108,8 @@ public interface ExtensionRangeOptionsPresence {
     public val hasVerification: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.presence] extension property.
+     * Interface providing field-presence information for [ExtensionRangeOptions.Declaration] messages.
+     * Retrieve it via the [ExtensionRangeOptions.Declaration.presence] extension property.
      */
     public interface Declaration {
         public val hasNumber: Boolean
@@ -1125,8 +1125,8 @@ public interface ExtensionRangeOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FieldDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FieldDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [FieldDescriptorProto] messages.
+ * Retrieve it via the [FieldDescriptorProto.presence] extension property.
  */
 public interface FieldDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1153,8 +1153,8 @@ public interface FieldDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.OneofDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.OneofDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [OneofDescriptorProto] messages.
+ * Retrieve it via the [OneofDescriptorProto.presence] extension property.
  */
 public interface OneofDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1163,8 +1163,8 @@ public interface OneofDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.EnumDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.EnumDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [EnumDescriptorProto] messages.
+ * Retrieve it via the [EnumDescriptorProto.presence] extension property.
  */
 public interface EnumDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1174,8 +1174,8 @@ public interface EnumDescriptorProtoPresence {
     public val hasVisibility: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange.presence] extension property.
+     * Interface providing field-presence information for [EnumDescriptorProto.EnumReservedRange] messages.
+     * Retrieve it via the [EnumDescriptorProto.EnumReservedRange.presence] extension property.
      */
     public interface EnumReservedRange {
         public val hasStart: Boolean
@@ -1185,8 +1185,8 @@ public interface EnumDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.EnumValueDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.EnumValueDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [EnumValueDescriptorProto] messages.
+ * Retrieve it via the [EnumValueDescriptorProto.presence] extension property.
  */
 public interface EnumValueDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1197,8 +1197,8 @@ public interface EnumValueDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.ServiceDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.ServiceDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [ServiceDescriptorProto] messages.
+ * Retrieve it via the [ServiceDescriptorProto.presence] extension property.
  */
 public interface ServiceDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1207,8 +1207,8 @@ public interface ServiceDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.MethodDescriptorProto] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.MethodDescriptorProto.presence] extension property.
+ * Interface providing field-presence information for [MethodDescriptorProto] messages.
+ * Retrieve it via the [MethodDescriptorProto.presence] extension property.
  */
 public interface MethodDescriptorProtoPresence {
     public val hasName: Boolean
@@ -1225,8 +1225,8 @@ public interface MethodDescriptorProtoPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FileOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FileOptions.presence] extension property.
+ * Interface providing field-presence information for [FileOptions] messages.
+ * Retrieve it via the [FileOptions.presence] extension property.
  */
 public interface FileOptionsPresence {
     public val hasJavaPackage: Boolean
@@ -1271,8 +1271,8 @@ public interface FileOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.MessageOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.MessageOptions.presence] extension property.
+ * Interface providing field-presence information for [MessageOptions] messages.
+ * Retrieve it via the [MessageOptions.presence] extension property.
  */
 public interface MessageOptionsPresence {
     public val hasMessageSetWireFormat: Boolean
@@ -1289,8 +1289,8 @@ public interface MessageOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FieldOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FieldOptions.presence] extension property.
+ * Interface providing field-presence information for [FieldOptions] messages.
+ * Retrieve it via the [FieldOptions.presence] extension property.
  */
 public interface FieldOptionsPresence {
     public val hasCtype: Boolean
@@ -1316,8 +1316,8 @@ public interface FieldOptionsPresence {
     public val hasFeatureSupport: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.FieldOptions.EditionDefault] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.FieldOptions.EditionDefault.presence] extension property.
+     * Interface providing field-presence information for [FieldOptions.EditionDefault] messages.
+     * Retrieve it via the [FieldOptions.EditionDefault.presence] extension property.
      */
     public interface EditionDefault {
         public val hasEdition: Boolean
@@ -1326,8 +1326,8 @@ public interface FieldOptionsPresence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.FieldOptions.FeatureSupport] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.FieldOptions.FeatureSupport.presence] extension property.
+     * Interface providing field-presence information for [FieldOptions.FeatureSupport] messages.
+     * Retrieve it via the [FieldOptions.FeatureSupport.presence] extension property.
      */
     public interface FeatureSupport {
         public val hasEditionIntroduced: Boolean
@@ -1341,16 +1341,16 @@ public interface FieldOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.OneofOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.OneofOptions.presence] extension property.
+ * Interface providing field-presence information for [OneofOptions] messages.
+ * Retrieve it via the [OneofOptions.presence] extension property.
  */
 public interface OneofOptionsPresence {
     public val hasFeatures: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.EnumOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.EnumOptions.presence] extension property.
+ * Interface providing field-presence information for [EnumOptions] messages.
+ * Retrieve it via the [EnumOptions.presence] extension property.
  */
 public interface EnumOptionsPresence {
     public val hasAllowAlias: Boolean
@@ -1363,8 +1363,8 @@ public interface EnumOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.EnumValueOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.EnumValueOptions.presence] extension property.
+ * Interface providing field-presence information for [EnumValueOptions] messages.
+ * Retrieve it via the [EnumValueOptions.presence] extension property.
  */
 public interface EnumValueOptionsPresence {
     public val hasDeprecated: Boolean
@@ -1377,8 +1377,8 @@ public interface EnumValueOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.ServiceOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.ServiceOptions.presence] extension property.
+ * Interface providing field-presence information for [ServiceOptions] messages.
+ * Retrieve it via the [ServiceOptions.presence] extension property.
  */
 public interface ServiceOptionsPresence {
     public val hasFeatures: Boolean
@@ -1387,8 +1387,8 @@ public interface ServiceOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.MethodOptions] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.MethodOptions.presence] extension property.
+ * Interface providing field-presence information for [MethodOptions] messages.
+ * Retrieve it via the [MethodOptions.presence] extension property.
  */
 public interface MethodOptionsPresence {
     public val hasDeprecated: Boolean
@@ -1399,8 +1399,8 @@ public interface MethodOptionsPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.UninterpretedOption] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.UninterpretedOption.presence] extension property.
+ * Interface providing field-presence information for [UninterpretedOption] messages.
+ * Retrieve it via the [UninterpretedOption.presence] extension property.
  */
 public interface UninterpretedOptionPresence {
     public val hasIdentifierValue: Boolean
@@ -1416,8 +1416,8 @@ public interface UninterpretedOptionPresence {
     public val hasAggregateValue: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.UninterpretedOption.NamePart] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.UninterpretedOption.NamePart.presence] extension property.
+     * Interface providing field-presence information for [UninterpretedOption.NamePart] messages.
+     * Retrieve it via the [UninterpretedOption.NamePart.presence] extension property.
      */
     public interface NamePart {
         public val hasNamePart: Boolean
@@ -1427,8 +1427,8 @@ public interface UninterpretedOptionPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FeatureSet] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FeatureSet.presence] extension property.
+ * Interface providing field-presence information for [FeatureSet] messages.
+ * Retrieve it via the [FeatureSet.presence] extension property.
  */
 public interface FeatureSetPresence {
     public val hasFieldPresence: Boolean
@@ -1449,8 +1449,8 @@ public interface FeatureSetPresence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.FeatureSetDefaults] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.FeatureSetDefaults.presence] extension property.
+ * Interface providing field-presence information for [FeatureSetDefaults] messages.
+ * Retrieve it via the [FeatureSetDefaults.presence] extension property.
  */
 public interface FeatureSetDefaultsPresence {
     public val hasMinimumEdition: Boolean
@@ -1458,8 +1458,8 @@ public interface FeatureSetDefaultsPresence {
     public val hasMaximumEdition: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.FeatureSetDefaults.FeatureSetEditionDefault.presence] extension property.
+     * Interface providing field-presence information for [FeatureSetDefaults.FeatureSetEditionDefault] messages.
+     * Retrieve it via the [FeatureSetDefaults.FeatureSetEditionDefault.presence] extension property.
      */
     public interface FeatureSetEditionDefault {
         public val hasEdition: Boolean
@@ -1472,8 +1472,8 @@ public interface FeatureSetDefaultsPresence {
 
 public interface SourceCodeInfoPresence {
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.SourceCodeInfo.Location] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.SourceCodeInfo.Location.presence] extension property.
+     * Interface providing field-presence information for [SourceCodeInfo.Location] messages.
+     * Retrieve it via the [SourceCodeInfo.Location.presence] extension property.
      */
     public interface Location {
         public val hasLeadingComments: Boolean
@@ -1484,8 +1484,8 @@ public interface SourceCodeInfoPresence {
 
 public interface GeneratedCodeInfoPresence {
     /**
-     * Interface providing field-presence information for [com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation] messages.
-     * Retrieve it via the [com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation.presence] extension property.
+     * Interface providing field-presence information for [GeneratedCodeInfo.Annotation] messages.
+     * Retrieve it via the [GeneratedCodeInfo.Annotation.presence] extension property.
      */
     public interface Annotation {
         public val hasSourceFile: Boolean

@@ -83,7 +83,7 @@ fun ConformanceRequest.copy(body: ConformanceRequest.Builder.() -> Unit = {}): C
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.conformance.ConformanceRequest] instance.
+ * Returns the field-presence view for this [ConformanceRequest] instance.
  */
 val ConformanceRequest.presence: ConformanceRequestPresence get() = this.asInternal()._presence
 
@@ -140,8 +140,8 @@ fun JspbEncodingConfig.copy(body: JspbEncodingConfig.Builder.() -> Unit = {}): J
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.conformance.ConformanceRequest] messages.
- * Retrieve it via the [com.google.protobuf.conformance.ConformanceRequest.presence] extension property.
+ * Interface providing field-presence information for [ConformanceRequest] messages.
+ * Retrieve it via the [ConformanceRequest.presence] extension property.
  */
 interface ConformanceRequestPresence {
     val hasJspbEncodingOptions: Boolean

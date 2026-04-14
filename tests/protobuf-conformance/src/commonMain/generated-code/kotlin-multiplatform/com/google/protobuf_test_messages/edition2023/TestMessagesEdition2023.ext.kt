@@ -34,7 +34,7 @@ fun ComplexMessage.copy(body: ComplexMessage.Builder.() -> Unit = {}): ComplexMe
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.ComplexMessage] instance.
+ * Returns the field-presence view for this [ComplexMessage] instance.
  */
 val ComplexMessage.presence: ComplexMessagePresence get() = this.asInternal()._presence
 
@@ -65,7 +65,7 @@ fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023.Builder.() -> Uni
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023] instance.
+ * Returns the field-presence view for this [TestAllTypesEdition2023] instance.
  */
 val TestAllTypesEdition2023.presence: TestAllTypesEdition2023Presence get() = this.asInternal()._presence
 
@@ -96,7 +96,7 @@ fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023.Builder.() ->
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023] instance.
+ * Returns the field-presence view for this [ForeignMessageEdition2023] instance.
  */
 val ForeignMessageEdition2023.presence: ForeignMessageEdition2023Presence get() = this.asInternal()._presence
 
@@ -127,7 +127,7 @@ fun GroupLikeType.copy(body: GroupLikeType.Builder.() -> Unit = {}): GroupLikeTy
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.GroupLikeType] instance.
+ * Returns the field-presence view for this [GroupLikeType] instance.
  */
 val GroupLikeType.presence: GroupLikeTypePresence get() = this.asInternal()._presence
 
@@ -158,7 +158,7 @@ fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023.Nes
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage] instance.
+ * Returns the field-presence view for this [TestAllTypesEdition2023.NestedMessage] instance.
  */
 val TestAllTypesEdition2023.NestedMessage.presence: TestAllTypesEdition2023Presence.NestedMessage get() = this.asInternal()._presence
 
@@ -189,21 +189,21 @@ fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023.Gro
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType] instance.
+ * Returns the field-presence view for this [TestAllTypesEdition2023.GroupLikeType] instance.
  */
 val TestAllTypesEdition2023.GroupLikeType.presence: TestAllTypesEdition2023Presence.GroupLikeType get() = this.asInternal()._presence
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.ComplexMessage] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.edition2023.ComplexMessage.presence] extension property.
+ * Interface providing field-presence information for [ComplexMessage] messages.
+ * Retrieve it via the [ComplexMessage.presence] extension property.
  */
 interface ComplexMessagePresence {
     val hasD: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.presence] extension property.
+ * Interface providing field-presence information for [TestAllTypesEdition2023] messages.
+ * Retrieve it via the [TestAllTypesEdition2023.presence] extension property.
  */
 interface TestAllTypesEdition2023Presence {
     val hasOptionalInt32: Boolean
@@ -255,8 +255,8 @@ interface TestAllTypesEdition2023Presence {
     val hasDelimitedField: Boolean
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.NestedMessage.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesEdition2023.NestedMessage] messages.
+     * Retrieve it via the [TestAllTypesEdition2023.NestedMessage.presence] extension property.
      */
     interface NestedMessage {
         val hasA: Boolean
@@ -265,8 +265,8 @@ interface TestAllTypesEdition2023Presence {
     }
 
     /**
-     * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType] messages.
-     * Retrieve it via the [com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023.GroupLikeType.presence] extension property.
+     * Interface providing field-presence information for [TestAllTypesEdition2023.GroupLikeType] messages.
+     * Retrieve it via the [TestAllTypesEdition2023.GroupLikeType.presence] extension property.
      */
     interface GroupLikeType {
         val hasGroupInt32: Boolean
@@ -276,16 +276,16 @@ interface TestAllTypesEdition2023Presence {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.edition2023.ForeignMessageEdition2023.presence] extension property.
+ * Interface providing field-presence information for [ForeignMessageEdition2023] messages.
+ * Retrieve it via the [ForeignMessageEdition2023.presence] extension property.
  */
 interface ForeignMessageEdition2023Presence {
     val hasC: Boolean
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf_test_messages.edition2023.GroupLikeType] messages.
- * Retrieve it via the [com.google.protobuf_test_messages.edition2023.GroupLikeType.presence] extension property.
+ * Interface providing field-presence information for [GroupLikeType] messages.
+ * Retrieve it via the [GroupLikeType.presence] extension property.
  */
 interface GroupLikeTypePresence {
     val hasC: Boolean

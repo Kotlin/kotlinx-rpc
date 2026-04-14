@@ -31,7 +31,7 @@ public fun Api.copy(body: Api.Builder.() -> Unit = {}): Api {
 }
 
 /**
- * Returns the field-presence view for this [com.google.protobuf.kotlin.Api] instance.
+ * Returns the field-presence view for this [Api] instance.
  */
 public val Api.presence: ApiPresence get() = this.asInternal()._presence
 
@@ -88,8 +88,8 @@ public fun Mixin.copy(body: Mixin.Builder.() -> Unit = {}): Mixin {
 }
 
 /**
- * Interface providing field-presence information for [com.google.protobuf.kotlin.Api] messages.
- * Retrieve it via the [com.google.protobuf.kotlin.Api.presence] extension property.
+ * Interface providing field-presence information for [Api] messages.
+ * Retrieve it via the [Api.presence] extension property.
  */
 public interface ApiPresence {
     public val hasSourceContext: Boolean
