@@ -190,6 +190,13 @@ tasks.named<Test>("jvmTest") {
 
     if (hostNativeBinaryPath != null) {
         environment("NATIVE_CLIENT_BINARY", hostNativeBinaryPath)
+    } else {
+        // Native targets are not available (e.g., Kotlin master builds disable all native targets
+        // in KmpConfig.nativeTargets). Explicitly exclude the native conformance test — it must
+        // never be silently skipped; it is either run with the binary or excluded here.
+        filter {
+            excludeTestsMatching("kotlinx.rpc.protoc.gen.test.ConformanceTest.nativeConformance*")
+        }
     }
 
     useJUnitPlatform()
