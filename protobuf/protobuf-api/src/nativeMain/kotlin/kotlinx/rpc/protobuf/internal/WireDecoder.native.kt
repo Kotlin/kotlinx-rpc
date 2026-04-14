@@ -71,7 +71,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         when (pw_decoder_read_validated_tag(raw, tag.ptr)) {
             0 -> null // end of stream or sub-message boundary
             1 -> KTag.from(tag.value)
-            else -> throw ProtobufDecodingException.invalidTag()
+            else -> throw ProtobufDecodingException.invalidTag(tag.value)
         }
     }
 

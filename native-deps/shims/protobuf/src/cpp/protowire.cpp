@@ -235,6 +235,10 @@ extern "C" {
     }
 
     int pw_decoder_read_validated_tag(pw_decoder_t *self, uint32_t *tag_out) {
+        // Zero-initialize so the Kotlin caller always has a meaningful value
+        // for error diagnostics, even on early-return error paths.
+        *tag_out = 0;
+
         // Sub-message boundary: BytesUntilLimit() == 0 when a PushLimit scope
         // is active and all bytes within it have been consumed. This mirrors
         // ReadTag()'s internal limit check.
@@ -270,14 +274,20 @@ extern "C" {
 
         while (b >= 0x80) {
             if (bytes_used >= 10) {
+                // Write partial result for diagnostics before returning error.
+                *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
                 return -1; // varint exceeds 10 bytes
             }
             if (!self->codedInputStream.ReadRaw(&b, 1)) {
+                *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
                 return -1; // truncated varint
             }
             result |= static_cast<uint64_t>(b & 0x7F) << (7 * bytes_used);
             bytes_used++;
         }
+
+        // Write the decoded value for diagnostics on all remaining error paths.
+        *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
 
         if (result == 0) return -1;         // zero tag (invalid field number 0)
         if (result > UINT32_MAX) return -1;  // exceeds 32-bit tag range
@@ -293,7 +303,7 @@ extern "C" {
 
         if (bytes_used > min_bytes) return -1;
 
-        *tag_out = static_cast<uint32_t>(result);
+        // Success — *tag_out already set above.
         return 1;
     }
 
