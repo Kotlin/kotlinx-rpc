@@ -15,7 +15,7 @@ local_path_override(
 
 # This value is Gradle-managed. `native-deps/shims/protobuf` rewrites it from `versions-root/libs.versions.toml`
 # before Bazel-backed build tasks, so change `internal-native-protobuf-shim` there instead of editing this line manually.
-PROTOBUF_VERSION = "31.1"
+PROTOBUF_VERSION = "34.0"
 
 bazel_dep(
     name = "protobuf",
