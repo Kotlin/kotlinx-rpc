@@ -45,7 +45,6 @@ private typealias ResponseType = Any
  * GrpcServer is an implementation of both [RpcServer] and [GrpcServer] interfaces,
  * providing the ability to host gRPC services.
  *
- * @property port Specifies the port used by the server to listen for incoming connections.
  * @param serverBuilder exposes platform-specific Server builder.
  * @param interceptors a list of interceptors that will be applied to all incoming gRPC calls
  * @param messageMarshallerResolver a custom [GrpcMarshallerResolver] that will be used to resolve message marshallers
@@ -55,7 +54,6 @@ private typealias ResponseType = Any
  */
 @InternalRpcApi
 public class GrpcServerImpl internal constructor(
-    override val port: Int,
     private val serverBuilder: ServerBuilder<*>,
     private val interceptors: List<GrpcServerInterceptor>,
     messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
@@ -69,6 +67,9 @@ public class GrpcServerImpl internal constructor(
 
     private var isBuilt = false
     private lateinit var internalServer: PlatformServer
+
+    override val port: Int
+        get() = internalServer.port
 
     private val registry: GrpcMutableHandlerRegistry by lazy {
         GrpcMutableHandlerRegistry().apply { this@GrpcServerImpl.serverBuilder.fallbackHandlerRegistry(this) }

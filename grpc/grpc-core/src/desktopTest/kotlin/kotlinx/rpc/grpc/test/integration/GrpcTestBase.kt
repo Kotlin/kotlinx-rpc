@@ -36,16 +36,7 @@ abstract class GrpcTestBase {
         test: suspend (GrpcClient) -> Unit,
     ) = runBlocking {
         serverMutex.withLock {
-            val grpcClient = GrpcClient("localhost", PORT) {
-                credentials = clientCreds ?: plaintext()
-                if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
-                clientInterceptors.forEach { intercept(it) }
-                clientConfiguration()
-            }
-
-            val grpcServer = GrpcServer(
-                PORT,
-            ) {
+            val grpcServer = GrpcServer(0) {
                 credentials = serverCreds
                 serverInterceptors.forEach { intercept(it) }
                 services { registerServices() }
@@ -53,6 +44,14 @@ abstract class GrpcTestBase {
             }
 
             grpcServer.start()
+
+            val grpcClient = GrpcClient("localhost", grpcServer.port) {
+                credentials = clientCreds ?: plaintext()
+                if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
+                clientInterceptors.forEach { intercept(it) }
+                clientConfiguration()
+            }
+
             try {
                 test(grpcClient)
             } finally {
@@ -62,10 +61,6 @@ abstract class GrpcTestBase {
                 grpcClient.awaitTermination()
             }
         }
-    }
-
-    companion object {
-        const val PORT = 49656
     }
 
     internal fun serverInterceptor(
