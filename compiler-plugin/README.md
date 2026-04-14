@@ -27,6 +27,24 @@ Protocol-specific codegen and diagnostics details live alongside each protocol m
 - [gRPC codegen](../grpc/codegen.md) -- gRPC-specific additions: `delegate()`, `MethodDescriptor`, streaming types
 - [Protobuf codegen](../protobuf/codegen.md) -- `Builder` interface, `@WithProtoDescriptor`/`@WithGrpcMarshaller` annotations
 
+## Generated test runners — Do not edit manually
+
+`tests/compiler-plugin-tests/src/test-gen/` contains auto-generated Java test classes (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`). 
+**Do not edit them manually.** Regenerate after adding, removing, or renaming test data files:
+```
+:tests:compiler-plugin-tests:generateTests
+```
+
 ## Version Compatibility
 
 See `verify-compiler-plugin-compatibility` skill.
+
+## Compiler internals investigation tip
+
+When debugging issues involving the Kotlin compiler (compiler plugin code, FIR, IR),
+**read the implementation of the API you're calling**, not just the signature. Compiler
+APIs often have non-obvious side effects — e.g., a method named `addAnnotation` may
+also validate argument types and modify the declaration's annotation list. Use
+`searching_dependency_sources` to find the class, then `read_dependency_sources` to
+read the actual method body. This prevents hours of guessing about behavior that is
+plainly visible in the source.

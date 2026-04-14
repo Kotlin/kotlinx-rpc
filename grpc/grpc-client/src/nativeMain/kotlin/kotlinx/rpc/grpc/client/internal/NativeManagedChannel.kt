@@ -163,7 +163,7 @@ internal class NativeManagedChannel(
         }
         if (force) {
             // cancel all jobs, such that the shutdown is completing faster (not immediate).
-            // TODO: replace jobs by custom pendingCallClass.
+            // TODO KRPC-552: replace jobs by custom pendingCallClass.
             callJobSupervisor.cancelChildren(CancellationException("Channel is shutting down"))
         }
 

@@ -19,4 +19,4 @@ The test task waits for `[GRPC-TEST-SERVER] Server started` before proceeding.
 
 **`@Grpc`** annotation -- marks an interface as a gRPC service (analogous to `@Rpc` for kRPC).
 
-[//]: # (TODO reference code generation in protoc-gen)
+See [protoc-gen codegen reference](../protoc-gen/codegen.md) for details on generated code.

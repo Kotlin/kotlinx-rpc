@@ -42,11 +42,11 @@ The plugin uses `buf` CLI tool (not `protoc` directly) for code generation:
 When `kotlinx.rpc.plugin.internalDevelopment=true` (set in `gradle.properties`), the compiler plugin artifacts are resolved from local project paths instead of Maven coordinates. 
 This strips the `kotlinx-rpc-` prefix from artifact IDs (`RpcPluginConst.kt`, `KotlinCompilerPluginBuilder.kt`).
 
-### Generated sources at build time
+### Generated sources at build time — Do not edit manually
 
-`build.gradle.kts` generates two files:
-- `Versions.kt` (main) — `LIBRARY_VERSION`, `BUF_TOOL_VERSION` constants
-- `TestVersions.kt` (test) — `RPC_VERSION`, `ANDROID_HOME_DIR`, `BUILD_REPO` constants
+`build.gradle.kts` generates two files at build time. **Do not edit them manually** — they are regenerated automatically on every build:
+- `build/generated-sources/kotlin/main/Versions.kt` — `LIBRARY_VERSION`, `BUF_TOOL_VERSION` constants
+- `build/generated-sources/kotlin/test/TestVersions.kt` — `RPC_VERSION`, `ANDROID_HOME_DIR`, `BUILD_REPO` constants
 
 ### Test matrix
 

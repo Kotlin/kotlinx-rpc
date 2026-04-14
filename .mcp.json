@@ -7,6 +7,13 @@
         "Authorization": "Bearer ${YOUTRACK_TOKEN}"
       }
     },
+    "youtrack-agent": {
+      "type": "http",
+      "url": "https://youtrack.jetbrains.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${YOUTRACK_AGENT_TOKEN}"
+      }
+    },
     "gradle": {
       "command": "jbang",
       "args": [
@@ -15,6 +22,13 @@
         "--fresh",
         "gradle-mcp@rnett"
       ]
+    },
+    "develocity": {
+      "type": "http",
+      "url": "https://ge.jetbrains.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${DEVELOCITY_TOKEN}"
+      }
     }
   }
 }

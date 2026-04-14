@@ -13,8 +13,8 @@ Shared toolchain notes:
 - Manual Bazel/Konan troubleshooting and LLVM bundle maintenance live in [../bazel-support/README.md](/Users/jozott/development/jetbrains/kotlinx-rpc/native-deps/bazel-support/README.md).
 
 Useful tasks:
-- `./gradlew :kotlinx-rpc-grpc-core-shim:publishAllPublicationsToBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToBuildRepoRepository`
-- `./gradlew :kotlinx-rpc-protobuf-shim:publishAllPublicationsToBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToBuildRepoRepository`
+- `./gradlew :kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository`
+- `./gradlew :kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository`
 - `./gradlew :tests:test`
 
 gRPC overlap workflow (KRPC-540):

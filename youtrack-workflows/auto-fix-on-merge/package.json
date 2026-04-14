@@ -1,0 +1,8 @@
+{
+  "name": "auto-fix-on-merge",
+  "version": "0.0.1",
+  "description": "Sets issue state to Fixed when a VCS comment indicates a pull request was merged",
+  "dependencies": {
+    "@jetbrains/youtrack-scripting-api": "^2022.1.46592"
+  }
+}

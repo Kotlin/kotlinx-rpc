@@ -80,9 +80,7 @@ val conventions_jvm = settingsDir
     .resolve("kotlin")
     .resolve("conventions-jvm.gradle.kts")
 
-// todo
-//  remove apiValidation_kt after 2.3.20
-//  remote everything after 2.4.0
+// TODO KRPC-553: remove apiValidation_kt after 2.3.20, remove everything after 2.4.0
 if (kotlinVersion.isAtLeast(2, 4, 0)) {
     rewrite(
         file = apiValidation_kt,
@@ -134,7 +132,7 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
                 @OptIn(ExperimentalAbiValidation::class)
                 fun AbiValidationVariantSpec.configureAbiFilters() {
                     filters {
-                        @Suppress("DEPRECATION_ERROR") // todo: temp, remove after update to 2.3.20
+                        @Suppress("DEPRECATION_ERROR") // TODO KRPC-553: temp, remove after update to 2.3.20
                         excluded {
                             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
                             byNames.add("kotlinx.rpc.internal.**")

@@ -3,6 +3,9 @@
 kotlinx-rpc is a Kotlin Multiplatform library for building RPC services.
 Version catalog: `versions-root/libs.versions.toml`
 
+## Effort Level
+Always operate at maximum effort level. Do not ask about effort preferences.
+
 ## Protocols
 
 EXTREMELY IMPORTANT.
@@ -47,6 +50,15 @@ Non-Gradle validation:
 ./publishLocal.sh                  # Publish to build/repo/ for local testing
 ```
 
+## Generated Code — Do Not Edit Manually
+
+Several checked-in files are machine-generated. 
+**Never modify them by hand** — always run the appropriate regeneration task and commit the output.
+This includes `.api` and `.klib.api` ABI dump files (use `updateLegacyAbi`),
+conformance test output, WKT generated code, implicit import lists, and other.
+Hand-editing these files produces incorrect results (e.g., klib dump sort order
+differs from what's intuitive).
+
 ## Module Map
 
 The most important modules have brief READMEs in their directories, read when you need to work with the module.
@@ -66,6 +78,13 @@ The most important modules have brief READMEs in their directories, read when yo
 
 ### Protobuf (mainly used with gRPC)
 - `:protobuf:protobuf-{api,wkt,core}`
+
+### Native shims (standalone Gradle build)
+- `native-deps/shims/grpc/` -- gRPC cinterop shim KLIB (`:kotlinx-rpc-grpc-core-shim`)
+- `native-deps/shims/protobuf/` -- Protobuf cinterop shim KLIB (`:kotlinx-rpc-protobuf-shim`)
+- `native-deps/shims/annotation/` -- Shared opt-in markers (`:kotlinx-rpc-native-shims-annotation`)
+- `native-deps/shims/klib-patcher/` -- Internal KLIB metadata patcher
+- `native-deps/grpc-c-prebuilt/` -- Prebuilt gRPC static archives and headers
 
 ### Included builds (separate Gradle projects)
 - `compiler-plugin/` -- Kotlin K2 compiler plugin (FIR diagnostics + IR codegen)

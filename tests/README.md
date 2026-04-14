@@ -40,3 +40,13 @@ Tests use Kotlin's compiler test framework (`kotlin-compiler-test-framework`). T
 2. Run `./gradlew :tests:compiler-plugin-tests:generateTests` to regenerate the test suite
 3. Run with `-Pkotlin.test.update.test.data=true` to generate initial golden files
 4. Verify the generated `.fir.txt` / `.fir.ir.txt` are correct
+
+## Generated code — Do not edit manually
+
+Several files in this directory are machine-generated.
+**Never modify them by hand** — always run the appropriate regeneration task.
+
+| Generated files | Regeneration task | When to regenerate |
+|---|---|---|
+| `compiler-plugin-tests/src/test-gen/` (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`) | `:tests:compiler-plugin-tests:generateTests` | After adding, removing, or renaming test data files in `src/testData/` |
+| `protobuf-conformance/src/main/generated-code/` | `:tests:protobuf-conformance:bufGenerateMain` | After `protoc-gen/` changes |

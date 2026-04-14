@@ -51,6 +51,7 @@ fun PublishingExtension.configurePublication() {
         configureSpaceGrpcRepository()
         configureForIdeRepository()
         configureLocalDevRepository()
+        configureNativeDepsBuildRepository()
     }
 
     configureJvmPublicationIfNeeded()
@@ -165,6 +166,14 @@ fun RepositoryHandler.configureLocalDevRepository() {
     // Something that's straightforward to "clean" for development, not mavenLocal
     maven("$globalRootDir/build/repo") {
         name = "buildRepo"
+    }
+}
+
+fun RepositoryHandler.configureNativeDepsBuildRepository() {
+    // Local development repository for native-deps shim artifacts.
+    // Shims publish here; the main project resolves from here during local iteration.
+    maven("$globalRootDir/native-deps/build/repo") {
+        name = "nativeDepsBuildRepo"
     }
 }
 
