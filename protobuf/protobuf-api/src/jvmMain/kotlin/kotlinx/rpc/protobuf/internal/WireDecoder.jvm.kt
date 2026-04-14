@@ -55,7 +55,7 @@ internal class WireDecoderJvm(source: Source) : WireDecoder {
 
         val tag = raw64.toUInt()
         if (tag == 0u) {
-            throw ProtobufDecodingException.invalidTag()
+            throw ProtobufDecodingException.invalidTag(tag)
         }
 
         return KTag.from(tag)
