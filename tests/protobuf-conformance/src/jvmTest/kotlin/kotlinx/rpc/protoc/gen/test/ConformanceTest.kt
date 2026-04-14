@@ -37,6 +37,9 @@ class ConformanceTest {
         )
     }
 
+    // This test must NEVER be silently skipped. If the native binary is unavailable
+    // (e.g., Kotlin master builds where native targets are disabled), the build script
+    // must explicitly exclude this test via Gradle test filters — see build.gradle.kts.
     @TestFactory
     fun nativeConformance(): Stream<DynamicTest> {
         val nativeBinary = System.getenv("NATIVE_CLIENT_BINARY")
