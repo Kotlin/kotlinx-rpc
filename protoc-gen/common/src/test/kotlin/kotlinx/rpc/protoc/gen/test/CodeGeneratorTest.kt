@@ -379,6 +379,62 @@ class CodeGeneratorTest {
     }
 
     @Test
+    fun testClassCommentResolvesInClassScope() = codeGeneratorTest(generateComments = true) { table ->
+        val myClassName = fqDec("com.example", "MyClass")
+        val helperName = fqDec("com.example", "MyClass.Helper")
+
+        table.register(myClassName)
+        table.register(helperName)
+
+        val (imports, generated) = generate {
+            clazz(
+                name = "MyClass",
+                comment = Comment.leading(helperName.scoped().wrapIn { "See [$it] for details." }),
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * See [Helper] for details.
+             */
+            class MyClass
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertTrue { imports.isEmpty() }
+    }
+
+    @Test
+    fun testClassCommentFqWhenShadowed() = codeGeneratorTest(generateComments = true) { table ->
+        val outerString = fqDec("com.example", "MyClass.String")
+        val myClassName = fqDec("com.example", "MyClass")
+
+        table.register(outerString)
+        table.register(myClassName)
+
+        val (imports, generated) = generate {
+            clazz(
+                name = "MyClass",
+                comment = Comment.leading(
+                    FqName.Implicits.String.scoped().wrapIn { "Returns a [$it] value." }
+                ),
+            )
+        }
+
+        assertEquals(
+            """
+            /**
+             * Returns a [kotlin.String] value.
+             */
+            class MyClass
+            """.trimIndent(),
+            generated.trim(),
+        )
+        assertTrue { imports.isEmpty() }
+    }
+
+    @Test
     fun testProtoCommentPercentEscaping() = codeGeneratorTest(generateComments = true) {
         val resolver = ProtoTypeResolver(
             fullNameMap = emptyMap(),

@@ -543,7 +543,7 @@ open class CodeGenerator(
 
         val nestedNameTable = nameTable.nested(name.takeIf { it.isNotBlank() } ?: "Companion")
 
-        appendComment(comment)
+        appendComment(comment, selectedNameTable = nestedNameTable)
         for (annotation in annotations) {
             selectNames(nestedNameTable) {
                 addLine(annotation)
@@ -663,7 +663,12 @@ open class CodeGenerator(
         }
     }
 
-    fun appendComment(comment: Comment?, first: Boolean = true, final: Boolean = true) = selectNames {
+    fun appendComment(
+        comment: Comment?,
+        first: Boolean = true,
+        final: Boolean = true,
+        selectedNameTable: ScopedFqNameTable? = null,
+    ) = selectNames(selectedNameTable) {
         if (!config.generateComments || comment == null || comment.isEmpty()) {
             return@selectNames
         }
