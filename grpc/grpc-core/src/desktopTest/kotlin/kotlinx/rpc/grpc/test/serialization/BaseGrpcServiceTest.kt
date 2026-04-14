@@ -47,12 +47,14 @@ abstract class  BaseGrpcServiceTest {
 
         val service = client.withService(kClass)
 
-        block(service)
-
-        client.shutdown()
-        client.awaitTermination()
-        server.shutdown()
-        server.awaitTermination()
+        try {
+            block(service)
+        } finally {
+            client.shutdown()
+            client.awaitTermination()
+            server.shutdown()
+            server.awaitTermination()
+        }
     }
 }
 

@@ -138,13 +138,15 @@ class RawClientServerTest {
             credentials = plaintext()
         }
 
-        block(client, descriptor)
-
-        serverJob.cancelAndJoin()
-        client.shutdown()
-        client.awaitTermination()
-        server.shutdown()
-        server.awaitTermination()
+        try {
+            block(client, descriptor)
+        } finally {
+            serverJob.cancelAndJoin()
+            client.shutdown()
+            client.awaitTermination()
+            server.shutdown()
+            server.awaitTermination()
+        }
     }
 
     companion object {
