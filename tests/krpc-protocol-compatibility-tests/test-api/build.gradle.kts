@@ -3,12 +3,10 @@
  */
 
 @file:Suppress("PropertyName")
-@file:OptIn(ExperimentalAbiValidation::class)
 
 import org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -28,10 +26,6 @@ kotlin {
     // END
 
     explicitApi = ExplicitApiMode.Disabled
-
-    abiValidation {
-        enabled.set(false)
-    }
 }
 
 tasks.test {
