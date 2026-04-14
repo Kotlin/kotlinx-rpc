@@ -243,14 +243,22 @@ extern "C" {
         }
 
         // Read the first byte via ReadRaw to reliably distinguish top-level
-        // EOF from a varint start. ReadRaw(1) fails only when the stream is
-        // genuinely exhausted (BytesUntilLimit > 0 was checked above, so a
-        // limit boundary is not the cause). This avoids ReadTag()'s ambiguous
-        // return-0-for-both-EOF-and-errors and ConsumedEntireMessage()'s
-        // broken behavior at the top level (no limit set → legitimate_message_end_
-        // is never set).
+        // EOF from a varint start. BytesUntilLimit() is either -1 (no limit,
+        // top-level context where current_limit_ is INT_MAX) or positive
+        // (inside a PushLimit scope with remaining data). In either case,
+        // ReadRaw(1) failure means the underlying stream is exhausted.
+        //
+        // This avoids ReadTag()'s ambiguous return-0-for-both-EOF-and-errors
+        // and ConsumedEntireMessage()'s broken behavior at the top level (no
+        // limit set → legitimate_message_end_ is never set).
         uint8_t b;
         if (!self->codedInputStream.ReadRaw(&b, 1)) {
+            // BytesUntilLimit == -1: top-level EOF (no limit active, stream
+            // exhausted). BytesUntilLimit > 0: the limit says data should be
+            // available but the stream is exhausted — I/O error or truncation.
+            if (self->codedInputStream.BytesUntilLimit() > 0) {
+                return -1; // truncated stream
+            }
             return 0; // top-level EOF
         }
 

@@ -829,9 +829,40 @@ class WireMarshallerTest {
 
 
     @Test
-    fun testInvalidTag() {
+    fun testInvalidTagZero() {
         val buffer = Buffer()
         buffer.writeByte(0)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                WireDecoder(buffer).readTag()
+            }
+        }
+    }
+
+    @Test
+    fun testInvalidTagVarintMoreThanTenBytes() {
+        // 11 bytes: 10 continuation bytes (0x80) + 1 terminator (0x01)
+        // This exceeds the protobuf varint maximum of 10 bytes.
+        val buffer = Buffer()
+        repeat(10) { buffer.writeByte(0x80.toByte()) }
+        buffer.writeByte(0x01)
+
+        assertFailsWith<ProtobufDecodingException> {
+            checkForPlatformDecodeException {
+                WireDecoder(buffer).readTag()
+            }
+        }
+    }
+
+    @Test
+    fun testInvalidTagOverlongEncoding() {
+        // Field number 1, wire type 0 (VARINT) = tag value 8.
+        // Minimal encoding: single byte 0x08.
+        // Overlong encoding: two bytes 0x88 0x00 (value 8 in 2 varint bytes).
+        val buffer = Buffer()
+        buffer.writeByte(0x88.toByte())
+        buffer.writeByte(0x00)
 
         assertFailsWith<ProtobufDecodingException> {
             checkForPlatformDecodeException {
