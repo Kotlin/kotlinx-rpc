@@ -133,22 +133,15 @@ class KrpcProtocolCompatibilityTests : KrpcProtocolCompatibilityTestsBase() {
         ),
     ) { service, impl ->
         val job = launch {
-            println("[clientStreamCancellation] launching")
             service.clientStreamCancellation(flow {
                 emit(1)
-                println("[clientStreamCancellation] emit 1")
                 impl.fence.await()
-                println("[clientStreamCancellation] after fence")
             })
-            println("[clientStreamCancellation] after service call")
         }
 
         impl.entered.await()
-        println("[clientStreamCancellation] entered")
         job.cancelAndJoin()
-        println("[clientStreamCancellation] cancelled")
         impl.cancelled.await(1)
-        println("[clientStreamCancellation] awaited cancellation")
 
         assertNoErrorsInLogs()
     }
