@@ -239,8 +239,18 @@ extern "C" {
         // fast-path array reader (ReadVarint64FromArray) does not advance the
         // internal buffer pointer on failure (e.g., >10-byte varints), making
         // post-failure ConsumedEntireMessage() unreliable.
+        //
+        // Sub-message EOF: BytesUntilLimit() == 0 when a PushLimit scope is
+        // active and all bytes within it have been consumed. This is reliable
+        // regardless of legitimate_message_end_ state.
+        if (self->codedInputStream.BytesUntilLimit() == 0) {
+            return 0; // at sub-message limit boundary
+        }
+        // Top-level EOF: ConsumedEntireMessage() is reliable here because no
+        // prior failed ReadVarint64 could have corrupted legitimate_message_end_
+        // (we only reach this point after successful reads or from a fresh stream).
         if (self->codedInputStream.ConsumedEntireMessage()) {
-            return 0; // legitimate end of stream
+            return 0; // top-level end of stream
         }
 
         int pos_before = self->codedInputStream.CurrentPosition();
