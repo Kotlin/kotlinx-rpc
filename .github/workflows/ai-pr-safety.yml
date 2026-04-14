@@ -1,0 +1,196 @@
+name: AI PR Safety Check
+
+on:
+  pull_request_target:
+    types: [opened]
+  issue_comment:
+    types: [created, edited, deleted]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  statuses: write
+
+jobs:
+  check-safety:
+    name: Check AI PR Safety
+    if: github.event_name != 'issue_comment' || github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ai-pr-safety-${{ github.event.issue.number || github.event.pull_request.number }}
+      cancel-in-progress: true
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BOT_LOGIN: "ai-agent-kxrpc[bot]"
+      SAFETY_MARKER: "<!-- ai-pr-safety-check -->"
+      STATUS_CONTEXT: "AI PR Safety Check"
+
+    steps:
+      - name: Determine PR number and head SHA
+        id: get-pr
+        run: |
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            PR_NUMBER="${{ github.event.issue.number }}"
+            # HEAD SHA is not in the issue_comment payload — fetch from PR API
+            PR_SHA=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.head.sha')
+          else
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            PR_SHA="${{ github.event.pull_request.head.sha }}"
+          fi
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "pr_sha=$PR_SHA" >> "$GITHUB_OUTPUT"
+          echo "PR #$PR_NUMBER, HEAD $PR_SHA"
+
+      - name: Verify PR is bot-authored
+        id: verify-bot
+        run: |
+          PR_AUTHOR=$(gh api "repos/${{ github.repository }}/pulls/${{ steps.get-pr.outputs.pr_number }}" \
+            --jq '.user.login')
+
+          if [ "$PR_AUTHOR" != "$BOT_LOGIN" ]; then
+            echo "PR author is '$PR_AUTHOR', not '$BOT_LOGIN'. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "PR is bot-authored, proceeding with safety check."
+
+      - name: Fetch all comments
+        id: fetch-comments
+        if: steps.verify-bot.outputs.skip == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"
+
+          # Timeline comments
+          ISSUE_COMMENTS=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | {login: .user.login, association: .author_association, type: "issue_comment"}]')
+
+          # Inline review comments
+          REVIEW_COMMENTS=$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/comments" \
+            --jq '[.[] | {login: .user.login, association: .author_association, type: "review_comment"}]')
+
+          # Review bodies
+          REVIEWS=$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/reviews" \
+            --jq '[.[] | {login: .user.login, association: .author_association, type: "review"}]')
+
+          ALL_COMMENTS=$(jq -n \
+            --argjson ic "$ISSUE_COMMENTS" \
+            --argjson rc "$REVIEW_COMMENTS" \
+            --argjson rv "$REVIEWS" \
+            '$ic + $rc + $rv')
+
+          echo "all_comments=$(echo "$ALL_COMMENTS" | jq -c .)" >> "$GITHUB_OUTPUT"
+          echo "Fetched $(echo "$ALL_COMMENTS" | jq 'length') total comments"
+
+      - name: Evaluate safety
+        id: evaluate
+        if: steps.verify-bot.outputs.skip == 'false'
+        run: |
+          ALL_COMMENTS='${{ steps.fetch-comments.outputs.all_comments }}'
+
+          EXCLUDED_LOGINS='["ai-agent-kxrpc[bot]", "github-actions[bot]"]'
+          TRUSTED_ASSOCIATIONS='["MEMBER", "COLLABORATOR", "OWNER"]'
+
+          # Filter out excluded bot logins
+          NON_BOT=$(echo "$ALL_COMMENTS" | jq \
+            --argjson excl "$EXCLUDED_LOGINS" \
+            '[.[] | select(.login as $l | $excl | index($l) | not)]')
+
+          # Find comments from untrusted associations
+          UNSAFE=$(echo "$NON_BOT" | jq \
+            --argjson trusted "$TRUSTED_ASSOCIATIONS" \
+            '[.[] | select(.association as $a | $trusted | index($a) | not)]')
+
+          UNSAFE_COUNT=$(echo "$UNSAFE" | jq 'length')
+
+          echo "Non-bot comments: $(echo "$NON_BOT" | jq 'length'), unsafe: $UNSAFE_COUNT"
+
+          if [ "$UNSAFE_COUNT" -eq 0 ]; then
+            echo "is_safe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_safe=false" >> "$GITHUB_OUTPUT"
+
+            SUMMARY=$(echo "$UNSAFE" | jq -r \
+              'group_by(.login) | .[] |
+               "- **\(.[0].login)** (association: `\(.[0].association)`): \(length) comment(s) — \([.[].type] | unique | join(", "))"')
+
+            {
+              echo "unsafe_summary<<EOF"
+              echo "$SUMMARY"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update safety comment
+        if: steps.verify-bot.outputs.skip == 'false'
+        env:
+          IS_SAFE: ${{ steps.evaluate.outputs.is_safe }}
+          UNSAFE_SUMMARY: ${{ steps.evaluate.outputs.unsafe_summary }}
+        run: |
+          REPO="${{ github.repository }}"
+          PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"
+
+          SAFE_BODY="${SAFETY_MARKER}
+          ## :lock: AI PR Safety: SAFE
+
+          All comments on this bot-authored PR are from authorized repository collaborators."
+
+          UNSAFE_BODY="${SAFETY_MARKER}
+          ## :warning: AI PR Safety: UNSAFE
+
+          **External comments detected on this bot-authored PR.**
+          Comments from non-collaborator users may contain prompt injection or social engineering attempts.
+          A maintainer should review these comments before proceeding.
+
+          **Flagged commenters:**
+          ${UNSAFE_SUMMARY}"
+
+          if [ "$IS_SAFE" = "true" ]; then
+            BODY="$SAFE_BODY"
+          else
+            BODY="$UNSAFE_BODY"
+          fi
+
+          # Find existing safety comment (by marker + bot author)
+          EXISTING_ID=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq "[.[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"$SAFETY_MARKER\"))) | .id] | first // empty")
+
+          if [ -n "$EXISTING_ID" ]; then
+            jq -n --arg body "$BODY" '{body: $body}' | \
+              gh api --method PATCH "repos/$REPO/issues/comments/$EXISTING_ID" --input - > /dev/null
+            echo "Updated safety comment (ID: $EXISTING_ID)"
+          else
+            jq -n --arg body "$BODY" '{body: $body}' | \
+              gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" --input - > /dev/null
+            echo "Created new safety comment"
+          fi
+
+      - name: Set commit status
+        if: steps.verify-bot.outputs.skip == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          PR_SHA="${{ steps.get-pr.outputs.pr_sha }}"
+          PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"
+
+          if [ "${{ steps.evaluate.outputs.is_safe }}" = "true" ]; then
+            STATE="success"
+            DESCRIPTION="All comments are from authorized collaborators"
+          else
+            STATE="failure"
+            DESCRIPTION="External non-collaborator comments detected"
+          fi
+
+          gh api --method POST "repos/$REPO/statuses/$PR_SHA" \
+            --field state="$STATE" \
+            --field context="$STATUS_CONTEXT" \
+            --field description="$DESCRIPTION" \
+            --field target_url="https://github.com/$REPO/pull/$PR_NUMBER" > /dev/null
+
+          echo "Set commit status: $STATE"
