@@ -154,6 +154,10 @@ public abstract class kotlinx/rpc/protoc/DefaultProtoTask : org/gradle/api/Defau
 	public final fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
 }
 
+public abstract class kotlinx/rpc/protoc/ExtractDependencyProtoImports : org/gradle/api/tasks/Sync, kotlinx/rpc/protoc/ProtoTask {
+	public fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
+}
+
 public final class kotlinx/rpc/protoc/PluginJarsKt {
 	public static final fun getGrpcKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun getKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
