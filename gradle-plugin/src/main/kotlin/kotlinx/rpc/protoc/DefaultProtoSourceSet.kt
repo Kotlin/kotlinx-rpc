@@ -18,6 +18,7 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
@@ -151,6 +152,16 @@ internal open class DefaultProtoSourceSet(
     // only set for variant.name sourceSets
     val androidProperties: Property<ProtoTask.AndroidProperties> = project.objects.property()
 
+    // Proto dependency configuration for this source set, created when protoc is activated.
+    // Allows users to declare proto dependencies via `dependencies { <name>Proto("...") }`.
+    // Resolved artifacts are extracted and included in code generation.
+    internal var protoConfiguration: Configuration? = null
+
+    // Proto import dependency configuration for this source set, created when protoc is activated.
+    // Allows users to declare proto import dependencies via `dependencies { <name>ProtoImport("...") }`.
+    // Resolved artifacts are extracted and available as imports, but not for code generation.
+    internal var protoImportConfiguration: Configuration? = null
+
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
 
@@ -196,6 +207,14 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
         plugins.addAll(protoSourceSet.plugins)
+
+        // Wire Gradle configuration inheritance for proto dependency configurations
+        protoSourceSet.protoConfiguration?.let { parentConfig ->
+            protoConfiguration?.extendsFrom(parentConfig)
+        }
+        protoSourceSet.protoImportConfiguration?.let { parentConfig ->
+            protoImportConfiguration?.extendsFrom(parentConfig)
+        }
     }
 
     @JvmName("checkSelfImport_provider")
@@ -240,6 +259,24 @@ internal fun Project.createProtoExtensions() {
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
         languageSourceSet?.let { protoSourceSet.languageSourceSets.add(it) }
+
+        // Create proto dependency configurations eagerly so they are available
+        // as Kotlin DSL accessors in the build script's dependencies {} block.
+        if (protoSourceSet.protoConfiguration == null) {
+            val protoConfigName = protoConfigurationName(languageSourceSetName)
+            protoSourceSet.protoConfiguration = configurations.maybeCreate(protoConfigName).apply {
+                isCanBeResolved = true
+                isCanBeConsumed = false
+                description = "Proto file dependencies for source set '$languageSourceSetName' (code generation)"
+            }
+
+            val protoImportConfigName = protoImportConfigurationName(languageSourceSetName)
+            protoSourceSet.protoImportConfiguration = configurations.maybeCreate(protoImportConfigName).apply {
+                isCanBeResolved = true
+                isCanBeConsumed = false
+                description = "Proto file import dependencies for source set '$languageSourceSetName' (imports only)"
+            }
+        }
 
         return protoSourceSet
     }

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "dependency.proto";
+
+message Some {
+  string content = 1;
+  dependency.DependencyMessage dep = 2;
+}
