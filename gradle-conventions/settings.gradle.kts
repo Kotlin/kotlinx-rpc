@@ -108,15 +108,28 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
     )
     rewrite(
         file = conventions_kmp,
+        // no trimIndent
         markers = mapOf(
-            "marker-klib" to "",
+            "marker-abi-kmp" to """
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
+        }
+    }
+            """
         )
     )
     rewrite(
         file = conventions_jvm,
         // no trimIndent
         markers = mapOf(
-            "marker-enabled-jvm" to ""
+            "marker-abi-jvm" to """
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
+        }
+    }
+            """
         )
     )
 } else {
@@ -149,12 +162,14 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
         file = conventions_kmp,
         // no trimIndent
         markers = mapOf(
-            "marker-klib" to """
+            "marker-abi-kmp" to """
+    abiValidation {
         enabled = enableAbiValidation
-        
         klib {
             enabled = enableAbiValidation
         }
+        configureAbiFilters()
+    }
             """
         )
     )
@@ -162,8 +177,11 @@ if (kotlinVersion.isAtLeast(2, 4, 0)) {
         file = conventions_jvm,
         // no trimIndent
         markers = mapOf(
-            "marker-enabled-jvm" to """
+            "marker-abi-jvm" to """
+    abiValidation {
         enabled = enableAbiValidation
+        configureAbiFilters()
+    }
             """
         )
     )
