@@ -32,6 +32,8 @@ abstract class GrpcBaseTest : BaseTest() {
         runNonExistentTask(bufGenerate(set))
         runNonExistentTask(processProtoFiles(set))
         runNonExistentTask(processProtoFilesImports(set))
+        runNonExistentTask(extractProto(set))
+        runNonExistentTask(extractProtoImport(set))
         runNonExistentTask(generateBufYaml(set))
         runNonExistentTask(generateBufGenYaml(set))
     }
@@ -442,6 +444,8 @@ inputs:
         fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
         fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
         fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
+        fun extractProto(sourceSet: SSets) = "extractProto${sourceSet.capital}"
+        fun extractProtoImport(sourceSet: SSets) = "extractProtoImport${sourceSet.capital}"
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
 

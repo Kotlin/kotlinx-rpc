@@ -5,8 +5,10 @@
 package kotlinx.rpc.protoc
 
 import org.gradle.api.Project
+import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
@@ -76,6 +78,55 @@ internal fun Project.registerProcessProtoFilesImportsTask(
 
         from(allImports)
         from(rawImports)
+
+        into(destination)
+
+        configure()
+    }
+
+    return task
+}
+
+/**
+ * Extract proto files from dependency archives (JARs, ZIPs).
+ *
+ * Registered automatically when proto dependency configurations are used.
+ */
+public abstract class ExtractDependencyProtoImports @Inject internal constructor(
+    @get:Internal
+    override val properties: ProtoTask.Properties,
+) : Sync(), ProtoTask {
+    @get:Inject
+    internal abstract val archiveOperations: ArchiveOperations
+
+    init {
+        group = PROTO_GROUP
+    }
+}
+
+internal fun Project.registerExtractDependencyProtoImportsTask(
+    taskName: String,
+    destination: File,
+    dependencyArchives: FileCollection,
+    properties: ProtoTask.Properties,
+    configure: ExtractDependencyProtoImports.() -> Unit = {},
+): TaskProvider<ExtractDependencyProtoImports> {
+    val task = tasks.register(
+        taskName,
+        ExtractDependencyProtoImports::class,
+        properties,
+    )
+
+    task.configure {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+
+        from(dependencyArchives.elements.map { elements ->
+            elements.map { element ->
+                archiveOperations.zipTree(element.asFile).matching {
+                    include("**/*.proto")
+                }
+            }
+        })
 
         into(destination)
 

@@ -33,6 +33,58 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependency Proto Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+
+        // dependency.proto should be in the proto dir (codegen), not import dir
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("dependency.proto"))
+
+        // Both local and dependency protos generate code
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        // dependency.proto is in the "dependency" package, generated under a subdirectory
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("dependency", "Dependency.kt"),
+            Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.main)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+
+        // dependency.proto should be in the import dir (import-only), not proto dir
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        // Only local protos generate code, dependency protos are imports only
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.main)
+    }
+
+    @TestFactory
     fun `No gRPC`() = runGrpcTest {
         SSetsJvm.entries.forEach {
             runNonExistentTasksForSourceSet(it)

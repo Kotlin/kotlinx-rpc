@@ -182,6 +182,25 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("indentSize", buf.generate.indentSize)
     }
 
+    private fun wireConfigurationInheritance(protoSourceSet: DefaultProtoSourceSet) {
+        val dependsOnSources = protoSourceSet.getDependsOnTasksOf(project.protoSourceSets)
+        for (parent in dependsOnSources) {
+            val parentProtoConfig = parent.protoConfiguration ?: continue
+            val parentProtoImportConfig = parent.protoImportConfiguration ?: continue
+
+            protoSourceSet.protoConfiguration?.let { config ->
+                if (parentProtoConfig !in config.extendsFrom) {
+                    config.extendsFrom(parentProtoConfig)
+                }
+            }
+            protoSourceSet.protoImportConfiguration?.let { config ->
+                if (parentProtoImportConfig !in config.extendsFrom) {
+                    config.extendsFrom(parentProtoImportConfig)
+                }
+            }
+        }
+    }
+
     private fun configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         if (protoSourceSet.tasksConfigured.get()) {
             return
@@ -243,12 +262,53 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processProtoTask)
         }
 
+        wireConfigurationInheritance(protoSourceSet)
+
+        val protoArchives = protoSourceSet.protoConfiguration
+            ?.let { project.files(it) }
+            ?: project.files()
+
+        val protoImportArchives = protoSourceSet.protoImportConfiguration
+            ?.let { project.files(it) }
+            ?: project.files()
+
+        val extractProtoTask = project.registerExtractDependencyProtoImportsTask(
+            taskName = "extractProto${capitalName}",
+            destination = buildSourceSetsDir.resolve("protoExtracted"),
+            dependencyArchives = protoArchives,
+            properties = properties,
+        )
+
+        val extractProtoImportTask = project.registerExtractDependencyProtoImportsTask(
+            taskName = "extractProtoImport${capitalName}",
+            destination = buildSourceSetsDir.resolve("importExtracted"),
+            dependencyArchives = protoImportArchives,
+            properties = properties,
+        )
+
+        // Wire extracted protos into the existing process tasks
+        processProtoTask.configure {
+            from(extractProtoTask.map { it.destinationDir })
+            dependsOn(extractProtoTask)
+        }
+
+        processImportProtoTask.configure {
+            from(extractProtoImportTask.map { it.destinationDir })
+            dependsOn(extractProtoImportTask)
+        }
+
+        val hasProtoImports = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty }
+        val hasProtoImportConfig = project.provider {
+            protoSourceSet.protoImportConfiguration?.let { !it.isEmpty } ?: false
+        }
+        val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
+
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
-            withImport = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty },
+            withImport = withImport,
             properties = properties,
         ) {
             dependsOn(processProtoTask)
@@ -295,6 +355,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
+            dependsOn(extractProtoTask)
+            dependsOn(extractProtoImportTask)
 
             val dependencies = project.provider {
                 protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).mapNotNull { it.generateTask.orNull }
@@ -322,6 +384,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             generateBufGenYamlTask = generateBufGenYamlTask,
             processProtoTask = processProtoTask,
             processImportProtoTask = processImportProtoTask,
+            extractProtoTask = extractProtoTask,
+            extractProtoImportTask = extractProtoImportTask,
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
             properties = properties,
         ) {
@@ -450,6 +514,8 @@ internal open class DefaultProtocExtension @Inject constructor(
         generateBufGenYamlTask: TaskProvider<GenerateBufGenYaml>,
         processProtoTask: TaskProvider<ProcessProtoFiles>,
         processImportProtoTask: TaskProvider<ProcessProtoFiles>,
+        extractProtoTask: TaskProvider<ExtractDependencyProtoImports>,
+        extractProtoImportTask: TaskProvider<ExtractDependencyProtoImports>,
         sourceSetsProtoDirFileTree: ConfigurableFileTree,
         properties: ProtoTask.Properties,
         configure: BufExecTask.() -> Unit,
@@ -473,6 +539,8 @@ internal open class DefaultProtocExtension @Inject constructor(
                 dependsOn(generateBufGenYamlTask)
                 dependsOn(processProtoTask)
                 dependsOn(processImportProtoTask)
+                dependsOn(extractProtoTask)
+                dependsOn(extractProtoImportTask)
 
                 val dependencies = project.provider {
                     protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).map { dependency ->
@@ -903,6 +971,32 @@ internal fun DefaultProtoSourceSet.getDependsOnTasksOf(protoSourceSets: ProtoSou
     val main = correspondingMainNameSourceSet(name, protoSourceSets) as? DefaultProtoSourceSet
 
     return (kmpDependsOn + main).filterNotNull()
+}
+
+/**
+ * Computes the Gradle configuration name for a proto source set's code generation dependencies.
+ *
+ * Follows KGP's `disambiguateName` convention: the `"main"` source set name is elided.
+ * - `"main"` → `"proto"`
+ * - `"test"` → `"testProto"`
+ * - `"commonMain"` → `"commonMainProto"`
+ */
+internal fun protoConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "proto"
+    return "${sourceSetName}Proto"
+}
+
+/**
+ * Computes the Gradle configuration name for a proto source set's import-only dependencies.
+ *
+ * Follows KGP's `disambiguateName` convention: the `"main"` source set name is elided.
+ * - `"main"` → `"protoImport"`
+ * - `"test"` → `"testProtoImport"`
+ * - `"commonMain"` → `"commonMainProtoImport"`
+ */
+internal fun protoImportConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "protoImport"
+    return "${sourceSetName}ProtoImport"
 }
 
 private fun correspondingMainNameSourceSet(name: String, protoSourceSets: ProtoSourceSets): ProtoSourceSet? {
