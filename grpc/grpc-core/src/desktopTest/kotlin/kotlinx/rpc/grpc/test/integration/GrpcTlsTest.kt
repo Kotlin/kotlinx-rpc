@@ -40,16 +40,18 @@ class GrpcTlsTest : GrpcTestBase() {
         // uses default client TLS credentials
         // TODO: Use a test server controlled by us (KRPC-215)
         val grpcClient = GrpcClient("grpcb.in", 9001)
-        val service = grpcClient.withService<HelloService>()
-        val request = HelloRequest {
-            greeting = "world"
+        try {
+            val service = grpcClient.withService<HelloService>()
+            val request = HelloRequest {
+                greeting = "world"
+            }
+            val result = service.SayHello(request)
+
+            assertEquals("hello world", result.reply)
+        } finally {
+            grpcClient.shutdown()
+            grpcClient.awaitTermination()
         }
-        val result = service.SayHello(request)
-
-        assertEquals("hello world", result.reply)
-
-        grpcClient.shutdown()
-        grpcClient.awaitTermination()
     }
 
     @Test
