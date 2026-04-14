@@ -67,11 +67,11 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 
     override fun readTag(): KTag? = memScoped {
-        val tagOut = alloc<UIntVar>()
-        when (pw_decoder_read_validated_tag(raw, tagOut.ptr)) {
-            0 -> null // end of stream
-            1 -> KTag.from(tagOut.value)
-            else -> throw ProtobufDecodingException.invalidTag()
+        val tag = alloc<UIntVar>()
+        when (pw_decoder_read_validated_tag(raw, tag.ptr)) {
+            0 -> null // end of stream or sub-message boundary
+            1 -> KTag.from(tag.value)
+            else -> throw ProtobufDecodingException.invalidTag(tag.value)
         }
     }
 

@@ -32,8 +32,8 @@ public class ProtobufDecodingException : ProtobufException {
             "Decoder encountered an embedded string or message which claimed to have negative size."
         )
 
-        internal fun invalidTag() = ProtobufDecodingException(
-            "Protocol message contained an invalid tag (zero)."
+        internal fun invalidTag(tag: UInt = 0u) = ProtobufDecodingException(
+            "Protocol message contained an invalid tag ($tag)."
         )
 
         internal fun truncatedMessage() = ProtobufDecodingException(

@@ -2,9 +2,3 @@
 # Tests listed here are excluded from native conformance JUnit assertions.
 # Each line is a test name (text after '#' is a comment).
 
-# >10-byte varint tag rejection not yet handled by C++ ReadVarint64 (pre-existing, also fails on JVM)
-Required.Proto2.ProtobufInput.BadTag_VarintMoreThanTenBytes
-Required.Proto3.ProtobufInput.BadTag_VarintMoreThanTenBytes
-Required.Editions_Proto2.ProtobufInput.BadTag_VarintMoreThanTenBytes
-Required.Editions_Proto3.ProtobufInput.BadTag_VarintMoreThanTenBytes
-

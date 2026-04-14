@@ -235,47 +235,75 @@ extern "C" {
     }
 
     int pw_decoder_read_validated_tag(pw_decoder_t *self, uint32_t *tag_out) {
-        int pos_before = self->codedInputStream.CurrentPosition();
+        // Zero-initialize so the Kotlin caller always has a meaningful value
+        // for error diagnostics, even on early-return error paths.
+        *tag_out = 0;
 
-        uint64_t raw64;
-        if (!self->codedInputStream.ReadVarint64(&raw64)) {
-            // Use ConsumedEntireMessage() to distinguish
-            // legitimate end-of-stream from actual errors (like >10-byte varints).
-            // Note: CurrentPosition() alone is insufficient because ReadVarint64's
-            // fast-path array reader does not advance the buffer pointer on failure.
-            if (self->codedInputStream.ConsumedEntireMessage()) {
-                return 0; // legitimate end of stream
+        // Sub-message boundary: BytesUntilLimit() == 0 when a PushLimit scope
+        // is active and all bytes within it have been consumed. This mirrors
+        // ReadTag()'s internal limit check.
+        if (self->codedInputStream.BytesUntilLimit() == 0) {
+            return 0;
+        }
+
+        // Read the first byte via ReadRaw to reliably distinguish top-level
+        // EOF from a varint start. BytesUntilLimit() is either -1 (no limit,
+        // top-level context where current_limit_ is INT_MAX) or positive
+        // (inside a PushLimit scope with remaining data). In either case,
+        // ReadRaw(1) failure means the underlying stream is exhausted.
+        //
+        // This avoids ReadTag()'s ambiguous return-0-for-both-EOF-and-errors
+        // and ConsumedEntireMessage()'s broken behavior at the top level (no
+        // limit set → legitimate_message_end_ is never set).
+        uint8_t b;
+        if (!self->codedInputStream.ReadRaw(&b, 1)) {
+            // BytesUntilLimit == -1: top-level EOF (no limit active, stream
+            // exhausted). BytesUntilLimit > 0: the limit says data should be
+            // available but the stream is exhausted — I/O error or truncation.
+            if (self->codedInputStream.BytesUntilLimit() > 0) {
+                return -1; // truncated stream
             }
-            return -1; // error (>10-byte varint, truncated varint, etc.)
+            return 0; // top-level EOF
         }
 
-        int pos_after = self->codedInputStream.CurrentPosition();
-        int bytes_used = pos_after - pos_before;
+        // Parse the varint manually, tracking byte count for overlong detection.
+        // Tags are uint32 (max 5 varint bytes), but we must read up to 10 bytes
+        // to detect the >10-byte varint conformance case.
+        uint64_t result = b & 0x7F;
+        int bytes_used = 1;
 
-        // A zero tag value read from actual bytes is invalid (field number 0).
-        if (raw64 == 0) {
-            return -1;
+        while (b >= 0x80) {
+            if (bytes_used >= 10) {
+                // Write partial result for diagnostics before returning error.
+                *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
+                return -1; // varint exceeds 10 bytes
+            }
+            if (!self->codedInputStream.ReadRaw(&b, 1)) {
+                *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
+                return -1; // truncated varint
+            }
+            result |= static_cast<uint64_t>(b & 0x7F) << (7 * bytes_used);
+            bytes_used++;
         }
 
-        // Tag must fit in 32 bits (29-bit field number + 3-bit wire type).
-        if (raw64 > UINT32_MAX) {
-            return -1;
-        }
+        // Write the decoded value for diagnostics on all remaining error paths.
+        *tag_out = static_cast<uint32_t>(result & UINT32_MAX);
+
+        if (result == 0) return -1;         // zero tag (invalid field number 0)
+        if (result > UINT32_MAX) return -1;  // exceeds 32-bit tag range
 
         // Reject overlong varint encoding: the varint used more bytes than the
         // minimum required for its value. Each varint byte carries 7 payload bits.
         int min_bytes;
-        if      (raw64 < (1ULL <<  7)) min_bytes = 1;
-        else if (raw64 < (1ULL << 14)) min_bytes = 2;
-        else if (raw64 < (1ULL << 21)) min_bytes = 3;
-        else if (raw64 < (1ULL << 28)) min_bytes = 4;
-        else                           min_bytes = 5;
+        if      (result < (1ULL <<  7)) min_bytes = 1;
+        else if (result < (1ULL << 14)) min_bytes = 2;
+        else if (result < (1ULL << 21)) min_bytes = 3;
+        else if (result < (1ULL << 28)) min_bytes = 4;
+        else                            min_bytes = 5;
 
-        if (bytes_used > min_bytes) {
-            return -1;
-        }
+        if (bytes_used > min_bytes) return -1;
 
-        *tag_out = static_cast<uint32_t>(raw64);
+        // Success — *tag_out already set above.
         return 1;
     }
 
