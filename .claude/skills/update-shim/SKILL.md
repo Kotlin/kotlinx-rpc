@@ -20,6 +20,17 @@ Gradle build** (separate from the main kotlinx-rpc project). Each shim produces 
 patched KLIB that requires explicit `@OptIn` to use, keeping native internals out
 of the public API surface.
 
+## How to Execute
+
+Use the `running_gradle_builds` skill for all Gradle build/publish tasks and the
+`running_gradle_tests` skill for all Gradle test tasks. Do NOT run `./gradlew`
+directly via shell.
+
+Because the shims build is a **standalone Gradle project**, you must set `projectRoot`
+to the absolute path of `native-deps/shims/` when invoking Gradle skills for shim
+tasks. For verification tasks that run in the **main** kotlinx-rpc project, use the
+default projectRoot (omit it or point to the repo root).
+
 ## Module Layout
 
 ```
@@ -172,45 +183,29 @@ Use `--write-excludes <file> --exclude-scope <target>` to auto-append entries.
 
 ## Publishing Locally
 
-The shims build is a standalone Gradle project rooted at `native-deps/shims/`.
-All `./gradlew` commands below run from that directory, not the main project root.
+All tasks in this section target the shims standalone build (projectRoot: `native-deps/shims/`).
 
 **Prerequisite**: Bazel (or Bazelisk) must be on PATH. On macOS, Xcode (not just
 CommandLineTools) should be installed for cross-compilation to iOS/tvOS/watchOS.
 
 ### Publish to the local build repo
 
-```bash
-cd native-deps/shims
-
-# gRPC shim + annotation
-./gradlew :kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository \
-          :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository
-
-# Protobuf shim + annotation
-./gradlew :kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository \
-          :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository
-```
+- **gRPC shim + annotation**: task
+  `:kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository`
+- **Protobuf shim + annotation**: task
+  `:kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository`
 
 Published artifacts land in `native-deps/build/repo/`. The main kotlinx-rpc project
 is configured to resolve from this path during development.
 
 ### Publish both shims together
 
-```bash
-cd native-deps/shims
-./gradlew :kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository \
-          :kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository \
-          :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository
-```
+Task: `:kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository :kotlinx-rpc-native-shims-annotation:publishAllPublicationsToNativeDepsBuildRepoRepository`
 
 ### Build without publishing (sanity check)
 
-```bash
-cd native-deps/shims
-./gradlew :kotlinx-rpc-grpc-core-shim:assemble
-./gradlew :kotlinx-rpc-protobuf-shim:assemble
-```
+- gRPC shim: task `:kotlinx-rpc-grpc-core-shim:assemble`
+- Protobuf shim: task `:kotlinx-rpc-protobuf-shim:assemble`
 
 ---
 
@@ -221,36 +216,28 @@ cd native-deps/shims
 The `tests/` module uses Gradle TestKit to publish shim artifacts to a temporary
 verification repo and compile throwaway consumer projects against them.
 
-```bash
-cd native-deps/shims
-./gradlew :tests:test
-```
+Via `running_gradle_tests` (projectRoot: `native-deps/shims/`), task: `:tests:test`
 
 This runs 8 test cases (4 per shim):
 
-| Test | What it verifies |
-|---|---|
-| **negative** | Code using shim symbols without `@OptIn` fails to compile with the expected diagnostic message |
-| **positive** | Code with `@OptIn(InternalNativeRpcApi::class)` compiles successfully |
-| **scope** | Unrelated native code is unaffected by shim markers |
+| Test         | What it verifies                                                                                       |
+|--------------|--------------------------------------------------------------------------------------------------------|
+| **negative** | Code using shim symbols without `@OptIn` fails to compile with the expected diagnostic message         |
+| **positive** | Code with `@OptIn(InternalNativeRpcApi::class)` compiles successfully                                  |
+| **scope**    | Unrelated native code is unaffected by shim markers                                                    |
 | **artifact** | Published KLIB manifest contains the annotation dependency and `.knm` metadata carries annotation markers |
 
-Run a single test category:
-```bash
-./gradlew :tests:test --tests "*grpcNegativeTest"
-./gradlew :tests:test --tests "*protobufArtifactTest"
-```
+Single test category examples:
+- `:tests:test --tests "*grpcNegativeTest"`
+- `:tests:test --tests "*protobufArtifactTest"`
 
 ### 2. Verify in the main project
 
-After publishing locally, switch to the main project root and build the modules
-that consume the shims:
+After publishing locally, build the shim consumers in the **main** project
+(default projectRoot) via `running_gradle_builds`:
 
-```bash
-# From the main kotlinx-rpc project root
-./gradlew :protobuf:protobuf-api:compileKotlinMacosArm64   # protobuf shim consumer
-./gradlew :grpc:grpc-core:compileKotlinMacosArm64          # gRPC shim consumer
-```
+- Protobuf shim consumer: task `:protobuf:protobuf-api:compileKotlinMacosArm64`
+- gRPC shim consumer: task `:grpc:grpc-core:compileKotlinMacosArm64`
 
 Use whichever native target matches your host. If both compile cleanly, the shim
 changes integrate correctly with the rest of the project.
@@ -299,10 +286,7 @@ available (the build searches Konan dependencies, then PATH).
 metadata API. Check that `klib-patcher/build.gradle.kts` dependencies match the
 Kotlin version used by the shim build.
 
-**Clean rebuild**:
-```bash
-cd native-deps/shims
-./gradlew clean
-bazel clean --expunge   # optional nuclear option for Bazel cache
-./gradlew :kotlinx-rpc-grpc-core-shim:assemble
-```
+**Clean rebuild** (projectRoot: `native-deps/shims/`):
+1. Run `clean` task
+2. Optionally run `bazel clean --expunge` via shell for Bazel cache
+3. Run `:kotlinx-rpc-grpc-core-shim:assemble` task
