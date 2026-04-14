@@ -59,9 +59,12 @@ internal class ServerStreamContext {
     }
 
     fun removeCall(callId: String, cause: Throwable?) {
+        val cancellationCause = cause?.let { e ->
+            e as? CancellationException ?: CancellationException(e.message, e)
+        }
+
         streams.remove(callId)?.values?.forEach {
-            it.channel.close(cause)
-            it.channel.cancel(cause?.let { e -> e as? CancellationException ?: CancellationException(null, e) })
+            it.channel.cancel(cancellationCause)
         }
     }
 
