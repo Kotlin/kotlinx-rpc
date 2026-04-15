@@ -92,7 +92,7 @@ Versions live in `versions-root/libs.versions.toml`:
 
 | Alias | Current | Format |
 |---|---|---|
-| `internal-native-grpc-shim` | `1.78.0-1` | `<upstream-grpc-version>-<shim-revision>` |
+| `internal-native-grpc-shim` | `1.80.0-1` | `<upstream-grpc-version>-<shim-revision>` |
 | `internal-native-protobuf-shim` | `34.0-1` | `<upstream-protobuf-version>-<shim-revision>` |
 | `internal-native-shim-annotation` | `0.1.0` | Independent semver |
 
@@ -172,7 +172,7 @@ Use `--write-excludes <file> --exclude-scope <target>` to auto-append entries.
 ### Bumping an upstream version
 
 1. Update the base version in `versions-root/libs.versions.toml` (e.g., change
-   `internal-native-grpc-shim` from `1.78.0-1` to `1.79.0-1`).
+   `internal-native-grpc-shim` from `1.80.0-1` to `1.81.0-1`).
 2. The `MODULE.bazel` version variable is synced automatically by the
    `syncGrpcVersionToBazelModule` / `syncProtobufVersionToBazelModule` Gradle task.
 3. For gRPC: also update the `grpc-c-prebuilt` version if the prebuilt archive

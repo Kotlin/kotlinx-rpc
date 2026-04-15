@@ -1,7 +1,7 @@
 [versions]
 # core library version
 kotlinx-rpc = "0.11.0-SNAPSHOT"
-grpc-dev = "0.11.0-grpc-187"
+grpc-dev = "0.11.0-grpc-188"
 
 # kotlin
 kotlin-lang = "2.3.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
@@ -9,7 +9,7 @@ kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSIO
 
 # internal standalone publications.
 # the version scheme is "<upstream-grpc-version>-<shim-version>"
-internal-native-grpc-shim = "1.78.0-1" # 1.79.0 not yet in BCR; update when available
+internal-native-grpc-shim = "1.80.0-1"
 # the version scheme is "<upstream-protobuf-version>-<shim-version>"
 internal-native-protobuf-shim = "34.0-1"
 # the version numbers for the shim annotation
@@ -40,7 +40,7 @@ develocity = "4.3.2"
 common-custom-user-data = "2.4.0"
 compat-patrouille = "0.0.2"
 lincheck = "3.4"
-grpc = "1.79.0"
+grpc = "1.80.0"
 grpc-kotlin = "1.5.0"
 protobuf = "4.34.0"
 buf-tool = "1.66.0"
