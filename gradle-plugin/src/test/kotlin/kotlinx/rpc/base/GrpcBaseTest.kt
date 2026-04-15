@@ -637,6 +637,37 @@ inputs:
                 return entries
             }
         }
+
+        enum class Flavors(
+            override val mode: PluginMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsAndroid {
+            // non-executable root source sets
+            main, test, androidTest,
+
+            // per-flavor non-executable
+            arm, x86,
+
+            // build-type non-executable
+            debug, release,
+
+            // executable leaf variants
+            armDebug(plm.a), armRelease(plm.a),
+            x86Debug(plm.a), x86Release(plm.a),
+
+            // test variants
+            testArmDebug(plm.a), testArmRelease(plm.a),
+            testX86Debug(plm.a), testX86Release(plm.a),
+
+            // androidTest variants
+            androidTestArmDebug(plm.a),
+            androidTestX86Debug(plm.a),
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
     }
 
     enum class PluginMode {

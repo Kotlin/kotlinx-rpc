@@ -194,7 +194,9 @@ public final class kotlinx/rpc/protoc/ProtoSourceSetKt {
 	public static final fun getProto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lkotlinx/rpc/protoc/ProtoSourceSet;
 	public static final fun proto (Lorg/gradle/api/NamedDomainObjectProvider;Lorg/gradle/api/Action;)V
 	public static final fun proto (Lorg/gradle/api/tasks/SourceSet;Lorg/gradle/api/Action;)V
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/gradle/api/Action;)V
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun proto_kotlin (Lorg/gradle/api/NamedDomainObjectProvider;)Lorg/gradle/api/provider/Provider;
 	public static final fun proto_kotlin (Lorg/gradle/api/NamedDomainObjectProvider;Lorg/gradle/api/Action;)V
 }

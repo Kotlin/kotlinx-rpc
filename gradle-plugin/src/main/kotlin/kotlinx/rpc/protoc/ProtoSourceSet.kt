@@ -5,14 +5,18 @@
 package kotlinx.rpc.protoc
 
 import org.gradle.api.Action
+import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
+import org.jetbrains.kotlin.gradle.plugin.HasProject
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
@@ -342,5 +346,67 @@ public val NamedDomainObjectProvider<SourceSet>.proto: Provider<ProtoSourceSet>
 public fun NamedDomainObjectProvider<SourceSet>.proto(action: Action<ProtoSourceSet>) {
     configure {
         proto(action)
+    }
+}
+
+/**
+ * Adds a proto dependency for code generation from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be included in code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             proto("com.example:shared-protos:1.0")
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.proto(dependencyNotation: Any): Dependency? {
+    val configName = resolveProtoConfigurationName(this, "Proto")
+    return project.dependencies.add(configName, dependencyNotation)
+}
+
+/**
+ * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be available as imports only,
+ * but will not be used for code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             protoImport("com.example:common-protos:1.0")
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.protoImport(dependencyNotation: Any): Dependency? {
+    val configName = resolveProtoConfigurationName(this, "ProtoImport")
+    return project.dependencies.add(configName, dependencyNotation)
+}
+
+private fun resolveProtoConfigurationName(handler: KotlinDependencyHandler, suffix: String): String {
+    val sourceSetName = try {
+        val getParent = handler::class.java.getMethod("getParent")
+        val parent = getParent.invoke(handler)
+        (parent as? Named)?.name
+    } catch (_: Exception) {
+        null
+    } ?: error(
+        "Cannot determine source set name for proto dependency. " +
+                "Use top-level dependencies { <sourceSetName>${suffix}(\"...\") } syntax instead."
+    )
+
+    return if (sourceSetName == "main") {
+        suffix.replaceFirstChar { it.lowercase() }
+    } else {
+        "$sourceSetName$suffix"
     }
 }
