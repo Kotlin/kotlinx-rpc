@@ -33,6 +33,25 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependency Proto Import KMP DSL`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
     fun `Dependency Proto Import`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
