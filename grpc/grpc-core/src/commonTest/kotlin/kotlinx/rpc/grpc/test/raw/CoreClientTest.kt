@@ -31,6 +31,7 @@ import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.Duration.Companion.seconds
 
 private const val PORT = 50051
 
@@ -75,7 +76,7 @@ class GrpcCoreClientTest {
         } else {
             channel.shutdown()
         }
-        runBlocking { channel.awaitTermination() }
+        runBlocking { channel.awaitTermination(30.seconds) }
     }
 
     @Test

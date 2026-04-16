@@ -338,11 +338,15 @@ internal class NativeClientCall<Request, Response>(
         // the gRPC core will read the header and perform the compression (compression_filter.cc).
         if (callOptions.compression !is GrpcCompression.None) {
             if (callOptions.compression !is GrpcCompression.Gzip) {
-                // to match the behavior of grpc-java, we throw an error if the compression algorithm is not supported.
+                // to match the behavior of grpc-java, we cancel the call if the compression algorithm
+                // is not supported. Return early to avoid submitting a batch on the cancelled call,
+                // which would leave an orphaned CQ operation that delays shutdown.
+                arena.clear()
                 cancelInternal(
                     grpc_status_code.GRPC_STATUS_INTERNAL,
                     "Unable to find compressor by name ${callOptions.compression.name}"
                 )
+                return
             }
             headers.append("grpc-internal-encoding-request", callOptions.compression.name)
         }

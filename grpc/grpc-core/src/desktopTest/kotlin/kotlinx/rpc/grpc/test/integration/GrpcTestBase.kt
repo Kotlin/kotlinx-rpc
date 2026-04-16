@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
@@ -55,10 +56,13 @@ abstract class GrpcTestBase {
             try {
                 test(grpcClient)
             } finally {
-                grpcServer.shutdown()
-                grpcServer.awaitTermination()
-                grpcClient.shutdown()
-                grpcClient.awaitTermination()
+                // Use force shutdown (shutdownNow) to cancel in-flight calls immediately.
+                // On native failure paths, cancelled calls may leave orphaned CQ batches that
+                // delay graceful shutdown indefinitely, causing the test process to hang (KRPC-576).
+                grpcClient.shutdownNow()
+                grpcServer.shutdownNow()
+                grpcServer.awaitTermination(30.seconds)
+                grpcClient.awaitTermination(30.seconds)
             }
         }
     }
