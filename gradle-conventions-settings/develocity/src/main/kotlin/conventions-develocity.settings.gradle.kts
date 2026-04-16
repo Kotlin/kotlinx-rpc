@@ -10,8 +10,9 @@ plugins {
 }
 
 develocity {
-    val startParameter = gradle.startParameter
-    val scanJournal = File(settingsDir, "scan-journal.log")
+    // Write scan journal to .gradle/ so it doesn't change the included build's directory fingerprint.
+    // Previously written to settingsDir, which caused CC invalidation on every build after a scan publish.
+    val scanJournal = File(settings.rootDir, ".gradle/scan-journal.log")
 
     server.set(DEVELOCITY_SERVER)
 
@@ -28,7 +29,10 @@ develocity {
         }
 
         buildScanPublished {
-            scanJournal.appendText("${Date()} — $buildScanUri — $startParameter\n")
+            // Note: startParameter was previously logged here but removed because
+            // gradle.startParameter is not CC-serializable — capturing it in this lambda
+            // caused configuration cache violations.
+            scanJournal.appendText("${Date()} — $buildScanUri\n")
         }
 
         val skipBuildScans = settings.providers.gradleProperty("kotlinx.rpc.develocity.skipBuildScans")

@@ -24,4 +24,4 @@ Gradle will read the remote build caches so that your local build may be faster.
 
 This also allows you to check various metrics about your scans (https://ge.jetbrains.com).
 
-Build scan logs are collected locally in the `scan-journal.log` file.
+Build scan logs are collected locally in the `.gradle/scan-journal.log` file.

@@ -34,30 +34,31 @@ fun Settings.enrichTeamCityData() {
 fun Settings.enrichGitData() {
     val ge = extensions.getByType(DevelocityConfiguration::class.java)
 
-    gradle.projectsEvaluated {
-        val skipGitTags = settings.providers.gradleProperty("kotlinx.rpc.develocity.skipGitTags")
-            .getOrElse("false")
-            .toBooleanStrict()
+    val skipGitTags = settings.providers.gradleProperty("kotlinx.rpc.develocity.skipGitTags")
+        .getOrElse("false")
+        .toBooleanStrict()
 
-        if (!isCIRun && !skipGitTags) {
-            // Git commit id
-            val commitId = execute("git rev-parse --verify HEAD")
+    if (!isCIRun && !skipGitTags) {
+        // Use background {} to run git commands outside the configuration cache fingerprinting window.
+        // Previously, providers.exec was used inside projectsEvaluated {}, which made git output
+        // a CC input — every commit invalidated the cache.
+        val projectDir = settings.settingsDir // capture before entering background thread
+        ge.buildScan.background {
+            val commitId = execProcess("git", "rev-parse", "--verify", "HEAD", workDir = projectDir)
             if (commitId.isNotEmpty()) {
-                ge.buildScan.value("Git Commit ID", commitId)
-                ge.buildScan.link("GitHub Commit Link", "$GITHUB_REPO/tree/$commitId")
+                value("Git Commit ID", commitId)
+                link("GitHub Commit Link", "$GITHUB_REPO/tree/$commitId")
             }
 
-            // Git branch name
-            val branchName = execute("git rev-parse --abbrev-ref HEAD")
+            val branchName = execProcess("git", "rev-parse", "--abbrev-ref", "HEAD", workDir = projectDir)
             if (branchName.isNotEmpty()) {
-                ge.buildScan.value("Git Branch Name", branchName)
-                ge.buildScan.link("GitHub Branch Link", "$GITHUB_REPO/tree/$branchName")
+                value("Git Branch Name", branchName)
+                link("GitHub Branch Link", "$GITHUB_REPO/tree/$branchName")
             }
 
-            // Git dirty local state
-            val status = execute("git status --porcelain")
+            val status = execProcess("git", "status", "--porcelain", workDir = projectDir)
             if (status.isNotEmpty()) {
-                ge.buildScan.value("Git Status", status)
+                value("Git Status", status)
             }
         }
     }
