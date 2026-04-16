@@ -12,6 +12,7 @@ plugins {
     id("conventions-kotlin-version")
     id("conventions-dokka-public")
     id("org.gradle.test-retry")
+    id("project-report")
 }
 
 val globalRootDir: String by extra

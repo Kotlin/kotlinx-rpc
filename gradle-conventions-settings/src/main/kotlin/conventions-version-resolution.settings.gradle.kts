@@ -60,14 +60,6 @@ fun findGlobalRootDirPath(start: Path): Path {
         path = path.parent ?: error("Unable to find root path for kotlinx.rpc project")
     }
 
-    gradle.rootProject {
-        allprojects {
-            this.extra["globalRootDir"] = path.toAbsolutePath().toString()
-        }
-    }
-
-    settings.extra["globalRootDir"] = path.toAbsolutePath().toString()
-
     return path
 }
 
@@ -117,11 +109,11 @@ fun VersionCatalogBuilder.resolveKotlinVersion(
 ): Pair<String, String> {
     var kotlinCatalogVersion: String? =
         providers.gradleProperty(SettingsConventions.KOTLIN_VERSION_PROPERTY_NAME).orNull ?:
-        System.getenv(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME)
+        providers.environmentVariable(SettingsConventions.KOTLIN_VERSION_ENV_VAR_NAME).orNull
 
     var kotlinCompilerVersion: String? =
         providers.gradleProperty(SettingsConventions.KOTLIN_COMPILER_VERSION_PROPERTY_NAME).orNull ?:
-        System.getenv(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME)
+        providers.environmentVariable(SettingsConventions.KOTLIN_COMPILER_VERSION_ENV_VAR_NAME).orNull
 
     if (kotlinCatalogVersion != null) {
         version(SettingsConventions.KOTLIN_VERSION_ALIAS, kotlinCatalogVersion)
@@ -151,13 +143,14 @@ fun VersionCatalogBuilder.resolveKotlinVersion(
 
 // Resolves a core kotlinx.rpc version (without a Kotlin version prefix) from the Version Catalog.
 // Uses LIBRARY_VERSION_ENV_VAR_NAME instead if present
-fun resolveLibraryVersion(versionCatalog: Map<String, String>): String {
-    val libraryCoreVersion: String = System.getenv(SettingsConventions.LIBRARY_VERSION_ENV_VAR_NAME)
-        ?.takeIf { it.isNotBlank() }
-        ?: versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
-        ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
+fun resolveLibraryVersion(versionCatalog: Map<String, String>, providers: ProviderFactory): String {
+    val libraryCoreVersion: String =
+        providers.environmentVariable(SettingsConventions.LIBRARY_VERSION_ENV_VAR_NAME).orNull
+            ?.takeIf { it.isNotBlank() }
+            ?: versionCatalog[SettingsConventions.LIBRARY_CORE_VERSION_ALIAS]
+            ?: error("Expected to resolve '${SettingsConventions.LIBRARY_CORE_VERSION_ALIAS}' version")
 
-    val eapVersion: String = System.getenv(SettingsConventions.EAP_VERSION_ENV_VAR_NAME)
+    val eapVersion: String = providers.environmentVariable(SettingsConventions.EAP_VERSION_ENV_VAR_NAME).orNull
         ?.let {
             when {
                 it.isBlank() -> ""
@@ -181,16 +174,16 @@ fun String.kotlinVersionParsed(): KotlinVersion {
 val currentPath: Path = file(".").toPath().toAbsolutePath()
 val rootDir = findGlobalRootDirPath(currentPath)
 val versionCatalog = resolveVersionCatalog(rootDir)
-val libVersion = resolveLibraryVersion(versionCatalog)
+val libVersion = resolveLibraryVersion(versionCatalog, settings.providers)
 
+val globalRootDirString = rootDir.toAbsolutePath().toString()
+settings.extra["globalRootDir"] = globalRootDirString
 extra["libVersion"] = libVersion
 
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             from(files("$rootDir/${SettingsConventions.LIBS_VERSION_CATALOG_PATH}"))
-
-            val versionCatalog = resolveVersionCatalog(rootDir)
 
             val (kotlinVersion, compilerVersion) = resolveKotlinVersion(versionCatalog, settings.providers)
 
@@ -203,6 +196,7 @@ dependencyResolutionManagement {
 
             gradle.rootProject {
                 allprojects {
+                    this.extra["globalRootDir"] = globalRootDirString
                     this.extra["kotlinVersion"] = kotlinVersionParsed
                     this.extra["kotlinCompilerVersion"] = compilerVersion.kotlinVersionParsed()
                 }

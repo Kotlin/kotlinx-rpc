@@ -10,13 +10,10 @@ import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
-import org.jetbrains.kotlin.konan.target.HostManager
 import util.kotlinVersionParsed
 import util.other.optionalProperty
 import util.other.optionalPropertyValue
-import util.tasks.DumpPlatformsTask
 import java.io.File
-import kotlin.reflect.full.memberFunctions
 
 private const val UNSUPPORTED_TARGET = "-"
 private const val FULLY_SUPPORTED_TARGET = "*"
@@ -27,6 +24,27 @@ private val APPLE_TARGET_PREFIXES = listOf(
     "watchos",
     "tvos",
     "macos",
+)
+
+// This map must be kept in sync with versions-root/targets-since-kotlin-lookup.json.
+// Add new native targets here when updating the lookup table.
+private val NATIVE_TARGET_FACTORIES: Map<String, (KotlinMultiplatformExtension) -> KotlinTarget> = mapOf(
+    "linuxX64" to { it.linuxX64() },
+    "linuxArm64" to { it.linuxArm64() },
+    "mingwX64" to { it.mingwX64() },
+    "macosX64" to { it.macosX64() },
+    "macosArm64" to { it.macosArm64() },
+    "iosX64" to { it.iosX64() },
+    "iosArm64" to { it.iosArm64() },
+    "iosSimulatorArm64" to { it.iosSimulatorArm64() },
+    "watchosX64" to { it.watchosX64() },
+    "watchosArm32" to { it.watchosArm32() },
+    "watchosArm64" to { it.watchosArm64() },
+    "watchosSimulatorArm64" to { it.watchosSimulatorArm64() },
+    "watchosDeviceArm64" to { it.watchosDeviceArm64() },
+    "tvosX64" to { it.tvosX64() },
+    "tvosArm64" to { it.tvosArm64() },
+    "tvosSimulatorArm64" to { it.tvosSimulatorArm64() },
 )
 
 /**
@@ -84,18 +102,17 @@ class KmpConfig(
 
     val kotlinMasterBuild by optionalProperty()
 
-    fun nativeTargets(kmp: KotlinMultiplatformExtension) = kmp::class.memberFunctions
-        .filter { targetFunction ->
-            !kotlinMasterBuild &&
-                targetFunction.parameters.size == 1 &&
-                isIncluded(
-                    targetName = targetFunction.name,
-                    lookupTable = nativeLookup,
-                ) &&
-                !optionalPropertyValue(targetFunction.name, "exclude")
-        }.map { function ->
-            function.call(kmp) as KotlinTarget
+    fun nativeTargets(kmp: KotlinMultiplatformExtension): List<KotlinTarget> {
+        if (kotlinMasterBuild) return emptyList()
+
+        return NATIVE_TARGET_FACTORIES.mapNotNull { (targetName, factory) ->
+            if (isIncluded(targetName, nativeLookup) && !optionalPropertyValue(targetName, "exclude")) {
+                factory(kmp)
+            } else {
+                null
+            }
         }
+    }
 }
 
 fun Project.withKmpConfig(configure: KmpConfig.() -> Unit) {
