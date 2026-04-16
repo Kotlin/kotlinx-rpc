@@ -222,7 +222,7 @@ abstract class DumpPlatformsTask : DefaultTask() {
     }
 
     private fun updateTable(input: File, output: File, modules: Map<String, PlatformsDescription>) {
-        val original = input.readLines(Charsets.UTF_8)
+        val original = input.readLines()
         val tableStart = original.indexOfFirst { it.contains(TABLE_START_TAG) }
         val tableEnd = original.indexOfFirst { it.contains(TABLE_END_TAG) }
 
@@ -308,7 +308,7 @@ abstract class DumpPlatformsTask : DefaultTask() {
             }
         }
 
-        output.bufferedWriter(Charsets.UTF_8).use { writer ->
+        output.bufferedWriter().use { writer ->
             original.subList(0, tableStart + 1).forEach { line ->
                 writer.appendLine(line)
             }

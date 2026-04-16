@@ -10,7 +10,7 @@ import java.nio.file.OpenOption
 import java.nio.file.Path
 
 fun Path.bufferedReader(
-    charset: Charset = Charsets.UTF_8,
+    charset: Charset = java.nio.charset.StandardCharsets.UTF_8,
     bufferSize: Int = DEFAULT_BUFFER_SIZE,
     vararg options: OpenOption,
 ): BufferedReader {

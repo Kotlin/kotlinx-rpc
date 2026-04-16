@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -18,6 +19,7 @@ import util.withKotlinKmpExtension
 import java.io.File
 import javax.inject.Inject
 
+@CacheableTask
 abstract class GenerateSourceTask @Inject constructor(
     @get:Input val filename: String,
     @get:Input val text: String,

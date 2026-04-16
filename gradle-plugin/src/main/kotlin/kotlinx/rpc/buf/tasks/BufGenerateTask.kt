@@ -20,8 +20,11 @@ import kotlinx.rpc.protoc.DefaultProtocExtension
 import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import javax.inject.Inject
 
 /**
@@ -29,6 +32,7 @@ import javax.inject.Inject
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
+@CacheableTask
 public abstract class BufGenerateTask @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : BufExecTask(properties) {
@@ -49,6 +53,7 @@ public abstract class BufGenerateTask @Inject internal constructor(
      */
     // unsued, but required for Gradle to properly recognize inputs
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NONE)
     public abstract val executableFiles: ListProperty<File>
 
     /**

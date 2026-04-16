@@ -6,9 +6,12 @@ package util.csm
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import java.nio.file.Path
 import javax.inject.Inject
@@ -19,10 +22,11 @@ import kotlin.io.path.readLines
 import kotlin.io.path.walk
 import kotlin.io.path.writeLines
 
+@CacheableTask
 abstract class ProcessCsmTemplate @Inject constructor(
     @get:Input val kotlinComplierVersion: String,
     @get:Input val replacementMap: Map<String, String>,
-    @get:InputDirectory val templatesDir: Provider<Path>,
+    @get:InputDirectory @get:PathSensitive(PathSensitivity.RELATIVE) val templatesDir: Provider<Path>,
     @get:OutputDirectory val sourcesDir: Provider<Path>,
 ) : DefaultTask() {
     @OptIn(ExperimentalPathApi::class)
@@ -42,13 +46,13 @@ abstract class ProcessCsmTemplate @Inject constructor(
 
             val out = sources.resolve(templates.relativize(file))
             val lines = CsmTemplateProcessor.process(
-                lines = file.readLines(Charsets.UTF_8),
+                lines = file.readLines(),
                 kotlinCompilerVersion = kotlinComplierVersion,
                 replacementMap = replacementMap,
                 logger = logger,
             )
             out.parent.toFile().mkdirs()
-            out.writeLines(lines, charset = Charsets.UTF_8)
+            out.writeLines(lines)
         }
     }
 }

@@ -232,8 +232,10 @@ abstract class GrpcBaseTest : BaseTest() {
             importProtoFiles: List<Path>,
             generatedFiles: List<Path>,
             importGeneratedFiles: List<Path>,
+            generateOutcome: TaskOutcome = TaskOutcome.SUCCESS,
+            mainGenerateOutcome: TaskOutcome? = null,
         ) {
-            assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+            assertOutcome(generateOutcome, bufGenerateCommonTest)
             val processProtoOutcome = if (protoFiles.isEmpty()) {
                 TaskOutcome.NO_SOURCE
             } else {
@@ -249,13 +251,13 @@ abstract class GrpcBaseTest : BaseTest() {
             assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonTest)
 
-            val mainGenerateOutcome = if (importProtoFiles.isEmpty()) {
+            val effectiveMainGenerateOutcome = if (importProtoFiles.isEmpty()) {
                 TaskOutcome.SKIPPED
             } else {
-                TaskOutcome.SUCCESS
+                mainGenerateOutcome ?: TaskOutcome.SUCCESS
             }
 
-            assertOutcome(mainGenerateOutcome, bufGenerateCommonMain)
+            assertOutcome(effectiveMainGenerateOutcome, bufGenerateCommonMain)
             val mainProcessOutcome = if (importProtoFiles.isEmpty()) {
                 TaskOutcome.NO_SOURCE
             } else {
