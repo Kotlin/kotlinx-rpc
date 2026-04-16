@@ -13,14 +13,14 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-// useful for dependencies introspection
+// project-report plugin is applied in conventions-common.gradle.kts per subproject
 // run ./gradlew htmlDependencyReport
 // Report can normally be found in build/reports/project/dependencies/index.html
-allprojects {
-    plugins.apply("project-report")
-}
+plugins.apply("project-report")
 
 tasks.register<ValidatePublishedArtifactsTask>(ValidatePublishedArtifactsTask.NAME) {
+    // isPublicModule is set from settings (includePublic), not from build script evaluation,
+    // so this filter doesn't force eager configuration of subprojects.
     dependsOn(subprojects.filter { it.isPublicModule })
 }
 

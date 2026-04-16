@@ -26,12 +26,13 @@ pluginManagement {
         return null
     }
 
-    fun getEnv(propertyName: String): String? = System.getenv(
-        propertyName.replace(".", "_").uppercase()
-    )?.ifEmpty { null }
+    fun getEnv(propertyName: String): String? =
+        settings.providers.environmentVariable(
+            propertyName.replace(".", "_").uppercase()
+        ).orNull?.ifEmpty { null }
 
-    fun getLocalProperties(): java.util.Properties {
-        return java.util.Properties().apply {
+    val localProperties: java.util.Properties by lazy {
+        java.util.Properties().apply {
             val propertiesDir = File(
                 rootDir.path
                     .removeSuffix("/gradle-conventions")
@@ -47,9 +48,9 @@ pluginManagement {
         }
     }
 
-    fun getSpacePassword(): String? {
+    val spacePassword: String? by lazy {
         val password = "kotlinx.rpc.team.space.password"
-        return getLocalProperties()[password] as String?
+        localProperties[password] as String?
             ?: settings.providers.gradleProperty(password).orNull
             ?: getEnv(password)
             ?: logAbsentProperty(password)
@@ -65,12 +66,12 @@ pluginManagement {
             name = repoName.split("-").joinToString("") { it.replaceFirstChar { c -> c.titlecase() } }
             url = uri("https://packages.jetbrains.team/maven/p/krpc/$repoName")
 
-            val spacePassword = getSpacePassword()
+            val pw = spacePassword
 
-            if (spacePassword != null) {
+            if (pw != null) {
                 credentials(HttpHeaderCredentials::class.java) {
                     name = "Authorization"
-                    value = "Bearer $spacePassword"
+                    value = "Bearer $pw"
                 }
 
                 authentication {
@@ -85,8 +86,10 @@ pluginManagement {
     fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
     fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
 
+    val globalRootDir = findGlobalRootDirPath()
+
     repositories {
-        val useProxyProperty = getLocalProperties()["kotlinx.rpc.useProxyRepositories"] as String?
+        val useProxyProperty = localProperties["kotlinx.rpc.useProxyRepositories"] as String?
         val useProxy = (useProxyProperty == null || useProxyProperty == "true") &&
                 settings.providers.gradleProperty("kotlinx.rpc.useProxyRepositories").orNull != "false"
 
@@ -99,7 +102,7 @@ pluginManagement {
             google()
         }
 
-        maven("${findGlobalRootDirPath()}/lib-kotlin/")
+        maven("$globalRootDir/lib-kotlin/")
     }
 }
 
@@ -124,12 +127,13 @@ fun logAbsentProperty(name: String): Nothing? {
     return null
 }
 
-fun getEnv(propertyName: String): String? = System.getenv(
-    propertyName.replace(".", "_").uppercase()
-)?.ifEmpty { null }
+fun getEnv(propertyName: String): String? =
+    settings.providers.environmentVariable(
+        propertyName.replace(".", "_").uppercase()
+    ).orNull?.ifEmpty { null }
 
-fun getLocalProperties(): java.util.Properties {
-    return java.util.Properties().apply {
+val localProperties: java.util.Properties by lazy {
+    java.util.Properties().apply {
         val propertiesDir = File(
             rootDir.path
                 .removeSuffix("/gradle-conventions")
@@ -150,9 +154,9 @@ fun java.util.Properties.isUsingProxyRepositories(): Boolean {
     return useProxyProperty == null || useProxyProperty == "true"
 }
 
-fun getSpacePassword(): String? {
+val spacePassword: String? by lazy {
     val password = "kotlinx.rpc.team.space.password"
-    return getLocalProperties()[password] as String?
+    localProperties[password] as String?
         ?: settings.providers.gradleProperty(password).orNull
         ?: getEnv(password)
         ?: logAbsentProperty(password)
@@ -168,12 +172,12 @@ fun RepositoryHandler.jbTeamPackages(repoName: String) {
         name = repoName.split("-").joinToString("") { it.replaceFirstChar { c -> c.titlecase() } }
         url = uri("https://packages.jetbrains.team/maven/p/krpc/$repoName")
 
-        val spacePassword = getSpacePassword()
+        val pw = spacePassword
 
-        if (spacePassword != null) {
+        if (pw != null) {
             credentials(HttpHeaderCredentials::class.java) {
                 name = "Authorization"
-                value = "Bearer $spacePassword"
+                value = "Bearer $pw"
             }
 
             authentication {
@@ -189,22 +193,20 @@ fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
 fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
 fun RepositoryHandler.grpc() = jbTeamPackages(repoName = "grpc")
 
-val localProps = getLocalProperties()
+val globalRootDir = findGlobalRootDirPath()
 
-settings.extra["spacePassword"] = getSpacePassword()
-settings.extra["localProperties"] = localProps
-settings.extra["useProxyRepositories"] = localProps.isUsingProxyRepositories()
+settings.extra["spacePassword"] = spacePassword
+settings.extra["localProperties"] = localProperties
+settings.extra["useProxyRepositories"] = localProperties.isUsingProxyRepositories()
 
 gradle.rootProject {
     allprojects {
-        val useProxy = localProps.isUsingProxyRepositories() &&
+        val useProxy = localProperties.isUsingProxyRepositories() &&
                 project.findProperty("kotlinx.rpc.useProxyRepositories") != "false"
 
-        this.extra["spacePassword"] = getSpacePassword()
-        this.extra["localProperties"] = localProps
+        this.extra["spacePassword"] = spacePassword
+        this.extra["localProperties"] = localProperties
         this.extra["useProxyRepositories"] = useProxy
-
-        val globalRootDir = findGlobalRootDirPath()
 
         buildscript {
             repositories {
