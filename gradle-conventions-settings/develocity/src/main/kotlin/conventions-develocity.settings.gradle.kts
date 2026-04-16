@@ -50,12 +50,6 @@ develocity {
 }
 
 buildCache {
-    if (isCIRun) {
-        local {
-            isEnabled = false
-        }
-    }
-
     remote(develocity.buildCache) {
         isPush = isCIRun
         isEnabled = true
