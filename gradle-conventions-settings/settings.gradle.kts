@@ -25,12 +25,6 @@ val isCIRun = providers.environmentVariable("TEAMCITY_VERSION").isPresent ||
         providers.environmentVariable("GITHUB_ACTIONS").isPresent
 
 buildCache {
-    if (isCIRun) {
-        local {
-            isEnabled = false
-        }
-    }
-
     remote(develocity.buildCache) {
         isPush = isCIRun
         isEnabled = true
