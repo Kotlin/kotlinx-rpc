@@ -70,7 +70,7 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
             file.createNewFile()
         }
 
-        file.bufferedWriter(Charsets.UTF_8).use { writer ->
+        file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")
             writer.appendLine("clean: true")
             writer.appendLine("plugins:")

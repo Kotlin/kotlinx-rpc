@@ -42,13 +42,13 @@ abstract class ProcessCsmTemplate @Inject constructor(
 
             val out = sources.resolve(templates.relativize(file))
             val lines = CsmTemplateProcessor.process(
-                lines = file.readLines(Charsets.UTF_8),
+                lines = file.readLines(),
                 kotlinCompilerVersion = kotlinComplierVersion,
                 replacementMap = replacementMap,
                 logger = logger,
             )
             out.parent.toFile().mkdirs()
-            out.writeLines(lines, charset = Charsets.UTF_8)
+            out.writeLines(lines)
         }
     }
 }

@@ -45,7 +45,7 @@ abstract class UpdateDocsChangelog : DefaultTask() {
 
         var currentRelease = ""
         val fullChangelogLines = mutableListOf<String>()
-        val lines = inputPath.readLines(Charsets.UTF_8).flatMap { line ->
+        val lines = inputPath.readLines().flatMap { line ->
             val updated = line
                 .replace(PULL_REGEX) {
                     "[#${it.groupValues[1]}](${it.groupValues[0]})"

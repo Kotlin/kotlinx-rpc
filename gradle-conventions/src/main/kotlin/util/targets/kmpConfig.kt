@@ -39,7 +39,7 @@ private val APPLE_TARGET_PREFIXES = listOf(
 private fun loadTargetsSinceKotlinLookupTable(rootDir: String): Map<String, String> {
     val file = File("$rootDir/$TARGETS_SINCE_KOTLIN_LOOKUP_PATH")
     val table = JsonSlurper()
-        .parseText(file.readText(Charsets.UTF_8)) as Map<String, String>
+        .parseText(file.readText()) as Map<String, String>
 
     return table.filterValues { value -> value != UNSUPPORTED_TARGET }
 }

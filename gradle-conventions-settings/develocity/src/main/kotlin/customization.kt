@@ -15,7 +15,7 @@ fun Settings.enrichTeamCityData(isCIRun: Boolean) {
 
             if (gradle.rootProject.hasProperty(buildId) && gradle.rootProject.hasProperty(buildTypeId)) {
                 val buildIdValue = gradle.rootProject.property(buildId).toString()
-                val teamCityBuildNumber = java.net.URLEncoder.encode(buildIdValue, Charsets.UTF_8)
+                val teamCityBuildNumber = java.net.URLEncoder.encode(buildIdValue, java.nio.charset.StandardCharsets.UTF_8)
                 val teamCityBuildTypeId = gradle.rootProject.property(buildTypeId)
 
                 ge.buildScan.link(
