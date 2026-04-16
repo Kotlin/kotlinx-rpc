@@ -58,9 +58,9 @@ if the change is trivial and local verifications covered it.
 **GH Actions**: Are run automatically.
 
 **Monitor both via subagents**: Spawn two background subagents — one for GitHub
-Actions, one for TeamCity. Each polls its CI system and reports back with
-pass/fail results. See `references/ci-polling.md` for concrete poll loops,
-auth token usage, interval/timeout guidelines, and expected report format.
+Actions, one for TeamCity. Each runs the corresponding polling script and reports
+back with pass/fail results. See `references/ci-polling.md` for script usage,
+auth token requirements, and expected report format.
 
 See Error Recovery in SKILL.md for handling canceled or failed builds.
 

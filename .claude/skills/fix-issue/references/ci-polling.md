@@ -4,62 +4,48 @@ Concrete patterns for the two background subagents that monitor CI during Phase 
 
 ## GitHub Actions polling subagent
 
-The subagent should run a poll loop using `gh`:
+Run the polling script from the worktree root:
 
 ```bash
-# Wait for all GH Actions check runs to complete (poll every 90s, up to 30min)
-PR_NUMBER=<pr-number>
-for i in $(seq 1 20); do
-  STATUS=$(GH_TOKEN=$GH_TOKEN gh pr checks "$PR_NUMBER" \
-    --repo Kotlin/kotlinx-rpc --json name,state,conclusion \
-    --jq '[.[] | select(.state != "COMPLETED")] | length')
-  if [ "$STATUS" = "0" ]; then
-    echo "All GH Actions complete."
-    GH_TOKEN=$GH_TOKEN gh pr checks "$PR_NUMBER" --repo Kotlin/kotlinx-rpc
-    break
-  fi
-  echo "Iteration $i: $STATUS check(s) still running..."
-  sleep 90
-done
+GH_TOKEN=$GH_TOKEN .claude/skills/fix-issue/scripts/poll-gh-actions.sh <pr-number>
 ```
 
-Report: the full `gh pr checks` table on completion, highlighting any failures.
+The script polls every 90s for up to 30 minutes. Exit codes:
+- `0` — all checks passed
+- `1` — at least one check failed
+- `2` — timeout (some checks still running after 30min)
+
+Report: relay the script's structured report (check table + RESULT line).
+On failure, highlight which checks failed so the main agent can investigate.
 
 ## TeamCity polling subagent
 
-The subagent should trigger the required builds, collect their IDs, then poll:
+Trigger builds and poll from the worktree root:
 
 ```bash
-# 1. Trigger builds and capture IDs
-BUILD_ID=$(TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity run start <build-config> \
-  --branch <branch-name> --json | jq -r '.id')
-
-# 2. Poll each build (every 90s, up to 30min)
-for i in $(seq 1 20); do
-  STATUS=$(TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity run view "$BUILD_ID" \
-    --json=state,status | jq -r '.state')
-  if [ "$STATUS" = "finished" ]; then
-    echo "TC build $BUILD_ID finished."
-    TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity run view "$BUILD_ID"
-    break
-  fi
-  echo "Iteration $i: build $BUILD_ID state=$STATUS..."
-  sleep 90
-done
+TEAMCITY_AGENT_TOKEN=$TEAMCITY_AGENT_TOKEN \
+  .claude/skills/fix-issue/scripts/poll-tc-builds.sh <branch-name> <build-config-id> [<build-config-id> ...]
 ```
 
-For multiple TC builds, poll all IDs in the same loop — check each, exit when
-all are `finished`. On any failure, immediately run
-`TEAMCITY_TOKEN=$TEAMCITY_AGENT_TOKEN teamcity run log <build-id> --failed`
-and include the failure summary in the report.
+The script triggers all specified build configs, collects their IDs, then polls
+every 90s for up to 30 minutes. Exit codes:
+- `0` — all builds succeeded
+- `1` — at least one build failed (failure details included in output)
+- `2` — timeout (some builds still running after 30min)
+
+Report: relay the script's structured report (per-build status + RESULT line).
+On failure, the script automatically fetches `teamcity run log <id> --failed`
+output for each failed build — include this in the report.
 
 ## Polling guidelines
 
-- **Interval**: 90 seconds. CI builds typically take 5–20 minutes; polling faster
-  wastes API calls, polling slower delays feedback unnecessarily.
-- **Timeout**: 30 minutes (20 iterations × 90s). If a build hasn't completed by
-  then, report the current state and let the main agent decide whether to wait
-  longer or investigate.
-- **Report format**: Each subagent should return a structured summary —
-  build name/ID, final status (success/failure/timeout), duration, and for
-  failures the first few lines of the error.
+- **Interval**: 90 seconds (hardcoded in scripts). CI builds typically take
+  5–20 minutes; polling faster wastes API calls, polling slower delays feedback.
+- **Timeout**: 30 minutes (20 iterations x 90s). If a build hasn't completed by
+  then, the script reports the current state and exits with code 2. The main
+  agent decides whether to wait longer or investigate.
+- **Report format**: Each script outputs a structured summary — build name/ID,
+  final status (SUCCESS/FAILURE/TIMEOUT), and for failures the first lines of
+  the error. Subagents should relay this output verbatim.
+- **Token refresh**: If the GH Actions script gets a 401, regenerate `GH_TOKEN`
+  via `scripts/gh-app-token.sh` and re-run.
