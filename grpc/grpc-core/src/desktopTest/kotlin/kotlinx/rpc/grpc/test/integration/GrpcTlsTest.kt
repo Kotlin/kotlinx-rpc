@@ -28,6 +28,7 @@ import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.seconds
 
 class GrpcTlsTest : GrpcTestBase() {
 
@@ -49,8 +50,8 @@ class GrpcTlsTest : GrpcTestBase() {
 
             assertEquals("hello world", result.reply)
         } finally {
-            grpcClient.shutdown()
-            grpcClient.awaitTermination()
+            grpcClient.shutdownNow()
+            grpcClient.awaitTermination(30.seconds)
         }
     }
 

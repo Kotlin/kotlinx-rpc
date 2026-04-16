@@ -21,6 +21,7 @@ import kotlinx.rpc.grpc.test.EchoResponseInternal
 import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Tests for JVM and Native clients.
@@ -108,8 +109,8 @@ class RawClientTest {
         try {
             block(client, methodDescriptor)
         } finally {
-            client.shutdown()
-            client.awaitTermination()
+            client.shutdownNow()
+            client.awaitTermination(30.seconds)
         }
     }
 }

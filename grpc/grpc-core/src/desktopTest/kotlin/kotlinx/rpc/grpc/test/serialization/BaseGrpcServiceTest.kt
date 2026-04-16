@@ -12,6 +12,7 @@ import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.withService
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.seconds
 
 abstract class  BaseGrpcServiceTest {
     protected inline fun <@Grpc reified Service : Any> runServiceTest(
@@ -50,10 +51,10 @@ abstract class  BaseGrpcServiceTest {
         try {
             block(service)
         } finally {
-            client.shutdown()
-            client.awaitTermination()
-            server.shutdown()
-            server.awaitTermination()
+            client.shutdownNow()
+            server.shutdownNow()
+            server.awaitTermination(30.seconds)
+            client.awaitTermination(30.seconds)
         }
     }
 }

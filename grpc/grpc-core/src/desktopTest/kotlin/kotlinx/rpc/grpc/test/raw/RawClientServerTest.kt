@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.io.writeString
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -142,10 +143,10 @@ class RawClientServerTest {
             block(client, descriptor)
         } finally {
             serverJob.cancelAndJoin()
-            client.shutdown()
-            client.awaitTermination()
-            server.shutdown()
-            server.awaitTermination()
+            client.shutdownNow()
+            server.shutdownNow()
+            server.awaitTermination(30.seconds)
+            client.awaitTermination(30.seconds)
         }
     }
 

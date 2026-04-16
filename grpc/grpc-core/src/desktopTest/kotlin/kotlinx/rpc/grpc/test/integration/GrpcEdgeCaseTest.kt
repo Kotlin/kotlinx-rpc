@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -43,8 +44,8 @@ class GrpcEdgeCaseTest {
                 }
             }
         } finally {
-            client.shutdown()
-            runBlocking { client.awaitTermination() }
+            client.shutdownNow()
+            runBlocking { client.awaitTermination(30.seconds) }
         }
     }
 
