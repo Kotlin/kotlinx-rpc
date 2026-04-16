@@ -29,6 +29,8 @@ import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
 import javax.inject.Inject
 
@@ -41,13 +43,16 @@ public abstract class BufExecTask @Inject constructor(
     // unsued, but required for Gradle to properly recognise inputs
     @get:InputFiles
     @get:SkipWhenEmpty
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     internal abstract val protoFiles: ListProperty<File>
 
     // unsued, but required for Gradle to properly recognise inputs
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     internal abstract val importProtoFiles: ListProperty<File>
 
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
     internal abstract val bufExecutable: Property<File>
 
     /**
@@ -84,6 +89,7 @@ public abstract class BufExecTask @Inject constructor(
      * The `buf.yaml` file to use via `--config` option.
      */
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
     @get:Optional
     public abstract val configFile: Property<File>
 

@@ -292,7 +292,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
 
         thirdRunDebug.assertOutcomes(
             sourceSet = SSetsAndroid.Default.debug,
-            generate = TaskOutcome.SUCCESS,
+            generate = TaskOutcome.FROM_CACHE,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,

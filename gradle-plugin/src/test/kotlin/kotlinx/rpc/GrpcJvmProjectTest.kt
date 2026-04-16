@@ -107,7 +107,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
-            )
+            ),
+            mainGenerateOutcome = TaskOutcome.FROM_CACHE,
         )
 
         dryRunCompilation(SSetsJvm.test)
@@ -145,7 +146,8 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
-            )
+            ),
+            mainGenerateOutcome = TaskOutcome.FROM_CACHE,
         )
     }
 
@@ -387,7 +389,7 @@ inputs:
 
         val thirdRunMain = runGradle(bufGenerateCommonMain)
 
-        assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.FROM_CACHE, thirdRunMain.protoTaskOutcome(bufGenerateCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(processCommonMainProtoFiles))

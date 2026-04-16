@@ -92,7 +92,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
                 Path("Some.kt"),
                 Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
-            )
+            ),
+            mainGenerateOutcome = TaskOutcome.FROM_CACHE,
         )
     }
 
@@ -545,7 +546,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         thirdRunCommonMain.assertOutcomes(
             sourceSet = SSetsKmp.Default.commonMain,
-            generate = TaskOutcome.SUCCESS,
+            generate = TaskOutcome.FROM_CACHE,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
@@ -1016,7 +1017,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         thirdRunCommonMain.assertOutcomes(
             sourceSet = SSetsKmp.AndroidKmpLib.commonMain,
-            generate = TaskOutcome.SUCCESS,
+            generate = TaskOutcome.FROM_CACHE,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
@@ -1217,7 +1218,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
 
         thirdRunCommonMain.assertOutcomes(
             sourceSet = SSetsKmp.LegacyAndroid.commonMain,
-            generate = TaskOutcome.SUCCESS,
+            generate = TaskOutcome.FROM_CACHE,
             bufYaml = TaskOutcome.SUCCESS,
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
