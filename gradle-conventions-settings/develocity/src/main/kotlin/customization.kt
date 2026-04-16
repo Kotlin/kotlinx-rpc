@@ -5,7 +5,7 @@
 import com.gradle.develocity.agent.gradle.DevelocityConfiguration
 import org.gradle.api.initialization.Settings
 
-fun Settings.enrichTeamCityData() {
+fun Settings.enrichTeamCityData(isCIRun: Boolean) {
     val ge = extensions.getByType(DevelocityConfiguration::class.java)
 
     gradle.projectsEvaluated {
@@ -31,7 +31,7 @@ fun Settings.enrichTeamCityData() {
     }
 }
 
-fun Settings.enrichGitData() {
+fun Settings.enrichGitData(isCIRun: Boolean) {
     val ge = extensions.getByType(DevelocityConfiguration::class.java)
 
     val skipGitTags = settings.providers.gradleProperty("kotlinx.rpc.develocity.skipGitTags")

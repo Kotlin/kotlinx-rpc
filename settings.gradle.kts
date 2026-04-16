@@ -74,7 +74,7 @@ include(":tests:krpc-protocol-compatibility-tests")
 include(":tests:krpc-protocol-compatibility-tests:test-api")
 include(":tests:test-protos")
 include(":tests:grpc-test-server")
-val onWindows = System.getProperty("os.name").contains("Windows", ignoreCase = true)
+val onWindows = providers.systemProperty("os.name").get().contains("Windows", ignoreCase = true)
 if (!onWindows) {
     // The protobuf-conformance configuration doesn't support windows, so we exclude it on Windows.
     include(":tests:protobuf-conformance")

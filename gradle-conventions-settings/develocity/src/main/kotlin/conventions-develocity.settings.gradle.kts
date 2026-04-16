@@ -9,6 +9,12 @@ plugins {
     id("com.gradle.common-custom-user-data-gradle-plugin")
 }
 
+// Compute isCIRun using the CC-safe providers API instead of raw System.getenv().
+// providers.environmentVariable() is tracked by the configuration cache, so Gradle
+// correctly invalidates the cache when the environment changes between local and CI.
+val isCIRun = providers.environmentVariable("TEAMCITY_VERSION").isPresent ||
+    providers.environmentVariable("GITHUB_ACTIONS").isPresent
+
 develocity {
     // Write scan journal to .gradle/ so it doesn't change the included build's directory fingerprint.
     // Previously written to settingsDir, which caused CC invalidation on every build after a scan publish.
@@ -56,5 +62,5 @@ buildCache {
     }
 }
 
-enrichTeamCityData()
-enrichGitData()
+enrichTeamCityData(isCIRun)
+enrichGitData(isCIRun)

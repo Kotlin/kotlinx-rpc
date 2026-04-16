@@ -6,4 +6,7 @@ const val DEVELOCITY_SERVER = "https://ge.jetbrains.com"
 const val GITHUB_REPO = "https://github.com/Kotlin/kotlinx-rpc"
 const val TEAMCITY_URL = "https://krpc.teamcity.com"
 
-val isCIRun = System.getenv("TEAMCITY_VERSION") != null || System.getenv("GITHUB_ACTIONS") != null
+// isCIRun is computed in conventions-develocity.settings.gradle.kts using the CC-safe
+// providers.environmentVariable() API and passed explicitly to functions that need it.
+// Previously this was a top-level val using System.getenv(), which is not tracked by the
+// configuration cache — the value was baked in and never re-evaluated across builds.
