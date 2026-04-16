@@ -414,6 +414,11 @@ class CancellationTest {
 
     @Test
     fun testClientCancellationCancelsStream() = runCancellationTest {
+        // KRPC-584: flaky on wasmWasi/node due to WASI non-blocking I/O during concurrent close + flow teardown
+        if (platform == Platform.WASI) {
+            return@runCancellationTest
+        }
+
         val fence = CompletableDeferred<Unit>()
         launch {
             service.outgoingStream(resumableFlow(fence))
