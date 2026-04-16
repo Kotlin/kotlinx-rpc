@@ -23,8 +23,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:0.11.0-grpc-187")
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-client:0.11.0-grpc-187")
     implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-server:0.11.0-grpc-187")
-    implementation("ch.qos.logback:logback-classic:1.5.20")
-    implementation("io.grpc:grpc-netty:1.79.0")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
+    implementation("io.grpc:grpc-netty:1.80.0")
 }
 
 rpc {
