@@ -55,7 +55,13 @@ fun rewrite(file: File, markers: Map<String, String>) {
             i++
         }
     }
-    file.writeText(newLines.joinToString("\n"))
+    val newContent = newLines.joinToString("\n")
+    // Only write if content actually changed — unconditional writeText updates the file timestamp
+    // even when content is identical, causing Gradle to recompile convention plugins and invalidate
+    // the configuration cache.
+    if (file.readText() != newContent) {
+        file.writeText(newContent)
+    }
 }
 
 fun String.toKey(): String = trim().removePrefix("//").trim()

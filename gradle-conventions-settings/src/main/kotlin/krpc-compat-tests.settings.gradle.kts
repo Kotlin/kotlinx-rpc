@@ -5,6 +5,7 @@
 @file:Suppress("LoggingSimilarMessage")
 
 import kotlin.io.path.createDirectories
+import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 
@@ -18,8 +19,18 @@ val versionDirs = mapOf(
 // DON'T MODIFY BELOW THIS LINE
 
 fun java.nio.file.Path.replace(regex: Regex, replacement: String): java.nio.file.Path {
-    writeText(readText().replace(regex, replacement))
+    val oldContent = readText()
+    val newContent = oldContent.replace(regex, replacement)
+    if (oldContent != newContent) {
+        writeText(newContent)
+    }
     return this
+}
+
+fun java.nio.file.Path.writeTextIfChanged(content: String) {
+    if (!exists() || readText() != content) {
+        writeText(content)
+    }
 }
 
 val globalRootDirValue: String = extra["globalRootDir"] as? String
@@ -49,10 +60,10 @@ versionDirs.forEach { (dir, version) ->
     val moduleDir = compatDir.resolve(dir)
     moduleDir.createDirectories()
     val buildFile = moduleDir.resolve("build.gradle.kts")
-    buildFile.writeText(
+    buildFile.writeTextIfChanged(
         """
         /* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
-        
+
         import util.krpc_compat.setupCompat
 
         setupCompat("${version.rpc}", "${version.kotlin}")
@@ -60,12 +71,12 @@ versionDirs.forEach { (dir, version) ->
     """.trimIndent()
     )
     val propertiesFile = moduleDir.resolve("gradle.properties")
-    propertiesFile.writeText(
+    propertiesFile.writeTextIfChanged(
         """
         # THIS FILE IS AUTO-GENERATED, DO NOT EDIT!
 
         kotlin.compiler.runViaBuildToolsApi=true
-        
+
     """.trimIndent()
     )
 
@@ -98,7 +109,7 @@ val versionsConventionsFile: java.nio.file.Path = globalRootDir
     .resolve("versions.kt")
 
 logger.debug("Generating {}", globalRootDir.relativize(versionsConventionsFile))
-versionsConventionsFile.writeText(
+versionsConventionsFile.writeTextIfChanged(
     """
         |/* THIS FILE IS AUTO-GENERATED, DO NOT EDIT! */
         |
@@ -106,7 +117,7 @@ versionsConventionsFile.writeText(
         |
         |val krpcCompatVersions = mapOf(
         |    ${versionDirs.entries.joinToString("\n|    ") { "\"${it.key}\" to \"${it.value.rpc}\"," }}
-        |    
+        |
         |    "Latest" to "$libVersion", // current version
         |)
         |
