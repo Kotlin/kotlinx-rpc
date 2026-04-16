@@ -15,7 +15,7 @@ local_path_override(
 
 # This value is Gradle-managed. `native-deps/shims/grpc` rewrites it from `versions-root/libs.versions.toml`
 # before Bazel-backed build tasks, so change `internal-native-grpc-shim` there instead of editing this line manually.
-GRPC_VERSION = "1.74.1"
+GRPC_VERSION = "1.80.0"
 
 bazel_dep(
     name = "grpc",
