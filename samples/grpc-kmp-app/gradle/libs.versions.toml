@@ -1,19 +1,19 @@
 [versions]
-agp = "9.1.0"
+agp = "9.1.1"
 android-compileSdk = "36"
 android-minSdk = "24"
 androidx-activityCompose = "1.13.0"
-androidx-lifecycle = "2.9.6"
-compose = "1.10.5"
+androidx-lifecycle = "2.10.0"
+compose = "1.10.6"
 composeHotReload = "1.0.0"
-composeMultiplatform = "1.10.2"
+composeMultiplatform = "1.10.3"
 kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
-ktor = "3.4.1"
+ktor = "3.4.2"
 logback = "1.5.32"
 kotlinx-rpc = "0.11.0-grpc-187"
-grpc = "1.79.0"
-kotlinx-datatime = "0.7.1"
+grpc = "1.80.0"
+kotlinx-datatime = "0.7.1-0.6.x-compat"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
