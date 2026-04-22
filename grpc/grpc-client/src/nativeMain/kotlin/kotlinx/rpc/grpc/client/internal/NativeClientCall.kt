@@ -77,9 +77,16 @@ internal class NativeClientCall<Request, Response>(
     private val coroutineContext: CoroutineContext,
 ) : ClientCall<Request, Response>() {
 
+    // grpc_shutdown() requires all application-owned grpc objects to be destroyed before it runs
+    // (grpc/grpc.h). Release the application's +1 grpc_call ref deterministically in
+    // tryToCloseCall; the cleaner is the fallback for cases where onClose never fires. KRPC-586.
+    private val rawGuard = ResourceGuard()
+
     @Suppress("unused")
-    private val rawCleaner = createCleaner(raw) {
-        grpc_call_unref(it)
+    private val rawCleaner = createCleaner(Pair(raw, rawGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_call_unref(ptr)
+        }
     }
 
     private val rawCallCredentials = callOptions.callCredentials.let {
@@ -102,6 +109,13 @@ internal class NativeClientCall<Request, Response>(
                 is Throwable -> {
                     cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Call failed: ${it.message}")
                 }
+            }
+            // Fallback deterministic release for calls that never reached tryToCloseCall — e.g., a
+            // client interceptor threw before start() submitted any batch, so no
+            // RECV_STATUS_ON_CLIENT ever completes and closeInfo stays null. Without this, the
+            // grpc_call is owned past grpc_shutdown(). rawGuard blocks double-unref. KRPC-586.
+            if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+                grpc_call_unref(raw)
             }
         }
     }
@@ -157,12 +171,26 @@ internal class NativeClientCall<Request, Response>(
      */
     private fun tryToCloseCall() {
         val info = closeInfo.value ?: return
+        // The `inFlight.value == 0` read and the `closed` CAS below are intentionally non-atomic
+        // together. A concurrent `beginOp` can increment inFlight after we read it here; runBatch's
+        // post-beginOp re-read of `closed` is the barrier that closes that window. Under SC atomics
+        // (atomicfu on K/N), if our CAS on `closed` is sequenced after the thread's
+        // `inFlight.incrementAndGet`, that thread's following `closed.value` load will observe
+        // `closed=true` and bail before touching raw. Do not weaken either ordering.
         if (inFlight.value == 0 && closed.compareAndSet(expect = false, update = true)) {
-            val lst = checkNotNull(listener) { internalError("Not yet started") }
             // allows the managed channel to join for the call to finish.
             callJob.complete()
-            safeUserCode("Failed to call onClose.") {
-                lst.onClose(info.first, info.second)
+            // Listener may be null if the call failed before start() (e.g., an interceptor throws
+            // mid-chain and the call is later cancelled via shutdownNow → markClosePending). No
+            // user observer to notify in that case; resources still need to be released below.
+            listener?.let { lst ->
+                safeUserCode("Failed to call onClose.") {
+                    lst.onClose(info.first, info.second)
+                }
+            }
+            // Deterministic grpc_call_unref — see rawGuard.
+            if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+                grpc_call_unref(raw)
             }
         }
     }
@@ -228,6 +256,14 @@ internal class NativeClientCall<Request, Response>(
         // pre-book the batch, so onClose cannot be called before the batch finished.
         beginOp()
 
+        // Re-check after incrementing inFlight: tryToCloseCall may have fired between the fast-path
+        // check above and beginOp. Once inFlight > 0, tryToCloseCall is blocked, so if closed is
+        // still false here it will stay false (and the raw call stays referenced) until we endOp.
+        if (closed.value) {
+            endOp()
+            return cleanup()
+        }
+
         when (val callResult = cq.runBatch(this@NativeClientCall.raw, ops, nOps)) {
             is BatchResult.Submitted -> {
                 callResult.future.onComplete { success ->
@@ -246,17 +282,20 @@ internal class NativeClientCall<Request, Response>(
 
             BatchResult.CQShutdown -> {
                 cleanup()
-                endOp()
+                // Keep our outer beginOp's inFlight while cancelInternal runs so it cannot race
+                // with a concurrent tryToCloseCall unref; drop inFlight only after cancelInternal
+                // returns.
                 cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdown")
+                endOp()
             }
 
             is BatchResult.SubmitError -> {
                 cleanup()
-                endOp()
                 cancelInternal(
                     grpc_status_code.GRPC_STATUS_INTERNAL,
                     "Batch could not be submitted: ${callResult.error}"
                 )
+                endOp()
             }
         }
     }
@@ -439,12 +478,21 @@ internal class NativeClientCall<Request, Response>(
     }
 
     private fun cancelInternal(statusCode: grpc_status_code, message: String) {
-        val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
-        if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
-            markClosePending(
-                GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to cancel call: $cancelResult"),
-                GrpcMetadata()
-            )
+        // Hold inFlight while using raw so tryToCloseCall can't fire grpc_call_unref concurrently;
+        // cancel is a no-op if tryToCloseCall already closed the call (gRPC-Java semantics: cancel()
+        // after onClose is valid).
+        beginOp()
+        try {
+            if (closed.value) return
+            val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
+            if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
+                markClosePending(
+                    GrpcStatus(GrpcStatusCode.INTERNAL, "Failed to cancel call: $cancelResult"),
+                    GrpcMetadata()
+                )
+            }
+        } finally {
+            endOp()
         }
     }
 
