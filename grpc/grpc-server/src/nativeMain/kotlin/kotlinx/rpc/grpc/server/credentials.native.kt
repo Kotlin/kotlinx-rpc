@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.server
 
@@ -17,6 +18,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_ssl_client_certificate_request_ty
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_server_credentials_create
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
@@ -36,10 +38,13 @@ public actual abstract class GrpcServerCredentials internal constructor(
     }
 
     /**
-     * Releases the application-owned +1 ref on [raw] deterministically. Safe to call multiple
-     * times — the guard ensures the underlying `grpc_server_credentials_release` runs at most
-     * once, after which the GC cleaner becomes a no-op. Called from `NativeServer.dispose()`
-     * after `grpc_server_destroy` so the ref is gone before `grpc_shutdown` can run.
+     * Releases the application-owned +1 ref on the underlying `grpc_server_credentials`.
+     * Idempotent: subsequent calls — and the GC cleaner — are no-ops once the guard has fired.
+     *
+     * Sharing a single `GrpcServerCredentials` between multiple servers is supported: the first
+     * owning server's shutdown releases the app ref, and the remaining grpc-core internal refs
+     * obtained by the other servers' `grpc_server_add_http2_port` calls keep the object alive
+     * until they release it themselves.
      */
     internal fun releaseRaw() {
         if (rawGuard.released.compareAndSet(expect = false, update = true)) {

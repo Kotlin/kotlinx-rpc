@@ -4,8 +4,9 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.atomicfu.AtomicBoolean
 import kotlinx.atomicfu.atomic
-import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * Guards a native resource against double-free between an explicit release path and the GC
@@ -13,7 +14,7 @@ import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
  * the guard via its argument (e.g., `createCleaner(Pair(raw, guard)) { ... }`), never by closing
  * over an enclosing instance.
  */
-@InternalNativeRpcApi
+@InternalRpcApi
 public class ResourceGuard {
-    public val released: kotlinx.atomicfu.AtomicBoolean = atomic(false)
+    public val released: AtomicBoolean = atomic(false)
 }

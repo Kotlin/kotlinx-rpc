@@ -126,7 +126,7 @@ internal class NativeClientCall<Request, Response>(
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
                 grpc_call_unref(raw)
             }
-            // Matching fallback for the call-credentials ref — see rawCallCredentialsGuard. KRPC-588.
+            // Matching fallback for the call-credentials ref. KRPC-588.
             if (rawCallCredentials != null &&
                 rawCallCredentialsGuard.released.compareAndSet(expect = false, update = true)
             ) {
