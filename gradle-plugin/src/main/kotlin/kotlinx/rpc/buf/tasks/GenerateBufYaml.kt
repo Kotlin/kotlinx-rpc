@@ -23,11 +23,11 @@ import javax.inject.Inject
 /**
  * Generates/updates a Buf `buf.yaml` file.
  *
- * The output is a deterministic function of the declared `@Input` properties: directory names,
- * the `withImport` flag, and the two existence booleans. Two source sets with identical inputs
- * (same directory names, same existence state) will therefore produce byte-identical output —
- * expect `FROM_CACHE` outcomes across source sets once the local or remote build cache is
- * populated.
+ * The `sourceSetName` input makes the cache key unique per source set so outcomes stay
+ * predictable (strict SUCCESS / UP_TO_DATE / FROM_CACHE per the usual Gradle semantics) —
+ * without it, source sets with coincidentally identical dir names and existence flags would
+ * share a cache entry and produce cross-source-set FROM_CACHE hits that are hard to reason
+ * about in tests.
  *
  * **Warning to maintainers:** any filesystem state read inside the `@TaskAction` MUST be
  * declared as an `@Input` (or wired via a `Provider` bound to an `@Input Property`). Undeclared
@@ -38,6 +38,11 @@ import javax.inject.Inject
 public abstract class GenerateBufYaml @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {
+    // Source set identity. Included as an @Input so each source set has a distinct cache key
+    // even when its other inputs happen to coincide with another source set's.
+    @get:Input
+    internal abstract val sourceSetName: Property<String>
+
     @get:Input
     internal abstract val protoSourceDir: Property<String>
 
@@ -111,6 +116,7 @@ internal fun Project.registerGenerateBufYamlTask(
     val task = tasks.register("${GenerateBufYaml.NAME_PREFIX}$name", GenerateBufYaml::class, properties)
 
     task.configure {
+        sourceSetName.convention(name)
         protoSourceDir.convention(buildSourceSetsProtoDir.name)
         importSourceDir.convention(buildSourceSetsImportDir.name)
         this.withImport.convention(withImport)

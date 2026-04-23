@@ -53,17 +53,7 @@ abstract class GrpcBaseTest : BaseTest() {
             protoFilesImports: TaskOutcome? = null,
         ) {
             assertOutcome(generate, bufGenerate(sourceSet))
-            // generateBufYaml is @CacheableTask: source sets with identical inputs can
-            // populate the same cache entry, so SUCCESS is treated as "executed or restored
-            // from cache". Other outcomes (UP_TO_DATE, FROM_CACHE, SKIPPED, null) are still
-            // matched strictly — if a test genuinely needs to assert strict `SUCCESS` (i.e.,
-            // fresh execution and no cache hit), call `assertOutcome` directly instead of
-            // going through this wrapper.
-            if (bufYaml == TaskOutcome.SUCCESS) {
-                assertBufYamlExecuted(generateBufYaml(sourceSet))
-            } else {
-                assertOutcome(bufYaml, generateBufYaml(sourceSet))
-            }
+            assertOutcome(bufYaml, generateBufYaml(sourceSet))
             assertOutcome(bufGenYaml, generateBufGenYaml(sourceSet))
             assertOutcome(protoFiles, processProtoFiles(sourceSet))
             assertOutcome(protoFilesImports, processProtoFilesImports(sourceSet))
@@ -71,16 +61,6 @@ abstract class GrpcBaseTest : BaseTest() {
 
         fun BuildResult.assertOutcome(expected: TaskOutcome?, task: String) {
             assertEquals(expected, protoTaskOutcomeOrNull(task), "Outcome for task $task")
-        }
-
-        // generateBufYaml* is @CacheableTask: across source sets whose inputs coincide
-        // (same proto/import dir names and existence flags) the outcome may be FROM_CACHE
-        // instead of SUCCESS. Both indicate the task produced its expected output.
-        fun BuildResult.assertBufYamlExecuted(task: String) {
-            val actual = protoTaskOutcomeOrNull(task)
-            assert(actual == TaskOutcome.SUCCESS || actual == TaskOutcome.FROM_CACHE) {
-                "Outcome for task $task: expected SUCCESS or FROM_CACHE, got $actual"
-            }
         }
 
         fun BuildResult.protoTaskOutcome(name: String): TaskOutcome {
@@ -228,7 +208,7 @@ abstract class GrpcBaseTest : BaseTest() {
         ) {
             assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
             assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
-            assertBufYamlExecuted(generateBufYamlCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
 
             assertProtoTaskNotExecuted(bufGenerateCommonTest)
@@ -268,7 +248,7 @@ abstract class GrpcBaseTest : BaseTest() {
                 TaskOutcome.SUCCESS
             }
             assertOutcome(processProtoImportsOutcome, processCommonTestProtoFilesImports)
-            assertBufYamlExecuted(generateBufYamlCommonTest)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonTest)
 
             val effectiveMainGenerateOutcome = if (importProtoFiles.isEmpty()) {
@@ -284,7 +264,7 @@ abstract class GrpcBaseTest : BaseTest() {
                 TaskOutcome.SUCCESS
             }
             assertOutcome(mainProcessOutcome, processCommonMainProtoFiles)
-            assertBufYamlExecuted(generateBufYamlCommonMain)
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
 
             assertSourceCodeGenerated(testSourceSet, *generatedFiles.toTypedArray())
@@ -328,7 +308,7 @@ abstract class GrpcBaseTest : BaseTest() {
             }
             assertOutcome(processImportProtoOutcome, processProtoFilesImports(sourceSet))
 
-            assertBufYamlExecuted(generateBufYaml(sourceSet))
+            assertOutcome(TaskOutcome.SUCCESS, generateBufYaml(sourceSet))
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYaml(sourceSet))
 
             assertSourceCodeGenerated(sourceSet, *generatedFiles.toTypedArray())
