@@ -22,18 +22,15 @@ import javax.inject.Inject
 
 /**
  * Generates/updates a Buf `buf.yaml` file.
- *
- * The `sourceSetName` input makes the cache key unique per source set so outcomes stay
- * predictable (strict SUCCESS / UP_TO_DATE / FROM_CACHE per the usual Gradle semantics) —
- * without it, source sets with coincidentally identical dir names and existence flags would
- * share a cache entry and produce cross-source-set FROM_CACHE hits that are hard to reason
- * about in tests.
- *
- * **Warning to maintainers:** any filesystem state read inside the `@TaskAction` MUST be
- * declared as an `@Input` (or wired via a `Provider` bound to an `@Input Property`). Undeclared
- * filesystem reads break cache correctness silently — Gradle will cache-hit on stale output
- * when the undeclared input changes.
  */
+// Maintainer notes:
+// - Cache keys are kept unique per source set via the `sourceSetName` @Input. Without it,
+//   source sets with coincidentally identical dir names and existence flags would share a
+//   cache entry and produce cross-source-set FROM_CACHE hits that are hard to reason about.
+// - Any filesystem state read inside the @TaskAction MUST be declared as an @Input (or wired
+//   via a Provider bound to an @Input Property). Undeclared filesystem reads break cache
+//   correctness silently — Gradle will cache-hit on stale output when the undeclared input
+//   changes.
 @CacheableTask
 public abstract class GenerateBufYaml @Inject internal constructor(
     properties: ProtoTask.Properties,
