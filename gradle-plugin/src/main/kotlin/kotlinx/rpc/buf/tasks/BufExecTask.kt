@@ -32,11 +32,17 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
 /**
  * Abstract base class for `buf` tasks.
+ *
+ * Caching is disabled at this level because generic `buf` invocations are not known to be
+ * deterministic. Concrete subclasses with deterministic inputs/outputs (e.g. [BufGenerateTask])
+ * opt in explicitly via `@CacheableTask`.
  */
+@DisableCachingByDefault(because = "Custom buf subclasses must opt in to caching explicitly via @CacheableTask")
 public abstract class BufExecTask @Inject constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {

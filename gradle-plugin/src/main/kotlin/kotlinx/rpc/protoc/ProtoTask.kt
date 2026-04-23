@@ -95,7 +95,12 @@ public interface ProtoTask : Task {
 
 /**
  * Default implementation of [ProtoTask] with [Task.group] set to [PROTO_GROUP].
+ *
+ * Caching is disabled at this level because the base class carries no declared inputs or outputs.
+ * Subclasses must declare their caching intent explicitly via `@CacheableTask` or
+ * `@DisableCachingByDefault` once they know what they produce.
  */
+@org.gradle.work.DisableCachingByDefault(because = "Subclasses must declare caching intent explicitly")
 public abstract class DefaultProtoTask(
     @get:Internal
     final override val properties: ProtoTask.Properties,

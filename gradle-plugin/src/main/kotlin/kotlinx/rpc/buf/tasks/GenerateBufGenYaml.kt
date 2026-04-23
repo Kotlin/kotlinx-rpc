@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -48,10 +49,19 @@ internal data class ResolvedGrpcPlugin(
 
 /**
  * Generates/updates Buf `buf.gen.yaml` file.
+ *
+ * The `sourceSetName` input keeps cache keys unique per source set even when plugin
+ * configurations coincide, so outcomes stay predictable (strict SUCCESS / UP_TO_DATE /
+ * FROM_CACHE per the usual Gradle semantics) across source sets.
  */
+@CacheableTask
 public abstract class GenerateBufGenYaml @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {
+    // Source set identity — see [GenerateBufYaml.sourceSetName] for rationale.
+    @get:Input
+    internal abstract val sourceSetName: Property<String>
+
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 
@@ -146,6 +156,7 @@ internal fun Project.registerGenerateBufGenYamlTask(
     )
 
     task.configure {
+        sourceSetName.convention(name)
         val pluginsProvider = project.provider {
             protocPlugins.get().map { plugin ->
                 val artifact = plugin.artifact.get()
