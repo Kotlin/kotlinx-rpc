@@ -36,8 +36,13 @@ Message examples:
 
 ## D.2: Create a Draft PR
 
+Every `gh` invocation in this phase goes through the `gh-bot` wrapper
+(`.claude/skills/fix-issue/scripts/gh-bot.sh`). See SKILL.md § "Using `gh` —
+always through the `gh-bot` wrapper" for why — short version: a bare `gh`
+call in a fresh Bash shell silently authenticates as the human user.
+
 1. Push: `git push -u origin <branch-name>`
-2. Create draft PR with `gh pr create --draft`. Use the template in
+2. Create draft PR with `gh-bot.sh pr create --draft`. Use the template in
    `assets/gh-pr-body.md` — the PR body contains only the **solution**, not problem
    analysis or root cause (those belong in the YT issue). Include `Fixes #NNN` if a
    linked GH issue was found in Phase A (A.1).
@@ -45,6 +50,17 @@ Message examples:
 4. Post any skipped review warnings/nits as a checkbox comment on the PR
    (see `assets/gh-code-review-comment.md`). If all review issues were fixed,
    don't skip the comment, just post that all internal comments were addressed.
+5. **Identity assertion** — immediately after PR creation, confirm the PR
+   was authored by the bot, not the human user:
+
+   ```bash
+   .claude/skills/fix-issue/scripts/gh-bot.sh pr view <pr-number> \
+     --json author --jq '.author.login'
+   ```
+
+   Expected: the bot login (e.g. `ai-agent-kxrpc[bot]`). If the result is
+   a human login, the PR was created under the wrong identity — delete it
+   and redo using `gh-bot.sh`. Do not paper over it.
 
 ## D.3: Run CI Checks (TeamCity + GitHub Actions in parallel)
 
@@ -91,10 +107,33 @@ the PR comment is the deliverable.
 Once all CI passes:
 1. Rebase on latest main: `git fetch origin main && git rebase origin/main` +
    `git push --force-with-lease`
-2. Remove draft: `gh pr ready <pr-number>`
-3. Add reviewer: `gh pr edit <pr-number> --add-reviewer Mr3zee`
-4. Verify: `gh pr view <pr-number> --json isDraft,reviewRequests,headRefOid` — confirm
-   draft removed, reviewer assigned, and head SHA matches local HEAD.
+2. Remove draft: `gh-bot.sh pr ready <pr-number>`
+3. Add reviewer: `gh-bot.sh pr edit <pr-number> --add-reviewer Mr3zee`
+4. Verify: `gh-bot.sh pr view <pr-number> --json isDraft,reviewRequests,headRefOid` —
+   confirm draft removed, reviewer assigned, and head SHA matches local HEAD.
+
+### If step 3 returns `422 Review cannot be requested from pull request author`
+
+This error does **not** mean the App installer is being treated as the
+"author" for review-request purposes. It means the authenticating token
+belongs to the user you are trying to add as reviewer — GitHub's plain
+self-review rejection, disguised as an authorship rule. Its presence here is
+the telltale that `gh` was invoked as a human user, not as the App.
+
+Diagnose and recover:
+
+```bash
+.claude/skills/fix-issue/scripts/gh-bot.sh api user --jq .login
+```
+
+- `403 Resource not accessible by integration` — gh-bot is authenticating
+  as the App (App installation tokens cannot hit `/user`). Then the 422 is
+  unexpected and worth investigating separately.
+- A human login (e.g. `Mr3zee`) — you ran a bare `gh` somewhere, bypassing
+  the wrapper. Find the offending call, switch it to `gh-bot.sh`, and redo
+  any state-changing operations it performed (PR create, comments, ready,
+  edit). Do not just retry the `--add-reviewer` call against a broken-state
+  PR.
 
 ## D.5: Update YouTrack
 
@@ -111,9 +150,11 @@ Before reporting completion, **always invoke** `superpowers:verification-before-
 (via the Skill tool — not just manually checking). Verify actual state, do not
 assume previous phases succeeded:
 
-1. `gh pr view <pr-number> --json isDraft,reviewRequests` — draft removed, reviewer assigned
-2. Verify CI report comment exists on the PR
-3. Verify YT issue state is `Fixed in Branch` via `youtrack-agent`
+1. `gh-bot.sh pr view <pr-number> --json isDraft,reviewRequests,author` —
+   draft removed, reviewer assigned, and `author.login` is the bot (not a
+   human user).
+2. Verify CI report comment exists on the PR.
+3. Verify YT issue state is `Fixed in Branch` via `youtrack-agent`.
 
 If any check fails, fix it before reporting. Then report:
 PR URL, YT status, brief fix summary, worktree path.

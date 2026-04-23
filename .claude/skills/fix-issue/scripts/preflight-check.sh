@@ -118,40 +118,45 @@ else
   else
     pass "GitHub App private key file exists"
 
-    # Generate an installation token using the existing script
-    GH_TOKEN_VALUE=$("$SCRIPT_DIR/gh-app-token.sh" 2>/dev/null) || true
+    # The skill's gh auth model: every `gh` call must go through the gh-bot
+    # wrapper, which regenerates an installation token inline on each
+    # invocation. Preflight exercises the wrapper end-to-end — that catches
+    # a missing/broken wrapper, a stale venv, and silent fallback to the
+    # user's keyring token in a single check.
+    GH_BOT="$SCRIPT_DIR/gh-bot.sh"
 
-    if [ -z "$GH_TOKEN_VALUE" ]; then
-      fail "GitHub App token generation failed (gh-app-token.sh returned empty)"
-      info "Check that the private key is valid and GitHub API is reachable."
+    if [ ! -x "$GH_BOT" ]; then
+      fail "gh-bot wrapper missing or not executable at $GH_BOT"
+      info "This wrapper is the only sanctioned way to run gh in this skill."
     else
-      pass "GitHub App installation token generated"
+      pass "gh-bot wrapper present"
 
-      # Verify repo access
-      GH_REPO=$(GH_TOKEN="$GH_TOKEN_VALUE" gh api /repos/Kotlin/kotlinx-rpc --jq .full_name 2>/dev/null) || true
+      # Verify repo access through the wrapper (exercises gh-app-token.sh too).
+      GH_REPO=$("$GH_BOT" api /repos/Kotlin/kotlinx-rpc --jq .full_name 2>/dev/null) || true
 
       if [ "$GH_REPO" = "Kotlin/kotlinx-rpc" ]; then
-        pass "GitHub repo access verified: $GH_REPO"
+        pass "GitHub repo access verified via gh-bot: $GH_REPO"
       else
-        fail "GitHub repo access check failed — expected 'Kotlin/kotlinx-rpc'"
+        fail "GitHub repo access check failed via gh-bot — expected 'Kotlin/kotlinx-rpc'"
         info "Response: $GH_REPO"
+        info "Check that the App private key is valid and gh-app-token.sh works."
       fi
 
-      # Verify this is an App installation token, not a human personal token.
-      # Installation tokens get 403 on /user (only human tokens succeed there).
-      # Conversely, /installation/repositories only works with installation tokens.
-      GH_USER_STATUS=$(GH_TOKEN="$GH_TOKEN_VALUE" gh api /user --silent 2>&1 && echo "OK" || echo "DENIED")
-      GH_INSTALL_REPOS=$(GH_TOKEN="$GH_TOKEN_VALUE" gh api /installation/repositories --jq .total_count 2>/dev/null) || true
+      # Verify gh-bot is producing an App installation token, not silently
+      # falling through to a personal token. App installation tokens get
+      # 403 on /user; personal tokens succeed there. /installation/repositories
+      # is the inverse — works only for installation tokens.
+      GH_USER_STATUS=$("$GH_BOT" api /user --silent 2>&1 && echo "OK" || echo "DENIED")
+      GH_INSTALL_REPOS=$("$GH_BOT" api /installation/repositories --jq .total_count 2>/dev/null) || true
 
       if [ "$GH_USER_STATUS" = "OK" ]; then
-        # /user succeeded — this is a human personal token, not an App token
-        GH_USER_LOGIN=$(GH_TOKEN="$GH_TOKEN_VALUE" gh api /user --jq .login 2>/dev/null) || true
-        fail "GitHub identity is a human user: $GH_USER_LOGIN (expected App installation token)"
-        info "The GH_TOKEN should come from gh-app-token.sh, not personal auth."
+        GH_USER_LOGIN=$("$GH_BOT" api /user --jq .login 2>/dev/null) || true
+        fail "gh-bot identity is a human user: $GH_USER_LOGIN (expected App installation token)"
+        info "gh-bot should only ever present an App token. Check gh-app-token.sh output."
       elif [ -n "$GH_INSTALL_REPOS" ]; then
-        pass "GitHub identity is an App installation token (repos accessible: $GH_INSTALL_REPOS)"
+        pass "gh-bot identity is an App installation token (repos accessible: $GH_INSTALL_REPOS)"
       else
-        fail "Could not confirm GitHub token type — /user and /installation/repositories both failed"
+        fail "Could not confirm gh-bot token type — /user and /installation/repositories both failed"
       fi
     fi
   fi
