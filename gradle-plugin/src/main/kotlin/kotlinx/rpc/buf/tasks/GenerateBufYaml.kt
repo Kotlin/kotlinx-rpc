@@ -11,6 +11,7 @@ import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -22,9 +23,23 @@ import javax.inject.Inject
 /**
  * Generates/updates a Buf `buf.yaml` file.
  */
+// Maintainer notes:
+// - Cache keys are kept unique per source set via the `sourceSetName` @Input. Without it,
+//   source sets with coincidentally identical dir names and existence flags would share a
+//   cache entry and produce cross-source-set FROM_CACHE hits that are hard to reason about.
+// - Any filesystem state read inside the @TaskAction MUST be declared as an @Input (or wired
+//   via a Provider bound to an @Input Property). Undeclared filesystem reads break cache
+//   correctness silently — Gradle will cache-hit on stale output when the undeclared input
+//   changes.
+@CacheableTask
 public abstract class GenerateBufYaml @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {
+    // Source set identity. Included as an @Input so each source set has a distinct cache key
+    // even when its other inputs happen to coincide with another source set's.
+    @get:Input
+    internal abstract val sourceSetName: Property<String>
+
     @get:Input
     internal abstract val protoSourceDir: Property<String>
 
@@ -33,6 +48,15 @@ public abstract class GenerateBufYaml @Inject internal constructor(
 
     @get:Input
     internal abstract val withImport: Property<Boolean>
+
+    // Backed by a Provider in the caller so directory existence is resolved during task
+    // fingerprinting (after upstream process-proto tasks have run) and participates in the
+    // cache key. Do not replace with a direct `File.exists()` call in the @TaskAction.
+    @get:Input
+    internal abstract val protoSourceDirExists: Property<Boolean>
+
+    @get:Input
+    internal abstract val importSourceDirExists: Property<Boolean>
 
     /**
      * The `buf.yaml` file to generate/update.
@@ -43,11 +67,9 @@ public abstract class GenerateBufYaml @Inject internal constructor(
     @TaskAction
     internal fun generate() {
         val file = bufFile.get()
-
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-            file.createNewFile()
-        }
+        // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
+        // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
+        file.parentFile.mkdirs()
 
         file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")
@@ -60,18 +82,12 @@ public abstract class GenerateBufYaml @Inject internal constructor(
 
             writer.appendLine("modules:")
 
-            val protoDirName = protoSourceDir.get()
-            val protoDir = file.parentFile.resolve(protoDirName)
-            if (protoDir.exists()) {
-                val modulePath = protoDir.relativeTo(file.parentFile)
-                writer.appendLine("  - path: $modulePath")
+            if (protoSourceDirExists.get()) {
+                writer.appendLine("  - path: ${protoSourceDir.get()}")
             }
 
-            val importDirName = importSourceDir.get()
-            val importDir = file.parentFile.resolve(importDirName)
-            if (withImport.get() && importDir.exists()) {
-                val modulePath = importDir.relativeTo(file.parentFile)
-                writer.appendLine("  - path: $modulePath")
+            if (withImport.get() && importSourceDirExists.get()) {
+                writer.appendLine("  - path: ${importSourceDir.get()}")
             }
 
             writer.flush()
@@ -95,9 +111,13 @@ internal fun Project.registerGenerateBufYamlTask(
     val task = tasks.register("${GenerateBufYaml.NAME_PREFIX}$name", GenerateBufYaml::class, properties)
 
     task.configure {
+        sourceSetName.convention(name)
         protoSourceDir.convention(buildSourceSetsProtoDir.name)
         importSourceDir.convention(buildSourceSetsImportDir.name)
         this.withImport.convention(withImport)
+
+        protoSourceDirExists.convention(provider { buildSourceSetsProtoDir.exists() })
+        importSourceDirExists.convention(provider { buildSourceSetsImportDir.exists() })
 
         val bufYamlFile = buildSourceSetsDir
             .resolve(BUF_YAML)

@@ -13,12 +13,18 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
+import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import javax.inject.Inject
 
 /**
  * Copy proto files to a temporary directory for Buf to process.
+ *
+ * Caching is disabled because this is a file-copy task — Gradle's default heuristic is that
+ * copy/sync tasks are not worth caching (the cost of fetching a cached artifact exceeds the
+ * cost of re-copying local files).
  */
+@DisableCachingByDefault(because = "File copy task — caching overhead outweighs benefit")
 public abstract class ProcessProtoFiles @Inject internal constructor(
     @get:Internal
     override val properties: ProtoTask.Properties,

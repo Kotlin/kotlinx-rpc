@@ -7,6 +7,7 @@ package kotlinx.rpc.protoc
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.tasks.Internal
+import org.gradle.work.DisableCachingByDefault
 
 /**
  * Abstract base interface for tasks that work with .proto files.
@@ -95,7 +96,12 @@ public interface ProtoTask : Task {
 
 /**
  * Default implementation of [ProtoTask] with [Task.group] set to [PROTO_GROUP].
+ *
+ * Caching is disabled at this level because the base class carries no declared inputs or outputs.
+ * Subclasses must declare their caching intent explicitly via `@CacheableTask` or
+ * `@DisableCachingByDefault` once they know what they produce.
  */
+@DisableCachingByDefault(because = "Subclasses must declare caching intent explicitly")
 public abstract class DefaultProtoTask(
     @get:Internal
     final override val properties: ProtoTask.Properties,

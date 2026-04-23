@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -49,9 +50,15 @@ internal data class ResolvedGrpcPlugin(
 /**
  * Generates/updates Buf `buf.gen.yaml` file.
  */
+// Maintainer note: `sourceSetName` keeps cache keys unique per source set even when plugin
+// configurations coincide — see [GenerateBufYaml] for rationale.
+@CacheableTask
 public abstract class GenerateBufGenYaml @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {
+    @get:Input
+    internal abstract val sourceSetName: Property<String>
+
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 
@@ -65,10 +72,9 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
     @Suppress("detekt.NestedBlockDepth")
     internal fun generate() {
         val file = bufGenFile.get()
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-            file.createNewFile()
-        }
+        // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
+        // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
+        file.parentFile.mkdirs()
 
         file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")
@@ -146,6 +152,7 @@ internal fun Project.registerGenerateBufGenYamlTask(
     )
 
     task.configure {
+        sourceSetName.convention(name)
         val pluginsProvider = project.provider {
             protocPlugins.get().map { plugin ->
                 val artifact = plugin.artifact.get()
