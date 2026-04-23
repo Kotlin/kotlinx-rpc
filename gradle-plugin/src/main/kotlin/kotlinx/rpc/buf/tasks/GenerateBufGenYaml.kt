@@ -75,10 +75,9 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
     @Suppress("detekt.NestedBlockDepth")
     internal fun generate() {
         val file = bufGenFile.get()
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-            file.createNewFile()
-        }
+        // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
+        // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
+        file.parentFile.mkdirs()
 
         file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")

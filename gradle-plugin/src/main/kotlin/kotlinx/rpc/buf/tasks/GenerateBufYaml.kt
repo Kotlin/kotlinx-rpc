@@ -70,11 +70,9 @@ public abstract class GenerateBufYaml @Inject internal constructor(
     @TaskAction
     internal fun generate() {
         val file = bufFile.get()
-
-        if (!file.exists()) {
-            file.parentFile.mkdirs()
-            file.createNewFile()
-        }
+        // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
+        // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
+        file.parentFile.mkdirs()
 
         file.bufferedWriter().use { writer ->
             writer.appendLine("version: v2")
