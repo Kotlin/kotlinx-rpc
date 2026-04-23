@@ -22,16 +22,20 @@ will produce wrong output.
 
 ### Commit message format
 
-**Subject line only — no body.** Keep under 72 characters. Include the YT ticket ID
-and GH issue number (if the YT ticket references one). Use imperative mood, present
-tense, no trailing period.
+Follow the `commit-changes` skill. Short version: single line, no body, starts
+with the YouTrack ticket ID in the exact form required by
+`.github/workflows/bot-pr-title.yml` (regex `^KRPC-[0-9]+: .+`) — so
+`KRPC-NNN:` with a colon and a single space. Imperative mood, present tense,
+no trailing period, keep under ~72 characters. If the YT ticket references an
+original GitHub issue, include that issue number in parentheses at the end;
+do not add a PR number — squash-merge appends one automatically.
 
 ```
 KRPC-NNN: <Imperative verb> <what changed> (#GH-issue if exists)
 ```
 
 Message examples:
-- `KRPC-123 Add DSL builder for ProtoConfig`
+- `KRPC-123: Add DSL builder for ProtoConfig`
 - `KRPC-245: Strip common enum value prefixes (#12345)`
 
 ## D.2: Create a Draft PR
