@@ -5,9 +5,8 @@
 package kotlinx.rpc.grpc.server
 
 /**
- * Credentials used by a gRPC server to accept incoming connections. Instances may be shared across
- * multiple servers: each `GrpcServer` independently manages the credentials' refcount on the
- * underlying native transport, so the object stays valid until every owning server has shut down.
+ * Credentials used by a gRPC server to accept incoming connections. The same instance may be
+ * safely passed to multiple [GrpcServer]s.
  */
 public expect abstract class GrpcServerCredentials
 
