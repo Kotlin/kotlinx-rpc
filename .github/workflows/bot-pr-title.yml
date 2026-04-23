@@ -1,0 +1,68 @@
+name: Bot PR Title Format
+
+on:
+  pull_request_target:
+    types: [opened, edited, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  check-title:
+    name: Check bot PR title format
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      BOT_LOGIN: "ai-agent-kxrpc[bot]"
+      STATUS_CONTEXT: "Bot PR Title Format"
+      TITLE_PATTERN: '^KRPC-[0-9]+: .+'
+
+    steps:
+      - name: Skip if PR is not bot-authored
+        id: verify-bot
+        run: |
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          if [ "$PR_AUTHOR" != "$BOT_LOGIN" ]; then
+            echo "PR author is '$PR_AUTHOR', not '$BOT_LOGIN'. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate PR title
+        id: validate
+        if: steps.verify-bot.outputs.skip == 'false'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "Title: $PR_TITLE"
+          echo "Pattern: $TITLE_PATTERN"
+
+          if [[ "$PR_TITLE" =~ $TITLE_PATTERN ]]; then
+            echo "state=success" >> "$GITHUB_OUTPUT"
+            echo "description=Title starts with KRPC-XXX: prefix" >> "$GITHUB_OUTPUT"
+            echo "PR title matches required format."
+          else
+            echo "state=failure" >> "$GITHUB_OUTPUT"
+            echo "description=Title must start with 'KRPC-<number>: '" >> "$GITHUB_OUTPUT"
+            echo "::error::PR title '$PR_TITLE' must start with 'KRPC-<number>: ' (e.g. 'KRPC-123: Fix something')."
+          fi
+
+      - name: Set commit status
+        if: steps.verify-bot.outputs.skip == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          PR_SHA="${{ github.event.pull_request.head.sha }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          gh api --method POST "repos/$REPO/statuses/$PR_SHA" \
+            --field state="${{ steps.validate.outputs.state }}" \
+            --field context="$STATUS_CONTEXT" \
+            --field description="${{ steps.validate.outputs.description }}" \
+            --field target_url="https://github.com/$REPO/pull/$PR_NUMBER" > /dev/null
+
+          if [ "${{ steps.validate.outputs.state }}" != "success" ]; then
+            exit 1
+          fi

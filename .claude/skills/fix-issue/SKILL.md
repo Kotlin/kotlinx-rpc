@@ -26,19 +26,24 @@ These overrides take precedence over defaults in `use-youtrack` and `use-teamcit
   must be in `$GITHUB_APP_KEY_PATH`. **Never** use the user's `gh` CLI auth —
   always generate a fresh installation token from the App key (see below).
 
-### GitHub App Token Generation
+### Using `gh` — always through the `gh-bot` wrapper
 
-Installation tokens expire after 1 hour. Generate one at workflow start and refresh
-if any GitHub API call returns 401. The script manages its own venv and deps.
+Every `gh` invocation in this skill MUST go through the wrapper:
 
 ```bash
-export GH_TOKEN=$(scripts/gh-app-token.sh)
+.claude/skills/fix-issue/scripts/gh-bot.sh <gh args...>
 ```
 
-(Path is relative to this skill's directory: `.claude/skills/fix-issue/scripts/gh-app-token.sh`)
+`gh-bot` generates a fresh App installation token on every call and execs `gh`
+with that token set inline. It is a drop-in replacement for `gh`. 
+You MUST NEVER call `gh` directly.
 
-Once `GH_TOKEN` is set, all `gh` CLI commands automatically use it. If you get a
-401 mid-workflow, re-run the script to refresh.
+Examples:
+```bash
+.claude/skills/fix-issue/scripts/gh-bot.sh pr create --draft ...
+.claude/skills/fix-issue/scripts/gh-bot.sh pr ready 123
+.claude/skills/fix-issue/scripts/gh-bot.sh api /repos/Kotlin/kotlinx-rpc/issues/42/comments ...
+```
 
 ### Pre-flight Access Check — MANDATORY
 
@@ -170,9 +175,10 @@ workarounds that save significant time.
    affected modules, or error messages. Look at both open and resolved issues —
    a resolved issue may contain the exact fix pattern you need, and an open
    duplicate means you should link rather than duplicate effort.
-2. **GitHub**: Search issues and PRs in the repo (`gh search issues`, `gh search prs`)
-   for related keywords and error messages. Closed PRs may contain relevant
-   discussion or reverted approaches worth knowing about.
+2. **GitHub**: Search issues and PRs in the repo via the `gh-bot` wrapper
+   (`gh-bot.sh search issues ...`, `gh-bot.sh search prs ...`) for related
+   keywords and error messages. Closed PRs may contain relevant discussion or
+   reverted approaches worth knowing about.
 
 If you find related issues, **always note them** in the triage comment and
 **always link them** in YouTrack. If you find an exact duplicate,
