@@ -9,6 +9,7 @@ package kotlinx.rpc.grpc.server
 import cnames.structs.grpc_server_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.grpc.internal.cinterop.grpc_insecure_server_credentials_create
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_credentials_release
@@ -22,9 +23,28 @@ import kotlin.native.ref.createCleaner
 public actual abstract class GrpcServerCredentials internal constructor(
     internal val raw: CPointer<grpc_server_credentials>,
 ) {
+    // Guards the application-owned +1 ref on grpc_server_credentials against double-free between
+    // the explicit release performed by NativeServer.dispose() and the GC cleaner fallback.
+    // KRPC-591.
+    internal val rawGuard = ResourceGuard()
+
     @Suppress("unused")
-    internal val rawCleaner = createCleaner(raw) {
-        grpc_server_credentials_release(it)
+    internal val rawCleaner = createCleaner(Pair(raw, rawGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_server_credentials_release(ptr)
+        }
+    }
+
+    /**
+     * Releases the application-owned +1 ref on [raw] deterministically. Safe to call multiple
+     * times — the guard ensures the underlying `grpc_server_credentials_release` runs at most
+     * once, after which the GC cleaner becomes a no-op. Called from `NativeServer.dispose()`
+     * after `grpc_server_destroy` so the ref is gone before `grpc_shutdown` can run.
+     */
+    internal fun releaseRaw() {
+        if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+            grpc_server_credentials_release(raw)
+        }
     }
 }
 

@@ -91,6 +91,12 @@ internal class NativeServer(
     private fun dispose() {
         // disposed with completion of shutdown
         grpc_server_destroy(raw)
+        // Release the application-owned +1 ref on the server credentials before rt.close() can
+        // trigger grpc_shutdown(). grpc-core keeps its own internal ref obtained via
+        // grpc_server_add_http2_port, so releasing the app ref here does not invalidate the
+        // credentials for any still-live grpc-core state. The cleaner in GrpcServerCredentials is
+        // the guarded fallback. KRPC-591.
+        credentials.releaseRaw()
         callAllocationCtxs.forEach { it.dispose() }
         // release the grpc runtime, so grpc is shutdown if no other grpc servers are running.
         rt.close()
