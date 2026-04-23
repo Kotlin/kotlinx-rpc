@@ -31,6 +31,7 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -71,11 +72,16 @@ internal class NativeServerCall<Request, Response>(
         setMethodDescriptor(methodDescriptor)
     }
 
-    // TODO(KRPC-592): server-side analog of KRPC-586 — release deterministically via ResourceGuard
-    //  rather than relying on the GC cleaner to avoid the grpc_shutdown precondition race.
+    // grpc_shutdown() requires all application-owned grpc objects to be destroyed before it runs
+    // (grpc/grpc.h). Release the application's +1 grpc_call ref deterministically in finalize();
+    // the cleaner is the fallback for calls that never reach finalize. KRPC-592.
+    private val rawGuard = ResourceGuard()
+
     @Suppress("unused")
-    private val rawCleaner = createCleaner(raw) {
-        grpc_call_unref(it)
+    private val rawCleaner = createCleaner(Pair(raw, rawGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_call_unref(ptr)
+        }
     }
 
     private val listener = DeferredCallListener<Request>()
@@ -155,6 +161,10 @@ internal class NativeServerCall<Request, Response>(
                 callbackMutex.withLock {
                     listener.onComplete()
                 }
+            }
+            // Deterministic grpc_call_unref — see rawGuard. KRPC-592.
+            if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+                grpc_call_unref(raw)
             }
         }
     }

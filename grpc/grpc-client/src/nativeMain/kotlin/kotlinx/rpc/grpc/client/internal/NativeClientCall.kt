@@ -94,18 +94,31 @@ internal class NativeClientCall<Request, Response>(
         if (it is GrpcEmptyCallCredentials) null else it.createRaw(coroutineContext)
     }
 
-    // Mirrors rawGuard for the application-owned +1 ref on grpc_call_credentials. Deterministic
-    // release happens alongside grpc_call_unref (tryToCloseCall and the callJob completion
-    // fallback); the cleaner is the guarded fallback. KRPC-588.
-    private val rawCallCredentialsGuard = ResourceGuard()
+    // Mirrors rawGuard for the application-owned +1 ref on grpc_call_credentials. Null when no
+    // credentials are attached — avoids registering a cleaner in the common no-credentials path.
+    // Deterministic release happens alongside grpc_call_unref; the cleaner is the guarded
+    // fallback. KRPC-588.
+    private val rawCallCredentialsGuard: ResourceGuard? =
+        if (rawCallCredentials != null) ResourceGuard() else null
 
     @Suppress("unused")
-    private val rawCallCredentialsCleaner =
-        createCleaner(Pair(rawCallCredentials, rawCallCredentialsGuard)) { (ptr, guard) ->
-            if (ptr != null && guard.released.compareAndSet(expect = false, update = true)) {
-                grpc_call_credentials_release(ptr)
+    private val rawCallCredentialsCleaner = rawCallCredentials?.let { ptr ->
+        val guard = rawCallCredentialsGuard!!
+        createCleaner(Pair(ptr, guard)) { (p, g) ->
+            if (g.released.compareAndSet(expect = false, update = true)) {
+                grpc_call_credentials_release(p)
             }
         }
+    }
+
+    /** Idempotent deterministic release of the app-owned +1 on [rawCallCredentials]. KRPC-588. */
+    private fun releaseCallCredentialsIfNeeded() {
+        val ptr = rawCallCredentials ?: return
+        val guard = rawCallCredentialsGuard ?: return
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_call_credentials_release(ptr)
+        }
+    }
 
     init {
         // cancel the call if the job is canceled.
@@ -126,12 +139,7 @@ internal class NativeClientCall<Request, Response>(
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
                 grpc_call_unref(raw)
             }
-            // Matching fallback for the call-credentials ref. KRPC-588.
-            if (rawCallCredentials != null &&
-                rawCallCredentialsGuard.released.compareAndSet(expect = false, update = true)
-            ) {
-                grpc_call_credentials_release(rawCallCredentials)
-            }
+            releaseCallCredentialsIfNeeded()
         }
     }
 
@@ -207,14 +215,9 @@ internal class NativeClientCall<Request, Response>(
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
                 grpc_call_unref(raw)
             }
-            // Deterministic grpc_call_credentials_release — see rawCallCredentialsGuard. KRPC-588.
-            // Safe to release here: the call's internal ref on the credentials was dropped inside
-            // grpc-core when the call reached its terminal state (RECV_STATUS_ON_CLIENT completed).
-            if (rawCallCredentials != null &&
-                rawCallCredentialsGuard.released.compareAndSet(expect = false, update = true)
-            ) {
-                grpc_call_credentials_release(rawCallCredentials)
-            }
+            // Safe to release call credentials here: the call's internal ref on them was dropped
+            // inside grpc-core when RECV_STATUS_ON_CLIENT completed. KRPC-588.
+            releaseCallCredentialsIfNeeded()
         }
     }
 
