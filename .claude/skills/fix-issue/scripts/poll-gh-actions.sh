@@ -76,10 +76,12 @@ for f in failed:
       echo "RESULT: FAILURE"
       echo "Failed checks:"
       echo "$FAILURES"
+      echo "__POLL_RESULT__ exit=1 status=FAILURE pr=$PR_NUMBER"
       exit 1
     else
       echo "RESULT: SUCCESS"
       echo "All checks passed."
+      echo "__POLL_RESULT__ exit=0 status=SUCCESS pr=$PR_NUMBER"
       exit 0
     fi
   fi
@@ -93,5 +95,7 @@ echo "== GH Actions Report (PR #$PR_NUMBER) =="
 echo "RESULT: TIMEOUT (${MAX_ITERATIONS} iterations, $((MAX_ITERATIONS * INTERVAL))s elapsed)"
 echo ""
 echo "Current state:"
-"$GH_BOT" pr checks "$PR_NUMBER" --repo "$REPO"
+"$GH_BOT" pr checks "$PR_NUMBER" --repo "$REPO" || true
+echo ""
+echo "__POLL_RESULT__ exit=2 status=TIMEOUT pr=$PR_NUMBER"
 exit 2

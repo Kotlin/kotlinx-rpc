@@ -207,6 +207,22 @@ may return "no dependencies found with indices" for method-level searches even w
 the class exists. Workaround: use DECLARATION mode to find the class first, then
 use `read_dependency_sources` with pagination to read the specific section you need.
 
+#### Performance / infra tickets — use Develocity via its skill
+
+For tickets that reference build-scan data, cache hit rates, task timing, or
+flaky-test statistics on `ge.jetbrains.com` (common in performance and infra
+audits), invoke the `use-develocity` skill rather than calling
+`mcp__develocity__*` tools directly. The skill knows the right pagination
+and category selection for the KRPC project.
+
+If you must call `mcp__develocity__get_builds` directly, request **one
+category at a time** (`additionalDataToInclude` with a single entry) and
+start with `maxBuilds: 10` to survey the shape of the response before
+widening. A 50-build query with `["attributes", "caching",
+"build_performance"]` produces ~180k characters in a single JSON line and
+overflows the chat — it has to be written to a file and slice-read, which
+costs several minutes per query.
+
 #### Post a triage comment — MANDATORY (every issue type)
 
 **Always post a YT comment at this step** — this is unconditional, not optional.
@@ -283,6 +299,34 @@ When needed — may be a **new test** or **modification of an existing one**:
 
 After the fix is applied (B.2), re-run to confirm GREEN. If it still fails, the
 fix is incomplete — do not move on.
+
+#### Audit-style tickets
+
+Tickets framed as "Audit X", "Categorize Y", "Review Z", or "Audit and reduce N"
+are a trap for the Complex path below because the framing invites bundling
+multiple small fixes — but the primary deliverable is the **analysis**, not
+code. The triage comment and Agent Analysis section written in Phase A are
+the ticket's real output. Bundling multiple fixes muddies that analysis and
+bloats the diff without strengthening the finding.
+
+For these tickets:
+
+1. **Pick exactly ONE concrete code change** that reduces the audited surface
+   area. Optimize for clarity and reviewability over breadth — a single,
+   well-scoped reduction is easier to review and land than a pile of
+   mechanically-similar edits.
+2. **File follow-up issues** for every other finding you uncovered during
+   the audit — do not bundle them into the PR. The YT backlog is the right
+   place for the other findings; the PR is not.
+3. **If you can't identify a single safe code change, the PR may be
+   analysis-only.** Say so explicitly in the PR body — do not invent scope
+   to justify a commit. A ticket whose deliverable is "we audited this and
+   found nothing worth fixing right now" is a legitimate outcome; document
+   it that way.
+
+If you re-scope the implementation more than twice in Phase B, stop and
+re-read this subsection — scope thrashing on an audit is the symptom this
+rule exists to prevent.
 
 ### B.2: Apply the Fix
 
@@ -444,9 +488,15 @@ Service outages follow the No Silent Fallback policy above.
 ## Filing Follow-Up Issues
 
 If you discover related bugs, latent risks, or follow-up work during any phase, file
-them as YouTrack issues immediately rather than losing the context. Follow the rules
-in `references/filing-follow-up-issues.md` — especially the **mandatory `Vibe-report`
-tag** for all AI-created issues.
+them as YouTrack issues immediately rather than losing the context.
+
+**Read `references/filing-follow-up-issues.md` before calling any YouTrack MCP
+tool** — it is a drop-in replacement for the `file-youtrack-issue` skill, with
+the required custom-field shapes (array-typed fields like `Scope` must be passed
+as JSON arrays, not strings — a gotcha that costs retries every time the
+reference is skipped), the mandatory `Vibe-report` tag, and the parent-linking
+step. Do not reconstruct the format from memory or from `get_issue` output —
+the read and write schemas are asymmetric.
 
 ## Escalate to User
 

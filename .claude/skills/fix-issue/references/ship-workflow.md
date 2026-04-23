@@ -77,26 +77,41 @@ if the change is trivial and local verifications covered it.
 
 **GH Actions**: Are run automatically.
 
-**Monitor both via subagents**: Spawn two background subagents — one for GitHub
-Actions, one for TeamCity. Each runs the corresponding polling script and reports
-back with pass/fail results. See `references/ci-polling.md` for script usage,
-auth token requirements, and expected report format.
+**Run both polls in parallel via background `Bash`**: in a single message,
+launch `poll-tc-builds.sh` and `poll-gh-actions.sh` as two `Bash` calls with
+`run_in_background: true`. Each returns a shell ID and runs up to 30 min; the
+runtime notifies you on completion and you read the final stdout directly. No
+subagents — the scripts' output is bounded and the main agent reads it
+reliably. See `references/ci-polling.md` for script usage, auth token
+requirements, and the `__POLL_RESULT__` sentinel format.
 
 See Error Recovery in SKILL.md for handling canceled or failed builds.
+
+### D.3.1: Build status decision table
+
+Before investigating a failure, classify it. The same investigation procedure
+applies to most statuses, but the **retry vs. move-on vs. debug** decision
+depends on whether the failure is pre-existing or introduced by this PR.
+
+| Status   | Same test failing each run? | Fails on `main` with same symptom? | Action |
+|----------|-----------------------------|------------------------------------|--------|
+| canceled | n/a | n/a | Retry once (external cancellation is common) |
+| failed   | no — different test each run | yes | **Pre-existing flake.** Retry up to 3× for a green run; if none, note in CI report comment and proceed — do not revert bundled changes |
+| failed   | yes — same test each run | no  | **Likely regression introduced by this PR.** Invoke `superpowers:systematic-debugging`; do not retry blindly |
+| failed   | yes | yes | **Pre-existing broken test.** Note in CI report comment and proceed |
 
 On failure — **always invoke** `superpowers:systematic-debugging` (via the Skill tool —
 not just reading the log and guessing), not blind retries:
 1. Read the full error/stack trace, not just the test name.
-2. Check if pre-existing — run the same test against `main` (or check recent TC
-   history). **If TC fails on a task that also fails on main**, you may fix it if the
-   fix is trivial and within scope of this issue — otherwise note it as pre-existing
-   in the CI report comment and move on. Do not block the PR on failures unrelated
-   to your change.
+2. Classify via the D.3.1 decision table above. **If TC fails on a task that
+   also fails on main**, you may fix it if the fix is trivial and within scope
+   of this issue — otherwise note it as pre-existing in the CI report comment
+   and move on. Do not block the PR on failures unrelated to your change.
 3. Reproduce locally if feasible via `running_gradle_tests` — faster than CI round-trips.
 4. Form a hypothesis before fixing. If your first fix doesn't work, return to the
    error output — do not stack guesses.
 5. Fix, commit, push. GH Actions restart automatically; re-trigger TC if needed.
-   Spawn monitoring subagents again.
+   Re-launch the two poll scripts as background `Bash` calls (see D.3 above).
 
 **Post a CI report comment on the PR** — this is mandatory, not optional. The
 reviewer needs to see pipeline status directly on the PR. Use the template in
