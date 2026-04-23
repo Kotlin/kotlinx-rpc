@@ -2,7 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -32,8 +33,10 @@ import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GrpcRuntime
+import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toGrpcSlice
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_PROPAGATE_DEFAULTS
 import kotlinx.rpc.grpc.internal.cinterop.grpc_arg
 import kotlinx.rpc.grpc.internal.cinterop.grpc_arg_type
@@ -222,14 +225,6 @@ internal class NativeManagedChannel(
         )
     }
 
-}
-
-/**
- * Guards a native resource against double-free between an explicit release path and the GC
- * cleaner fallback. Used with [createCleaner] — must not capture an enclosing instance.
- */
-internal class ResourceGuard {
-    val released = atomic(false)
 }
 
 internal sealed class GrpcArg(val key: String) {

@@ -2,13 +2,15 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeRpcApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
+    InternalNativeRpcApi::class)
 
 package kotlinx.rpc.grpc.server
 
 import cnames.structs.grpc_server_credentials
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.TlsCredentialsOptionsBuilder
 import kotlinx.rpc.grpc.internal.cinterop.grpc_insecure_server_credentials_create
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_credentials_release
@@ -16,15 +18,38 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_ssl_client_certificate_request_ty
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_server_credentials_create
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
 public actual abstract class GrpcServerCredentials internal constructor(
     internal val raw: CPointer<grpc_server_credentials>,
 ) {
+    // Guards the application-owned +1 ref on grpc_server_credentials against double-free between
+    // the explicit release performed by NativeServer.dispose() and the GC cleaner fallback.
+    // KRPC-591.
+    internal val rawGuard = ResourceGuard()
+
     @Suppress("unused")
-    internal val rawCleaner = createCleaner(raw) {
-        grpc_server_credentials_release(it)
+    internal val rawCleaner = createCleaner(Pair(raw, rawGuard)) { (ptr, guard) ->
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_server_credentials_release(ptr)
+        }
+    }
+
+    /**
+     * Releases the application-owned +1 ref on the underlying `grpc_server_credentials`.
+     * Idempotent: subsequent calls — and the GC cleaner — are no-ops once the guard has fired.
+     *
+     * Sharing a single `GrpcServerCredentials` between multiple servers is supported: the first
+     * owning server's shutdown releases the app ref, and the remaining grpc-core internal refs
+     * obtained by the other servers' `grpc_server_add_http2_port` calls keep the object alive
+     * until they release it themselves.
+     */
+    internal fun releaseRaw() {
+        if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+            grpc_server_credentials_release(raw)
+        }
     }
 }
 

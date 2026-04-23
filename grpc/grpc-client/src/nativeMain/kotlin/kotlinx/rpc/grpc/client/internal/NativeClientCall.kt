@@ -33,6 +33,7 @@ import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.destroyEntries
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toByteArray
@@ -93,9 +94,30 @@ internal class NativeClientCall<Request, Response>(
         if (it is GrpcEmptyCallCredentials) null else it.createRaw(coroutineContext)
     }
 
+    // Mirrors rawGuard for the application-owned +1 ref on grpc_call_credentials. Null when no
+    // credentials are attached — avoids registering a cleaner in the common no-credentials path.
+    // Deterministic release happens alongside grpc_call_unref; the cleaner is the guarded
+    // fallback. KRPC-588.
+    private val rawCallCredentialsGuard: ResourceGuard? =
+        if (rawCallCredentials != null) ResourceGuard() else null
+
     @Suppress("unused")
-    private val rawCallCredentialsCleaner = createCleaner(rawCallCredentials) {
-        if (it != null) grpc_call_credentials_release(it)
+    private val rawCallCredentialsCleaner = rawCallCredentials?.let { ptr ->
+        val guard = rawCallCredentialsGuard!!
+        createCleaner(Pair(ptr, guard)) { (p, g) ->
+            if (g.released.compareAndSet(expect = false, update = true)) {
+                grpc_call_credentials_release(p)
+            }
+        }
+    }
+
+    /** Idempotent deterministic release of the app-owned +1 on [rawCallCredentials]. KRPC-588. */
+    private fun releaseCallCredentialsIfNeeded() {
+        val ptr = rawCallCredentials ?: return
+        val guard = rawCallCredentialsGuard ?: return
+        if (guard.released.compareAndSet(expect = false, update = true)) {
+            grpc_call_credentials_release(ptr)
+        }
     }
 
     init {
@@ -117,6 +139,7 @@ internal class NativeClientCall<Request, Response>(
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
                 grpc_call_unref(raw)
             }
+            releaseCallCredentialsIfNeeded()
         }
     }
 
@@ -192,6 +215,9 @@ internal class NativeClientCall<Request, Response>(
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
                 grpc_call_unref(raw)
             }
+            // Safe to release call credentials here: the call's internal ref on them was dropped
+            // inside grpc-core when RECV_STATUS_ON_CLIENT completed. KRPC-588.
+            releaseCallCredentialsIfNeeded()
         }
     }
 

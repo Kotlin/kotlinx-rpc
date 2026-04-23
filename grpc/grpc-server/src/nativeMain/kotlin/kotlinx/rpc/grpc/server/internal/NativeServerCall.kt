@@ -71,6 +71,11 @@ internal class NativeServerCall<Request, Response>(
         setMethodDescriptor(methodDescriptor)
     }
 
+    // TODO(KRPC-592): server-side analog of KRPC-586 — release deterministically via ResourceGuard
+    //  rather than relying on the GC cleaner to avoid the grpc_shutdown precondition race. Needs
+    //  an in-flight batch counter (like NativeClientCall.inFlight) to guard the unref against
+    //  concurrent cancel() calls; the naive release in finalize() races with runBatch error-path
+    //  cancel().
     @Suppress("unused")
     private val rawCleaner = createCleaner(raw) {
         grpc_call_unref(it)
