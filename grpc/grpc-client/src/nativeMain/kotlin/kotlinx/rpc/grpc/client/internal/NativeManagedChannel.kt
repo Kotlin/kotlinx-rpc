@@ -225,11 +225,10 @@ internal class NativeManagedChannel(
 }
 
 /**
- * Guards a native resource against double-free between explicit shutdown cleanup
- * and the GC cleaner fallback. Used with [createCleaner] — must not capture
- * the enclosing [NativeManagedChannel] instance.
+ * Guards a native resource against double-free between an explicit release path and the GC
+ * cleaner fallback. Used with [createCleaner] — must not capture an enclosing instance.
  */
-private class ResourceGuard {
+internal class ResourceGuard {
     val released = atomic(false)
 }
 
