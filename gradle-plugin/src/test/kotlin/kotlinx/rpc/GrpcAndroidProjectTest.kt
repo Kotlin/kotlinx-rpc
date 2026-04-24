@@ -232,6 +232,71 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependency Proto Import`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        fun runForSetWithImport(sourceSet: SSets, vararg extraTasks: SSetsAndroid) {
+            val result = runForSet(sourceSet)
+
+            result.assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = listOf(
+                    Path("some.proto"),
+                ),
+                importProtoFiles = listOf(
+                    Path("dependency.proto"),
+                ),
+                generatedFiles = listOf(
+                    Path("Some.kt"),
+                    Path("Some.ext.kt"),
+                    Path(RPC_INTERNAL, "Some.kt"),
+                ),
+                notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
+            )
+        }
+
+        runForSetWithImport(SSetsAndroid.Default.debug)
+        runForSetWithImport(SSetsAndroid.Default.release)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import Flavors`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import Flavors Codegen`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+        // Verify proto imports work across all flavor variants
+        // protoImport declared on main → inherited by all variants
+
+        fun runForVariant(sourceSet: SSets, vararg extraTasks: SSets) {
+            val result = runForSet(sourceSet)
+
+            result.assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = listOf(
+                    Path("some.proto"),
+                ),
+                importProtoFiles = listOf(
+                    Path("dependency.proto"),
+                ),
+                generatedFiles = listOf(
+                    Path("Some.kt"),
+                    Path("Some.ext.kt"),
+                    Path(RPC_INTERNAL, "Some.kt"),
+                ),
+                notExecuted = emptyList(),
+            )
+        }
+
+        // arm variants
+        runForVariant(SSetsAndroid.Flavors.armDebug)
+        runForVariant(SSetsAndroid.Flavors.armRelease)
+
+        // x86 variants
+        runForVariant(SSetsAndroid.Flavors.x86Debug)
+        runForVariant(SSetsAndroid.Flavors.x86Release)
+    }
+
+    @TestFactory
     fun `No gRPC`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
         SSetsAndroid.Default.entries.forEach {
             runNonExistentTasksForSourceSet(it)
