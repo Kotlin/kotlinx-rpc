@@ -7,12 +7,11 @@ This is a **separate included Gradle build** (JVM-only). Published artifacts are
 
 See [codegen.md](codegen.md) for what each plugin generates, with full examples of `.proto` → Kotlin output.
 
-## Downstream generated code — Do not edit manually
+## Downstream generated code
 
-Changes to `protoc-gen/` affect checked-in generated code in other modules. 
-**Never edit these files by hand** — regenerate them instead:
+Changes to `protoc-gen/` affect the Kotlin code generated into downstream modules. The generated output is written into each module's `build/protoBuild/generated/<sourceSetName>/` tree and is **not** committed. Gradle regenerates it automatically when `protoc-gen/` inputs change:
 
-| Generated files | Regeneration task |
+| Downstream module | Regeneration task |
 |---|---|
-| `protobuf/protobuf-wkt/src/commonMain/generated-code/` | `:protobuf:protobuf-wkt:bufGenerateCommonMain` |
-| `tests/protobuf-conformance/src/main/generated-code/` | `:tests:protobuf-conformance:bufGenerateMain` |
+| `protobuf/protobuf-wkt` | `:protobuf:protobuf-wkt:bufGenerateCommonMain` |
+| `tests/protobuf-conformance` | `:tests:protobuf-conformance:bufGenerateCommonMain` |

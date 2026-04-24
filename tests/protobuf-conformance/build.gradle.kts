@@ -58,22 +58,12 @@ kotlin {
 setupProtobufConformanceResources()
 configureLocalProtocGenDevelopmentDependency("CommonMain")
 
-fun generatedCodeDir(sourceSetName: String): File = project.layout.projectDirectory
-    .dir("src")
-    .dir(sourceSetName)
-    .dir("generated-code")
-    .asFile
-
 rpc {
     protoc {
         buf.generate.comments {
             includeFileLevelComments = false
         }
     }
-}
-
-protoTasks.buf.generate.nonTestTasks().configureEach {
-    outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
 // Use lazy configuration references to avoid premature resolution of jvmRuntimeClasspath

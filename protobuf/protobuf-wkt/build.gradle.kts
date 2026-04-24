@@ -8,8 +8,6 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.buf
 import kotlinx.rpc.protoc.generate
-import kotlinx.rpc.protoc.proto
-import kotlinx.rpc.protoc.protoTasks
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -26,12 +24,6 @@ kotlin {
     }
 }
 
-fun generatedCodeDir(sourceSetName: String): File = layout.projectDirectory
-    .dir("src")
-    .dir(sourceSetName)
-    .dir("generated-code")
-    .asFile
-
 rpc {
     protoc {
         buf.generate {
@@ -42,10 +34,6 @@ rpc {
             }
         }
     }
-}
-
-protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {
-    outputDirectory = generatedCodeDir(properties.sourceSetNames.single())
 }
 
 configureLocalProtocGenDevelopmentDependency("Main")

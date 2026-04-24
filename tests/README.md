@@ -49,4 +49,4 @@ Several files in this directory are machine-generated.
 | Generated files | Regeneration task | When to regenerate |
 |---|---|---|
 | `compiler-plugin-tests/src/test-gen/` (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`) | `:tests:compiler-plugin-tests:generateTests` | After adding, removing, or renaming test data files in `src/testData/` |
-| `protobuf-conformance/src/main/generated-code/` | `:tests:protobuf-conformance:bufGenerateMain` | After `protoc-gen/` changes |
+| `protobuf-conformance/build/protoBuild/generated/commonMain/` (not committed; regenerated on every build) | `:tests:protobuf-conformance:bufGenerateCommonMain` | Automatically after `protoc-gen/` or `.proto` changes |
