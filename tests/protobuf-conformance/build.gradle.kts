@@ -14,6 +14,9 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import util.other.localProperties
 import util.tasks.CONFORMANCE_PB
 import util.tasks.GenerateConformanceFileDescriptorSet
+import util.tasks.GenerateConformanceTestsTask
+import util.tasks.NPM_INSTALL_CONFORMANCE_TASK
+import util.tasks.NpmInstallConformanceTask
 import util.tasks.PAYLOAD_PB
 import util.tasks.setupProtobufConformanceResources
 
@@ -79,7 +82,7 @@ protoTasks.buf.generate.nonTestTasks().configureEach {
 // Use lazy configuration references to avoid premature resolution of jvmRuntimeClasspath
 val jvmRuntimeClasspath = configurations.named("jvmRuntimeClasspath")
 
-val mockClientJar = tasks.register<Jar>("mockClientJar") {
+val mockClientJarTask = tasks.register<Jar>("mockClientJar") {
     archiveBaseName.set("mockClient")
     archiveVersion.set("")
 
@@ -99,16 +102,21 @@ val mockClientJar = tasks.register<Jar>("mockClientJar") {
     from(tasks.named("jvmProcessResources").map { it.outputs.files })
 }
 
-val generateConformanceTests = tasks.register<JavaExec>("generateConformanceTests") {
+val npmInstallConformance = tasks.named<NpmInstallConformanceTask>(NPM_INSTALL_CONFORMANCE_TASK)
+
+val generateConformanceTests = tasks.register<GenerateConformanceTestsTask>("generateConformanceTests") {
     classpath = files(jvmRuntimeClasspath, tasks.named("compileKotlinJvm").map { it.outputs.files })
 
-    dependsOn(mockClientJar)
-    dependsOn(protoTasks.buf.generate.matchingSourceSet("commonMain"))
-    dependsOn(tasks.named("jvmMainClasses"))
-
-    args = listOf(
-        mockClientJar.get().archiveFile.get().asFile.absolutePath
+    mockClientJar.set(mockClientJarTask.flatMap { it.archiveFile })
+    generatedProtoSources.from(protoTasks.buf.generate.matchingSourceSet("commonMain"))
+    conformanceRunnerBin.set(
+        npmInstallConformance.flatMap {
+            it.installDir.file("node_modules/protobuf-conformance/conformance_test_runner.cjs")
+        }
     )
+    outputDir.set(layout.buildDirectory.dir("protobuf-conformance/mock"))
+
+    dependsOn(tasks.named("jvmMainClasses"))
 
     mainClass.set("kotlinx.rpc.protoc.gen.test.GenerateConformanceTestsKt")
 }
@@ -123,13 +131,13 @@ val generateConformanceFileDescriptorSet = tasks
 tasks.register<JavaExec>("runConformanceTest") {
     classpath = files(jvmRuntimeClasspath, tasks.named("compileKotlinJvm").map { it.outputs.files })
 
-    dependsOn(mockClientJar)
+    dependsOn(mockClientJarTask)
     dependsOn(protoTasks.buf.generate.matchingSourceSet("commonMain"))
     dependsOn(generateConformanceFileDescriptorSet)
     dependsOn(tasks.named("jvmMainClasses"))
 
     args = listOfNotNull(
-        mockClientJar.get().archiveFile.get().asFile.absolutePath,
+        mockClientJarTask.get().archiveFile.get().asFile.absolutePath,
         conformanceTest,
         if (conformanceTestDebug) "--debug" else null
     )
@@ -186,7 +194,7 @@ val hostNativeBinaryPath = hostNativeTarget?.binaries
     ?.absolutePath
 
 tasks.named<Test>("jvmTest") {
-    environment("MOCK_CLIENT_JAR", mockClientJar.get().archiveFile.get().asFile.absolutePath)
+    environment("MOCK_CLIENT_JAR", mockClientJarTask.get().archiveFile.get().asFile.absolutePath)
 
     if (hostNativeBinaryPath != null) {
         environment("NATIVE_CLIENT_BINARY", hostNativeBinaryPath)
