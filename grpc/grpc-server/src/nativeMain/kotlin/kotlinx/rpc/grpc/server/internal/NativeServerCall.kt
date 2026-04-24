@@ -512,11 +512,17 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
     fun setDelegate(d: ServerCall.Listener<T>) {
         mutex.withLock {
             if (delegate != null) return
+            // Drain BEFORE publishing `delegate`, and keep both inside the same mutex.
+            // A concurrent deliver() fast path reads `delegate` lock-free; if it sees non-null,
+            // it must also be able to assume the queue is already drained, otherwise its
+            // invocation on `d` can run on a different thread concurrently with this drain loop.
+            // Inverting the order + holding the mutex across the drain closes that window:
+            // readers either see null and fall to the mutex-guarded slow path, or see `d` and
+            // are guaranteed the drain has completed. KRPC-599.
+            queue.forEach { it(d) }
+            queue.clear()
             delegate = d
         }
-        // drain the queue
-        queue.forEach { it(d) }
-        queue.clear()
     }
 
     private inline fun deliver(crossinline invokeListener: (ServerCall.Listener<T>) -> Unit) {
