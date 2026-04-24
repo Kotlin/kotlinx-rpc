@@ -202,6 +202,23 @@ public class CompletionQueue {
 
         return _shutdownDone
     }
+
+    /**
+     * Upgrades an in-progress (or future) shutdown to force mode without initiating the
+     * shutdown itself. After this call, any subsequent or currently-pending [shutdown] — whether
+     * invoked with `force = false` or `force = true` — will behave as if `force = true` was passed:
+     * new batches (including those from still-executing grpc-core callbacks) are rejected with
+     * [BatchResult.CQShutdown]. Idempotent; safe to call at any point in the CQ lifecycle.
+     *
+     * Distinguished from [shutdown] with `force = true` by NOT performing the state transition
+     * or invoking `grpc_completion_queue_shutdown`. Use this when a force upgrade is needed but
+     * the CQ's actual shutdown must remain sequenced by an external event (for example, a
+     * caller that cannot safely trigger `grpc_completion_queue_shutdown` itself because another
+     * async precondition has not yet completed).
+     */
+    public fun requestForceShutdown(): Unit {
+        forceShutdown.value = true
+    }
 }
 
 // kq stands for kompletion_queue lol
