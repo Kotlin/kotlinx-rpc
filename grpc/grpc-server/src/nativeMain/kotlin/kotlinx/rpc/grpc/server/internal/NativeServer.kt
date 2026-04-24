@@ -118,7 +118,30 @@ internal class NativeServer(
     }
 
     override fun shutdownNow(): PlatformServer {
-        shutdown()
+        if (!isShutdownInternal.compareAndSet(expect = false, update = true)) {
+            // shutdown() (or an earlier shutdownNow()) already scheduled the notify callback.
+            // Flip the CQ force flag so the pending callback's cq.shutdown() — whether it ran
+            // as force=true or force=false when captured — observes force mode when it actually
+            // initiates the CQ shutdown. Calling cq.shutdown(force = true) directly here is
+            // unsafe: if the notify has not yet been delivered, CompletionQueue.shutdown would
+            // CAS the CQ state from OPEN to SHUTTING_DOWN and invoke grpc_completion_queue_shutdown
+            // ahead of the notify delivery — a grpc-core precondition violation.
+            // requestForceShutdown is flag-only, so it does not initiate grpc_completion_queue_shutdown.
+            cq.requestForceShutdown()
+            if (!isTerminatedInternal.isCompleted) {
+                grpc_server_cancel_all_calls(raw)
+            }
+            return this
+        }
+
+        grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
+            // Safe to force-shutdown the CQ here: we run after the notify tag has been delivered
+            // on the CQ, so grpc_completion_queue_shutdown will not race with the server notify.
+            cq.shutdown(force = true).onComplete {
+                dispose()
+                isTerminatedInternal.complete(Unit)
+            }
+        })
         grpc_server_cancel_all_calls(raw)
         return this
     }
