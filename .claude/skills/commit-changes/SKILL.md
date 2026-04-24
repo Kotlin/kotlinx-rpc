@@ -78,6 +78,14 @@ The workflow check has no fallback — there is no prefix-less style for
 committed work, and release/version-bump commits are not an exception. Use the
 `file-youtrack-issue` skill to create a ticket, then commit against it.
 
+**Exception — user interaction.** If the user explicitly asks to commit,
+and there is no ticket in the conversation context, do so without a pushback. 
+All other rules still apply (single line, no body, imperative
+mood, no trailing period, ~72 chars).
+
+This only applies when a user asks to commit, 
+not when you have decided to commit based on other rules/skills.
+
 ## PR numbers
 
 GitHub automatically appends `(#NNN)` when squash-merging. Do not add PR
