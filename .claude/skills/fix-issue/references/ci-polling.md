@@ -46,6 +46,15 @@ main agent automatically when the script exits.
 
 ### How to launch
 
+> ⚠️ **Background `Bash` runs in a fresh shell and does NOT inherit
+> `GITHUB_APP_KEY_PATH` (or `TEAMCITY_AGENT_TOKEN`) from the parent
+> environment.** Prefix every background poll invocation with an explicit
+> `VAR=$VAR …` pass-through for each token the script needs. Without this,
+> `gh-bot` cannot mint an App installation token and `poll-gh-actions.sh`
+> exits silently with code 1 after the first `Polling GH Actions…` line — no
+> `__POLL_RESULT__` sentinel, no visible error in the output file. The TC
+> script has the same foot-gun for `TEAMCITY_AGENT_TOKEN`.
+
 In a single message, dispatch both polls in parallel:
 
 ```
@@ -57,7 +66,8 @@ Bash(
 )
 
 Bash(
-  command=".claude/skills/fix-issue/scripts/poll-gh-actions.sh <pr-number>",
+  command="GITHUB_APP_KEY_PATH=$GITHUB_APP_KEY_PATH \
+    .claude/skills/fix-issue/scripts/poll-gh-actions.sh <pr-number>",
   run_in_background=true,
   description="Poll GitHub Actions checks"
 )
@@ -118,7 +128,11 @@ script from the worktree root:
 ```
 
 The script wraps `gh` via `gh-bot`, so it re-authenticates per invocation —
-no `GH_TOKEN` needs to be set in the parent shell.
+no `GH_TOKEN` needs to be set in the parent shell. However
+`GITHUB_APP_KEY_PATH` **must** be set in the caller's environment and, for
+`run_in_background=true` invocations, **must be explicitly forwarded** via a
+`GITHUB_APP_KEY_PATH=$GITHUB_APP_KEY_PATH …` prefix (background `Bash` launches
+a fresh shell that does not inherit it).
 
 Exit codes:
 

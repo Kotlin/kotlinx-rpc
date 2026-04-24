@@ -30,6 +30,12 @@ fi
 
 PR_NUMBER="$1"
 
+if [ -z "${GITHUB_APP_KEY_PATH:-}" ]; then
+  echo "ERROR: GITHUB_APP_KEY_PATH is not set. When running under run_in_background=true, prefix the call with GITHUB_APP_KEY_PATH=\$GITHUB_APP_KEY_PATH to forward it from the parent shell." >&2
+  echo "__POLL_RESULT__ exit=1 status=ENV_MISSING pr=$PR_NUMBER"
+  exit 1
+fi
+
 if [ ! -x "$GH_BOT" ]; then
   echo "ERROR: gh-bot wrapper missing at $GH_BOT" >&2
   exit 1

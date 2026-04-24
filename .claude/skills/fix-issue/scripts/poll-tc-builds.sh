@@ -42,7 +42,8 @@ if [ $# -lt 2 ]; then
 fi
 
 if [ -z "${TEAMCITY_AGENT_TOKEN:-}" ]; then
-  echo "ERROR: TEAMCITY_AGENT_TOKEN is not set" >&2
+  echo "ERROR: TEAMCITY_AGENT_TOKEN is not set. When running under run_in_background=true, prefix the call with TEAMCITY_AGENT_TOKEN=\$TEAMCITY_AGENT_TOKEN to forward it from the parent shell." >&2
+  echo "__POLL_RESULT__ exit=1 status=ENV_MISSING"
   exit 1
 fi
 

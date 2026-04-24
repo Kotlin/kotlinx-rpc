@@ -81,7 +81,7 @@ code-review formatting) those skills encode.
 Detailed guidance for specific situations and phases:
 
 - **`references/investigation-tips.md`** — Phase A.3 analysis patterns: prior-issue search (mandatory) and the `search_dependency_sources` FULL_TEXT workaround.
-- **`references/develocity-tips.md`** — How to query Develocity without overflowing the chat.
+- **`references/develocity-tips.md`** — **READ BEFORE** any `mcp__develocity__*` call. Default truncation (100 items, 500-char strings) will bite you; the tips file has the parameter shapes that actually work.
 - **`references/audit-style-scoping.md`** — Scope discipline for "Audit X" / "Review Y" tickets.
 - **`references/reproducer-verification.md`** — Before/after verification protocol when the issue includes an external reproducer.
 - **`references/verification-special-cases.md`** — Mandatory extra verifications for conformance `known_failures.txt` and compiler-plugin changes (Phase C.2).
@@ -167,17 +167,20 @@ description. Understand what's broken/missing, which modules are involved, the
 type (bug/feature/task), and linked issues.
 
 For situational guidance (similar-issues search, dependency-source gotcha,
-Develocity usage, audit-style scope traps), consult the References section
-above.
+Develocity usage, audit-style scope traps, bug-vs-usability-problem
+classification), consult the References section above.
+
+If the ticket's literal `## Task` steps are disproportionate to the likely value
+of the finding (e.g., "trigger N CI builds to bisect" when static analysis will
+identify the answer in minutes), propose a scoped alternative in the triage
+comment and issue-body update — those artifacts are your scope-change contract.
+Don't grind through expensive prescribed steps when cheaper investigation
+suffices; don't silently skip them either.
 
 For bugs, you must invoke `superpowers:systematic-debugging` before posting the triage
 comment: reproduce, trace data flow backward to where incorrect state
 originates, form a specific hypothesis ("Field X is null because `deserialize()`
 silently drops the payload when..."), and have your reproducer confirm it.
-
-**Exception**: usability problems (confusing behavior, poor defaults, rough
-ergonomics) with an obvious root cause aren't bugs in this sense — treat them
-like tasks (document in the triage comment, follow the Standard path in B.2).
 
 #### Post a triage comment — MANDATORY (every issue type)
 

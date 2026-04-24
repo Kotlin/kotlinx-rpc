@@ -93,24 +93,30 @@ Before investigating a failure, classify it. The same investigation procedure
 applies to most statuses, but the **retry vs. move-on vs. debug** decision
 depends on whether the failure is pre-existing or introduced by this PR.
 
-| Status   | Same test failing each run? | Fails on `main` with same symptom? | Action |
-|----------|-----------------------------|------------------------------------|--------|
-| canceled | n/a | n/a | Retry once (external cancellation is common) |
-| failed   | no — different test each run | yes | **Pre-existing flake.** Retry up to 3× for a green run; if none, note in CI report comment and proceed — do not revert bundled changes |
-| failed   | yes — same test each run | no  | **Likely regression introduced by this PR.** Invoke `superpowers:systematic-debugging`; do not retry blindly |
-| failed   | yes | yes | **Pre-existing broken test.** Note in CI report comment and proceed |
+| Status   | Failure mode | Same test each run? | Fails on `main` with same symptom? | Action |
+|----------|--------------|---------------------|------------------------------------|--------|
+| canceled | n/a | n/a | n/a | Retry once (external cancellation is common) |
+| failed   | assertion / expected exception | no — different test each run | yes | **Pre-existing flake.** Retry up to 3× for a green run; if none, note in CI report comment and proceed — do not revert bundled changes |
+| failed   | process exit ("Test running process exited unexpectedly") | no — different test each run | n/a | **Treat as regression by default.** The test name is random because the process dies on whichever test was running. Retry **once** to rule out transient infra; if it fails again with the same class of symptom, revert-test the suspect change locally (Docker on Linux if host isn't Linux — see KRPC-597 description for the recipe) before any more CI. Do NOT burn the 3× budget on this class. |
+| failed   | any | yes — same test each run | no  | **Likely regression introduced by this PR.** Invoke `superpowers:systematic-debugging`; do not retry blindly |
+| failed   | any | yes | yes | **Pre-existing broken test.** Note in CI report comment and proceed |
 
 On failure — **always invoke** `superpowers:systematic-debugging` (via the Skill tool —
 not just reading the log and guessing), not blind retries:
 1. Read the full error/stack trace, not just the test name.
-2. Classify via the D.3.1 decision table above. **If TC fails on a task that
+2. **Identify the failure mode first.** "Test running process exited unexpectedly"
+   (or any SIGSEGV / SIGABRT / "Process exited with code N" signature) is a
+   process crash — it needs the process-exit row of D.3.1, NOT the
+   assertion-failure row. This is the most common misclassification and the
+   one that burns the most retries.
+3. Classify via the D.3.1 decision table above. **If TC fails on a task that
    also fails on main**, you may fix it if the fix is trivial and within scope
    of this issue — otherwise note it as pre-existing in the CI report comment
    and move on. Do not block the PR on failures unrelated to your change.
-3. Reproduce locally if feasible via `running_gradle_tests` — faster than CI round-trips.
-4. Form a hypothesis before fixing. If your first fix doesn't work, return to the
+4. Reproduce locally if feasible via `running_gradle_tests` — faster than CI round-trips.
+5. Form a hypothesis before fixing. If your first fix doesn't work, return to the
    error output — do not stack guesses.
-5. Fix, commit, push. GH Actions restart automatically; re-trigger TC if needed.
+6. Fix, commit, push. GH Actions restart automatically; re-trigger TC if needed.
    Re-launch the two poll scripts as background `Bash` calls (see D.3 above).
 
 **Post a CI report comment on the PR** — this is mandatory, not optional. The
