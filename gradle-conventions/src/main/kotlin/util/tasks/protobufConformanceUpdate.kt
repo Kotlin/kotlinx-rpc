@@ -6,20 +6,29 @@ package util.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileTree
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.the
+import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import util.other.libs
 import java.io.File
@@ -67,6 +76,11 @@ private fun Project.conformanceNpmDir(): File =
 private fun Project.conformanceEjectedProtosDir(): File =
     layout.buildDirectory.get().dir("conformance-protos").asFile
 
+@DisableCachingByDefault(
+    because = "Writes machine-specific absolute paths (conformance binary, build/, test source dir) " +
+        "into a generated Kotlin source file; caching would either leak host paths across workers " +
+        "or resolve to non-existent paths after restore."
+)
 abstract class ConformanceExecutablePathWriter : DefaultTask() {
     @get:Input
     abstract val outputDir: Property<File>
@@ -107,14 +121,97 @@ abstract class ConformanceExecutablePathWriter : DefaultTask() {
     }
 }
 
-abstract class GenerateConformanceFileDescriptorSet : Exec() {
+/**
+ * Installs a pinned version of the `protobuf-conformance` npm package into [installDir].
+ *
+ * Cacheable because [conformanceVersion] is pinned against the `protobuf` version from the
+ * catalog; in practice that yields a stable `node_modules/` tree for this package (transitive
+ * deps are not lockfile-pinned under `--no-save`, but the conformance package's dep surface is
+ * small and stable enough for caching to be safe). The full [installDir] is declared as the
+ * output so that cache restore produces a working `node_modules/` (including the `.bin/` entry
+ * points consumed by downstream tasks).
+ *
+ * [Exec.workingDir] is synced from [installDir] in [exec] so the cache key and the exec working
+ * directory cannot drift.
+ */
+@CacheableTask
+abstract class NpmInstallConformanceTask : Exec() {
+    @get:Input
+    abstract val conformanceVersion: Property<String>
+
+    @get:OutputDirectory
+    abstract val installDir: DirectoryProperty
+
+    @TaskAction
+    override fun exec() {
+        val dir = installDir.get().asFile
+        dir.mkdirs()
+        workingDir = dir
+        super.exec()
+    }
+}
+
+/**
+ * Runs the mock conformance client against the conformance test runner and captures the
+ * generated failure lists under [outputDir].
+ *
+ * Declared inputs:
+ * - [mockClientJar] — the compiled mock client JAR (content-based),
+ * - [generatedProtoSources] — Buf-generated sources consumed by the client (name-based),
+ * - [conformanceRunnerBin] — the pinned conformance runner binary (content-based),
+ * - inherited `classpath` — `@Classpath` on [JavaExec].
+ *
+ * ### Cross-machine caching limitation
+ *
+ * This task is `@CacheableTask` so local incremental builds and fresh checkouts on the same
+ * host get cache hits. Cross-machine cache hits are not achievable in practice: [classpath]
+ * transitively includes the compiled output of `executable-paths.kt`, which embeds
+ * machine-absolute paths from [ConformanceExecutablePathWriter]. The content-based
+ * `@Classpath` fingerprint therefore differs between hosts. Resolving that would require
+ * redesigning the runtime path lookup and is explicitly out of scope for KRPC-596.
+ */
+@CacheableTask
+abstract class GenerateConformanceTestsTask : JavaExec() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val mockClientJar: RegularFileProperty
+
+    // Name-only because the files come from a flat ListProperty<File> with no declared root —
+    // RELATIVE would degrade to content-only anyway. Name + content is the meaningful key.
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract val generatedProtoSources: ConfigurableFileCollection
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val conformanceRunnerBin: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    override fun exec() {
+        args = listOf(mockClientJar.get().asFile.absolutePath)
+        super.exec()
+    }
+}
+
+@CacheableTask
+abstract class GenerateConformanceFileDescriptorSet : Exec() {
+    // Flat ListProperty<File> with no declared root — NAME_ONLY is the honest annotation:
+    // RELATIVE would degrade to content-only here anyway. protoc's FileDescriptorSet output
+    // only references the proto file paths as stripped by --proto_path, which the task
+    // derives from the files' common prefix, so name + content is the meaningful cache key.
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
     abstract val wktFilesCollection: ListProperty<File>
 
     @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
     abstract val conformanceFilesCollection: ListProperty<File>
 
     @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
     abstract val bin: Property<File>
 
     @get:OutputFile
@@ -195,19 +292,23 @@ fun Project.setupProtobufConformanceResources() {
     val conformanceVersion = libs.versions.protobuf.get().substringAfter(".")
     val npmDir = conformanceNpmDir()
     val ejectedProtosDir = conformanceEjectedProtosDir()
-    val conformanceRunnerBin = File(npmDir, "node_modules/.bin/conformance_test_runner")
-    val conformanceProtoEjectBin = File(npmDir, "node_modules/.bin/conformance_proto_eject")
+    // Invoke the `.cjs` entry points directly rather than the `node_modules/.bin/…` symlinks.
+    // Gradle's build cache dereferences symlinks on store and restores them as regular file
+    // copies, which breaks node's require-resolution relative to the symlink location. Using
+    // the real files keeps the dep graph intact across cache restore.
+    val conformanceRunnerBin =
+        File(npmDir, "node_modules/protobuf-conformance/conformance_test_runner.cjs")
+    val conformanceProtoEjectBin =
+        File(npmDir, "node_modules/protobuf-conformance/conformance_proto_eject.cjs")
 
-    val npmInstallConformance = tasks.register<Exec>(NPM_INSTALL_CONFORMANCE_TASK) {
-        inputs.property("conformanceVersion", conformanceVersion)
-        outputs.dir(File(npmDir, "node_modules/protobuf-conformance"))
+    val npmInstallConformance = tasks.register<NpmInstallConformanceTask>(NPM_INSTALL_CONFORMANCE_TASK) {
+        this.conformanceVersion.set(conformanceVersion)
+        // The whole npmDir is the authoritative output — node_modules/ (including the transitive
+        // dep graph) is produced by `npm install` and nothing else. Declaring only the
+        // protobuf-conformance subdir would leave transitive deps out of any cache restore.
+        installDir.set(npmDir)
 
-        workingDir = npmDir
         commandLine("npm", "install", "--no-save", "protobuf-conformance@$conformanceVersion.0")
-
-        doFirst {
-            npmDir.mkdirs()
-        }
     }
 
     val ejectConformanceProtos = tasks.register<Exec>(EJECT_CONFORMANCE_PROTOS_TASK) {
