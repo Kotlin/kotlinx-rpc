@@ -22,7 +22,7 @@ import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import javax.inject.Inject
@@ -105,8 +105,13 @@ public abstract class BufGenerateTask @Inject internal constructor(
      * Generated source directories by plugin name.
      *
      * Can be used in [SourceDirectorySet.srcDir] or similar `srcDir` functions from other source set directories.
+     *
+     * Marked [Internal] because the entries are subdirectories of [outputDirectory], which is already tracked as
+     * an [OutputDirectory]. Declaring both would make Gradle flag overlapping outputs and refuse to cache this
+     * `@CacheableTask`. Consumers that pass this provider into `srcDir(Provider)` still get a task dependency
+     * because it is derived from the task's [TaskProvider] via `map`, independent of this annotation.
      */
-    @get:OutputDirectories
+    @get:Internal
     public val outputSourceDirectories: Provider<List<File>> = pluginNames.map { plugins ->
         val out = outputDirectory.get()
         plugins.map { out.resolve(it) }
