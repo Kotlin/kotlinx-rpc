@@ -51,18 +51,25 @@ jobs:
           fi
 
       - name: Set commit status
-        if: steps.verify-bot.outputs.skip == 'false'
         run: |
           REPO="${{ github.repository }}"
           PR_SHA="${{ github.event.pull_request.head.sha }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
+          if [ "${{ steps.verify-bot.outputs.skip }}" == "true" ]; then
+            STATE="success"
+            DESCRIPTION="Skipped (not a bot PR)"
+          else
+            STATE="${{ steps.validate.outputs.state }}"
+            DESCRIPTION="${{ steps.validate.outputs.description }}"
+          fi
+
           gh api --method POST "repos/$REPO/statuses/$PR_SHA" \
-            --field state="${{ steps.validate.outputs.state }}" \
+            --field state="$STATE" \
             --field context="$STATUS_CONTEXT" \
-            --field description="${{ steps.validate.outputs.description }}" \
+            --field description="$DESCRIPTION" \
             --field target_url="https://github.com/$REPO/pull/$PR_NUMBER" > /dev/null
 
-          if [ "${{ steps.validate.outputs.state }}" != "success" ]; then
+          if [ "$STATE" != "success" ]; then
             exit 1
           fi
