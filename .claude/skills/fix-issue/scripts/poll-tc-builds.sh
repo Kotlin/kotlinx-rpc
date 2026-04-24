@@ -173,12 +173,15 @@ echo ""
 
 if [ "$HAS_FAILURE" = true ]; then
   echo "RESULT: FAILURE"
+  echo "__POLL_RESULT__ exit=1 status=FAILURE builds=$NUM_BUILDS"
   exit 1
 elif [ "$HAS_TIMEOUT" = true ]; then
   echo "RESULT: TIMEOUT"
+  echo "__POLL_RESULT__ exit=2 status=TIMEOUT builds=$NUM_BUILDS"
   exit 2
 else
   echo "RESULT: SUCCESS"
   echo "All builds passed."
+  echo "__POLL_RESULT__ exit=0 status=SUCCESS builds=$NUM_BUILDS"
   exit 0
 fi

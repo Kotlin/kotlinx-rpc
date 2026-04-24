@@ -9,127 +9,110 @@ description: >
 
 # kotlinx-rpc Commit Message Style
 
-This project follows specific commit message conventions documented in CONTRIBUTING.md
-and reinforced by years of project history. The goal is clear, scannable git history
-that tells you what changed and where, at a glance.
+Every commit message is a **single line** that starts with a YouTrack issue ID.
+No module prefixes, no parenthesized ticket references, no bodies.
 
-## Subject Line Rules
+The format is enforced for bot-authored PRs by
+`.github/workflows/bot-pr-title.yml`, which rejects any PR title that does not
+match `^KRPC-[0-9]+: .+`. Squash-merge makes the PR title the commit subject,
+so the same pattern applies to commits.
 
-1. **English only**
-2. **Imperative mood, present tense** — "Fix" not "Fixed", "Add" not "Added", "Update" not "Updated"
-3. **No period** at the end of the subject line
-4. **Keep under ~72 characters** (GitHub truncates beyond this)
+## Format
 
-## Module Prefix
-
-When a change is scoped to a specific module or subsystem, prefix the subject with the
-module name and a colon. This is the most distinctive convention in this project — it
-makes `git log --oneline` scannable by area.
-
-Use **lowercase** for the prefix. Common prefixes from the project history:
-
-| Prefix | Scope |
-|---|---|
-| `grpc:` | gRPC protocol modules |
-| `pb:` | Protobuf modules |
-| `protoc-gen:` | Protobuf code generator |
-| `compiler-plugin:` | Kotlin compiler plugin |
-
-After the prefix, capitalize the first word:
+```
+KRPC-<number>: <Imperative verb> <what changed> (#GH-issue if exists)
+```
 
 **Example 1:**
-`pb: Add support for extensions`
+`KRPC-586: Release grpc_call deterministically in NativeClientCall`
 
 **Example 2:**
-`grpc: Fix retry behavior for client RPC calls`
+`KRPC-572: Enable local Gradle build cache alongside remote Develocity cache`
 
 **Example 3:**
-`compiler-plugin: Refactor annotation creation in ProtoDescriptorGenerator`
+`KRPC-252: Support type resolution in comments for protoc-gen`
 
-If the change spans multiple modules or is project-wide, omit the prefix:
+**Example 4 (with GH-issue cross-reference):**
+`KRPC-245: Strip common enum value prefixes (#12345)`
 
-**Example 4:**
-`Bump version to 0.11.0-SNAPSHOT`
+## Rules
 
-**Example 5:**
-`Update to Gradle 9.4`
+1. **Start with the YouTrack ID** as `KRPC-NNN:` — colon, then a single space.
+2. **English only.**
+3. **Imperative mood, present tense** — "Fix" not "Fixed", "Add" not "Added".
+4. **Capitalize the first word** after the colon.
+5. **No trailing period.**
+6. **Keep under ~72 characters** so it stays readable in `git log --oneline`
+   and on GitHub.
+7. **No body, ever.** Everything a reviewer needs goes on the subject line.
+   Longer context belongs in the YouTrack ticket or the PR description —
+   never in the commit body. When invoking `git commit`, pass a single `-m`
+   with one line; do not use `-m` twice and do not use a HEREDOC that produces
+   multiple paragraphs.
 
-## YouTrack Issue References
+## GitHub issue cross-references
 
-When a commit addresses a YouTrack issue, include the ticket ID (format: `KRPC-NNN`).
-Two accepted placements:
+Some YouTrack tickets originate from a GitHub issue. When the YT ticket
+links to an original GH issue, append that issue number in parentheses at
+the end of the subject so both trackers are reachable from the git history.
+Check the YouTrack ticket for a linked GH issue before committing; if one
+exists, add it. This is **not** the PR number — squash-merge appends that
+separately, and a linked GH issue and the merge PR are different numbers.
 
-- **As a prefix** (before the description): `KRPC-522 Build is broken for AGP projects`
-- **In parentheses** (after the description): `pb: Use shared defaults for generated protobuf messages (KRPC-520)`
+**Example:** `KRPC-245: Strip common enum value prefixes (#12345)`
 
-Both styles are used in the project. When a module prefix is present, the parenthesized
-style reads better. When there's no module prefix, leading with the ticket ID is fine.
+If there is no linked GH issue, omit the suffix entirely.
 
-### GitHub Issue Cross-References
+## No module prefixes
 
-Some YouTrack tickets originate from GitHub issues. When the YT ticket references an
-original GitHub issue, include the GH issue number in the commit message too so both
-trackers are linked from the git history. Place it alongside the KRPC ticket:
+Older commits used `grpc:`, `pb:`, `compiler-plugin:` prefixes, sometimes with
+the ticket tacked on in parentheses at the end. Do not copy that style. The
+ticket ID comes first; the subject text itself already names the area being
+changed (e.g. "Release grpc_call deterministically in NativeClientCall" makes
+it obvious this touches gRPC native-client code).
 
-**Example:** `KRPC-522 Fix AGP project builds (#636)`
-**Example:** `pb: Fix size discrepancy (KRPC-520, #566)`
+## No YouTrack ticket yet?
 
-Check the YouTrack ticket for a GitHub issue link before committing — if one exists, add it.
+If a change needs committing but no YouTrack issue exists, create one first.
+The workflow check has no fallback — there is no prefix-less style for
+committed work, and release/version-bump commits are not an exception. Use the
+`file-youtrack-issue` skill to create a ticket, then commit against it.
 
-## PR Numbers
+**Exception — user interaction.** If the user explicitly asks to commit,
+and there is no ticket in the conversation context, do so without a pushback. 
+All other rules still apply (single line, no body, imperative
+mood, no trailing period, ~72 chars).
 
-GitHub automatically appends `(#NNN)` when squash-merging. Do NOT manually add PR
-numbers to commit messages — GitHub handles this.
+This only applies when a user asks to commit, 
+not when you have decided to commit based on other rules/skills.
 
-## Commit Body
+## PR numbers
 
-Most commits in this project have **no body** — a clear subject line is sufficient. Add
-a body only when the change genuinely needs explanation beyond what the subject says:
+GitHub automatically appends `(#NNN)` when squash-merging. Do not add PR
+numbers to commit subjects by hand.
 
-- Multi-part changes that benefit from a bullet list
-- Non-obvious motivation or tradeoffs
-- Breaking changes
+## Generated files
 
-When writing a body, separate it from the subject with a blank line. Bullet lists with
-`-` are preferred for multi-item descriptions.
+Never hand-edit generated files. Always run the appropriate regeneration task
+and commit the output. Keep generated-file changes in a **separate commit**
+from hand-authored code so reviewers can distinguish mechanical output from
+real edits. Both commits still follow the `KRPC-NNN:` subject rule.
 
-**Example with body:**
-```
-Updated grpc-kmp-app:
-- Added ktor server variant
-- Added Android client
-- Added way for clients to distinguish between servers (rest button)
-```
-
-## Release and Version Commits
-
-These follow a simple pattern:
-- `Release X.Y.Z` or `Release X.Y.Z-qualifier (#NNN)`
-- `Bump version to X.Y.Z-SNAPSHOT`
-- `CHANGELOG.md` (for changelog-only updates)
-
-## Generated Files
-
-**Never hand-edit generated files.** Always run the appropriate regeneration task and
-commit the output.
-
-Generated file changes (ABI dumps, WKT, conformance code, platform table, etc.) should
-be committed **separately** from hand-authored code so reviewers can distinguish human
-changes from mechanical regeneration output.
-
-## Quick Reference
+## Quick reference
 
 ```
-<module>: <Imperative verb> <what changed> (<KRPC-NNN>)
-│         │                                │
-│         │                                └─ Optional: YouTrack ticket
-│         └─ Capitalized, imperative mood, no period
-└─ Optional: lowercase module prefix with colon
+KRPC-<number>: <Imperative verb> <what changed> (#GH-issue if exists)
+│              │                                │
+│              │                                └─ Optional: linked GH issue from the YT ticket
+│              └─ Capitalized, imperative mood, no period, single line
+└─ Required YouTrack ticket, followed by ": "
 ```
 
-Good: `grpc: Add timeout support`
-Good: `KRPC-192 grpc-pb: Implement message recursion limit`
-Good: `Fix compiler plugin for 2.1.* versions`
-Bad:  `fixed bug` (past tense, vague)
-Bad:  `grpc: added timeout support.` (past tense, trailing period)
-Bad:  `FEAT: Add timeout support for gRPC` (not a project convention — no conventional commits)
+Good: `KRPC-583: Reduce configuration phase overhead from settings plugins`
+Good: `KRPC-574: Make BufGenerateTask cacheable`
+Good: `KRPC-576: Fix native test process crash on linuxX64 in negative test paths`
+
+Bad:  `grpc: Fix retry behavior (KRPC-586)` — module prefix, ticket at the end
+Bad:  `KRPC-123: fixed bug` — past tense, lowercase first word
+Bad:  `KRPC-123: Add timeout support.` — trailing period
+Bad:  Any multi-line message — bodies are not used on this project
