@@ -3,6 +3,21 @@
 Situational guidance for analyzing tickets. Read the relevant sections when
 they apply — neither fires on every issue.
 
+## When a "Bug" ticket is really a usability problem
+
+Not everything filed as a bug is a bug in the `superpowers:systematic-debugging`
+sense. Usability problems — confusing behavior, poor defaults, rough
+ergonomics — often have an **obvious** root cause (the default is wrong; the
+error message is misleading; the API nudges users into a footgun). There's no
+"trace backward from incorrect state" to do; the incorrect state is visible in
+the design, not hidden in a runtime bug.
+
+Treat these like tasks: document the observation and proposed change in the
+triage comment, follow the Standard path in B.2, skip the reproducer. You only
+need `systematic-debugging` when you don't yet know **why** the code behaves as
+it does. If you already know why and only disagree with the choice, that's a
+design change, not a debugging session.
+
 ## Search for similar issues — MANDATORY
 
 Before root cause or planning, check whether this problem has been seen before
