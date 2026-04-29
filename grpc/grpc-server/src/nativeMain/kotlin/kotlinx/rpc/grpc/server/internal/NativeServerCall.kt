@@ -58,6 +58,10 @@ import kotlin.concurrent.Volatile
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
+// Bit 30 of [NativeServerCall.state]; once set, no new reader claim is admitted and the next
+// path that observes `state == CLOSE_REQUESTED` finalises the call. KRPC-604.
+private const val CLOSE_REQUESTED = 1 shl 30
+
 internal class NativeServerCall<Request, Response>(
     // ownership is transferred to the call
     val raw: CPointer<grpc_call>,
@@ -94,7 +98,7 @@ internal class NativeServerCall<Request, Response>(
     // tracks whether GRPC_OP_SEND_STATUS_FROM_SERVER completed. This is purely a gate for
     // rejecting further application-issued batches (request/sendMessage/sendHeaders) after the
     // server has sent trailers — it is NOT the call-lifecycle "closed" gate. The latter is
-    // [callClosed], set under the inFlight-guarded CAS in [tryToCloseCall].
+    // the CLOSE_REQUESTED bit on [state], set by the [tryToCloseCall] CAS. KRPC-604.
     private var sentStatus = false
     // Analog of NativeClientCall.closeInfo. The client stores the full GrpcStatus+trailers it
     // needs to hand to onClose; the server only needs the `cancelled` flag to pick between
@@ -102,13 +106,21 @@ internal class NativeServerCall<Request, Response>(
     // not yet observed (either RECV_CLOSE_ON_SERVER completing OR initialize() failing to submit
     // that batch).
     private val closeInfo = atomic<Boolean?>(null)
-    // Analog of NativeClientCall.closed. Renamed `callClosed` to avoid shadowing the
-    // ServerCall.close(status, trailers) override method further below.
-    private val callClosed = atomic(false)
-    // in-flight batch counter. Every batch submission (runBatch, initialize's
-    // RECV_CLOSE_ON_SERVER) and every grpc_call_cancel_with_status call participates. When this
-    // drops to 0 and [closeInfo] is set, [tryToCloseCall] is safe to unref `raw`.
-    private val inFlight = atomic(0)
+
+    // Lock-free state machine for the call's lifetime claims. Replaces the read-then-CAS pair
+    // formed by the prior `inFlight: AtomicInt` + `callClosed: AtomicBoolean` whose SC schedule
+    // admitted a UAF window between runBatch and tryToCloseCall (mirror of the client-side
+    // crash; same fix applied for symmetry). KRPC-604.
+    //
+    // Encoding (32-bit signed):
+    //   bit 30 (CLOSE_REQUESTED) — once set, no new reader claim is admitted.
+    //   bits 0..29              — count of reader claims currently outstanding.
+    //
+    // A reader claim succeeds via CAS(N -> N+1) iff the bit is clear; the close path claims via
+    // CAS(N -> N | bit). [finishClose] runs at most once: by whichever of (a) the close path's
+    // CAS observing count == 0, or (b) the last reader's [endOp] post-decrement observing the
+    // word at exactly CLOSE_REQUESTED. Both paths gate the body via the rawGuard CAS.
+    private val state = atomic(0)
 
     // tracks whether the initial metadata has been sent.
     // this is used to determine if we have to send the initial metadata
@@ -151,8 +163,9 @@ internal class NativeServerCall<Request, Response>(
             data.recv_close_on_server.cancelled = cancelled.ptr
         }
         // beginOp BEFORE submitting so the unref in tryToCloseCall can't race the completion
-        // callback — same invariant runBatch enforces for later batches.
-        beginOp()
+        // callback — same invariant runBatch enforces for later batches. The claim is
+        // guaranteed at construction time (state == 0, bit clear).
+        check(beginOp()) { internalError("beginOp refused at construction") }
         val result = cq.runBatch(raw, op.ptr, 1u)
         if (result !is BatchResult.Submitted) {
             // we couldn't submit the initialization batch, so nothing can be done.
@@ -188,71 +201,93 @@ internal class NativeServerCall<Request, Response>(
     }
 
     /**
-     * Increments the [inFlight] counter by one. Must be called before starting a batch or any
-     * native operation that dereferences `raw` (e.g., `grpc_call_cancel_with_status`).
+     * Attempts a reader claim on [raw]. Returns `true` if the claim succeeded — caller must
+     * pair it with exactly one [endOp]. Returns `false` if the call has already requested
+     * close; caller skips the protected operation.
      */
-    private fun beginOp() {
-        inFlight.incrementAndGet()
-    }
-
-    /**
-     * Decrements the [inFlight] counter by one. If the counter reaches 0 and [closeInfo] is set,
-     * invokes [tryToCloseCall] to finalize the call.
-     */
-    private fun endOp() {
-        if (inFlight.decrementAndGet() == 0) {
-            tryToCloseCall()
+    private fun beginOp(): Boolean {
+        while (true) {
+            val cur = state.value
+            if (cur and CLOSE_REQUESTED != 0) return false
+            if (state.compareAndSet(cur, cur + 1)) return true
         }
     }
 
     /**
-     * If the call has reached its terminal signal ([closeInfo] non-null) and no batches are in
-     * flight ([inFlight] == 0), CAS-claim the terminal transition and run the listener
-     * onCancel/onComplete callback followed by the deterministic grpc_call_unref. Idempotent —
-     * `endOp` may invoke it multiple times; only the first winner of the [callClosed] CAS does
-     * any work.
+     * Releases a reader claim. If this drops the count to 0 (and close has not yet been
+     * requested), invokes [tryToCloseCall] to drive close when [closeInfo] is set; if the
+     * decrement transitions the word to exactly CLOSE_REQUESTED, we are the last reader after
+     * the close-path winner set the bit, so finalise directly.
+     */
+    private fun endOp() {
+        val v = state.decrementAndGet()
+        if (v == 0) {
+            tryToCloseCall()
+        } else if (v == CLOSE_REQUESTED) {
+            // closeInfo was non-null when the close-path CAS set the bit and is monotonic, so
+            // it is guaranteed non-null here.
+            closeInfo.value?.let { finishClose(it) }
+        }
+    }
+
+    /**
+     * Drives the close transition. Single-CAS reader/destroyer linearisation closes the
+     * UAF window that the prior `inFlight + callClosed` two-atomic pattern admitted. KRPC-604.
+     *
+     * - If [closeInfo] is not yet set (RECV_CLOSE_ON_SERVER still in progress), this does
+     *   nothing.
+     * - Otherwise CAS-set the close-requested bit. If the count component was 0 at the CAS we
+     *   are also the finaliser and run [finishClose] immediately. Otherwise the last reader's
+     *   [endOp] runs [finishClose] when the word transitions to exactly CLOSE_REQUESTED.
      */
     private fun tryToCloseCall() {
         val wasCancelled = closeInfo.value ?: return
-        // The `inFlight.value == 0` read and the `callClosed` CAS below are intentionally not
-        // atomic together. A concurrent `beginOp` can increment inFlight after we read it; the
-        // runBatch / cancel post-beginOp re-read of `callClosed` is the ordering barrier that
-        // closes that window. Under SC atomics (atomicfu on K/N), if our CAS on `callClosed` is
-        // sequenced after another thread's `inFlight.incrementAndGet`, that thread's following
-        // `callClosed.value` load will observe `true` and bail before touching `raw`.
-        if (inFlight.value == 0 && callClosed.compareAndSet(expect = false, update = true)) {
-            // Dispatch the terminal listener callback under `callbackMutex` so it cannot
-            // interleave with a still-draining onMessage/onHalfClose/onReady callback.
-            // Intentionally no safeUserCode wrapper (unlike NativeClientCall.tryToCloseCall): the
-            // server is already at terminal state and has no cancel path to recurse into. A
-            // thrown listener exception escapes on the CQ thread; the try/finally still runs
-            // grpc_call_unref so we don't leak the call ref.
-            try {
-                if (wasCancelled) {
-                    this.cancelled = true
-                    callbackMutex.withLock {
-                        listener.onCancel()
-                    }
-                } else {
-                    callbackMutex.withLock {
-                        listener.onComplete()
-                    }
+        while (true) {
+            val cur = state.value
+            if (cur and CLOSE_REQUESTED != 0) return
+            if (state.compareAndSet(cur, cur or CLOSE_REQUESTED)) {
+                if (cur == 0) finishClose(wasCancelled)
+                return
+            }
+        }
+    }
+
+    /**
+     * Runs the terminal listener callback and releases `raw`. Idempotent via the rawGuard CAS:
+     * the close-path winner that observed `cur == 0` and the last reader's [endOp] post-
+     * decrement can both reach this — only the first wins the CAS and runs the body.
+     *
+     * Listener dispatch happens under [callbackMutex] so it cannot interleave with a still-
+     * draining onMessage/onHalfClose/onReady callback. No safeUserCode wrapper: the server is
+     * already at terminal state and has no cancel path to recurse into. A thrown listener
+     * exception escapes on the CQ thread; the try/finally still runs grpc_call_unref so we do
+     * not leak the call ref.
+     */
+    private fun finishClose(wasCancelled: Boolean) {
+        if (!rawGuard.released.compareAndSet(expect = false, update = true)) return
+        try {
+            if (wasCancelled) {
+                this.cancelled = true
+                callbackMutex.withLock {
+                    listener.onCancel()
                 }
-            } finally {
-                if (rawGuard.released.compareAndSet(expect = false, update = true)) {
-                    grpc_call_unref(raw)
+            } else {
+                callbackMutex.withLock {
+                    listener.onComplete()
                 }
             }
+        } finally {
+            grpc_call_unref(raw)
         }
     }
 
     fun cancel(status: grpc_status_code, message: String) {
         cancelled = true
-        // Hold inFlight while dereferencing `raw` so tryToCloseCall can't fire grpc_call_unref
-        // concurrently. Bail if the call has already finalized — mirrors NativeClientCall.
-        beginOp()
+        // Hold a reader claim while dereferencing `raw` so tryToCloseCall cannot fire
+        // grpc_call_unref concurrently. If the claim is refused the call has already finalised
+        // — cancel is a no-op. Mirrors NativeClientCall.cancelInternal.
+        if (!beginOp()) return
         try {
-            if (callClosed.value) return
             grpc_call_cancel_with_status(raw, status, message, null)
         } finally {
             endOp()
@@ -281,21 +316,14 @@ internal class NativeServerCall<Request, Response>(
         cleanup: () -> Unit = {},
         onSuccess: () -> Unit = {},
     ) {
-        // Fast-path bail if the call has terminated or no more application batches are allowed.
-        if (callClosed.value || sentStatus || cancelled) return cleanup()
+        // Application-level gates: once we have sent the trailers or local cancellation has
+        // been observed, no further application batches are allowed.
+        if (sentStatus || cancelled) return cleanup()
 
-        // Pre-book the batch so tryToCloseCall cannot fire before we either reach a CQ submission
-        // or bail out. Every exit below must call endOp exactly once.
-        beginOp()
-
-        // Re-check after incrementing inFlight: tryToCloseCall may have fired between the
-        // fast-path check above and beginOp. Once inFlight > 0, tryToCloseCall is blocked on the
-        // inFlight.value == 0 gate, so if callClosed is still false here it stays false (and
-        // `raw` stays referenced) until we endOp.
-        if (callClosed.value) {
-            endOp()
-            return cleanup()
-        }
+        // Single-CAS reader claim atomically (a) checks the call has not requested close and
+        // (b) increments the in-flight count. No read-then-CAS pair → no SC-reorder window in
+        // which `cq.runBatch` could touch a freed call. KRPC-604.
+        if (!beginOp()) return cleanup()
 
         when (val result = cq.runBatch(raw, ops, nOps)) {
             is BatchResult.Submitted -> {
