@@ -39,7 +39,12 @@ import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_batch_method_allocato
 import kotlinx.rpc.grpc.internal.cinterop.kgrpc_server_set_register_method_allocator
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.native.ref.createCleaner
 import kotlin.time.Duration
+
+// Bit 30 of [NativeServer.rawState]; once set, no new reader claim is admitted and the next
+// transition to count == 0 finalises [grpc_server_destroy]. KRPC-603.
+private const val DESTROY_REQUESTED = 1 shl 30
 
 internal class NativeServer(
     requestedPort: Int,
@@ -58,6 +63,40 @@ internal class NativeServer(
 
     val raw: CPointer<grpc_server> = grpc_server_create(null, null)
         ?: error("Failed to create server")
+
+    // Lock-free state machine guarding the application-owned grpc_server handle against both
+    // double-free (between [dispose] and the GC cleaner below) and use-after-free (between
+    // [shutdownNow]'s [grpc_server_cancel_all_calls] sites and [dispose]'s [grpc_server_destroy]).
+    // KRPC-603.
+    //
+    // Encoding (32-bit signed):
+    //   bit 30 (DESTROY_REQUESTED) — once set, no new reader claim is admitted.
+    //   bits 0..29                — count of reader claims currently outstanding.
+    //
+    // Reader entry [useRawAlive] and destroyer entry [requestRawDestroy] both linearise via CAS
+    // on this single word: a reader claims by CAS(N -> N+1) iff the bit is clear, the destroyer
+    // claims by CAS(N -> N | bit). [grpc_server_destroy] is invoked exactly once, by whichever
+    // of (a) the destroyer's CAS that observed count == 0, or (b) the reader release whose
+    // [decrementAndGet] returns exactly DESTROY_REQUESTED. The two are mutually exclusive: a
+    // destroyer that sees a non-zero count delegates to the last reader, and once the bit is
+    // set no new reader can claim. There is no read-then-CAS pair, so no SC-reorder window in
+    // which a claim could be granted across the destroyer's transition.
+    private val rawState = atomic(0)
+
+    @Suppress("unused")
+    private val rawCleaner = createCleaner(Pair(raw, rawState)) { (ptr, state) ->
+        // Cleaner runs only after [NativeServer] is unreachable, so no live thread can hold a
+        // reader claim. The CAS converges with any racing [requestRawDestroy] still in flight on
+        // the CQ thread that just released the last live reference.
+        while (true) {
+            val cur = state.value
+            if (cur and DESTROY_REQUESTED != 0) return@createCleaner
+            if (state.compareAndSet(cur, cur or DESTROY_REQUESTED)) {
+                grpc_server_destroy(ptr)
+                return@createCleaner
+            }
+        }
+    }
 
     // holds all stable references to MethodAllocationCtx objects.
     // the stable references must eventually be disposed.
@@ -89,8 +128,10 @@ internal class NativeServer(
     }
 
     private fun dispose() {
-        // disposed with completion of shutdown
-        grpc_server_destroy(raw)
+        // Lock-free destroy: set the destroy-requested bit. If no reader claim is outstanding,
+        // we run [grpc_server_destroy] immediately; otherwise the last reader's release runs it.
+        // Idempotent against the GC cleaner and against re-entry. KRPC-603.
+        requestRawDestroy()
         // Release the application-owned +1 ref on the server credentials before rt.close() can
         // trigger grpc_shutdown(). grpc-core keeps its own internal ref obtained via
         // grpc_server_add_http2_port, so releasing the app ref here does not invalidate the
@@ -128,7 +169,10 @@ internal class NativeServer(
             // ahead of the notify delivery — a grpc-core precondition violation.
             // requestForceShutdown is flag-only, so it does not initiate grpc_completion_queue_shutdown.
             cq.requestForceShutdown()
-            if (!isTerminatedInternal.isCompleted) {
+            // Claim [raw] for the duration of [grpc_server_cancel_all_calls]. The claim atomically
+            // prevents [dispose]'s [grpc_server_destroy] from interleaving; if [dispose] has
+            // already requested destruction, the claim is refused and the call is skipped. KRPC-603.
+            useRawAlive {
                 grpc_server_cancel_all_calls(raw)
             }
             return this
@@ -142,8 +186,53 @@ internal class NativeServer(
                 isTerminatedInternal.complete(Unit)
             }
         })
-        grpc_server_cancel_all_calls(raw)
+        // Symmetric with the CAS-loser branch: even on the winner path, the CQ pump can deliver
+        // the notify and drive [dispose] to completion before this line runs (when no calls are
+        // in flight). The reader claim closes that window. KRPC-603.
+        useRawAlive {
+            grpc_server_cancel_all_calls(raw)
+        }
         return this
+    }
+
+    /**
+     * Acquires a reader claim on [raw] for the duration of [block], or skips [block] if the raw
+     * handle has already been (or is about to be) destroyed. KRPC-603.
+     */
+    private inline fun useRawAlive(block: () -> Unit) {
+        while (true) {
+            val cur = rawState.value
+            if (cur and DESTROY_REQUESTED != 0) return
+            if (rawState.compareAndSet(cur, cur + 1)) {
+                try {
+                    block()
+                } finally {
+                    if (rawState.decrementAndGet() == DESTROY_REQUESTED) {
+                        // Last reader after destroy was requested: we run the finaliser.
+                        grpc_server_destroy(raw)
+                    }
+                }
+                return
+            }
+        }
+    }
+
+    /**
+     * Sets the destroy-requested bit on [rawState]. Calls [grpc_server_destroy] immediately if
+     * no reader claim is outstanding; otherwise the last reader's release in [useRawAlive] will.
+     * Idempotent. KRPC-603.
+     */
+    private fun requestRawDestroy() {
+        while (true) {
+            val cur = rawState.value
+            if (cur and DESTROY_REQUESTED != 0) return
+            if (rawState.compareAndSet(cur, cur or DESTROY_REQUESTED)) {
+                if (cur == 0) {
+                    grpc_server_destroy(raw)
+                }
+                return
+            }
+        }
     }
 
     override suspend fun awaitTermination(duration: Duration): PlatformServer {
