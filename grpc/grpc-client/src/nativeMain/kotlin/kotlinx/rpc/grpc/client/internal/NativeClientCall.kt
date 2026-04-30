@@ -126,21 +126,50 @@ internal class NativeClientCall<Request, Response>(
 
     init {
         // cancel the call if the job is canceled.
-        callJob.invokeOnCompletion {
-            when (it) {
+        callJob.invokeOnCompletion { cause ->
+            // Synthesise the close status that mirrors the one we just sent to grpc-core, so we
+            // can deliver onClose to the listener if we end up winning the rawGuard CAS below
+            // before the natural finishClose path observes RECV_STATUS_ON_CLIENT. KRPC-597.
+            val cancelCloseInfo: Pair<GrpcStatus, GrpcMetadata>? = when (cause) {
                 is CancellationException -> {
                     cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdownNow invoked")
+                    Pair(
+                        GrpcStatus(GrpcStatusCode.UNAVAILABLE, cause.message ?: "Channel shutdownNow invoked", cause),
+                        GrpcMetadata(),
+                    )
                 }
 
                 is Throwable -> {
-                    cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Call failed: ${it.message}")
+                    cancelInternal(grpc_status_code.GRPC_STATUS_INTERNAL, "Call failed: ${cause.message}")
+                    Pair(
+                        GrpcStatus(GrpcStatusCode.INTERNAL, "Call failed: ${cause.message}", cause),
+                        GrpcMetadata(),
+                    )
                 }
+
+                else -> null
             }
             // Fallback deterministic release for calls that never reached tryToCloseCall — e.g., a
             // client interceptor threw before start() submitted any batch, so no
             // RECV_STATUS_ON_CLIENT ever completes and closeInfo stays null. Without this, the
             // grpc_call is owned past grpc_shutdown(). rawGuard blocks double-unref. KRPC-586.
+            //
+            // Also drives onClose for the in-flight cancel race: shutdownNow() cancels callJob
+            // synchronously, and the eager unref below used to win the rawGuard CAS before the
+            // CQ delivered RECV_STATUS_ON_CLIENT — so finishClose's later CAS would lose and
+            // listener.onClose was never invoked. We now mirror finishClose's listener
+            // notification on this path, using closeInfo if grpc-core has already filled it,
+            // else the synthetic status from `cancelCloseInfo`. Idempotency is preserved by the
+            // rawGuard CAS itself: only one of (this fallback, finishClose) can win. KRPC-597.
             if (rawGuard.released.compareAndSet(expect = false, update = true)) {
+                val info = closeInfo.value ?: cancelCloseInfo
+                if (info != null) {
+                    listener?.let { lst ->
+                        safeUserCode("Failed to call onClose.") {
+                            lst.onClose(info.first, info.second)
+                        }
+                    }
+                }
                 grpc_call_unref(raw)
             }
             releaseCallCredentialsIfNeeded()

@@ -192,26 +192,18 @@ failures=0
 successes=0
 crash_signatures=()
 
-# Tests excluded from stress runs:
-#   GrpcCoreClientTest.shutdownNowInMiddleOfCall -- pre-existing 10s timeout on
-#     macosArm64 (and likely linuxX64); fails identically under
-#     `:grpc:grpc-core:<target>Test`. Including it would consume 75% of each
-#     iteration's runtime on a known-broken test and push the 400-iter stress
-#     run past the 20-minute budget.
-KTEST_NEGATIVE_FILTER="*shutdownNowInMiddleOfCall*"
-
 run_kexe() {
     local out="$1"
     case "$(uname -s)" in
         Linux)
             LD_PRELOAD="$ROOT/$SHIM" \
-                "./$KEXE" "--ktest_negative_gradle_filter=$KTEST_NEGATIVE_FILTER" \
+                "./$KEXE" \
                 > "$out" 2>&1
             ;;
         Darwin)
             DYLD_INSERT_LIBRARIES="$ROOT/$SHIM" \
             DYLD_FORCE_FLAT_NAMESPACE=1 \
-                "./$KEXE" "--ktest_negative_gradle_filter=$KTEST_NEGATIVE_FILTER" \
+                "./$KEXE" \
                 > "$out" 2>&1
             ;;
     esac
