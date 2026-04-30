@@ -4,6 +4,7 @@
 
 import util.other.isPublicModule
 import util.other.libs
+import util.registerBuildCrashbtShimTask
 import util.setupPage
 import util.tasks.*
 import java.nio.file.Path
@@ -70,6 +71,7 @@ configureNpm()
 
 registerDumpPlatformTableTask()
 registerChangelogTask()
+registerBuildCrashbtShimTask()
 
 fun Project.forEachIncludedProject(action: (String, Path, Path) -> Unit) {
     val globalRootDir: String by extra

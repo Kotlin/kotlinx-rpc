@@ -1,128 +1,282 @@
 #!/usr/bin/env bash
-# Stress harness for the KRPC-597/604 native crash investigation.
+# Persistent stress harness for the :grpc:grpc-core native test suite (KRPC-597).
 #
-# Runs the canonical crashing gRPC native tests in a loop, counts process-exit
-# crashes and normal test failures, writes a crash-fraction metric to stdout
-# (final line is a bare number for the autoresearch verify pipeline to pick up).
+# Loops the K/N debug-test binary N times under the LD_PRELOAD/DYLD_INSERT_LIBRARIES
+# crashbt shim and counts process-exit signatures (SIGSEGV/SIGABRT/SIGBUS) vs normal
+# test failures vs successes. Per-run stdout+stderr lands in
+# autoresearch-runs/batch_<stamp>_<target>/run_NNN.log; the shim's backtrace +
+# memory map is interleaved into stderr on crash.
 #
 # Usage:
-#   scripts/stress-native-grpc.sh [RUNS] [TARGET]
-#     RUNS   — number of iterations (default: 10)
-#     TARGET — gradle task name (default: macosArm64Test)
+#   scripts/stress-native-grpc.sh [TARGET] [RUNS]
+#     TARGET — linuxX64 | macosX64 | macosArm64 (default: auto-detect from host)
+#     RUNS   — number of iterations (default: 400)
 #
-# Output:
-#   Human-readable progress to stderr; every stdout line is for the harness
-#   caller. The final stdout line is the crash-fraction (0.0 .. 1.0).
+# Pre-conditions: the test binary, crashbt shim, and grpc-test-server fixture
+# must already be built. From Gradle:
+#   ./gradlew :grpc:grpc-core:linkDebugTest<Target> \
+#             :buildCrashbtShim \
+#             :tests:grpc-test-server:installDist
+#
+# A subset of grpc-core native tests (RawClient*, GrpcCoreClient*) need the
+# grpc-test-server JVM fixture running on localhost:50051. The Gradle
+# `<target>Test` task starts it via `withBackgroundTask` (see
+# grpc-core/build.gradle.kts); when running the kexe directly we have to
+# launch+await+kill it ourselves -- this script does so.
+#
+# In TeamCity, the build config invokes those Gradle tasks before this script.
+# TC sets TEAMCITY_VERSION automatically, which switches the script into TC mode
+# (build statistics + crash signatures emitted as ##teamcity[...] messages).
+#
+# Exit code: 0 if zero crashes, 1 otherwise. Test failures (assertion mismatches)
+# are NOT counted as crashes — only process-exit signatures are.
 
 set -u
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
-RUNS="${1:-10}"
-TARGET="${2:-macosArm64Test}"
+# ---- args -----------------------------------------------------------------
 
-LOG_DIR="${ROOT}/autoresearch-runs"
+detect_target() {
+    case "$(uname -s)-$(uname -m)" in
+        Linux-x86_64)  echo linuxX64 ;;
+        Darwin-x86_64) echo macosX64 ;;
+        Darwin-arm64)  echo macosArm64 ;;
+        *)
+            echo "ERROR: unsupported host: $(uname -s) $(uname -m)" >&2
+            exit 2
+            ;;
+    esac
+}
+
+capitalise_target() {
+    case "$1" in
+        linuxX64)    echo LinuxX64 ;;
+        macosX64)    echo MacosX64 ;;
+        macosArm64)  echo MacosArm64 ;;
+    esac
+}
+
+TARGET="${1:-$(detect_target)}"
+RUNS="${2:-400}"
+
+case "$TARGET" in
+    linuxX64|macosX64|macosArm64) ;;
+    *)
+        echo "ERROR: unsupported target '$TARGET' (expected linuxX64 | macosX64 | macosArm64)" >&2
+        exit 2
+        ;;
+esac
+
+# ---- locate kexe + shim ---------------------------------------------------
+
+KEXE="grpc/grpc-core/build/bin/${TARGET}/debugTest/test.kexe"
+
+if [ ! -f "$KEXE" ]; then
+    echo "ERROR: $KEXE not found. Build it first:" >&2
+    echo "  ./gradlew :grpc:grpc-core:linkDebugTest$(capitalise_target "$TARGET")" >&2
+    exit 2
+fi
+
+case "$(uname -s)" in
+    Linux)  SHIM="build/crashbt/libcrashbt.so" ;;
+    Darwin) SHIM="build/crashbt/libcrashbt.dylib" ;;
+    *)
+        echo "ERROR: unsupported host OS for crashbt shim: $(uname -s)" >&2
+        exit 2
+        ;;
+esac
+
+if [ ! -f "$SHIM" ]; then
+    echo "ERROR: $SHIM not found. Build it first:" >&2
+    echo "  ./gradlew :buildCrashbtShim" >&2
+    exit 2
+fi
+
+# ---- grpc-test-server fixture --------------------------------------------
+
+TEST_SERVER_DIR="tests/grpc-test-server/build"
+TEST_SERVER_BIN="$TEST_SERVER_DIR/install/grpc-test-server/bin/grpc-test-server"
+
+if [ ! -x "$TEST_SERVER_BIN" ]; then
+    echo "ERROR: $TEST_SERVER_BIN not found. Build it first:" >&2
+    echo "  ./gradlew :tests:grpc-test-server:installDist" >&2
+    exit 2
+fi
+
+# ---- output dirs ----------------------------------------------------------
+
+LOG_DIR="$ROOT/autoresearch-runs"
 mkdir -p "$LOG_DIR"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-BATCH_DIR="${LOG_DIR}/batch_${STAMP}_${TARGET}"
+BATCH_DIR="$LOG_DIR/batch_${STAMP}_${TARGET}"
 mkdir -p "$BATCH_DIR"
 
-# Canonical tests implicated in KRPC-604 (linuxX64 process-exit crashes).
-# Each entry: fully-qualified test class. A --tests pattern joins them.
-TEST_CLASSES=(
-    "kotlinx.rpc.grpc.test.integration.ClientInterceptorTest"
-    "kotlinx.rpc.grpc.test.integration.GrpcTlsTest"
-    "kotlinx.rpc.grpc.test.integration.ServerInterceptorTest"
-    "kotlinx.rpc.grpc.test.integration.MetadataTest"
-    "kotlinx.rpc.grpc.test.integration.StreamingTest"
-    "kotlinx.rpc.grpc.test.integration.GrpcTimeoutTest"
-    "kotlinx.rpc.grpc.test.integration.GrpcEdgeCaseTest"
-)
-TEST_ARGS=()
-for t in "${TEST_CLASSES[@]}"; do
-    TEST_ARGS+=(--tests "$t")
+# ---- TC mode --------------------------------------------------------------
+
+IN_TC=0
+if [ -n "${TEAMCITY_VERSION:-}" ]; then
+    IN_TC=1
+fi
+
+tc_msg() {
+    if [ "$IN_TC" -eq 1 ]; then
+        echo "$1"
+    fi
+}
+
+# ---- loop ------------------------------------------------------------------
+
+echo "=== Native gRPC stress harness ===" >&2
+echo "Target:      $TARGET" >&2
+echo "Binary:      $KEXE" >&2
+echo "Shim:        $SHIM" >&2
+echo "Test server: $TEST_SERVER_BIN" >&2
+echo "Runs:        $RUNS" >&2
+echo "Batch dir:   $BATCH_DIR" >&2
+echo "TC mode:     $IN_TC" >&2
+echo >&2
+
+# ---- start grpc-test-server fixture ---------------------------------------
+# Mirrors the Gradle `withBackgroundTask` wiring in grpc-core/build.gradle.kts.
+# RawClient*/GrpcCoreClient* tests dial localhost:50051 and would fail without it.
+TEST_SERVER_LOG="$BATCH_DIR/test-server.log"
+TEST_SERVER_PID=""
+
+cleanup_test_server() {
+    if [ -n "$TEST_SERVER_PID" ] && kill -0 "$TEST_SERVER_PID" 2>/dev/null; then
+        echo "Stopping grpc-test-server (pid $TEST_SERVER_PID)..." >&2
+        kill "$TEST_SERVER_PID" 2>/dev/null || true
+        # Give it a moment to release the port, then SIGKILL if still alive.
+        for _ in 1 2 3 4 5; do
+            kill -0 "$TEST_SERVER_PID" 2>/dev/null || break
+            sleep 0.5
+        done
+        kill -9 "$TEST_SERVER_PID" 2>/dev/null || true
+    fi
+}
+trap cleanup_test_server EXIT INT TERM
+
+echo "Starting grpc-test-server fixture..." >&2
+(cd "$TEST_SERVER_DIR" && exec "./install/grpc-test-server/bin/grpc-test-server") \
+    > "$TEST_SERVER_LOG" 2>&1 &
+TEST_SERVER_PID=$!
+
+# Wait for "[GRPC-TEST-SERVER] Server started" or 30s timeout.
+ready=0
+for _ in $(seq 1 60); do
+    if grep -q "GRPC-TEST-SERVER. Server started" "$TEST_SERVER_LOG" 2>/dev/null; then
+        ready=1
+        break
+    fi
+    if ! kill -0 "$TEST_SERVER_PID" 2>/dev/null; then
+        echo "ERROR: grpc-test-server exited before becoming ready. Log:" >&2
+        cat "$TEST_SERVER_LOG" >&2
+        exit 2
+    fi
+    sleep 0.5
 done
 
-# Gradle task path — grpc-core owns the desktopTest set (these tests are in
-# commonTest/desktopTest and compile into :grpc:grpc-core:$TARGET).
-GRADLE_TASK=":grpc:grpc-core:${TARGET}"
+if [ "$ready" -ne 1 ]; then
+    echo "ERROR: grpc-test-server did not become ready within 30s. Log:" >&2
+    cat "$TEST_SERVER_LOG" >&2
+    exit 2
+fi
 
-echo "=== KRPC-597/604 stress harness ===" >&2
-echo "Target:    $GRADLE_TASK" >&2
-echo "Runs:      $RUNS" >&2
-echo "Batch dir: $BATCH_DIR" >&2
-echo "Tests:" >&2
-for t in "${TEST_CLASSES[@]}"; do echo "  - $t" >&2; done
+echo "grpc-test-server ready (pid $TEST_SERVER_PID)" >&2
 echo >&2
 
 crashes=0
 failures=0
 successes=0
-metric_error=0
+crash_signatures=()
+
+# Tests excluded from stress runs:
+#   GrpcCoreClientTest.shutdownNowInMiddleOfCall -- pre-existing 10s timeout on
+#     macosArm64 (and likely linuxX64); fails identically under
+#     `:grpc:grpc-core:<target>Test`. Including it would consume 75% of each
+#     iteration's runtime on a known-broken test and push the 400-iter stress
+#     run past the 20-minute budget.
+KTEST_NEGATIVE_FILTER="*shutdownNowInMiddleOfCall*"
+
+run_kexe() {
+    local out="$1"
+    case "$(uname -s)" in
+        Linux)
+            LD_PRELOAD="$ROOT/$SHIM" \
+                "./$KEXE" "--ktest_negative_gradle_filter=$KTEST_NEGATIVE_FILTER" \
+                > "$out" 2>&1
+            ;;
+        Darwin)
+            DYLD_INSERT_LIBRARIES="$ROOT/$SHIM" \
+            DYLD_FORCE_FLAT_NAMESPACE=1 \
+                "./$KEXE" "--ktest_negative_gradle_filter=$KTEST_NEGATIVE_FILTER" \
+                > "$out" 2>&1
+            ;;
+    esac
+}
 
 for i in $(seq 1 "$RUNS"); do
-    OUT="$BATCH_DIR/run_$(printf '%02d' "$i").log"
+    OUT="$BATCH_DIR/run_$(printf '%03d' "$i").log"
     ts="$(date +%H:%M:%S)"
-    echo -n "[$ts] run $i/$RUNS … " >&2
+    label="$(printf '%03d/%03d' "$i" "$RUNS")"
+    tc_msg "##teamcity[progressMessage 'Stress run $label']"
 
-    # Keep compile/link caches (we're running the same binary); just rerun the test task.
-    # Env var enables the debug-mode resource counter inside the test process.
-    KOTLINX_RPC_NATIVE_DEBUG_COUNTERS=1 \
-    ./gradlew "$GRADLE_TASK" "${TEST_ARGS[@]}" \
-        --rerun-tasks \
-        --no-daemon \
-        > "$OUT" 2>&1
+    run_kexe "$OUT"
     rc=$?
 
     if [ $rc -eq 0 ]; then
-        # Look for debug-counter leak assertion failures even on exit 0 — they
-        # show up as non-fatal logs in the current iteration.
-        if grep -q "NATIVE_COUNTER_LEAK" "$OUT"; then
-            echo "LEAK (rc=0 but counters non-zero)" >&2
-            failures=$((failures + 1))
-        else
-            echo "ok" >&2
-            successes=$((successes + 1))
-        fi
+        echo "[$ts] run $label: ok"
+        successes=$((successes + 1))
+    elif grep -qE "SIGSEGV|SIGBUS|SIGABRT|SIGKILL|signal 11|signal 6|signal 9|Check failed:|core dumped|Aborted|Segmentation fault|pure virtual method called|terminate called|crashbt: signal" "$OUT"; then
+        echo "[$ts] run $label: CRASH (rc=$rc)"
+        crashes=$((crashes + 1))
+        sig="$(grep -oE 'pure virtual method called|Segmentation fault|Aborted|SIGSEGV|SIGBUS|SIGABRT|Check failed:[^\\n]*|crashbt: signal [0-9]+' "$OUT" | head -1)"
+        crash_signatures+=("run $i: $sig")
+    elif grep -qE "FAILED|Assertion|AssertionError" "$OUT"; then
+        echo "[$ts] run $label: test fail (rc=$rc)"
+        failures=$((failures + 1))
     else
-        # Classify crash vs test failure by looking for the KRPC-597 signature.
-        if grep -qE "Test running process exited unexpectedly|process exited unexpectedly|SIGSEGV|SIGBUS|SIGABRT|signal 11|signal 6" "$OUT"; then
-            echo "CRASH (rc=$rc)" >&2
-            crashes=$((crashes + 1))
-        elif grep -qE "Tests? .* completed, .* failed" "$OUT" && ! grep -qE "Tests? .* completed, 0 failed" "$OUT"; then
-            echo "test fail (rc=$rc)" >&2
-            failures=$((failures + 1))
-        else
-            # Ambiguous — treat as test failure not crash.
-            echo "fail (rc=$rc, unclassified)" >&2
-            failures=$((failures + 1))
-        fi
+        echo "[$ts] run $label: CRASH (rc=$rc, unclassified)"
+        crashes=$((crashes + 1))
+        crash_signatures+=("run $i: unclassified rc=$rc")
     fi
 done
 
-total=$((successes + failures + crashes))
-if [ "$total" -eq 0 ]; then
-    echo "ERROR: no runs completed" >&2
-    # Output sentinel so autoresearch can detect metric-error
-    echo "NaN"
-    exit 2
-fi
+# ---- summary ---------------------------------------------------------------
 
-# Crash fraction only (the primary metric). Failures tracked separately for
-# guard purposes (if N tests fail that didn't use to, we have a regression).
+total=$((successes + failures + crashes))
 crash_frac=$(awk -v c="$crashes" -v t="$total" 'BEGIN { printf "%.4f", c / t }')
 
-{
-    echo
-    echo "=== Summary ==="
-    echo "Total runs:   $total"
-    echo "Successes:    $successes"
-    echo "Crashes:      $crashes"
-    echo "Test fails:   $failures"
-    echo "Crash frac:   $crash_frac"
-    echo "Batch dir:    $BATCH_DIR"
-} >&2
+echo
+echo "=== Summary ==="
+echo "Target:       $TARGET"
+echo "Total runs:   $total"
+echo "Successes:    $successes"
+echo "Crashes:      $crashes"
+echo "Test fails:   $failures"
+echo "Crash frac:   $crash_frac"
+echo "Batch dir:    $BATCH_DIR"
 
-# Final stdout line — the autoresearch verify metric.
-echo "$crash_frac"
+if [ "$IN_TC" -eq 1 ]; then
+    echo "##teamcity[buildStatisticValue key='nativeStress.runs' value='$total']"
+    echo "##teamcity[buildStatisticValue key='nativeStress.successes' value='$successes']"
+    echo "##teamcity[buildStatisticValue key='nativeStress.crashes' value='$crashes']"
+    echo "##teamcity[buildStatisticValue key='nativeStress.failures' value='$failures']"
+
+    if [ "$crashes" -gt 0 ]; then
+        for sig in "${crash_signatures[@]}"; do
+            echo "##teamcity[message text='$sig' status='ERROR']"
+        done
+        echo "##teamcity[buildStatus text='{build.status.text}; native stress: $crashes/$total crashes ($crash_frac), $failures fails']"
+    else
+        echo "##teamcity[buildStatus text='{build.status.text}; native stress: $successes/$total clean, $failures fails']"
+    fi
+fi
+
+if [ "$crashes" -gt 0 ]; then
+    exit 1
+fi
+
+exit 0

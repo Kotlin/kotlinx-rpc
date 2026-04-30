@@ -7,6 +7,7 @@
 import compat.patrouille.configureJavaCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
+import util.applyCrashbtShimToNativeTests
 import util.targets.configureJs
 import util.targets.configureJvm
 import util.targets.configureKotlinExtension
@@ -41,3 +42,5 @@ withKmpConfig {
 configureJvm(isKmp = true)
 
 configureJavaCompatibility(8)
+
+applyCrashbtShimToNativeTests()
