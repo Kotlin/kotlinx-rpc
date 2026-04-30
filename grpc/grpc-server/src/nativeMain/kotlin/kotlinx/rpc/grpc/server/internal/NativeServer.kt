@@ -83,6 +83,15 @@ internal class NativeServer(
     // which a claim could be granted across the destroyer's transition.
     private val rawState = atomic(0)
 
+    // Post-destroy thunk handed off through the same arbiter as [grpc_server_destroy]. Published by
+    // [requestRawDestroy] before it flips DESTROY_REQUESTED, invoked exactly once on whichever
+    // path actually runs the destroy: inline in [requestRawDestroy] when count == 0, or in
+    // [useRawAlive]'s last-reader release when count > 0. This serialises [rt.close] (which can
+    // trigger grpc_shutdown) strictly after [grpc_server_destroy], preserving grpc-core's
+    // "all servers destroyed before grpc_shutdown" invariant even when shutdown_and_notify is
+    // wrapped in a reader claim and the actual destroy is deferred to the CQ pump thread. KRPC-604.
+    private val pendingPostDestroy = atomic<(() -> Unit)?>(null)
+
     @Suppress("unused")
     private val rawCleaner = createCleaner(Pair(raw, rawState)) { (ptr, state) ->
         // Cleaner runs only after [NativeServer] is unreachable, so no live thread can hold a
@@ -130,17 +139,20 @@ internal class NativeServer(
     private fun dispose() {
         // Lock-free destroy: set the destroy-requested bit. If no reader claim is outstanding,
         // we run [grpc_server_destroy] immediately; otherwise the last reader's release runs it.
-        // Idempotent against the GC cleaner and against re-entry. KRPC-603.
-        requestRawDestroy()
-        // Release the application-owned +1 ref on the server credentials before rt.close() can
-        // trigger grpc_shutdown(). grpc-core keeps its own internal ref obtained via
-        // grpc_server_add_http2_port, so releasing the app ref here does not invalidate the
-        // credentials for any still-live grpc-core state. The cleaner in GrpcServerCredentials is
-        // the guarded fallback. KRPC-591.
-        credentials.releaseRaw()
-        callAllocationCtxs.forEach { it.dispose() }
-        // release the grpc runtime, so grpc is shutdown if no other grpc servers are running.
-        rt.close()
+        // The post-destroy thunk runs on whichever path performs the destroy, so [rt.close]
+        // (which can trigger grpc_shutdown) is always sequenced strictly AFTER grpc_server_destroy.
+        // Idempotent against the GC cleaner and against re-entry. KRPC-603 / KRPC-604.
+        requestRawDestroy {
+            // Release the application-owned +1 ref on the server credentials before rt.close() can
+            // trigger grpc_shutdown(). grpc-core keeps its own internal ref obtained via
+            // grpc_server_add_http2_port, so releasing the app ref here does not invalidate the
+            // credentials for any still-live grpc-core state. The cleaner in GrpcServerCredentials
+            // is the guarded fallback. KRPC-591.
+            credentials.releaseRaw()
+            callAllocationCtxs.forEach { it.dispose() }
+            // release the grpc runtime, so grpc is shutdown if no other grpc servers are running.
+            rt.close()
+        }
     }
 
     override fun shutdown(): PlatformServer {
@@ -149,12 +161,18 @@ internal class NativeServer(
             return this
         }
 
-        grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
-            cq.shutdown().onComplete {
-                dispose()
-                isTerminatedInternal.complete(Unit)
-            }
-        })
+        // Wrap [grpc_server_shutdown_and_notify] in a reader claim so a CQ pump thread that
+        // dequeues the notify tag (published from this call's ExecCtx flush at scope-exit) and
+        // drives [dispose] -> [requestRawDestroy] cannot race with the unlocked StopListening
+        // iteration still running inside this call. KRPC-604.
+        useRawAlive {
+            grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
+                cq.shutdown().onComplete {
+                    dispose()
+                    isTerminatedInternal.complete(Unit)
+                }
+            })
+        }
         return this
     }
 
@@ -178,14 +196,20 @@ internal class NativeServer(
             return this
         }
 
-        grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
-            // Safe to force-shutdown the CQ here: we run after the notify tag has been delivered
-            // on the CQ, so grpc_completion_queue_shutdown will not race with the server notify.
-            cq.shutdown(force = true).onComplete {
-                dispose()
-                isTerminatedInternal.complete(Unit)
-            }
-        })
+        // Wrap [grpc_server_shutdown_and_notify] in a reader claim so a CQ pump thread that
+        // dequeues the notify tag (published from this call's ExecCtx flush at scope-exit) and
+        // drives [dispose] -> [requestRawDestroy] cannot race with the unlocked StopListening
+        // iteration still running inside this call. KRPC-604.
+        useRawAlive {
+            grpc_server_shutdown_and_notify(raw, cq.raw, CallbackTag.Companion.anonymous {
+                // Safe to force-shutdown the CQ here: we run after the notify tag has been delivered
+                // on the CQ, so grpc_completion_queue_shutdown will not race with the server notify.
+                cq.shutdown(force = true).onComplete {
+                    dispose()
+                    isTerminatedInternal.complete(Unit)
+                }
+            })
+        }
         // Symmetric with the CAS-loser branch: even on the winner path, the CQ pump can deliver
         // the notify and drive [dispose] to completion before this line runs (when no calls are
         // in flight). The reader claim closes that window. KRPC-603.
@@ -208,8 +232,10 @@ internal class NativeServer(
                     block()
                 } finally {
                     if (rawState.decrementAndGet() == DESTROY_REQUESTED) {
-                        // Last reader after destroy was requested: we run the finaliser.
+                        // Last reader after destroy was requested: we run the finaliser, and then
+                        // the post-destroy thunk if one was published by [requestRawDestroy].
                         grpc_server_destroy(raw)
+                        pendingPostDestroy.getAndSet(null)?.invoke()
                     }
                 }
                 return
@@ -220,15 +246,31 @@ internal class NativeServer(
     /**
      * Sets the destroy-requested bit on [rawState]. Calls [grpc_server_destroy] immediately if
      * no reader claim is outstanding; otherwise the last reader's release in [useRawAlive] will.
-     * Idempotent. KRPC-603.
+     * The [postDestroy] thunk is published before the bit is flipped and is invoked exactly once
+     * by whichever path performs the destroy, so it always runs strictly AFTER
+     * [grpc_server_destroy]. Idempotent: re-entry returns without overwriting the published
+     * thunk. KRPC-603 / KRPC-604.
      */
-    private fun requestRawDestroy() {
+    private fun requestRawDestroy(postDestroy: () -> Unit) {
+        // Publish the thunk BEFORE flipping the bit so a concurrent last-reader release can pick
+        // it up. Re-entry (second call) finds a non-null thunk and bails — the original requestor
+        // owns the destroy responsibility.
+        if (!pendingPostDestroy.compareAndSet(null, postDestroy)) {
+            return
+        }
         while (true) {
             val cur = rawState.value
-            if (cur and DESTROY_REQUESTED != 0) return
+            if (cur and DESTROY_REQUESTED != 0) {
+                // Bit was already set by another path (e.g. the GC cleaner racing this call).
+                // grpc_server_destroy has already happened or is about to; the thunk is moot in
+                // that path, so retract it and return.
+                pendingPostDestroy.value = null
+                return
+            }
             if (rawState.compareAndSet(cur, cur or DESTROY_REQUESTED)) {
                 if (cur == 0) {
                     grpc_server_destroy(raw)
+                    pendingPostDestroy.getAndSet(null)?.invoke()
                 }
                 return
             }
