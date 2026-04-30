@@ -125,11 +125,27 @@ internal class NativeClientCall<Request, Response>(
     }
 
     init {
-        // cancel the call if the job is canceled.
+        // Cancel the call if the job is cancelled, and drive close deterministically. Routes
+        // both the cancel batch and the eventual `grpc_call_unref` through the state-machine-
+        // guarded markClosePending → tryToCloseCall → finishClose pipeline — never a direct
+        // rawGuard CAS bypass.
+        //
+        // The earlier shape of this handler did `cancelInternal(...)` followed by an
+        // unconditional `rawGuard.released.CAS(false, true) → grpc_call_unref(raw)`. That CAS
+        // ignored the state machine: if any reader (another thread inside `runBatch`, or even
+        // the `endOp` tail of the just-completed `cancelInternal`) was still using `raw`, the
+        // bypass freed it underneath them. That is the residual `__cxa_deleted_virtual` /
+        // `pure virtual method called` signature inside `grpc_core::Call::CancelWithStatus`
+        // observed on the linuxX64 stress shards under KRPC-604.
+        //
+        // markClosePending publishes `closeInfo` and runs `tryToCloseCall`, which CAS's the
+        // CLOSE_REQUESTED bit on `state`: if the reader count was 0, finishClose runs now;
+        // otherwise the last reader's `endOp` runs it on transition to CLOSE_REQUESTED. Either
+        // way the `grpc_call_unref` happens after every in-flight reader has released its
+        // claim. If grpc-core's CQ already populated `closeInfo` via its own RECV_STATUS_ON_-
+        // CLIENT delivery, the synthetic status is discarded (closeInfo is monotonic); the
+        // listener still sees onClose with the real status. KRPC-597 / KRPC-604.
         callJob.invokeOnCompletion { cause ->
-            // Synthesise the close status that mirrors the one we just sent to grpc-core, so we
-            // can deliver onClose to the listener if we end up winning the rawGuard CAS below
-            // before the natural finishClose path observes RECV_STATUS_ON_CLIENT. KRPC-597.
             val cancelCloseInfo: Pair<GrpcStatus, GrpcMetadata>? = when (cause) {
                 is CancellationException -> {
                     cancelInternal(grpc_status_code.GRPC_STATUS_UNAVAILABLE, "Channel shutdownNow invoked")
@@ -149,29 +165,7 @@ internal class NativeClientCall<Request, Response>(
 
                 else -> null
             }
-            // Fallback deterministic release for calls that never reached tryToCloseCall — e.g., a
-            // client interceptor threw before start() submitted any batch, so no
-            // RECV_STATUS_ON_CLIENT ever completes and closeInfo stays null. Without this, the
-            // grpc_call is owned past grpc_shutdown(). rawGuard blocks double-unref. KRPC-586.
-            //
-            // Also drives onClose for the in-flight cancel race: shutdownNow() cancels callJob
-            // synchronously, and the eager unref below used to win the rawGuard CAS before the
-            // CQ delivered RECV_STATUS_ON_CLIENT — so finishClose's later CAS would lose and
-            // listener.onClose was never invoked. We now mirror finishClose's listener
-            // notification on this path, using closeInfo if grpc-core has already filled it,
-            // else the synthetic status from `cancelCloseInfo`. Idempotency is preserved by the
-            // rawGuard CAS itself: only one of (this fallback, finishClose) can win. KRPC-597.
-            if (rawGuard.released.compareAndSet(expect = false, update = true)) {
-                val info = closeInfo.value ?: cancelCloseInfo
-                if (info != null) {
-                    listener?.let { lst ->
-                        safeUserCode("Failed to call onClose.") {
-                            lst.onClose(info.first, info.second)
-                        }
-                    }
-                }
-                grpc_call_unref(raw)
-            }
+            cancelCloseInfo?.let { (status, trailers) -> markClosePending(status, trailers) }
             releaseCallCredentialsIfNeeded()
         }
     }
