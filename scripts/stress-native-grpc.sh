@@ -192,19 +192,36 @@ failures=0
 successes=0
 crash_signatures=()
 
+# Optional positive K/N test filter. Passed verbatim to the kexe as
+# `--ktest_gradle_filter=$KTEST_FILTER` if set (e.g. `*Interceptor*`).
+# Empty / unset = run all tests.
+KTEST_FILTER="${KTEST_FILTER:-}"
+KEXE_FILTER_ARG=""
+if [ -n "$KTEST_FILTER" ]; then
+    KEXE_FILTER_ARG="--ktest_gradle_filter=$KTEST_FILTER"
+    echo "Filter:      $KTEST_FILTER" >&2
+fi
+
 run_kexe() {
     local out="$1"
     case "$(uname -s)" in
         Linux)
-            LD_PRELOAD="$ROOT/$SHIM" \
-                "./$KEXE" \
-                > "$out" 2>&1
+            if [ -n "$KEXE_FILTER_ARG" ]; then
+                LD_PRELOAD="$ROOT/$SHIM" "./$KEXE" "$KEXE_FILTER_ARG" > "$out" 2>&1
+            else
+                LD_PRELOAD="$ROOT/$SHIM" "./$KEXE" > "$out" 2>&1
+            fi
             ;;
         Darwin)
-            DYLD_INSERT_LIBRARIES="$ROOT/$SHIM" \
-            DYLD_FORCE_FLAT_NAMESPACE=1 \
-                "./$KEXE" \
-                > "$out" 2>&1
+            if [ -n "$KEXE_FILTER_ARG" ]; then
+                DYLD_INSERT_LIBRARIES="$ROOT/$SHIM" \
+                DYLD_FORCE_FLAT_NAMESPACE=1 \
+                    "./$KEXE" "$KEXE_FILTER_ARG" > "$out" 2>&1
+            else
+                DYLD_INSERT_LIBRARIES="$ROOT/$SHIM" \
+                DYLD_FORCE_FLAT_NAMESPACE=1 \
+                    "./$KEXE" > "$out" 2>&1
+            fi
             ;;
     esac
 }
