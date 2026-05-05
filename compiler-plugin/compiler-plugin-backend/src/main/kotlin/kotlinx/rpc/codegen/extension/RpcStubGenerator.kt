@@ -285,7 +285,6 @@ internal class RpcStubGenerator(
      *  - `<return-type>` - the return type of the method
      *  - `<method-class>` or `<method-object>` - generated class or object for this method
      */
-    @Suppress("detekt.NestedBlockDepth")
     private fun IrClass.generateRpcMethod(method: ServiceDeclaration.Method) {
         addFunction {
             name = method.function.name
@@ -352,7 +351,6 @@ internal class RpcStubGenerator(
      * ))
      * ```
      */
-    @Suppress("detekt.NestedBlockDepth")
     private fun IrBlockBodyBuilder.irRpcMethodClientCall(
         method: ServiceDeclaration.Method,
         functionThisReceiver: IrValueParameter,
@@ -612,7 +610,6 @@ internal class RpcStubGenerator(
      *  - `<method-name>` - the name of the method
      *  - <argument-type-k> - type of the kth argument
      */
-    @Suppress("detekt.NestedBlockDepth")
     private fun IrClass.generateInvokator(callable: ServiceDeclaration.Callable) {
         check(callable is ServiceDeclaration.Method) {
             "Only methods are allowed here"

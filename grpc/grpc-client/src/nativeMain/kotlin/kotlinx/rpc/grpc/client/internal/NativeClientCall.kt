@@ -163,7 +163,9 @@ internal class NativeClientCall<Request, Response>(
                     )
                 }
 
-                else -> null
+                else -> {
+                    null
+                }
             }
             cancelCloseInfo?.let { (status, trailers) -> markClosePending(status, trailers) }
             releaseCallCredentialsIfNeeded()
