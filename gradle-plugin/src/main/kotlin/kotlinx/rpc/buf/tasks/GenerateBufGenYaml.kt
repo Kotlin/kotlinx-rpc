@@ -69,7 +69,6 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
     public abstract val bufGenFile: Property<File>
 
     @TaskAction
-    @Suppress("detekt.NestedBlockDepth")
     internal fun generate() {
         val file = bufGenFile.get()
         // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
