@@ -28,7 +28,6 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.sizeOf
 import kotlinx.cinterop.staticCFunction
 import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_STATUS_ON_CLIENT
 import kotlinx.rpc.grpc.internal.cinterop.grpc_call_error
 import kotlinx.rpc.grpc.internal.cinterop.grpc_call_start_batch
 import kotlinx.rpc.grpc.internal.cinterop.grpc_completion_queue_create_for_callback
@@ -141,16 +140,24 @@ public class CompletionQueue {
         var err = grpc_call_error.GRPC_CALL_ERROR
 
         synchronized(batchStartGuard) {
-            if (_state.value == State.SHUTTING_DOWN && ops.pointed.op == GRPC_OP_RECV_STATUS_ON_CLIENT) {
-                // if the queue is in the process of a SHUTDOWN,
-                // new call status receive batches will be rejected.
-                deleteCbTag(tag)
-                return BatchResult.CQShutdown
-            }
-
-            if (forceShutdown.value || _state.value == State.CLOSED) {
-                // if the queue is either closed or in the process of a FORCE shutdown,
-                // new batches will instantly fail.
+            // Reject ALL batches once the CQ is not strictly OPEN, or when force-shutdown has
+            // been requested. Rationale: `shutdown()` calls `grpc_completion_queue_shutdown(raw)`
+            // under this same lock before flipping `_state` to SHUTTING_DOWN. After that call,
+            // grpc-core's `grpc_cq_begin_op` returns false for any new op — and
+            // `grpc_call_start_batch` then aborts with a GPR check failure at
+            // filter_stack_call.cc:1098 (`Check failed: grpc_cq_begin_op(cq_, notify_tag)`).
+            //
+            // Previously only GRPC_OP_RECV_STATUS_ON_CLIENT was rejected in SHUTTING_DOWN, on
+            // the assumption that other ops would be allowed to "drain" — but grpc-core has no
+            // such drain semantics for `grpc_call_start_batch`: every batch is a new op that
+            // must pass `grpc_cq_begin_op`, which only succeeds when the CQ is fully open.
+            // Submitting any other op (send/recv message, etc.) during SHUTTING_DOWN therefore
+            // triggers the abort — the root cause of the KRPC-597/604 process-exit crashes
+            // observed on the server side ("cancel in request flow", "close during request
+            // flow", etc. — the client cancels, test teardown begins shutdownNow concurrently,
+            // and a still-draining server handler submits one more batch that aborts the
+            // process).
+            if (_state.value != State.OPEN || forceShutdown.value) {
                 deleteCbTag(tag)
                 return BatchResult.CQShutdown
             }
@@ -194,6 +201,23 @@ public class CompletionQueue {
         }
 
         return _shutdownDone
+    }
+
+    /**
+     * Upgrades an in-progress (or future) shutdown to force mode without initiating the
+     * shutdown itself. After this call, any subsequent or currently-pending [shutdown] — whether
+     * invoked with `force = false` or `force = true` — will behave as if `force = true` was passed:
+     * new batches (including those from still-executing grpc-core callbacks) are rejected with
+     * [BatchResult.CQShutdown]. Idempotent; safe to call at any point in the CQ lifecycle.
+     *
+     * Distinguished from [shutdown] with `force = true` by NOT performing the state transition
+     * or invoking `grpc_completion_queue_shutdown`. Use this when a force upgrade is needed but
+     * the CQ's actual shutdown must remain sequenced by an external event (for example, a
+     * caller that cannot safely trigger `grpc_completion_queue_shutdown` itself because another
+     * async precondition has not yet completed).
+     */
+    public fun requestForceShutdown(): Unit {
+        forceShutdown.value = true
     }
 }
 
