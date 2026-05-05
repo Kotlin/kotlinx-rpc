@@ -7,6 +7,7 @@ package kotlinx.rpc.buf.tasks
 import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
@@ -99,7 +100,7 @@ public abstract class BufGenerateTask @Inject internal constructor(
      * not the directory for sources. For that see [outputSourceDirectories].
      */
     @get:OutputDirectory
-    public abstract val outputDirectory: Property<File>
+    public abstract val outputDirectory: DirectoryProperty
 
     /**
      * Generated source directories by plugin name.
@@ -113,7 +114,7 @@ public abstract class BufGenerateTask @Inject internal constructor(
      */
     @get:Internal
     public val outputSourceDirectories: Provider<List<File>> = pluginNames.map { plugins ->
-        val out = outputDirectory.get()
+        val out = outputDirectory.get().asFile
         plugins.map { out.resolve(it) }
     }
 
@@ -122,7 +123,7 @@ public abstract class BufGenerateTask @Inject internal constructor(
 
         val args = project.provider {
             buildList {
-                add("--output"); add(outputDirectory.get().absolutePath)
+                add("--output"); add(outputDirectory.get().asFile.absolutePath)
 
                 if (includeImports.getOrElse(false) || includeWkt.getOrElse(false)) {
                     add("--include-imports")
@@ -169,7 +170,7 @@ internal fun Project.registerBufGenerateTask(
         includeWkt.convention(generate.includeWkt)
         errorFormat.convention(generate.errorFormat)
 
-        this.outputDirectory.convention(outputDirectory)
+        this.outputDirectory.convention(project.layout.dir(project.provider { outputDirectory }))
 
         pluginNames.convention(includedPlugins.map { it.map { plugin -> plugin.name } })
 
