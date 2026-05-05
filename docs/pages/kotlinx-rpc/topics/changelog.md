@@ -2,6 +2,71 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.11.0-grpc-188
+> Published 2 April 2026
+
+**Full Changelog**: [0.11.0-grpc-187...0.11.0-grpc-188](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-187...0.11.0-grpc-188)
+
+#### Features 🎉 {id=Features_0_11_0-grpc-188}
+* KRPC-239 Add option to disable default protoc plugins by [@Mr3zee](https://github.com/Mr3zee) in [#649](https://github.com/Kotlin/kotlinx-rpc/pull/649)
+* KRPC-254 Strip redundant enum value prefixes in protoc-gen by [@Mr3zee](https://github.com/Mr3zee) in [#650](https://github.com/Kotlin/kotlinx-rpc/pull/650)
+* KRPC-264 Add DSL builder for ProtoConfig by [@Mr3zee](https://github.com/Mr3zee) in [#647](https://github.com/Kotlin/kotlinx-rpc/pull/647)
+* KRPC-237: Add kotlinx.rpc.protoc Gradle property to enable protoc by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#653](https://github.com/Kotlin/kotlinx-rpc/pull/653)
+* KRPC-533: Add SubclassOptInRequired to generated proto messages by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#656](https://github.com/Kotlin/kotlinx-rpc/pull/656)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_11_0-grpc-188}
+* KRPC-245 Fix eager configuration resolution warning in Gradle 9.0 by [@Mr3zee](https://github.com/Mr3zee) in [#651](https://github.com/Kotlin/kotlinx-rpc/pull/651)
+* KRPC-275 Reject invalid UTF-8 in protobuf string extension fields by [@Mr3zee](https://github.com/Mr3zee) in [#648](https://github.com/Kotlin/kotlinx-rpc/pull/648)
+* KRPC-268: Fix missing leading space in generated KDoc block comments by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#654](https://github.com/Kotlin/kotlinx-rpc/pull/654)
+* KRPC-266 Move ProtobufException classes to public package by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#655](https://github.com/Kotlin/kotlinx-rpc/pull/655)
+* KRPC-274: Reject bad tag field numbers and overlong varints in protobuf parser by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#657](https://github.com/Kotlin/kotlinx-rpc/pull/657)
+* KRPC-548: Fix flaky CancellationTest.testCancelServer on native by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#660](https://github.com/Kotlin/kotlinx-rpc/pull/660)
+* KRPC-549: Fix flaky GrpcTimeoutTest by increasing server delay margin by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#658](https://github.com/Kotlin/kotlinx-rpc/pull/658)
+* KRPC-556: Add markerClass parameter to SubclassOptInRequired annotations by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#659](https://github.com/Kotlin/kotlinx-rpc/pull/659)
+* KRPC-267: Add blank line before properties with block comments in protoc-gen by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#667](https://github.com/Kotlin/kotlinx-rpc/pull/667)
+* KRPC-560: Fix Native segfault in callables property itable dispatch by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#668](https://github.com/Kotlin/kotlinx-rpc/pull/668)
+* KRPC-554: Reject bad tag field numbers and overlong varints in native protobuf parser by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#669](https://github.com/Kotlin/kotlinx-rpc/pull/669)
+* KRPC-558: Reject invalid UTF-8 in protobuf string fields on native by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#666](https://github.com/Kotlin/kotlinx-rpc/pull/666)
+* KRPC-564: Reject >10-byte varint tags in protobuf parser by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#672](https://github.com/Kotlin/kotlinx-rpc/pull/672)
+* KRPC-562: Use ephemeral ports in gRPC integration tests by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#670](https://github.com/Kotlin/kotlinx-rpc/pull/670)
+* KRPC-561: Explicit grpc_channel_destroy before grpc_shutdown in NativeManagedChannel by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#671](https://github.com/Kotlin/kotlinx-rpc/pull/671)
+* KRPC-252: Support type resolution in comments for protoc-gen by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#673](https://github.com/Kotlin/kotlinx-rpc/pull/673)
+* KRPC-567: Fix race in ServerStreamContext.removeCall causing flaky test by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#681](https://github.com/Kotlin/kotlinx-rpc/pull/681)
+* KRPC-597: Fix grpc native release race conditions by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#711](https://github.com/Kotlin/kotlinx-rpc/pull/711)
+
+#### Documentation 📗 {id=Documentation_0_11_0-grpc-188}
+* KRPC-440: Clarify Android JVM support on platforms page by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#664](https://github.com/Kotlin/kotlinx-rpc/pull/664)
+
+#### Infra 🚧 {id=Infra_0_11_0-grpc-188}
+* KRPC-555: Port protobuf conformance tests to Kotlin/Native by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#661](https://github.com/Kotlin/kotlinx-rpc/pull/661)
+* KRPC-565: Fix deprecated abiValidation enabled API for Kotlin >= 2.4.0 by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#676](https://github.com/Kotlin/kotlinx-rpc/pull/676)
+* KRPC-569: Exclude native conformance test when native targets are unavailable by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#680](https://github.com/Kotlin/kotlinx-rpc/pull/680)
+* Add use-develocity skill for build scan analysis by [@Mr3zee](https://github.com/Mr3zee) in [#683](https://github.com/Kotlin/kotlinx-rpc/pull/683)
+* KRPC-571: Fix configuration cache misses on every local build by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#684](https://github.com/Kotlin/kotlinx-rpc/pull/684)
+* KRPC-541: Align native shim versions with JVM catalog versions by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#678](https://github.com/Kotlin/kotlinx-rpc/pull/678)
+* KRPC-577: Add .gradle-home to .gitignore for CI Docker cache by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#685](https://github.com/Kotlin/kotlinx-rpc/pull/685)
+* KRPC-573: Remove hardcoded workers.max to scale with CPU cores by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#687](https://github.com/Kotlin/kotlinx-rpc/pull/687)
+* KRPC-572: Enable local Gradle build cache alongside remote Develocity cache by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#689](https://github.com/Kotlin/kotlinx-rpc/pull/689)
+* Add CI polling scripts for fix-issue skill by [@Mr3zee](https://github.com/Mr3zee) in [#690](https://github.com/Kotlin/kotlinx-rpc/pull/690)
+* KRPC-574: Make BufGenerateTask cacheable by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#691](https://github.com/Kotlin/kotlinx-rpc/pull/691)
+* KRPC-583: Reduce configuration phase overhead from settings plugins by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#692](https://github.com/Kotlin/kotlinx-rpc/pull/692)
+* KRPC-580: Make GenerateBufYaml cacheable by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#700](https://github.com/Kotlin/kotlinx-rpc/pull/700)
+* KRPC-595: Make BufGenerateTask actually cacheable (remove overlapping outputs) by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#704](https://github.com/Kotlin/kotlinx-rpc/pull/704)
+* KRPC-596: Make protobuf conformance tasks cacheable by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#705](https://github.com/Kotlin/kotlinx-rpc/pull/705)
+
+#### Other Changes 🧹 {id=Other_Changes_0_11_0-grpc-188}
+* KRPC-183 Add little-endian platform guard to native protobuf codec by [@Mr3zee](https://github.com/Mr3zee) in [#646](https://github.com/Kotlin/kotlinx-rpc/pull/646)
+* Add fix-issue skill for autonomous YT issue resolution by [@Mr3zee](https://github.com/Mr3zee) in [#652](https://github.com/Kotlin/kotlinx-rpc/pull/652)
+* KRPC-568: Skip testCancelServer on wasmWasi due to EAGAIN flakiness by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#677](https://github.com/Kotlin/kotlinx-rpc/pull/677)
+* KRPC-584: Skip testClientCancellationCancelsStream on wasmWasi (flaky) by [@Mr3zee](https://github.com/Mr3zee) in [#693](https://github.com/Kotlin/kotlinx-rpc/pull/693)
+* Varoius fixes to AI automation by [@Mr3zee](https://github.com/Mr3zee) in [#698](https://github.com/Kotlin/kotlinx-rpc/pull/698)
+* Update commit requirements by [@Mr3zee](https://github.com/Mr3zee) in [#701](https://github.com/Kotlin/kotlinx-rpc/pull/701)
+* fix bot-pr-title.yml and skill by [@Mr3zee](https://github.com/Mr3zee) in [#706](https://github.com/Kotlin/kotlinx-rpc/pull/706)
+
+### New Contributors {id=New_Contributors_0_11_0-grpc-188}
+* [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] made their first contribution in [#653](https://github.com/Kotlin/kotlinx-rpc/pull/653)
+
+
 ## 0.11.0-grpc-187
 > Published 2 April 2026
 
