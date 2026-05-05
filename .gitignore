@@ -49,14 +49,4 @@ autoresearch-runs/
 # krpc compat tests
 tests/krpc-protocol-compatibility-tests/v*
 gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
-/native-deps/shims/grpc/.clwb/.blaze/modules/.project-data-dir.iml
-/native-deps/shims/grpc/.clwb/.blaze/modules/.workspace.iml
-/native-deps/shims/grpc/.clwb/aspects/artifacts.bzl
-/native-deps/shims/grpc/.clwb/aspects/cc_info.bzl
-/native-deps/shims/grpc/.clwb/aspects/code_generator_info.bzl
-/native-deps/shims/grpc/.clwb/aspects/intellij_info_bundled.bzl
-/native-deps/shims/grpc/.clwb/aspects/intellij_info_impl_bundled.bzl
-/native-deps/shims/grpc/.clwb/aspects/make_variables.bzl
-/native-deps/shims/grpc/.clwb/aspects/python_info.bzl
-/native-deps/shims/grpc/.clwb/aspects/xcode_query.bzl
-/native-deps/shims/grpc/.clwb/.bazelproject
+/native-deps/shims/grpc/.clwb/**
