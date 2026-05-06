@@ -11,6 +11,7 @@ import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.protoc.ProtocPlugin
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -66,11 +67,11 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
      * The `buf.gen.yaml` file to generate/update.
      */
     @get:OutputFile
-    public abstract val bufGenFile: Property<File>
+    public abstract val bufGenFile: RegularFileProperty
 
     @TaskAction
     internal fun generate() {
-        val file = bufGenFile.get()
+        val file = bufGenFile.get().asFile
         // Parent dir may be missing when the configuration cache hits and `ensureRegularFileExists`
         // in the caller is skipped; creating it defensively lets `bufferedWriter()` succeed.
         file.parentFile.mkdirs()
@@ -184,7 +185,7 @@ internal fun Project.registerGenerateBufGenYamlTask(
             .resolve(BUF_GEN_YAML)
             .ensureRegularFileExists()
 
-        bufGenFile.convention(bufGenYamlFile)
+        bufGenFile.convention(project.layout.file(project.provider { bufGenYamlFile }))
 
         configure()
     }
