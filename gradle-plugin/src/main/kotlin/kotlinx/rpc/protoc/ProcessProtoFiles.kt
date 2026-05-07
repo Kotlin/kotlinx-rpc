@@ -110,7 +110,7 @@ public abstract class ExtractDependencyProtoImports @Inject internal constructor
     }
 }
 
-internal fun Project.registerExtractDependencyProtoImportsTask(
+internal fun Project.registerExtractDependencyProtoTask(
     taskName: String,
     destination: File,
     dependencyArchives: FileCollection,

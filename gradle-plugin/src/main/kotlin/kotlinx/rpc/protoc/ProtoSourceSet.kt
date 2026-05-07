@@ -15,7 +15,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
-import org.jetbrains.kotlin.gradle.plugin.HasProject
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
@@ -400,8 +399,9 @@ private fun resolveProtoConfigurationName(handler: KotlinDependencyHandler, suff
     } catch (_: Exception) {
         null
     } ?: error(
-        "Cannot determine source set name for proto dependency. " +
-                "Use top-level dependencies { <sourceSetName>${suffix}(\"...\") } syntax instead."
+        "Cannot determine source set name for proto dependency. \n" +
+            "Please report this issue to the kotlinx-rpc team: https://github.com/Kotlin/kotlinx-rpc/issues/new\n" +
+                "Meanwhile, you can use top-level dependencies { <sourceSetName>${suffix}(\"...\") } syntax instead."
     )
 
     return if (sourceSetName == "main") {

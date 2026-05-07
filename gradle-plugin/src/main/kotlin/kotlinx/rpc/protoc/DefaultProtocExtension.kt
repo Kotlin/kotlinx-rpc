@@ -182,25 +182,6 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("indentSize", buf.generate.indentSize)
     }
 
-    private fun wireConfigurationInheritance(protoSourceSet: DefaultProtoSourceSet) {
-        val dependsOnSources = protoSourceSet.getDependsOnTasksOf(project.protoSourceSets)
-        for (parent in dependsOnSources) {
-            val parentProtoConfig = parent.protoConfiguration ?: continue
-            val parentProtoImportConfig = parent.protoImportConfiguration ?: continue
-
-            protoSourceSet.protoConfiguration?.let { config ->
-                if (parentProtoConfig !in config.extendsFrom) {
-                    config.extendsFrom(parentProtoConfig)
-                }
-            }
-            protoSourceSet.protoImportConfiguration?.let { config ->
-                if (parentProtoImportConfig !in config.extendsFrom) {
-                    config.extendsFrom(parentProtoImportConfig)
-                }
-            }
-        }
-    }
-
     private fun configureTasks(protoSourceSet: DefaultProtoSourceSet) {
         if (protoSourceSet.tasksConfigured.get()) {
             return
@@ -262,27 +243,17 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processProtoTask)
         }
 
-        wireConfigurationInheritance(protoSourceSet)
-
-        val protoArchives = protoSourceSet.protoConfiguration
-            ?.let { project.files(it) }
-            ?: project.files()
-
-        val protoImportArchives = protoSourceSet.protoImportConfiguration
-            ?.let { project.files(it) }
-            ?: project.files()
-
-        val extractProtoTask = project.registerExtractDependencyProtoImportsTask(
+        val extractProtoTask = project.registerExtractDependencyProtoTask(
             taskName = "extractProto${capitalName}",
             destination = buildSourceSetsDir.resolve("protoExtracted"),
-            dependencyArchives = protoArchives,
+            dependencyArchives = protoSourceSet.protoConfiguration,
             properties = properties,
         )
 
-        val extractProtoImportTask = project.registerExtractDependencyProtoImportsTask(
+        val extractProtoImportTask = project.registerExtractDependencyProtoTask(
             taskName = "extractProtoImport${capitalName}",
             destination = buildSourceSetsDir.resolve("importExtracted"),
-            dependencyArchives = protoImportArchives,
+            dependencyArchives = protoSourceSet.protoImportConfiguration,
             properties = properties,
         )
 
@@ -299,7 +270,7 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val hasProtoImports = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty }
         val hasProtoImportConfig = project.provider {
-            protoSourceSet.protoImportConfiguration?.let { !it.isEmpty } ?: false
+            !protoSourceSet.protoImportConfiguration.isEmpty
         }
         val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
 
@@ -971,32 +942,6 @@ internal fun DefaultProtoSourceSet.getDependsOnTasksOf(protoSourceSets: ProtoSou
     val main = correspondingMainNameSourceSet(name, protoSourceSets) as? DefaultProtoSourceSet
 
     return (kmpDependsOn + main).filterNotNull()
-}
-
-/**
- * Computes the Gradle configuration name for a proto source set's code generation dependencies.
- *
- * Follows KGP's `disambiguateName` convention: the `"main"` source set name is elided.
- * - `"main"` → `"proto"`
- * - `"test"` → `"testProto"`
- * - `"commonMain"` → `"commonMainProto"`
- */
-internal fun protoConfigurationName(sourceSetName: String): String {
-    if (sourceSetName == "main") return "proto"
-    return "${sourceSetName}Proto"
-}
-
-/**
- * Computes the Gradle configuration name for a proto source set's import-only dependencies.
- *
- * Follows KGP's `disambiguateName` convention: the `"main"` source set name is elided.
- * - `"main"` → `"protoImport"`
- * - `"test"` → `"testProtoImport"`
- * - `"commonMain"` → `"commonMainProtoImport"`
- */
-internal fun protoImportConfigurationName(sourceSetName: String): String {
-    if (sourceSetName == "main") return "protoImport"
-    return "${sourceSetName}ProtoImport"
 }
 
 private fun correspondingMainNameSourceSet(name: String, protoSourceSets: ProtoSourceSets): ProtoSourceSet? {

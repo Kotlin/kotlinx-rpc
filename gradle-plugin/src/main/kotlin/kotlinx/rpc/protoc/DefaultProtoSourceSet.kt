@@ -36,6 +36,8 @@ import java.io.File
 import java.util.*
 import java.util.function.Consumer
 import javax.inject.Inject
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @Suppress("UNCHECKED_CAST")
 internal val Project.protoSourceSets: ProtoSourceSets
@@ -62,6 +64,7 @@ internal fun Project.findOrCreateProtoSourceSets(): NamedDomainObjectContainer<P
         container
     }
 
+@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 internal open class DefaultProtoSourceSet(
     internal val project: Project,
     internal val sourceDirectorySet: SourceDirectorySet,
@@ -155,51 +158,82 @@ internal open class DefaultProtoSourceSet(
     // Proto dependency configuration for this source set, created when protoc is activated.
     // Allows users to declare proto dependencies via `dependencies { <name>Proto("...") }`.
     // Resolved artifacts are extracted and included in code generation.
-    internal var protoConfiguration: Configuration? = null
+    internal val protoConfiguration: Configuration
 
     // Proto import dependency configuration for this source set, created when protoc is activated.
     // Allows users to declare proto import dependencies via `dependencies { <name>ProtoImport("...") }`.
     // Resolved artifacts are extracted and available as imports, but not for code generation.
-    internal var protoImportConfiguration: Configuration? = null
+    internal val protoImportConfiguration: Configuration
+
+    init {
+        val protoConfigName = protoConfigurationName(name)
+        protoConfiguration = project.configurations.maybeCreate(protoConfigName).apply {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            description = "Proto file dependencies for source set '$name' (code generation)"
+        }
+
+        val protoImportConfigName = protoImportConfigurationName(name)
+        protoImportConfiguration = project.configurations.maybeCreate(protoImportConfigName).apply {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            description = "Proto file import dependencies for source set '$name' (imports only)"
+        }
+    }
 
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
 
-    override fun importsFrom(protoSourceSet: ProtoSourceSet) {
+    override fun importsFrom(rawProtoSourceSet: ProtoSourceSet) {
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
+
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.imports.checkSelfImport())
+
+        protoImportConfiguration.extendsFrom(protoSourceSet.protoImportConfiguration)
     }
 
-    override fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>) {
+    override fun importsFrom(rawProtoSourceSet: Provider<ProtoSourceSet>) {
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
+
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
+
+        protoImportConfiguration.extendsFrom(protoSourceSet.map { it.protoImportConfiguration })
     }
 
-    override fun importsAllFrom(protoSourceSets: Provider<List<ProtoSourceSet>>) {
+    override fun importsAllFrom(rawProtoSourceSets: Provider<List<ProtoSourceSet>>) {
+        val protoSourceSets = rawProtoSourceSets.asDefault("extend")
+
         imports.addAll(protoSourceSets.checkSelfImport())
         imports.addAll(protoSourceSets.map { list -> list.flatMap { it.imports.checkSelfImport().get() } })
+
+        protoImportConfiguration.extendsFrom(
+            protoSourceSets.map { list -> list.flatMap { it.protoImportConfiguration } }
+        )
     }
 
-    override fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>) {
+    override fun importsFrom(rawProtoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>) {
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
+
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
+
+        protoImportConfiguration.extendsFrom(protoSourceSet.map { it.protoImportConfiguration })
     }
 
     private val extendsFrom: MutableSet<ProtoSourceSet> = mutableSetOf()
 
-    override fun extendsFrom(protoSourceSet: ProtoSourceSet) {
-        if (extendsFrom.contains(protoSourceSet)) {
+    override fun extendsFrom(rawProtoSourceSet: ProtoSourceSet) {
+        if (extendsFrom.contains(rawProtoSourceSet)) {
             return
         }
 
-        require(this != protoSourceSet) {
+        require(this != rawProtoSourceSet) {
             "$name proto source set cannot extend from self"
         }
 
-        require(protoSourceSet is DefaultProtoSourceSet) {
-            "$name proto source set can only extend from other default proto source sets." +
-                    "${protoSourceSet.name} is not a ${DefaultProtoSourceSet::class.simpleName}"
-        }
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
 
         extendsFrom += protoSourceSet
 
@@ -209,16 +243,12 @@ internal open class DefaultProtoSourceSet(
         plugins.addAll(protoSourceSet.plugins)
 
         // Wire Gradle configuration inheritance for proto dependency configurations
-        protoSourceSet.protoConfiguration?.let { parentConfig ->
-            protoConfiguration?.extendsFrom(parentConfig)
-        }
-        protoSourceSet.protoImportConfiguration?.let { parentConfig ->
-            protoImportConfiguration?.extendsFrom(parentConfig)
-        }
+        protoConfiguration.extendsFrom(protoSourceSet.protoConfiguration)
+        protoImportConfiguration.extendsFrom(protoSourceSet.protoImportConfiguration)
     }
 
     @JvmName("checkSelfImport_provider")
-    private fun Provider<ProtoSourceSet>.checkSelfImport() = map {
+    private fun Provider<DefaultProtoSourceSet>.checkSelfImport() = map {
         it.checkSelfImport()
     }
 
@@ -227,13 +257,31 @@ internal open class DefaultProtoSourceSet(
     }
 
     @JvmName("checkSelfImport_provider_list")
-    private fun Provider<List<ProtoSourceSet>>.checkSelfImport() = map { set ->
+    private fun Provider<List<DefaultProtoSourceSet>>.checkSelfImport() = map { set ->
         set.onEach { it.checkSelfImport() }
     }
 
     private fun ProtoSourceSet.checkSelfImport(): ProtoSourceSet {
         require(this@DefaultProtoSourceSet != this) {
             "${this@DefaultProtoSourceSet.name} proto source set cannot import from itself"
+        }
+
+        return this
+    }
+
+    private fun Provider<ProtoSourceSet>.asDefault(action: String): Provider<DefaultProtoSourceSet> {
+        return map { it.asDefault(action) }
+    }
+
+    private fun Provider<List<ProtoSourceSet>>.asDefault(action: String): Provider<List<DefaultProtoSourceSet>> {
+        return map { it.map { it.asDefault(action) } }
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    private fun ProtoSourceSet.asDefault(action: String): DefaultProtoSourceSet {
+        require(this is DefaultProtoSourceSet) {
+            "$name proto source set can only $action from other default proto source sets." +
+                "${this.name} is not a ${DefaultProtoSourceSet::class.simpleName}"
         }
 
         return this
@@ -259,25 +307,6 @@ internal fun Project.createProtoExtensions() {
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
         languageSourceSet?.let { protoSourceSet.languageSourceSets.add(it) }
-
-        // Create proto dependency configurations eagerly so they are available
-        // as Kotlin DSL accessors in the build script's dependencies {} block.
-        if (protoSourceSet.protoConfiguration == null) {
-            val protoConfigName = protoConfigurationName(languageSourceSetName)
-            protoSourceSet.protoConfiguration = configurations.maybeCreate(protoConfigName).apply {
-                isCanBeResolved = true
-                isCanBeConsumed = false
-                description = "Proto file dependencies for source set '$languageSourceSetName' (code generation)"
-            }
-
-            val protoImportConfigName = protoImportConfigurationName(languageSourceSetName)
-            protoSourceSet.protoImportConfiguration = configurations.maybeCreate(protoImportConfigName).apply {
-                isCanBeResolved = true
-                isCanBeConsumed = false
-                description = "Proto file import dependencies for source set '$languageSourceSetName' (imports only)"
-            }
-        }
-
         return protoSourceSet
     }
 
@@ -325,4 +354,14 @@ internal object PlatformOption {
     const val NATIVE = "native"
     const val COMMON = "common"
     const val WASM = "wasm"
+}
+
+internal fun protoConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "proto"
+    return "${sourceSetName}Proto"
+}
+
+internal fun protoImportConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "protoImport"
+    return "${sourceSetName}ProtoImport"
 }

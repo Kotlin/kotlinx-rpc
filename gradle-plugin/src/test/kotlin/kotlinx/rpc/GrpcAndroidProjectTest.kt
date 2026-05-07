@@ -267,7 +267,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
         // Verify proto imports work across all flavor variants
         // protoImport declared on main → inherited by all variants
 
-        fun runForVariant(sourceSet: SSets, vararg extraTasks: SSets) {
+        fun runForVariant(sourceSet: SSets) {
             val result = runForSet(sourceSet)
 
             result.assertTaskExecuted(
