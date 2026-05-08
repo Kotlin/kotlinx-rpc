@@ -363,6 +363,72 @@ abstract class GrpcBaseTest : BaseTest() {
             return runGradle(bufGenerate(sourceSet))
         }
 
+        /**
+         * Asserts the workspace state for a source set whose proto files come ONLY from
+         * `<set>Proto` / `<set>ProtoImport` zip dependencies (one pair per source set).
+         *
+         * Each source set's zip contains a single proto file:
+         *   <set>-dependency.zip          -> <camelSet>Dep.proto       message <PascalSet>Dep
+         *   <set>-import-dependency.zip   -> <camelSet>ImportDep.proto message <PascalSet>ImportDep
+         *
+         * Mirrors [assertSourceSet]'s shape but with the zip-based naming convention:
+         *   - Codegen workspace = each `extendedProto` set + the source set itself, one
+         *     `<set>Dep.proto` each (extendsFrom propagates parent's `<set>Proto` zip into
+         *     child's codegen).
+         *   - Import workspace = the codegen sets above PLUS each `imports` set, one
+         *     `<set>ImportDep.proto` each (extendsFrom propagates parent's `<set>ProtoImport`,
+         *     and importsAllFrom/importsFrom propagate the import config too).
+         *   - Generated files = `dependency/<Pascal>Dep.kt`, `dependency/<Pascal>Dep.ext.kt`,
+         *     `dependency/_rpc_internal/<Pascal>Dep.kt` for each codegen set.
+         */
+        fun GrpcTestEnv.assertZipSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extendedProto: List<SSets> = emptyList(),
+        ) {
+            if (!sourceSet.applicable()) {
+                println(
+                    "Skipping ${sourceSet.capital} source set " +
+                            "because it's not applicable for the current Kotlin version"
+                )
+                return
+            }
+
+            cleanProtoBuildDir()
+
+            val applicableImports = imports
+                .onEach {
+                    if (!it.applicable()) {
+                        println(
+                            "Skipping ${it.capital} import source set " +
+                                    "because it's not applicable for the current Kotlin version"
+                        )
+                    }
+                }
+                .filter { it.applicable() }
+                .toSet()
+
+            val codegenSets = extendedProto.filter { it.applicable() } + sourceSet
+            val importDepSets = codegenSets + applicableImports.toList()
+
+            val result = runForSet(sourceSet)
+
+            result.assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = codegenSets.map { Path("${it.name}Dep.proto") },
+                importProtoFiles = importDepSets.map { Path("${it.name}ImportDep.proto") },
+                generatedFiles = codegenSets.flatMap {
+                    val pascal = it.capital
+                    listOf(
+                        Path("dependency", "${pascal}Dep.kt"),
+                        Path("dependency", "${pascal}Dep.ext.kt"),
+                        Path("dependency", RPC_INTERNAL, "${pascal}Dep.kt"),
+                    )
+                },
+                notExecuted = sourceSet.all().filter { it != sourceSet && it !in applicableImports },
+            )
+        }
+
         fun BuildResult.assertSourceSet(
             sourceSet: SSets,
             vararg imports: SSets,

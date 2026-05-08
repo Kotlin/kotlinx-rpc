@@ -5,6 +5,7 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.base.GrpcBaseTest
+import kotlinx.rpc.base.KtVersion
 import kotlinx.rpc.base.isAgp9
 import kotlinx.rpc.base.versionsWhereAndroidKmpLibExist
 import kotlinx.rpc.protoc.PlatformOption
@@ -70,6 +71,116 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+
+        // dependency proto reaches commonMain as codegen
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "Dependency.kt"),
+            Path("dependency", "Dependency.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Codegen KMP DSL`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("commonMainDep.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "CommonMainDep.kt"),
+            Path("dependency", "CommonMainDep.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "CommonMainDep.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Per Source Set KMP DSL`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonTest)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFilesImports)
+
+        // protoImport on commonTest only — not visible to commonMain
+        // commonTest extends commonMain, so its imports include the zip's commonTestImportDep.proto
+        // plus commonMain's protos (some.proto) propagated via the source set hierarchy.
+        assertWorkspaceImportProtoFilesCopied(testSourceSet, Path("commonTestImportDep.proto"), Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet)
+
+        assertWorkspaceProtoFilesCopied(testSourceSet, Path("other.proto"))
+        // commonMain has its own some.proto and inherits nothing extra
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+    }
+
+    @TestFactory
+    fun `Dependency Proto KMP Hierarchy Propagation`() = runGrpcTest {
+        // protoImport declared on commonMain must propagate to platform leaves
+        // (jvmMain, macosArm64Main) via extendsFrom — the explicit transitivity claim.
+        // Platform leaves also inherit commonMain's own protos (some.proto) as imports
+        // through the source set hierarchy.
+
+        runGradle("processJvmMainProtoFilesImports")
+        assertWorkspaceImportProtoFilesCopied(
+            SSetsKmp.Default.jvmMain,
+            Path("commonMainImportDep.proto"),
+            Path("some.proto"),
+        )
+
+        runGradle("processMacosArm64MainProtoFilesImports")
+        assertWorkspaceImportProtoFilesCopied(
+            SSetsKmp.Default.macosArm64Main,
+            Path("commonMainImportDep.proto"),
+            Path("some.proto"),
+        )
+
+        // Source of truth — commonMain itself only sees the zip's commonMainImportDep.proto;
+        // its own some.proto stays in the proto dir, not the import dir.
+        runGradle(processCommonMainProtoFiles)
+        runGradle("processCommonMainProtoFilesImports")
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("commonMainImportDep.proto"))
+    }
+
+    @TestFactory
+    fun `Imports From Provider Source Set`() = runGrpcTest {
+        // Exercises ProtoSourceSet.importsFrom(Provider<ProtoSourceSet>) which is the
+        // only public path that calls extendsFromLazy. Asserts both branches:
+        //   - the imported source set's local protos appear as imports (common2.proto)
+        //   - the imported source set's protoImport configuration is also pulled in
+        //     transitively via extendsFromLazy (common2ImportDep.proto from the zip)
+        runGradle(processCommonMainProtoFiles)
+        runGradle("processCommonMainProtoFilesImports")
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(
+            mainSourceSet,
+            Path("common2.proto"),
+            Path("common2ImportDep.proto"),
+        )
     }
 
     @TestFactory
@@ -246,6 +357,107 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         )
 
         runAndCheckFiles(
+            SSetsKmp.Default.macosArm64Test,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.macosTest,
+        )
+    }
+
+    @TestFactory
+    fun `Dependency Proto Per Source Set Hierarchy`() = runGrpcTest(
+        // webMain/webTest source sets only exist on Kotlin 2.2.20+; the build script
+        // declares <set>Proto/<set>ProtoImport configs for them, which only resolve when
+        // the corresponding source sets exist.
+        versionsPredicate = { kotlinSemver >= KtVersion.v2_2_20 },
+    ) {
+        // Each of the 16 KMP source sets in the Default hierarchy declares its OWN
+        //   <set>Proto       zip with <set>Dep.proto       message dependency.<Set>Dep
+        //   <set>ProtoImport zip with <set>ImportDep.proto message dependency.<Set>ImportDep
+        //
+        // Verifies (mirrors the structure of the `KMP Hierarchy` test method):
+        //   - Each source set's bufGenerate task processes ONLY its own <set>Dep.proto
+        //     (KMP source-set hierarchy is wired via importsAllFrom, NOT extendsFrom —
+        //     parent's <set>Proto zip stays in parent only).
+        //   - Each source set's import workspace contains its own <set>ImportDep.proto
+        //     plus every ancestor's <set>ImportDep.proto (importsAllFrom propagates
+        //     parent's protoImport configuration to child's import workspace).
+        //   - For test source sets, the corresponding main set's <set>ImportDep.proto
+        //     also propagates (importsAllFrom corresponding-main mechanism).
+
+        assertZipSourceSet(SSetsKmp.Default.commonMain)
+        assertZipSourceSet(SSetsKmp.Default.commonTest, SSetsKmp.Default.commonMain)
+
+        assertZipSourceSet(SSetsKmp.Default.nativeMain, SSetsKmp.Default.commonMain)
+        assertZipSourceSet(
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        assertZipSourceSet(SSetsKmp.Default.jvmMain, SSetsKmp.Default.commonMain)
+        assertZipSourceSet(
+            SSetsKmp.Default.jvmTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        assertZipSourceSet(SSetsKmp.Default.webMain, SSetsKmp.Default.commonMain)
+        assertZipSourceSet(
+            SSetsKmp.Default.webTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        assertZipSourceSet(
+            SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+        )
+        assertZipSourceSet(
+            SSetsKmp.Default.jsTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain, SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.webTest,
+        )
+
+        assertZipSourceSet(
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+        )
+        assertZipSourceSet(
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.nativeTest,
+        )
+
+        assertZipSourceSet(
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+        )
+        assertZipSourceSet(
+            SSetsKmp.Default.macosTest,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+        )
+
+        assertZipSourceSet(
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+        )
+        assertZipSourceSet(
             SSetsKmp.Default.macosArm64Test,
             SSetsKmp.Default.commonMain,
             SSetsKmp.Default.nativeMain,

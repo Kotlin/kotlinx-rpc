@@ -85,6 +85,103 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependency Proto Test Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonTest)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
+
+        // testDep proto reaches the test source set as codegen
+        assertWorkspaceProtoFilesCopied(testSourceSet, Path("some.proto"), Path("testDep.proto"))
+
+        // main is untouched: testProto must not leak to main
+        assertWorkspaceProtoFilesCopied(mainSourceSet)
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet)
+
+        assertSourceCodeGenerated(
+            testSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "TestDep.kt"),
+            Path("dependency", RPC_INTERNAL, "TestDep.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.test)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Test Import`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonTest)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFilesImports)
+
+        // testImportDep proto reaches test as import only
+        assertWorkspaceProtoFilesCopied(testSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(testSourceSet, Path("testImportDep.proto"))
+
+        // main is untouched
+        assertWorkspaceProtoFilesCopied(mainSourceSet)
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet)
+
+        // testImportDep.proto is import-only, so no TestImportDep.kt generated
+        assertSourceCodeGenerated(
+            testSourceSet,
+            Path("Some.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.test)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Extract Tasks Are Cached Properly`() = runGrpcTest {
+        val extractProtoMain = "extractProtoMain"
+        val extractProtoImportMain = "extractProtoImportMain"
+
+        val firstRun = runGradle(extractProtoMain, extractProtoImportMain)
+        assertEquals(TaskOutcome.SUCCESS, firstRun.protoTaskOutcome(extractProtoMain))
+        assertEquals(TaskOutcome.SUCCESS, firstRun.protoTaskOutcome(extractProtoImportMain))
+
+        val secondRun = runGradle(extractProtoMain, extractProtoImportMain)
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRun.protoTaskOutcome(extractProtoMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRun.protoTaskOutcome(extractProtoImportMain))
+
+        cleanProtoBuildDir()
+
+        // Sync isn't a cacheable task, so a clean output dir means re-execute → SUCCESS,
+        // not FROM_CACHE. UP_TO_DATE detection relies on the persisted output state.
+        val thirdRun = runGradle(extractProtoMain, extractProtoImportMain)
+        assertEquals(TaskOutcome.SUCCESS, thirdRun.protoTaskOutcome(extractProtoMain))
+        assertEquals(TaskOutcome.SUCCESS, thirdRun.protoTaskOutcome(extractProtoImportMain))
+
+        // rewrite the codegen zip with different content — must invalidate extractProtoMain
+        // but NOT extractProtoImportMain, which reads a separate zip.
+        val codegenZip = projectDir.resolve("main-dependency.zip")
+        java.util.zip.ZipOutputStream(java.nio.file.Files.newOutputStream(codegenZip)).use { zos ->
+            zos.putNextEntry(java.util.zip.ZipEntry("mainDep.proto"))
+            zos.write(
+                """
+                syntax = "proto3";
+
+                package dependency;
+
+                message MainDep {
+                  string value = 1;
+                  int32 version = 2;
+                }
+                """.trimIndent().toByteArray(),
+            )
+            zos.closeEntry()
+        }
+
+        val fourthRun = runGradle(extractProtoMain, extractProtoImportMain)
+        assertEquals(TaskOutcome.SUCCESS, fourthRun.protoTaskOutcome(extractProtoMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fourthRun.protoTaskOutcome(extractProtoImportMain))
+    }
+
+    @TestFactory
     fun `No gRPC`() = runGrpcTest {
         SSetsJvm.entries.forEach {
             runNonExistentTasksForSourceSet(it)

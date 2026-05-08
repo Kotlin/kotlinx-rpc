@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "common2.proto";
+import "common2ImportDep.proto";
+
+message Some {
+  string content = 1;
+  AuxMessage aux = 2;
+  dependency.CommonAuxImportDep dep = 3;
+}

@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "commonMainImportDep.proto";
+
+message Some {
+  string content = 1;
+  dependency.CommonMainImportDep dep = 2;
+}

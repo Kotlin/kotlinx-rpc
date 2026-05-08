@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+import "debugImportDep.proto";
+
+message Debug {
+  string content = 1;
+  dependency.DebugImportDep dep = 2;
+}
