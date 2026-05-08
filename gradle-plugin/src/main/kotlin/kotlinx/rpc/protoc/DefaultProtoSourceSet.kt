@@ -6,6 +6,7 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
+import kotlinx.rpc.util.extendsFromLazy
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withLegacyAndroid
 import kotlinx.rpc.util.withAndroidSourceSets
@@ -20,6 +21,7 @@ import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -37,7 +39,6 @@ import java.util.*
 import java.util.function.Consumer
 import javax.inject.Inject
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 @Suppress("UNCHECKED_CAST")
 internal val Project.protoSourceSets: ProtoSourceSets
@@ -163,7 +164,19 @@ internal open class DefaultProtoSourceSet(
     // Proto import dependency configuration for this source set, created when protoc is activated.
     // Allows users to declare proto import dependencies via `dependencies { <name>ProtoImport("...") }`.
     // Resolved artifacts are extracted and available as imports, but not for code generation.
-    internal val protoImportConfiguration: Configuration
+    private val protoImportConfigurationNew: Configuration
+
+    // Configurations attached lazily via importsFrom(Provider<...>) / importsAllFrom that cannot
+    // be wired through Configuration.extendsFrom: Gradle 8.8–9.3 has no Provider-based overload at
+    // all, and no Gradle version exposes a Provider<List<Configuration>> overload. Their files are
+    // merged into [protoImportFiles] at the consumer site, so resolution still sees them.
+    private val protoImportConfigurationLegacyList: ListProperty<Configuration> = project.objects.listProperty()
+
+    // Aggregated proto-import inputs for tasks: declared dependencies plus the transitive closure
+    // built up via Configuration.extendsFrom, plus everything stored in protoImportConfigOverflow.
+    internal val protoImportConfiguration: FileCollection by lazy {
+        project.files(protoImportConfigurationNew, protoImportConfigurationLegacyList)
+    }
 
     init {
         val protoConfigName = protoConfigurationName(name)
@@ -174,7 +187,7 @@ internal open class DefaultProtoSourceSet(
         }
 
         val protoImportConfigName = protoImportConfigurationName(name)
-        protoImportConfiguration = project.configurations.maybeCreate(protoImportConfigName).apply {
+        protoImportConfigurationNew = project.configurations.maybeCreate(protoImportConfigName).apply {
             isCanBeResolved = true
             isCanBeConsumed = false
             description = "Proto file import dependencies for source set '$name' (imports only)"
@@ -190,7 +203,8 @@ internal open class DefaultProtoSourceSet(
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
-        protoImportConfiguration.extendsFrom(protoSourceSet.protoImportConfiguration)
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
     }
 
     override fun importsFrom(rawProtoSourceSet: Provider<ProtoSourceSet>) {
@@ -199,7 +213,11 @@ internal open class DefaultProtoSourceSet(
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
 
-        protoImportConfiguration.extendsFrom(protoSourceSet.map { it.protoImportConfiguration })
+        protoImportConfigurationNew.extendsFromLazy(
+            legacyList = protoImportConfigurationLegacyList,
+            provider = protoSourceSet.map { it.protoImportConfigurationNew },
+        )
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.flatMap { it.protoImportConfigurationLegacyList })
     }
 
     override fun importsAllFrom(rawProtoSourceSets: Provider<List<ProtoSourceSet>>) {
@@ -208,18 +226,12 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSets.checkSelfImport())
         imports.addAll(protoSourceSets.map { list -> list.flatMap { it.imports.checkSelfImport().get() } })
 
-        protoImportConfiguration.extendsFrom(
-            protoSourceSets.map { list -> list.flatMap { it.protoImportConfiguration } }
+        protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.map { it.protoImportConfigurationNew } },
         )
-    }
-
-    override fun importsFrom(rawProtoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>) {
-        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
-
-        imports.add(protoSourceSet.checkSelfImport())
-        imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
-
-        protoImportConfiguration.extendsFrom(protoSourceSet.map { it.protoImportConfiguration })
+        protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.flatMap { it.protoImportConfigurationLegacyList.get() } },
+        )
     }
 
     private val extendsFrom: MutableSet<ProtoSourceSet> = mutableSetOf()
@@ -244,7 +256,8 @@ internal open class DefaultProtoSourceSet(
 
         // Wire Gradle configuration inheritance for proto dependency configurations
         protoConfiguration.extendsFrom(protoSourceSet.protoConfiguration)
-        protoImportConfiguration.extendsFrom(protoSourceSet.protoImportConfiguration)
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
     }
 
     @JvmName("checkSelfImport_provider")
@@ -273,8 +286,9 @@ internal open class DefaultProtoSourceSet(
         return map { it.asDefault(action) }
     }
 
+    @JvmName("asDefault_provider_list")
     private fun Provider<List<ProtoSourceSet>>.asDefault(action: String): Provider<List<DefaultProtoSourceSet>> {
-        return map { it.map { it.asDefault(action) } }
+        return map { lists -> lists.map { it.asDefault(action) } }
     }
 
     @OptIn(ExperimentalContracts::class)

@@ -208,23 +208,6 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
     public fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>)
 
     /**
-     * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
-     *
-     * Example:
-     * ```kotlin
-     * kotlin.sourceSets {
-     *     val someProto = create("someProto")
-     *     commonMain {
-     *         proto {
-     *             importsFrom(protoSourceSets.getByName("someProto"))
-     *         }
-     *     }
-     * }
-     * ```
-     */
-    public fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>)
-
-    /**
      * Proto files from [protoSourceSets] will be available as import, but will not be used for code generation.
      *
      * Example:
