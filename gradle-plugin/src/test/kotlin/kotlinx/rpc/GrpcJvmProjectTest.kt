@@ -30,6 +30,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -216,6 +217,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -232,6 +234,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             importProtoFiles = emptyList(),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             importGeneratedFiles = emptyList()
@@ -248,6 +251,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -267,10 +271,12 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Other.kt"),
+                Path("Other.ext.kt"),
                 Path(RPC_INTERNAL, "Other.kt"),
             ),
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,
@@ -289,6 +295,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -306,10 +313,12 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Other.kt"),
+                Path("Other.ext.kt"),
                 Path(RPC_INTERNAL, "Other.kt"),
             ),
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,

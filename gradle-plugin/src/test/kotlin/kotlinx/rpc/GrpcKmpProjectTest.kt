@@ -27,6 +27,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
