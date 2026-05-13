@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-import "mainDep.proto";
-
-message Some {
-  string content = 1;
-  dependency.MainDep dep = 2;
-}

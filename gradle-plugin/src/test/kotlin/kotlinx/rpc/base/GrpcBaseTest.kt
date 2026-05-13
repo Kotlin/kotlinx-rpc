@@ -9,10 +9,12 @@ package kotlinx.rpc.base
 import kotlinx.rpc.base.GrpcBaseTest.PluginMode
 import kotlinx.rpc.base.GrpcBaseTest.SSets
 import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestInstance
+import java.io.BufferedReader
 import java.nio.file.Path
 import java.util.stream.Stream
 import kotlin.io.path.*
@@ -94,6 +96,9 @@ abstract class GrpcBaseTest : BaseTest() {
                     "File '${file}' in '$dir' does not exist"
                 }
             }
+
+            // todo check no tests are broken
+            assertSourceCodeNotGeneratedExcept(sourceSet, *files)
         }
 
         fun assertSourceCodeNotGenerated(sourceSet: SSets, vararg files: Path) {
@@ -106,7 +111,7 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun assertSourceCodeNotGeneratedExcept(sourceSet: SSets, vararg files: Path) {
+        private fun assertSourceCodeNotGeneratedExcept(sourceSet: SSets, vararg files: Path) {
             val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
 
             fun Path.doAssert() {
@@ -314,7 +319,6 @@ abstract class GrpcBaseTest : BaseTest() {
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYaml(sourceSet))
 
             assertSourceCodeGenerated(sourceSet, *generatedFiles.toTypedArray())
-            assertSourceCodeNotGeneratedExcept(sourceSet, *generatedFiles.toTypedArray())
             assertWorkspaceProtoFilesCopied(sourceSet, *protoFiles.toTypedArray())
             assertWorkspaceImportProtoFilesCopied(sourceSet, *importProtoFiles.toTypedArray())
 
@@ -324,7 +328,21 @@ abstract class GrpcBaseTest : BaseTest() {
                 assertProtoTaskNotExecuted(processProtoFilesImports(it))
                 assertProtoTaskNotExecuted(generateBufYaml(it))
                 assertProtoTaskNotExecuted(generateBufGenYaml(it))
+                assertProtoTaskNotExecuted(extractProto(it))
+                assertProtoTaskNotExecuted(extractProtoImport(it))
             }
+        }
+
+        fun GrpcTestEnv.runAndCheckZipFiles(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extended: List<SSets> = emptyList(),
+        ) {
+            cleanProtoBuildDir()
+
+            runForSet(sourceSet).assertZipSourceSet(sourceSet, *imports, extendedProto = extended)
+
+            dryRunCompilation(sourceSet)
         }
 
         fun GrpcTestEnv.runAndCheckFiles(
@@ -360,76 +378,14 @@ abstract class GrpcBaseTest : BaseTest() {
         }
 
         fun GrpcTestEnv.runForSet(sourceSet: SSets): BuildResult {
+            if (!sourceSet.applicable()) {
+                return SkipBuild
+            }
+
             return runGradle(bufGenerate(sourceSet))
         }
 
-        /**
-         * Asserts the workspace state for a source set whose proto files come ONLY from
-         * `<set>Proto` / `<set>ProtoImport` zip dependencies (one pair per source set).
-         *
-         * Each source set's zip contains a single proto file:
-         *   <set>-dependency.zip          -> <camelSet>Dep.proto       message <PascalSet>Dep
-         *   <set>-import-dependency.zip   -> <camelSet>ImportDep.proto message <PascalSet>ImportDep
-         *
-         * Mirrors [assertSourceSet]'s shape but with the zip-based naming convention:
-         *   - Codegen workspace = each `extendedProto` set + the source set itself, one
-         *     `<set>Dep.proto` each (extendsFrom propagates parent's `<set>Proto` zip into
-         *     child's codegen).
-         *   - Import workspace = the codegen sets above PLUS each `imports` set, one
-         *     `<set>ImportDep.proto` each (extendsFrom propagates parent's `<set>ProtoImport`,
-         *     and importsAllFrom/importsFrom propagate the import config too).
-         *   - Generated files = `dependency/<Pascal>Dep.kt`, `dependency/<Pascal>Dep.ext.kt`,
-         *     `dependency/_rpc_internal/<Pascal>Dep.kt` for each codegen set.
-         */
-        fun GrpcTestEnv.assertZipSourceSet(
-            sourceSet: SSets,
-            vararg imports: SSets,
-            extendedProto: List<SSets> = emptyList(),
-        ) {
-            if (!sourceSet.applicable()) {
-                println(
-                    "Skipping ${sourceSet.capital} source set " +
-                            "because it's not applicable for the current Kotlin version"
-                )
-                return
-            }
-
-            cleanProtoBuildDir()
-
-            val applicableImports = imports
-                .onEach {
-                    if (!it.applicable()) {
-                        println(
-                            "Skipping ${it.capital} import source set " +
-                                    "because it's not applicable for the current Kotlin version"
-                        )
-                    }
-                }
-                .filter { it.applicable() }
-                .toSet()
-
-            val codegenSets = extendedProto.filter { it.applicable() } + sourceSet
-            val importDepSets = codegenSets + applicableImports.toList()
-
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = codegenSets.map { Path("${it.name}Dep.proto") },
-                importProtoFiles = importDepSets.map { Path("${it.name}ImportDep.proto") },
-                generatedFiles = codegenSets.flatMap {
-                    val pascal = it.capital
-                    listOf(
-                        Path("dependency", "${pascal}Dep.kt"),
-                        Path("dependency", "${pascal}Dep.ext.kt"),
-                        Path("dependency", RPC_INTERNAL, "${pascal}Dep.kt"),
-                    )
-                },
-                notExecuted = sourceSet.all().filter { it != sourceSet && it !in applicableImports },
-            )
-        }
-
-        fun BuildResult.assertSourceSet(
+        private fun BuildResult.assertZipSourceSet(
             sourceSet: SSets,
             vararg imports: SSets,
             extendedProto: List<SSets>,
@@ -454,7 +410,52 @@ abstract class GrpcBaseTest : BaseTest() {
                 .filter { it.applicable() }
                 .toSet()
 
-            val generateFor = extendedProto + sourceSet
+            val generateFor = extendedProto.filter { it.applicable() } + sourceSet
+            // because every sset has import dependency too for these tests
+            val fullImports = importsSet + generateFor
+
+            assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = generateFor.map { Path("${it.name}Dep.proto") },
+                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") },
+                generatedFiles = generateFor.flatMap {
+                    val pascal = it.capital
+                    listOf(
+                        Path("dependency", "${pascal}Dep.kt"),
+                        Path("dependency", "${pascal}Dep.ext.kt"),
+                        Path("dependency", RPC_INTERNAL, "${pascal}Dep.kt"),
+                    )
+                },
+                notExecuted = sourceSet.all().filter { it != sourceSet && it !in fullImports },
+            )
+        }
+
+        private fun BuildResult.assertSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extendedProto: List<SSets>,
+        ) {
+            if (!sourceSet.applicable()) {
+                println(
+                    "Skipping ${sourceSet.capital} source set " +
+                            "because it's not applicable for the current Kotlin version"
+                )
+                return
+            }
+
+            val importsSet = imports
+                .onEach {
+                    if (!it.applicable()) {
+                        println(
+                            "Skipping ${it.capital} import source set " +
+                                    "because it's not applicable for the current Kotlin version"
+                        )
+                    }
+                }
+                .filter { it.applicable() }
+                .toSet()
+
+            val generateFor = extendedProto.filter { it.applicable() } + sourceSet
 
             assertTaskExecuted(
                 sourceSet = sourceSet,
@@ -538,6 +539,10 @@ inputs:
         val generateBufYamlCommonTest = generateBufYaml(testSourceSet)
         val generateBufGenYamlCommonMain = generateBufGenYaml(mainSourceSet)
         val generateBufGenYamlCommonTest = generateBufGenYaml(testSourceSet)
+        val extractProtoCommonMain = extractProto(mainSourceSet)
+        val extractProtoCommonTest = extractProto(testSourceSet)
+        val extractProtoImportCommonMain = extractProtoImport(mainSourceSet)
+        val extractProtoImportCommonTest = extractProtoImport(testSourceSet)
 
         val protoBuildDir: Path by lazy {
             projectDir
@@ -874,4 +879,14 @@ private fun SSets.preBuildTaskName(mode: PluginMode): String? {
             "pre${capital}Build"
         }
     }
+}
+
+private object SkipBuild : BuildResult {
+    override fun getOutput(): String = ""
+    @Suppress("UnstableApiUsage")
+    override fun getOutputReader(): BufferedReader? = null
+    override fun getTasks(): List<BuildTask?> = emptyList()
+    override fun tasks(outcome: TaskOutcome?): List<BuildTask?> = emptyList()
+    override fun taskPaths(outcome: TaskOutcome?): List<String?> = emptyList()
+    override fun task(taskPath: String?): BuildTask? = null
 }

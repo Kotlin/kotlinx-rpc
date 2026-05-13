@@ -19,49 +19,37 @@ android {
     compileSdk = 34
 }
 
-// Each Android source set declares its own pair of zip dependencies:
-//   <set>Proto       — codegen, propagates via Android variant extendsFrom wiring
-//                      (debug extends main; testDebug extends test/testFixtures/testFixturesDebug; etc.)
-//   <set>ProtoImport — import-only, propagates as imports via extendsFrom and importsFrom
-//                      (testDebug.importsFrom(debug) → debug's imports become testDebug's imports)
-//
-// AGP 9.0 built-in Kotlin only creates unit test compilation for testBuildType (debug),
-// so testRelease has no compile task — testRelease deps are still declared, but the
-// test method skips assertions for testRelease in this fixture.
-//
-// The `main` source set's configurations are named `proto` / `protoImport` (not
-// `mainProto` / `mainProtoImport`) — see protoConfigurationName / protoImportConfigurationName.
 dependencies {
-    "proto"(files("main-dependency.zip"))
-    "protoImport"(files("main-import-dependency.zip"))
+    proto(files("main-dependency.zip"))
+    protoImport(files("main-import-dependency.zip"))
 
-    "testProto"(files("test-dependency.zip"))
-    "testProtoImport"(files("test-import-dependency.zip"))
+    testProto(files("test-dependency.zip"))
+    testProtoImport(files("test-import-dependency.zip"))
 
-    "testFixturesProto"(files("test-fixtures-dependency.zip"))
-    "testFixturesProtoImport"(files("test-fixtures-import-dependency.zip"))
+    testFixturesProto(files("test-fixtures-dependency.zip"))
+    testFixturesProtoImport(files("test-fixtures-import-dependency.zip"))
 
-    "testFixturesDebugProto"(files("test-fixtures-debug-dependency.zip"))
-    "testFixturesDebugProtoImport"(files("test-fixtures-debug-import-dependency.zip"))
+    testFixturesDebugProto(files("test-fixtures-debug-dependency.zip"))
+    testFixturesDebugProtoImport(files("test-fixtures-debug-import-dependency.zip"))
 
-    "testFixturesReleaseProto"(files("test-fixtures-release-dependency.zip"))
-    "testFixturesReleaseProtoImport"(files("test-fixtures-release-import-dependency.zip"))
+    testFixturesReleaseProto(files("test-fixtures-release-dependency.zip"))
+    testFixturesReleaseProtoImport(files("test-fixtures-release-import-dependency.zip"))
 
-    "androidTestProto"(files("android-test-dependency.zip"))
-    "androidTestProtoImport"(files("android-test-import-dependency.zip"))
+    androidTestProto(files("android-test-dependency.zip"))
+    androidTestProtoImport(files("android-test-import-dependency.zip"))
 
-    "debugProto"(files("debug-dependency.zip"))
-    "debugProtoImport"(files("debug-import-dependency.zip"))
+    debugProto(files("debug-dependency.zip"))
+    debugProtoImport(files("debug-import-dependency.zip"))
 
-    "releaseProto"(files("release-dependency.zip"))
-    "releaseProtoImport"(files("release-import-dependency.zip"))
+    releaseProto(files("release-dependency.zip"))
+    releaseProtoImport(files("release-import-dependency.zip"))
 
-    "testDebugProto"(files("test-debug-dependency.zip"))
-    "testDebugProtoImport"(files("test-debug-import-dependency.zip"))
+    testDebugProto(files("test-debug-dependency.zip"))
+    testDebugProtoImport(files("test-debug-import-dependency.zip"))
 
-    "testReleaseProto"(files("test-release-dependency.zip"))
-    "testReleaseProtoImport"(files("test-release-import-dependency.zip"))
+    testReleaseProto(files("test-release-dependency.zip"))
+    testReleaseProtoImport(files("test-release-import-dependency.zip"))
 
-    "androidTestDebugProto"(files("android-test-debug-dependency.zip"))
-    "androidTestDebugProtoImport"(files("android-test-debug-import-dependency.zip"))
+    androidTestDebugProto(files("android-test-debug-dependency.zip"))
+    androidTestDebugProtoImport(files("android-test-debug-import-dependency.zip"))
 }

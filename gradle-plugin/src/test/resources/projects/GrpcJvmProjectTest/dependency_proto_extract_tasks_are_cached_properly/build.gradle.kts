@@ -14,10 +14,6 @@ rpc {
 }
 
 dependencies {
-    // Per-source-set / per-configuration zips: distinct content for each
-    // archive so a regression that wires extractProtoMain and
-    // extractProtoImportMain to the same source would surface as the wrong
-    // proto file landing in the wrong workspace dir.
     proto(files("main-dependency.zip"))
     protoImport(files("main-import-dependency.zip"))
 }

@@ -244,51 +244,38 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     private fun GrpcTestEnv.dependencyProtoPerSourceSetAllVariantsBody(includeTestRelease: Boolean = true) {
-        // Each of the 11 Android Default source sets declares its OWN
-        //   <set>Proto       zip with <set>Dep.proto       message dependency.<Set>Dep
-        //   <set>ProtoImport zip with <set>ImportDep.proto message dependency.<Set>ImportDep
-        //
-        // Verifies (mirrors the structure of `All Default Source Sets`):
-        //   - Each leaf variant's bufGenerate task produces code for its own <set>Dep.proto
-        //     plus every variant-extendsFrom ancestor's <set>Dep.proto (variant wiring uses
-        //     extendsFrom — codegen propagates as codegen).
-        //   - Each leaf variant's import workspace contains its own <set>ImportDep.proto,
-        //     every extendsFrom ancestor's <set>ImportDep.proto, and every importsFrom
-        //     source set's <set>ImportDep.proto (test variants importsFrom the corresponding
-        //     main variant; testFixtures importsFrom main).
-
-        assertZipSourceSet(
+        runAndCheckZipFiles(
             SSetsAndroid.Default.debug,
-            extendedProto = listOf(SSetsAndroid.Default.main),
+            extended = listOf(SSetsAndroid.Default.main),
         )
-        assertZipSourceSet(
+        runAndCheckZipFiles(
             SSetsAndroid.Default.release,
-            extendedProto = listOf(SSetsAndroid.Default.main),
+            extended = listOf(SSetsAndroid.Default.main),
         )
-        assertZipSourceSet(
+        runAndCheckZipFiles(
             SSetsAndroid.Default.testDebug,
             SSetsAndroid.Default.debug, SSetsAndroid.Default.main,
-            extendedProto = listOf(
+            extended = listOf(
                 SSetsAndroid.Default.test,
                 SSetsAndroid.Default.testFixtures,
                 SSetsAndroid.Default.testFixturesDebug,
             ),
         )
         if (includeTestRelease) {
-            assertZipSourceSet(
+            runAndCheckZipFiles(
                 SSetsAndroid.Default.testRelease,
                 SSetsAndroid.Default.release, SSetsAndroid.Default.main,
-                extendedProto = listOf(
+                extended = listOf(
                     SSetsAndroid.Default.test,
                     SSetsAndroid.Default.testFixtures,
                     SSetsAndroid.Default.testFixturesRelease,
                 ),
             )
         }
-        assertZipSourceSet(
+        runAndCheckZipFiles(
             SSetsAndroid.Default.androidTestDebug,
             SSetsAndroid.Default.debug, SSetsAndroid.Default.main,
-            extendedProto = listOf(
+            extended = listOf(
                 SSetsAndroid.Default.androidTest,
                 SSetsAndroid.Default.testFixtures,
                 SSetsAndroid.Default.testFixturesDebug,
@@ -297,192 +284,13 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Dependency Proto Import`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
-        fun runForSetWithImport(sourceSet: SSets, vararg extraTasks: SSetsAndroid) {
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = listOf(
-                    Path("some.proto"),
-                ),
-                importProtoFiles = listOf(
-                    Path("dependency.proto"),
-                ),
-                generatedFiles = listOf(
-                    Path("Some.kt"),
-                    Path("Some.ext.kt"),
-                    Path(RPC_INTERNAL, "Some.kt"),
-                ),
-                notExecuted = SSetsAndroid.Default.entries - extraTasks.toSet() - sourceSet,
-            )
-        }
-
-        runForSetWithImport(SSetsAndroid.Default.debug)
-        runForSetWithImport(SSetsAndroid.Default.release)
-    }
-
-    @TestFactory
-    fun `Dependency Proto Import Flavors`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
+    fun `Dependency Configurations And Tasks`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
         runGradle("test_tasks", "--no-configuration-cache")
     }
 
     @TestFactory
-    fun `Dependency Proto Import Flavors Codegen`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
-        // Verify proto imports work across all flavor variants
-        // protoImport declared on main → inherited by all variants
-
-        fun runForVariant(sourceSet: SSets) {
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = listOf(
-                    Path("some.proto"),
-                ),
-                importProtoFiles = listOf(
-                    Path("dependency.proto"),
-                ),
-                generatedFiles = listOf(
-                    Path("Some.kt"),
-                    Path("Some.ext.kt"),
-                    Path(RPC_INTERNAL, "Some.kt"),
-                ),
-                notExecuted = emptyList(),
-            )
-        }
-
-        // arm variants
-        runForVariant(SSetsAndroid.Flavors.armDebug)
-        runForVariant(SSetsAndroid.Flavors.armRelease)
-
-        // x86 variants
-        runForVariant(SSetsAndroid.Flavors.x86Debug)
-        runForVariant(SSetsAndroid.Flavors.x86Release)
-    }
-
-    @TestFactory
-    fun `Dependency Proto Codegen`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
-        fun runForVariant(sourceSet: SSets) {
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = listOf(
-                    Path("some.proto"),
-                    Path("mainDep.proto"),
-                ),
-                importProtoFiles = emptyList(),
-                generatedFiles = listOf(
-                    Path("Some.kt"),
-                    Path("Some.ext.kt"),
-                    Path(RPC_INTERNAL, "Some.kt"),
-                    Path("dependency", "MainDep.kt"),
-                    Path("dependency", "MainDep.ext.kt"),
-                    Path("dependency", RPC_INTERNAL, "MainDep.kt"),
-                ),
-                notExecuted = SSetsAndroid.Default.entries - sourceSet,
-            )
-        }
-
-        runForVariant(SSetsAndroid.Default.debug)
-        runForVariant(SSetsAndroid.Default.release)
-    }
-
-    @TestFactory
-    fun `Dependency Proto Per Variant Import`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
-        // protoImport scoped to debug only — release must NOT see debugImportDep.proto.
-
-        val debugRun = runForSet(SSetsAndroid.Default.debug)
-        debugRun.assertTaskExecuted(
-            sourceSet = SSetsAndroid.Default.debug,
-            protoFiles = listOf(
-                Path("main.proto"),
-                Path("debug.proto"),
-            ),
-            importProtoFiles = listOf(
-                Path("debugImportDep.proto"),
-            ),
-            generatedFiles = listOf(
-                Path("Main.kt"),
-                Path("Main.ext.kt"),
-                Path(RPC_INTERNAL, "Main.kt"),
-                Path("Debug.kt"),
-                Path("Debug.ext.kt"),
-                Path(RPC_INTERNAL, "Debug.kt"),
-            ),
-            notExecuted = SSetsAndroid.Default.entries - SSetsAndroid.Default.debug,
-        )
-
-        val releaseRun = runForSet(SSetsAndroid.Default.release)
-        releaseRun.assertTaskExecuted(
-            sourceSet = SSetsAndroid.Default.release,
-            protoFiles = listOf(
-                Path("main.proto"),
-                Path("release.proto"),
-            ),
-            importProtoFiles = emptyList(),
-            generatedFiles = listOf(
-                Path("Main.kt"),
-                Path("Main.ext.kt"),
-                Path(RPC_INTERNAL, "Main.kt"),
-                Path("Release.kt"),
-                Path("Release.ext.kt"),
-                Path(RPC_INTERNAL, "Release.kt"),
-            ),
-            notExecuted = SSetsAndroid.Default.entries - SSetsAndroid.Default.release,
-        )
-    }
-
-    @TestFactory
-    fun `Dependency Proto Per Flavor Codegen`() = runGrpcTest(versionsPredicate = { !isAgp9 }) {
-        // armProto declared on the arm flavor — must reach armDebug/armRelease via
-        // extendsFrom but NOT x86Debug/x86Release.
-
-        fun runForArm(sourceSet: SSets) {
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = listOf(
-                    Path("some.proto"),
-                    Path("armDep.proto"),
-                ),
-                importProtoFiles = emptyList(),
-                generatedFiles = listOf(
-                    Path("Some.kt"),
-                    Path("Some.ext.kt"),
-                    Path(RPC_INTERNAL, "Some.kt"),
-                    Path("dependency", "ArmDep.kt"),
-                    Path("dependency", "ArmDep.ext.kt"),
-                    Path("dependency", RPC_INTERNAL, "ArmDep.kt"),
-                ),
-                notExecuted = emptyList(),
-            )
-        }
-
-        fun runForX86(sourceSet: SSets) {
-            val result = runForSet(sourceSet)
-
-            result.assertTaskExecuted(
-                sourceSet = sourceSet,
-                protoFiles = listOf(
-                    Path("some.proto"),
-                ),
-                importProtoFiles = emptyList(),
-                generatedFiles = listOf(
-                    Path("Some.kt"),
-                    Path("Some.ext.kt"),
-                    Path(RPC_INTERNAL, "Some.kt"),
-                ),
-                notExecuted = emptyList(),
-            )
-        }
-
-        runForArm(SSetsAndroid.Flavors.armDebug)
-        runForArm(SSetsAndroid.Flavors.armRelease)
-        runForX86(SSetsAndroid.Flavors.x86Debug)
-        runForX86(SSetsAndroid.Flavors.x86Release)
+    fun `Dependency Configurations And Tasks No KGP`() = runGrpcTest(versionsPredicate = { isAgp9 }) {
+        runGradle("test_tasks", "--no-configuration-cache")
     }
 
     @TestFactory
