@@ -20,36 +20,36 @@ android {
 }
 
 dependencies {
-    proto(files("main-dependency.zip"))
-    protoImport(files("main-import-dependency.zip"))
+    proto(files("zip/main-dependency.zip"))
+    protoImport(files("zip/main-import-dependency.zip"))
 
-    testProto(files("test-dependency.zip"))
-    testProtoImport(files("test-import-dependency.zip"))
+    testProto(files("zip/test-dependency.zip"))
+    testProtoImport(files("zip/test-import-dependency.zip"))
 
-    testFixturesProto(files("test-fixtures-dependency.zip"))
-    testFixturesProtoImport(files("test-fixtures-import-dependency.zip"))
+    testFixturesProto(files("zip/test-fixtures-dependency.zip"))
+    testFixturesProtoImport(files("zip/test-fixtures-import-dependency.zip"))
 
-    testFixturesDebugProto(files("test-fixtures-debug-dependency.zip"))
-    testFixturesDebugProtoImport(files("test-fixtures-debug-import-dependency.zip"))
+    testFixturesDebugProto(files("zip/test-fixtures-debug-dependency.zip"))
+    testFixturesDebugProtoImport(files("zip/test-fixtures-debug-import-dependency.zip"))
 
-    testFixturesReleaseProto(files("test-fixtures-release-dependency.zip"))
-    testFixturesReleaseProtoImport(files("test-fixtures-release-import-dependency.zip"))
+    testFixturesReleaseProto(files("zip/test-fixtures-release-dependency.zip"))
+    testFixturesReleaseProtoImport(files("zip/test-fixtures-release-import-dependency.zip"))
 
-    androidTestProto(files("android-test-dependency.zip"))
-    androidTestProtoImport(files("android-test-import-dependency.zip"))
+    androidTestProto(files("zip/android-test-dependency.zip"))
+    androidTestProtoImport(files("zip/android-test-import-dependency.zip"))
 
-    debugProto(files("debug-dependency.zip"))
-    debugProtoImport(files("debug-import-dependency.zip"))
+    debugProto(files("zip/debug-dependency.zip"))
+    debugProtoImport(files("zip/debug-import-dependency.zip"))
 
-    releaseProto(files("release-dependency.zip"))
-    releaseProtoImport(files("release-import-dependency.zip"))
+    releaseProto(files("zip/release-dependency.zip"))
+    releaseProtoImport(files("zip/release-import-dependency.zip"))
 
-    testDebugProto(files("test-debug-dependency.zip"))
-    testDebugProtoImport(files("test-debug-import-dependency.zip"))
+    testDebugProto(files("zip/test-debug-dependency.zip"))
+    testDebugProtoImport(files("zip/test-debug-import-dependency.zip"))
 
-    testReleaseProto(files("test-release-dependency.zip"))
-    testReleaseProtoImport(files("test-release-import-dependency.zip"))
+    testReleaseProto(files("zip/test-release-dependency.zip"))
+    testReleaseProtoImport(files("zip/test-release-import-dependency.zip"))
 
-    androidTestDebugProto(files("android-test-debug-dependency.zip"))
-    androidTestDebugProtoImport(files("android-test-debug-import-dependency.zip"))
+    androidTestDebugProto(files("zip/android-test-debug-dependency.zip"))
+    androidTestDebugProtoImport(files("zip/android-test-debug-import-dependency.zip"))
 }

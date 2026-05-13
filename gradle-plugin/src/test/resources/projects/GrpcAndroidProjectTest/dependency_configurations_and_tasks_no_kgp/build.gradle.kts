@@ -38,7 +38,7 @@ android {
 }
 
 dependencies {
-    protoImport(files("dependency-protos.zip"))
+    protoImport(files("zip/dependency-protos.zip"))
 }
 
 fun assertConfigurationExists(name: String) {

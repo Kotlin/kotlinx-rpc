@@ -14,5 +14,5 @@ rpc {
 }
 
 dependencies {
-    testProto(files("test-dependency.zip"))
+    testProto(files("zip/test-dependency.zip"))
 }

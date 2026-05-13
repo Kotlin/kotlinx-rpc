@@ -14,5 +14,5 @@ rpc {
 }
 
 dependencies {
-    proto(files("dependency-protos.zip"))
+    proto(files("zip/dependency-protos.zip"))
 }

@@ -27,21 +27,21 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            proto(files("common-main-dependency.zip"))
-            protoImport(files("common-main-import-dependency.zip"))
+            proto(files("zip/common-main-dependency.zip"))
+            protoImport(files("zip/common-main-import-dependency.zip"))
         }
         commonTest.dependencies {
-            proto(files("common-test-dependency.zip"))
-            protoImport(files("common-test-import-dependency.zip"))
+            proto(files("zip/common-test-dependency.zip"))
+            protoImport(files("zip/common-test-import-dependency.zip"))
         }
 
         jvmMain.dependencies {
-            proto(files("jvm-main-dependency.zip"))
-            protoImport(files("jvm-main-import-dependency.zip"))
+            proto(files("zip/jvm-main-dependency.zip"))
+            protoImport(files("zip/jvm-main-import-dependency.zip"))
         }
         jvmTest.dependencies {
-            proto(files("jvm-test-dependency.zip"))
-            protoImport(files("jvm-test-import-dependency.zip"))
+            proto(files("zip/jvm-test-dependency.zip"))
+            protoImport(files("zip/jvm-test-import-dependency.zip"))
         }
     }
 }
@@ -63,68 +63,68 @@ configurations.all {
 
 dependencies {
     // KMP android non-executable
-    "androidMainProto"(files("android-main-dependency.zip"))
-    "androidMainProtoImport"(files("android-main-import-dependency.zip"))
+    "androidMainProto"(files("zip/android-main-dependency.zip"))
+    "androidMainProtoImport"(files("zip/android-main-import-dependency.zip"))
 
-    "androidTestProto"(files("android-test-dependency.zip"))
-    "androidTestProtoImport"(files("android-test-import-dependency.zip"))
+    "androidTestProto"(files("zip/android-test-dependency.zip"))
+    "androidTestProtoImport"(files("zip/android-test-import-dependency.zip"))
 
-    "androidUnitTestProto"(files("android-unit-test-dependency.zip"))
-    "androidUnitTestProtoImport"(files("android-unit-test-import-dependency.zip"))
+    "androidUnitTestProto"(files("zip/android-unit-test-dependency.zip"))
+    "androidUnitTestProtoImport"(files("zip/android-unit-test-import-dependency.zip"))
 
-    "androidInstrumentedTestProto"(files("android-instrumented-test-dependency.zip"))
-    "androidInstrumentedTestProtoImport"(files("android-instrumented-test-import-dependency.zip"))
+    "androidInstrumentedTestProto"(files("zip/android-instrumented-test-dependency.zip"))
+    "androidInstrumentedTestProtoImport"(files("zip/android-instrumented-test-import-dependency.zip"))
 
     // KMP android executable (these are created in a wierd way and probably are not used in real life anyway)
     afterEvaluate {
-        "androidDebugProto"(files("android-debug-dependency.zip"))
-        "androidDebugProtoImport"(files("android-debug-import-dependency.zip"))
+        "androidDebugProto"(files("zip/android-debug-dependency.zip"))
+        "androidDebugProtoImport"(files("zip/android-debug-import-dependency.zip"))
 
-        "androidReleaseProto"(files("android-release-dependency.zip"))
-        "androidReleaseProtoImport"(files("android-release-import-dependency.zip"))
+        "androidReleaseProto"(files("zip/android-release-dependency.zip"))
+        "androidReleaseProtoImport"(files("zip/android-release-import-dependency.zip"))
 
-        "androidUnitTestDebugProto"(files("android-unit-test-debug-dependency.zip"))
-        "androidUnitTestDebugProtoImport"(files("android-unit-test-debug-import-dependency.zip"))
+        "androidUnitTestDebugProto"(files("zip/android-unit-test-debug-dependency.zip"))
+        "androidUnitTestDebugProtoImport"(files("zip/android-unit-test-debug-import-dependency.zip"))
 
-        "androidUnitTestReleaseProto"(files("android-unit-test-release-dependency.zip"))
-        "androidUnitTestReleaseProtoImport"(files("android-unit-test-release-import-dependency.zip"))
+        "androidUnitTestReleaseProto"(files("zip/android-unit-test-release-dependency.zip"))
+        "androidUnitTestReleaseProtoImport"(files("zip/android-unit-test-release-import-dependency.zip"))
 
-        "androidInstrumentedTestDebugProto"(files("android-instrumented-test-debug-dependency.zip"))
-        "androidInstrumentedTestDebugProtoImport"(files("android-instrumented-test-debug-import-dependency.zip"))
+        "androidInstrumentedTestDebugProto"(files("zip/android-instrumented-test-debug-dependency.zip"))
+        "androidInstrumentedTestDebugProtoImport"(files("zip/android-instrumented-test-debug-import-dependency.zip"))
     }
 
     // legacy android non-executable
-    proto(files("main-dependency.zip"))
-    protoImport(files("main-import-dependency.zip"))
+    proto(files("zip/main-dependency.zip"))
+    protoImport(files("zip/main-import-dependency.zip"))
 
-    testProto(files("test-dependency.zip"))
-    testProtoImport(files("test-import-dependency.zip"))
+    testProto(files("zip/test-dependency.zip"))
+    testProtoImport(files("zip/test-import-dependency.zip"))
 
-    testFixturesProto(files("test-fixtures-dependency.zip"))
-    testFixturesProtoImport(files("test-fixtures-import-dependency.zip"))
+    testFixturesProto(files("zip/test-fixtures-dependency.zip"))
+    testFixturesProtoImport(files("zip/test-fixtures-import-dependency.zip"))
 
-    testFixturesDebugProto(files("test-fixtures-debug-dependency.zip"))
-    testFixturesDebugProtoImport(files("test-fixtures-debug-import-dependency.zip"))
+    testFixturesDebugProto(files("zip/test-fixtures-debug-dependency.zip"))
+    testFixturesDebugProtoImport(files("zip/test-fixtures-debug-import-dependency.zip"))
 
-    testFixturesReleaseProto(files("test-fixtures-release-dependency.zip"))
-    testFixturesReleaseProtoImport(files("test-fixtures-release-import-dependency.zip"))
+    testFixturesReleaseProto(files("zip/test-fixtures-release-dependency.zip"))
+    testFixturesReleaseProtoImport(files("zip/test-fixtures-release-import-dependency.zip"))
 
-    androidTestProto(files("android-test-dependency.zip"))
-    androidTestProtoImport(files("android-test-import-dependency.zip"))
+    androidTestProto(files("zip/android-test-dependency.zip"))
+    androidTestProtoImport(files("zip/android-test-import-dependency.zip"))
 
     // legacy android variants
-    debugProto(files("debug-dependency.zip"))
-    debugProtoImport(files("debug-import-dependency.zip"))
+    debugProto(files("zip/debug-dependency.zip"))
+    debugProtoImport(files("zip/debug-import-dependency.zip"))
 
-    releaseProto(files("release-dependency.zip"))
-    releaseProtoImport(files("release-import-dependency.zip"))
+    releaseProto(files("zip/release-dependency.zip"))
+    releaseProtoImport(files("zip/release-import-dependency.zip"))
 
-    testDebugProto(files("test-debug-dependency.zip"))
-    testDebugProtoImport(files("test-debug-import-dependency.zip"))
+    testDebugProto(files("zip/test-debug-dependency.zip"))
+    testDebugProtoImport(files("zip/test-debug-import-dependency.zip"))
 
-    testReleaseProto(files("test-release-dependency.zip"))
-    testReleaseProtoImport(files("test-release-import-dependency.zip"))
+    testReleaseProto(files("zip/test-release-dependency.zip"))
+    testReleaseProtoImport(files("zip/test-release-import-dependency.zip"))
 
-    androidTestDebugProto(files("android-test-debug-dependency.zip"))
-    androidTestDebugProtoImport(files("android-test-debug-import-dependency.zip"))
+    androidTestDebugProto(files("zip/android-test-debug-dependency.zip"))
+    androidTestDebugProtoImport(files("zip/android-test-debug-import-dependency.zip"))
 }

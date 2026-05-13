@@ -27,5 +27,5 @@ protoSourceSets {
 }
 
 dependencies {
-    "common2ProtoImport"(files("common-2-import-dependency.zip"))
+    "common2ProtoImport"(files("zip/common-2-import-dependency.zip"))
 }

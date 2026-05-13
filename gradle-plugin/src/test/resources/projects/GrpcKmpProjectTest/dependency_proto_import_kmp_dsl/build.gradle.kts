@@ -16,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                protoImport(files("dependency-protos.zip"))
+                protoImport(files("zip/dependency-protos.zip"))
             }
         }
     }

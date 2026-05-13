@@ -16,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                proto(files("common-main-dependency.zip"))
+                proto(files("zip/common-main-dependency.zip"))
             }
         }
     }

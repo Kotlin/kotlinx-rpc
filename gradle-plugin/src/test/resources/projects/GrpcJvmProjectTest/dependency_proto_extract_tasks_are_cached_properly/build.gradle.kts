@@ -14,6 +14,6 @@ rpc {
 }
 
 dependencies {
-    proto(files("main-dependency.zip"))
-    protoImport(files("main-import-dependency.zip"))
+    proto(files("zip/main-dependency.zip"))
+    protoImport(files("zip/main-import-dependency.zip"))
 }

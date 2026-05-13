@@ -18,5 +18,5 @@ rpc {
 }
 
 dependencies {
-    commonMainProto(files("dependency-protos.zip"))
+    commonMainProto(files("zip/dependency-protos.zip"))
 }

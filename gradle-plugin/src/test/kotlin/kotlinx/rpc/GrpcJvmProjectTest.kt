@@ -174,7 +174,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
 
         // rewrite the codegen zip with different content — must invalidate extractProtoMain
         // but NOT extractProtoImportMain, which reads a separate zip.
-        val codegenZip = projectDir.resolve("main-dependency.zip")
+        val codegenZip = projectDir.resolve("zip/main-dependency.zip")
         ZipOutputStream(Files.newOutputStream(codegenZip)).use { zos ->
             zos.putNextEntry(ZipEntry("mainDep.proto"))
             zos.write(
