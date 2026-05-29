@@ -243,12 +243,43 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(processProtoTask)
         }
 
+        val extractProtoTask = project.registerExtractDependencyProtoTask(
+            taskName = "extractProto${capitalName}",
+            destination = buildSourceSetsDir.resolve("protoExtracted"),
+            dependencyArchives = protoSourceSet.protoConfiguration,
+            properties = properties,
+        )
+
+        val extractProtoImportTask = project.registerExtractDependencyProtoTask(
+            taskName = "extractProtoImport${capitalName}",
+            destination = buildSourceSetsDir.resolve("importExtracted"),
+            dependencyArchives = protoSourceSet.protoImportConfiguration,
+            properties = properties,
+        )
+
+        // Wire extracted protos into the existing process tasks
+        processProtoTask.configure {
+            from(extractProtoTask.map { it.destinationDir })
+            dependsOn(extractProtoTask)
+        }
+
+        processImportProtoTask.configure {
+            from(extractProtoImportTask.map { it.destinationDir })
+            dependsOn(extractProtoImportTask)
+        }
+
+        val hasProtoImports = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty }
+        val hasProtoImportConfig = project.provider {
+            !protoSourceSet.protoImportConfiguration.isEmpty
+        }
+        val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
+
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
-            withImport = protoSourceSet.imports.map { it.isNotEmpty() || !protoSourceSet.fileImports.isEmpty },
+            withImport = withImport,
             properties = properties,
         ) {
             dependsOn(processProtoTask)
@@ -295,6 +326,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
+            dependsOn(extractProtoTask)
+            dependsOn(extractProtoImportTask)
 
             val dependencies = project.provider {
                 protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).mapNotNull { it.generateTask.orNull }
@@ -322,6 +355,8 @@ internal open class DefaultProtocExtension @Inject constructor(
             generateBufGenYamlTask = generateBufGenYamlTask,
             processProtoTask = processProtoTask,
             processImportProtoTask = processImportProtoTask,
+            extractProtoTask = extractProtoTask,
+            extractProtoImportTask = extractProtoImportTask,
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
             properties = properties,
         ) {
@@ -450,6 +485,8 @@ internal open class DefaultProtocExtension @Inject constructor(
         generateBufGenYamlTask: TaskProvider<GenerateBufGenYaml>,
         processProtoTask: TaskProvider<ProcessProtoFiles>,
         processImportProtoTask: TaskProvider<ProcessProtoFiles>,
+        extractProtoTask: TaskProvider<ExtractDependencyProtoImports>,
+        extractProtoImportTask: TaskProvider<ExtractDependencyProtoImports>,
         sourceSetsProtoDirFileTree: ConfigurableFileTree,
         properties: ProtoTask.Properties,
         configure: BufExecTask.() -> Unit,
@@ -473,6 +510,8 @@ internal open class DefaultProtocExtension @Inject constructor(
                 dependsOn(generateBufGenYamlTask)
                 dependsOn(processProtoTask)
                 dependsOn(processImportProtoTask)
+                dependsOn(extractProtoTask)
+                dependsOn(extractProtoImportTask)
 
                 val dependencies = project.provider {
                     protoSourceSet.getDependsOnTasksOf(project.protoSourceSets).map { dependency ->

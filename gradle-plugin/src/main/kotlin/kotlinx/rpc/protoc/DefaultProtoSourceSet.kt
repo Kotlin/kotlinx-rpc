@@ -6,6 +6,7 @@ package kotlinx.rpc.protoc
 
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
+import kotlinx.rpc.util.extendsFromLazy
 import kotlinx.rpc.util.findOrCreate
 import kotlinx.rpc.util.withLegacyAndroid
 import kotlinx.rpc.util.withAndroidSourceSets
@@ -18,7 +19,9 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
@@ -35,6 +38,7 @@ import java.io.File
 import java.util.*
 import java.util.function.Consumer
 import javax.inject.Inject
+import kotlin.contracts.ExperimentalContracts
 
 @Suppress("UNCHECKED_CAST")
 internal val Project.protoSourceSets: ProtoSourceSets
@@ -61,6 +65,7 @@ internal fun Project.findOrCreateProtoSourceSets(): NamedDomainObjectContainer<P
         container
     }
 
+@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
 internal open class DefaultProtoSourceSet(
     internal val project: Project,
     internal val sourceDirectorySet: SourceDirectorySet,
@@ -151,44 +156,96 @@ internal open class DefaultProtoSourceSet(
     // only set for variant.name sourceSets
     val androidProperties: Property<ProtoTask.AndroidProperties> = project.objects.property()
 
+    // Proto dependency configuration for this source set, created when protoc is activated.
+    // Allows users to declare proto dependencies via `dependencies { <name>Proto("...") }`.
+    // Resolved artifacts are extracted and included in code generation.
+    internal val protoConfiguration: Configuration
+
+    // Proto import dependency configuration for this source set, created when protoc is activated.
+    // Allows users to declare proto import dependencies via `dependencies { <name>ProtoImport("...") }`.
+    // Resolved artifacts are extracted and available as imports, but not for code generation.
+    private val protoImportConfigurationNew: Configuration
+
+    // Configurations attached lazily via importsFrom(Provider<...>) / importsAllFrom that cannot
+    // be wired through Configuration.extendsFrom: Gradle 8.8–9.3 has no Provider-based overload at
+    // all, and no Gradle version exposes a Provider<List<Configuration>> overload. Their files are
+    // merged into [protoImportFiles] at the consumer site, so resolution still sees them.
+    private val protoImportConfigurationLegacyList: ListProperty<Configuration> = project.objects.listProperty()
+
+    // Aggregated proto-import inputs for tasks: declared dependencies plus the transitive closure
+    // built up via Configuration.extendsFrom, plus everything stored in protoImportConfigOverflow.
+    internal val protoImportConfiguration: FileCollection by lazy {
+        project.files(protoImportConfigurationNew, protoImportConfigurationLegacyList)
+    }
+
+    init {
+        val protoConfigName = protoConfigurationName(name)
+        protoConfiguration = project.configurations.maybeCreate(protoConfigName).apply {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            description = "Proto file dependencies for source set '$name' (code generation)"
+        }
+
+        val protoImportConfigName = protoImportConfigurationName(name)
+        protoImportConfigurationNew = project.configurations.maybeCreate(protoImportConfigName).apply {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            description = "Proto file import dependencies for source set '$name' (imports only)"
+        }
+    }
+
     override val imports: SetProperty<ProtoSourceSet> = project.objects.setProperty()
     override val fileImports: ConfigurableFileCollection = project.objects.fileCollection()
 
-    override fun importsFrom(protoSourceSet: ProtoSourceSet) {
+    override fun importsFrom(rawProtoSourceSet: ProtoSourceSet) {
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
+
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.imports.checkSelfImport())
+
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
     }
 
-    override fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>) {
+    override fun importsFrom(rawProtoSourceSet: Provider<ProtoSourceSet>) {
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
+
         imports.add(protoSourceSet.checkSelfImport())
         imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
+
+        protoImportConfigurationNew.extendsFromLazy(
+            legacyList = protoImportConfigurationLegacyList,
+            provider = protoSourceSet.map { it.protoImportConfigurationNew },
+        )
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.flatMap { it.protoImportConfigurationLegacyList })
     }
 
-    override fun importsAllFrom(protoSourceSets: Provider<List<ProtoSourceSet>>) {
+    override fun importsAllFrom(rawProtoSourceSets: Provider<List<ProtoSourceSet>>) {
+        val protoSourceSets = rawProtoSourceSets.asDefault("extend")
+
         imports.addAll(protoSourceSets.checkSelfImport())
         imports.addAll(protoSourceSets.map { list -> list.flatMap { it.imports.checkSelfImport().get() } })
-    }
 
-    override fun importsFrom(protoSourceSet: NamedDomainObjectProvider<ProtoSourceSet>) {
-        imports.add(protoSourceSet.checkSelfImport())
-        imports.addAll(protoSourceSet.flatMap { it.imports.checkSelfImport() })
+        protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.map { it.protoImportConfigurationNew } },
+        )
+        protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.flatMap { it.protoImportConfigurationLegacyList.get() } },
+        )
     }
 
     private val extendsFrom: MutableSet<ProtoSourceSet> = mutableSetOf()
 
-    override fun extendsFrom(protoSourceSet: ProtoSourceSet) {
-        if (extendsFrom.contains(protoSourceSet)) {
+    override fun extendsFrom(rawProtoSourceSet: ProtoSourceSet) {
+        if (extendsFrom.contains(rawProtoSourceSet)) {
             return
         }
 
-        require(this != protoSourceSet) {
+        require(this != rawProtoSourceSet) {
             "$name proto source set cannot extend from self"
         }
 
-        require(protoSourceSet is DefaultProtoSourceSet) {
-            "$name proto source set can only extend from other default proto source sets." +
-                    "${protoSourceSet.name} is not a ${DefaultProtoSourceSet::class.simpleName}"
-        }
+        val protoSourceSet = rawProtoSourceSet.asDefault("extend")
 
         extendsFrom += protoSourceSet
 
@@ -196,10 +253,15 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
         plugins.addAll(protoSourceSet.plugins)
+
+        // Wire Gradle configuration inheritance for proto dependency configurations
+        protoConfiguration.extendsFrom(protoSourceSet.protoConfiguration)
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
     }
 
     @JvmName("checkSelfImport_provider")
-    private fun Provider<ProtoSourceSet>.checkSelfImport() = map {
+    private fun Provider<DefaultProtoSourceSet>.checkSelfImport() = map {
         it.checkSelfImport()
     }
 
@@ -208,13 +270,32 @@ internal open class DefaultProtoSourceSet(
     }
 
     @JvmName("checkSelfImport_provider_list")
-    private fun Provider<List<ProtoSourceSet>>.checkSelfImport() = map { set ->
+    private fun Provider<List<DefaultProtoSourceSet>>.checkSelfImport() = map { set ->
         set.onEach { it.checkSelfImport() }
     }
 
     private fun ProtoSourceSet.checkSelfImport(): ProtoSourceSet {
         require(this@DefaultProtoSourceSet != this) {
             "${this@DefaultProtoSourceSet.name} proto source set cannot import from itself"
+        }
+
+        return this
+    }
+
+    private fun Provider<ProtoSourceSet>.asDefault(action: String): Provider<DefaultProtoSourceSet> {
+        return map { it.asDefault(action) }
+    }
+
+    @JvmName("asDefault_provider_list")
+    private fun Provider<List<ProtoSourceSet>>.asDefault(action: String): Provider<List<DefaultProtoSourceSet>> {
+        return map { lists -> lists.map { it.asDefault(action) } }
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    private fun ProtoSourceSet.asDefault(action: String): DefaultProtoSourceSet {
+        require(this is DefaultProtoSourceSet) {
+            "$name proto source set can only $action from other default proto source sets." +
+                "${this.name} is not a ${DefaultProtoSourceSet::class.simpleName}"
         }
 
         return this
@@ -240,7 +321,6 @@ internal fun Project.createProtoExtensions() {
         val protoSourceSet = container.maybeCreate(languageSourceSetName) as DefaultProtoSourceSet
 
         languageSourceSet?.let { protoSourceSet.languageSourceSets.add(it) }
-
         return protoSourceSet
     }
 
@@ -288,4 +368,14 @@ internal object PlatformOption {
     const val NATIVE = "native"
     const val COMMON = "common"
     const val WASM = "wasm"
+}
+
+internal fun protoConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "proto"
+    return "${sourceSetName}Proto"
+}
+
+internal fun protoImportConfigurationName(sourceSetName: String): String {
+    if (sourceSetName == "main") return "protoImport"
+    return "${sourceSetName}ProtoImport"
 }
