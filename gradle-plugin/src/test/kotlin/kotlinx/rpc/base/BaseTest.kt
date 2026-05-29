@@ -19,7 +19,9 @@ import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlinx.rpc.BUILD_REPO
 import kotlinx.rpc.RPC_VERSION
+import org.junit.jupiter.api.Assertions.assertTimeoutPreemptively
 import org.junit.jupiter.api.DynamicTest
+import java.time.Duration
 import java.util.stream.Stream
 import kotlin.io.path.absolute
 import kotlin.io.path.appendText
@@ -57,6 +59,8 @@ internal fun VersionsEnv.versionsWhereAndroidKmpLibExist(): Boolean {
 internal val VersionsEnv.isAgp9: Boolean
     get() = androidSemver.isAtLeast(9, 0, 0)
 
+private val DEFAULT_TEST_TIMEOUT: Duration = Duration.ofMinutes(5)
+
 private val GradleVersions = listOf(
     VersionsEnv("9.3.1", "2.2.21", "9.1.0"),
     VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
@@ -74,7 +78,9 @@ internal fun BaseTest.runWithGradleVersions(
             setupTest(versions)
 
             DynamicTest.dynamicTest("Gradle ${versions.gradle}, KGP ${versions.kotlin}, AGP ${versions.android}") {
-                body(versions)
+                assertTimeoutPreemptively(DEFAULT_TEST_TIMEOUT) {
+                    body(versions)
+                }
             }
         }
 }

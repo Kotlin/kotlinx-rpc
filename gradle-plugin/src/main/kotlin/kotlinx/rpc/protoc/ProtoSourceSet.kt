@@ -9,6 +9,7 @@ import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Property
@@ -353,6 +354,92 @@ public fun KotlinDependencyHandler.proto(dependencyNotation: Any): Dependency? {
 }
 
 /**
+ * Adds a proto dependency for code generation from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be included in code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             proto("com.example:shared-protos:1.0") { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.proto(dependencyNotation: String, action: ExternalModuleDependency.() -> Unit): Dependency? {
+    val configName = resolveProtoConfigurationName(this, "Proto")
+    val dependency = project.dependencies.create(dependencyNotation) as ExternalModuleDependency
+    dependency.action()
+    return project.dependencies.add(configName, dependency)
+}
+
+/**
+ * Adds a proto dependency for code generation from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be included in code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             proto("com.example:shared-protos:1.0") { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.proto(dependencyNotation: String, action: Action<ExternalModuleDependency>): Dependency? {
+    return proto(dependencyNotation) { action.execute(this) }
+}
+
+/**
+ * Adds a proto dependency for code generation from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be included in code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             proto(dependency) { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun <T : Dependency> KotlinDependencyHandler.proto(dependency: T, configure: T.() -> Unit): T {
+    val configName = resolveProtoConfigurationName(this, "Proto")
+    dependency.configure()
+    project.dependencies.add(configName, dependency)
+    return dependency
+}
+
+/**
+ * Adds a proto dependency for code generation from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be included in code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             proto(dependency) { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun <T : Dependency> KotlinDependencyHandler.proto(dependency: T, action: Action<T>): T {
+    return proto(dependency, action::execute)
+}
+
+/**
  * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
  *
  * Proto files (`.proto`) from the resolved archives will be available as imports only,
@@ -372,6 +459,96 @@ public fun KotlinDependencyHandler.proto(dependencyNotation: Any): Dependency? {
 public fun KotlinDependencyHandler.protoImport(dependencyNotation: Any): Dependency? {
     val configName = resolveProtoConfigurationName(this, "ProtoImport")
     return project.dependencies.add(configName, dependencyNotation)
+}
+
+/**
+ * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be available as imports only,
+ * but will not be used for code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             protoImport("com.example:common-protos:1.0") { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.protoImport(dependencyNotation: String, action: ExternalModuleDependency.() -> Unit): Dependency? {
+    val configName = resolveProtoConfigurationName(this, "ProtoImport")
+    val dependency = project.dependencies.create(dependencyNotation) as ExternalModuleDependency
+    dependency.action()
+    return project.dependencies.add(configName, dependency)
+}
+
+/**
+ * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be available as imports only,
+ * but will not be used for code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             protoImport("com.example:common-protos:1.0") { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun KotlinDependencyHandler.protoImport(dependencyNotation: String, action: Action<ExternalModuleDependency>): Dependency? {
+    return proto(dependencyNotation) { action.execute(this) }
+}
+
+/**
+ * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be available as imports only,
+ * but will not be used for code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             protoImport(dependency) { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun <T : Dependency> KotlinDependencyHandler.protoImport(dependency: T, configure: T.() -> Unit): T {
+    val configName = resolveProtoConfigurationName(this, "ProtoImport")
+    dependency.configure()
+    project.dependencies.add(configName, dependency)
+    return dependency
+}
+
+/**
+ * Adds a proto import dependency from within [KotlinSourceSet.dependencies].
+ *
+ * Proto files (`.proto`) from the resolved archives will be available as imports only,
+ * but will not be used for code generation.
+ *
+ * Example:
+ * ```kotlin
+ * kotlin.sourceSets {
+ *     commonMain {
+ *         dependencies {
+ *             protoImport(dependency) { ... }
+ *         }
+ *     }
+ * }
+ * ```
+ */
+public fun <T : Dependency> KotlinDependencyHandler.protoImport(dependency: T, action: Action<T>): T {
+    return proto(dependency, action::execute)
 }
 
 private fun resolveProtoConfigurationName(handler: KotlinDependencyHandler, suffix: String): String {

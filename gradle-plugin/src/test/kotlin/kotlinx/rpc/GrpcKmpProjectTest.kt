@@ -135,6 +135,11 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependencies With Configure Block`() = runGrpcTest {
+        runGradle("verifyExcludes", "--no-configuration-cache")
+    }
+
+    @TestFactory
     fun `Dependency Imports From Provider Source Set`() = runGrpcTest {
         runGradle(processCommonMainProtoFiles)
         runGradle("processCommonMainProtoFilesImports")

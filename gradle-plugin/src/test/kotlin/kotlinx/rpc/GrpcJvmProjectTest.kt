@@ -156,6 +156,11 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
+    fun `Dependencies With Configure Block`() = runGrpcTest {
+        runGradle("verifyExcludes", "--no-configuration-cache")
+    }
+
+    @TestFactory
     fun `Dependency Proto Extract Tasks Are Cached Properly`() = runGrpcTest {
         val firstRun = runGradle(extractProtoCommonMain, extractProtoImportCommonMain)
         assertEquals(TaskOutcome.SUCCESS, firstRun.protoTaskOutcome(extractProtoCommonMain))
