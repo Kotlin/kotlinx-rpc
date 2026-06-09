@@ -9,10 +9,12 @@ package kotlinx.rpc.base
 import kotlinx.rpc.base.GrpcBaseTest.PluginMode
 import kotlinx.rpc.base.GrpcBaseTest.SSets
 import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.BuildTask
 import org.gradle.testkit.runner.TaskOutcome
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestInstance
+import java.io.BufferedReader
 import java.nio.file.Path
 import java.util.stream.Stream
 import kotlin.io.path.*
@@ -32,6 +34,8 @@ abstract class GrpcBaseTest : BaseTest() {
         runNonExistentTask(bufGenerate(set))
         runNonExistentTask(processProtoFiles(set))
         runNonExistentTask(processProtoFilesImports(set))
+        runNonExistentTask(extractProto(set))
+        runNonExistentTask(extractProtoImport(set))
         runNonExistentTask(generateBufYaml(set))
         runNonExistentTask(generateBufGenYaml(set))
     }
@@ -92,6 +96,9 @@ abstract class GrpcBaseTest : BaseTest() {
                     "File '${file}' in '$dir' does not exist"
                 }
             }
+
+            // todo check no tests are broken
+            assertSourceCodeNotGeneratedExcept(sourceSet, *files)
         }
 
         fun assertSourceCodeNotGenerated(sourceSet: SSets, vararg files: Path) {
@@ -104,7 +111,7 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
-        fun assertSourceCodeNotGeneratedExcept(sourceSet: SSets, vararg files: Path) {
+        private fun assertSourceCodeNotGeneratedExcept(sourceSet: SSets, vararg files: Path) {
             val dir = protoBuildDirGenerated.resolve(sourceSet.name).resolve(KOTLIN_MULTIPLATFORM_DIR)
 
             fun Path.doAssert() {
@@ -312,7 +319,6 @@ abstract class GrpcBaseTest : BaseTest() {
             assertOutcome(TaskOutcome.SUCCESS, generateBufGenYaml(sourceSet))
 
             assertSourceCodeGenerated(sourceSet, *generatedFiles.toTypedArray())
-            assertSourceCodeNotGeneratedExcept(sourceSet, *generatedFiles.toTypedArray())
             assertWorkspaceProtoFilesCopied(sourceSet, *protoFiles.toTypedArray())
             assertWorkspaceImportProtoFilesCopied(sourceSet, *importProtoFiles.toTypedArray())
 
@@ -322,7 +328,21 @@ abstract class GrpcBaseTest : BaseTest() {
                 assertProtoTaskNotExecuted(processProtoFilesImports(it))
                 assertProtoTaskNotExecuted(generateBufYaml(it))
                 assertProtoTaskNotExecuted(generateBufGenYaml(it))
+                assertProtoTaskNotExecuted(extractProto(it))
+                assertProtoTaskNotExecuted(extractProtoImport(it))
             }
+        }
+
+        fun GrpcTestEnv.runAndCheckZipFiles(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extended: List<SSets> = emptyList(),
+        ) {
+            cleanProtoBuildDir()
+
+            runForSet(sourceSet).assertZipSourceSet(sourceSet, *imports, extendedProto = extended)
+
+            dryRunCompilation(sourceSet)
         }
 
         fun GrpcTestEnv.runAndCheckFiles(
@@ -358,10 +378,14 @@ abstract class GrpcBaseTest : BaseTest() {
         }
 
         fun GrpcTestEnv.runForSet(sourceSet: SSets): BuildResult {
+            if (!sourceSet.applicable()) {
+                return SkipBuild
+            }
+
             return runGradle(bufGenerate(sourceSet))
         }
 
-        fun BuildResult.assertSourceSet(
+        private fun BuildResult.assertZipSourceSet(
             sourceSet: SSets,
             vararg imports: SSets,
             extendedProto: List<SSets>,
@@ -386,7 +410,52 @@ abstract class GrpcBaseTest : BaseTest() {
                 .filter { it.applicable() }
                 .toSet()
 
-            val generateFor = extendedProto + sourceSet
+            val generateFor = extendedProto.filter { it.applicable() } + sourceSet
+            // because every sset has import dependency too for these tests
+            val fullImports = importsSet + generateFor
+
+            assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = generateFor.map { Path("${it.name}Dep.proto") },
+                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") },
+                generatedFiles = generateFor.flatMap {
+                    val pascal = it.capital
+                    listOf(
+                        Path("dependency", "${pascal}Dep.kt"),
+                        Path("dependency", "${pascal}Dep.ext.kt"),
+                        Path("dependency", RPC_INTERNAL, "${pascal}Dep.kt"),
+                    )
+                },
+                notExecuted = sourceSet.all().filter { it != sourceSet && it !in fullImports },
+            )
+        }
+
+        private fun BuildResult.assertSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extendedProto: List<SSets>,
+        ) {
+            if (!sourceSet.applicable()) {
+                println(
+                    "Skipping ${sourceSet.capital} source set " +
+                            "because it's not applicable for the current Kotlin version"
+                )
+                return
+            }
+
+            val importsSet = imports
+                .onEach {
+                    if (!it.applicable()) {
+                        println(
+                            "Skipping ${it.capital} import source set " +
+                                    "because it's not applicable for the current Kotlin version"
+                        )
+                    }
+                }
+                .filter { it.applicable() }
+                .toSet()
+
+            val generateFor = extendedProto.filter { it.applicable() } + sourceSet
 
             assertTaskExecuted(
                 sourceSet = sourceSet,
@@ -444,6 +513,8 @@ inputs:
         fun bufGenerate(sourceSet: SSets) = "bufGenerate${sourceSet.capital}"
         fun processProtoFiles(sourceSet: SSets) = "process${sourceSet.capital}ProtoFiles"
         fun processProtoFilesImports(sourceSet: SSets) = "process${sourceSet.capital}ProtoFilesImports"
+        fun extractProto(sourceSet: SSets) = "extractProto${sourceSet.capital}"
+        fun extractProtoImport(sourceSet: SSets) = "extractProtoImport${sourceSet.capital}"
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
 
@@ -468,6 +539,10 @@ inputs:
         val generateBufYamlCommonTest = generateBufYaml(testSourceSet)
         val generateBufGenYamlCommonMain = generateBufGenYaml(mainSourceSet)
         val generateBufGenYamlCommonTest = generateBufGenYaml(testSourceSet)
+        val extractProtoCommonMain = extractProto(mainSourceSet)
+        val extractProtoCommonTest = extractProto(testSourceSet)
+        val extractProtoImportCommonMain = extractProtoImport(mainSourceSet)
+        val extractProtoImportCommonTest = extractProtoImport(testSourceSet)
 
         val protoBuildDir: Path by lazy {
             projectDir
@@ -635,6 +710,37 @@ inputs:
                 return entries
             }
         }
+
+        enum class Flavors(
+            override val mode: PluginMode? = null,
+            override val minKotlin: KotlinVersion = KtVersion.v2_0_0,
+        ) : SSetsAndroid {
+            // non-executable root source sets
+            main, test, androidTest,
+
+            // per-flavor non-executable
+            arm, x86,
+
+            // build-type non-executable
+            debug, release,
+
+            // executable leaf variants
+            armDebug(plm.a), armRelease(plm.a),
+            x86Debug(plm.a), x86Release(plm.a),
+
+            // test variants
+            testArmDebug(plm.a), testArmRelease(plm.a),
+            testX86Debug(plm.a), testX86Release(plm.a),
+
+            // androidTest variants
+            androidTestArmDebug(plm.a),
+            androidTestX86Debug(plm.a),
+            ;
+
+            override fun all(): List<SSets> {
+                return entries
+            }
+        }
     }
 
     enum class PluginMode {
@@ -773,4 +879,14 @@ private fun SSets.preBuildTaskName(mode: PluginMode): String? {
             "pre${capital}Build"
         }
     }
+}
+
+private object SkipBuild : BuildResult {
+    override fun getOutput(): String = ""
+    @Suppress("UnstableApiUsage")
+    override fun getOutputReader(): BufferedReader? = null
+    override fun getTasks(): List<BuildTask?> = emptyList()
+    override fun tasks(outcome: TaskOutcome?): List<BuildTask?> = emptyList()
+    override fun taskPaths(outcome: TaskOutcome?): List<String?> = emptyList()
+    override fun task(taskPath: String?): BuildTask? = null
 }

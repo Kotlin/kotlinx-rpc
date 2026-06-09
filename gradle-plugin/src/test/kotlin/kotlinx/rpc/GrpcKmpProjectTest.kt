@@ -27,8 +27,128 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
+        )
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import KMP DSL`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoImportCommonMain)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoImportCommonMain)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoImportCommonMain)
+
+        // dependency proto reaches commonMain as codegen
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("dependency.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "Dependency.kt"),
+            Path("dependency", "Dependency.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Codegen KMP DSL`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoImportCommonMain)
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("commonMainDep.proto"))
+
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "CommonMainDep.kt"),
+            Path("dependency", "CommonMainDep.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "CommonMainDep.kt"),
+        )
+
+        dryRunCompilation(SSetsKmp.Default.jvmMain)
+    }
+
+    @TestFactory
+    fun `Dependencies With Configure Block`() = runGrpcTest {
+        runGradle("verifyExcludes", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Dependency Imports From Provider Source Set`() = runGrpcTest {
+        runGradle(processCommonMainProtoFiles)
+        runGradle("processCommonMainProtoFilesImports")
+
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(
+            mainSourceSet,
+            Path("common2.proto"),
+            Path("common2ImportDep.proto"),
         )
     }
 
@@ -125,6 +245,383 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             )
         )
     }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy`() = runGrpcTest {
+        runAndCheckZipFiles(
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.jvmTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.webMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.webTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.jsTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain, SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.webTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.nativeTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.macosTest,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+        )
+        runAndCheckZipFiles(
+            SSetsKmp.Default.macosArm64Test,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.macosTest,
+        )
+    }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy Android KMP Library`() = runGrpcTest {
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+    }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy Android KMP Library With Test Tasks`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
+    ) {
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy Android KMP Library With Test Tasks Not Wired`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
+    ) {
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+    }
+
+    @TestFactory
+    fun `Dependency KMP Hierarchy Legacy Android Not Wired`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckZipFiles(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+    }
+
 
     @TestFactory
     fun `KMP Hierarchy`() = runGrpcTest {

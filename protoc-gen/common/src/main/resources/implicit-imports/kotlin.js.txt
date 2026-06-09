@@ -5,6 +5,7 @@ EagerInitialization
 ExperimentalJsCollectionsApi
 ExperimentalJsExport
 ExperimentalJsFileName
+ExperimentalJsNoRuntime
 ExperimentalJsReflectionCreateInstance
 ExperimentalJsStatic
 ExperimentalWasmJsInterop
@@ -21,6 +22,7 @@ JsExternalInheritorsOnly
 JsFileName
 JsModule
 JsName
+JsNoRuntime
 JsNonModule
 JsNumber
 JsPromiseError

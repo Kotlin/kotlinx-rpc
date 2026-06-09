@@ -154,6 +154,10 @@ public abstract class kotlinx/rpc/protoc/DefaultProtoTask : org/gradle/api/Defau
 	public final fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
 }
 
+public abstract class kotlinx/rpc/protoc/ExtractDependencyProtoImports : org/gradle/api/tasks/Sync, kotlinx/rpc/protoc/ProtoTask {
+	public fun getProperties ()Lkotlinx/rpc/protoc/ProtoTask$Properties;
+}
+
 public final class kotlinx/rpc/protoc/PluginJarsKt {
 	public static final fun getGrpcKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
 	public static final fun getKotlinMultiplatformProtocPluginJarPath (Lorg/gradle/api/Project;)Lorg/gradle/api/provider/Provider;
@@ -172,7 +176,6 @@ public abstract interface class kotlinx/rpc/protoc/ProtoSourceSet : org/gradle/a
 	public abstract fun getPlugins ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun importsAllFrom (Lorg/gradle/api/provider/Provider;)V
 	public abstract fun importsFrom (Lkotlinx/rpc/protoc/ProtoSourceSet;)V
-	public abstract fun importsFrom (Lorg/gradle/api/NamedDomainObjectProvider;)V
 	public abstract fun importsFrom (Lorg/gradle/api/provider/Provider;)V
 	public abstract fun plugin (Lkotlinx/rpc/protoc/ProtocPlugin;Lorg/gradle/api/Action;)V
 	public abstract fun plugin (Lorg/gradle/api/Action;Lkotlin/jvm/functions/Function1;)V
@@ -190,7 +193,17 @@ public final class kotlinx/rpc/protoc/ProtoSourceSetKt {
 	public static final fun getProto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;)Lkotlinx/rpc/protoc/ProtoSourceSet;
 	public static final fun proto (Lorg/gradle/api/NamedDomainObjectProvider;Lorg/gradle/api/Action;)V
 	public static final fun proto (Lorg/gradle/api/tasks/SourceSet;Lorg/gradle/api/Action;)V
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Lorg/gradle/api/artifacts/Dependency;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Lorg/gradle/api/artifacts/Dependency;Lorg/gradle/api/Action;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun proto (Lorg/jetbrains/kotlin/gradle/plugin/KotlinSourceSet;Lorg/gradle/api/Action;)V
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/Object;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Ljava/lang/String;Lorg/gradle/api/Action;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Lorg/gradle/api/artifacts/Dependency;Lkotlin/jvm/functions/Function1;)Lorg/gradle/api/artifacts/Dependency;
+	public static final fun protoImport (Lorg/jetbrains/kotlin/gradle/plugin/KotlinDependencyHandler;Lorg/gradle/api/artifacts/Dependency;Lorg/gradle/api/Action;)Lorg/gradle/api/artifacts/Dependency;
 	public static final fun proto_kotlin (Lorg/gradle/api/NamedDomainObjectProvider;)Lorg/gradle/api/provider/Provider;
 	public static final fun proto_kotlin (Lorg/gradle/api/NamedDomainObjectProvider;Lorg/gradle/api/Action;)V
 }

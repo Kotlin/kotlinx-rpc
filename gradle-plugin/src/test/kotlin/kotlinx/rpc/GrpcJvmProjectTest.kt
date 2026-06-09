@@ -9,6 +9,9 @@ import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
+import java.nio.file.Files
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 import kotlin.io.path.appendText
 import kotlin.test.assertEquals
@@ -27,9 +30,177 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
+    }
+
+    @TestFactory
+    fun `Dependency Proto Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoImportCommonMain)
+
+        // dependency.proto should be in the proto dir (codegen), not import dir
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"), Path("dependency.proto"))
+
+        // Both local and dependency protos generate code
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "Dependency.kt"),
+            Path("dependency", "Dependency.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.main)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Import`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonMainProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonMain)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoImportCommonMain)
+
+        // dependency.proto should be in the import dir (import-only), not proto dir
+        assertWorkspaceProtoFilesCopied(mainSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet, Path("dependency.proto"))
+
+        // Only local protos generate code, dependency protos are imports only
+        assertSourceCodeGenerated(
+            mainSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.main)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Test Codegen`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonTest)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, processCommonTestProtoFilesImports)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoCommonTest)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoImportCommonTest)
+
+
+        // testDep proto reaches the test source set as codegen
+        assertWorkspaceProtoFilesCopied(testSourceSet, Path("some.proto"), Path("testDep.proto"))
+
+        // main is untouched: testProto must not leak to main
+        assertWorkspaceProtoFilesCopied(mainSourceSet)
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet)
+
+        assertSourceCodeGenerated(
+            testSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+            Path("dependency", "TestDep.kt"),
+            Path("dependency", "TestDep.ext.kt"),
+            Path("dependency", RPC_INTERNAL, "TestDep.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.test)
+    }
+
+    @TestFactory
+    fun `Dependency Proto Test Import`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonTest)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFiles)
+        result.assertOutcome(TaskOutcome.SUCCESS, processCommonTestProtoFilesImports)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufYamlCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, generateBufGenYamlCommonTest)
+        result.assertOutcome(TaskOutcome.NO_SOURCE, extractProtoCommonTest)
+        result.assertOutcome(TaskOutcome.SUCCESS, extractProtoImportCommonTest)
+
+
+        // testImportDep proto reaches test as import only
+        assertWorkspaceProtoFilesCopied(testSourceSet, Path("some.proto"))
+        assertWorkspaceImportProtoFilesCopied(testSourceSet, Path("testImportDep.proto"))
+
+        // main is untouched
+        assertWorkspaceProtoFilesCopied(mainSourceSet)
+        assertWorkspaceImportProtoFilesCopied(mainSourceSet)
+
+        // testImportDep.proto is import-only, so no TestImportDep.kt generated
+        assertSourceCodeGenerated(
+            testSourceSet,
+            Path("Some.kt"),
+            Path("Some.ext.kt"),
+            Path(RPC_INTERNAL, "Some.kt"),
+        )
+
+        dryRunCompilation(SSetsJvm.test)
+    }
+
+    @TestFactory
+    fun `Dependencies With Configure Block`() = runGrpcTest {
+        runGradle("verifyExcludes", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Dependency Proto Extract Tasks Are Cached Properly`() = runGrpcTest {
+        val firstRun = runGradle(extractProtoCommonMain, extractProtoImportCommonMain)
+        assertEquals(TaskOutcome.SUCCESS, firstRun.protoTaskOutcome(extractProtoCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, firstRun.protoTaskOutcome(extractProtoImportCommonMain))
+
+        val secondRun = runGradle(extractProtoCommonMain, extractProtoImportCommonMain)
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRun.protoTaskOutcome(extractProtoCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRun.protoTaskOutcome(extractProtoImportCommonMain))
+
+        cleanProtoBuildDir()
+
+        // Sync isn't a cacheable task, so a clean output dir means re-execute → SUCCESS,
+        // not FROM_CACHE. UP_TO_DATE detection relies on the persisted output state.
+        val thirdRun = runGradle(extractProtoCommonMain, extractProtoImportCommonMain)
+        assertEquals(TaskOutcome.SUCCESS, thirdRun.protoTaskOutcome(extractProtoCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, thirdRun.protoTaskOutcome(extractProtoImportCommonMain))
+
+        // rewrite the codegen zip with different content — must invalidate extractProtoMain
+        // but NOT extractProtoImportMain, which reads a separate zip.
+        val codegenZip = projectDir.resolve("zip/main-dependency.zip")
+        ZipOutputStream(Files.newOutputStream(codegenZip)).use { zos ->
+            zos.putNextEntry(ZipEntry("mainDep.proto"))
+            zos.write(
+                """
+                syntax = "proto3";
+
+                package dependency;
+
+                message MainDep {
+                  string value = 1;
+                  int32 version = 2;
+                }
+                """.trimIndent().toByteArray(),
+            )
+            zos.closeEntry()
+        }
+
+        val fourthRun = runGradle(extractProtoCommonMain, extractProtoImportCommonMain)
+        assertEquals(TaskOutcome.SUCCESS, fourthRun.protoTaskOutcome(extractProtoCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fourthRun.protoTaskOutcome(extractProtoImportCommonMain))
     }
 
     @TestFactory
@@ -51,6 +222,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -67,6 +239,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             importProtoFiles = emptyList(),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             importGeneratedFiles = emptyList()
@@ -83,6 +256,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -102,10 +276,12 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Other.kt"),
+                Path("Other.ext.kt"),
                 Path(RPC_INTERNAL, "Other.kt"),
             ),
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,
@@ -124,6 +300,7 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             )
         )
@@ -141,10 +318,12 @@ class GrpcJvmProjectTest : GrpcBaseTest() {
             ),
             generatedFiles = listOf(
                 Path("Other.kt"),
+                Path("Other.ext.kt"),
                 Path(RPC_INTERNAL, "Other.kt"),
             ),
             importGeneratedFiles = listOf(
                 Path("Some.kt"),
+                Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
             ),
             mainGenerateOutcome = TaskOutcome.FROM_CACHE,
