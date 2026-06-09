@@ -125,4 +125,43 @@ fun Project.configureNpm() {
             configureNpmExtension(useProxy, kotlinMasterBuild)
         }
     }
+
+    configurePuppeteerCacheSafety()
+}
+
+/**
+ * On CI, both js and wasm npm installs download puppeteer browsers into the same shared cache
+ * directory (see `.puppeteerrc.cjs`). Running the two installs concurrently makes one process
+ * observe the other's half-extracted browser folder and fail with
+ * "The browser folder exists but the executable is missing".
+ *
+ * To prevent this:
+ * - the wasm npm install is ordered after the js one, so only one process populates the cache;
+ * - on TeamCity, the cache is wiped before the js install re-runs, so a build killed
+ *   mid-download cannot poison subsequent builds on a reused agent work directory.
+ */
+private fun Project.configurePuppeteerCacheSafety() {
+    rootProject.plugins.withType<YarnPlugin> {
+        rootProject.extensions.configure<NodeJsRootExtension> {
+            val jsNpmInstall = npmInstallTaskProvider
+
+            val isTeamCity = System.getenv("TEAMCITY_VERSION") != null
+            val puppeteerCache = File(rootProject.projectDir, ".puppeteer")
+            jsNpmInstall.configure {
+                doFirst {
+                    if (isTeamCity) {
+                        puppeteerCache.deleteRecursively()
+                    }
+                }
+            }
+
+            rootProject.plugins.withType<WasmYarnPlugin> {
+                rootProject.extensions.configure<WasmNodeJsRootExtension> {
+                    npmInstallTaskProvider.configure {
+                        mustRunAfter(jsNpmInstall)
+                    }
+                }
+            }
+        }
+    }
 }
