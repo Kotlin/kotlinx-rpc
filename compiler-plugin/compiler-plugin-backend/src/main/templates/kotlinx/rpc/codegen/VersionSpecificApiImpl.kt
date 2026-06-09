@@ -276,6 +276,13 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return copyTo(irFunction, origin)
     }
 
+    //##csm MessageCollectorAccess
+    //##csm default
+    @OptIn(org.jetbrains.kotlin.config.MessageCollectorAccess::class)
+    //##csm /default
+    //##csm specific=[2.1.0...2.4.19]
+    //##csm /specific
+    //##csm /MessageCollectorAccess
     override val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
         get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
 

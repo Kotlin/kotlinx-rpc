@@ -85,6 +85,7 @@ pluginManagement {
 
     fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
     fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
+    fun RepositoryHandler.buildDepsEapForIde() = jbTeamPackages(repoName = "build-deps-eap-for-ide")
 
     val globalRootDir = findGlobalRootDirPath()
 
@@ -96,6 +97,7 @@ pluginManagement {
         if (useProxy) {
             buildDeps()
             buildDepsEap()
+            buildDepsEapForIde()
         } else {
             mavenCentral()
             gradlePluginPortal()
@@ -191,6 +193,7 @@ fun RepositoryHandler.jbTeamPackages(repoName: String) {
 
 fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
 fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
+fun RepositoryHandler.buildDepsEapForIde() = jbTeamPackages(repoName = "build-deps-eap-for-ide")
 fun RepositoryHandler.grpc() = jbTeamPackages(repoName = "grpc")
 
 val globalRootDir = findGlobalRootDirPath()
@@ -213,6 +216,7 @@ gradle.rootProject {
                 if (useProxy) {
                     buildDeps()
                     buildDepsEap()
+                    buildDepsEapForIde()
                 } else {
                     mavenCentral()
                     gradlePluginPortal()
@@ -226,19 +230,23 @@ gradle.rootProject {
             if (useProxy) {
                 buildDeps()
                 buildDepsEap()
+                buildDepsEapForIde()
             } else {
                 mavenCentral()
                 gradlePluginPortal()
                 google()
 
+                maven("https://packages.jetbrains.team/maven/p/kt/dev")
+                maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
+                maven("https://redirector.kotlinlang.org/maven/ktor-eap")
+
                 maven("https://www.jetbrains.com/intellij-repository/releases")
 
+                // legacy
                 maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies")
                 maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
                 maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
-
                 maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
-                maven("https://packages.jetbrains.team/maven/p/ktor/eap")
             }
 
             // Internal standalone shim artifacts are published here and can be resolved
