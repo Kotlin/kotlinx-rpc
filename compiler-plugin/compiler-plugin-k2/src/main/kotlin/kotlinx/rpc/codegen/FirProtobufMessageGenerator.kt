@@ -96,7 +96,7 @@ class FirProtobufMessageGenerator(
                     modality = Modality.ABSTRACT
                     superType { owner.defaultType() }
                     vsApi {
-                        sourceVS = owner.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                        sourceVS = owner.source?.fakeElement(pluginGeneratedElementKindVS())
                     }
                 }.symbol
             }
@@ -148,7 +148,7 @@ class FirProtobufMessageGenerator(
                     isOverride = true
                 }
                 vsApi {
-                    sourceVS = property.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )

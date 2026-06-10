@@ -15,8 +15,8 @@ if [[ -z $BUILD_SERVER_TOKEN ]]; then
   fi;
 fi;
 
-# Artifacts from https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_Artifacts
-response=$(curl -f "https://teamcity.jetbrains.com/app/rest/builds?locator=count:1,buildType:Kotlin_KotlinPublic_Artifacts,status:SUCCESS,state:finished" --request GET --header "Authorization: Bearer $BUILD_SERVER_TOKEN")
+# Artifacts from https://teamcity.jetbrains.com/buildConfiguration/Kotlin_KotlinPublic_Artifacts_aggregate
+response=$(curl -f "https://teamcity.jetbrains.com/app/rest/builds?locator=count:1,buildType:Kotlin_KotlinPublic_Artifacts_aggregate,status:SUCCESS,state:finished" --request GET --header "Authorization: Bearer $BUILD_SERVER_TOKEN")
 
 buildId=$(echo "$response" | sed -En 's/.*build id="([0-9]+)".*/\1/p')
 echo "Build id: $buildId"

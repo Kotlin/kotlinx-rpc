@@ -13,7 +13,7 @@ Run the `dowload_kotlin_master.sh` script in the project root:
 
 This requires a `BUILD_SERVER_TOKEN` -- either as an environment variable or in
 `~/.gradle/gradle.properties` as `buildserver.token=<token>`. The script:
-1. Queries JetBrains TeamCity for the latest successful `Kotlin_KotlinPublic_Artifacts` build
+1. Queries JetBrains TeamCity for the latest successful `Kotlin_KotlinPublic_Artifacts_aggregate` build
 2. Downloads the Maven artifacts archive
 3. Extracts them into a `lib-kotlin/` directory at the project root
 
@@ -50,8 +50,8 @@ the previous release's code moves into a `specific` block with a bounded range.
 
 ## Caveats
 
-- Master versions have dev suffixes like `2.4.0-dev-12345`. Exact prefix matches work
-  fine (e.g., `2.4.0-dev-*`), but version ranges strip the suffix before comparison, so
+- Master versions have dev suffixes like `2.4.0-dev-12345` for builds, but for the aftifacts it is now `2.4.20-public` (stable suffix). 
+  Exact prefix matches work fine (e.g., `2.4.0-dev-*`, `2.4.20-public`), but version ranges strip the suffix before comparison, so
   a range like `2.4.0...2.4.*` will match `2.4.0-dev-12345` as `2.4.0`. Non-stable
   suffixes are not allowed inside range bounds -- use prefix patterns instead for dev
   versions.
