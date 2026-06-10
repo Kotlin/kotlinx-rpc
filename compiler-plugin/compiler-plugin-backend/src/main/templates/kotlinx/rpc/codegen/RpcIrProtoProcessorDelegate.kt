@@ -8,28 +8,8 @@ import kotlinx.rpc.codegen.extension.RpcIrContext
 import kotlinx.rpc.codegen.extension.RpcIrProtoProcessor
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
-//##csm RpcIrProtoProcessorDelegate.kt-import
-//##csm specific=[2.1.0...2.1.21]
-import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
-//##csm /specific
-//##csm default
 import org.jetbrains.kotlin.ir.visitors.IrTransformer
-//##csm /default
-//##csm /RpcIrProtoProcessorDelegate.kt-import
 
-//##csm RpcIrProtoProcessorDelegate
-//##csm specific=[2.1.0...2.1.21]
-internal class RpcIrProtoProcessorDelegate(
-    val processor: RpcIrProtoProcessor,
-) : IrElementTransformer<RpcIrContext> {
-    override fun visitClass(declaration: IrClass, data: RpcIrContext): IrStatement {
-        processor.visitClass(declaration, data)
-
-        return super.visitClass(declaration, data)
-    }
-}
-//##csm /specific
-//##csm default
 internal class RpcIrProtoProcessorDelegate(
     val processor: RpcIrProtoProcessor,
 ) : IrTransformer<RpcIrContext>() {
@@ -39,5 +19,3 @@ internal class RpcIrProtoProcessorDelegate(
         return super.visitClass(declaration, data)
     }
 }
-//##csm /default
-//##csm /RpcIrProtoProcessorDelegate

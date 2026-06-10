@@ -1,16 +1,4 @@
 {
-  "2.1.0": {
-    "macos-aarch64": "llvm-16.0.0-aarch64-macos-essentials-63"
-  },
-  "2.1.10": {
-    "macos-aarch64": "llvm-16.0.0-aarch64-macos-essentials-63"
-  },
-  "2.1.20": {
-    "macos-aarch64": "llvm-16.0.0-aarch64-macos-essentials-63"
-  },
-  "2.1.21": {
-    "macos-aarch64": "llvm-16.0.0-aarch64-macos-essentials-65"
-  },
   "2.2.0": {
     "linux-x86_64": "llvm-19-x86_64-linux-essentials-100",
     "macos-aarch64": "llvm-19-aarch64-macos-essentials-74",
@@ -36,13 +24,28 @@
     "macos-aarch64": "llvm-19-aarch64-macos-essentials-79",
     "macos-x86_64": "llvm-19-x86_64-macos-essentials-75"
   },
-  "2.4.0-Beta1": {
-    "linux-x86_64": "llvm-21-x86_64-linux-essentials-114",
-    "macos-aarch64": "llvm-21-aarch64-macos-essentials-93",
-    "macos-x86_64": "llvm-21-x86_64-macos-essentials-81"
+  "2.3.10": {
+    "linux-x86_64": "llvm-19-x86_64-linux-essentials-103",
+    "macos-aarch64": "llvm-19-aarch64-macos-essentials-79",
+    "macos-x86_64": "llvm-19-x86_64-macos-essentials-75"
+  },
+  "2.3.20": {
+    "linux-x86_64": "llvm-19-x86_64-linux-essentials-109",
+    "macos-aarch64": "llvm-19-aarch64-macos-essentials-81",
+    "macos-x86_64": "llvm-19-x86_64-macos-essentials-77"
+  },
+  "2.3.21": {
+    "linux-x86_64": "llvm-19-x86_64-linux-essentials-109",
+    "macos-aarch64": "llvm-19-aarch64-macos-essentials-81",
+    "macos-x86_64": "llvm-19-x86_64-macos-essentials-77"
+  },
+  "2.4.0": {
+    "linux-x86_64": "llvm-21-x86_64-linux-essentials-116",
+    "macos-aarch64": "llvm-21-aarch64-macos-essentials-97",
+    "macos-x86_64": "llvm-21-x86_64-macos-essentials-83"
   },
   "_metadata": {
-    "generated_at": "2026-03-31T13:54:48Z",
+    "generated_at": "2026-06-10T12:39:47Z",
     "source": "https://raw.githubusercontent.com/JetBrains/kotlin/v<kotlin-version>/kotlin-native/gradle.properties",
     "supported_hosts": [
       "linux-x86_64",

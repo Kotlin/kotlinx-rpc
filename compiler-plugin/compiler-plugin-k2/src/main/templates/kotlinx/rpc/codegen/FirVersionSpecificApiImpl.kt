@@ -5,37 +5,7 @@
 package kotlinx.rpc.codegen
 
 //##csm FirVersionSpecificApiImpl.kt-import
-//##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
-import org.jetbrains.kotlin.KtFakeSourceElementKind
-import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
-import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.getBooleanArgument
-import org.jetbrains.kotlin.fir.declarations.getStringArgument
-import org.jetbrains.kotlin.fir.declarations.getKClassArgument
-import org.jetbrains.kotlin.fir.expressions.FirAnnotation
-import org.jetbrains.kotlin.fir.resolve.toClassSymbol
-import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
-import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
-import org.jetbrains.kotlin.fir.plugin.DeclarationBuildingContext
-import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
-import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
-import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
-import org.jetbrains.kotlin.fir.scopes.processAllCallables
-import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
-import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
-import org.jetbrains.kotlin.fir.types.FirTypeRef
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.Name
-//##csm /specific
-//##csm specific=[2.1.22...2.2.10]
+//##csm specific=[2.2.0...2.2.10]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -132,8 +102,6 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         return toClassSymbol(session)
     }
 
-    //##csm FirRegularClass.declarationsVS
-    //##csm default
     override fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
         val declarations = mutableListOf<FirBasedSymbol<*>>()
         processAllDeclarations(session) { symbol ->
@@ -141,15 +109,6 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         }
         return declarations
     }
-
-    //##csm /default
-    //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
-    @org.jetbrains.kotlin.fir.symbols.SymbolInternals
-    override fun FirRegularClassSymbol.declarationsVS(session: FirSession): List<FirBasedSymbol<*>> {
-        return fir.declarations.map { it.symbol }
-    }
-    //##csm /specific
-    //##csm /FirRegularClass.declarationsVS
 
     override val FirResolvedTypeRef.coneTypeVS: ConeKotlinType get() = coneType
 
@@ -165,7 +124,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     //##csm default
     @OptIn(org.jetbrains.kotlin.config.MessageCollectorAccess::class)
     //##csm /default
-    //##csm specific=[2.1.0...2.4.19]
+    //##csm specific=[2.2.0...2.4.19]
     //##csm /specific
     //##csm /MessageCollectorAccess
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
@@ -179,15 +138,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     }
 
     override fun FirSession.getRegularClassSymbolByClassIdVS(classId: ClassId): FirRegularClassSymbol? {
-        //##csm ConeKotlinType.toClassSymbolVS
-        //##csm default
         return getRegularClassSymbolByClassId(classId)
-        //##csm /default
-        //##csm specific=[2.1.0...2.1.21, 2.2.0-ij251-*]
-        // this is the same implementation as getRegularClassSymbolByClassId() in 2.1.22+
-        return symbolProvider.getClassLikeSymbolByClassId(classId) as? FirRegularClassSymbol
-        //##csm /specific
-        //##csm /ConeKotlinType.toClassSymbolVS
     }
 
     override fun FirAnnotation.getKClassArgumentVS(name: Name, session: FirSession): ConeKotlinType? {
@@ -195,7 +146,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm default
         return getKClassArgument(name)
         //##csm /default
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return getKClassArgument(name, session)
         //##csm /specific
         //##csm /FirAnnotation.getKClassArgumentVS
@@ -206,7 +157,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm default
         return getBooleanArgument(name)
         //##csm /default
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return getBooleanArgument(name, session)
         //##csm /specific
         //##csm /FirAnnotation.getBooleanArgumentVS
@@ -217,38 +168,21 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         //##csm default
         return getStringArgument(name)
         //##csm /default
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return getStringArgument(name, session)
         //##csm /specific
         //##csm /FirAnnotation.getStringArgumentVS
     }
 
     override fun FirClassSymbol<*>.forAllCallablesVS(session: FirSession, body: (FirCallableSymbol<*>) -> Unit) {
-        //##csm FirClassSymbol.forAllCallables
-        //##csm default
         processAllDeclaredCallables(session) {
             body(it)
         }
-        //##csm /default
-        //##csm specific=[2.1.0...2.1.99, 2.2.0-ij251-*]
-        declaredMemberScope(session, null).processAllCallables {
-            body(it)
-        }
-        //##csm /specific
-        //##csm /FirClassSymbol.forAllCallables
     }
 
     override var DeclarationBuildingContext<*>.sourceVS: KtSourceElement?
-        //##csm ClassBuildingContext.sourceVS
-        //##csm default
         get() = source
         set(value) { source = value }
-        //##csm /default
-        //##csm specific=[2.1.0...2.1.99]
-        get() = null
-        set(_) {}
-        //##csm /specific
-        //##csm /ClassBuildingContext.sourceVS
 
 
     override fun pluginGeneratedElementKindVS(marker: Any?): KtFakeSourceElementKind {
@@ -259,7 +193,7 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
             else -> KtFakeSourceElementKind.PluginGenerated.Custom(marker)
         }
         //##csm /default
-        //##csm specific=[2.1.0...2.4.19]
+        //##csm specific=[2.2.0...2.4.19]
         return KtFakeSourceElementKind.PluginGenerated
         //##csm /specific
         //##csm /ClassBuildingContext.sourceVS

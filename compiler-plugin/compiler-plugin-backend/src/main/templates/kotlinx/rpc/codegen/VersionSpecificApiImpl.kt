@@ -5,74 +5,7 @@
 package kotlinx.rpc.codegen
 
 //##csm VersionSpecificApiImpl.kt-import
-//##csm specific=[2.1.0...2.1.10, 2.1.20-ij243-*]
-import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
-import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.descriptors.SourceElement
-import org.jetbrains.kotlin.ir.backend.js.utils.valueArguments
-import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrConstKind
-import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.isNullable
-import org.jetbrains.kotlin.ir.util.copyTo
-import org.jetbrains.kotlin.name.CallableId
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.platform.isJs
-import org.jetbrains.kotlin.platform.isWasm
-import kotlin.reflect.KClass
-import kotlin.reflect.safeCast
-//##csm /specific
-//##csm specific=[2.1.11...2.1.21]
-import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
-import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
-import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
-import org.jetbrains.kotlin.config.CommonConfigurationKeys
-import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.descriptors.SourceElement
-import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
-import org.jetbrains.kotlin.ir.declarations.*
-import org.jetbrains.kotlin.ir.expressions.IrCall
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrConstKind
-import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
-import org.jetbrains.kotlin.ir.expressions.IrExpression
-import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
-import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.util.copyTo
-import org.jetbrains.kotlin.ir.util.isNullable
-import org.jetbrains.kotlin.name.CallableId
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.platform.isJs
-import org.jetbrains.kotlin.platform.isWasm
-import kotlin.reflect.KClass
-import kotlin.reflect.safeCast
-//##csm /specific
-//##csm specific=[2.1.22...2.3.*]
+//##csm specific=[2.2.0...2.3.*]
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -155,34 +88,11 @@ object VersionSpecificApiImpl : VersionSpecificApi {
             origin = value
         }
 
-    //##csm IrConstructor.parametersVS
-    //##csm specific=[2.1.0...2.1.10, 2.1.20-ij243-*]
-    override val IrConstructor.parametersVS: List<IrValueParameter>
-        get() = valueParameters
-
-    //##csm /specific
-    //##csm default
     override val IrConstructor.parametersVS: List<IrValueParameter>
         get() = parameters
-    //##csm /default
-    //##csm /IrConstructor.parametersVS
 
-    //##csm IrConstructorCall.argumentsVS
-    //##csm specific=[2.1.0...2.1.10, 2.1.20-ij243-*]
-    override val IrConstructorCall.argumentsVS: List<IrExpression?>
-        get() = valueArguments
-
-    //##csm /specific
-    //##csm specific=[2.1.11...2.1.21]
-    override val IrConstructorCall.argumentsVS: List<IrExpression?>
-        get() = arguments
-
-    //##csm /specific
-    //##csm default
     override val IrConstructorCall.argumentsVS: List<IrExpression?>
         get() = arguments.toList()
-    //##csm /default
-    //##csm /IrConstructorCall.argumentsVS
 
     override fun IrType.isNullableVS(): Boolean {
         return isNullable()
@@ -194,7 +104,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         name: String
     ): IrClassSymbol? {
         //##csm referenceBuiltInClass
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return context.referenceClass(
         //##csm /specific
         //##csm default
@@ -216,7 +126,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         from: IrFile,
     ): IrClassSymbol? {
         //##csm referenceClass
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return context.referenceClass(
         //##csm /specific
         //##csm default
@@ -237,7 +147,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         name: String,
     ): Collection<IrSimpleFunctionSymbol> {
         //##csm referenceBuiltinFunctions
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return context.referenceFunctions(
         //##csm /specific
         //##csm default
@@ -258,7 +168,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         from: IrFile,
     ): Collection<IrSimpleFunctionSymbol> {
         //##csm referenceFunctions
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return context.referenceFunctions(
         //##csm /specific
         //##csm default
@@ -280,7 +190,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     //##csm default
     @OptIn(org.jetbrains.kotlin.config.MessageCollectorAccess::class)
     //##csm /default
-    //##csm specific=[2.1.0...2.4.19]
+    //##csm specific=[2.2.0...2.4.19]
     //##csm /specific
     //##csm /MessageCollectorAccess
     override val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
@@ -330,54 +240,19 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         )
     }
 
-    //##csm IrFunction.valueParametersVS
-    //##csm specific=[2.1.0...2.1.21]
-    override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
-        return valueParameters
-    }
-
-    //##csm /specific
-    //##csm default
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
         return parameters.filter { it.kind == IrParameterKind.Regular }
     }
-    //##csm /default
-    //##csm /IrFunction.valueParametersVS
 
     override var IrFunction.dispatchReceiverParameterVS: IrValueParameter?
         get() = dispatchReceiverParameter
         set(value) {
-            //##csm IrFunction.extensionReceiverParameterVS
-            //##csm specific=[2.1.0...2.1.21]
-            dispatchReceiverParameter = value
-            //##csm /specific
-            //##csm default
             if (value != null) {
                 parameters += value
             }
-            //##csm /default
-            //##csm /IrFunction.extensionReceiverParameterVS
         }
 
     override fun IrMemberAccessExpressionData.buildForVS(access: IrMemberAccessExpression<*>) {
-        //##csm IrMemberAccessExpressionData.buildFor
-        //##csm specific=[2.1.0...2.1.21]
-        if (dispatchReceiver != null) {
-            access.dispatchReceiver = dispatchReceiver
-        }
-
-        if (extensionReceiver != null) {
-            access.extensionReceiver = extensionReceiver
-        }
-        valueArguments.forEachIndexed { index, irExpression ->
-            access.putValueArgument(index, irExpression)
-        }
-
-        typeArguments.forEachIndexed { index, irType ->
-            access.putTypeArgument(index, irType)
-        }
-        //##csm /specific
-        //##csm default
         var offset = if (dispatchReceiver != null) {
             access.arguments[0] = dispatchReceiver
             1
@@ -399,8 +274,6 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         typeArguments.forEachIndexed { index, irType ->
             access.typeArguments[index] = irType
         }
-        //##csm /default
-        //##csm /IrMemberAccessExpressionData.buildFor
     }
 
     override fun IrAnnotationVS(
@@ -413,7 +286,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         constructorTypeArgumentsCount: Int,
     ): IrMemberAccessExpression<*> {
         //##csm IrAnnotationVS
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         return IrConstructorCallImplVS(
             startOffset = startOffset,
             endOffset = endOffset,
@@ -437,7 +310,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override fun IrMutableAnnotationContainer.addAnnotationVS(annotation: IrMemberAccessExpression<*>) {
         //##csm addAnnotationVS
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         annotations += annotation as IrConstructorCallImpl
         //##csm /specific
         //##csm default
@@ -452,7 +325,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         annotation: IrMemberAccessExpression<*>,
     ) {
         //##csm addMetadataVisibleAnnotationVS
-        //##csm specific=[2.1.0...2.3.99]
+        //##csm specific=[2.2.0...2.3.99]
         context.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(
             declaration,
             listOf(annotation as IrConstructorCall),
@@ -468,14 +341,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     }
 
     override fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression? {
-        //##csm IrConstructorCall.valueArgumentAt
-        //##csm specific=[2.1.0...2.1.10]
-        return getValueArgument(index)
-        //##csm /specific
-        //##csm default
         return arguments.getOrNull(index)
-        //##csm /default
-        //##csm /IrConstructorCall.valueArgumentAt
     }
 
     override fun <T : Any> IrExpression.asConstValueVS(clazz: KClass<T>): T? {
