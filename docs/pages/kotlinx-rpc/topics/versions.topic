@@ -23,7 +23,8 @@
     </p>
     <list>
         <li>2.2.0, 2.2.10, 2.2.20, 2.2.21</li>
-        <li>2.3.0</li>
+        <li>2.3.0, 2.3.10, 2.3.20, 2.3.21</li>
+        <li>2.4.0</li>
     </list>
     <p>
         Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code
