@@ -269,16 +269,15 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return copyTo(irFunction, origin)
     }
 
-    //##csm messageCollectorKey
-    //##csm specific=[2.0.0...2.0.10]
-    override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
-        get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
-    //##csm /specific
+    //##csm MessageCollectorAccess
     //##csm default
+    @OptIn(org.jetbrains.kotlin.config.MessageCollectorAccess::class)
+    //##csm /default
+    //##csm specific=[2.1.0...2.4.19]
+    //##csm /specific
+    //##csm /MessageCollectorAccess
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
         get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
-    //##csm /default
-    //##csm /messageCollectorKey
 
     override fun IrCallImplVS(
         startOffset: Int,

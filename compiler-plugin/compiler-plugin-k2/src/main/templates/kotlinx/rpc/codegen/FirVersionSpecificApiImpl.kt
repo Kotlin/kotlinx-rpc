@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.types.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 //##csm /specific
 //##csm specific=[2.0.11...2.0.21]
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
@@ -61,6 +62,7 @@ import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 //##csm /specific
 //##csm specific=[2.1.22...2.2.10]
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
@@ -80,6 +82,7 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 //##csm /specific
 //##csm specific=[2.2.20...2.2.*]
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
@@ -99,6 +102,7 @@ import org.jetbrains.kotlin.fir.declarations.processAllDeclarations
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 //##csm /specific
 //##csm specific=[2.3.0...2.*]
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
@@ -163,16 +167,15 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         return toRegularClassSymbol(session)
     }
 
-    //##csm messageCollectorKey
+    //##csm MessageCollectorAccess
     //##csm default
+    @OptIn(org.jetbrains.kotlin.config.MessageCollectorAccess::class)
+    //##csm /default
+    //##csm specific=[2.1.0...2.4.19]
+    //##csm /specific
+    //##csm /MessageCollectorAccess
     override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
         get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
-    //##csm /default
-    //##csm specific=[2.0.0...2.0.10]
-    override val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
-        get() = CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY
-    //##csm /specific
-    //##csm /messageCollectorKey
 
     override fun ConeKotlinType.toFirResolvedTypeRefVS(
         source: KtSourceElement?,
