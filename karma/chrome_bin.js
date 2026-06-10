@@ -26,4 +26,16 @@ config.set({
     }
 });
 
-process.env.CHROME_BIN = require('puppeteer').executablePath();
+// puppeteer 25+ is ESM-only and its executablePath() returns a Promise, while this file is
+// inlined into the synchronous generated karma.conf.js. Resolve the browser path in a
+// blocking child process instead. cwd matters twice: import("puppeteer") resolves against
+// it, and puppeteer looks up .puppeteerrc.cjs from it.
+process.env.CHROME_BIN = require('child_process').execFileSync(
+    process.execPath,
+    [
+        '--input-type=module',
+        '-e',
+        'console.log(await (await import("puppeteer")).default.executablePath());'
+    ],
+    {encoding: 'utf8', cwd: __dirname}
+).trim();

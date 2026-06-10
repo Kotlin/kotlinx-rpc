@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -54,6 +55,8 @@ interface FirVersionSpecificApi {
     fun FirClassSymbol<*>.forAllCallablesVS(session: FirSession, body: (FirCallableSymbol<*>) -> Unit)
 
     var DeclarationBuildingContext<*>.sourceVS: KtSourceElement?
+
+    fun pluginGeneratedElementKindVS(marker: Any? = null): KtFakeSourceElementKind
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {
