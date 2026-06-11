@@ -37,7 +37,7 @@ class Config(
     val indentSize: Int,
     val platform: Platform,
     val protoNamesOutput: String?,
-    val useLowerCamelCaseRpcMethodName: Boolean,
+    val useLowerCamelCaseGrpcMethodNames: Boolean,
 )
 
 abstract class ProtocGenPlugin {
@@ -50,7 +50,7 @@ abstract class ProtocGenPlugin {
         private const val GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS = "generateOptionalFieldOrNullGetters"
         private const val INDENT_SIZE_OPTION = "indentSize"
         private const val PLATFORM_OPTION = "platform"
-        private const val USE_LOWER_CAMEL_CASE_RPC_METHOD_NAME = "useLowerCamelCaseRpcMethodName"
+        private const val USE_LOWER_CAMEL_CASE_GRPC_METHOD_NAMES = "useLowerCamelCaseGrpcMethodNames"
     }
 
     private var debugOutput: String? = null
@@ -98,7 +98,8 @@ abstract class ProtocGenPlugin {
 
         val protoNamesOutput = parameters[PROTO_NAMES_OUTPUT_OPTION]
 
-        val doCapitalizeRpcMethodName = parameters[USE_LOWER_CAMEL_CASE_RPC_METHOD_NAME]?.toBooleanStrictOrNull() ?: true
+        val useLowerCamelCaseGrpcMethodNames =
+            parameters[USE_LOWER_CAMEL_CASE_GRPC_METHOD_NAMES]?.toBooleanStrictOrNull() ?: true
 
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
@@ -108,7 +109,7 @@ abstract class ProtocGenPlugin {
             indentSize = indentSize,
             platform = Platform.fromString(platform),
             protoNamesOutput = protoNamesOutput,
-            useLowerCamelCaseRpcMethodName = doCapitalizeRpcMethodName,
+            useLowerCamelCaseGrpcMethodNames = useLowerCamelCaseGrpcMethodNames,
         )
 
         val generatedMetadata = GeneratedMetadata()
