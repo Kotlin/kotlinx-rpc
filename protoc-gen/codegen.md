@@ -246,11 +246,14 @@ Each service becomes a `@Grpc` interface.
 ```kotlin
 @Grpc
 interface GreeterService {
-    suspend fun SayHello(message: HelloRequest): HelloReply
+    @Grpc.Method(name = "SayHello")
+    suspend fun sayHello(message: HelloRequest): HelloReply
 }
 ```
 
 The compiler plugin then generates the stub class, `RpcServiceDescriptor`, `GrpcServiceDelegate`, and `RpcCallable` entries from this interface (see [grpc/codegen.md](../grpc/codegen.md)).
+
+Note: gRPC method names are generated in lower camel case by default. Set `useLowerCamelCaseGrpcMethodNames` to `false` to disable this conversion.
 
 ### Streaming
 
@@ -267,9 +270,14 @@ service StreamingTestService {
 ```kotlin
 @Grpc
 interface StreamingTestService {
-    fun Server(message: References): Flow<References>
-    suspend fun Client(message: Flow<References>): References
-    fun Bidi(message: Flow<References>): Flow<References>
+    @Grpc.Method(name = "Server")
+    fun server(message: References): Flow<References>
+
+    @Grpc.Method(name = "Client")
+    suspend fun client(message: Flow<References>): References
+
+    @Grpc.Method(name = "Bidi")
+    fun bidi(message: Flow<References>): Flow<References>
 }
 ```
 
@@ -277,13 +285,13 @@ Note: server-streaming and bidi methods are **not** `suspend` since they return 
 
 ### Idempotency
 
-Reads `MethodOptions.IdempotencyLevel` from the `.proto` method options and maps to `@GrpcMethod` annotation parameters:
+Reads `MethodOptions.IdempotencyLevel` from the `.proto` method options and maps to `@Grpc.Method` annotation parameters:
 
 | Proto `idempotency_level` | Generated annotation |
 |---|---|
 | (default) | _(none)_ |
-| `IDEMPOTENT` | `@GrpcMethod(idempotent = true)` |
-| `NO_SIDE_EFFECTS` | `@GrpcMethod(idempotent = true, safe = true)` |
+| `IDEMPOTENT` | `@Grpc.Method(idempotent = true)` |
+| `NO_SIDE_EFFECTS` | `@Grpc.Method(idempotent = true, safe = true)` |
 
 ## Pipeline Overview
 
