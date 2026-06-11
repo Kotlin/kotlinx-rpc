@@ -314,12 +314,12 @@ protoc (or buf)
 
 Both plugins accept the same options (passed via `--<plugin>_opt=key=value`):
 
-| Option                            | Default | Description                                                                                     |
-|-----------------------------------|---------|-------------------------------------------------------------------------------------------------|
-| `explicitApiModeEnabled`          | `false` | Add `public`/`internal` visibility modifiers                                                    |
-| `generateComments`                | `true`  | Preserve proto comments as KDoc                                                                 |
-| `generateFileLevelComments`       | `true`  | Include file-level proto comments                                                               |
-| `indentSize`                      | `4`     | Indentation width in spaces                                                                     |
-| `platform`                        | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
-| `debugOutput`                     | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
-| `useLowerCamelCaseRpcMethodName`  | `true`  | Decapitalize rpc name                                                                           |
+| Option                             | Default | Description                                                                                     |
+|------------------------------------|---------|-------------------------------------------------------------------------------------------------|
+| `explicitApiModeEnabled`           | `false` | Add `public`/`internal` visibility modifiers                                                    |
+| `generateComments`                 | `true`  | Preserve proto comments as KDoc                                                                 |
+| `generateFileLevelComments`        | `true`  | Include file-level proto comments                                                               |
+| `indentSize`                       | `4`     | Indentation width in spaces                                                                     |
+| `platform`                         | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
+| `debugOutput`                      | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
+| `useLowerCamelCaseGrpcMethodNames` | `true`  | Generate Kotlin gRPC method names in lower camel case                                           |
