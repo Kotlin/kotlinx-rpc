@@ -35,12 +35,14 @@ internal object RpcPluginConst {
 
 internal val Project.isInternalDevelopment: Boolean
     get() {
-        return (properties.getOrDefault(INTERNAL_DEVELOPMENT_PROPERTY, null) as String?)
-            ?.toBoolean() ?: false
+        return providers.gradleProperty(INTERNAL_DEVELOPMENT_PROPERTY)
+            .map(String::toBoolean)
+            .getOrElse(false)
     }
 
 internal val Project.isProtocEnabled: Boolean
     get() {
-        return (properties.getOrDefault(PROTOC_ENABLED_PROPERTY, null) as String?)
-            ?.toBoolean() ?: false
+        return providers.gradleProperty(PROTOC_ENABLED_PROPERTY)
+            .map(String::toBoolean)
+            .getOrElse(false)
     }
