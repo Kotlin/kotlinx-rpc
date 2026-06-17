@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.defaultType
 import org.jetbrains.kotlin.ir.util.getAnnotation
-import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.name.Name
@@ -46,10 +45,9 @@ internal class ServiceDeclaration(
                 RpcClassId.grpcMethodAnnotation.asSingleFqName(),
             )
 
-            val nameArgument = grpcMethodAnnotation?.getValueArgument(Name.identifier("name"))
-
             ctx.vsApi {
-                nameArgument?.asConstValueVS(String::class)
+                grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("name"))
+                    ?.asConstValueVS(String::class)
                     ?.takeIf { it.isNotBlank() }
                     ?: name
             }
