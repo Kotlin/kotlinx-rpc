@@ -83,7 +83,6 @@ import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.getAnnotation
-import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.isObject
 import org.jetbrains.kotlin.ir.util.kotlinFqName
 import org.jetbrains.kotlin.ir.util.primaryConstructor
@@ -1236,23 +1235,23 @@ internal class RpcStubGenerator(
                     // schemaDescriptor
                     +nullConst(ctx.anyNullable)
 
-                    val idempotentArgument = grpcMethodAnnotation
-                        ?.getValueArgument(Name.identifier("idempotent"))
-                    val idempotent = idempotentArgument?.asConstValueVS(Boolean::class) ?: false
+                    val idempotent = vsApi {
+                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("idempotent"))
+                    }?.asConstValueVS(Boolean::class) ?: false
 
                     // idempotent
                     +booleanConst(idempotent)
 
-                    val safeArgument = grpcMethodAnnotation
-                        ?.getValueArgument(Name.identifier("safe"))
-                    val safe = safeArgument?.asConstValueVS(Boolean::class) ?: false
+                    val safe = vsApi {
+                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("safe"))
+                    }?.asConstValueVS(Boolean::class) ?: false
 
                     // safe
                     +booleanConst(safe)
 
-                    val sampledToLocalTracingArgument = grpcMethodAnnotation
-                        ?.getValueArgument(Name.identifier("sampledToLocalTracing"))
-                    val sampledToLocalTracing = sampledToLocalTracingArgument?.asConstValueVS(Boolean::class) ?: true
+                    val sampledToLocalTracing = vsApi {
+                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("sampledToLocalTracing"))
+                    }?.asConstValueVS(Boolean::class) ?: true
 
                     // sampledToLocalTracing
                     +booleanConst(sampledToLocalTracing)

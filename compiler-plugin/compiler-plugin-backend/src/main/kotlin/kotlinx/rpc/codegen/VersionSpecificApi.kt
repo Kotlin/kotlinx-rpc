@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.name.Name
 import kotlin.reflect.KClass
 
 interface VersionSpecificApi {
@@ -121,6 +122,8 @@ interface VersionSpecificApi {
     fun IrMemberAccessExpressionData.buildForVS(access: IrMemberAccessExpression<*>)
 
     fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression?
+
+    fun IrMemberAccessExpression<*>.getValueArgumentVS(name: Name): IrExpression?
 
     fun <T : Any> IrExpression.asConstValueVS(clazz: KClass<T>): T?
 }

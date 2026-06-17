@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.util.copyTo
+import org.jetbrains.kotlin.ir.util.getValueArgument
 import org.jetbrains.kotlin.ir.util.isNullable
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -37,7 +38,44 @@ import org.jetbrains.kotlin.platform.isWasm
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 //##csm /specific
-//##csm specific=[2.4.0...2.*]
+//##csm specific=[2.4.0...2.4.19]
+import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
+import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.config.CommonConfigurationKeys
+import org.jetbrains.kotlin.config.CompilerConfigurationKey
+import org.jetbrains.kotlin.descriptors.SourceElement
+import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
+import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.IrAnnotation
+import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstKind
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
+import org.jetbrains.kotlin.ir.expressions.IrExpression
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
+import org.jetbrains.kotlin.ir.expressions.impl.IrAnnotationImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.expressions.impl.fromSymbolOwner
+import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
+import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
+import org.jetbrains.kotlin.ir.types.IrType
+import org.jetbrains.kotlin.ir.util.copyTo
+import org.jetbrains.kotlin.ir.util.getValueArgument
+import org.jetbrains.kotlin.ir.util.isNullable
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.platform.isJs
+import org.jetbrains.kotlin.platform.isWasm
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
+//##csm /specific
+//##csm default
 import kotlinx.rpc.codegen.extension.IrMemberAccessExpressionData
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
@@ -72,7 +110,7 @@ import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.isWasm
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
-//##csm /specific
+//##csm /default
 //##csm /VersionSpecificApiImpl.kt-import
 
 object VersionSpecificApiImpl : VersionSpecificApi {
@@ -342,6 +380,17 @@ object VersionSpecificApiImpl : VersionSpecificApi {
 
     override fun IrConstructorCall.valueArgumentAtVS(index: Int): IrExpression? {
         return arguments.getOrNull(index)
+    }
+
+    override fun IrMemberAccessExpression<*>.getValueArgumentVS(name: Name): IrExpression? {
+        //##csm getValueArgumentVS
+        //##csm specific=[2.2.0...2.4.19]
+        return (this as IrConstructorCall).getValueArgument(name)
+        //##csm /specific
+        //##csm default
+        return (this as IrAnnotation).argumentMapping[name]
+        //##csm /default
+        //##csm /getValueArgumentVS
     }
 
     override fun <T : Any> IrExpression.asConstValueVS(clazz: KClass<T>): T? {
