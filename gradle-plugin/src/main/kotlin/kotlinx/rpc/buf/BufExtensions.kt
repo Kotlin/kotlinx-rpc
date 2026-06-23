@@ -208,7 +208,7 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
      *
      * Default value: `true`.
      */
-    public val useLowerCamelCaseGrpcMethodNames: Property<Boolean> =
+    public val camelCaseGrpcMethods: Property<Boolean> =
         project.objects.property<Boolean>().convention(true)
 
     /**

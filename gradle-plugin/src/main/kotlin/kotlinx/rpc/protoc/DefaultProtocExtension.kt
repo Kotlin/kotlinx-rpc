@@ -183,7 +183,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("indentSize", buf.generate.indentSize)
 
         if (name == GRPC_KOTLIN_MULTIPLATFORM) {
-            options.put("useLowerCamelCaseGrpcMethodNames", buf.generate.useLowerCamelCaseGrpcMethodNames)
+            options.put("camelCaseGrpcMethods", buf.generate.camelCaseGrpcMethods)
         }
     }
 

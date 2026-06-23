@@ -23,17 +23,17 @@ internal fun DescriptorProtos.FileDescriptorProto.toGrpcModel(): Model {
         .addProtoFile(this)
         .addFileToGenerate(PROTO_FILE_NAME)
         .build()
-        .toModel(grpcGeneratorConfig(useLowerCamelCaseGrpcMethodNames = false))
+        .toModel(grpcGeneratorConfig(camelCaseGrpcMethods = false))
 }
 
-internal fun grpcGeneratorConfig(useLowerCamelCaseGrpcMethodNames: Boolean): Config = Config(
+internal fun grpcGeneratorConfig(camelCaseGrpcMethods: Boolean): Config = Config(
     explicitApiModeEnabled = false,
     generateComments = true,
     generateFileLevelComments = true,
     indentSize = 4,
     platform = Platform.Jvm,
     protoNamesOutput = null,
-    useLowerCamelCaseGrpcMethodNames = useLowerCamelCaseGrpcMethodNames,
+    camelCaseGrpcMethods = camelCaseGrpcMethods,
 )
 
 internal class GrpcProtoFixture {

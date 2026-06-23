@@ -253,7 +253,7 @@ interface GreeterService {
 
 The compiler plugin then generates the stub class, `RpcServiceDescriptor`, `GrpcServiceDelegate`, and `RpcCallable` entries from this interface (see [grpc/codegen.md](../grpc/codegen.md)).
 
-Note: gRPC method names are generated in lower camel case by default. Set `useLowerCamelCaseGrpcMethodNames` to `false` to disable this conversion.
+Note: gRPC method names are generated in lower camel case by default. Set `camelCaseGrpcMethods` to `false` to disable this conversion.
 
 ### Streaming
 
@@ -330,4 +330,4 @@ Both plugins accept the same options (passed via `--<plugin>_opt=key=value`):
 | `indentSize`                       | `4`     | Indentation width in spaces                                                                     |
 | `platform`                         | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
 | `debugOutput`                      | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
-| `useLowerCamelCaseGrpcMethodNames` | `true`  | Generate Kotlin gRPC method names in lower camel case                                           |
+| `camelCaseGrpcMethods` | `true`  | Generate Kotlin gRPC method names in lower camel case                                           |
