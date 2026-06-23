@@ -43,7 +43,10 @@ object ProtoNames {
         return messageName + "Internal"
     }
 
+    fun presenceInterfaceName(messageName: String): String {
+        return messageName + "Presence"
+    }
+
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")
     val MARSHALLER_NAME = Name.identifier("MARSHALLER")
-    val PRESENCE_INDICES_NAME = Name.identifier("PresenceIndices")
 }

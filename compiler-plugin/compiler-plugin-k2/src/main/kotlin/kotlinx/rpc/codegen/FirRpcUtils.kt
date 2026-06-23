@@ -111,3 +111,17 @@ fun ClassId.internalMessageClassId(): ClassId {
         names.drop(1).fold(topLevel) { acc, name -> acc.createNestedClassId(name) }
     }
 }
+
+/**
+ * Returns the [ClassId] corresponding to the generated presence interface for this message [ClassId].
+ *
+ * Only the top-level segment is suffixed with `Presence`; nested messages reuse their simple name nested
+ * inside the parent's presence interface (e.g. `Outer.Inner` -> `OuterPresence.Inner`), mirroring the
+ * naming used by the protobuf code generator.
+ */
+fun ClassId.presenceInterfaceClassId(): ClassId {
+    val names = relativeClassName.pathSegments()
+    val topLevel = ClassId(packageFqName, Name.identifier(ProtoNames.presenceInterfaceName(names.first().asString())))
+
+    return names.drop(1).fold(topLevel) { acc, name -> acc.createNestedClassId(name) }
+}

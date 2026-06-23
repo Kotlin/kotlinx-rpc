@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
@@ -47,20 +46,17 @@ class FirProtobufMessageGenerator(
         session.firCachesFactory.createCache { messageClassSymbol: FirClassSymbol<*>, _ ->
             val propertyNames = mutableMapOf<Name, FirPropertySymbol>()
             val functionNames = mutableMapOf<Name, FirPropertySymbol>()
-            val presenceTrackedPropertyNames = messageClassSymbol.presenceTrackedPropertyNames(session)
+            val presenceGetterNames = messageClassSymbol.presenceGetterNames(session)
             vsApi {
-                messageClassSymbol.forAllCallablesVS(session) { it ->
-                    if (it is FirPropertySymbol) {
-                        propertyNames[it.name] = it
+                messageClassSymbol.forAllCallablesVS(session) { callable ->
+                    if (callable is FirPropertySymbol) {
+                        propertyNames[callable.name] = callable
 
-                        if (it.name in presenceTrackedPropertyNames) {
-                            // if the property is presence tracked, construct clear<PropertyName> function
-                            val functionName = Name.identifier(
-                                "clear${
-                                it.name.asString()
-                                    .replaceFirstChar { char -> char.uppercase() }
-                            }")
-                            functionNames[functionName] = it
+                        // The presence interface declares a `has<Field>` getter for each presence-tracked field;
+                        // for those fields we generate a matching `clear<Field>` function on the builder.
+                        val capitalized = callable.name.asString().replaceFirstChar { char -> char.uppercase() }
+                        if (Name.identifier("has$capitalized") in presenceGetterNames) {
+                            functionNames[Name.identifier("clear$capitalized")] = callable
                         }
                     }
                 }
@@ -199,7 +195,7 @@ class FirProtobufMessageGenerator(
                 visibility = Visibilities.Public
                 modality = Modality.ABSTRACT
                 vsApi {
-                    sourceVS = property.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
+                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )
@@ -207,27 +203,24 @@ class FirProtobufMessageGenerator(
 }
 
 /**
- * Returns the names of all proto fields of this generated proto message class that are presence tracked.
+ * Returns the names of the presence getters (`has<Field>`) declared in the generated presence interface
+ * of this message, e.g. `hasSourceContext`. Each such getter corresponds to one presence-tracked field.
  *
- * It finds those names by searching for the `PresenceIndices` object in the internal message class.
- * The `PresenceIndices` object contains a field for each presence-tracked field.
- * The field name is the same as the proto field name.
+ * The presence interface is resolved by its [ClassId]. It is a standalone hierarchy (it does not extend
+ * the message, the builder, or the internal class) so resolving its member scope here is safe.
+ *
+ * This must NOT be derived from the internal message class: that class extends the generated builder, so
+ * forcing resolution of its member scope (or of anything nested in it, such as the `PresenceIndices` object)
+ * re-enters declaration generation for the builder and causes unbounded recursion under the IDE's lazy
+ * (Analysis API) resolution.
  */
-private fun FirClassSymbol<*>.presenceTrackedPropertyNames(session: FirSession): Set<Name> {
-    val internalClass = vsApi {
-        session.getRegularClassSymbolByClassIdVS(
-            classId.internalMessageClassId()
-        )
-    } ?: return emptySet()
-
-    val presenceIndices = vsApi {
-        internalClass.declarationsVS(session)
-            .filterIsInstance<FirRegularClassSymbol>()
-            .find { it.classKind == ClassKind.OBJECT && it.name == ProtoNames.PRESENCE_INDICES_NAME }
+private fun FirClassSymbol<*>.presenceGetterNames(session: FirSession): Set<Name> {
+    val presenceInterface = vsApi {
+        session.getRegularClassSymbolByClassIdVS(classId.presenceInterfaceClassId())
     } ?: return emptySet()
 
     return vsApi {
-        presenceIndices.declarationsVS(session)
+        presenceInterface.declarationsVS(session)
             .filterIsInstance<FirPropertySymbol>()
             .mapTo(mutableSetOf()) { it.name }
     }
