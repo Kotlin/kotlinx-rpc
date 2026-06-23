@@ -26,6 +26,10 @@ interface MyMessage {
     val optionalField: Int
 }
 
+interface MyMessagePresence {
+    val hasOptionalField: Boolean
+}
+
 class MyMessageInternal : MyMessage.Builder {
     override var field: Int = 1
 

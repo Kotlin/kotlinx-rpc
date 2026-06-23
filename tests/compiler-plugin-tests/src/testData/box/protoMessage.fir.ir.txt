@@ -262,6 +262,25 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-optionalField> visibility:public modality:ABSTRACT returnType:kotlin.Int
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage
         correspondingProperty: PROPERTY name:optionalField visibility:public modality:ABSTRACT [val]
+  CLASS INTERFACE name:MyMessagePresence modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
+    thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessagePresence
+    FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
+      VALUE_PARAMETER kind:Regular name:other index:1 type:kotlin.Any?
+      overridden:
+        public open fun equals (other: kotlin.Any?): kotlin.Boolean declared in kotlin.Any
+    FUN FAKE_OVERRIDE name:hashCode visibility:public modality:OPEN returnType:kotlin.Int [fake_override]
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
+      overridden:
+        public open fun hashCode (): kotlin.Int declared in kotlin.Any
+    FUN FAKE_OVERRIDE name:toString visibility:public modality:OPEN returnType:kotlin.String [fake_override]
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
+      overridden:
+        public open fun toString (): kotlin.String declared in kotlin.Any
+    PROPERTY name:hasOptionalField visibility:public modality:ABSTRACT [val]
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-hasOptionalField> visibility:public modality:ABSTRACT returnType:kotlin.Boolean
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessagePresence
+        correspondingProperty: PROPERTY name:hasOptionalField visibility:public modality:ABSTRACT [val]
   FUN name:box visibility:public modality:FINAL returnType:kotlin.String
     BLOCK_BODY
       RETURN type=kotlin.Nothing from='public final fun box (): kotlin.String declared in test.my_message'

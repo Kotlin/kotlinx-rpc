@@ -26,6 +26,11 @@ FILE: module_main_protoMessage.kt
         }
 
     }
+    public abstract interface MyMessagePresence : R|kotlin/Any| {
+        public abstract val hasOptionalField: R|kotlin/Boolean|
+            public get(): R|kotlin/Boolean|
+
+    }
     public final class MyMessageInternal : R|test/my_message/MyMessage.Builder| {
         public constructor(): R|test/my_message/MyMessageInternal| {
             super<R|kotlin/Any|>()
