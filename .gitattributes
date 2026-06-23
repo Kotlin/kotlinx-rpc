@@ -1,9 +1,89 @@
 #
 # https://help.github.com/articles/dealing-with-line-endings/
 #
-# Linux start script should use lf
-/gradlew        text eol=lf
+# Normalize all text files to LF in the repository (line endings are converted
+# to LF on commit and checked out as-is). This keeps diffs stable across the
+# different platforms this project is developed and built on. Git auto-detects
+# binary content, so the explicit overrides below are for clarity and safety.
+#
+* text=auto eol=lf
 
-# These are Windows script files and should use crlf
-*.bat           text eol=crlf
+# ---------------------------------------------------------------------------
+# Line endings
+# ---------------------------------------------------------------------------
 
+# Unix shell scripts and the Gradle wrapper must stay LF (matches every copy in
+# subprojects and samples, not just the root one).
+*.sh        text eol=lf
+gradlew     text eol=lf
+
+# Windows scripts must use CRLF.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# ---------------------------------------------------------------------------
+# Binary files (no text conversion, no textual diffs)
+# ---------------------------------------------------------------------------
+
+# Archives & Java/Kotlin artifacts
+*.jar       binary
+*.war       binary
+*.zip       binary
+*.gz        binary
+*.tar       binary
+*.7z        binary
+*.klib      binary
+
+# Native libraries & objects
+*.so        binary
+*.dll       binary
+*.dylib     binary
+*.a         binary
+*.o         binary
+*.wasm      binary
+
+# Keystores & certificates
+*.jks       binary
+*.keystore  binary
+*.p12       binary
+
+# Images
+*.png       binary
+*.webp      binary
+*.gif       binary
+*.ico       binary
+*.jpg       binary
+*.jpeg      binary
+*.bmp       binary
+
+# Fonts
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+*.eot       binary
+
+# ---------------------------------------------------------------------------
+# Generated files — collapsed in diffs and excluded from GitHub language stats.
+# These are machine-generated and must never be hand-edited (see CLAUDE.md);
+# regenerate them with the appropriate task instead.
+# ---------------------------------------------------------------------------
+
+# Binary compatibility (ABI) dumps — `updateLegacyAbi`
+*.api                   linguist-generated
+*.klib.api              linguist-generated
+
+# Generated protobuf code (well-known types and conformance suite)
+**/generated-code/**    linguist-generated
+
+# Generated compiler-plugin test runners
+tests/compiler-plugin-tests/src/test-gen/**             linguist-generated
+
+# Implicit import lists — `update_implicit_types.sh`
+protoc-gen/common/src/main/resources/implicit-imports/*.txt linguist-generated
+
+# Class-dump golden files used by kRPC tests
+*.gold                  linguist-generated
+
+# Dependency lock files (yarn, Bazel)
+*.lock                  linguist-generated
