@@ -17,7 +17,10 @@ import kotlinx.rpc.grpc.test.OptionalTypes
 import kotlinx.rpc.grpc.test.Repeated
 import kotlinx.rpc.grpc.test.TestMap
 import kotlinx.rpc.grpc.test.UsingEnum
+import kotlinx.rpc.grpc.test.ageOrNull
 import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.grpc.test.nameOrNull
+import kotlinx.rpc.grpc.test.referenceOrNull
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -107,14 +110,13 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(42, resultNotNull.reference.field)
 
         val resultNullable = service.Optional(OptionalTypes {
-            name = null
-            age = null
+            clearName()
+            clearAge()
         })
 
-        assertEquals(null, resultNullable.name)
-        assertEquals(null, resultNullable.age)
-        // todo presence check
-//        assertEquals(null, resultNullable.reference)
+        assertEquals(null, resultNullable.nameOrNull)
+        assertEquals(null, resultNullable.ageOrNull)
+        assertEquals(null, resultNullable.referenceOrNull)
     }
 
     @Test
