@@ -251,6 +251,15 @@ Two approaches are supported:
 * Konan LLVM bundle mapping update by [@Jozott00](https://github.com/Jozott00) in [#585](https://github.com/Kotlin/kotlinx-rpc/pull/585)
 
 
+## 0.10.3
+> Published 23 June 2026
+
+**Full Changelog**: [0.10.2...0.10.3](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.10.3)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_10_3}
+* KRPC-560: Fix Native segfault in callables property itable dispatch (… by [@eminasljivic](https://github.com/eminasljivic) in [#728](https://github.com/Kotlin/kotlinx-rpc/pull/728)
+
+
 ## 0.10.2
 > Published 15 February 2026
 

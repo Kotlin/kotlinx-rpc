@@ -243,6 +243,14 @@ Two approaches are supported:
 
 **Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.11.0-grpc-185
 
+# 0.10.3
+> Published 23 June 2026
+
+### Bug fixes 🐛
+* KRPC-560: Fix Native segfault in callables property itable dispatch (… by @eminasljivic in https://github.com/Kotlin/kotlinx-rpc/pull/728
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.10.3
+
 # 0.10.2
 > Published 15 February 2026
 
