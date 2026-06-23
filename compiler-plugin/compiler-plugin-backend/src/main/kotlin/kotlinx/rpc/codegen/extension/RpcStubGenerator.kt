@@ -724,7 +724,10 @@ internal class RpcStubGenerator(
 
         callables = addProperty {
             name = Name.identifier(Descriptor.CALLABLES)
-            visibility = DescriptorVisibilities.PRIVATE
+            // The property must be PUBLIC to match the interface declaration.
+            // On Kotlin/Native, a PRIVATE property with a PUBLIC getter does not get
+            // a proper itable entry, causing a segfault on interface dispatch (KRPC-560).
+            visibility = DescriptorVisibilities.PUBLIC
             modality = Modality.FINAL
         }.apply {
             overriddenSymbols = listOf(interfaceProperty)
@@ -752,9 +755,12 @@ internal class RpcStubGenerator(
             }
 
             addDefaultGetter(this@generateCallablesProperty, ctx.irBuiltIns) {
-                visibility =
-                    DescriptorVisibilities.PUBLIC
-                overriddenSymbols = listOf(ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)!!)
+                visibility = DescriptorVisibilities.PUBLIC
+
+                val propertyGetter = ctx.rpcServiceDescriptor.getPropertyGetter(Descriptor.CALLABLES)
+                    ?: error("Expected RpcServiceDescriptor.callables property getter to exist")
+
+                overriddenSymbols = listOf(propertyGetter)
             }
         }
     }
