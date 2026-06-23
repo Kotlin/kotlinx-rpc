@@ -95,7 +95,7 @@
         </code-block>
         <note>
             gRPC method names are generated in lower camel case by default.
-            Set <code>generate.useLowerCamelCaseGrpcMethodNames</code> to <code>false</code> to disable this conversion.
+            Set <code>generate.camelCaseGrpcMethods</code> to <code>false</code> to disable this conversion.
         </note>
         <p>
             The companion extension file contains the user-facing builder and copy helpers:

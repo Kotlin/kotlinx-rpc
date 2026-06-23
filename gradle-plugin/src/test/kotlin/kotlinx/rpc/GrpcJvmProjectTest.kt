@@ -372,7 +372,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - useLowerCamelCaseGrpcMethodNames=true
+      - camelCaseGrpcMethods=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
@@ -452,7 +452,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - useLowerCamelCaseGrpcMethodNames=true
+      - camelCaseGrpcMethods=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [path, to, protoc-gen-myplugin.exe]
@@ -505,7 +505,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - useLowerCamelCaseGrpcMethodNames=true
+      - camelCaseGrpcMethods=true
       - explicitApiModeEnabled=false
       - platform=jvm
   - remote: my.remote.plugin
@@ -690,7 +690,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - useLowerCamelCaseGrpcMethodNames=true
+      - camelCaseGrpcMethods=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
@@ -700,7 +700,7 @@ inputs:
     }
 
     @TestFactory
-    fun `Lower Camel Case Grpc Method Names Option`() = runGrpcTest {
+    fun `Camel Case Grpc Methods Option`() = runGrpcTest {
         runGradle(generateBufGenYamlCommonMain)
 
         assertBufGenYaml(
@@ -725,7 +725,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - indentSize=4
-      - useLowerCamelCaseGrpcMethodNames=false
+      - camelCaseGrpcMethods=false
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:

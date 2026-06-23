@@ -54,7 +54,7 @@ class ModelToGrpcKotlinCommonGenerator(
                 val inputType = method.inputType
                 val outputType = method.outputType
 
-                val methodName = if (config.useLowerCamelCaseGrpcMethodNames) {
+                val methodName = if (config.camelCaseGrpcMethods) {
                     KotlinKeywords.escapeIfKeyword(name = method.name.replaceFirstChar { it.lowercase() })
                 } else {
                     method.name
