@@ -5,7 +5,9 @@ public final class kotlinx/rpc/grpc/marshaller/GrpcEmptyMarshallerResolver : kot
 
 public abstract interface class kotlinx/rpc/grpc/marshaller/GrpcMarshaller {
 	public abstract fun decode (Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
+	public static synthetic fun decode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Ljava/lang/Object;
 	public abstract fun encode (Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/io/Source;
+	public static synthetic fun encode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/io/Source;
 }
 
 public final class kotlinx/rpc/grpc/marshaller/GrpcMarshaller$DefaultImpls {

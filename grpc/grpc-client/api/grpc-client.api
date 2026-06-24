@@ -5,7 +5,7 @@ public final class kotlinx/rpc/grpc/client/CredentialsKt {
 
 public abstract interface class kotlinx/rpc/grpc/client/GrpcCallCredentials {
 	public abstract fun getRequestMetadata (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getRequiresTransportSecurity ()Z
+	public fun getRequiresTransportSecurity ()Z
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcCallCredentials$Context {
@@ -51,6 +51,7 @@ public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
 
 public abstract interface class kotlinx/rpc/grpc/client/GrpcClientCallScope {
 	public abstract fun cancel (Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Void;
+	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/GrpcClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
 	public abstract fun getCallOptions ()Lkotlinx/rpc/grpc/client/GrpcCallOptions;
 	public abstract fun getMethod ()Lio/grpc/MethodDescriptor;
 	public abstract fun getRequestHeaders ()Lio/grpc/Metadata;
