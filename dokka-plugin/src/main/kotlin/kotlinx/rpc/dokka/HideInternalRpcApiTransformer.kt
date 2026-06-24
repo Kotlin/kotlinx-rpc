@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.dokka
 
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.base.transformers.documentables.SuppressedByConditionDocumentableFilterTransformer
 import org.jetbrains.dokka.model.Annotations
 import org.jetbrains.dokka.model.Documentable
@@ -13,7 +12,6 @@ import org.jetbrains.dokka.plugability.DokkaContext
 
 class HideInternalRpcApiTransformer(context: DokkaContext) : SuppressedByConditionDocumentableFilterTransformer(context) {
     override fun shouldBeSuppressed(d: Documentable): Boolean {
-        DokkaBaseConfiguration
         val annotations: List<Annotations.Annotation> =
             (d as? WithExtraProperties<*>)
                 ?.extra

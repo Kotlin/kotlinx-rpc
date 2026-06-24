@@ -97,7 +97,6 @@ abstract class GrpcBaseTest : BaseTest() {
                 }
             }
 
-            // todo check no tests are broken
             assertSourceCodeNotGeneratedExcept(sourceSet, *files)
         }
 
