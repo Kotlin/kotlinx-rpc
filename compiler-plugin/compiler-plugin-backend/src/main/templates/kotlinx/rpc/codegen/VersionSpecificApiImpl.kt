@@ -388,7 +388,13 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return (this as IrConstructorCall).getValueArgument(name)
         //##csm /specific
         //##csm default
-        return (this as IrAnnotation).argumentMapping.orEmpty()[name]
+        val constructorCall = this as IrConstructorCall
+        val parameterIndex = constructorCall.symbol.owner.parameters
+            .firstOrNull { it.name == name }
+            ?.indexInParameters
+            ?: return null
+
+        return constructorCall.argumentsVS.getOrNull(parameterIndex)
         //##csm /default
         //##csm /getValueArgumentVS
     }
