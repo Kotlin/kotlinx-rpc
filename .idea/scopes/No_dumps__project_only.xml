@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="No dumps, project only" pattern="!file:*.api&amp;&amp;!file[kotlinx-rpc]:kotlin-js-store//*&amp;&amp;!file[kotlinx-rpc]:gradle/artifacts//*&amp;&amp;!ext:*/&amp;&amp;!file[kotlinx-rpc]:.idea//*&amp;&amp;!file[kotlinx-rpc]:.gradle//*&amp;&amp;!file[kotlinx-rpc]:.kotlin//*&amp;&amp;!file[kotlinx-rpc]:autoresearch-runs//*&amp;&amp;!file[kotlinx-rpc]:detekt/reports//*&amp;&amp;!file[kotlinx-rpc]:native-deps/shims/.gradle//*&amp;&amp;!file:*//build//*&amp;&amp;!file[kotlinx-rpc]:native-deps/grpc-c-prebuilt/.idea//*&amp;&amp;!file[kotlinx-rpc]:youtrack-workflows//*&amp;&amp;!file:*.lock&amp;&amp;!file:*.log" />
+</component>

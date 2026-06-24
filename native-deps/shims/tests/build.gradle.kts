@@ -46,8 +46,6 @@ fun currentHostTarget(): HostTarget {
     return when {
         os.contains("mac") && (arch.contains("aarch64") || arch.contains("arm64")) ->
             HostTarget("macosArm64()", "compileKotlinMacosArm64", "MacosArm64", "macosarm64")
-        os.contains("mac") ->
-            HostTarget("macosX64()", "compileKotlinMacosX64", "MacosX64", "macosx64")
         os.contains("linux") && (arch.contains("aarch64") || arch.contains("arm64")) ->
             HostTarget("linuxArm64()", "compileKotlinLinuxArm64", "LinuxArm64", "linuxarm64")
         os.contains("linux") ->

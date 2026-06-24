@@ -177,7 +177,6 @@ val hostNativeTarget: KotlinNativeTarget? = run {
     val arch = System.getProperty("os.arch").lowercase()
     val targetName = when {
         os.startsWith("mac") && arch == "aarch64" -> "macosArm64"
-        os.startsWith("mac") -> "macosX64"
         os.startsWith("linux") && arch == "aarch64" -> "linuxArm64"
         os.startsWith("linux") -> "linuxX64"
         else -> null

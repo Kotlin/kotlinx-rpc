@@ -32,19 +32,21 @@ private val NATIVE_TARGET_FACTORIES: Map<String, (KotlinMultiplatformExtension) 
     "linuxX64" to { it.linuxX64() },
     "linuxArm64" to { it.linuxArm64() },
     "mingwX64" to { it.mingwX64() },
-    "macosX64" to { it.macosX64() },
     "macosArm64" to { it.macosArm64() },
     "iosX64" to { it.iosX64() },
     "iosArm64" to { it.iosArm64() },
     "iosSimulatorArm64" to { it.iosSimulatorArm64() },
-    "watchosX64" to { it.watchosX64() },
     "watchosArm32" to { it.watchosArm32() },
     "watchosArm64" to { it.watchosArm64() },
     "watchosSimulatorArm64" to { it.watchosSimulatorArm64() },
     "watchosDeviceArm64" to { it.watchosDeviceArm64() },
-    "tvosX64" to { it.tvosX64() },
     "tvosArm64" to { it.tvosArm64() },
     "tvosSimulatorArm64" to { it.tvosSimulatorArm64() },
+
+    "androidNativeArm32" to { it.androidNativeArm32() },
+    "androidNativeArm64" to { it.androidNativeArm64() },
+    "androidNativeX86" to { it.androidNativeX86() },
+    "androidNativeX64" to { it.androidNativeX64() },
 )
 
 /**

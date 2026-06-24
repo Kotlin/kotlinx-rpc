@@ -9,7 +9,7 @@
 #
 # Usage:
 #   scripts/stress-native-grpc.sh [TARGET] [RUNS]
-#     TARGET — linuxX64 | macosX64 | macosArm64 (default: auto-detect from host)
+#     TARGET — linuxX64 | macosArm64 (default: auto-detect from host)
 #     RUNS   — number of iterations (default: 400)
 #
 # Pre-conditions: the test binary, crashbt shim, and grpc-test-server fixture
@@ -40,7 +40,6 @@ ROOT="$(pwd)"
 detect_target() {
     case "$(uname -s)-$(uname -m)" in
         Linux-x86_64)  echo linuxX64 ;;
-        Darwin-x86_64) echo macosX64 ;;
         Darwin-arm64)  echo macosArm64 ;;
         *)
             echo "ERROR: unsupported host: $(uname -s) $(uname -m)" >&2
@@ -52,7 +51,6 @@ detect_target() {
 capitalise_target() {
     case "$1" in
         linuxX64)    echo LinuxX64 ;;
-        macosX64)    echo MacosX64 ;;
         macosArm64)  echo MacosArm64 ;;
     esac
 }
@@ -61,9 +59,9 @@ TARGET="${1:-$(detect_target)}"
 RUNS="${2:-400}"
 
 case "$TARGET" in
-    linuxX64|macosX64|macosArm64) ;;
+    linuxX64|macosArm64) ;;
     *)
-        echo "ERROR: unsupported target '$TARGET' (expected linuxX64 | macosX64 | macosArm64)" >&2
+        echo "ERROR: unsupported target '$TARGET' (expected linuxX64 | macosArm64)" >&2
         exit 2
         ;;
 esac
