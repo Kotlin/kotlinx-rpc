@@ -482,6 +482,7 @@ class CodeGeneratorTest {
                 explicitApiModeEnabled = false,
                 generateComments = generateComments,
                 generateFileLevelComments = false,
+                generateOptionalFieldOrNullGetters = false,
                 indentSize = 4,
                 platform = platform,
                 protoNamesOutput = null,

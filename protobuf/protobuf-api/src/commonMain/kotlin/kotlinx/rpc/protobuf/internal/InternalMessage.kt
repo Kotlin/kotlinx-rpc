@@ -129,6 +129,16 @@ public class MsgFieldDelegate<T>(
         @Suppress("UNCHECKED_CAST")
         return value as T
     }
+
+    /**
+     * Clears the value if it was set. This is used by the generated clear() function on message builders
+     * to clear the value from within the copy function body.
+     */
+    public fun clearField(thisRef: InternalMessage) {
+        valueSet = false
+        value = null
+        presenceIdx?.let { thisRef.presenceMask[it] = false }
+    }
 }
 
 @InternalRpcApi

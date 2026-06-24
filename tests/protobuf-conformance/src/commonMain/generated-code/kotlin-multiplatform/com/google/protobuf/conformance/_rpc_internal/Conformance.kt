@@ -251,6 +251,10 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     override var testCategory: TestCategory by __testCategoryDelegate
     internal val __jspbEncodingOptionsDelegate: MsgFieldDelegate<JspbEncodingConfig> = MsgFieldDelegate(PresenceIndices.jspbEncodingOptions) { JspbEncodingConfigInternal.DEFAULT }
     override var jspbEncodingOptions: JspbEncodingConfig by __jspbEncodingOptionsDelegate
+    override fun clearJspbEncodingOptions() {
+        __jspbEncodingOptionsDelegate.clearField(this)
+    }
+
     internal val __printUnknownFieldsDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
     override var printUnknownFields: Boolean by __printUnknownFieldsDelegate
     override var payload: ConformanceRequest.Payload? = null

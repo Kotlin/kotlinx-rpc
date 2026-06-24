@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.common.ProtoNames
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirClassLikeDeclaration
@@ -96,4 +97,31 @@ private fun createDeprecatedHiddenAnnotation(session: FirSession): FirAnnotation
 fun FirClassLikeDeclaration.markAsDeprecatedHidden(session: FirSession) {
     replaceAnnotations(annotations + listOf(createDeprecatedHiddenAnnotation(session)))
     replaceDeprecationsProvider(getDeprecationsProvider(session))
+}
+
+
+/**
+ * Returns the [ClassId] corresponding to the generated internal message class for this [ClassId].
+ */
+fun ClassId.internalMessageClassId(): ClassId {
+    val names = relativeClassName.pathSegments()
+        .map { Name.identifier(ProtoNames.internalName(it.asString())) }
+
+    return ClassId(packageFqName, names.first()).let { topLevel ->
+        names.drop(1).fold(topLevel) { acc, name -> acc.createNestedClassId(name) }
+    }
+}
+
+/**
+ * Returns the [ClassId] corresponding to the generated presence interface for this message [ClassId].
+ *
+ * Only the top-level segment is suffixed with `Presence`; nested messages reuse their simple name nested
+ * inside the parent's presence interface (e.g. `Outer.Inner` -> `OuterPresence.Inner`), mirroring the
+ * naming used by the protobuf code generator.
+ */
+fun ClassId.presenceInterfaceClassId(): ClassId {
+    val names = relativeClassName.pathSegments()
+    val topLevel = ClassId(packageFqName, Name.identifier(ProtoNames.presenceInterfaceName(names.first().asString())))
+
+    return names.drop(1).fold(topLevel) { acc, name -> acc.createNestedClassId(name) }
 }

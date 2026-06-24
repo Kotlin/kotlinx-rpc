@@ -388,7 +388,7 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         return (this as IrConstructorCall).getValueArgument(name)
         //##csm /specific
         //##csm default
-        return (this as IrAnnotation).argumentMapping[name]
+        return (this as IrAnnotation).argumentMapping.orEmpty()[name]
         //##csm /default
         //##csm /getValueArgumentVS
     }

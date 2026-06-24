@@ -171,15 +171,22 @@ data class FieldDeclaration(
 
     val isPartOfMapEntry = dec.containingType.options.mapEntry
 
-    // aligns with edition settings and backward compatibility with proto2 and proto3
-    val nullable: Boolean = (dec.hasPresence() && !dec.isRequired && !dec.hasDefaultValue()
-            && !dec.isRepeated // repeated fields cannot be nullable (just empty)
-            && !isPartOfOneof // upper conditions would match oneof inner fields
-            && type !is FieldType.Message // messages must not be null (to conform protobuf standards)
-            && !isPartOfMapEntry // map entry fields cannot be null
-            )
-            || type is FieldType.OneOf // all OneOf fields are nullable
     val number: Int = dec.number
+
+    // all normal fields are non-nullable (KRPC-262)
+    // only oneof fields are nullable.
+    val nullable: Boolean = type is FieldType.OneOf
+    // if the field may have an `orNull` extension getter
+    val hasOrNullGetter: Boolean =
+        !nullable              // nullable fields don't need a nullable getter
+        && dec.hasPresence()
+        && !dec.isRequired
+        && !dec.isRepeated    // repeated fields cannot be nullable (just empty)
+        && !isPartOfOneof     // upper conditions would match oneof inner fields
+        && !isPartOfMapEntry  // map entry fields cannot be null
+
+    val presenceGetterName = "has${rawName.replaceFirstChar { it.uppercase() }}"
+    val clearFunctionName = "clear${rawName.replaceFirstChar { it.uppercase() }}"
 }
 
 data class ServiceDeclaration(

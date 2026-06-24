@@ -102,7 +102,9 @@ class MessageTest {
         assertEquals("hello", decoded.optionalString)
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         // Unset fields should be clear
-        kotlin.test.assertNull(decoded.optionalInt64)
-        kotlin.test.assertNull(decoded.optionalBool)
+        kotlin.test.assertNull(decoded.optionalInt64OrNull)
+        kotlin.test.assertNull(decoded.optionalBoolOrNull)
+        assertEquals(0L, decoded.optionalInt64)
+        assertEquals(false, decoded.optionalBool)
     }
 }

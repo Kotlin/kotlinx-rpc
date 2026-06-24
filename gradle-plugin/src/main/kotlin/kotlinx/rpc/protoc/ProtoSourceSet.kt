@@ -369,7 +369,10 @@ public fun KotlinDependencyHandler.proto(dependencyNotation: Any): Dependency? {
  * }
  * ```
  */
-public fun KotlinDependencyHandler.proto(dependencyNotation: String, action: ExternalModuleDependency.() -> Unit): Dependency? {
+public fun KotlinDependencyHandler.proto(
+    dependencyNotation: String,
+    action: ExternalModuleDependency.() -> Unit,
+): Dependency? {
     val configName = resolveProtoConfigurationName(this, "Proto")
     val dependency = project.dependencies.create(dependencyNotation) as ExternalModuleDependency
     dependency.action()
@@ -392,7 +395,10 @@ public fun KotlinDependencyHandler.proto(dependencyNotation: String, action: Ext
  * }
  * ```
  */
-public fun KotlinDependencyHandler.proto(dependencyNotation: String, action: Action<ExternalModuleDependency>): Dependency? {
+public fun KotlinDependencyHandler.proto(
+    dependencyNotation: String,
+    action: Action<ExternalModuleDependency>,
+): Dependency? {
     return proto(dependencyNotation) { action.execute(this) }
 }
 
@@ -478,7 +484,10 @@ public fun KotlinDependencyHandler.protoImport(dependencyNotation: Any): Depende
  * }
  * ```
  */
-public fun KotlinDependencyHandler.protoImport(dependencyNotation: String, action: ExternalModuleDependency.() -> Unit): Dependency? {
+public fun KotlinDependencyHandler.protoImport(
+    dependencyNotation: String,
+    action: ExternalModuleDependency.() -> Unit,
+): Dependency? {
     val configName = resolveProtoConfigurationName(this, "ProtoImport")
     val dependency = project.dependencies.create(dependencyNotation) as ExternalModuleDependency
     dependency.action()
@@ -502,7 +511,10 @@ public fun KotlinDependencyHandler.protoImport(dependencyNotation: String, actio
  * }
  * ```
  */
-public fun KotlinDependencyHandler.protoImport(dependencyNotation: String, action: Action<ExternalModuleDependency>): Dependency? {
+public fun KotlinDependencyHandler.protoImport(
+    dependencyNotation: String,
+    action: Action<ExternalModuleDependency>,
+): Dependency? {
     return proto(dependencyNotation) { action.execute(this) }
 }
 

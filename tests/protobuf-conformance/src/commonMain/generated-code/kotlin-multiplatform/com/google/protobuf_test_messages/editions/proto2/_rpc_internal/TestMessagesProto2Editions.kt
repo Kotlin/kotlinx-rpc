@@ -133,50 +133,138 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __optionalInt32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
-    override var optionalInt32: Int? by __optionalInt32Delegate
-    internal val __optionalInt64Delegate: MsgFieldDelegate<Long?> = MsgFieldDelegate(PresenceIndices.optionalInt64) { null }
-    override var optionalInt64: Long? by __optionalInt64Delegate
-    internal val __optionalUint32Delegate: MsgFieldDelegate<UInt?> = MsgFieldDelegate(PresenceIndices.optionalUint32) { null }
-    override var optionalUint32: UInt? by __optionalUint32Delegate
-    internal val __optionalUint64Delegate: MsgFieldDelegate<ULong?> = MsgFieldDelegate(PresenceIndices.optionalUint64) { null }
-    override var optionalUint64: ULong? by __optionalUint64Delegate
-    internal val __optionalSint32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.optionalSint32) { null }
-    override var optionalSint32: Int? by __optionalSint32Delegate
-    internal val __optionalSint64Delegate: MsgFieldDelegate<Long?> = MsgFieldDelegate(PresenceIndices.optionalSint64) { null }
-    override var optionalSint64: Long? by __optionalSint64Delegate
-    internal val __optionalFixed32Delegate: MsgFieldDelegate<UInt?> = MsgFieldDelegate(PresenceIndices.optionalFixed32) { null }
-    override var optionalFixed32: UInt? by __optionalFixed32Delegate
-    internal val __optionalFixed64Delegate: MsgFieldDelegate<ULong?> = MsgFieldDelegate(PresenceIndices.optionalFixed64) { null }
-    override var optionalFixed64: ULong? by __optionalFixed64Delegate
-    internal val __optionalSfixed32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.optionalSfixed32) { null }
-    override var optionalSfixed32: Int? by __optionalSfixed32Delegate
-    internal val __optionalSfixed64Delegate: MsgFieldDelegate<Long?> = MsgFieldDelegate(PresenceIndices.optionalSfixed64) { null }
-    override var optionalSfixed64: Long? by __optionalSfixed64Delegate
-    internal val __optionalFloatDelegate: MsgFieldDelegate<Float?> = MsgFieldDelegate(PresenceIndices.optionalFloat) { null }
-    override var optionalFloat: Float? by __optionalFloatDelegate
-    internal val __optionalDoubleDelegate: MsgFieldDelegate<Double?> = MsgFieldDelegate(PresenceIndices.optionalDouble) { null }
-    override var optionalDouble: Double? by __optionalDoubleDelegate
-    internal val __optionalBoolDelegate: MsgFieldDelegate<Boolean?> = MsgFieldDelegate(PresenceIndices.optionalBool) { null }
-    override var optionalBool: Boolean? by __optionalBoolDelegate
-    internal val __optionalStringDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.optionalString) { null }
-    override var optionalString: String? by __optionalStringDelegate
-    internal val __optionalBytesDelegate: MsgFieldDelegate<ByteString?> = MsgFieldDelegate(PresenceIndices.optionalBytes) { null }
-    override var optionalBytes: ByteString? by __optionalBytesDelegate
+    internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalInt32) { 0 }
+    override var optionalInt32: Int by __optionalInt32Delegate
+    override fun clearOptionalInt32() {
+        __optionalInt32Delegate.clearField(this)
+    }
+
+    internal val __optionalInt64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.optionalInt64) { 0L }
+    override var optionalInt64: Long by __optionalInt64Delegate
+    override fun clearOptionalInt64() {
+        __optionalInt64Delegate.clearField(this)
+    }
+
+    internal val __optionalUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.optionalUint32) { 0u }
+    override var optionalUint32: UInt by __optionalUint32Delegate
+    override fun clearOptionalUint32() {
+        __optionalUint32Delegate.clearField(this)
+    }
+
+    internal val __optionalUint64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.optionalUint64) { 0uL }
+    override var optionalUint64: ULong by __optionalUint64Delegate
+    override fun clearOptionalUint64() {
+        __optionalUint64Delegate.clearField(this)
+    }
+
+    internal val __optionalSint32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalSint32) { 0 }
+    override var optionalSint32: Int by __optionalSint32Delegate
+    override fun clearOptionalSint32() {
+        __optionalSint32Delegate.clearField(this)
+    }
+
+    internal val __optionalSint64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.optionalSint64) { 0L }
+    override var optionalSint64: Long by __optionalSint64Delegate
+    override fun clearOptionalSint64() {
+        __optionalSint64Delegate.clearField(this)
+    }
+
+    internal val __optionalFixed32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.optionalFixed32) { 0u }
+    override var optionalFixed32: UInt by __optionalFixed32Delegate
+    override fun clearOptionalFixed32() {
+        __optionalFixed32Delegate.clearField(this)
+    }
+
+    internal val __optionalFixed64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.optionalFixed64) { 0uL }
+    override var optionalFixed64: ULong by __optionalFixed64Delegate
+    override fun clearOptionalFixed64() {
+        __optionalFixed64Delegate.clearField(this)
+    }
+
+    internal val __optionalSfixed32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalSfixed32) { 0 }
+    override var optionalSfixed32: Int by __optionalSfixed32Delegate
+    override fun clearOptionalSfixed32() {
+        __optionalSfixed32Delegate.clearField(this)
+    }
+
+    internal val __optionalSfixed64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.optionalSfixed64) { 0L }
+    override var optionalSfixed64: Long by __optionalSfixed64Delegate
+    override fun clearOptionalSfixed64() {
+        __optionalSfixed64Delegate.clearField(this)
+    }
+
+    internal val __optionalFloatDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.optionalFloat) { 0.0f }
+    override var optionalFloat: Float by __optionalFloatDelegate
+    override fun clearOptionalFloat() {
+        __optionalFloatDelegate.clearField(this)
+    }
+
+    internal val __optionalDoubleDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate(PresenceIndices.optionalDouble) { 0.0 }
+    override var optionalDouble: Double by __optionalDoubleDelegate
+    override fun clearOptionalDouble() {
+        __optionalDoubleDelegate.clearField(this)
+    }
+
+    internal val __optionalBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.optionalBool) { false }
+    override var optionalBool: Boolean by __optionalBoolDelegate
+    override fun clearOptionalBool() {
+        __optionalBoolDelegate.clearField(this)
+    }
+
+    internal val __optionalStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.optionalString) { "" }
+    override var optionalString: String by __optionalStringDelegate
+    override fun clearOptionalString() {
+        __optionalStringDelegate.clearField(this)
+    }
+
+    internal val __optionalBytesDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.optionalBytes) { ByteString() }
+    override var optionalBytes: ByteString by __optionalBytesDelegate
+    override fun clearOptionalBytes() {
+        __optionalBytesDelegate.clearField(this)
+    }
+
     internal val __optionalNestedMessageDelegate: MsgFieldDelegate<TestAllTypesProto2.NestedMessage> = MsgFieldDelegate(PresenceIndices.optionalNestedMessage) { NestedMessageInternal.DEFAULT }
     override var optionalNestedMessage: TestAllTypesProto2.NestedMessage by __optionalNestedMessageDelegate
+    override fun clearOptionalNestedMessage() {
+        __optionalNestedMessageDelegate.clearField(this)
+    }
+
     internal val __optionalForeignMessageDelegate: MsgFieldDelegate<ForeignMessageProto2> = MsgFieldDelegate(PresenceIndices.optionalForeignMessage) { ForeignMessageProto2Internal.DEFAULT }
     override var optionalForeignMessage: ForeignMessageProto2 by __optionalForeignMessageDelegate
-    internal val __optionalNestedEnumDelegate: MsgFieldDelegate<TestAllTypesProto2.NestedEnum?> = MsgFieldDelegate(PresenceIndices.optionalNestedEnum) { null }
-    override var optionalNestedEnum: TestAllTypesProto2.NestedEnum? by __optionalNestedEnumDelegate
-    internal val __optionalForeignEnumDelegate: MsgFieldDelegate<ForeignEnumProto2?> = MsgFieldDelegate(PresenceIndices.optionalForeignEnum) { null }
-    override var optionalForeignEnum: ForeignEnumProto2? by __optionalForeignEnumDelegate
-    internal val __optionalStringPieceDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.optionalStringPiece) { null }
-    override var optionalStringPiece: String? by __optionalStringPieceDelegate
-    internal val __optionalCordDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.optionalCord) { null }
-    override var optionalCord: String? by __optionalCordDelegate
+    override fun clearOptionalForeignMessage() {
+        __optionalForeignMessageDelegate.clearField(this)
+    }
+
+    internal val __optionalNestedEnumDelegate: MsgFieldDelegate<TestAllTypesProto2.NestedEnum> = MsgFieldDelegate(PresenceIndices.optionalNestedEnum) { TestAllTypesProto2.NestedEnum.FOO }
+    override var optionalNestedEnum: TestAllTypesProto2.NestedEnum by __optionalNestedEnumDelegate
+    override fun clearOptionalNestedEnum() {
+        __optionalNestedEnumDelegate.clearField(this)
+    }
+
+    internal val __optionalForeignEnumDelegate: MsgFieldDelegate<ForeignEnumProto2> = MsgFieldDelegate(PresenceIndices.optionalForeignEnum) { ForeignEnumProto2.FOREIGN_FOO }
+    override var optionalForeignEnum: ForeignEnumProto2 by __optionalForeignEnumDelegate
+    override fun clearOptionalForeignEnum() {
+        __optionalForeignEnumDelegate.clearField(this)
+    }
+
+    internal val __optionalStringPieceDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.optionalStringPiece) { "" }
+    override var optionalStringPiece: String by __optionalStringPieceDelegate
+    override fun clearOptionalStringPiece() {
+        __optionalStringPieceDelegate.clearField(this)
+    }
+
+    internal val __optionalCordDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.optionalCord) { "" }
+    override var optionalCord: String by __optionalCordDelegate
+    override fun clearOptionalCord() {
+        __optionalCordDelegate.clearField(this)
+    }
+
     internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllTypesProto2> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllTypesProto2Internal.DEFAULT }
     override var recursiveMessage: TestAllTypesProto2 by __recursiveMessageDelegate
+    override fun clearRecursiveMessage() {
+        __recursiveMessageDelegate.clearField(this)
+    }
+
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var repeatedInt32: List<Int> by __repeatedInt32Delegate
     internal val __repeatedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
@@ -319,76 +407,220 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var mapStringForeignEnum: Map<String, ForeignEnumProto2> by __mapStringForeignEnumDelegate
     internal val __dataDelegate: MsgFieldDelegate<TestAllTypesProto2.Data> = MsgFieldDelegate(PresenceIndices.data) { DataInternal.DEFAULT }
     override var data: TestAllTypesProto2.Data by __dataDelegate
+    override fun clearData() {
+        __dataDelegate.clearField(this)
+    }
+
     internal val __multiwordgroupfieldDelegate: MsgFieldDelegate<TestAllTypesProto2.MultiWordGroupField> = MsgFieldDelegate(PresenceIndices.multiwordgroupfield) { MultiWordGroupFieldInternal.DEFAULT }
     override var multiwordgroupfield: TestAllTypesProto2.MultiWordGroupField by __multiwordgroupfieldDelegate
+    override fun clearMultiwordgroupfield() {
+        __multiwordgroupfieldDelegate.clearField(this)
+    }
+
     internal val __defaultInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultInt32) { -123456789 }
     override var defaultInt32: Int by __defaultInt32Delegate
+    override fun clearDefaultInt32() {
+        __defaultInt32Delegate.clearField(this)
+    }
+
     internal val __defaultInt64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultInt64) { -9123456789123456789L }
     override var defaultInt64: Long by __defaultInt64Delegate
+    override fun clearDefaultInt64() {
+        __defaultInt64Delegate.clearField(this)
+    }
+
     internal val __defaultUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.defaultUint32) { 2123456789u }
     override var defaultUint32: UInt by __defaultUint32Delegate
+    override fun clearDefaultUint32() {
+        __defaultUint32Delegate.clearField(this)
+    }
+
     internal val __defaultUint64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.defaultUint64) { 10123456789123456789uL }
     override var defaultUint64: ULong by __defaultUint64Delegate
+    override fun clearDefaultUint64() {
+        __defaultUint64Delegate.clearField(this)
+    }
+
     internal val __defaultSint32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultSint32) { -123456789 }
     override var defaultSint32: Int by __defaultSint32Delegate
+    override fun clearDefaultSint32() {
+        __defaultSint32Delegate.clearField(this)
+    }
+
     internal val __defaultSint64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultSint64) { -9123456789123456789L }
     override var defaultSint64: Long by __defaultSint64Delegate
+    override fun clearDefaultSint64() {
+        __defaultSint64Delegate.clearField(this)
+    }
+
     internal val __defaultFixed32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.defaultFixed32) { 2123456789u }
     override var defaultFixed32: UInt by __defaultFixed32Delegate
+    override fun clearDefaultFixed32() {
+        __defaultFixed32Delegate.clearField(this)
+    }
+
     internal val __defaultFixed64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.defaultFixed64) { 10123456789123456789uL }
     override var defaultFixed64: ULong by __defaultFixed64Delegate
+    override fun clearDefaultFixed64() {
+        __defaultFixed64Delegate.clearField(this)
+    }
+
     internal val __defaultSfixed32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultSfixed32) { -123456789 }
     override var defaultSfixed32: Int by __defaultSfixed32Delegate
+    override fun clearDefaultSfixed32() {
+        __defaultSfixed32Delegate.clearField(this)
+    }
+
     internal val __defaultSfixed64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultSfixed64) { -9123456789123456789L }
     override var defaultSfixed64: Long by __defaultSfixed64Delegate
+    override fun clearDefaultSfixed64() {
+        __defaultSfixed64Delegate.clearField(this)
+    }
+
     internal val __defaultFloatDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.defaultFloat) { Float.fromBits(0x50061C46.toInt()) }
     override var defaultFloat: Float by __defaultFloatDelegate
+    override fun clearDefaultFloat() {
+        __defaultFloatDelegate.clearField(this)
+    }
+
     internal val __defaultDoubleDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultDouble: Double by __defaultDoubleDelegate
+    override fun clearDefaultDouble() {
+        __defaultDoubleDelegate.clearField(this)
+    }
+
     internal val __defaultBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultBool: Boolean by __defaultBoolDelegate
+    override fun clearDefaultBool() {
+        __defaultBoolDelegate.clearField(this)
+    }
+
     internal val __defaultStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultString: String by __defaultStringDelegate
+    override fun clearDefaultString() {
+        __defaultStringDelegate.clearField(this)
+    }
+
     internal val __defaultBytesDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
     override var defaultBytes: ByteString by __defaultBytesDelegate
-    internal val __fieldname1Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.fieldname1) { null }
-    override var fieldname1: Int? by __fieldname1Delegate
-    internal val __fieldName2Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.fieldName2) { null }
-    override var fieldName2: Int? by __fieldName2Delegate
-    internal val __FieldName3Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.FieldName3) { null }
-    override var FieldName3: Int? by __FieldName3Delegate
-    internal val __field_Name4_Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field_Name4_) { null }
-    override var field_Name4_: Int? by __field_Name4_Delegate
-    internal val __field0name5Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field0name5) { null }
-    override var field0name5: Int? by __field0name5Delegate
-    internal val __field_0Name6Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field_0Name6) { null }
-    override var field_0Name6: Int? by __field_0Name6Delegate
-    internal val __fieldName7Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.fieldName7) { null }
-    override var fieldName7: Int? by __fieldName7Delegate
-    internal val __FieldName8Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.FieldName8) { null }
-    override var FieldName8: Int? by __FieldName8Delegate
-    internal val __field_Name9Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field_Name9) { null }
-    override var field_Name9: Int? by __field_Name9Delegate
-    internal val __Field_Name10Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.Field_Name10) { null }
-    override var Field_Name10: Int? by __Field_Name10Delegate
-    internal val __FIELD_NAME11Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.FIELD_NAME11) { null }
-    override var FIELD_NAME11: Int? by __FIELD_NAME11Delegate
-    internal val __FIELDName12Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.FIELDName12) { null }
-    override var FIELDName12: Int? by __FIELDName12Delegate
-    internal val ___FieldName13Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices._FieldName13) { null }
-    override var _FieldName13: Int? by ___FieldName13Delegate
-    internal val ____FieldName14Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.__FieldName14) { null }
-    override var __FieldName14: Int? by ____FieldName14Delegate
-    internal val __field_Name15Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field_Name15) { null }
-    override var field_Name15: Int? by __field_Name15Delegate
-    internal val __field__Name16Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.field__Name16) { null }
-    override var field__Name16: Int? by __field__Name16Delegate
-    internal val __fieldName17__Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.fieldName17__) { null }
-    override var fieldName17__: Int? by __fieldName17__Delegate
-    internal val __FieldName18__Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.FieldName18__) { null }
-    override var FieldName18__: Int? by __FieldName18__Delegate
+    override fun clearDefaultBytes() {
+        __defaultBytesDelegate.clearField(this)
+    }
+
+    internal val __fieldname1Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldname1) { 0 }
+    override var fieldname1: Int by __fieldname1Delegate
+    override fun clearFieldname1() {
+        __fieldname1Delegate.clearField(this)
+    }
+
+    internal val __fieldName2Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName2) { 0 }
+    override var fieldName2: Int by __fieldName2Delegate
+    override fun clearFieldName2() {
+        __fieldName2Delegate.clearField(this)
+    }
+
+    internal val __FieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.FieldName3) { 0 }
+    override var FieldName3: Int by __FieldName3Delegate
+    override fun clearFieldName3() {
+        __FieldName3Delegate.clearField(this)
+    }
+
+    internal val __field_Name4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name4_) { 0 }
+    override var field_Name4_: Int by __field_Name4_Delegate
+    override fun clearField_Name4_() {
+        __field_Name4_Delegate.clearField(this)
+    }
+
+    internal val __field0name5Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field0name5) { 0 }
+    override var field0name5: Int by __field0name5Delegate
+    override fun clearField0name5() {
+        __field0name5Delegate.clearField(this)
+    }
+
+    internal val __field_0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_0Name6) { 0 }
+    override var field_0Name6: Int by __field_0Name6Delegate
+    override fun clearField_0Name6() {
+        __field_0Name6Delegate.clearField(this)
+    }
+
+    internal val __fieldName7Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName7) { 0 }
+    override var fieldName7: Int by __fieldName7Delegate
+    override fun clearFieldName7() {
+        __fieldName7Delegate.clearField(this)
+    }
+
+    internal val __FieldName8Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.FieldName8) { 0 }
+    override var FieldName8: Int by __FieldName8Delegate
+    override fun clearFieldName8() {
+        __FieldName8Delegate.clearField(this)
+    }
+
+    internal val __field_Name9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name9) { 0 }
+    override var field_Name9: Int by __field_Name9Delegate
+    override fun clearField_Name9() {
+        __field_Name9Delegate.clearField(this)
+    }
+
+    internal val __Field_Name10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.Field_Name10) { 0 }
+    override var Field_Name10: Int by __Field_Name10Delegate
+    override fun clearField_Name10() {
+        __Field_Name10Delegate.clearField(this)
+    }
+
+    internal val __FIELD_NAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.FIELD_NAME11) { 0 }
+    override var FIELD_NAME11: Int by __FIELD_NAME11Delegate
+    override fun clearFIELD_NAME11() {
+        __FIELD_NAME11Delegate.clearField(this)
+    }
+
+    internal val __FIELDName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.FIELDName12) { 0 }
+    override var FIELDName12: Int by __FIELDName12Delegate
+    override fun clearFIELDName12() {
+        __FIELDName12Delegate.clearField(this)
+    }
+
+    internal val ___FieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices._FieldName13) { 0 }
+    override var _FieldName13: Int by ___FieldName13Delegate
+    override fun clear_FieldName13() {
+        ___FieldName13Delegate.clearField(this)
+    }
+
+    internal val ____FieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.__FieldName14) { 0 }
+    override var __FieldName14: Int by ____FieldName14Delegate
+    override fun clear__FieldName14() {
+        ____FieldName14Delegate.clearField(this)
+    }
+
+    internal val __field_Name15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name15) { 0 }
+    override var field_Name15: Int by __field_Name15Delegate
+    override fun clearField_Name15() {
+        __field_Name15Delegate.clearField(this)
+    }
+
+    internal val __field__Name16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field__Name16) { 0 }
+    override var field__Name16: Int by __field__Name16Delegate
+    override fun clearField__Name16() {
+        __field__Name16Delegate.clearField(this)
+    }
+
+    internal val __fieldName17__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName17__) { 0 }
+    override var fieldName17__: Int by __fieldName17__Delegate
+    override fun clearFieldName17__() {
+        __fieldName17__Delegate.clearField(this)
+    }
+
+    internal val __FieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.FieldName18__) { 0 }
+    override var FieldName18__: Int by __FieldName18__Delegate
+    override fun clearFieldName18__() {
+        __FieldName18__Delegate.clearField(this)
+    }
+
     internal val __messageSetCorrectDelegate: MsgFieldDelegate<TestAllTypesProto2.MessageSetCorrect> = MsgFieldDelegate(PresenceIndices.messageSetCorrect) { MessageSetCorrectInternal.DEFAULT }
     override var messageSetCorrect: TestAllTypesProto2.MessageSetCorrect by __messageSetCorrectDelegate
+    override fun clearMessageSetCorrect() {
+        __messageSetCorrectDelegate.clearField(this)
+    }
+
     override var oneofField: TestAllTypesProto2.OneofField? = null
 
     private val _owner: TestAllTypesProto2Internal = this
@@ -516,27 +748,27 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.optionalInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (this.optionalInt64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[2]) (this.optionalUint32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[3]) (this.optionalUint64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[4]) (this.optionalSint32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[5]) (this.optionalSint64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[6]) (this.optionalFixed32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[7]) (this.optionalFixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[8]) (this.optionalSfixed32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[9]) (this.optionalSfixed64?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[10]) (this.optionalFloat?.toBits()?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[11]) (this.optionalDouble?.toBits()?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[12]) (this.optionalBool?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[13]) (this.optionalString?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[14]) (this.optionalBytes?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.optionalInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) this.optionalInt64.hashCode() else 0
+        result = 31 * result + if (presenceMask[2]) this.optionalUint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[3]) this.optionalUint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[4]) this.optionalSint32.hashCode() else 0
+        result = 31 * result + if (presenceMask[5]) this.optionalSint64.hashCode() else 0
+        result = 31 * result + if (presenceMask[6]) this.optionalFixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[7]) this.optionalFixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[8]) this.optionalSfixed32.hashCode() else 0
+        result = 31 * result + if (presenceMask[9]) this.optionalSfixed64.hashCode() else 0
+        result = 31 * result + if (presenceMask[10]) this.optionalFloat.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[11]) this.optionalDouble.toBits().hashCode() else 0
+        result = 31 * result + if (presenceMask[12]) this.optionalBool.hashCode() else 0
+        result = 31 * result + if (presenceMask[13]) this.optionalString.hashCode() else 0
+        result = 31 * result + if (presenceMask[14]) this.optionalBytes.hashCode() else 0
         result = 31 * result + if (presenceMask[15]) this.optionalNestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[16]) this.optionalForeignMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[17]) (this.optionalNestedEnum?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[18]) (this.optionalForeignEnum?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[19]) (this.optionalStringPiece?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[20]) (this.optionalCord?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[17]) this.optionalNestedEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[18]) this.optionalForeignEnum.hashCode() else 0
+        result = 31 * result + if (presenceMask[19]) this.optionalStringPiece.hashCode() else 0
+        result = 31 * result + if (presenceMask[20]) this.optionalCord.hashCode() else 0
         result = 31 * result + if (presenceMask[21]) this.recursiveMessage.hashCode() else 0
         result = 31 * result + this.repeatedInt32.hashCode()
         result = 31 * result + this.repeatedInt64.hashCode()
@@ -625,24 +857,24 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[36]) this.defaultBool.hashCode() else 0
         result = 31 * result + if (presenceMask[37]) this.defaultString.hashCode() else 0
         result = 31 * result + if (presenceMask[38]) this.defaultBytes.hashCode() else 0
-        result = 31 * result + if (presenceMask[39]) (this.fieldname1?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[40]) (this.fieldName2?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[41]) (this.FieldName3?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[42]) (this.field_Name4_?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[43]) (this.field0name5?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[44]) (this.field_0Name6?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[45]) (this.fieldName7?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[46]) (this.FieldName8?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[47]) (this.field_Name9?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[48]) (this.Field_Name10?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[49]) (this.FIELD_NAME11?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[50]) (this.FIELDName12?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[51]) (this._FieldName13?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[52]) (this.__FieldName14?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[53]) (this.field_Name15?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[54]) (this.field__Name16?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[55]) (this.fieldName17__?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[56]) (this.FieldName18__?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[39]) this.fieldname1.hashCode() else 0
+        result = 31 * result + if (presenceMask[40]) this.fieldName2.hashCode() else 0
+        result = 31 * result + if (presenceMask[41]) this.FieldName3.hashCode() else 0
+        result = 31 * result + if (presenceMask[42]) this.field_Name4_.hashCode() else 0
+        result = 31 * result + if (presenceMask[43]) this.field0name5.hashCode() else 0
+        result = 31 * result + if (presenceMask[44]) this.field_0Name6.hashCode() else 0
+        result = 31 * result + if (presenceMask[45]) this.fieldName7.hashCode() else 0
+        result = 31 * result + if (presenceMask[46]) this.FieldName8.hashCode() else 0
+        result = 31 * result + if (presenceMask[47]) this.field_Name9.hashCode() else 0
+        result = 31 * result + if (presenceMask[48]) this.Field_Name10.hashCode() else 0
+        result = 31 * result + if (presenceMask[49]) this.FIELD_NAME11.hashCode() else 0
+        result = 31 * result + if (presenceMask[50]) this.FIELDName12.hashCode() else 0
+        result = 31 * result + if (presenceMask[51]) this._FieldName13.hashCode() else 0
+        result = 31 * result + if (presenceMask[52]) this.__FieldName14.hashCode() else 0
+        result = 31 * result + if (presenceMask[53]) this.field_Name15.hashCode() else 0
+        result = 31 * result + if (presenceMask[54]) this.field__Name16.hashCode() else 0
+        result = 31 * result + if (presenceMask[55]) this.fieldName17__.hashCode() else 0
+        result = 31 * result + if (presenceMask[56]) this.FieldName18__.hashCode() else 0
         result = 31 * result + if (presenceMask[57]) this.messageSetCorrect.hashCode() else 0
         result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
         result = 31 * result + extensionsHashCode()
@@ -697,8 +929,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[7] && this.optionalFixed64 != other.optionalFixed64) return false
         if (presenceMask[8] && this.optionalSfixed32 != other.optionalSfixed32) return false
         if (presenceMask[9] && this.optionalSfixed64 != other.optionalSfixed64) return false
-        if (presenceMask[10] && this.optionalFloat?.toBits() != other.optionalFloat?.toBits()) return false
-        if (presenceMask[11] && this.optionalDouble?.toBits() != other.optionalDouble?.toBits()) return false
+        if (presenceMask[10] && this.optionalFloat.toBits() != other.optionalFloat.toBits()) return false
+        if (presenceMask[11] && this.optionalDouble.toBits() != other.optionalDouble.toBits()) return false
         if (presenceMask[12] && this.optionalBool != other.optionalBool) return false
         if (presenceMask[13] && this.optionalString != other.optionalString) return false
         if (presenceMask[14] && this.optionalBytes != other.optionalBytes) return false
@@ -915,7 +1147,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         }
 
         if (presenceMask[14]) {
-            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes?.protoToString()},")
+            builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.protoToString()},")
         } else {
             builder.appendLine("${nextIndentString}optionalBytes=<unset>,")
         }
@@ -1618,10 +1850,18 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __aDelegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.a) { null }
-        override var a: Int? by __aDelegate
+        internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
+        override var a: Int by __aDelegate
+        override fun clearA() {
+            __aDelegate.clearField(this)
+        }
+
         internal val __corecursiveDelegate: MsgFieldDelegate<TestAllTypesProto2> = MsgFieldDelegate(PresenceIndices.corecursive) { TestAllTypesProto2Internal.DEFAULT }
         override var corecursive: TestAllTypesProto2 by __corecursiveDelegate
+
+        override fun clearCorecursive() {
+            __corecursiveDelegate.clearField(this)
+        }
 
         private val _owner: NestedMessageInternal = this
 
@@ -1636,7 +1876,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.a?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.a.hashCode() else 0
             result = 31 * result + if (presenceMask[1]) this.corecursive.hashCode() else 0
             return result
         }
@@ -3284,10 +3524,18 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __groupInt32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.groupInt32) { null }
-        override var groupInt32: Int? by __groupInt32Delegate
-        internal val __groupUint32Delegate: MsgFieldDelegate<UInt?> = MsgFieldDelegate(PresenceIndices.groupUint32) { null }
-        override var groupUint32: UInt? by __groupUint32Delegate
+        internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
+        override var groupInt32: Int by __groupInt32Delegate
+        override fun clearGroupInt32() {
+            __groupInt32Delegate.clearField(this)
+        }
+
+        internal val __groupUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
+        override var groupUint32: UInt by __groupUint32Delegate
+
+        override fun clearGroupUint32() {
+            __groupUint32Delegate.clearField(this)
+        }
 
         private val _owner: DataInternal = this
 
@@ -3302,8 +3550,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
-            result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.groupInt32.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.groupUint32.hashCode() else 0
             return result
         }
 
@@ -3417,10 +3665,18 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __groupInt32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.groupInt32) { null }
-        override var groupInt32: Int? by __groupInt32Delegate
-        internal val __groupUint32Delegate: MsgFieldDelegate<UInt?> = MsgFieldDelegate(PresenceIndices.groupUint32) { null }
-        override var groupUint32: UInt? by __groupUint32Delegate
+        internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
+        override var groupInt32: Int by __groupInt32Delegate
+        override fun clearGroupInt32() {
+            __groupInt32Delegate.clearField(this)
+        }
+
+        internal val __groupUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
+        override var groupUint32: UInt by __groupUint32Delegate
+
+        override fun clearGroupUint32() {
+            __groupUint32Delegate.clearField(this)
+        }
 
         private val _owner: MultiWordGroupFieldInternal = this
 
@@ -3435,8 +3691,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
-            result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.groupInt32.hashCode() else 0
+            result = 31 * result + if (presenceMask[1]) this.groupUint32.hashCode() else 0
             return result
         }
 
@@ -3648,8 +3904,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __strDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.str) { null }
-        override var str: String? by __strDelegate
+        internal val __strDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.str) { "" }
+        override var str: String by __strDelegate
+
+        override fun clearStr() {
+            __strDelegate.clearField(this)
+        }
 
         private val _owner: MessageSetCorrectExtension1Internal = this
 
@@ -3662,7 +3922,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.str?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.str.hashCode() else 0
             return result
         }
 
@@ -3764,8 +4024,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __iDelegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.i) { null }
-        override var i: Int? by __iDelegate
+        internal val __iDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.i) { 0 }
+        override var i: Int by __iDelegate
+
+        override fun clearI() {
+            __iDelegate.clearField(this)
+        }
 
         private val _owner: MessageSetCorrectExtension2Internal = this
 
@@ -3778,7 +4042,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.i?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.i.hashCode() else 0
             return result
         }
 
@@ -4024,8 +4288,12 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __cDelegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.c) { null }
-    override var c: Int? by __cDelegate
+    internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
+    override var c: Int by __cDelegate
+
+    override fun clearC() {
+        __cDelegate.clearField(this)
+    }
 
     private val _owner: ForeignMessageProto2Internal = this
 
@@ -4038,7 +4306,7 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.c?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.c.hashCode() else 0
         return result
     }
 
@@ -4141,10 +4409,18 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __groupInt32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.groupInt32) { null }
-    override var groupInt32: Int? by __groupInt32Delegate
-    internal val __groupUint32Delegate: MsgFieldDelegate<UInt?> = MsgFieldDelegate(PresenceIndices.groupUint32) { null }
-    override var groupUint32: UInt? by __groupUint32Delegate
+    internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
+    override var groupInt32: Int by __groupInt32Delegate
+    override fun clearGroupInt32() {
+        __groupInt32Delegate.clearField(this)
+    }
+
+    internal val __groupUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
+    override var groupUint32: UInt by __groupUint32Delegate
+
+    override fun clearGroupUint32() {
+        __groupUint32Delegate.clearField(this)
+    }
 
     private val _owner: GroupFieldInternal = this
 
@@ -4159,8 +4435,8 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.groupInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (this.groupUint32?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.groupInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) this.groupUint32.hashCode() else 0
         return result
     }
 
@@ -4277,16 +4553,36 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __optionalInt32Delegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.optionalInt32) { null }
-    override var optionalInt32: Int? by __optionalInt32Delegate
-    internal val __optionalStringDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.optionalString) { null }
-    override var optionalString: String? by __optionalStringDelegate
+    internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalInt32) { 0 }
+    override var optionalInt32: Int by __optionalInt32Delegate
+    override fun clearOptionalInt32() {
+        __optionalInt32Delegate.clearField(this)
+    }
+
+    internal val __optionalStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.optionalString) { "" }
+    override var optionalString: String by __optionalStringDelegate
+    override fun clearOptionalString() {
+        __optionalStringDelegate.clearField(this)
+    }
+
     internal val __nestedMessageDelegate: MsgFieldDelegate<ForeignMessageProto2> = MsgFieldDelegate(PresenceIndices.nestedMessage) { ForeignMessageProto2Internal.DEFAULT }
     override var nestedMessage: ForeignMessageProto2 by __nestedMessageDelegate
+    override fun clearNestedMessage() {
+        __nestedMessageDelegate.clearField(this)
+    }
+
     internal val __optionalgroupDelegate: MsgFieldDelegate<UnknownToTestAllTypes.OptionalGroup> = MsgFieldDelegate(PresenceIndices.optionalgroup) { OptionalGroupInternal.DEFAULT }
     override var optionalgroup: UnknownToTestAllTypes.OptionalGroup by __optionalgroupDelegate
-    internal val __optionalBoolDelegate: MsgFieldDelegate<Boolean?> = MsgFieldDelegate(PresenceIndices.optionalBool) { null }
-    override var optionalBool: Boolean? by __optionalBoolDelegate
+    override fun clearOptionalgroup() {
+        __optionalgroupDelegate.clearField(this)
+    }
+
+    internal val __optionalBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.optionalBool) { false }
+    override var optionalBool: Boolean by __optionalBoolDelegate
+    override fun clearOptionalBool() {
+        __optionalBoolDelegate.clearField(this)
+    }
+
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var repeatedInt32: List<Int> by __repeatedInt32Delegate
 
@@ -4309,11 +4605,11 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.optionalInt32?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (this.optionalString?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.optionalInt32.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) this.optionalString.hashCode() else 0
         result = 31 * result + if (presenceMask[2]) this.nestedMessage.hashCode() else 0
         result = 31 * result + if (presenceMask[3]) this.optionalgroup.hashCode() else 0
-        result = 31 * result + if (presenceMask[4]) (this.optionalBool?.hashCode() ?: 0) else 0
+        result = 31 * result + if (presenceMask[4]) this.optionalBool.hashCode() else 0
         result = 31 * result + this.repeatedInt32.hashCode()
         return result
     }
@@ -4426,8 +4722,12 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
         @InternalRpcApi
         internal var _unknownFieldsEncoder: WireEncoder? = null
 
-        internal val __aDelegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.a) { null }
-        override var a: Int? by __aDelegate
+        internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
+        override var a: Int by __aDelegate
+
+        override fun clearA() {
+            __aDelegate.clearField(this)
+        }
 
         private val _owner: OptionalGroupInternal = this
 
@@ -4440,7 +4740,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
         override fun hashCode(): Int {
             checkRequiredFields()
-            var result = if (presenceMask[0]) (this.a?.hashCode() ?: 0) else 0
+            var result = if (presenceMask[0]) this.a.hashCode() else 0
             return result
         }
 
@@ -4755,8 +5055,12 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __dataDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.data) { null }
-    override var data: String? by __dataDelegate
+    internal val __dataDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.data) { "" }
+    override var data: String by __dataDelegate
+
+    override fun clearData() {
+        __dataDelegate.clearField(this)
+    }
 
     private val _owner: OneStringProto2Internal = this
 
@@ -4769,7 +5073,7 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.data?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.data.hashCode() else 0
         return result
     }
 
@@ -4872,10 +5176,18 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    internal val __inlineDelegate: MsgFieldDelegate<Int?> = MsgFieldDelegate(PresenceIndices.inline) { null }
-    override var inline: Int? by __inlineDelegate
-    internal val __conceptDelegate: MsgFieldDelegate<String?> = MsgFieldDelegate(PresenceIndices.concept) { null }
-    override var concept: String? by __conceptDelegate
+    internal val __inlineDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.inline) { 0 }
+    override var inline: Int by __inlineDelegate
+    override fun clearInline() {
+        __inlineDelegate.clearField(this)
+    }
+
+    internal val __conceptDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.concept) { "" }
+    override var concept: String by __conceptDelegate
+    override fun clearConcept() {
+        __conceptDelegate.clearField(this)
+    }
+
     internal val __requiresDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     override var requires: List<String> by __requiresDelegate
 
@@ -4892,8 +5204,8 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
 
     override fun hashCode(): Int {
         checkRequiredFields()
-        var result = if (presenceMask[0]) (this.inline?.hashCode() ?: 0) else 0
-        result = 31 * result + if (presenceMask[1]) (this.concept?.hashCode() ?: 0) else 0
+        var result = if (presenceMask[0]) this.inline.hashCode() else 0
+        result = 31 * result + if (presenceMask[1]) this.concept.hashCode() else 0
         result = 31 * result + this.requires.hashCode()
         return result
     }
@@ -5054,82 +5366,238 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
     internal val __requiredInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.requiredInt32) { 0 }
     override var requiredInt32: Int by __requiredInt32Delegate
+    override fun clearRequiredInt32() {
+        __requiredInt32Delegate.clearField(this)
+    }
+
     internal val __requiredInt64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.requiredInt64) { 0L }
     override var requiredInt64: Long by __requiredInt64Delegate
+    override fun clearRequiredInt64() {
+        __requiredInt64Delegate.clearField(this)
+    }
+
     internal val __requiredUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.requiredUint32) { 0u }
     override var requiredUint32: UInt by __requiredUint32Delegate
+    override fun clearRequiredUint32() {
+        __requiredUint32Delegate.clearField(this)
+    }
+
     internal val __requiredUint64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.requiredUint64) { 0uL }
     override var requiredUint64: ULong by __requiredUint64Delegate
+    override fun clearRequiredUint64() {
+        __requiredUint64Delegate.clearField(this)
+    }
+
     internal val __requiredSint32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.requiredSint32) { 0 }
     override var requiredSint32: Int by __requiredSint32Delegate
+    override fun clearRequiredSint32() {
+        __requiredSint32Delegate.clearField(this)
+    }
+
     internal val __requiredSint64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.requiredSint64) { 0L }
     override var requiredSint64: Long by __requiredSint64Delegate
+    override fun clearRequiredSint64() {
+        __requiredSint64Delegate.clearField(this)
+    }
+
     internal val __requiredFixed32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.requiredFixed32) { 0u }
     override var requiredFixed32: UInt by __requiredFixed32Delegate
+    override fun clearRequiredFixed32() {
+        __requiredFixed32Delegate.clearField(this)
+    }
+
     internal val __requiredFixed64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.requiredFixed64) { 0uL }
     override var requiredFixed64: ULong by __requiredFixed64Delegate
+    override fun clearRequiredFixed64() {
+        __requiredFixed64Delegate.clearField(this)
+    }
+
     internal val __requiredSfixed32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.requiredSfixed32) { 0 }
     override var requiredSfixed32: Int by __requiredSfixed32Delegate
+    override fun clearRequiredSfixed32() {
+        __requiredSfixed32Delegate.clearField(this)
+    }
+
     internal val __requiredSfixed64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.requiredSfixed64) { 0L }
     override var requiredSfixed64: Long by __requiredSfixed64Delegate
+    override fun clearRequiredSfixed64() {
+        __requiredSfixed64Delegate.clearField(this)
+    }
+
     internal val __requiredFloatDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.requiredFloat) { 0.0f }
     override var requiredFloat: Float by __requiredFloatDelegate
+    override fun clearRequiredFloat() {
+        __requiredFloatDelegate.clearField(this)
+    }
+
     internal val __requiredDoubleDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate(PresenceIndices.requiredDouble) { 0.0 }
     override var requiredDouble: Double by __requiredDoubleDelegate
+    override fun clearRequiredDouble() {
+        __requiredDoubleDelegate.clearField(this)
+    }
+
     internal val __requiredBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.requiredBool) { false }
     override var requiredBool: Boolean by __requiredBoolDelegate
+    override fun clearRequiredBool() {
+        __requiredBoolDelegate.clearField(this)
+    }
+
     internal val __requiredStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.requiredString) { "" }
     override var requiredString: String by __requiredStringDelegate
+    override fun clearRequiredString() {
+        __requiredStringDelegate.clearField(this)
+    }
+
     internal val __requiredBytesDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.requiredBytes) { ByteString() }
     override var requiredBytes: ByteString by __requiredBytesDelegate
+    override fun clearRequiredBytes() {
+        __requiredBytesDelegate.clearField(this)
+    }
+
     internal val __requiredNestedMessageDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2.NestedMessage> = MsgFieldDelegate(PresenceIndices.requiredNestedMessage) { NestedMessageInternal.DEFAULT }
     override var requiredNestedMessage: TestAllRequiredTypesProto2.NestedMessage by __requiredNestedMessageDelegate
+    override fun clearRequiredNestedMessage() {
+        __requiredNestedMessageDelegate.clearField(this)
+    }
+
     internal val __requiredForeignMessageDelegate: MsgFieldDelegate<ForeignMessageProto2> = MsgFieldDelegate(PresenceIndices.requiredForeignMessage) { ForeignMessageProto2Internal.DEFAULT }
     override var requiredForeignMessage: ForeignMessageProto2 by __requiredForeignMessageDelegate
+    override fun clearRequiredForeignMessage() {
+        __requiredForeignMessageDelegate.clearField(this)
+    }
+
     internal val __requiredNestedEnumDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2.NestedEnum> = MsgFieldDelegate(PresenceIndices.requiredNestedEnum) { TestAllRequiredTypesProto2.NestedEnum.FOO }
     override var requiredNestedEnum: TestAllRequiredTypesProto2.NestedEnum by __requiredNestedEnumDelegate
+    override fun clearRequiredNestedEnum() {
+        __requiredNestedEnumDelegate.clearField(this)
+    }
+
     internal val __requiredForeignEnumDelegate: MsgFieldDelegate<ForeignEnumProto2> = MsgFieldDelegate(PresenceIndices.requiredForeignEnum) { ForeignEnumProto2.FOREIGN_FOO }
     override var requiredForeignEnum: ForeignEnumProto2 by __requiredForeignEnumDelegate
+    override fun clearRequiredForeignEnum() {
+        __requiredForeignEnumDelegate.clearField(this)
+    }
+
     internal val __requiredStringPieceDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.requiredStringPiece) { "" }
     override var requiredStringPiece: String by __requiredStringPieceDelegate
+    override fun clearRequiredStringPiece() {
+        __requiredStringPieceDelegate.clearField(this)
+    }
+
     internal val __requiredCordDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.requiredCord) { "" }
     override var requiredCord: String by __requiredCordDelegate
+    override fun clearRequiredCord() {
+        __requiredCordDelegate.clearField(this)
+    }
+
     internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllRequiredTypesProto2Internal.DEFAULT }
     override var recursiveMessage: TestAllRequiredTypesProto2 by __recursiveMessageDelegate
+    override fun clearRecursiveMessage() {
+        __recursiveMessageDelegate.clearField(this)
+    }
+
     internal val __optionalRecursiveMessageDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2> = MsgFieldDelegate(PresenceIndices.optionalRecursiveMessage) { TestAllRequiredTypesProto2Internal.DEFAULT }
     override var optionalRecursiveMessage: TestAllRequiredTypesProto2 by __optionalRecursiveMessageDelegate
+    override fun clearOptionalRecursiveMessage() {
+        __optionalRecursiveMessageDelegate.clearField(this)
+    }
+
     internal val __dataDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2.Data> = MsgFieldDelegate(PresenceIndices.data) { DataInternal.DEFAULT }
     override var data: TestAllRequiredTypesProto2.Data by __dataDelegate
+    override fun clearData() {
+        __dataDelegate.clearField(this)
+    }
+
     internal val __defaultInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultInt32) { -123456789 }
     override var defaultInt32: Int by __defaultInt32Delegate
+    override fun clearDefaultInt32() {
+        __defaultInt32Delegate.clearField(this)
+    }
+
     internal val __defaultInt64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultInt64) { -9123456789123456789L }
     override var defaultInt64: Long by __defaultInt64Delegate
+    override fun clearDefaultInt64() {
+        __defaultInt64Delegate.clearField(this)
+    }
+
     internal val __defaultUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.defaultUint32) { 2123456789u }
     override var defaultUint32: UInt by __defaultUint32Delegate
+    override fun clearDefaultUint32() {
+        __defaultUint32Delegate.clearField(this)
+    }
+
     internal val __defaultUint64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.defaultUint64) { 10123456789123456789uL }
     override var defaultUint64: ULong by __defaultUint64Delegate
+    override fun clearDefaultUint64() {
+        __defaultUint64Delegate.clearField(this)
+    }
+
     internal val __defaultSint32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultSint32) { -123456789 }
     override var defaultSint32: Int by __defaultSint32Delegate
+    override fun clearDefaultSint32() {
+        __defaultSint32Delegate.clearField(this)
+    }
+
     internal val __defaultSint64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultSint64) { -9123456789123456789L }
     override var defaultSint64: Long by __defaultSint64Delegate
+    override fun clearDefaultSint64() {
+        __defaultSint64Delegate.clearField(this)
+    }
+
     internal val __defaultFixed32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.defaultFixed32) { 2123456789u }
     override var defaultFixed32: UInt by __defaultFixed32Delegate
+    override fun clearDefaultFixed32() {
+        __defaultFixed32Delegate.clearField(this)
+    }
+
     internal val __defaultFixed64Delegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.defaultFixed64) { 10123456789123456789uL }
     override var defaultFixed64: ULong by __defaultFixed64Delegate
+    override fun clearDefaultFixed64() {
+        __defaultFixed64Delegate.clearField(this)
+    }
+
     internal val __defaultSfixed32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.defaultSfixed32) { -123456789 }
     override var defaultSfixed32: Int by __defaultSfixed32Delegate
+    override fun clearDefaultSfixed32() {
+        __defaultSfixed32Delegate.clearField(this)
+    }
+
     internal val __defaultSfixed64Delegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.defaultSfixed64) { -9123456789123456789L }
     override var defaultSfixed64: Long by __defaultSfixed64Delegate
+    override fun clearDefaultSfixed64() {
+        __defaultSfixed64Delegate.clearField(this)
+    }
+
     internal val __defaultFloatDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.defaultFloat) { Float.fromBits(0x50061C46.toInt()) }
     override var defaultFloat: Float by __defaultFloatDelegate
+    override fun clearDefaultFloat() {
+        __defaultFloatDelegate.clearField(this)
+    }
+
     internal val __defaultDoubleDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate(PresenceIndices.defaultDouble) { Double.fromBits(0x44ADA56A4B0835C0L) }
     override var defaultDouble: Double by __defaultDoubleDelegate
+    override fun clearDefaultDouble() {
+        __defaultDoubleDelegate.clearField(this)
+    }
+
     internal val __defaultBoolDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.defaultBool) { true }
     override var defaultBool: Boolean by __defaultBoolDelegate
+    override fun clearDefaultBool() {
+        __defaultBoolDelegate.clearField(this)
+    }
+
     internal val __defaultStringDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.defaultString) { "Rosebud" }
     override var defaultString: String by __defaultStringDelegate
+    override fun clearDefaultString() {
+        __defaultStringDelegate.clearField(this)
+    }
+
     internal val __defaultBytesDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.defaultBytes) { BytesDefaults.defaultBytes }
     override var defaultBytes: ByteString by __defaultBytesDelegate
+
+    override fun clearDefaultBytes() {
+        __defaultBytesDelegate.clearField(this)
+    }
 
     private val _owner: TestAllRequiredTypesProto2Internal = this
 
@@ -5747,10 +6215,22 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
+        override fun clearA() {
+            __aDelegate.clearField(this)
+        }
+
         internal val __corecursiveDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2> = MsgFieldDelegate(PresenceIndices.corecursive) { TestAllRequiredTypesProto2Internal.DEFAULT }
         override var corecursive: TestAllRequiredTypesProto2 by __corecursiveDelegate
+        override fun clearCorecursive() {
+            __corecursiveDelegate.clearField(this)
+        }
+
         internal val __optionalCorecursiveDelegate: MsgFieldDelegate<TestAllRequiredTypesProto2> = MsgFieldDelegate(PresenceIndices.optionalCorecursive) { TestAllRequiredTypesProto2Internal.DEFAULT }
         override var optionalCorecursive: TestAllRequiredTypesProto2 by __optionalCorecursiveDelegate
+
+        override fun clearOptionalCorecursive() {
+            __optionalCorecursiveDelegate.clearField(this)
+        }
 
         private val _owner: NestedMessageInternal = this
 
@@ -5896,8 +6376,16 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
+        override fun clearGroupInt32() {
+            __groupInt32Delegate.clearField(this)
+        }
+
         internal val __groupUint32Delegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.groupUint32) { 0u }
         override var groupUint32: UInt by __groupUint32Delegate
+
+        override fun clearGroupUint32() {
+            __groupUint32Delegate.clearField(this)
+        }
 
         private val _owner: DataInternal = this
 
@@ -6128,6 +6616,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         internal val __strDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.str) { "" }
         override var str: String by __strDelegate
 
+        override fun clearStr() {
+            __strDelegate.clearField(this)
+        }
+
         private val _owner: MessageSetCorrectExtension1Internal = this
 
         @InternalRpcApi
@@ -6243,6 +6735,10 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         internal val __iDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.i) { 0 }
         override var i: Int by __iDelegate
+
+        override fun clearI() {
+            __iDelegate.clearField(this)
+        }
 
         private val _owner: MessageSetCorrectExtension2Internal = this
 
@@ -7004,64 +7500,64 @@ fun TestAllTypesProto2Internal.checkRequiredFields() {
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.optionalInt32?.also {
-        encoder.writeInt32(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1, value = this.optionalInt32)
     }
 
-    this.optionalInt64?.also {
-        encoder.writeInt64(fieldNr = 2, value = it)
+    if (presenceMask[1]) {
+        encoder.writeInt64(fieldNr = 2, value = this.optionalInt64)
     }
 
-    this.optionalUint32?.also {
-        encoder.writeUInt32(fieldNr = 3, value = it)
+    if (presenceMask[2]) {
+        encoder.writeUInt32(fieldNr = 3, value = this.optionalUint32)
     }
 
-    this.optionalUint64?.also {
-        encoder.writeUInt64(fieldNr = 4, value = it)
+    if (presenceMask[3]) {
+        encoder.writeUInt64(fieldNr = 4, value = this.optionalUint64)
     }
 
-    this.optionalSint32?.also {
-        encoder.writeSInt32(fieldNr = 5, value = it)
+    if (presenceMask[4]) {
+        encoder.writeSInt32(fieldNr = 5, value = this.optionalSint32)
     }
 
-    this.optionalSint64?.also {
-        encoder.writeSInt64(fieldNr = 6, value = it)
+    if (presenceMask[5]) {
+        encoder.writeSInt64(fieldNr = 6, value = this.optionalSint64)
     }
 
-    this.optionalFixed32?.also {
-        encoder.writeFixed32(fieldNr = 7, value = it)
+    if (presenceMask[6]) {
+        encoder.writeFixed32(fieldNr = 7, value = this.optionalFixed32)
     }
 
-    this.optionalFixed64?.also {
-        encoder.writeFixed64(fieldNr = 8, value = it)
+    if (presenceMask[7]) {
+        encoder.writeFixed64(fieldNr = 8, value = this.optionalFixed64)
     }
 
-    this.optionalSfixed32?.also {
-        encoder.writeSFixed32(fieldNr = 9, value = it)
+    if (presenceMask[8]) {
+        encoder.writeSFixed32(fieldNr = 9, value = this.optionalSfixed32)
     }
 
-    this.optionalSfixed64?.also {
-        encoder.writeSFixed64(fieldNr = 10, value = it)
+    if (presenceMask[9]) {
+        encoder.writeSFixed64(fieldNr = 10, value = this.optionalSfixed64)
     }
 
-    this.optionalFloat?.also {
-        encoder.writeFloat(fieldNr = 11, value = it)
+    if (presenceMask[10]) {
+        encoder.writeFloat(fieldNr = 11, value = this.optionalFloat)
     }
 
-    this.optionalDouble?.also {
-        encoder.writeDouble(fieldNr = 12, value = it)
+    if (presenceMask[11]) {
+        encoder.writeDouble(fieldNr = 12, value = this.optionalDouble)
     }
 
-    this.optionalBool?.also {
-        encoder.writeBool(fieldNr = 13, value = it)
+    if (presenceMask[12]) {
+        encoder.writeBool(fieldNr = 13, value = this.optionalBool)
     }
 
-    this.optionalString?.also {
-        encoder.writeString(fieldNr = 14, value = it)
+    if (presenceMask[13]) {
+        encoder.writeString(fieldNr = 14, value = this.optionalString)
     }
 
-    this.optionalBytes?.also {
-        encoder.writeBytes(fieldNr = 15, value = it)
+    if (presenceMask[14]) {
+        encoder.writeBytes(fieldNr = 15, value = this.optionalBytes)
     }
 
     if (presenceMask[15]) {
@@ -7072,20 +7568,20 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeMessage(fieldNr = 19, value = this.optionalForeignMessage.asInternal()) { encodeWith(it, config) }
     }
 
-    this.optionalNestedEnum?.also {
-        encoder.writeEnum(fieldNr = 21, value = it.number)
+    if (presenceMask[17]) {
+        encoder.writeEnum(fieldNr = 21, value = this.optionalNestedEnum.number)
     }
 
-    this.optionalForeignEnum?.also {
-        encoder.writeEnum(fieldNr = 22, value = it.number)
+    if (presenceMask[18]) {
+        encoder.writeEnum(fieldNr = 22, value = this.optionalForeignEnum.number)
     }
 
-    this.optionalStringPiece?.also {
-        encoder.writeString(fieldNr = 24, value = it)
+    if (presenceMask[19]) {
+        encoder.writeString(fieldNr = 24, value = this.optionalStringPiece)
     }
 
-    this.optionalCord?.also {
-        encoder.writeString(fieldNr = 25, value = it)
+    if (presenceMask[20]) {
+        encoder.writeString(fieldNr = 25, value = this.optionalCord)
     }
 
     if (presenceMask[21]) {
@@ -7678,76 +8174,76 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeBytes(fieldNr = 255, value = this.defaultBytes)
     }
 
-    this.fieldname1?.also {
-        encoder.writeInt32(fieldNr = 401, value = it)
+    if (presenceMask[39]) {
+        encoder.writeInt32(fieldNr = 401, value = this.fieldname1)
     }
 
-    this.fieldName2?.also {
-        encoder.writeInt32(fieldNr = 402, value = it)
+    if (presenceMask[40]) {
+        encoder.writeInt32(fieldNr = 402, value = this.fieldName2)
     }
 
-    this.FieldName3?.also {
-        encoder.writeInt32(fieldNr = 403, value = it)
+    if (presenceMask[41]) {
+        encoder.writeInt32(fieldNr = 403, value = this.FieldName3)
     }
 
-    this.field_Name4_?.also {
-        encoder.writeInt32(fieldNr = 404, value = it)
+    if (presenceMask[42]) {
+        encoder.writeInt32(fieldNr = 404, value = this.field_Name4_)
     }
 
-    this.field0name5?.also {
-        encoder.writeInt32(fieldNr = 405, value = it)
+    if (presenceMask[43]) {
+        encoder.writeInt32(fieldNr = 405, value = this.field0name5)
     }
 
-    this.field_0Name6?.also {
-        encoder.writeInt32(fieldNr = 406, value = it)
+    if (presenceMask[44]) {
+        encoder.writeInt32(fieldNr = 406, value = this.field_0Name6)
     }
 
-    this.fieldName7?.also {
-        encoder.writeInt32(fieldNr = 407, value = it)
+    if (presenceMask[45]) {
+        encoder.writeInt32(fieldNr = 407, value = this.fieldName7)
     }
 
-    this.FieldName8?.also {
-        encoder.writeInt32(fieldNr = 408, value = it)
+    if (presenceMask[46]) {
+        encoder.writeInt32(fieldNr = 408, value = this.FieldName8)
     }
 
-    this.field_Name9?.also {
-        encoder.writeInt32(fieldNr = 409, value = it)
+    if (presenceMask[47]) {
+        encoder.writeInt32(fieldNr = 409, value = this.field_Name9)
     }
 
-    this.Field_Name10?.also {
-        encoder.writeInt32(fieldNr = 410, value = it)
+    if (presenceMask[48]) {
+        encoder.writeInt32(fieldNr = 410, value = this.Field_Name10)
     }
 
-    this.FIELD_NAME11?.also {
-        encoder.writeInt32(fieldNr = 411, value = it)
+    if (presenceMask[49]) {
+        encoder.writeInt32(fieldNr = 411, value = this.FIELD_NAME11)
     }
 
-    this.FIELDName12?.also {
-        encoder.writeInt32(fieldNr = 412, value = it)
+    if (presenceMask[50]) {
+        encoder.writeInt32(fieldNr = 412, value = this.FIELDName12)
     }
 
-    this._FieldName13?.also {
-        encoder.writeInt32(fieldNr = 413, value = it)
+    if (presenceMask[51]) {
+        encoder.writeInt32(fieldNr = 413, value = this._FieldName13)
     }
 
-    this.__FieldName14?.also {
-        encoder.writeInt32(fieldNr = 414, value = it)
+    if (presenceMask[52]) {
+        encoder.writeInt32(fieldNr = 414, value = this.__FieldName14)
     }
 
-    this.field_Name15?.also {
-        encoder.writeInt32(fieldNr = 415, value = it)
+    if (presenceMask[53]) {
+        encoder.writeInt32(fieldNr = 415, value = this.field_Name15)
     }
 
-    this.field__Name16?.also {
-        encoder.writeInt32(fieldNr = 416, value = it)
+    if (presenceMask[54]) {
+        encoder.writeInt32(fieldNr = 416, value = this.field__Name16)
     }
 
-    this.fieldName17__?.also {
-        encoder.writeInt32(fieldNr = 417, value = it)
+    if (presenceMask[55]) {
+        encoder.writeInt32(fieldNr = 417, value = this.fieldName17__)
     }
 
-    this.FieldName18__?.also {
-        encoder.writeInt32(fieldNr = 418, value = it)
+    if (presenceMask[56]) {
+        encoder.writeInt32(fieldNr = 418, value = this.FieldName18__)
     }
 
     if (presenceMask[57]) {
@@ -8610,64 +9106,64 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
 
 private fun TestAllTypesProto2Internal.computeSize(): Int {
     var __result = 0
-    this.optionalInt32?.also {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.optionalInt32))
     }
 
-    this.optionalInt64?.also {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(it))
+    if (presenceMask[1]) {
+        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.optionalInt64))
     }
 
-    this.optionalUint32?.also {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(it))
+    if (presenceMask[2]) {
+        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(this.optionalUint32))
     }
 
-    this.optionalUint64?.also {
-        __result += (WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(it))
+    if (presenceMask[3]) {
+        __result += (WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(this.optionalUint64))
     }
 
-    this.optionalSint32?.also {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(it))
+    if (presenceMask[4]) {
+        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(this.optionalSint32))
     }
 
-    this.optionalSint64?.also {
-        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(it))
+    if (presenceMask[5]) {
+        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(this.optionalSint64))
     }
 
-    this.optionalFixed32?.also {
-        __result += (WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(it))
+    if (presenceMask[6]) {
+        __result += (WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(this.optionalFixed32))
     }
 
-    this.optionalFixed64?.also {
-        __result += (WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(it))
+    if (presenceMask[7]) {
+        __result += (WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(this.optionalFixed64))
     }
 
-    this.optionalSfixed32?.also {
-        __result += (WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(it))
+    if (presenceMask[8]) {
+        __result += (WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(this.optionalSfixed32))
     }
 
-    this.optionalSfixed64?.also {
-        __result += (WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(it))
+    if (presenceMask[9]) {
+        __result += (WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(this.optionalSfixed64))
     }
 
-    this.optionalFloat?.also {
-        __result += (WireSize.tag(11, WireType.FIXED32) + WireSize.float(it))
+    if (presenceMask[10]) {
+        __result += (WireSize.tag(11, WireType.FIXED32) + WireSize.float(this.optionalFloat))
     }
 
-    this.optionalDouble?.also {
-        __result += (WireSize.tag(12, WireType.FIXED64) + WireSize.double(it))
+    if (presenceMask[11]) {
+        __result += (WireSize.tag(12, WireType.FIXED64) + WireSize.double(this.optionalDouble))
     }
 
-    this.optionalBool?.also {
-        __result += (WireSize.tag(13, WireType.VARINT) + WireSize.bool(it))
+    if (presenceMask[12]) {
+        __result += (WireSize.tag(13, WireType.VARINT) + WireSize.bool(this.optionalBool))
     }
 
-    this.optionalString?.also {
-        __result += WireSize.string(it).let { WireSize.tag(14, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[13]) {
+        __result += WireSize.string(this.optionalString).let { WireSize.tag(14, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    this.optionalBytes?.also {
-        __result += WireSize.bytes(it).let { WireSize.tag(15, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[14]) {
+        __result += WireSize.bytes(this.optionalBytes).let { WireSize.tag(15, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[15]) {
@@ -8678,20 +9174,20 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
         __result += this.optionalForeignMessage.asInternal()._size.let { WireSize.tag(19, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    this.optionalNestedEnum?.also {
-        __result += (WireSize.tag(21, WireType.VARINT) + WireSize.enum(it.number))
+    if (presenceMask[17]) {
+        __result += (WireSize.tag(21, WireType.VARINT) + WireSize.enum(this.optionalNestedEnum.number))
     }
 
-    this.optionalForeignEnum?.also {
-        __result += (WireSize.tag(22, WireType.VARINT) + WireSize.enum(it.number))
+    if (presenceMask[18]) {
+        __result += (WireSize.tag(22, WireType.VARINT) + WireSize.enum(this.optionalForeignEnum.number))
     }
 
-    this.optionalStringPiece?.also {
-        __result += WireSize.string(it).let { WireSize.tag(24, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[19]) {
+        __result += WireSize.string(this.optionalStringPiece).let { WireSize.tag(24, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    this.optionalCord?.also {
-        __result += WireSize.string(it).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[20]) {
+        __result += WireSize.string(this.optionalCord).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[21]) {
@@ -9172,76 +9668,76 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
         __result += WireSize.bytes(this.defaultBytes).let { WireSize.tag(255, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    this.fieldname1?.also {
-        __result += (WireSize.tag(401, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[39]) {
+        __result += (WireSize.tag(401, WireType.VARINT) + WireSize.int32(this.fieldname1))
     }
 
-    this.fieldName2?.also {
-        __result += (WireSize.tag(402, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[40]) {
+        __result += (WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2))
     }
 
-    this.FieldName3?.also {
-        __result += (WireSize.tag(403, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[41]) {
+        __result += (WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.FieldName3))
     }
 
-    this.field_Name4_?.also {
-        __result += (WireSize.tag(404, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[42]) {
+        __result += (WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_))
     }
 
-    this.field0name5?.also {
-        __result += (WireSize.tag(405, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[43]) {
+        __result += (WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5))
     }
 
-    this.field_0Name6?.also {
-        __result += (WireSize.tag(406, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[44]) {
+        __result += (WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6))
     }
 
-    this.fieldName7?.also {
-        __result += (WireSize.tag(407, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[45]) {
+        __result += (WireSize.tag(407, WireType.VARINT) + WireSize.int32(this.fieldName7))
     }
 
-    this.FieldName8?.also {
-        __result += (WireSize.tag(408, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[46]) {
+        __result += (WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.FieldName8))
     }
 
-    this.field_Name9?.also {
-        __result += (WireSize.tag(409, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[47]) {
+        __result += (WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9))
     }
 
-    this.Field_Name10?.also {
-        __result += (WireSize.tag(410, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[48]) {
+        __result += (WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.Field_Name10))
     }
 
-    this.FIELD_NAME11?.also {
-        __result += (WireSize.tag(411, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[49]) {
+        __result += (WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.FIELD_NAME11))
     }
 
-    this.FIELDName12?.also {
-        __result += (WireSize.tag(412, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[50]) {
+        __result += (WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.FIELDName12))
     }
 
-    this._FieldName13?.also {
-        __result += (WireSize.tag(413, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[51]) {
+        __result += (WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13))
     }
 
-    this.__FieldName14?.also {
-        __result += (WireSize.tag(414, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[52]) {
+        __result += (WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14))
     }
 
-    this.field_Name15?.also {
-        __result += (WireSize.tag(415, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[53]) {
+        __result += (WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15))
     }
 
-    this.field__Name16?.also {
-        __result += (WireSize.tag(416, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[54]) {
+        __result += (WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16))
     }
 
-    this.fieldName17__?.also {
-        __result += (WireSize.tag(417, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[55]) {
+        __result += (WireSize.tag(417, WireType.VARINT) + WireSize.int32(this.fieldName17__))
     }
 
-    this.FieldName18__?.also {
-        __result += (WireSize.tag(418, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[56]) {
+        __result += (WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.FieldName18__))
     }
 
     if (presenceMask[57]) {
@@ -9297,8 +9793,8 @@ fun ForeignMessageProto2Internal.checkRequiredFields() {
 
 @InternalRpcApi
 fun ForeignMessageProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.c?.also {
-        encoder.writeInt32(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1, value = this.c)
     }
 
     _extensions.forEach { (key, value) ->
@@ -9342,8 +9838,8 @@ fun ForeignMessageProto2Internal.Companion.decodeWith(msg: ForeignMessageProto2I
 
 private fun ForeignMessageProto2Internal.computeSize(): Int {
     var __result = 0
-    this.c?.also {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.c))
     }
 
     __result += _unknownFields.size.toInt()
@@ -9362,12 +9858,12 @@ fun GroupFieldInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun GroupFieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.groupInt32?.also {
-        encoder.writeInt32(fieldNr = 122, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 122, value = this.groupInt32)
     }
 
-    this.groupUint32?.also {
-        encoder.writeUInt32(fieldNr = 123, value = it)
+    if (presenceMask[1]) {
+        encoder.writeUInt32(fieldNr = 123, value = this.groupUint32)
     }
 
     _extensions.forEach { (key, value) ->
@@ -9414,12 +9910,12 @@ fun GroupFieldInternal.Companion.decodeWith(msg: GroupFieldInternal, decoder: Wi
 
 private fun GroupFieldInternal.computeSize(): Int {
     var __result = 0
-    this.groupInt32?.also {
-        __result += (WireSize.tag(122, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(122, WireType.VARINT) + WireSize.int32(this.groupInt32))
     }
 
-    this.groupUint32?.also {
-        __result += (WireSize.tag(123, WireType.VARINT) + WireSize.uInt32(it))
+    if (presenceMask[1]) {
+        __result += (WireSize.tag(123, WireType.VARINT) + WireSize.uInt32(this.groupUint32))
     }
 
     __result += _unknownFields.size.toInt()
@@ -9445,12 +9941,12 @@ fun UnknownToTestAllTypesInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun UnknownToTestAllTypesInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.optionalInt32?.also {
-        encoder.writeInt32(fieldNr = 1001, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1001, value = this.optionalInt32)
     }
 
-    this.optionalString?.also {
-        encoder.writeString(fieldNr = 1002, value = it)
+    if (presenceMask[1]) {
+        encoder.writeString(fieldNr = 1002, value = this.optionalString)
     }
 
     if (presenceMask[2]) {
@@ -9461,8 +9957,8 @@ fun UnknownToTestAllTypesInternal.encodeWith(encoder: WireEncoder, config: Proto
         encoder.writeGroupMessage(fieldNr = 1004, value = this.optionalgroup.asInternal()) { encodeWith(it, config) }
     }
 
-    this.optionalBool?.also {
-        encoder.writeBool(fieldNr = 1006, value = it)
+    if (presenceMask[4]) {
+        encoder.writeBool(fieldNr = 1006, value = this.optionalBool)
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
@@ -9535,12 +10031,12 @@ fun UnknownToTestAllTypesInternal.Companion.decodeWith(msg: UnknownToTestAllType
 
 private fun UnknownToTestAllTypesInternal.computeSize(): Int {
     var __result = 0
-    this.optionalInt32?.also {
-        __result += (WireSize.tag(1001, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1001, WireType.VARINT) + WireSize.int32(this.optionalInt32))
     }
 
-    this.optionalString?.also {
-        __result += WireSize.string(it).let { WireSize.tag(1002, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[1]) {
+        __result += WireSize.string(this.optionalString).let { WireSize.tag(1002, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (presenceMask[2]) {
@@ -9551,8 +10047,8 @@ private fun UnknownToTestAllTypesInternal.computeSize(): Int {
         __result += this.optionalgroup.asInternal()._size.let { (2 * WireSize.tag(1004, WireType.START_GROUP)) + it }
     }
 
-    this.optionalBool?.also {
-        __result += (WireSize.tag(1006, WireType.VARINT) + WireSize.bool(it))
+    if (presenceMask[4]) {
+        __result += (WireSize.tag(1006, WireType.VARINT) + WireSize.bool(this.optionalBool))
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
@@ -9685,8 +10181,8 @@ fun OneStringProto2Internal.checkRequiredFields() {
 
 @InternalRpcApi
 fun OneStringProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.data?.also {
-        encoder.writeString(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeString(fieldNr = 1, value = this.data)
     }
 
     _extensions.forEach { (key, value) ->
@@ -9730,8 +10226,8 @@ fun OneStringProto2Internal.Companion.decodeWith(msg: OneStringProto2Internal, d
 
 private fun OneStringProto2Internal.computeSize(): Int {
     var __result = 0
-    this.data?.also {
-        __result += WireSize.string(it).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[0]) {
+        __result += WireSize.string(this.data).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()
@@ -9750,12 +10246,12 @@ fun ProtoWithKeywordsInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun ProtoWithKeywordsInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.inline?.also {
-        encoder.writeInt32(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1, value = this.inline)
     }
 
-    this.concept?.also {
-        encoder.writeString(fieldNr = 2, value = it)
+    if (presenceMask[1]) {
+        encoder.writeString(fieldNr = 2, value = this.concept)
     }
 
     if (this.requires.isNotEmpty()) {
@@ -9813,12 +10309,12 @@ fun ProtoWithKeywordsInternal.Companion.decodeWith(msg: ProtoWithKeywordsInterna
 
 private fun ProtoWithKeywordsInternal.computeSize(): Int {
     var __result = 0
-    this.inline?.also {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.inline))
     }
 
-    this.concept?.also {
-        __result += WireSize.string(it).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[1]) {
+        __result += WireSize.string(this.concept).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.requires.isNotEmpty()) {
@@ -10660,8 +11156,8 @@ fun TestAllTypesProto2Internal.NestedMessageInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.a?.also {
-        encoder.writeInt32(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1, value = this.a)
     }
 
     if (presenceMask[1]) {
@@ -10713,8 +11209,8 @@ fun TestAllTypesProto2Internal.NestedMessageInternal.Companion.decodeWith(msg: T
 
 private fun TestAllTypesProto2Internal.NestedMessageInternal.computeSize(): Int {
     var __result = 0
-    this.a?.also {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.a))
     }
 
     if (presenceMask[1]) {
@@ -12345,12 +12841,12 @@ fun TestAllTypesProto2Internal.DataInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.DataInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.groupInt32?.also {
-        encoder.writeInt32(fieldNr = 202, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 202, value = this.groupInt32)
     }
 
-    this.groupUint32?.also {
-        encoder.writeUInt32(fieldNr = 203, value = it)
+    if (presenceMask[1]) {
+        encoder.writeUInt32(fieldNr = 203, value = this.groupUint32)
     }
 
     _extensions.forEach { (key, value) ->
@@ -12408,12 +12904,12 @@ fun TestAllTypesProto2Internal.DataInternal.Companion.decodeWith(msg: TestAllTyp
 
 private fun TestAllTypesProto2Internal.DataInternal.computeSize(): Int {
     var __result = 0
-    this.groupInt32?.also {
-        __result += (WireSize.tag(202, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(202, WireType.VARINT) + WireSize.int32(this.groupInt32))
     }
 
-    this.groupUint32?.also {
-        __result += (WireSize.tag(203, WireType.VARINT) + WireSize.uInt32(it))
+    if (presenceMask[1]) {
+        __result += (WireSize.tag(203, WireType.VARINT) + WireSize.uInt32(this.groupUint32))
     }
 
     __result += _unknownFields.size.toInt()
@@ -12432,12 +12928,12 @@ fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.checkRequiredFields()
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.groupInt32?.also {
-        encoder.writeInt32(fieldNr = 205, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 205, value = this.groupInt32)
     }
 
-    this.groupUint32?.also {
-        encoder.writeUInt32(fieldNr = 206, value = it)
+    if (presenceMask[1]) {
+        encoder.writeUInt32(fieldNr = 206, value = this.groupUint32)
     }
 
     _extensions.forEach { (key, value) ->
@@ -12495,12 +12991,12 @@ fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.Companion.decodeWith(
 
 private fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.computeSize(): Int {
     var __result = 0
-    this.groupInt32?.also {
-        __result += (WireSize.tag(205, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(205, WireType.VARINT) + WireSize.int32(this.groupInt32))
     }
 
-    this.groupUint32?.also {
-        __result += (WireSize.tag(206, WireType.VARINT) + WireSize.uInt32(it))
+    if (presenceMask[1]) {
+        __result += (WireSize.tag(206, WireType.VARINT) + WireSize.uInt32(this.groupUint32))
     }
 
     __result += _unknownFields.size.toInt()
@@ -12584,8 +13080,8 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.checkRequired
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.str?.also {
-        encoder.writeString(fieldNr = 25, value = it)
+    if (presenceMask[0]) {
+        encoder.writeString(fieldNr = 25, value = this.str)
     }
 
     _extensions.forEach { (key, value) ->
@@ -12629,8 +13125,8 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.Companion.dec
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.computeSize(): Int {
     var __result = 0
-    this.str?.also {
-        __result += WireSize.string(it).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    if (presenceMask[0]) {
+        __result += WireSize.string(this.str).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()
@@ -12649,8 +13145,8 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.checkRequired
 
 @InternalRpcApi
 fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.i?.also {
-        encoder.writeInt32(fieldNr = 9, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 9, value = this.i)
     }
 
     _extensions.forEach { (key, value) ->
@@ -12694,8 +13190,8 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.Companion.dec
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.computeSize(): Int {
     var __result = 0
-    this.i?.also {
-        __result += (WireSize.tag(9, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(9, WireType.VARINT) + WireSize.int32(this.i))
     }
 
     __result += _unknownFields.size.toInt()
@@ -12796,8 +13292,8 @@ fun UnknownToTestAllTypesInternal.OptionalGroupInternal.checkRequiredFields() {
 
 @InternalRpcApi
 fun UnknownToTestAllTypesInternal.OptionalGroupInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.a?.also {
-        encoder.writeInt32(fieldNr = 1, value = it)
+    if (presenceMask[0]) {
+        encoder.writeInt32(fieldNr = 1, value = this.a)
     }
 
     _extensions.forEach { (key, value) ->
@@ -12852,8 +13348,8 @@ fun UnknownToTestAllTypesInternal.OptionalGroupInternal.Companion.decodeWith(msg
 
 private fun UnknownToTestAllTypesInternal.OptionalGroupInternal.computeSize(): Int {
     var __result = 0
-    this.a?.also {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(it))
+    if (presenceMask[0]) {
+        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.a))
     }
 
     __result += _unknownFields.size.toInt()

@@ -131,6 +131,15 @@ abstract class ConformanceExecutablePathWriter : DefaultTask() {
  * output so that cache restore produces a working `node_modules/` (including the `.bin/` entry
  * points consumed by downstream tasks).
  *
+ * The command line is assembled in [exec] (not at configuration time) so it can:
+ *  - resolve `npm` to an absolute path via [resolveNpmExecutable] — a bare `npm` is resolved
+ *    against the Gradle daemon's `PATH`, which on IDE/daemon launches frequently omits Homebrew
+ *    and Node locations (e.g. `/opt/homebrew/bin`), producing `Cannot run program "npm"`;
+ *  - pass `--prefix [installDir]` — without a local `package.json`, `npm install` walks up the
+ *    directory tree and installs into the first ancestor package root (e.g. `~/node_modules`),
+ *    leaving [installDir] empty and silently breaking downstream tasks. Pinning the prefix forces
+ *    installation into `[installDir]/node_modules`.
+ *
  * [Exec.workingDir] is synced from [installDir] in [exec] so the cache key and the exec working
  * directory cannot drift.
  */
@@ -147,8 +156,52 @@ abstract class NpmInstallConformanceTask : Exec() {
         val dir = installDir.get().asFile
         dir.mkdirs()
         workingDir = dir
+
+        commandLine(
+            resolveNpmExecutable(),
+            "install",
+            "--no-save",
+            "--prefix", dir.absolutePath,
+            "protobuf-conformance@${conformanceVersion.get()}.0",
+        )
+
         super.exec()
     }
+}
+
+/**
+ * Resolves an absolute path to the `npm` executable.
+ *
+ * A bare `npm` command is resolved by the JVM against the Gradle daemon's `PATH`, which often
+ * differs from an interactive shell's `PATH` (IDE- and MCP-launched daemons on macOS typically
+ * carry only `/usr/bin:/bin:/usr/sbin:/sbin`, omitting Homebrew/Node locations). This searches the
+ * daemon `PATH` first, then a curated set of common install locations, and fails with actionable
+ * guidance if none is found.
+ */
+private fun resolveNpmExecutable(): String {
+    val isWindows = System.getProperty("os.name").lowercase().startsWith("win")
+    val names = if (isWindows) listOf("npm.cmd", "npm.exe", "npm") else listOf("npm")
+
+    val home = System.getProperty("user.home")
+    val pathDirs = (System.getenv("PATH") ?: "").split(File.pathSeparatorChar)
+    val commonDirs = listOf("/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "$home/.volta/bin")
+
+    for (dir in pathDirs + commonDirs) {
+        if (dir.isBlank()) continue
+        for (name in names) {
+            val candidate = File(dir, name)
+            if (candidate.isFile && candidate.canExecute()) {
+                return candidate.absolutePath
+            }
+        }
+    }
+
+    error(
+        "Could not locate the 'npm' executable on the Gradle daemon's PATH or in common install " +
+            "locations (${commonDirs.joinToString()}). Install Node.js/npm, or ensure 'npm' is on " +
+            "the PATH of the process running Gradle (note: IDE/daemon launches may not inherit your " +
+            "shell PATH)."
+    )
 }
 
 /**
@@ -308,7 +361,8 @@ fun Project.setupProtobufConformanceResources() {
         // protobuf-conformance subdir would leave transitive deps out of any cache restore.
         installDir.set(npmDir)
 
-        commandLine("npm", "install", "--no-save", "protobuf-conformance@$conformanceVersion.0")
+        // The command line (incl. the resolved npm path and --prefix) is assembled in
+        // NpmInstallConformanceTask.exec() — see that task's KDoc.
     }
 
     val ejectConformanceProtos = tasks.register<Exec>(EJECT_CONFORMANCE_PROTOS_TASK) {

@@ -23,10 +23,23 @@ import kotlinx.io.Source
 @GeneratedProtoMessage
 interface MyMessage {
     val field: Int
+    val optionalField: Int
+}
+
+interface MyMessagePresence {
+    val hasOptionalField: Boolean
 }
 
 class MyMessageInternal : MyMessage.Builder {
     override var field: Int = 1
+
+    override var optionalField: Int = 2
+
+    override fun clearOptionalField() {}
+
+    private object PresenceIndices {
+        const val optionalField = 0
+    }
 
     object DESCRIPTOR: ProtoDescriptor<MyMessage> {
         override val fullName: String = "fullName"

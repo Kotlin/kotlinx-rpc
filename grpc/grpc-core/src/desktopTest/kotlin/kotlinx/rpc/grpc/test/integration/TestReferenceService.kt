@@ -17,7 +17,13 @@ import kotlinx.rpc.grpc.test.OptionalTypes
 import kotlinx.rpc.grpc.test.Repeated
 import kotlinx.rpc.grpc.test.TestMap
 import kotlinx.rpc.grpc.test.UsingEnum
+import kotlinx.rpc.grpc.test.ageOrNull
+import kotlinx.rpc.grpc.test.inner1OrNull
 import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.grpc.test.nameOrNull
+import kotlinx.rpc.grpc.test.recursionOrNull
+import kotlinx.rpc.grpc.test.reference21OrNull
+import kotlinx.rpc.grpc.test.referenceOrNull
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
@@ -107,14 +113,13 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(42, resultNotNull.reference.field)
 
         val resultNullable = service.Optional(OptionalTypes {
-            name = null
-            age = null
+            clearName()
+            clearAge()
         })
 
-        assertEquals(null, resultNullable.name)
-        assertEquals(null, resultNullable.age)
-        // todo presence check
-//        assertEquals(null, resultNullable.reference)
+        assertEquals(null, resultNullable.nameOrNull)
+        assertEquals(null, resultNullable.ageOrNull)
+        assertEquals(null, resultNullable.referenceOrNull)
     }
 
     @Test
@@ -185,25 +190,21 @@ class TestReferenceService : GrpcTestBase() {
         })
 
         // Assert Inner1.Inner11
-        // todo presence check
-//        assertEquals(null, result.inner1.inner11.reference21)
-//        assertEquals(null, result.inner1.inner11.reference12.recursion)
+        assertEquals(null, result.inner1.inner11.reference21OrNull)
+        assertEquals(null, result.inner1.inner11.reference12.recursionOrNull)
         assertEquals(Nested.Inner2.NestedEnum.ZERO, result.inner1.inner11.enum)
 
         // Assert Inner1.Inner12
         assertNotNull(result.inner1.inner22.recursion)
-        // todo presence check
-//        assertEquals(null, result.inner1.inner22.recursion.recursion)
+        assertEquals(null, result.inner1.inner22.recursion.recursionOrNull)
 
         // Assert Inner1
         assertEquals("42_1", result.inner1.string)
-        // todo presence check
-//        assertEquals(null, result.inner1.inner1)
+        assertEquals(null, result.inner1.inner1OrNull)
 
         // Assert Inner2.Inner21
-        // todo presence check
-//        assertEquals(null, result.inner2.inner21.reference11.reference21)
-//        assertEquals(null, result.inner2.inner21.reference11.reference12.recursion)
+        assertEquals(null, result.inner2.inner21.reference11.reference21OrNull)
+        assertEquals(null, result.inner2.inner21.reference11.reference12.recursionOrNull)
         assertEquals(Nested.Inner2.NestedEnum.ZERO, result.inner2.inner21.reference11.enum)
         assertEquals(Nested.Inner2.NestedEnum.ZERO, result.inner2.inner21.reference22.enum)
 

@@ -18,14 +18,16 @@ import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.*
 import org.jetbrains.kotlin.fir.plugin.createCompanionObject
+import org.jetbrains.kotlin.fir.plugin.createMemberFunction
 import org.jetbrains.kotlin.fir.plugin.createMemberProperty
 import org.jetbrains.kotlin.fir.plugin.createNestedClass
 import org.jetbrains.kotlin.fir.resolve.defaultType
-import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 
@@ -34,17 +36,32 @@ class FirProtobufMessageGenerator(
     @Suppress("unused")
     private val logger: MessageCollector,
 ) : FirDeclarationGenerationExtension(session) {
-    private val messageCallablesCache: FirCache<FirClassSymbol<*>, Map<Name, FirCallableSymbol<*>>, Nothing?> =
+
+    private class GeneratedNames(
+        val propertyNames: Map<Name, FirPropertySymbol> = emptyMap(),
+        val functionNames: Map<Name, FirPropertySymbol> = emptyMap(),
+    )
+
+    private val messageCallablesCache: FirCache<FirClassSymbol<*>, GeneratedNames, Nothing?> =
         session.firCachesFactory.createCache { messageClassSymbol: FirClassSymbol<*>, _ ->
-            buildMap {
-                vsApi {
-                    messageClassSymbol.forAllCallablesVS(session) {
-                        if (it is FirPropertySymbol) {
-                            put(it.name, it)
+            val propertyNames = mutableMapOf<Name, FirPropertySymbol>()
+            val functionNames = mutableMapOf<Name, FirPropertySymbol>()
+            val presenceGetterNames = messageClassSymbol.presenceGetterNames(session)
+            vsApi {
+                messageClassSymbol.forAllCallablesVS(session) { callable ->
+                    if (callable is FirPropertySymbol) {
+                        propertyNames[callable.name] = callable
+
+                        // The presence interface declares a `has<Field>` getter for each presence-tracked field;
+                        // for those fields we generate a matching `clear<Field>` function on the builder.
+                        val capitalized = callable.name.asString().replaceFirstChar { char -> char.uppercase() }
+                        if (Name.identifier("has$capitalized") in presenceGetterNames) {
+                            functionNames[Name.identifier("clear$capitalized")] = callable
                         }
                     }
                 }
             }
+            GeneratedNames(propertyNames, functionNames)
         }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
@@ -118,7 +135,8 @@ class FirProtobufMessageGenerator(
         val messageClassSymbol = classSymbol.generatedProtoMessageBuilderKey?.message
             ?: return super.getCallableNamesForClass(classSymbol, context)
 
-        return messageCallablesCache.getValue(messageClassSymbol).keys
+        val generatedNames = messageCallablesCache.getValue(messageClassSymbol)
+        return generatedNames.propertyNames.keys + generatedNames.functionNames.keys
     }
 
     override fun generateProperties(
@@ -130,7 +148,8 @@ class FirProtobufMessageGenerator(
         val messageClassSymbol = context.owner.generatedProtoMessageBuilderKey?.message
             ?: return super.generateProperties(callableId, context)
 
-        val property = messageCallablesCache.getValue(messageClassSymbol)[callableId.callableName]
+        val property = messageCallablesCache.getValue(messageClassSymbol)
+            .propertyNames[callableId.callableName]
             ?: return super.generateProperties(callableId, context)
 
         return listOf(
@@ -152,5 +171,57 @@ class FirProtobufMessageGenerator(
                 }
             }.symbol
         )
+    }
+
+    override fun generateFunctions(
+        callableId: CallableId,
+        context: MemberGenerationContext?
+    ): List<FirNamedFunctionSymbol> {
+        context ?: return super.generateFunctions(callableId, context)
+
+        val messageClassSymbol = context.owner.generatedProtoMessageBuilderKey?.message
+            ?: return super.generateFunctions(callableId, context)
+
+        val property = messageCallablesCache.getValue(messageClassSymbol)
+            .functionNames[callableId.callableName] ?: return super.generateFunctions(callableId, context)
+
+        return listOf(
+            createMemberFunction(
+                owner = context.owner,
+                key = FirGeneratedProtoMessageBuilderFunctionKey,
+                name = callableId.callableName,
+                returnType = session.builtinTypes.unitType.coneType
+            ) {
+                visibility = Visibilities.Public
+                modality = Modality.ABSTRACT
+                vsApi {
+                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
+                }
+            }.symbol
+        )
+    }
+}
+
+/**
+ * Returns the names of the presence getters (`has<Field>`) declared in the generated presence interface
+ * of this message, e.g. `hasSourceContext`. Each such getter corresponds to one presence-tracked field.
+ *
+ * The presence interface is resolved by its [ClassId]. It is a standalone hierarchy (it does not extend
+ * the message, the builder, or the internal class) so resolving its member scope here is safe.
+ *
+ * This must NOT be derived from the internal message class: that class extends the generated builder, so
+ * forcing resolution of its member scope (or of anything nested in it, such as the `PresenceIndices` object)
+ * re-enters declaration generation for the builder and causes unbounded recursion under the IDE's lazy
+ * (Analysis API) resolution.
+ */
+private fun FirClassSymbol<*>.presenceGetterNames(session: FirSession): Set<Name> {
+    val presenceInterface = vsApi {
+        session.getRegularClassSymbolByClassIdVS(classId.presenceInterfaceClassId())
+    } ?: return emptySet()
+
+    return vsApi {
+        presenceInterface.declarationsVS(session)
+            .filterIsInstance<FirPropertySymbol>()
+            .mapTo(mutableSetOf()) { it.name }
     }
 }

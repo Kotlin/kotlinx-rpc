@@ -72,6 +72,7 @@ public class kotlinx/rpc/buf/BufGenerateExtension {
 	public final fun getIncludeImports ()Lorg/gradle/api/provider/Property;
 	public final fun getIncludeWkt ()Lorg/gradle/api/provider/Property;
 	public final fun getIndentSize ()Lorg/gradle/api/provider/Property;
+	public final fun getOptionalFieldOrNullGetters ()Lorg/gradle/api/provider/Property;
 }
 
 public final class kotlinx/rpc/buf/BufGenerateExtension$ErrorFormat : java/lang/Enum {
