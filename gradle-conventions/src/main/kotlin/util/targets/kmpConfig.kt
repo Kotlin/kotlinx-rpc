@@ -42,6 +42,11 @@ private val NATIVE_TARGET_FACTORIES: Map<String, (KotlinMultiplatformExtension) 
     "watchosDeviceArm64" to { it.watchosDeviceArm64() },
     "tvosArm64" to { it.tvosArm64() },
     "tvosSimulatorArm64" to { it.tvosSimulatorArm64() },
+
+    "androidNativeArm32" to { it.androidNativeArm32() },
+    "androidNativeArm64" to { it.androidNativeArm64() },
+    "androidNativeX86" to { it.androidNativeX86() },
+    "androidNativeX64" to { it.androidNativeX64() },
 )
 
 /**
