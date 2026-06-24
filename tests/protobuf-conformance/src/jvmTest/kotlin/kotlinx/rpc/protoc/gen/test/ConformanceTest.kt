@@ -47,7 +47,7 @@ class ConformanceTest {
                 "Expected environment variable 'NATIVE_CLIENT_BINARY' to be set. " +
                     "Native conformance tests are not available on: ${System.getProperty("os.name")} " +
                     "(${System.getProperty("os.arch")}). " +
-                    "Supported platforms: macosArm64, macosX64, linuxX64, linuxArm64."
+                    "Supported platforms: macosArm64, linuxX64, linuxArm64."
             )
 
         // The native binary takes args directly: <binary> conformance

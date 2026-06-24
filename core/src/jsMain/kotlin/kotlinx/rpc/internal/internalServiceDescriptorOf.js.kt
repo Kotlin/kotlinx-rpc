@@ -40,6 +40,7 @@ internal fun KClass<*>.findAssociatedObjectImpl(annotationClass: KClass<*>): Any
     return factory()
 }
 
+@OptIn(ExperimentalWasmJsInterop::class)
 private fun <R : Any> fallbackFindAssociatedObjectImpl(map: dynamic): R? {
     return Object.entries(map as Any)
         .mapNotNull { (_, factory) ->
