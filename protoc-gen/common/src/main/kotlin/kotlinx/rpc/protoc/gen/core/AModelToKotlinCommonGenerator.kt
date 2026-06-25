@@ -109,7 +109,6 @@ abstract class AModelToKotlinCommonGenerator(
             comments = this@generatePublicKotlinFile.doc
 
             fileOptIns = listOf(
-                "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
                 "%T::class".scoped(FqName.Annotations.InternalRpcApi),
             )
 

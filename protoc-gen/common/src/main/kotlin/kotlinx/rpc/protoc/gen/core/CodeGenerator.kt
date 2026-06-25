@@ -28,8 +28,8 @@ open class CodeGenerator(
     private var lastIsDeclaration: Boolean = false
     private var needsNewLineAfterDeclaration: Boolean = true
 
-    context(selectedNameTable: ScopedFqNameTable)
     @Suppress("FunctionName")
+    context(selectedNameTable: ScopedFqNameTable)
     private fun _append(
         value: ScopedFormattedString? = null,
         newLineBefore: Boolean = false,
@@ -684,21 +684,21 @@ open class CodeGenerator(
         }
 
         leadingDetached.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if (leadingDetached.isNotEmpty() && (leading.isNotEmpty() || trailing.isNotEmpty())) {
             addLine(" *".scoped())
         }
         leading.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if ((leadingDetached.isNotEmpty() || leading.isNotEmpty()) && trailing.isNotEmpty()) {
             addLine(" *".scoped())
         }
         trailing.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if (final) {
