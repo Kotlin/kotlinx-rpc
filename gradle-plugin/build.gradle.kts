@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.plugin.compatibility.compatibility
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import util.other.generateSource
 import kotlin.io.path.Path
@@ -94,8 +95,14 @@ gradlePlugin {
             displayName = "kotlinx.rpc Gradle Plugin"
             implementationClass = "kotlinx.rpc.RpcGradlePlugin"
             description = """
-                The plugin ensures correct RPC configurations for your project, that will allow proper code generation. 
+                The plugin ensures correct RPC configurations for your project, that will allow proper code generation.
             """.trimIndent()
+
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
