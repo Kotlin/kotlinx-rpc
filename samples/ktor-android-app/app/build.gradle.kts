@@ -14,7 +14,7 @@ plugins {
 
 android {
     namespace = "kotlinx.rpc.sample"
-    compileSdk = 35
+    compileSdk = 36
 
     packaging {
         resources {
