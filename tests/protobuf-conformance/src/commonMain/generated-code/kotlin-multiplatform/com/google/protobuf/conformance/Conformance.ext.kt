@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.conformance
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 operator fun TestStatus.Companion.invoke(body: TestStatus.Builder.() -> Unit): TestStatus {
-    val msg = TestStatusInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestStatusInternal().apply(body)
 }
 
 /**
@@ -39,9 +38,7 @@ fun TestStatus.copy(body: TestStatus.Builder.() -> Unit = {}): TestStatus {
  * ```
  */
 operator fun FailureSet.Companion.invoke(body: FailureSet.Builder.() -> Unit): FailureSet {
-    val msg = FailureSetInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FailureSetInternal().apply(body)
 }
 
 /**
@@ -65,9 +62,7 @@ fun FailureSet.copy(body: FailureSet.Builder.() -> Unit = {}): FailureSet {
  * ```
  */
 operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequest.Builder.() -> Unit): ConformanceRequest {
-    val msg = ConformanceRequestInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ConformanceRequestInternal().apply(body)
 }
 
 /**
@@ -101,9 +96,7 @@ val ConformanceRequest.jspbEncodingOptionsOrNull: JspbEncodingConfig? get() = if
  * ```
  */
 operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponse.Builder.() -> Unit): ConformanceResponse {
-    val msg = ConformanceResponseInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ConformanceResponseInternal().apply(body)
 }
 
 /**
@@ -127,9 +120,7 @@ fun ConformanceResponse.copy(body: ConformanceResponse.Builder.() -> Unit = {}):
  * ```
  */
 operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfig.Builder.() -> Unit): JspbEncodingConfig {
-    val msg = JspbEncodingConfigInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return JspbEncodingConfigInternal().apply(body)
 }
 
 /**

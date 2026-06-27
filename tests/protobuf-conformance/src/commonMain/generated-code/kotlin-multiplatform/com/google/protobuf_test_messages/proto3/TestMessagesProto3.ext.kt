@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf_test_messages.proto3
 
 import com.google.protobuf.kotlin.BoolValue
@@ -16,7 +18,6 @@ import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -28,9 +29,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3.Builder.() -> Unit): TestAllTypesProto3 {
-    val msg = TestAllTypesProto3Internal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestAllTypesProto3Internal().apply(body)
 }
 
 /**
@@ -154,9 +153,7 @@ val TestAllTypesProto3.optionalEmptyOrNull: Empty? get() = if (this.presence.has
  * ```
  */
 operator fun ForeignMessage.Companion.invoke(body: ForeignMessage.Builder.() -> Unit): ForeignMessage {
-    val msg = ForeignMessageInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ForeignMessageInternal().apply(body)
 }
 
 /**
@@ -178,9 +175,7 @@ fun ForeignMessage.copy(body: ForeignMessage.Builder.() -> Unit = {}): ForeignMe
  * ```
  */
 operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Builder.() -> Unit): NullHypothesisProto3 {
-    val msg = NullHypothesisProto3Internal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return NullHypothesisProto3Internal().apply(body)
 }
 
 /**
@@ -200,9 +195,7 @@ fun NullHypothesisProto3.copy(body: NullHypothesisProto3.Builder.() -> Unit = {}
  * ```
  */
 operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3.Builder.() -> Unit): EnumOnlyProto3 {
-    val msg = EnumOnlyProto3Internal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumOnlyProto3Internal().apply(body)
 }
 
 /**
@@ -224,9 +217,7 @@ fun EnumOnlyProto3.copy(body: EnumOnlyProto3.Builder.() -> Unit = {}): EnumOnlyP
  * ```
  */
 operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit): TestAllTypesProto3.NestedMessage {
-    val msg = TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
 }
 
 /**

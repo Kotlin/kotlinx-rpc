@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun Type.Companion.invoke(body: Type.Builder.() -> Unit): Type {
-    val msg = TypeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TypeInternal().apply(body)
 }
 
 /**
@@ -49,9 +48,7 @@ public val Type.sourceContextOrNull: SourceContext? get() = if (this.presence.ha
  * ```
  */
 public operator fun Field.Companion.invoke(body: Field.Builder.() -> Unit): Field {
-    val msg = FieldInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldInternal().apply(body)
 }
 
 /**
@@ -75,9 +72,7 @@ public fun Field.copy(body: Field.Builder.() -> Unit = {}): Field {
  * ```
  */
 public operator fun Enum.Companion.invoke(body: Enum.Builder.() -> Unit): Enum {
-    val msg = EnumInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumInternal().apply(body)
 }
 
 /**
@@ -111,9 +106,7 @@ public val Enum.sourceContextOrNull: SourceContext? get() = if (this.presence.ha
  * ```
  */
 public operator fun EnumValue.Companion.invoke(body: EnumValue.Builder.() -> Unit): EnumValue {
-    val msg = EnumValueInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumValueInternal().apply(body)
 }
 
 /**
@@ -137,9 +130,7 @@ public fun EnumValue.copy(body: EnumValue.Builder.() -> Unit = {}): EnumValue {
  * ```
  */
 public operator fun Option.Companion.invoke(body: Option.Builder.() -> Unit): Option {
-    val msg = OptionInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return OptionInternal().apply(body)
 }
 
 /**

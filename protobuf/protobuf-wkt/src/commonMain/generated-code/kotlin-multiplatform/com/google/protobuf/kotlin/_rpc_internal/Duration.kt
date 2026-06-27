@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -29,6 +31,7 @@ import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
+@InternalRpcApi
 public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -45,21 +48,17 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
     public override var nanos: Int by __nanosDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.seconds.hashCode()
         result = 31 * result + this.nanos.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as DurationInternal
-        other.checkRequiredFields()
         if (this.seconds != other.seconds) return false
-        if (this.nanos != other.nanos) return false
-        return true
+        return this.nanos == other.nanos
     }
 
     public override fun toString(): String {
@@ -67,7 +66,6 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -112,7 +110,6 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
                 checkForPlatformDecodeException {
                     DurationInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -127,11 +124,6 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
     public companion object {
         public val DEFAULT: Duration by lazy { DurationInternal() }
     }
-}
-
-@InternalRpcApi
-public fun DurationInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -157,11 +149,11 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig
 public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.seconds = decoder.readInt64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.nanos = decoder.readInt32()
             }
             else -> {
@@ -189,11 +181,11 @@ public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder:
 private fun DurationInternal.computeSize(): Int {
     var __result = 0
     if (this.seconds != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.seconds))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.seconds)
     }
 
     if (this.nanos != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.nanos))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.nanos)
     }
 
     __result += _unknownFields.size.toInt()

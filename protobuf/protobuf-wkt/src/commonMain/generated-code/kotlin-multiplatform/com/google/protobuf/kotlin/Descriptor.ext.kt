@@ -1,8 +1,9 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -14,9 +15,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun FileDescriptorSet.Companion.invoke(body: FileDescriptorSet.Builder.() -> Unit): FileDescriptorSet {
-    val msg = FileDescriptorSetInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FileDescriptorSetInternal().apply(body).apply(FileDescriptorSetInternal::checkRequiredFields)
 }
 
 /**
@@ -45,9 +44,7 @@ public val FileDescriptorSet.presence: FileDescriptorSetPresence get() = this.as
  * ```
  */
 public operator fun FileDescriptorProto.Companion.invoke(body: FileDescriptorProto.Builder.() -> Unit): FileDescriptorProto {
-    val msg = FileDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FileDescriptorProtoInternal().apply(body).apply(FileDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -106,9 +103,7 @@ public val FileDescriptorProto.editionOrNull: Edition? get() = if (this.presence
  * ```
  */
 public operator fun DescriptorProto.Companion.invoke(body: DescriptorProto.Builder.() -> Unit): DescriptorProto {
-    val msg = DescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return DescriptorProtoInternal().apply(body).apply(DescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -152,9 +147,7 @@ public val DescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (this.
  * ```
  */
 public operator fun ExtensionRangeOptions.Companion.invoke(body: ExtensionRangeOptions.Builder.() -> Unit): ExtensionRangeOptions {
-    val msg = ExtensionRangeOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ExtensionRangeOptionsInternal().apply(body).apply(ExtensionRangeOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -193,9 +186,7 @@ public val ExtensionRangeOptions.verificationOrNull: ExtensionRangeOptions.Verif
  * ```
  */
 public operator fun FieldDescriptorProto.Companion.invoke(body: FieldDescriptorProto.Builder.() -> Unit): FieldDescriptorProto {
-    val msg = FieldDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldDescriptorProtoInternal().apply(body).apply(FieldDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -279,9 +270,7 @@ public val FieldDescriptorProto.proto3OptionalOrNull: Boolean? get() = if (this.
  * ```
  */
 public operator fun OneofDescriptorProto.Companion.invoke(body: OneofDescriptorProto.Builder.() -> Unit): OneofDescriptorProto {
-    val msg = OneofDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return OneofDescriptorProtoInternal().apply(body).apply(OneofDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -320,9 +309,7 @@ public val OneofDescriptorProto.optionsOrNull: OneofOptions? get() = if (this.pr
  * ```
  */
 public operator fun EnumDescriptorProto.Companion.invoke(body: EnumDescriptorProto.Builder.() -> Unit): EnumDescriptorProto {
-    val msg = EnumDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumDescriptorProtoInternal().apply(body).apply(EnumDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -366,9 +353,7 @@ public val EnumDescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (t
  * ```
  */
 public operator fun EnumValueDescriptorProto.Companion.invoke(body: EnumValueDescriptorProto.Builder.() -> Unit): EnumValueDescriptorProto {
-    val msg = EnumValueDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumValueDescriptorProtoInternal().apply(body).apply(EnumValueDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -412,9 +397,7 @@ public val EnumValueDescriptorProto.optionsOrNull: EnumValueOptions? get() = if 
  * ```
  */
 public operator fun ServiceDescriptorProto.Companion.invoke(body: ServiceDescriptorProto.Builder.() -> Unit): ServiceDescriptorProto {
-    val msg = ServiceDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ServiceDescriptorProtoInternal().apply(body).apply(ServiceDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -453,9 +436,7 @@ public val ServiceDescriptorProto.optionsOrNull: ServiceOptions? get() = if (thi
  * ```
  */
 public operator fun MethodDescriptorProto.Companion.invoke(body: MethodDescriptorProto.Builder.() -> Unit): MethodDescriptorProto {
-    val msg = MethodDescriptorProtoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return MethodDescriptorProtoInternal().apply(body).apply(MethodDescriptorProtoInternal::checkRequiredFields)
 }
 
 /**
@@ -514,9 +495,7 @@ public val MethodDescriptorProto.serverStreamingOrNull: Boolean? get() = if (thi
  * ```
  */
 public operator fun FileOptions.Companion.invoke(body: FileOptions.Builder.() -> Unit): FileOptions {
-    val msg = FileOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FileOptionsInternal().apply(body).apply(FileOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -645,9 +624,7 @@ public val FileOptions.featuresOrNull: FeatureSet? get() = if (this.presence.has
  * ```
  */
 public operator fun MessageOptions.Companion.invoke(body: MessageOptions.Builder.() -> Unit): MessageOptions {
-    val msg = MessageOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return MessageOptionsInternal().apply(body).apply(MessageOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -706,9 +683,7 @@ public val MessageOptions.featuresOrNull: FeatureSet? get() = if (this.presence.
  * ```
  */
 public operator fun FieldOptions.Companion.invoke(body: FieldOptions.Builder.() -> Unit): FieldOptions {
-    val msg = FieldOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldOptionsInternal().apply(body).apply(FieldOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -792,9 +767,7 @@ public val FieldOptions.featureSupportOrNull: FieldOptions.FeatureSupport? get()
  * ```
  */
 public operator fun OneofOptions.Companion.invoke(body: OneofOptions.Builder.() -> Unit): OneofOptions {
-    val msg = OneofOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return OneofOptionsInternal().apply(body).apply(OneofOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -828,9 +801,7 @@ public val OneofOptions.featuresOrNull: FeatureSet? get() = if (this.presence.ha
  * ```
  */
 public operator fun EnumOptions.Companion.invoke(body: EnumOptions.Builder.() -> Unit): EnumOptions {
-    val msg = EnumOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumOptionsInternal().apply(body).apply(EnumOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -879,9 +850,7 @@ public val EnumOptions.featuresOrNull: FeatureSet? get() = if (this.presence.has
  * ```
  */
 public operator fun EnumValueOptions.Companion.invoke(body: EnumValueOptions.Builder.() -> Unit): EnumValueOptions {
-    val msg = EnumValueOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumValueOptionsInternal().apply(body).apply(EnumValueOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -930,9 +899,7 @@ public val EnumValueOptions.featureSupportOrNull: FieldOptions.FeatureSupport? g
  * ```
  */
 public operator fun ServiceOptions.Companion.invoke(body: ServiceOptions.Builder.() -> Unit): ServiceOptions {
-    val msg = ServiceOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ServiceOptionsInternal().apply(body).apply(ServiceOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -971,9 +938,7 @@ public val ServiceOptions.deprecatedOrNull: Boolean? get() = if (this.presence.h
  * ```
  */
 public operator fun MethodOptions.Companion.invoke(body: MethodOptions.Builder.() -> Unit): MethodOptions {
-    val msg = MethodOptionsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return MethodOptionsInternal().apply(body).apply(MethodOptionsInternal::checkRequiredFields)
 }
 
 /**
@@ -1017,9 +982,7 @@ public val MethodOptions.featuresOrNull: FeatureSet? get() = if (this.presence.h
  * ```
  */
 public operator fun UninterpretedOption.Companion.invoke(body: UninterpretedOption.Builder.() -> Unit): UninterpretedOption {
-    val msg = UninterpretedOptionInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return UninterpretedOptionInternal().apply(body).apply(UninterpretedOptionInternal::checkRequiredFields)
 }
 
 /**
@@ -1078,9 +1041,7 @@ public val UninterpretedOption.aggregateValueOrNull: String? get() = if (this.pr
  * ```
  */
 public operator fun FeatureSet.Companion.invoke(body: FeatureSet.Builder.() -> Unit): FeatureSet {
-    val msg = FeatureSetInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FeatureSetInternal().apply(body)
 }
 
 /**
@@ -1149,9 +1110,7 @@ public val FeatureSet.defaultSymbolVisibilityOrNull: FeatureSet.VisibilityFeatur
  * ```
  */
 public operator fun FeatureSetDefaults.Companion.invoke(body: FeatureSetDefaults.Builder.() -> Unit): FeatureSetDefaults {
-    val msg = FeatureSetDefaultsInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FeatureSetDefaultsInternal().apply(body)
 }
 
 /**
@@ -1190,9 +1149,7 @@ public val FeatureSetDefaults.maximumEditionOrNull: Edition? get() = if (this.pr
  * ```
  */
 public operator fun SourceCodeInfo.Companion.invoke(body: SourceCodeInfo.Builder.() -> Unit): SourceCodeInfo {
-    val msg = SourceCodeInfoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return SourceCodeInfoInternal().apply(body)
 }
 
 /**
@@ -1221,9 +1178,7 @@ public val SourceCodeInfo.presence: SourceCodeInfoPresence get() = this.asIntern
  * ```
  */
 public operator fun GeneratedCodeInfo.Companion.invoke(body: GeneratedCodeInfo.Builder.() -> Unit): GeneratedCodeInfo {
-    val msg = GeneratedCodeInfoInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return GeneratedCodeInfoInternal().apply(body)
 }
 
 /**
@@ -1247,9 +1202,7 @@ public fun GeneratedCodeInfo.copy(body: GeneratedCodeInfo.Builder.() -> Unit = {
  * ```
  */
 public operator fun DescriptorProto.ExtensionRange.Companion.invoke(body: DescriptorProto.ExtensionRange.Builder.() -> Unit): DescriptorProto.ExtensionRange {
-    val msg = DescriptorProtoInternal.ExtensionRangeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return DescriptorProtoInternal.ExtensionRangeInternal().apply(body).apply(DescriptorProtoInternal.ExtensionRangeInternal::checkRequiredFields)
 }
 
 /**
@@ -1293,9 +1246,7 @@ public val DescriptorProto.ExtensionRange.optionsOrNull: ExtensionRangeOptions? 
  * ```
  */
 public operator fun DescriptorProto.ReservedRange.Companion.invoke(body: DescriptorProto.ReservedRange.Builder.() -> Unit): DescriptorProto.ReservedRange {
-    val msg = DescriptorProtoInternal.ReservedRangeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return DescriptorProtoInternal.ReservedRangeInternal().apply(body)
 }
 
 /**
@@ -1334,9 +1285,7 @@ public val DescriptorProto.ReservedRange.endOrNull: Int? get() = if (this.presen
  * ```
  */
 public operator fun ExtensionRangeOptions.Declaration.Companion.invoke(body: ExtensionRangeOptions.Declaration.Builder.() -> Unit): ExtensionRangeOptions.Declaration {
-    val msg = ExtensionRangeOptionsInternal.DeclarationInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ExtensionRangeOptionsInternal.DeclarationInternal().apply(body)
 }
 
 /**
@@ -1390,9 +1339,7 @@ public val ExtensionRangeOptions.Declaration.repeatedOrNull: Boolean? get() = if
  * ```
  */
 public operator fun EnumDescriptorProto.EnumReservedRange.Companion.invoke(body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit): EnumDescriptorProto.EnumReservedRange {
-    val msg = EnumDescriptorProtoInternal.EnumReservedRangeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EnumDescriptorProtoInternal.EnumReservedRangeInternal().apply(body)
 }
 
 /**
@@ -1431,9 +1378,7 @@ public val EnumDescriptorProto.EnumReservedRange.endOrNull: Int? get() = if (thi
  * ```
  */
 public operator fun FieldOptions.EditionDefault.Companion.invoke(body: FieldOptions.EditionDefault.Builder.() -> Unit): FieldOptions.EditionDefault {
-    val msg = FieldOptionsInternal.EditionDefaultInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldOptionsInternal.EditionDefaultInternal().apply(body)
 }
 
 /**
@@ -1472,9 +1417,7 @@ public val FieldOptions.EditionDefault.valueOrNull: String? get() = if (this.pre
  * ```
  */
 public operator fun FieldOptions.FeatureSupport.Companion.invoke(body: FieldOptions.FeatureSupport.Builder.() -> Unit): FieldOptions.FeatureSupport {
-    val msg = FieldOptionsInternal.FeatureSupportInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldOptionsInternal.FeatureSupportInternal().apply(body)
 }
 
 /**
@@ -1523,9 +1466,7 @@ public val FieldOptions.FeatureSupport.editionRemovedOrNull: Edition? get() = if
  * ```
  */
 public operator fun UninterpretedOption.NamePart.Companion.invoke(body: UninterpretedOption.NamePart.Builder.() -> Unit): UninterpretedOption.NamePart {
-    val msg = UninterpretedOptionInternal.NamePartInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return UninterpretedOptionInternal.NamePartInternal().apply(body).apply(UninterpretedOptionInternal.NamePartInternal::checkRequiredFields)
 }
 
 /**
@@ -1552,9 +1493,7 @@ public val UninterpretedOption.NamePart.presence: UninterpretedOptionPresence.Na
  * ```
  */
 public operator fun FeatureSet.VisibilityFeature.Companion.invoke(body: FeatureSet.VisibilityFeature.Builder.() -> Unit): FeatureSet.VisibilityFeature {
-    val msg = FeatureSetInternal.VisibilityFeatureInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FeatureSetInternal.VisibilityFeatureInternal().apply(body)
 }
 
 /**
@@ -1576,9 +1515,7 @@ public fun FeatureSet.VisibilityFeature.copy(body: FeatureSet.VisibilityFeature.
  * ```
  */
 public operator fun FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke(body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit): FeatureSetDefaults.FeatureSetEditionDefault {
-    val msg = FeatureSetDefaultsInternal.FeatureSetEditionDefaultInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FeatureSetDefaultsInternal.FeatureSetEditionDefaultInternal().apply(body)
 }
 
 /**
@@ -1622,9 +1559,7 @@ public val FeatureSetDefaults.FeatureSetEditionDefault.fixedFeaturesOrNull: Feat
  * ```
  */
 public operator fun SourceCodeInfo.Location.Companion.invoke(body: SourceCodeInfo.Location.Builder.() -> Unit): SourceCodeInfo.Location {
-    val msg = SourceCodeInfoInternal.LocationInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return SourceCodeInfoInternal.LocationInternal().apply(body)
 }
 
 /**
@@ -1663,9 +1598,7 @@ public val SourceCodeInfo.Location.trailingCommentsOrNull: String? get() = if (t
  * ```
  */
 public operator fun GeneratedCodeInfo.Annotation.Companion.invoke(body: GeneratedCodeInfo.Annotation.Builder.() -> Unit): GeneratedCodeInfo.Annotation {
-    val msg = GeneratedCodeInfoInternal.AnnotationInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return GeneratedCodeInfoInternal.AnnotationInternal().apply(body)
 }
 
 /**

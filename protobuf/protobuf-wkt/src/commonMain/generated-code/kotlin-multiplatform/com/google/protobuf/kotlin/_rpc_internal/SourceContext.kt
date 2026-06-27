@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -26,6 +28,7 @@ import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
+@InternalRpcApi
 public class SourceContextInternal: SourceContext.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -40,19 +43,15 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     public override var fileName: String by __fileNameDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.fileName.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as SourceContextInternal
-        other.checkRequiredFields()
-        if (this.fileName != other.fileName) return false
-        return true
+        return this.fileName == other.fileName
     }
 
     public override fun toString(): String {
@@ -60,7 +59,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -103,7 +101,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
                 checkForPlatformDecodeException {
                     SourceContextInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -118,11 +115,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     public companion object {
         public val DEFAULT: SourceContext by lazy { SourceContextInternal() }
     }
-}
-
-@InternalRpcApi
-public fun SourceContextInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -144,8 +136,8 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtoC
 public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.fileName = decoder.readString()
             }
             else -> {

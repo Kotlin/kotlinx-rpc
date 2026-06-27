@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -11,9 +12,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun Empty.Companion.invoke(body: Empty.Builder.() -> Unit): Empty {
-    val msg = EmptyInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return EmptyInternal().apply(body)
 }
 
 /**
