@@ -159,7 +159,7 @@ open class CodeGenerator(
         block: (CodeGenerator.() -> Unit),
     ) {
         val pre = if (prefix.value.isNotEmpty()) {
-            prefix.wrapIn { it.trim() + " " }
+            prefix.wrapIn { it.toString().trim() + " " }
         } else {
             ScopedFormattedString.empty
         }

@@ -2294,7 +2294,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     val bits = java.lang.Float.floatToRawIntBits(value)
                     val toInt = if (bits < 0) ".toInt()" else ""
                     // using string concat, because otherwise, .format will fuck around with %T
-                    float + ".fromBits(0x%08X$toInt)".format(bits)
+                    float.toString() + ".fromBits(0x%08X$toInt)".format(bits)
                 }
             }
 
@@ -2304,7 +2304,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 value == Double.NEGATIVE_INFINITY -> "%T.NEGATIVE_INFINITY".scoped(FqName.Implicits.Double)
                 else -> FqName.Implicits.Double.scoped().wrapIn { double ->
                     // otherwise, `.format` will fuck around with %T
-                    double + ".fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
+                    double.toString() + ".fromBits(0x%016XL)".format(java.lang.Double.doubleToRawLongBits(value))
                 }
             }
 

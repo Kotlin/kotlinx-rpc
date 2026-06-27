@@ -127,11 +127,54 @@ class ScopedFormattedString(val value: String, val args: List<Any>) {
     }
 }
 
+// used for string interpolation, only use toString
+interface TrackedString
+
+class TrackedStringImpl(
+    val value: String,
+    val index: Int,
+    val usedByIndex: (Int) -> Unit,
+) : TrackedString {
+    var used: Boolean = false
+    override fun toString(): String {
+        check(!used) {
+            "Argument \"$value\" was used more than once"
+        }
+
+        usedByIndex(index)
+        used = true
+
+        return value
+    }
+
+    fun check() {
+        check(used) {
+            "Argument \"$value\" was not used during interpolation"
+        }
+    }
+}
+
+private fun tracker(): (Int) -> Unit {
+    var count = 0
+    return { index ->
+        check(index == count) {
+            "Argument $index was used instead of $count. Wrong interpolation order."
+        }
+
+        count++
+    }
+}
+
+private val trackerNoOp: (Int) -> Unit = {}
+
 /**
- * IMPORTANT TO USE THE ARGUMENT ONLY ONCE
+ * IMPORTANT TO USE THE ARGUMENT EXACTLY ONCE
  */
-fun ScopedFormattedString.wrapIn(block: (String) -> String): ScopedFormattedString {
-    return ScopedFormattedString(block(value), args)
+fun ScopedFormattedString.wrapIn(block: (TrackedString) -> String): ScopedFormattedString {
+    val tracked = TrackedStringImpl(value, 0, trackerNoOp)
+    return ScopedFormattedString(block(tracked), args).also {
+        tracked.check()
+    }
 }
 
 /**
@@ -143,51 +186,77 @@ fun ScopedFormattedString.wrapIn(block: (String) -> String): ScopedFormattedStri
  */
 fun ScopedFormattedString.wrapInIfNotBlankOr(
     or: String? = null,
-    block: (String) -> String,
+    block: (TrackedString) -> String,
 ): ScopedFormattedString {
     return if (this.value.isBlank()) or?.scoped() ?: ScopedFormattedString.empty else wrapIn(block)
 }
 
 /**
- * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT ONLY ONCE
+ * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT EXACTLY ONCE
  */
 fun ScopedFormattedString.merge(
     other: ScopedFormattedString,
-    block: (String, String) -> String,
+    block: (TrackedString, TrackedString) -> String,
 ): ScopedFormattedString {
+    val tracker = tracker()
+    val tracked1 = TrackedStringImpl(value, 0, tracker)
+    val tracked2 = TrackedStringImpl(other.value, 1, tracker)
     return ScopedFormattedString(
-        value = block(value, other.value),
+        value = block(tracked1, tracked2),
         args = args + other.args,
-    )
+    ).also {
+        tracked1.check()
+        tracked2.check()
+    }
 }
 
 /**
- * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT ONLY ONCE
+ * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT EXACTLY ONCE
  */
 fun ScopedFormattedString.merge(
     other: ScopedFormattedString,
     another: ScopedFormattedString,
-    block: (String, String, String) -> String,
+    block: (TrackedString, TrackedString, TrackedString) -> String,
 ): ScopedFormattedString {
+    val tracker = tracker()
+    val tracked1 = TrackedStringImpl(value, 0, tracker)
+    val tracked2 = TrackedStringImpl(other.value, 1, tracker)
+    val tracked3 = TrackedStringImpl(another.value, 2, tracker)
+
     return ScopedFormattedString(
-        value = block(value, other.value, another.value),
+        value = block(tracked1, tracked2, tracked3),
         args = args + other.args + another.args,
-    )
+    ).also {
+        tracked1.check()
+        tracked2.check()
+        tracked3.check()
+    }
 }
 
 /**
- * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT ONLY ONCE
+ * IMPORTANT TO PRESERVE ORDER IN BLOCK INTERPOLATION AND USE EACH ARGUMENT EXACTLY ONCE
  */
 fun ScopedFormattedString.merge(
     other: ScopedFormattedString,
     another: ScopedFormattedString,
     anotherOne: ScopedFormattedString,
-    block: (String, String, String, String) -> String,
+    block: (TrackedString, TrackedString, TrackedString, TrackedString) -> String,
 ): ScopedFormattedString {
+    val tracker = tracker()
+    val tracked1 = TrackedStringImpl(value, 0, tracker)
+    val tracked2 = TrackedStringImpl(other.value, 1, tracker)
+    val tracked3 = TrackedStringImpl(another.value, 2, tracker)
+    val tracked4 = TrackedStringImpl(anotherOne.value, 3, tracker)
+
     return ScopedFormattedString(
-        value = block(value, other.value, another.value, anotherOne.value),
+        value = block(tracked1, tracked2, tracked3, tracked4),
         args = args + other.args + another.args + anotherOne.args,
-    )
+    ).also {
+        tracked1.check()
+        tracked2.check()
+        tracked3.check()
+        tracked4.check()
+    }
 }
 
 fun List<ScopedFormattedString>.joinToScopedString(separator: String): ScopedFormattedString {
