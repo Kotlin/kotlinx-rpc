@@ -89,7 +89,7 @@ class ModelToProtobufKotlinCommonGenerator(
         fileDeclaration.dependencies.forEach { dependency ->
             dependency.packageName.addExtensionImports(
                 hasEnums = dependency.enumDeclarations.isNotEmpty() || dependency.messageDeclarations.any { it.hasEnums() },
-                checkRequiredFieldsGenerated = dependency.messageDeclarations.any { it.requiredFields.isNotEmpty() },
+                checkRequiredFieldsGenerated = dependency.messageDeclarations.any { it.hasRequiredFieldsRecursively },
             )
         }
 
