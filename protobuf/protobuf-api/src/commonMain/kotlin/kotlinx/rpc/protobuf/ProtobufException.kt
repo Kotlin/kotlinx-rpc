@@ -9,10 +9,15 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 /**
  * Base class for exceptions thrown during Protobuf encoding or decoding operations.
  */
-public sealed class ProtobufException : RuntimeException {
+public open class ProtobufException : RuntimeException {
     protected constructor(message: String, cause: Throwable? = null) : super(message, cause)
-}
 
+    public companion object {
+        @InternalRpcApi
+        public fun missingRequiredField(messageName: String, fieldName: String): ProtobufException =
+            ProtobufException("Message '$messageName' is missing a required field: $fieldName")
+    }
+}
 
 /**
  * Exception thrown when a Protobuf message cannot be decoded from wire format.
@@ -24,10 +29,6 @@ public class ProtobufDecodingException : ProtobufException {
     public constructor(message: String, cause: Throwable? = null) : super(message, cause)
 
     public companion object Companion {
-        @InternalRpcApi
-        public fun missingRequiredField(messageName: String, fieldName: String): ProtobufDecodingException =
-            ProtobufDecodingException("Message '$messageName' is missing a required field: $fieldName")
-
         internal fun negativeSize() = ProtobufDecodingException(
             "Decoder encountered an embedded string or message which claimed to have negative size."
         )

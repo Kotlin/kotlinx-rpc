@@ -8,6 +8,8 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors
 import kotlinx.rpc.protoc.gen.core.Comment
 import kotlinx.rpc.protoc.gen.core.FqNameTable
+import kotlinx.rpc.protoc.gen.core.ScopedFormattedString
+import kotlinx.rpc.protoc.gen.core.scoped
 
 data class Model(
     val files: List<FileDeclaration>,
@@ -54,6 +56,27 @@ data class MessageDeclaration(
         }
     }
 
+    val requiredFields by lazy { actualFields.filter { it.dec.isRequired } }
+
+    val messageFields by lazy { actualFields.filter { it.type is FieldType.Message } }
+    val oneOfFields by lazy { actualFields.filter { it.type is FieldType.OneOf } }
+    val listFields by lazy { actualFields.filter { it.type is FieldType.List } }
+    val mapFields by lazy { actualFields.filter { it.type is FieldType.Map } }
+
+    private var hasRequiredFieldsRecursivelyCheckStarted = false
+    val hasRequiredFieldsRecursively: Boolean by lazy {
+        if (hasRequiredFieldsRecursivelyCheckStarted) {
+            false
+        } else {
+            hasRequiredFieldsRecursivelyCheckStarted = true
+            requiredFields.isNotEmpty()
+                || messageFields.any { it.type.hasRequiredFields }
+                || listFields.any { (it.type as FieldType.List).value.hasRequiredFields }
+                || mapFields.any { (it.type as FieldType.Map).entry.value.hasRequiredFields }
+                || oneOfFields.flatMap { (it.type as FieldType.OneOf).dec.variants }.any { it.type.hasRequiredFields }
+        }
+    }
+
     val hasPresenceFields by lazy { actualFields.any { it.presenceIdx != null } }
 
     val presenceInterfaceName: FqName.Declaration by lazy {
@@ -90,8 +113,8 @@ data class MessageDeclaration(
         return actualFields
             .filter {
                 it.type == FieldType.IntegralType.BYTES &&
-                        it.dec.hasDefaultValue() &&
-                        !(it.dec.defaultValue as ByteString).isEmpty
+                    it.dec.hasDefaultValue() &&
+                    !(it.dec.defaultValue as ByteString).isEmpty
             }
     }
 
@@ -104,6 +127,9 @@ data class MessageDeclaration(
     }
 
 }
+
+val FieldType.hasRequiredFields: Boolean
+    get() = this is FieldType.Message && dec.value.hasRequiredFieldsRecursively
 
 data class EnumDeclaration(
     val name: FqName,
@@ -176,17 +202,26 @@ data class FieldDeclaration(
     // all normal fields are non-nullable (KRPC-262)
     // only oneof fields are nullable.
     val nullable: Boolean = type is FieldType.OneOf
+
     // if the field may have an `orNull` extension getter
     val hasOrNullGetter: Boolean =
         !nullable              // nullable fields don't need a nullable getter
-        && dec.hasPresence()
-        && !dec.isRequired
-        && !dec.isRepeated    // repeated fields cannot be nullable (just empty)
-        && !isPartOfOneof     // upper conditions would match oneof inner fields
-        && !isPartOfMapEntry  // map entry fields cannot be null
+            && dec.hasPresence()
+            && !dec.isRequired
+            && !dec.isRepeated    // repeated fields cannot be nullable (just empty)
+            && !isPartOfOneof     // upper conditions would match oneof inner fields
+            && !isPartOfMapEntry  // map entry fields cannot be null
 
     val presenceGetterName = "has${rawName.replaceFirstChar { it.uppercase() }}"
     val clearFunctionName = "clear${rawName.replaceFirstChar { it.uppercase() }}"
+
+    val presenceIdxFieldName: ScopedFormattedString by lazy {
+        check(presenceIdx != null) {
+            "Internal error: presence index is null for field $name in ${containingType.value.name}"
+        }
+
+        "%T.$name".scoped(containingType.value.presenceIndicesName)
+    }
 }
 
 data class ServiceDeclaration(

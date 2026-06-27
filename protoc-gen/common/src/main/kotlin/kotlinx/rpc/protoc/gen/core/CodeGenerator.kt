@@ -731,6 +731,7 @@ class FileGenerator(
     var packagePath: String? = packageName.toString(),
     var comments: List<Comment> = emptyList(),
     var fileOptIns: List<ScopedFormattedString> = emptyList(),
+    var fileSuppresses: List<String> = emptyList(),
     val imports: MutableSet<String> = mutableSetOf(),
     config: Config,
 ) : CodeGenerator("", config = config, nameTable = rawNameTable.scoped(packageName, imports)) {
@@ -769,12 +770,22 @@ class FileGenerator(
                 })
             }
 
+            if (this@FileGenerator.fileSuppresses.isNotEmpty()) {
+                val suppress = "@file:%T".scoped(FqName.Implicits.Suppress)
+                code(suppress.merge(this@FileGenerator.fileSuppresses.joinToString(", ") { "\"$it\"" }.scoped()) { suppress, it ->
+                    "$suppress($it)"
+                })
+            }
+
             val packageName = this@FileGenerator.stringPackageName
             if (packageName.isNotEmpty()) {
+                if (this@FileGenerator.fileOptIns.isNotEmpty() || this@FileGenerator.fileSuppresses.isNotEmpty()) {
+                    blankLine()
+                }
                 code("package $packageName".scoped())
             }
 
-            if (this@FileGenerator.fileOptIns.isNotEmpty() || packageName.isNotEmpty()) {
+            if (this@FileGenerator.fileOptIns.isNotEmpty() || this@FileGenerator.fileSuppresses.isNotEmpty() || packageName.isNotEmpty()) {
                 blankLine()
             }
 

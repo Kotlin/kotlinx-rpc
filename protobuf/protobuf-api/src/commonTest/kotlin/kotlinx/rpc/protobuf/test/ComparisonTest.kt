@@ -27,6 +27,7 @@ class ComparisonTest {
         }
 
         assertEquals(msg1, msg2)
+        assertEquals(msg2, msg1)
         assertEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -49,6 +50,7 @@ class ComparisonTest {
         }
 
         assertEquals(msg1, msg2)
+        assertEquals(msg2, msg1)
         assertEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -70,6 +72,7 @@ class ComparisonTest {
         }
 
         assertNotEquals(msg1, msg2)
+        assertNotEquals(msg2, msg1)
         assertNotEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -88,6 +91,7 @@ class ComparisonTest {
         }
 
         assertNotEquals(msg1, msg2)
+        assertNotEquals(msg2, msg1)
         assertNotEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -108,6 +112,7 @@ class ComparisonTest {
         }
 
         assertNotEquals(msg1, msg2)
+        assertNotEquals(msg2, msg1)
         assertNotEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -128,6 +133,7 @@ class ComparisonTest {
         }
 
         assertEquals(msg1, msg2)
+        assertEquals(msg2, msg1)
         assertEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -148,6 +154,7 @@ class ComparisonTest {
         }
 
         assertEquals(msg1, msg2)
+        assertEquals(msg2, msg1)
         assertEquals(msg1.hashCode(), msg2.hashCode())
     }
 
@@ -168,6 +175,27 @@ class ComparisonTest {
         }
 
         assertNotEquals(msg1, msg2)
+        assertNotEquals(msg2, msg1)
+        assertNotEquals(msg1.hashCode(), msg2.hashCode())
+    }
+
+    @Test
+    fun sameDefaultDifferentPresence() {
+        val msg1 = Equals {
+            str1 = "hello"
+            str2 = "abc"
+            bytes1 = ByteString(1, 2, 3)
+            someEnum2 = Equals.SomeEnum.VALUE1
+        }
+
+        val msg2 = Equals {
+            str1 = "hello"
+            bytes1 = ByteString(1, 2, 3)
+            someEnum2 = Equals.SomeEnum.VALUE1
+        }
+
+        assertNotEquals(msg1, msg2)
+        assertNotEquals(msg2, msg1)
         assertNotEquals(msg1.hashCode(), msg2.hashCode())
     }
 }

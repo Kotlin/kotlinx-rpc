@@ -61,7 +61,6 @@ sealed interface FqName {
         val Float = fq("kotlin", "Float")
         val Double = fq("kotlin", "Double")
         val Boolean = fq("kotlin", "Boolean")
-        val ByteArray = fq("kotlin", "ByteArray")
         val List = fq("kotlin.collections", "List")
         val MutableList = fq("kotlin.collections", "MutableList")
         val Map = fq("kotlin.collections", "Map")
@@ -69,6 +68,7 @@ sealed interface FqName {
         val Deprecated = fq("kotlin", "Deprecated")
         val DeprecationLevel = fq("kotlin", "DeprecationLevel")
         val OptIn = fq("kotlin", "OptIn")
+        val Suppress = fq("kotlin", "Suppress")
     }
 
     object Annotations {
@@ -91,6 +91,7 @@ sealed interface FqName {
         val MsgFieldDelegate = fqDec("kotlinx.rpc.protobuf.internal", "MsgFieldDelegate")
         val GrpcMarshaller = fqDec("kotlinx.rpc.grpc.marshaller", "GrpcMarshaller")
         val KTag = fqDec("kotlinx.rpc.protobuf.internal", "KTag")
+        val ProtobufException = fqDec("kotlinx.rpc.protobuf", "ProtobufException")
         val ProtobufDecodingException = fqDec("kotlinx.rpc.protobuf", "ProtobufDecodingException")
         val GrpcMarshallerConfig = fqDec("kotlinx.rpc.grpc.marshaller", "GrpcMarshallerConfig")
         val ProtoConfig = fqDec("kotlinx.rpc.protobuf", "ProtoConfig")

@@ -8,6 +8,7 @@ import com.google.protobuf.DescriptorProtos
 import kotlinx.rpc.protoc.gen.core.AModelToKotlinCommonGenerator
 import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Config
+import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
@@ -28,13 +29,13 @@ class ModelToGrpcKotlinCommonGenerator(
     override val FileDeclaration.hasInternalGeneratedContent: Boolean get() = false
     override val FileDeclaration.hasExtensionGeneratedContent: Boolean get() = false
 
-    override fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
+    override fun FileGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileDeclaration.serviceDeclarations.forEach { generatePublicService(it, fileDeclaration.packageName) }
     }
 
-    override fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {}
+    override fun FileGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration) {}
 
-    override fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
+    override fun FileGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {}
 
     private fun CodeGenerator.generatePublicService(service: ServiceDeclaration, packageName: FqName.Package) {
         val pkg = service.dec.file.`package`.orEmpty()

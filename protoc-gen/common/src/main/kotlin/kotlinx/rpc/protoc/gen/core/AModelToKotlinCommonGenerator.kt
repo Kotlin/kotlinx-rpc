@@ -21,11 +21,11 @@ abstract class AModelToKotlinCommonGenerator(
     protected val model: Model,
     protected val conflictCollector: NameConflictCollector = NameConflictCollector(),
 ) {
-    protected abstract fun CodeGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
+    protected abstract fun FileGenerator.generatePublicDeclaredEntities(fileDeclaration: FileDeclaration)
 
-    protected abstract fun CodeGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration)
+    protected abstract fun FileGenerator.generateExtensionEntities(fileDeclaration: FileDeclaration)
 
-    protected abstract fun CodeGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
+    protected abstract fun FileGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration)
 
     protected abstract val FileDeclaration.hasPublicGeneratedContent: Boolean
     protected abstract val FileDeclaration.hasExtensionGeneratedContent: Boolean
@@ -123,7 +123,6 @@ abstract class AModelToKotlinCommonGenerator(
             filename = this@generateExtensionKotlinFile.name.removeSuffix(".kt") + ".ext.kt"
 
             fileOptIns = listOf(
-                "%T::class".scoped(FqName.Annotations.ExperimentalRpcApi),
                 "%T::class".scoped(FqName.Annotations.InternalRpcApi),
             )
 

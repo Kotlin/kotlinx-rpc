@@ -11,9 +11,10 @@ import asInternal
 import encodeWith
 import invoke
 import kotlinx.io.Buffer
+import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
-import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
 import test.groups.invoke
@@ -45,6 +46,20 @@ class ProtosTest {
     ): M {
         val source = marshaller.encode(msg)
         return marshaller.decode(source)
+    }
+
+    private fun encodeToBytes(block: (WireEncoder) -> Unit): ByteArray {
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        block(encoder)
+        encoder.flush()
+        return buffer.readByteArray()
+    }
+
+    // PresenceCheck wire bytes that contain only the optional field (field 2),
+    // i.e. the required `RequiredPresence` (field 1) is missing.
+    private fun presenceCheckMissingRequired(): ByteArray = encodeToBytes {
+        it.writeFloat(2, 1f)
     }
 
     @Test
@@ -86,9 +101,7 @@ class ProtosTest {
             bytes = byteArrayOf(1, 2, 3).asByteString()
         }
 
-        val msgObj = msg
-
-        val decoded = encodeDecode(msgObj, grpcMarshallerOf<AllPrimitives>())
+        val decoded = encodeDecode(msg, grpcMarshallerOf<AllPrimitives>())
 
         assertEquals(msg.double, decoded.double)
     }
@@ -118,19 +131,37 @@ class ProtosTest {
 
     @Test
     fun testRepeatedWithRequiredSubField() {
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             RepeatedWithRequired {
-                // we construct the message using the internal class,
-                // so it is not invoking the checkRequired method on construction
-                msgList = listOf(PresenceCheck { RequiredPresence = 2 }, PresenceCheckInternal())
+                msgList = listOf(PresenceCheck { RequiredPresence = 2 }, PresenceCheck { })
             }
+        }
+    }
+
+    @Test
+    fun testRepeatedRequiredSubFieldMissingOnWire() {
+        // A repeated message field where one of the list elements
+        // is missing its required field during decoding.
+        val validElement = encodeToBytes {
+            it.writeInt32(1, 2)
+            it.writeFloat(2, 1f)
+        }
+
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeBytes(1, validElement)
+        encoder.writeBytes(1, presenceCheckMissingRequired())
+        encoder.flush()
+
+        assertFailsWith<ProtobufException> {
+            grpcMarshallerOf<RepeatedWithRequired>().decode(buffer)
         }
     }
 
     @Test
     fun testPresenceCheckProto() {
         // Check a missing required field in a user-constructed message
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             PresenceCheck {}
         }
 
@@ -140,7 +171,7 @@ class ProtosTest {
         encoder.writeFloat(2, 1f)
         encoder.flush()
 
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             grpcMarshallerOf<PresenceCheck>().decode(buffer)
         }
     }
@@ -262,12 +293,24 @@ class ProtosTest {
 
     @Test
     fun testOneOfRequiredSubField() {
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             OneOfWithRequired {
-                // we construct the message using the internal class,
-                // so it is not invoking the checkRequired method on construction
-                field = OneOfWithRequired.Field.Msg(PresenceCheckInternal())
+                field = OneOfWithRequired.Field.Msg(PresenceCheck { })
             }
+        }
+    }
+
+    @Test
+    fun testOneOfRequiredSubFieldMissingOnWire() {
+        // A oneof message branch whose message is missing
+        // its required field during decoding (msg = 2).
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeBytes(2, presenceCheckMissingRequired())
+        encoder.flush()
+
+        assertFailsWith<ProtobufException> {
+            grpcMarshallerOf<OneOfWithRequired>().decode(buffer)
         }
     }
 
@@ -292,8 +335,22 @@ class ProtosTest {
     }
 
     @Test
+    fun testSubMessageRequiredFieldMissingOnWire() {
+        // The `inner` submessage is present on the wire (field 1)
+        // but is missing its required `field` during decoding.
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeBytes(1, ByteArray(0))
+        encoder.flush()
+
+        assertFailsWith<ProtobufException> {
+            grpcMarshallerOf<Outer>().decode(buffer)
+        }
+    }
+
+    @Test
     fun testRecursiveReqNotSet() {
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             RecursiveReq {
                 rec = RecursiveReq {
                     rec = RecursiveReq {
@@ -460,15 +517,32 @@ class ProtosTest {
 
     @Test
     fun testMapRequiredSubField() {
-        // we use the internal constructor to avoid a "missing required field" error during object construction
-        val missingRequiredMessage = PresenceCheckInternal()
-
-        assertFailsWith<ProtobufDecodingException> {
+        assertFailsWith<ProtobufException> {
             TestMap {
                 messages = mapOf(
-                    2 to missingRequiredMessage
+                    2 to PresenceCheck {}
                 )
             }
+        }
+    }
+
+    @Test
+    fun testMapRequiredSubFieldMissingOnWire() {
+        // A map<int32, PresenceCheck> entry (messages = 2) whose value message
+        // is missing its required field during decoding.
+        // A map entry is encoded as a submessage with key = field 1, value = field 2.
+        val mapEntry = encodeToBytes {
+            it.writeInt32(1, 7)
+            it.writeBytes(2, presenceCheckMissingRequired())
+        }
+
+        val buffer = Buffer()
+        val encoder = WireEncoder(buffer)
+        encoder.writeBytes(2, mapEntry)
+        encoder.flush()
+
+        assertFailsWith<ProtobufException> {
+            grpcMarshallerOf<TestMap>().decode(buffer)
         }
     }
 
