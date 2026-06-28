@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun SourceContext.Companion.invoke(body: SourceContext.Builder.() -> Unit): SourceContext {
-    val msg = SourceContextInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return SourceContextInternal().apply(body)
 }
 
 /**

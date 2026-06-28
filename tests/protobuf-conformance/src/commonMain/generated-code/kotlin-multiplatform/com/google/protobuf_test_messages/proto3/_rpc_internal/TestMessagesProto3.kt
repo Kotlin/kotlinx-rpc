@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf_test_messages.proto3
 
 import com.google.protobuf.kotlin.AnyInternal
@@ -36,7 +38,6 @@ import com.google.protobuf.kotlin.UInt64ValueInternal
 import com.google.protobuf.kotlin.Value
 import com.google.protobuf.kotlin.ValueInternal
 import com.google.protobuf.kotlin.asInternal
-import com.google.protobuf.kotlin.checkRequiredFields
 import com.google.protobuf.kotlin.copy
 import com.google.protobuf.kotlin.decodeWith
 import com.google.protobuf.kotlin.encodeWith
@@ -95,8 +96,10 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
+@InternalRpcApi
 class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 19) {
-    private object PresenceIndices {
+    @InternalRpcApi
+    internal object PresenceIndices {
         const val optionalNestedMessage: Int = 0
         const val optionalForeignMessage: Int = 1
         const val recursiveMessage: Int = 2
@@ -179,7 +182,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var optionalStringPiece: String by __optionalStringPieceDelegate
     internal val __optionalCordDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     override var optionalCord: String by __optionalCordDelegate
-    internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { TestAllTypesProto3Internal.DEFAULT }
+    internal val __recursiveMessageDelegate: MsgFieldDelegate<TestAllTypesProto3> = MsgFieldDelegate(PresenceIndices.recursiveMessage) { DEFAULT }
     override var recursiveMessage: TestAllTypesProto3 by __recursiveMessageDelegate
     override fun clearRecursiveMessage() {
         __recursiveMessageDelegate.clearField(this)
@@ -497,47 +500,46 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     val _presence: TestAllTypesProto3Presence = object : TestAllTypesProto3Presence, InternalPresenceObject {
         override val _message: TestAllTypesProto3Internal get() = _owner
 
-        override val hasOptionalNestedMessage: Boolean get() = presenceMask[0]
+        override val hasOptionalNestedMessage: Boolean get() = presenceMask[PresenceIndices.optionalNestedMessage]
 
-        override val hasOptionalForeignMessage: Boolean get() = presenceMask[1]
+        override val hasOptionalForeignMessage: Boolean get() = presenceMask[PresenceIndices.optionalForeignMessage]
 
-        override val hasRecursiveMessage: Boolean get() = presenceMask[2]
+        override val hasRecursiveMessage: Boolean get() = presenceMask[PresenceIndices.recursiveMessage]
 
-        override val hasOptionalBoolWrapper: Boolean get() = presenceMask[3]
+        override val hasOptionalBoolWrapper: Boolean get() = presenceMask[PresenceIndices.optionalBoolWrapper]
 
-        override val hasOptionalInt32Wrapper: Boolean get() = presenceMask[4]
+        override val hasOptionalInt32Wrapper: Boolean get() = presenceMask[PresenceIndices.optionalInt32Wrapper]
 
-        override val hasOptionalInt64Wrapper: Boolean get() = presenceMask[5]
+        override val hasOptionalInt64Wrapper: Boolean get() = presenceMask[PresenceIndices.optionalInt64Wrapper]
 
-        override val hasOptionalUint32Wrapper: Boolean get() = presenceMask[6]
+        override val hasOptionalUint32Wrapper: Boolean get() = presenceMask[PresenceIndices.optionalUint32Wrapper]
 
-        override val hasOptionalUint64Wrapper: Boolean get() = presenceMask[7]
+        override val hasOptionalUint64Wrapper: Boolean get() = presenceMask[PresenceIndices.optionalUint64Wrapper]
 
-        override val hasOptionalFloatWrapper: Boolean get() = presenceMask[8]
+        override val hasOptionalFloatWrapper: Boolean get() = presenceMask[PresenceIndices.optionalFloatWrapper]
 
-        override val hasOptionalDoubleWrapper: Boolean get() = presenceMask[9]
+        override val hasOptionalDoubleWrapper: Boolean get() = presenceMask[PresenceIndices.optionalDoubleWrapper]
 
-        override val hasOptionalStringWrapper: Boolean get() = presenceMask[10]
+        override val hasOptionalStringWrapper: Boolean get() = presenceMask[PresenceIndices.optionalStringWrapper]
 
-        override val hasOptionalBytesWrapper: Boolean get() = presenceMask[11]
+        override val hasOptionalBytesWrapper: Boolean get() = presenceMask[PresenceIndices.optionalBytesWrapper]
 
-        override val hasOptionalDuration: Boolean get() = presenceMask[12]
+        override val hasOptionalDuration: Boolean get() = presenceMask[PresenceIndices.optionalDuration]
 
-        override val hasOptionalTimestamp: Boolean get() = presenceMask[13]
+        override val hasOptionalTimestamp: Boolean get() = presenceMask[PresenceIndices.optionalTimestamp]
 
-        override val hasOptionalFieldMask: Boolean get() = presenceMask[14]
+        override val hasOptionalFieldMask: Boolean get() = presenceMask[PresenceIndices.optionalFieldMask]
 
-        override val hasOptionalStruct: Boolean get() = presenceMask[15]
+        override val hasOptionalStruct: Boolean get() = presenceMask[PresenceIndices.optionalStruct]
 
-        override val hasOptionalAny: Boolean get() = presenceMask[16]
+        override val hasOptionalAny: Boolean get() = presenceMask[PresenceIndices.optionalAny]
 
-        override val hasOptionalValue: Boolean get() = presenceMask[17]
+        override val hasOptionalValue: Boolean get() = presenceMask[PresenceIndices.optionalValue]
 
-        override val hasOptionalEmpty: Boolean get() = presenceMask[18]
+        override val hasOptionalEmpty: Boolean get() = presenceMask[PresenceIndices.optionalEmpty]
     }
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.optionalInt32.hashCode()
         result = 31 * result + this.optionalInt64.hashCode()
         result = 31 * result + this.optionalUint32.hashCode()
@@ -553,14 +555,14 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.optionalBool.hashCode()
         result = 31 * result + this.optionalString.hashCode()
         result = 31 * result + this.optionalBytes.hashCode()
-        result = 31 * result + if (presenceMask[0]) this.optionalNestedMessage.hashCode() else 0
-        result = 31 * result + if (presenceMask[1]) this.optionalForeignMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalNestedMessage]) this.optionalNestedMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalForeignMessage]) this.optionalForeignMessage.hashCode() else 0
         result = 31 * result + this.optionalNestedEnum.hashCode()
         result = 31 * result + this.optionalForeignEnum.hashCode()
         result = 31 * result + this.optionalAliasedEnum.hashCode()
         result = 31 * result + this.optionalStringPiece.hashCode()
         result = 31 * result + this.optionalCord.hashCode()
-        result = 31 * result + if (presenceMask[2]) this.recursiveMessage.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.recursiveMessage]) this.recursiveMessage.hashCode() else 0
         result = 31 * result + this.repeatedInt32.hashCode()
         result = 31 * result + this.repeatedInt64.hashCode()
         result = 31 * result + this.repeatedUint32.hashCode()
@@ -629,15 +631,15 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.mapStringForeignMessage.hashCode()
         result = 31 * result + this.mapStringNestedEnum.hashCode()
         result = 31 * result + this.mapStringForeignEnum.hashCode()
-        result = 31 * result + if (presenceMask[3]) this.optionalBoolWrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[4]) this.optionalInt32Wrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[5]) this.optionalInt64Wrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[6]) this.optionalUint32Wrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[7]) this.optionalUint64Wrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[8]) this.optionalFloatWrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[9]) this.optionalDoubleWrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[10]) this.optionalStringWrapper.hashCode() else 0
-        result = 31 * result + if (presenceMask[11]) this.optionalBytesWrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalBoolWrapper]) this.optionalBoolWrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalInt32Wrapper]) this.optionalInt32Wrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalInt64Wrapper]) this.optionalInt64Wrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalUint32Wrapper]) this.optionalUint32Wrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalUint64Wrapper]) this.optionalUint64Wrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalFloatWrapper]) this.optionalFloatWrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalDoubleWrapper]) this.optionalDoubleWrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalStringWrapper]) this.optionalStringWrapper.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalBytesWrapper]) this.optionalBytesWrapper.hashCode() else 0
         result = 31 * result + this.repeatedBoolWrapper.hashCode()
         result = 31 * result + this.repeatedInt32Wrapper.hashCode()
         result = 31 * result + this.repeatedInt64Wrapper.hashCode()
@@ -647,14 +649,14 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.repeatedDoubleWrapper.hashCode()
         result = 31 * result + this.repeatedStringWrapper.hashCode()
         result = 31 * result + this.repeatedBytesWrapper.hashCode()
-        result = 31 * result + if (presenceMask[12]) this.optionalDuration.hashCode() else 0
-        result = 31 * result + if (presenceMask[13]) this.optionalTimestamp.hashCode() else 0
-        result = 31 * result + if (presenceMask[14]) this.optionalFieldMask.hashCode() else 0
-        result = 31 * result + if (presenceMask[15]) this.optionalStruct.hashCode() else 0
-        result = 31 * result + if (presenceMask[16]) this.optionalAny.hashCode() else 0
-        result = 31 * result + if (presenceMask[17]) this.optionalValue.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalDuration]) this.optionalDuration.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalTimestamp]) this.optionalTimestamp.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalFieldMask]) this.optionalFieldMask.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalStruct]) this.optionalStruct.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalAny]) this.optionalAny.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalValue]) this.optionalValue.hashCode() else 0
         result = 31 * result + this.optionalNullValue.hashCode()
-        result = 31 * result + if (presenceMask[18]) this.optionalEmpty.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.optionalEmpty]) this.optionalEmpty.hashCode() else 0
         result = 31 * result + this.repeatedDuration.hashCode()
         result = 31 * result + this.repeatedTimestamp.hashCode()
         result = 31 * result + this.repeatedFieldmask.hashCode()
@@ -719,11 +721,9 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as TestAllTypesProto3Internal
-        other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
         if (this.optionalInt32 != other.optionalInt32) return false
         if (this.optionalInt64 != other.optionalInt64) return false
@@ -740,14 +740,14 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.optionalBool != other.optionalBool) return false
         if (this.optionalString != other.optionalString) return false
         if (this.optionalBytes != other.optionalBytes) return false
-        if (presenceMask[0] && this.optionalNestedMessage != other.optionalNestedMessage) return false
-        if (presenceMask[1] && this.optionalForeignMessage != other.optionalForeignMessage) return false
+        if (presenceMask[PresenceIndices.optionalNestedMessage] && this.optionalNestedMessage != other.optionalNestedMessage) return false
+        if (presenceMask[PresenceIndices.optionalForeignMessage] && this.optionalForeignMessage != other.optionalForeignMessage) return false
         if (this.optionalNestedEnum != other.optionalNestedEnum) return false
         if (this.optionalForeignEnum != other.optionalForeignEnum) return false
         if (this.optionalAliasedEnum != other.optionalAliasedEnum) return false
         if (this.optionalStringPiece != other.optionalStringPiece) return false
         if (this.optionalCord != other.optionalCord) return false
-        if (presenceMask[2] && this.recursiveMessage != other.recursiveMessage) return false
+        if (presenceMask[PresenceIndices.recursiveMessage] && this.recursiveMessage != other.recursiveMessage) return false
         if (this.repeatedInt32 != other.repeatedInt32) return false
         if (this.repeatedInt64 != other.repeatedInt64) return false
         if (this.repeatedUint32 != other.repeatedUint32) return false
@@ -816,15 +816,15 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (this.mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
-        if (presenceMask[3] && this.optionalBoolWrapper != other.optionalBoolWrapper) return false
-        if (presenceMask[4] && this.optionalInt32Wrapper != other.optionalInt32Wrapper) return false
-        if (presenceMask[5] && this.optionalInt64Wrapper != other.optionalInt64Wrapper) return false
-        if (presenceMask[6] && this.optionalUint32Wrapper != other.optionalUint32Wrapper) return false
-        if (presenceMask[7] && this.optionalUint64Wrapper != other.optionalUint64Wrapper) return false
-        if (presenceMask[8] && this.optionalFloatWrapper != other.optionalFloatWrapper) return false
-        if (presenceMask[9] && this.optionalDoubleWrapper != other.optionalDoubleWrapper) return false
-        if (presenceMask[10] && this.optionalStringWrapper != other.optionalStringWrapper) return false
-        if (presenceMask[11] && this.optionalBytesWrapper != other.optionalBytesWrapper) return false
+        if (presenceMask[PresenceIndices.optionalBoolWrapper] && this.optionalBoolWrapper != other.optionalBoolWrapper) return false
+        if (presenceMask[PresenceIndices.optionalInt32Wrapper] && this.optionalInt32Wrapper != other.optionalInt32Wrapper) return false
+        if (presenceMask[PresenceIndices.optionalInt64Wrapper] && this.optionalInt64Wrapper != other.optionalInt64Wrapper) return false
+        if (presenceMask[PresenceIndices.optionalUint32Wrapper] && this.optionalUint32Wrapper != other.optionalUint32Wrapper) return false
+        if (presenceMask[PresenceIndices.optionalUint64Wrapper] && this.optionalUint64Wrapper != other.optionalUint64Wrapper) return false
+        if (presenceMask[PresenceIndices.optionalFloatWrapper] && this.optionalFloatWrapper != other.optionalFloatWrapper) return false
+        if (presenceMask[PresenceIndices.optionalDoubleWrapper] && this.optionalDoubleWrapper != other.optionalDoubleWrapper) return false
+        if (presenceMask[PresenceIndices.optionalStringWrapper] && this.optionalStringWrapper != other.optionalStringWrapper) return false
+        if (presenceMask[PresenceIndices.optionalBytesWrapper] && this.optionalBytesWrapper != other.optionalBytesWrapper) return false
         if (this.repeatedBoolWrapper != other.repeatedBoolWrapper) return false
         if (this.repeatedInt32Wrapper != other.repeatedInt32Wrapper) return false
         if (this.repeatedInt64Wrapper != other.repeatedInt64Wrapper) return false
@@ -834,14 +834,14 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedDoubleWrapper != other.repeatedDoubleWrapper) return false
         if (this.repeatedStringWrapper != other.repeatedStringWrapper) return false
         if (this.repeatedBytesWrapper != other.repeatedBytesWrapper) return false
-        if (presenceMask[12] && this.optionalDuration != other.optionalDuration) return false
-        if (presenceMask[13] && this.optionalTimestamp != other.optionalTimestamp) return false
-        if (presenceMask[14] && this.optionalFieldMask != other.optionalFieldMask) return false
-        if (presenceMask[15] && this.optionalStruct != other.optionalStruct) return false
-        if (presenceMask[16] && this.optionalAny != other.optionalAny) return false
-        if (presenceMask[17] && this.optionalValue != other.optionalValue) return false
+        if (presenceMask[PresenceIndices.optionalDuration] && this.optionalDuration != other.optionalDuration) return false
+        if (presenceMask[PresenceIndices.optionalTimestamp] && this.optionalTimestamp != other.optionalTimestamp) return false
+        if (presenceMask[PresenceIndices.optionalFieldMask] && this.optionalFieldMask != other.optionalFieldMask) return false
+        if (presenceMask[PresenceIndices.optionalStruct] && this.optionalStruct != other.optionalStruct) return false
+        if (presenceMask[PresenceIndices.optionalAny] && this.optionalAny != other.optionalAny) return false
+        if (presenceMask[PresenceIndices.optionalValue] && this.optionalValue != other.optionalValue) return false
         if (this.optionalNullValue != other.optionalNullValue) return false
-        if (presenceMask[18] && this.optionalEmpty != other.optionalEmpty) return false
+        if (presenceMask[PresenceIndices.optionalEmpty] && this.optionalEmpty != other.optionalEmpty) return false
         if (this.repeatedDuration != other.repeatedDuration) return false
         if (this.repeatedTimestamp != other.repeatedTimestamp) return false
         if (this.repeatedFieldmask != other.repeatedFieldmask) return false
@@ -868,8 +868,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.field__Name16 != other.field__Name16) return false
         if (this.fieldName17__ != other.fieldName17__) return false
         if (this.FieldName18__ != other.FieldName18__) return false
-        if (!oneOfEquals(this.oneofField, other.oneofField)) return false
-        return true
+        return oneOfEquals(this.oneofField, other.oneofField)
     }
 
     override fun toString(): String {
@@ -877,7 +876,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -897,13 +895,13 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}optionalBool=${this.optionalBool},")
         builder.appendLine("${nextIndentString}optionalString=${this.optionalString},")
         builder.appendLine("${nextIndentString}optionalBytes=${this.optionalBytes.protoToString()},")
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.optionalNestedMessage]) {
             builder.appendLine("${nextIndentString}optionalNestedMessage=${this.optionalNestedMessage.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalNestedMessage=<unset>,")
         }
 
-        if (presenceMask[1]) {
+        if (presenceMask[PresenceIndices.optionalForeignMessage]) {
             builder.appendLine("${nextIndentString}optionalForeignMessage=${this.optionalForeignMessage.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalForeignMessage=<unset>,")
@@ -914,7 +912,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}optionalAliasedEnum=${this.optionalAliasedEnum},")
         builder.appendLine("${nextIndentString}optionalStringPiece=${this.optionalStringPiece},")
         builder.appendLine("${nextIndentString}optionalCord=${this.optionalCord},")
-        if (presenceMask[2]) {
+        if (presenceMask[PresenceIndices.recursiveMessage]) {
             builder.appendLine("${nextIndentString}recursiveMessage=${this.recursiveMessage.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}recursiveMessage=<unset>,")
@@ -988,55 +986,55 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}mapStringForeignMessage=${this.mapStringForeignMessage},")
         builder.appendLine("${nextIndentString}mapStringNestedEnum=${this.mapStringNestedEnum},")
         builder.appendLine("${nextIndentString}mapStringForeignEnum=${this.mapStringForeignEnum},")
-        if (presenceMask[3]) {
+        if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             builder.appendLine("${nextIndentString}optionalBoolWrapper=${this.optionalBoolWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalBoolWrapper=<unset>,")
         }
 
-        if (presenceMask[4]) {
+        if (presenceMask[PresenceIndices.optionalInt32Wrapper]) {
             builder.appendLine("${nextIndentString}optionalInt32Wrapper=${this.optionalInt32Wrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalInt32Wrapper=<unset>,")
         }
 
-        if (presenceMask[5]) {
+        if (presenceMask[PresenceIndices.optionalInt64Wrapper]) {
             builder.appendLine("${nextIndentString}optionalInt64Wrapper=${this.optionalInt64Wrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalInt64Wrapper=<unset>,")
         }
 
-        if (presenceMask[6]) {
+        if (presenceMask[PresenceIndices.optionalUint32Wrapper]) {
             builder.appendLine("${nextIndentString}optionalUint32Wrapper=${this.optionalUint32Wrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalUint32Wrapper=<unset>,")
         }
 
-        if (presenceMask[7]) {
+        if (presenceMask[PresenceIndices.optionalUint64Wrapper]) {
             builder.appendLine("${nextIndentString}optionalUint64Wrapper=${this.optionalUint64Wrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalUint64Wrapper=<unset>,")
         }
 
-        if (presenceMask[8]) {
+        if (presenceMask[PresenceIndices.optionalFloatWrapper]) {
             builder.appendLine("${nextIndentString}optionalFloatWrapper=${this.optionalFloatWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalFloatWrapper=<unset>,")
         }
 
-        if (presenceMask[9]) {
+        if (presenceMask[PresenceIndices.optionalDoubleWrapper]) {
             builder.appendLine("${nextIndentString}optionalDoubleWrapper=${this.optionalDoubleWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalDoubleWrapper=<unset>,")
         }
 
-        if (presenceMask[10]) {
+        if (presenceMask[PresenceIndices.optionalStringWrapper]) {
             builder.appendLine("${nextIndentString}optionalStringWrapper=${this.optionalStringWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalStringWrapper=<unset>,")
         }
 
-        if (presenceMask[11]) {
+        if (presenceMask[PresenceIndices.optionalBytesWrapper]) {
             builder.appendLine("${nextIndentString}optionalBytesWrapper=${this.optionalBytesWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalBytesWrapper=<unset>,")
@@ -1051,44 +1049,44 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}repeatedDoubleWrapper=${this.repeatedDoubleWrapper},")
         builder.appendLine("${nextIndentString}repeatedStringWrapper=${this.repeatedStringWrapper},")
         builder.appendLine("${nextIndentString}repeatedBytesWrapper=${this.repeatedBytesWrapper},")
-        if (presenceMask[12]) {
+        if (presenceMask[PresenceIndices.optionalDuration]) {
             builder.appendLine("${nextIndentString}optionalDuration=${this.optionalDuration.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalDuration=<unset>,")
         }
 
-        if (presenceMask[13]) {
+        if (presenceMask[PresenceIndices.optionalTimestamp]) {
             builder.appendLine("${nextIndentString}optionalTimestamp=${this.optionalTimestamp.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalTimestamp=<unset>,")
         }
 
-        if (presenceMask[14]) {
+        if (presenceMask[PresenceIndices.optionalFieldMask]) {
             builder.appendLine("${nextIndentString}optionalFieldMask=${this.optionalFieldMask.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalFieldMask=<unset>,")
         }
 
-        if (presenceMask[15]) {
+        if (presenceMask[PresenceIndices.optionalStruct]) {
             builder.appendLine("${nextIndentString}optionalStruct=${this.optionalStruct.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalStruct=<unset>,")
         }
 
-        if (presenceMask[16]) {
+        if (presenceMask[PresenceIndices.optionalAny]) {
             builder.appendLine("${nextIndentString}optionalAny=${this.optionalAny.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalAny=<unset>,")
         }
 
-        if (presenceMask[17]) {
+        if (presenceMask[PresenceIndices.optionalValue]) {
             builder.appendLine("${nextIndentString}optionalValue=${this.optionalValue.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalValue=<unset>,")
         }
 
         builder.appendLine("${nextIndentString}optionalNullValue=${this.optionalNullValue},")
-        if (presenceMask[18]) {
+        if (presenceMask[PresenceIndices.optionalEmpty]) {
             builder.appendLine("${nextIndentString}optionalEmpty=${this.optionalEmpty.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}optionalEmpty=<unset>,")
@@ -1147,11 +1145,11 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.optionalBool = this.optionalBool
         copy.optionalString = this.optionalString
         copy.optionalBytes = this.optionalBytes
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.optionalNestedMessage]) {
             copy.optionalNestedMessage = this.optionalNestedMessage.copy()
         }
 
-        if (presenceMask[1]) {
+        if (presenceMask[PresenceIndices.optionalForeignMessage]) {
             copy.optionalForeignMessage = this.optionalForeignMessage.copy()
         }
 
@@ -1160,7 +1158,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.optionalAliasedEnum = this.optionalAliasedEnum
         copy.optionalStringPiece = this.optionalStringPiece
         copy.optionalCord = this.optionalCord
-        if (presenceMask[2]) {
+        if (presenceMask[PresenceIndices.recursiveMessage]) {
             copy.recursiveMessage = this.recursiveMessage.copy()
         }
 
@@ -1232,39 +1230,39 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
         copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
-        if (presenceMask[3]) {
+        if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             copy.optionalBoolWrapper = this.optionalBoolWrapper.copy()
         }
 
-        if (presenceMask[4]) {
+        if (presenceMask[PresenceIndices.optionalInt32Wrapper]) {
             copy.optionalInt32Wrapper = this.optionalInt32Wrapper.copy()
         }
 
-        if (presenceMask[5]) {
+        if (presenceMask[PresenceIndices.optionalInt64Wrapper]) {
             copy.optionalInt64Wrapper = this.optionalInt64Wrapper.copy()
         }
 
-        if (presenceMask[6]) {
+        if (presenceMask[PresenceIndices.optionalUint32Wrapper]) {
             copy.optionalUint32Wrapper = this.optionalUint32Wrapper.copy()
         }
 
-        if (presenceMask[7]) {
+        if (presenceMask[PresenceIndices.optionalUint64Wrapper]) {
             copy.optionalUint64Wrapper = this.optionalUint64Wrapper.copy()
         }
 
-        if (presenceMask[8]) {
+        if (presenceMask[PresenceIndices.optionalFloatWrapper]) {
             copy.optionalFloatWrapper = this.optionalFloatWrapper.copy()
         }
 
-        if (presenceMask[9]) {
+        if (presenceMask[PresenceIndices.optionalDoubleWrapper]) {
             copy.optionalDoubleWrapper = this.optionalDoubleWrapper.copy()
         }
 
-        if (presenceMask[10]) {
+        if (presenceMask[PresenceIndices.optionalStringWrapper]) {
             copy.optionalStringWrapper = this.optionalStringWrapper.copy()
         }
 
-        if (presenceMask[11]) {
+        if (presenceMask[PresenceIndices.optionalBytesWrapper]) {
             copy.optionalBytesWrapper = this.optionalBytesWrapper.copy()
         }
 
@@ -1277,32 +1275,32 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.repeatedDoubleWrapper = this.repeatedDoubleWrapper.map { it.copy() }
         copy.repeatedStringWrapper = this.repeatedStringWrapper.map { it.copy() }
         copy.repeatedBytesWrapper = this.repeatedBytesWrapper.map { it.copy() }
-        if (presenceMask[12]) {
+        if (presenceMask[PresenceIndices.optionalDuration]) {
             copy.optionalDuration = this.optionalDuration.copy()
         }
 
-        if (presenceMask[13]) {
+        if (presenceMask[PresenceIndices.optionalTimestamp]) {
             copy.optionalTimestamp = this.optionalTimestamp.copy()
         }
 
-        if (presenceMask[14]) {
+        if (presenceMask[PresenceIndices.optionalFieldMask]) {
             copy.optionalFieldMask = this.optionalFieldMask.copy()
         }
 
-        if (presenceMask[15]) {
+        if (presenceMask[PresenceIndices.optionalStruct]) {
             copy.optionalStruct = this.optionalStruct.copy()
         }
 
-        if (presenceMask[16]) {
+        if (presenceMask[PresenceIndices.optionalAny]) {
             copy.optionalAny = this.optionalAny.copy()
         }
 
-        if (presenceMask[17]) {
+        if (presenceMask[PresenceIndices.optionalValue]) {
             copy.optionalValue = this.optionalValue.copy()
         }
 
         copy.optionalNullValue = this.optionalNullValue
-        if (presenceMask[18]) {
+        if (presenceMask[PresenceIndices.optionalEmpty]) {
             copy.optionalEmpty = this.optionalEmpty.copy()
         }
 
@@ -1374,8 +1372,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
     }
 
+    @InternalRpcApi
     class NestedMessageInternal: TestAllTypesProto3.NestedMessage.Builder, InternalMessage(fieldsWithPresence = 1) {
-        private object PresenceIndices {
+        @InternalRpcApi
+        internal object PresenceIndices {
             const val corecursive: Int = 0
         }
 
@@ -1403,26 +1403,22 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         val _presence: TestAllTypesProto3Presence.NestedMessage = object : TestAllTypesProto3Presence.NestedMessage, InternalPresenceObject {
             override val _message: NestedMessageInternal get() = _owner
 
-            override val hasCorecursive: Boolean get() = presenceMask[0]
+            override val hasCorecursive: Boolean get() = presenceMask[PresenceIndices.corecursive]
         }
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.a.hashCode()
-            result = 31 * result + if (presenceMask[0]) this.corecursive.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.corecursive]) this.corecursive.hashCode() else 0
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as NestedMessageInternal
-            other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (this.a != other.a) return false
-            if (presenceMask[0] && this.corecursive != other.corecursive) return false
-            return true
+            return !presenceMask[PresenceIndices.corecursive] || this.corecursive == other.corecursive
         }
 
         override fun toString(): String {
@@ -1430,13 +1426,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto3.NestedMessage(")
             builder.appendLine("${nextIndentString}a=${this.a},")
-            if (presenceMask[0]) {
+            if (presenceMask[PresenceIndices.corecursive]) {
                 builder.appendLine("${nextIndentString}corecursive=${this.corecursive.asInternal().asString(indent = indent + 4)},")
             } else {
                 builder.appendLine("${nextIndentString}corecursive=<unset>,")
@@ -1454,7 +1449,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         fun copyInternal(body: NestedMessageInternal.() -> Unit): NestedMessageInternal {
             val copy = NestedMessageInternal()
             copy.a = this.a
-            if (presenceMask[0]) {
+            if (presenceMask[PresenceIndices.corecursive]) {
                 copy.corecursive = this.corecursive.copy()
             }
 
@@ -1483,7 +1478,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                     checkForPlatformDecodeException {
                         NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
                     }
-                    msg.checkRequiredFields()
                     return msg
                 }
             }
@@ -1500,6 +1494,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
     }
 
+    @InternalRpcApi
     class MapInt32Int32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1516,21 +1511,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapInt32Int32EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1538,7 +1529,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1557,6 +1547,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapInt64Int64EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1573,21 +1564,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapInt64Int64EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1595,7 +1582,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1614,6 +1600,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapUint32Uint32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1630,21 +1617,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: UInt by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapUint32Uint32EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1652,7 +1635,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1671,6 +1653,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapUint64Uint64EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1687,21 +1670,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: ULong by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapUint64Uint64EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1709,7 +1688,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1728,6 +1706,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapSint32Sint32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1744,21 +1723,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapSint32Sint32EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1766,7 +1741,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1785,6 +1759,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapSint64Sint64EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1801,21 +1776,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapSint64Sint64EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1823,7 +1794,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1842,6 +1812,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapFixed32Fixed32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1858,21 +1829,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: UInt by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapFixed32Fixed32EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1880,7 +1847,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1899,6 +1865,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapFixed64Fixed64EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1915,21 +1882,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: ULong by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapFixed64Fixed64EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1937,7 +1900,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -1956,6 +1918,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapSfixed32Sfixed32EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -1972,21 +1935,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Int by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapSfixed32Sfixed32EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -1994,7 +1953,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2013,6 +1971,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapSfixed64Sfixed64EntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2029,21 +1988,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Long by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapSfixed64Sfixed64EntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2051,7 +2006,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2070,6 +2024,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapInt32FloatEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2086,21 +2041,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Float by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.toBits().hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapInt32FloatEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value.toBits() != other.value.toBits()) return false
-            return true
+            return this.value.toBits() == other.value.toBits()
         }
 
         override fun toString(): String {
@@ -2108,7 +2059,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2127,6 +2077,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapInt32DoubleEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2143,21 +2094,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Double by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.toBits().hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapInt32DoubleEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value.toBits() != other.value.toBits()) return false
-            return true
+            return this.value.toBits() == other.value.toBits()
         }
 
         override fun toString(): String {
@@ -2165,7 +2112,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2184,6 +2130,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapBoolBoolEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2200,21 +2147,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: Boolean by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapBoolBoolEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2222,7 +2165,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2241,6 +2183,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringStringEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2257,21 +2200,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: String by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringStringEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2279,7 +2218,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2298,6 +2236,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringBytesEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2314,21 +2253,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: ByteString by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringBytesEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2336,7 +2271,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2355,8 +2289,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringNestedMessageEntryInternal: InternalMessage(fieldsWithPresence = 1) {
-        private object PresenceIndices {
+        @InternalRpcApi
+        internal object PresenceIndices {
             const val value: Int = 0
         }
 
@@ -2375,22 +2311,18 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: TestAllTypesProto3.NestedMessage by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
-            result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.value]) this.value.hashCode() else 0
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringNestedMessageEntryInternal
-            other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (this.key != other.key) return false
-            if (presenceMask[0] && this.value != other.value) return false
-            return true
+            return !presenceMask[PresenceIndices.value] || this.value == other.value
         }
 
         override fun toString(): String {
@@ -2398,13 +2330,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto3.MapStringNestedMessageEntry(")
             builder.appendLine("${nextIndentString}key=${this.key},")
-            if (presenceMask[0]) {
+            if (presenceMask[PresenceIndices.value]) {
                 builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
@@ -2422,8 +2353,10 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringForeignMessageEntryInternal: InternalMessage(fieldsWithPresence = 1) {
-        private object PresenceIndices {
+        @InternalRpcApi
+        internal object PresenceIndices {
             const val value: Int = 0
         }
 
@@ -2442,22 +2375,18 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: ForeignMessage by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
-            result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.value]) this.value.hashCode() else 0
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringForeignMessageEntryInternal
-            other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (this.key != other.key) return false
-            if (presenceMask[0] && this.value != other.value) return false
-            return true
+            return !presenceMask[PresenceIndices.value] || this.value == other.value
         }
 
         override fun toString(): String {
@@ -2465,13 +2394,12 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("TestAllTypesProto3.MapStringForeignMessageEntry(")
             builder.appendLine("${nextIndentString}key=${this.key},")
-            if (presenceMask[0]) {
+            if (presenceMask[PresenceIndices.value]) {
                 builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
@@ -2489,6 +2417,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringNestedEnumEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2505,21 +2434,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: TestAllTypesProto3.NestedEnum by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringNestedEnumEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2527,7 +2452,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2546,6 +2470,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         companion object
     }
 
+    @InternalRpcApi
     class MapStringForeignEnumEntryInternal: InternalMessage(fieldsWithPresence = 0) {
         @InternalRpcApi
         override val _size: Int by lazy { computeSize() }
@@ -2562,21 +2487,17 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         var value: ForeignEnum by __valueDelegate
 
         override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
             result = 31 * result + this.value.hashCode()
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as MapStringForeignEnumEntryInternal
-            other.checkRequiredFields()
             if (this.key != other.key) return false
-            if (this.value != other.value) return false
-            return true
+            return this.value == other.value
         }
 
         override fun toString(): String {
@@ -2584,7 +2505,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
@@ -2623,7 +2543,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
                 checkForPlatformDecodeException {
                     TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -2640,6 +2559,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 }
 
+@InternalRpcApi
 class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -2654,19 +2574,15 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     override var c: Int by __cDelegate
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.c.hashCode()
         return result
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ForeignMessageInternal
-        other.checkRequiredFields()
-        if (this.c != other.c) return false
-        return true
+        return this.c == other.c
     }
 
     override fun toString(): String {
@@ -2674,7 +2590,6 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -2717,7 +2632,6 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
                 checkForPlatformDecodeException {
                     ForeignMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -2734,6 +2648,7 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 }
 
+@InternalRpcApi
 class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -2745,17 +2660,14 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this::class.hashCode()
         return result
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as NullHypothesisProto3Internal
-        other.checkRequiredFields()
         return true
     }
 
@@ -2764,9 +2676,7 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
-        val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("NullHypothesisProto3(")
         builder.append("${indentString})")
@@ -2805,7 +2715,6 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
                 checkForPlatformDecodeException {
                     NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -2822,6 +2731,7 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 }
 
+@InternalRpcApi
 class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -2833,17 +2743,14 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this::class.hashCode()
         return result
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as EnumOnlyProto3Internal
-        other.checkRequiredFields()
         return true
     }
 
@@ -2852,9 +2759,7 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
-        val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("EnumOnlyProto3(")
         builder.append("${indentString})")
@@ -2893,7 +2798,6 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
                 checkForPlatformDecodeException {
                     EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -2907,178 +2811,6 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     @InternalRpcApi
     companion object {
         val DEFAULT: EnumOnlyProto3 by lazy { EnumOnlyProto3Internal() }
-    }
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.optionalNestedMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[1]) {
-        this.optionalForeignMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[2]) {
-        this.recursiveMessage.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[3]) {
-        this.optionalBoolWrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[4]) {
-        this.optionalInt32Wrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[5]) {
-        this.optionalInt64Wrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[6]) {
-        this.optionalUint32Wrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[7]) {
-        this.optionalUint64Wrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[8]) {
-        this.optionalFloatWrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[9]) {
-        this.optionalDoubleWrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[10]) {
-        this.optionalStringWrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[11]) {
-        this.optionalBytesWrapper.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[12]) {
-        this.optionalDuration.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[13]) {
-        this.optionalTimestamp.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[14]) {
-        this.optionalFieldMask.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[15]) {
-        this.optionalStruct.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[16]) {
-        this.optionalAny.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[17]) {
-        this.optionalValue.asInternal().checkRequiredFields()
-    }
-
-    if (presenceMask[18]) {
-        this.optionalEmpty.asInternal().checkRequiredFields()
-    }
-
-    this.oneofField?.also {
-        when {
-            it is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                it.value.asInternal().checkRequiredFields()
-            }
-        }
-    }
-
-    this.repeatedNestedMessage.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedForeignMessage.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedBoolWrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedInt32Wrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedInt64Wrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedUint32Wrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedUint64Wrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedFloatWrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedDoubleWrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedStringWrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedBytesWrapper.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedDuration.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedTimestamp.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedFieldmask.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedStruct.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedAny.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedValue.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedListValue.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.repeatedEmpty.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.mapStringNestedMessage.values.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.mapStringForeignMessage.values.forEach {
-        it.asInternal().checkRequiredFields()
     }
 }
 
@@ -3132,7 +2864,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeDouble(fieldNr = 12, value = this.optionalDouble)
     }
 
-    if (this.optionalBool != false) {
+    if (this.optionalBool) {
         encoder.writeBool(fieldNr = 13, value = this.optionalBool)
     }
 
@@ -3144,12 +2876,12 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeBytes(fieldNr = 15, value = this.optionalBytes)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 18, value = this.optionalNestedMessage.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalNestedMessage]) {
+        encoder.writeMessage(fieldNr = 18, value = this.optionalNestedMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[1]) {
-        encoder.writeMessage(fieldNr = 19, value = this.optionalForeignMessage.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalForeignMessage]) {
+        encoder.writeMessage(fieldNr = 19, value = this.optionalForeignMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
@@ -3172,8 +2904,8 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeString(fieldNr = 25, value = this.optionalCord)
     }
 
-    if (presenceMask[2]) {
-        encoder.writeMessage(fieldNr = 27, value = this.recursiveMessage.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.recursiveMessage]) {
+        encoder.writeMessage(fieldNr = 27, value = this.recursiveMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
@@ -3242,13 +2974,13 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
 
     if (this.repeatedNestedMessage.isNotEmpty()) {
         this.repeatedNestedMessage.forEach {
-            encoder.writeMessage(fieldNr = 48, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 48, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedForeignMessage.isNotEmpty()) {
         this.repeatedForeignMessage.forEach {
-            encoder.writeMessage(fieldNr = 49, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 49, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -3419,7 +3151,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 56, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 56, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3431,7 +3163,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 57, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 57, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3443,7 +3175,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 58, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 58, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3455,7 +3187,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 59, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 59, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3467,7 +3199,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 60, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 60, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3479,7 +3211,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 61, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 61, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3491,7 +3223,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 62, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 62, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3503,7 +3235,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 63, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 63, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3515,7 +3247,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 64, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 64, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3527,7 +3259,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 65, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 65, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3539,7 +3271,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 66, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 66, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3551,7 +3283,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 67, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 67, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3563,7 +3295,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 68, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 68, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3575,7 +3307,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 69, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 69, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3587,7 +3319,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 70, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 70, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3599,7 +3331,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 71, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 71, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3611,7 +3343,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 72, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 72, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3623,7 +3355,7 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 73, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 73, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -3635,178 +3367,178 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 74, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 74, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
 
-    if (presenceMask[3]) {
-        encoder.writeMessage(fieldNr = 201, value = this.optionalBoolWrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
+        encoder.writeMessage(fieldNr = 201, value = this.optionalBoolWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[4]) {
-        encoder.writeMessage(fieldNr = 202, value = this.optionalInt32Wrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalInt32Wrapper]) {
+        encoder.writeMessage(fieldNr = 202, value = this.optionalInt32Wrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[5]) {
-        encoder.writeMessage(fieldNr = 203, value = this.optionalInt64Wrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalInt64Wrapper]) {
+        encoder.writeMessage(fieldNr = 203, value = this.optionalInt64Wrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[6]) {
-        encoder.writeMessage(fieldNr = 204, value = this.optionalUint32Wrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalUint32Wrapper]) {
+        encoder.writeMessage(fieldNr = 204, value = this.optionalUint32Wrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[7]) {
-        encoder.writeMessage(fieldNr = 205, value = this.optionalUint64Wrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalUint64Wrapper]) {
+        encoder.writeMessage(fieldNr = 205, value = this.optionalUint64Wrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[8]) {
-        encoder.writeMessage(fieldNr = 206, value = this.optionalFloatWrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalFloatWrapper]) {
+        encoder.writeMessage(fieldNr = 206, value = this.optionalFloatWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[9]) {
-        encoder.writeMessage(fieldNr = 207, value = this.optionalDoubleWrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalDoubleWrapper]) {
+        encoder.writeMessage(fieldNr = 207, value = this.optionalDoubleWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[10]) {
-        encoder.writeMessage(fieldNr = 208, value = this.optionalStringWrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalStringWrapper]) {
+        encoder.writeMessage(fieldNr = 208, value = this.optionalStringWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[11]) {
-        encoder.writeMessage(fieldNr = 209, value = this.optionalBytesWrapper.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBytesWrapper]) {
+        encoder.writeMessage(fieldNr = 209, value = this.optionalBytesWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.repeatedBoolWrapper.isNotEmpty()) {
         this.repeatedBoolWrapper.forEach {
-            encoder.writeMessage(fieldNr = 211, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 211, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedInt32Wrapper.isNotEmpty()) {
         this.repeatedInt32Wrapper.forEach {
-            encoder.writeMessage(fieldNr = 212, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 212, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedInt64Wrapper.isNotEmpty()) {
         this.repeatedInt64Wrapper.forEach {
-            encoder.writeMessage(fieldNr = 213, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 213, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedUint32Wrapper.isNotEmpty()) {
         this.repeatedUint32Wrapper.forEach {
-            encoder.writeMessage(fieldNr = 214, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 214, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedUint64Wrapper.isNotEmpty()) {
         this.repeatedUint64Wrapper.forEach {
-            encoder.writeMessage(fieldNr = 215, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 215, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedFloatWrapper.isNotEmpty()) {
         this.repeatedFloatWrapper.forEach {
-            encoder.writeMessage(fieldNr = 216, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 216, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedDoubleWrapper.isNotEmpty()) {
         this.repeatedDoubleWrapper.forEach {
-            encoder.writeMessage(fieldNr = 217, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 217, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedStringWrapper.isNotEmpty()) {
         this.repeatedStringWrapper.forEach {
-            encoder.writeMessage(fieldNr = 218, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 218, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedBytesWrapper.isNotEmpty()) {
         this.repeatedBytesWrapper.forEach {
-            encoder.writeMessage(fieldNr = 219, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 219, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
-    if (presenceMask[12]) {
-        encoder.writeMessage(fieldNr = 301, value = this.optionalDuration.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalDuration]) {
+        encoder.writeMessage(fieldNr = 301, value = this.optionalDuration.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[13]) {
-        encoder.writeMessage(fieldNr = 302, value = this.optionalTimestamp.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalTimestamp]) {
+        encoder.writeMessage(fieldNr = 302, value = this.optionalTimestamp.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[14]) {
-        encoder.writeMessage(fieldNr = 303, value = this.optionalFieldMask.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalFieldMask]) {
+        encoder.writeMessage(fieldNr = 303, value = this.optionalFieldMask.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[15]) {
-        encoder.writeMessage(fieldNr = 304, value = this.optionalStruct.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalStruct]) {
+        encoder.writeMessage(fieldNr = 304, value = this.optionalStruct.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[16]) {
-        encoder.writeMessage(fieldNr = 305, value = this.optionalAny.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalAny]) {
+        encoder.writeMessage(fieldNr = 305, value = this.optionalAny.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (presenceMask[17]) {
-        encoder.writeMessage(fieldNr = 306, value = this.optionalValue.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalValue]) {
+        encoder.writeMessage(fieldNr = 306, value = this.optionalValue.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.optionalNullValue != NullValue.NULL_VALUE) {
         encoder.writeEnum(fieldNr = 307, value = this.optionalNullValue.number)
     }
 
-    if (presenceMask[18]) {
-        encoder.writeMessage(fieldNr = 308, value = this.optionalEmpty.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalEmpty]) {
+        encoder.writeMessage(fieldNr = 308, value = this.optionalEmpty.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.repeatedDuration.isNotEmpty()) {
         this.repeatedDuration.forEach {
-            encoder.writeMessage(fieldNr = 311, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 311, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedTimestamp.isNotEmpty()) {
         this.repeatedTimestamp.forEach {
-            encoder.writeMessage(fieldNr = 312, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 312, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedFieldmask.isNotEmpty()) {
         this.repeatedFieldmask.forEach {
-            encoder.writeMessage(fieldNr = 313, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 313, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedStruct.isNotEmpty()) {
         this.repeatedStruct.forEach {
-            encoder.writeMessage(fieldNr = 324, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 324, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedAny.isNotEmpty()) {
         this.repeatedAny.forEach {
-            encoder.writeMessage(fieldNr = 315, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 315, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedValue.isNotEmpty()) {
         this.repeatedValue.forEach {
-            encoder.writeMessage(fieldNr = 316, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 316, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedListValue.isNotEmpty()) {
         this.repeatedListValue.forEach {
-            encoder.writeMessage(fieldNr = 317, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 317, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.repeatedEmpty.isNotEmpty()) {
         this.repeatedEmpty.forEach {
-            encoder.writeMessage(fieldNr = 318, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 318, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -3882,13 +3614,13 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 418, value = this.FieldName18__)
     }
 
-    this.oneofField?.also {
-        when (val value = it) {
+    this.oneofField?.also { value ->
+        when (value) {
             is TestAllTypesProto3.OneofField.OneofUint32 -> {
                 encoder.writeUInt32(fieldNr = 111, value = value.value)
             }
             is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
             is TestAllTypesProto3.OneofField.OneofString -> {
                 encoder.writeString(fieldNr = 113, value = value.value)
@@ -3930,886 +3662,886 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
 fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.optionalInt32 = decoder.readInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.optionalInt64 = decoder.readInt64()
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.VARINT -> {
+            3 if tag.wireType == WireType.VARINT -> {
                 msg.optionalUint32 = decoder.readUInt32()
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.VARINT -> {
+            4 if tag.wireType == WireType.VARINT -> {
                 msg.optionalUint64 = decoder.readUInt64()
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.VARINT -> {
+            5 if tag.wireType == WireType.VARINT -> {
                 msg.optionalSint32 = decoder.readSInt32()
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.VARINT -> {
+            6 if tag.wireType == WireType.VARINT -> {
                 msg.optionalSint64 = decoder.readSInt64()
             }
-            tag.fieldNr == 7 && tag.wireType == WireType.FIXED32 -> {
+            7 if tag.wireType == WireType.FIXED32 -> {
                 msg.optionalFixed32 = decoder.readFixed32()
             }
-            tag.fieldNr == 8 && tag.wireType == WireType.FIXED64 -> {
+            8 if tag.wireType == WireType.FIXED64 -> {
                 msg.optionalFixed64 = decoder.readFixed64()
             }
-            tag.fieldNr == 9 && tag.wireType == WireType.FIXED32 -> {
+            9 if tag.wireType == WireType.FIXED32 -> {
                 msg.optionalSfixed32 = decoder.readSFixed32()
             }
-            tag.fieldNr == 10 && tag.wireType == WireType.FIXED64 -> {
+            10 if tag.wireType == WireType.FIXED64 -> {
                 msg.optionalSfixed64 = decoder.readSFixed64()
             }
-            tag.fieldNr == 11 && tag.wireType == WireType.FIXED32 -> {
+            11 if tag.wireType == WireType.FIXED32 -> {
                 msg.optionalFloat = decoder.readFloat()
             }
-            tag.fieldNr == 12 && tag.wireType == WireType.FIXED64 -> {
+            12 if tag.wireType == WireType.FIXED64 -> {
                 msg.optionalDouble = decoder.readDouble()
             }
-            tag.fieldNr == 13 && tag.wireType == WireType.VARINT -> {
+            13 if tag.wireType == WireType.VARINT -> {
                 msg.optionalBool = decoder.readBool()
             }
-            tag.fieldNr == 14 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            14 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.optionalString = decoder.readString()
             }
-            tag.fieldNr == 15 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            15 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.optionalBytes = decoder.readBytes()
             }
-            tag.fieldNr == 18 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            18 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalNestedMessageDelegate.getOrCreate(msg) { TestAllTypesProto3Internal.NestedMessageInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 19 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            19 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalForeignMessageDelegate.getOrCreate(msg) { ForeignMessageInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 21 && tag.wireType == WireType.VARINT -> {
+            21 if tag.wireType == WireType.VARINT -> {
                 msg.optionalNestedEnum = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 22 && tag.wireType == WireType.VARINT -> {
+            22 if tag.wireType == WireType.VARINT -> {
                 msg.optionalForeignEnum = ForeignEnum.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 23 && tag.wireType == WireType.VARINT -> {
+            23 if tag.wireType == WireType.VARINT -> {
                 msg.optionalAliasedEnum = TestAllTypesProto3.AliasedEnum.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 24 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            24 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.optionalStringPiece = decoder.readString()
             }
-            tag.fieldNr == 25 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            25 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.optionalCord = decoder.readString()
             }
-            tag.fieldNr == 27 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            27 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__recursiveMessageDelegate.getOrCreate(msg) { TestAllTypesProto3Internal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 31 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            31 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            tag.fieldNr == 31 && tag.wireType == WireType.VARINT -> {
+            31 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 32 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            32 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            tag.fieldNr == 32 && tag.wireType == WireType.VARINT -> {
+            32 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 33 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            33 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            tag.fieldNr == 33 && tag.wireType == WireType.VARINT -> {
+            33 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 34 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            34 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            tag.fieldNr == 34 && tag.wireType == WireType.VARINT -> {
+            34 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 35 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            35 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            tag.fieldNr == 35 && tag.wireType == WireType.VARINT -> {
+            35 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 36 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            36 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            tag.fieldNr == 36 && tag.wireType == WireType.VARINT -> {
+            36 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 37 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            37 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            tag.fieldNr == 37 && tag.wireType == WireType.FIXED32 -> {
+            37 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 38 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            38 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            tag.fieldNr == 38 && tag.wireType == WireType.FIXED64 -> {
+            38 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 39 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            39 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            tag.fieldNr == 39 && tag.wireType == WireType.FIXED32 -> {
+            39 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 40 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            40 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            tag.fieldNr == 40 && tag.wireType == WireType.FIXED64 -> {
+            40 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 41 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            41 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            tag.fieldNr == 41 && tag.wireType == WireType.FIXED32 -> {
+            41 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            tag.fieldNr == 42 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            42 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            tag.fieldNr == 42 && tag.wireType == WireType.FIXED64 -> {
+            42 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            tag.fieldNr == 43 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            43 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            tag.fieldNr == 43 && tag.wireType == WireType.VARINT -> {
+            43 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            tag.fieldNr == 44 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            44 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedStringDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            tag.fieldNr == 45 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            45 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedBytesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBytes()
                 target.add(elem)
             }
-            tag.fieldNr == 48 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            48 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedNestedMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3Internal.NestedMessageInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 49 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            49 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedForeignMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignMessageInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 51 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            51 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
-            tag.fieldNr == 51 && tag.wireType == WireType.VARINT -> {
+            51 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            tag.fieldNr == 52 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            52 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { ForeignEnum.fromNumber(it) })
             }
-            tag.fieldNr == 52 && tag.wireType == WireType.VARINT -> {
+            52 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            tag.fieldNr == 54 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            54 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedStringPieceDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            tag.fieldNr == 55 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            55 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedCordDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            tag.fieldNr == 75 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            75 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            tag.fieldNr == 75 && tag.wireType == WireType.VARINT -> {
+            75 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 76 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            76 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            tag.fieldNr == 76 && tag.wireType == WireType.VARINT -> {
+            76 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 77 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            77 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            tag.fieldNr == 77 && tag.wireType == WireType.VARINT -> {
+            77 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 78 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            78 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            tag.fieldNr == 78 && tag.wireType == WireType.VARINT -> {
+            78 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 79 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            79 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            tag.fieldNr == 79 && tag.wireType == WireType.VARINT -> {
+            79 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 80 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            80 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            tag.fieldNr == 80 && tag.wireType == WireType.VARINT -> {
+            80 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 81 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            81 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            tag.fieldNr == 81 && tag.wireType == WireType.FIXED32 -> {
+            81 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 82 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            82 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            tag.fieldNr == 82 && tag.wireType == WireType.FIXED64 -> {
+            82 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 83 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            83 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            tag.fieldNr == 83 && tag.wireType == WireType.FIXED32 -> {
+            83 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 84 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            84 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            tag.fieldNr == 84 && tag.wireType == WireType.FIXED64 -> {
+            84 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 85 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            85 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            tag.fieldNr == 85 && tag.wireType == WireType.FIXED32 -> {
+            85 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            tag.fieldNr == 86 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            86 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            tag.fieldNr == 86 && tag.wireType == WireType.FIXED64 -> {
+            86 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            tag.fieldNr == 87 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            87 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            tag.fieldNr == 87 && tag.wireType == WireType.VARINT -> {
+            87 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            tag.fieldNr == 88 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            88 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
-            tag.fieldNr == 88 && tag.wireType == WireType.VARINT -> {
+            88 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            tag.fieldNr == 89 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            89 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            tag.fieldNr == 89 && tag.wireType == WireType.VARINT -> {
+            89 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 90 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            90 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            tag.fieldNr == 90 && tag.wireType == WireType.VARINT -> {
+            90 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 91 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            91 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            tag.fieldNr == 91 && tag.wireType == WireType.VARINT -> {
+            91 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 92 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            92 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            tag.fieldNr == 92 && tag.wireType == WireType.VARINT -> {
+            92 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 93 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            93 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            tag.fieldNr == 93 && tag.wireType == WireType.VARINT -> {
+            93 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            tag.fieldNr == 94 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            94 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            tag.fieldNr == 94 && tag.wireType == WireType.VARINT -> {
+            94 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            tag.fieldNr == 95 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            95 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            tag.fieldNr == 95 && tag.wireType == WireType.FIXED32 -> {
+            95 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 96 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            96 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            tag.fieldNr == 96 && tag.wireType == WireType.FIXED64 -> {
+            96 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 97 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            97 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            tag.fieldNr == 97 && tag.wireType == WireType.FIXED32 -> {
+            97 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            tag.fieldNr == 98 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            98 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            tag.fieldNr == 98 && tag.wireType == WireType.FIXED64 -> {
+            98 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            tag.fieldNr == 99 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            99 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            tag.fieldNr == 99 && tag.wireType == WireType.FIXED32 -> {
+            99 if tag.wireType == WireType.FIXED32 -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            tag.fieldNr == 100 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            100 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            tag.fieldNr == 100 && tag.wireType == WireType.FIXED64 -> {
+            100 if tag.wireType == WireType.FIXED64 -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            tag.fieldNr == 101 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            101 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            tag.fieldNr == 101 && tag.wireType == WireType.VARINT -> {
+            101 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            tag.fieldNr == 102 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            102 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesProto3.NestedEnum.fromNumber(it) })
             }
-            tag.fieldNr == 102 && tag.wireType == WireType.VARINT -> {
+            102 if tag.wireType == WireType.VARINT -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            tag.fieldNr == 56 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            56 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapInt32Int32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32Int32EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32Int32EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapInt32Int32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 57 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            57 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapInt64Int64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt64Int64EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt64Int64EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapInt64Int64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 58 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            58 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapUint32Uint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapUint32Uint32EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 59 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            59 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapUint64Uint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapUint64Uint64EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 60 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            60 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapSint32Sint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSint32Sint32EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 61 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            61 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapSint64Sint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSint64Sint64EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 62 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            62 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapFixed32Fixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 63 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            63 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapFixed64Fixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 64 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            64 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapSfixed32Sfixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 65 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            65 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapSfixed64Sfixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 66 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            66 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapInt32FloatDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32FloatEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32FloatEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapInt32FloatEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 67 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            67 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapInt32DoubleDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapInt32DoubleEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 68 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            68 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapBoolBoolDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapBoolBoolEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapBoolBoolEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapBoolBoolEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 69 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            69 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringStringDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringStringEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringStringEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringStringEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 70 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            70 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringBytesDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringBytesEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringBytesEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringBytesEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 71 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            71 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringNestedMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 72 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            72 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringForeignMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 73 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            73 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringNestedEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 74 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            74 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__mapStringForeignEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            tag.fieldNr == 201 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            201 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalBoolWrapperDelegate.getOrCreate(msg) { BoolValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 202 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            202 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalInt32WrapperDelegate.getOrCreate(msg) { Int32ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 203 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            203 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalInt64WrapperDelegate.getOrCreate(msg) { Int64ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 204 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            204 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalUint32WrapperDelegate.getOrCreate(msg) { UInt32ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 205 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            205 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalUint64WrapperDelegate.getOrCreate(msg) { UInt64ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 206 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            206 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalFloatWrapperDelegate.getOrCreate(msg) { FloatValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 207 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            207 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalDoubleWrapperDelegate.getOrCreate(msg) { DoubleValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 208 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            208 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalStringWrapperDelegate.getOrCreate(msg) { StringValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 209 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            209 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalBytesWrapperDelegate.getOrCreate(msg) { BytesValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 211 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            211 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedBoolWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = BoolValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 212 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            212 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedInt32WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = Int32ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> Int32ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 213 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            213 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedInt64WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = Int64ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> Int64ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 214 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            214 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedUint32WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = UInt32ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> UInt32ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 215 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            215 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedUint64WrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = UInt64ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> UInt64ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 216 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            216 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedFloatWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FloatValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> FloatValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 217 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            217 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedDoubleWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = DoubleValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> DoubleValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 218 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            218 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedStringWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = StringValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> StringValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 219 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            219 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedBytesWrapperDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = BytesValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> BytesValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 301 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            301 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalDurationDelegate.getOrCreate(msg) { DurationInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 302 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            302 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalTimestampDelegate.getOrCreate(msg) { TimestampInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 303 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            303 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalFieldMaskDelegate.getOrCreate(msg) { FieldMaskInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 304 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            304 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalStructDelegate.getOrCreate(msg) { StructInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 305 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            305 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalAnyDelegate.getOrCreate(msg) { AnyInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 306 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            306 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalValueDelegate.getOrCreate(msg) { ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 307 && tag.wireType == WireType.VARINT -> {
+            307 if tag.wireType == WireType.VARINT -> {
                 msg.optionalNullValue = NullValue.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 308 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            308 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalEmptyDelegate.getOrCreate(msg) { EmptyInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 311 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            311 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedDurationDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = DurationInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> DurationInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 312 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            312 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedTimestampDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TimestampInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> TimestampInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 313 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            313 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedFieldmaskDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FieldMaskInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> FieldMaskInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 324 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            324 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedStructDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = StructInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 315 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            315 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedAnyDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = AnyInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 316 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            316 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedValueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 317 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            317 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedListValueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ListValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 318 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            318 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__repeatedEmptyDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = EmptyInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> EmptyInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 401 && tag.wireType == WireType.VARINT -> {
+            401 if tag.wireType == WireType.VARINT -> {
                 msg.fieldname1 = decoder.readInt32()
             }
-            tag.fieldNr == 402 && tag.wireType == WireType.VARINT -> {
+            402 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName2 = decoder.readInt32()
             }
-            tag.fieldNr == 403 && tag.wireType == WireType.VARINT -> {
+            403 if tag.wireType == WireType.VARINT -> {
                 msg.FieldName3 = decoder.readInt32()
             }
-            tag.fieldNr == 404 && tag.wireType == WireType.VARINT -> {
+            404 if tag.wireType == WireType.VARINT -> {
                 msg.field_Name4_ = decoder.readInt32()
             }
-            tag.fieldNr == 405 && tag.wireType == WireType.VARINT -> {
+            405 if tag.wireType == WireType.VARINT -> {
                 msg.field0name5 = decoder.readInt32()
             }
-            tag.fieldNr == 406 && tag.wireType == WireType.VARINT -> {
+            406 if tag.wireType == WireType.VARINT -> {
                 msg.field_0Name6 = decoder.readInt32()
             }
-            tag.fieldNr == 407 && tag.wireType == WireType.VARINT -> {
+            407 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName7 = decoder.readInt32()
             }
-            tag.fieldNr == 408 && tag.wireType == WireType.VARINT -> {
+            408 if tag.wireType == WireType.VARINT -> {
                 msg.FieldName8 = decoder.readInt32()
             }
-            tag.fieldNr == 409 && tag.wireType == WireType.VARINT -> {
+            409 if tag.wireType == WireType.VARINT -> {
                 msg.field_Name9 = decoder.readInt32()
             }
-            tag.fieldNr == 410 && tag.wireType == WireType.VARINT -> {
+            410 if tag.wireType == WireType.VARINT -> {
                 msg.Field_Name10 = decoder.readInt32()
             }
-            tag.fieldNr == 411 && tag.wireType == WireType.VARINT -> {
+            411 if tag.wireType == WireType.VARINT -> {
                 msg.FIELD_NAME11 = decoder.readInt32()
             }
-            tag.fieldNr == 412 && tag.wireType == WireType.VARINT -> {
+            412 if tag.wireType == WireType.VARINT -> {
                 msg.FIELDName12 = decoder.readInt32()
             }
-            tag.fieldNr == 413 && tag.wireType == WireType.VARINT -> {
+            413 if tag.wireType == WireType.VARINT -> {
                 msg._FieldName13 = decoder.readInt32()
             }
-            tag.fieldNr == 414 && tag.wireType == WireType.VARINT -> {
+            414 if tag.wireType == WireType.VARINT -> {
                 msg.__FieldName14 = decoder.readInt32()
             }
-            tag.fieldNr == 415 && tag.wireType == WireType.VARINT -> {
+            415 if tag.wireType == WireType.VARINT -> {
                 msg.field_Name15 = decoder.readInt32()
             }
-            tag.fieldNr == 416 && tag.wireType == WireType.VARINT -> {
+            416 if tag.wireType == WireType.VARINT -> {
                 msg.field__Name16 = decoder.readInt32()
             }
-            tag.fieldNr == 417 && tag.wireType == WireType.VARINT -> {
+            417 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName17__ = decoder.readInt32()
             }
-            tag.fieldNr == 418 && tag.wireType == WireType.VARINT -> {
+            418 if tag.wireType == WireType.VARINT -> {
                 msg.FieldName18__ = decoder.readInt32()
             }
-            tag.fieldNr == 111 && tag.wireType == WireType.VARINT -> {
+            111 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofUint32(decoder.readUInt32())
             }
-            tag.fieldNr == 112 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val field = (msg.oneofField as? TestAllTypesProto3.OneofField.OneofNestedMessage) ?: TestAllTypesProto3.OneofField.OneofNestedMessage(TestAllTypesProto3Internal.NestedMessageInternal()).also {
                     msg.oneofField = it
                 }
 
-                decoder.readMessage(field.value.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(field.value.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 113 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofString(decoder.readString())
             }
-            tag.fieldNr == 114 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofBytes(decoder.readBytes())
             }
-            tag.fieldNr == 115 && tag.wireType == WireType.VARINT -> {
+            115 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofBool(decoder.readBool())
             }
-            tag.fieldNr == 116 && tag.wireType == WireType.VARINT -> {
+            116 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofUint64(decoder.readUInt64())
             }
-            tag.fieldNr == 117 && tag.wireType == WireType.FIXED32 -> {
+            117 if tag.wireType == WireType.FIXED32 -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofFloat(decoder.readFloat())
             }
-            tag.fieldNr == 118 && tag.wireType == WireType.FIXED64 -> {
+            118 if tag.wireType == WireType.FIXED64 -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofDouble(decoder.readDouble())
             }
-            tag.fieldNr == 119 && tag.wireType == WireType.VARINT -> {
+            119 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofEnum(TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum()))
             }
-            tag.fieldNr == 120 && tag.wireType == WireType.VARINT -> {
+            120 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesProto3.OneofField.OneofNullValue(NullValue.fromNumber(decoder.readEnum()))
             }
             else -> {
@@ -4837,55 +4569,55 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
 private fun TestAllTypesProto3Internal.computeSize(): Int {
     var __result = 0
     if (this.optionalInt32 != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.optionalInt32))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.optionalInt32)
     }
 
     if (this.optionalInt64 != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.optionalInt64))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.optionalInt64)
     }
 
     if (this.optionalUint32 != 0u) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(this.optionalUint32))
+        __result += WireSize.tag(3, WireType.VARINT) + WireSize.uInt32(this.optionalUint32)
     }
 
     if (this.optionalUint64 != 0uL) {
-        __result += (WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(this.optionalUint64))
+        __result += WireSize.tag(4, WireType.VARINT) + WireSize.uInt64(this.optionalUint64)
     }
 
     if (this.optionalSint32 != 0) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(this.optionalSint32))
+        __result += WireSize.tag(5, WireType.VARINT) + WireSize.sInt32(this.optionalSint32)
     }
 
     if (this.optionalSint64 != 0L) {
-        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(this.optionalSint64))
+        __result += WireSize.tag(6, WireType.VARINT) + WireSize.sInt64(this.optionalSint64)
     }
 
     if (this.optionalFixed32 != 0u) {
-        __result += (WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(this.optionalFixed32))
+        __result += WireSize.tag(7, WireType.FIXED32) + WireSize.fixed32(this.optionalFixed32)
     }
 
     if (this.optionalFixed64 != 0uL) {
-        __result += (WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(this.optionalFixed64))
+        __result += WireSize.tag(8, WireType.FIXED64) + WireSize.fixed64(this.optionalFixed64)
     }
 
     if (this.optionalSfixed32 != 0) {
-        __result += (WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(this.optionalSfixed32))
+        __result += WireSize.tag(9, WireType.FIXED32) + WireSize.sFixed32(this.optionalSfixed32)
     }
 
     if (this.optionalSfixed64 != 0L) {
-        __result += (WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(this.optionalSfixed64))
+        __result += WireSize.tag(10, WireType.FIXED64) + WireSize.sFixed64(this.optionalSfixed64)
     }
 
     if (this.optionalFloat != 0.0f) {
-        __result += (WireSize.tag(11, WireType.FIXED32) + WireSize.float(this.optionalFloat))
+        __result += WireSize.tag(11, WireType.FIXED32) + WireSize.float(this.optionalFloat)
     }
 
     if (this.optionalDouble != 0.0) {
-        __result += (WireSize.tag(12, WireType.FIXED64) + WireSize.double(this.optionalDouble))
+        __result += WireSize.tag(12, WireType.FIXED64) + WireSize.double(this.optionalDouble)
     }
 
-    if (this.optionalBool != false) {
-        __result += (WireSize.tag(13, WireType.VARINT) + WireSize.bool(this.optionalBool))
+    if (this.optionalBool) {
+        __result += WireSize.tag(13, WireType.VARINT) + WireSize.bool(this.optionalBool)
     }
 
     if (this.optionalString.isNotEmpty()) {
@@ -4896,24 +4628,24 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += WireSize.bytes(this.optionalBytes).let { WireSize.tag(15, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalNestedMessage]) {
         __result += this.optionalNestedMessage.asInternal()._size.let { WireSize.tag(18, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[1]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalForeignMessage]) {
         __result += this.optionalForeignMessage.asInternal()._size.let { WireSize.tag(19, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.optionalNestedEnum != TestAllTypesProto3.NestedEnum.FOO) {
-        __result += (WireSize.tag(21, WireType.VARINT) + WireSize.enum(this.optionalNestedEnum.number))
+        __result += WireSize.tag(21, WireType.VARINT) + WireSize.enum(this.optionalNestedEnum.number)
     }
 
     if (this.optionalForeignEnum != ForeignEnum.FOREIGN_FOO) {
-        __result += (WireSize.tag(22, WireType.VARINT) + WireSize.enum(this.optionalForeignEnum.number))
+        __result += WireSize.tag(22, WireType.VARINT) + WireSize.enum(this.optionalForeignEnum.number)
     }
 
     if (this.optionalAliasedEnum != TestAllTypesProto3.AliasedEnum.ALIAS_FOO) {
-        __result += (WireSize.tag(23, WireType.VARINT) + WireSize.enum(this.optionalAliasedEnum.number))
+        __result += WireSize.tag(23, WireType.VARINT) + WireSize.enum(this.optionalAliasedEnum.number)
     }
 
     if (this.optionalStringPiece.isNotEmpty()) {
@@ -4924,7 +4656,7 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += WireSize.string(this.optionalCord).let { WireSize.tag(25, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[2]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.recursiveMessage]) {
         __result += this.recursiveMessage.asInternal()._size.let { WireSize.tag(27, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
@@ -4981,19 +4713,19 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.repeatedString.isNotEmpty()) {
-        __result += this.repeatedString.sumOf { WireSize.string(it).let { WireSize.tag(44, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedString.sumOf { element -> WireSize.string(element).let { WireSize.tag(44, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedBytes.isNotEmpty()) {
-        __result += this.repeatedBytes.sumOf { WireSize.bytes(it).let { WireSize.tag(45, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedBytes.sumOf { element -> WireSize.bytes(element).let { WireSize.tag(45, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedNestedMessage.isNotEmpty()) {
-        __result += this.repeatedNestedMessage.sumOf { it.asInternal()._size.let { WireSize.tag(48, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedNestedMessage.sumOf { element -> element.asInternal()._size.let { WireSize.tag(48, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedForeignMessage.isNotEmpty()) {
-        __result += this.repeatedForeignMessage.sumOf { it.asInternal()._size.let { WireSize.tag(49, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedForeignMessage.sumOf { element -> element.asInternal()._size.let { WireSize.tag(49, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedNestedEnum.isNotEmpty()) {
@@ -5005,11 +4737,11 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.repeatedStringPiece.isNotEmpty()) {
-        __result += this.repeatedStringPiece.sumOf { WireSize.string(it).let { WireSize.tag(54, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedStringPiece.sumOf { element -> WireSize.string(element).let { WireSize.tag(54, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedCord.isNotEmpty()) {
-        __result += this.repeatedCord.sumOf { WireSize.string(it).let { WireSize.tag(55, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedCord.sumOf { element -> WireSize.string(element).let { WireSize.tag(55, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.packedInt32.isNotEmpty()) {
@@ -5069,59 +4801,59 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
-        __result += this.unpackedInt32.sumOf { WireSize.tag(89, WireType.VARINT) + WireSize.int32(it) }
+        __result += this.unpackedInt32.sumOf { element -> WireSize.tag(89, WireType.VARINT) + WireSize.int32(element) }
     }
 
     if (this.unpackedInt64.isNotEmpty()) {
-        __result += this.unpackedInt64.sumOf { WireSize.tag(90, WireType.VARINT) + WireSize.int64(it) }
+        __result += this.unpackedInt64.sumOf { element -> WireSize.tag(90, WireType.VARINT) + WireSize.int64(element) }
     }
 
     if (this.unpackedUint32.isNotEmpty()) {
-        __result += this.unpackedUint32.sumOf { WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(it) }
+        __result += this.unpackedUint32.sumOf { element -> WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(element) }
     }
 
     if (this.unpackedUint64.isNotEmpty()) {
-        __result += this.unpackedUint64.sumOf { WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(it) }
+        __result += this.unpackedUint64.sumOf { element -> WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(element) }
     }
 
     if (this.unpackedSint32.isNotEmpty()) {
-        __result += this.unpackedSint32.sumOf { WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(it) }
+        __result += this.unpackedSint32.sumOf { element -> WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(element) }
     }
 
     if (this.unpackedSint64.isNotEmpty()) {
-        __result += this.unpackedSint64.sumOf { WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(it) }
+        __result += this.unpackedSint64.sumOf { element -> WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(element) }
     }
 
     if (this.unpackedFixed32.isNotEmpty()) {
-        __result += this.unpackedFixed32.sumOf { WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(it) }
+        __result += this.unpackedFixed32.sumOf { element -> WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(element) }
     }
 
     if (this.unpackedFixed64.isNotEmpty()) {
-        __result += this.unpackedFixed64.sumOf { WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(it) }
+        __result += this.unpackedFixed64.sumOf { element -> WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(element) }
     }
 
     if (this.unpackedSfixed32.isNotEmpty()) {
-        __result += this.unpackedSfixed32.sumOf { WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(it) }
+        __result += this.unpackedSfixed32.sumOf { element -> WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(element) }
     }
 
     if (this.unpackedSfixed64.isNotEmpty()) {
-        __result += this.unpackedSfixed64.sumOf { WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(it) }
+        __result += this.unpackedSfixed64.sumOf { element -> WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(element) }
     }
 
     if (this.unpackedFloat.isNotEmpty()) {
-        __result += this.unpackedFloat.sumOf { WireSize.tag(99, WireType.FIXED32) + WireSize.float(it) }
+        __result += this.unpackedFloat.sumOf { element -> WireSize.tag(99, WireType.FIXED32) + WireSize.float(element) }
     }
 
     if (this.unpackedDouble.isNotEmpty()) {
-        __result += this.unpackedDouble.sumOf { WireSize.tag(100, WireType.FIXED64) + WireSize.double(it) }
+        __result += this.unpackedDouble.sumOf { element -> WireSize.tag(100, WireType.FIXED64) + WireSize.double(element) }
     }
 
     if (this.unpackedBool.isNotEmpty()) {
-        __result += this.unpackedBool.sumOf { WireSize.tag(101, WireType.VARINT) + WireSize.bool(it) }
+        __result += this.unpackedBool.sumOf { element -> WireSize.tag(101, WireType.VARINT) + WireSize.bool(element) }
     }
 
     if (this.unpackedNestedEnum.isNotEmpty()) {
-        __result += this.unpackedNestedEnum.sumOf { WireSize.tag(102, WireType.VARINT) + WireSize.enum(it.number) }
+        __result += this.unpackedNestedEnum.sumOf { element -> WireSize.tag(102, WireType.VARINT) + WireSize.enum(element.number) }
     }
 
     if (this.mapInt32Int32.isNotEmpty()) {
@@ -5314,245 +5046,245 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
-    if (presenceMask[3]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
         __result += this.optionalBoolWrapper.asInternal()._size.let { WireSize.tag(201, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[4]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalInt32Wrapper]) {
         __result += this.optionalInt32Wrapper.asInternal()._size.let { WireSize.tag(202, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[5]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalInt64Wrapper]) {
         __result += this.optionalInt64Wrapper.asInternal()._size.let { WireSize.tag(203, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[6]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalUint32Wrapper]) {
         __result += this.optionalUint32Wrapper.asInternal()._size.let { WireSize.tag(204, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[7]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalUint64Wrapper]) {
         __result += this.optionalUint64Wrapper.asInternal()._size.let { WireSize.tag(205, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[8]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalFloatWrapper]) {
         __result += this.optionalFloatWrapper.asInternal()._size.let { WireSize.tag(206, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[9]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalDoubleWrapper]) {
         __result += this.optionalDoubleWrapper.asInternal()._size.let { WireSize.tag(207, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[10]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalStringWrapper]) {
         __result += this.optionalStringWrapper.asInternal()._size.let { WireSize.tag(208, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[11]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBytesWrapper]) {
         __result += this.optionalBytesWrapper.asInternal()._size.let { WireSize.tag(209, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedBoolWrapper.isNotEmpty()) {
-        __result += this.repeatedBoolWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(211, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedBoolWrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(211, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedInt32Wrapper.isNotEmpty()) {
-        __result += this.repeatedInt32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(212, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedInt32Wrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(212, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedInt64Wrapper.isNotEmpty()) {
-        __result += this.repeatedInt64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(213, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedInt64Wrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(213, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedUint32Wrapper.isNotEmpty()) {
-        __result += this.repeatedUint32Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(214, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedUint32Wrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(214, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedUint64Wrapper.isNotEmpty()) {
-        __result += this.repeatedUint64Wrapper.sumOf { it.asInternal()._size.let { WireSize.tag(215, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedUint64Wrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(215, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedFloatWrapper.isNotEmpty()) {
-        __result += this.repeatedFloatWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(216, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedFloatWrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(216, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedDoubleWrapper.isNotEmpty()) {
-        __result += this.repeatedDoubleWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(217, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedDoubleWrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(217, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedStringWrapper.isNotEmpty()) {
-        __result += this.repeatedStringWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(218, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedStringWrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(218, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedBytesWrapper.isNotEmpty()) {
-        __result += this.repeatedBytesWrapper.sumOf { it.asInternal()._size.let { WireSize.tag(219, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedBytesWrapper.sumOf { element -> element.asInternal()._size.let { WireSize.tag(219, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (presenceMask[12]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalDuration]) {
         __result += this.optionalDuration.asInternal()._size.let { WireSize.tag(301, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[13]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalTimestamp]) {
         __result += this.optionalTimestamp.asInternal()._size.let { WireSize.tag(302, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[14]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalFieldMask]) {
         __result += this.optionalFieldMask.asInternal()._size.let { WireSize.tag(303, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[15]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalStruct]) {
         __result += this.optionalStruct.asInternal()._size.let { WireSize.tag(304, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[16]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalAny]) {
         __result += this.optionalAny.asInternal()._size.let { WireSize.tag(305, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[17]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalValue]) {
         __result += this.optionalValue.asInternal()._size.let { WireSize.tag(306, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.optionalNullValue != NullValue.NULL_VALUE) {
-        __result += (WireSize.tag(307, WireType.VARINT) + WireSize.enum(this.optionalNullValue.number))
+        __result += WireSize.tag(307, WireType.VARINT) + WireSize.enum(this.optionalNullValue.number)
     }
 
-    if (presenceMask[18]) {
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalEmpty]) {
         __result += this.optionalEmpty.asInternal()._size.let { WireSize.tag(308, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedDuration.isNotEmpty()) {
-        __result += this.repeatedDuration.sumOf { it.asInternal()._size.let { WireSize.tag(311, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedDuration.sumOf { element -> element.asInternal()._size.let { WireSize.tag(311, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedTimestamp.isNotEmpty()) {
-        __result += this.repeatedTimestamp.sumOf { it.asInternal()._size.let { WireSize.tag(312, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedTimestamp.sumOf { element -> element.asInternal()._size.let { WireSize.tag(312, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedFieldmask.isNotEmpty()) {
-        __result += this.repeatedFieldmask.sumOf { it.asInternal()._size.let { WireSize.tag(313, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedFieldmask.sumOf { element -> element.asInternal()._size.let { WireSize.tag(313, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedStruct.isNotEmpty()) {
-        __result += this.repeatedStruct.sumOf { it.asInternal()._size.let { WireSize.tag(324, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedStruct.sumOf { element -> element.asInternal()._size.let { WireSize.tag(324, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedAny.isNotEmpty()) {
-        __result += this.repeatedAny.sumOf { it.asInternal()._size.let { WireSize.tag(315, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedAny.sumOf { element -> element.asInternal()._size.let { WireSize.tag(315, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedValue.isNotEmpty()) {
-        __result += this.repeatedValue.sumOf { it.asInternal()._size.let { WireSize.tag(316, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedValue.sumOf { element -> element.asInternal()._size.let { WireSize.tag(316, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedListValue.isNotEmpty()) {
-        __result += this.repeatedListValue.sumOf { it.asInternal()._size.let { WireSize.tag(317, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedListValue.sumOf { element -> element.asInternal()._size.let { WireSize.tag(317, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.repeatedEmpty.isNotEmpty()) {
-        __result += this.repeatedEmpty.sumOf { it.asInternal()._size.let { WireSize.tag(318, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.repeatedEmpty.sumOf { element -> element.asInternal()._size.let { WireSize.tag(318, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.fieldname1 != 0) {
-        __result += (WireSize.tag(401, WireType.VARINT) + WireSize.int32(this.fieldname1))
+        __result += WireSize.tag(401, WireType.VARINT) + WireSize.int32(this.fieldname1)
     }
 
     if (this.fieldName2 != 0) {
-        __result += (WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2))
+        __result += WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2)
     }
 
     if (this.FieldName3 != 0) {
-        __result += (WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.FieldName3))
+        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.FieldName3)
     }
 
     if (this.field_Name4_ != 0) {
-        __result += (WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_))
+        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_)
     }
 
     if (this.field0name5 != 0) {
-        __result += (WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5))
+        __result += WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5)
     }
 
     if (this.field_0Name6 != 0) {
-        __result += (WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6))
+        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6)
     }
 
     if (this.fieldName7 != 0) {
-        __result += (WireSize.tag(407, WireType.VARINT) + WireSize.int32(this.fieldName7))
+        __result += WireSize.tag(407, WireType.VARINT) + WireSize.int32(this.fieldName7)
     }
 
     if (this.FieldName8 != 0) {
-        __result += (WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.FieldName8))
+        __result += WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.FieldName8)
     }
 
     if (this.field_Name9 != 0) {
-        __result += (WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9))
+        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9)
     }
 
     if (this.Field_Name10 != 0) {
-        __result += (WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.Field_Name10))
+        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.Field_Name10)
     }
 
     if (this.FIELD_NAME11 != 0) {
-        __result += (WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.FIELD_NAME11))
+        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.FIELD_NAME11)
     }
 
     if (this.FIELDName12 != 0) {
-        __result += (WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.FIELDName12))
+        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.FIELDName12)
     }
 
     if (this._FieldName13 != 0) {
-        __result += (WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13))
+        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13)
     }
 
     if (this.__FieldName14 != 0) {
-        __result += (WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14))
+        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14)
     }
 
     if (this.field_Name15 != 0) {
-        __result += (WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15))
+        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15)
     }
 
     if (this.field__Name16 != 0) {
-        __result += (WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16))
+        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16)
     }
 
     if (this.fieldName17__ != 0) {
-        __result += (WireSize.tag(417, WireType.VARINT) + WireSize.int32(this.fieldName17__))
+        __result += WireSize.tag(417, WireType.VARINT) + WireSize.int32(this.fieldName17__)
     }
 
     if (this.FieldName18__ != 0) {
-        __result += (WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.FieldName18__))
+        __result += WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.FieldName18__)
     }
 
-    this.oneofField?.also {
-        when (val value = it) {
+    this.oneofField?.also { value ->
+        __result += when (value) {
             is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                __result += (WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value))
+                WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value)
             }
             is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                __result += value.value.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                value.value.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is TestAllTypesProto3.OneofField.OneofString -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is TestAllTypesProto3.OneofField.OneofBytes -> {
-                __result += WireSize.bytes(value.value).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.bytes(value.value).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is TestAllTypesProto3.OneofField.OneofBool -> {
-                __result += (WireSize.tag(115, WireType.VARINT) + WireSize.bool(value.value))
+                WireSize.tag(115, WireType.VARINT) + WireSize.bool(value.value)
             }
             is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                __result += (WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(value.value))
+                WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(value.value)
             }
             is TestAllTypesProto3.OneofField.OneofFloat -> {
-                __result += (WireSize.tag(117, WireType.FIXED32) + WireSize.float(value.value))
+                WireSize.tag(117, WireType.FIXED32) + WireSize.float(value.value)
             }
             is TestAllTypesProto3.OneofField.OneofDouble -> {
-                __result += (WireSize.tag(118, WireType.FIXED64) + WireSize.double(value.value))
+                WireSize.tag(118, WireType.FIXED64) + WireSize.double(value.value)
             }
             is TestAllTypesProto3.OneofField.OneofEnum -> {
-                __result += (WireSize.tag(119, WireType.VARINT) + WireSize.enum(value.value.number))
+                WireSize.tag(119, WireType.VARINT) + WireSize.enum(value.value.number)
             }
             is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                __result += (WireSize.tag(120, WireType.VARINT) + WireSize.enum(value.value.number))
+                WireSize.tag(120, WireType.VARINT) + WireSize.enum(value.value.number)
             }
         }
     }
@@ -5564,11 +5296,6 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
 @InternalRpcApi
 fun TestAllTypesProto3.asInternal(): TestAllTypesProto3Internal {
     return this as? TestAllTypesProto3Internal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun ForeignMessageInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -5590,8 +5317,8 @@ fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?
 fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.c = decoder.readInt32()
             }
             else -> {
@@ -5619,7 +5346,7 @@ fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, dec
 private fun ForeignMessageInternal.computeSize(): Int {
     var __result = 0
     if (this.c != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.c))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.c)
     }
 
     __result += _unknownFields.size.toInt()
@@ -5629,11 +5356,6 @@ private fun ForeignMessageInternal.computeSize(): Int {
 @InternalRpcApi
 fun ForeignMessage.asInternal(): ForeignMessageInternal {
     return this as? ForeignMessageInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun NullHypothesisProto3Internal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -5652,7 +5374,7 @@ fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoC
 fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
+        when (tag.fieldNr) {
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -5687,11 +5409,6 @@ fun NullHypothesisProto3.asInternal(): NullHypothesisProto3Internal {
 }
 
 @InternalRpcApi
-fun EnumOnlyProto3Internal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     // no fields to encode
     _extensions.forEach { (key, value) ->
@@ -5707,7 +5424,7 @@ fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?
 fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
+        when (tag.fieldNr) {
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
@@ -5742,21 +5459,13 @@ fun EnumOnlyProto3.asInternal(): EnumOnlyProto3Internal {
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.NestedMessageInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.corecursive.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.a != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.a)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.NestedMessageInternal.PresenceIndices.corecursive]) {
+        encoder.writeMessage(fieldNr = 2, value = this.corecursive.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -5772,13 +5481,13 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
 fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.a = decoder.readInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__corecursiveDelegate.getOrCreate(msg) { TestAllTypesProto3Internal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -5805,10 +5514,10 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: T
 private fun TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int {
     var __result = 0
     if (this.a != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.a))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.a)
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[TestAllTypesProto3Internal.NestedMessageInternal.PresenceIndices.corecursive]) {
         __result += this.corecursive.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
@@ -5819,11 +5528,6 @@ private fun TestAllTypesProto3Internal.NestedMessageInternal.computeSize(): Int 
 @InternalRpcApi
 fun TestAllTypesProto3.NestedMessage.asInternal(): TestAllTypesProto3Internal.NestedMessageInternal {
     return this as? TestAllTypesProto3Internal.NestedMessageInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -5849,11 +5553,11 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
 fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32Int32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readInt32()
             }
             else -> {
@@ -5881,11 +5585,11 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(m
 private fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key)
     }
 
     if (this.value != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -5895,11 +5599,6 @@ private fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.computeSize():
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.asInternal(): TestAllTypesProto3Internal.MapInt32Int32EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -5925,11 +5624,11 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
 fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt64Int64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readInt64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readInt64()
             }
             else -> {
@@ -5957,11 +5656,11 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(m
 private fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.key)
     }
 
     if (this.value != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.int64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -5971,11 +5670,6 @@ private fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.computeSize():
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.asInternal(): TestAllTypesProto3Internal.MapInt64Int64EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6001,11 +5695,11 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
 fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint32Uint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readUInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readUInt32()
             }
             else -> {
@@ -6033,11 +5727,11 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith
 private fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0u) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.key)
     }
 
     if (this.value != 0u) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt32(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.uInt32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6047,11 +5741,6 @@ private fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.computeSize(
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.asInternal(): TestAllTypesProto3Internal.MapUint32Uint32EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6077,11 +5766,11 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
 fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint64Uint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readUInt64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readUInt64()
             }
             else -> {
@@ -6109,11 +5798,11 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith
 private fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0uL) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.key)
     }
 
     if (this.value != 0uL) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.uInt64(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.uInt64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6123,11 +5812,6 @@ private fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.computeSize(
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.asInternal(): TestAllTypesProto3Internal.MapUint64Uint64EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6153,11 +5837,11 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
 fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint32Sint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readSInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readSInt32()
             }
             else -> {
@@ -6185,11 +5869,11 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith
 private fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt32(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.sInt32(this.key)
     }
 
     if (this.value != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt32(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.sInt32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6199,11 +5883,6 @@ private fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.computeSize(
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.asInternal(): TestAllTypesProto3Internal.MapSint32Sint32EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6229,11 +5908,11 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
 fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint64Sint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readSInt64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readSInt64()
             }
             else -> {
@@ -6261,11 +5940,11 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith
 private fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.sInt64(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.sInt64(this.key)
     }
 
     if (this.value != 0L) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.sInt64(this.value))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.sInt64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6275,11 +5954,6 @@ private fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.computeSize(
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.asInternal(): TestAllTypesProto3Internal.MapSint64Sint64EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6305,11 +5979,11 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
 fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED32 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED32 -> {
                 msg.key = decoder.readFixed32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED32 -> {
+            2 if tag.wireType == WireType.FIXED32 -> {
                 msg.value = decoder.readFixed32()
             }
             else -> {
@@ -6337,11 +6011,11 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWi
 private fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0u) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.fixed32(this.key))
+        __result += WireSize.tag(1, WireType.FIXED32) + WireSize.fixed32(this.key)
     }
 
     if (this.value != 0u) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.fixed32(this.value))
+        __result += WireSize.tag(2, WireType.FIXED32) + WireSize.fixed32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6351,11 +6025,6 @@ private fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.computeSiz
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.asInternal(): TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6381,11 +6050,11 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
 fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED64 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED64 -> {
                 msg.key = decoder.readFixed64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED64 -> {
+            2 if tag.wireType == WireType.FIXED64 -> {
                 msg.value = decoder.readFixed64()
             }
             else -> {
@@ -6413,11 +6082,11 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWi
 private fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0uL) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.fixed64(this.key))
+        __result += WireSize.tag(1, WireType.FIXED64) + WireSize.fixed64(this.key)
     }
 
     if (this.value != 0uL) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.fixed64(this.value))
+        __result += WireSize.tag(2, WireType.FIXED64) + WireSize.fixed64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6427,11 +6096,6 @@ private fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.computeSiz
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.asInternal(): TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6457,11 +6121,11 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
 fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED32 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED32 -> {
                 msg.key = decoder.readSFixed32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED32 -> {
+            2 if tag.wireType == WireType.FIXED32 -> {
                 msg.value = decoder.readSFixed32()
             }
             else -> {
@@ -6489,11 +6153,11 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decode
 private fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.sFixed32(this.key))
+        __result += WireSize.tag(1, WireType.FIXED32) + WireSize.sFixed32(this.key)
     }
 
     if (this.value != 0) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.sFixed32(this.value))
+        __result += WireSize.tag(2, WireType.FIXED32) + WireSize.sFixed32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6503,11 +6167,6 @@ private fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.computeS
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.asInternal(): TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6533,11 +6192,11 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
 fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED64 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED64 -> {
                 msg.key = decoder.readSFixed64()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED64 -> {
+            2 if tag.wireType == WireType.FIXED64 -> {
                 msg.value = decoder.readSFixed64()
             }
             else -> {
@@ -6565,11 +6224,11 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decode
 private fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0L) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.sFixed64(this.key))
+        __result += WireSize.tag(1, WireType.FIXED64) + WireSize.sFixed64(this.key)
     }
 
     if (this.value != 0L) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.sFixed64(this.value))
+        __result += WireSize.tag(2, WireType.FIXED64) + WireSize.sFixed64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6579,11 +6238,6 @@ private fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.computeS
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.asInternal(): TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6609,11 +6263,11 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
 fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32FloatEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED32 -> {
+            2 if tag.wireType == WireType.FIXED32 -> {
                 msg.value = decoder.readFloat()
             }
             else -> {
@@ -6641,11 +6295,11 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(m
 private fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key)
     }
 
     if (this.value != 0.0f) {
-        __result += (WireSize.tag(2, WireType.FIXED32) + WireSize.float(this.value))
+        __result += WireSize.tag(2, WireType.FIXED32) + WireSize.float(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6655,11 +6309,6 @@ private fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.computeSize():
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.asInternal(): TestAllTypesProto3Internal.MapInt32FloatEntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6685,11 +6334,11 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
 fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32DoubleEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readInt32()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED64 -> {
+            2 if tag.wireType == WireType.FIXED64 -> {
                 msg.value = decoder.readDouble()
             }
             else -> {
@@ -6717,11 +6366,11 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
 private fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
     var __result = 0
     if (this.key != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key)
     }
 
     if (this.value != 0.0) {
-        __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.double(this.value))
+        __result += WireSize.tag(2, WireType.FIXED64) + WireSize.double(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6734,17 +6383,12 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.asInternal(): TestAll
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    if (this.key != false) {
+    if (this.key) {
         encoder.writeBool(fieldNr = 1, value = this.key)
     }
 
-    if (this.value != false) {
+    if (this.value) {
         encoder.writeBool(fieldNr = 2, value = this.value)
     }
 
@@ -6761,11 +6405,11 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
 fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapBoolBoolEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.key = decoder.readBool()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readBool()
             }
             else -> {
@@ -6792,12 +6436,12 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg
 
 private fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): Int {
     var __result = 0
-    if (this.key != false) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.key))
+    if (this.key) {
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.key)
     }
 
-    if (this.value != false) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.bool(this.value))
+    if (this.value) {
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.bool(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -6807,11 +6451,6 @@ private fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.computeSize(): I
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.asInternal(): TestAllTypesProto3Internal.MapBoolBoolEntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringStringEntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -6837,11 +6476,11 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: 
 fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringStringEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.value = decoder.readString()
             }
             else -> {
@@ -6886,11 +6525,6 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
@@ -6913,11 +6547,11 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
 fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringBytesEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.value = decoder.readBytes()
             }
             else -> {
@@ -6962,21 +6596,13 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.asInternal(): TestAll
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.value.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.PresenceIndices.value]) {
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -6992,13 +6618,13 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(en
 fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { TestAllTypesProto3Internal.NestedMessageInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -7028,7 +6654,7 @@ private fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.compu
         __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.PresenceIndices.value]) {
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
@@ -7042,21 +6668,13 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.asInternal():
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.value.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.PresenceIndices.value]) {
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -7072,13 +6690,13 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(e
 fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { ForeignMessageInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> ForeignMessageInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -7108,7 +6726,7 @@ private fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.comp
         __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.PresenceIndices.value]) {
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
@@ -7119,11 +6737,6 @@ private fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.comp
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.asInternal(): TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -7149,11 +6762,11 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
 fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
             }
             else -> {
@@ -7185,7 +6798,7 @@ private fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeS
     }
 
     if (this.value != TestAllTypesProto3.NestedEnum.FOO) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number)
     }
 
     __result += _unknownFields.size.toInt()
@@ -7195,11 +6808,6 @@ private fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.computeS
 @InternalRpcApi
 fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.asInternal(): TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal {
     return this
-}
-
-@InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -7225,11 +6833,11 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
 fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.value = ForeignEnum.fromNumber(decoder.readEnum())
             }
             else -> {
@@ -7261,7 +6869,7 @@ private fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.compute
     }
 
     if (this.value != ForeignEnum.FOREIGN_FOO) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.value.number)
     }
 
     __result += _unknownFields.size.toInt()

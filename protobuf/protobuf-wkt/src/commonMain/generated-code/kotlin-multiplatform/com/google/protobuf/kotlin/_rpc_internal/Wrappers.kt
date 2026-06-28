@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -34,6 +36,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
+@InternalRpcApi
 public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -48,19 +51,15 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
     public override var value: Double by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.toBits().hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as DoubleValueInternal
-        other.checkRequiredFields()
-        if (this.value.toBits() != other.value.toBits()) return false
-        return true
+        return this.value.toBits() == other.value.toBits()
     }
 
     public override fun toString(): String {
@@ -68,7 +67,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -111,7 +109,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
                 checkForPlatformDecodeException {
                     DoubleValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -128,6 +125,7 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
     }
 }
 
+@InternalRpcApi
 public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -142,19 +140,15 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     public override var value: Float by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.toBits().hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as FloatValueInternal
-        other.checkRequiredFields()
-        if (this.value.toBits() != other.value.toBits()) return false
-        return true
+        return this.value.toBits() == other.value.toBits()
     }
 
     public override fun toString(): String {
@@ -162,7 +156,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -205,7 +198,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
                 checkForPlatformDecodeException {
                     FloatValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -222,6 +214,7 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     }
 }
 
+@InternalRpcApi
 public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -236,19 +229,15 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
     public override var value: Long by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as Int64ValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -256,7 +245,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -299,7 +287,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
                 checkForPlatformDecodeException {
                     Int64ValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -316,6 +303,7 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
     }
 }
 
+@InternalRpcApi
 public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -330,19 +318,15 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     public override var value: ULong by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as UInt64ValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -350,7 +334,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -393,7 +376,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
                 checkForPlatformDecodeException {
                     UInt64ValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -410,6 +392,7 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     }
 }
 
+@InternalRpcApi
 public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -424,19 +407,15 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
     public override var value: Int by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as Int32ValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -444,7 +423,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -487,7 +465,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
                 checkForPlatformDecodeException {
                     Int32ValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -504,6 +481,7 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
     }
 }
 
+@InternalRpcApi
 public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -518,19 +496,15 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     public override var value: UInt by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as UInt32ValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -538,7 +512,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -581,7 +554,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
                 checkForPlatformDecodeException {
                     UInt32ValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -598,6 +570,7 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     }
 }
 
+@InternalRpcApi
 public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -612,19 +585,15 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
     public override var value: Boolean by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as BoolValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -632,7 +601,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -675,7 +643,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
                 checkForPlatformDecodeException {
                     BoolValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -692,6 +659,7 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+@InternalRpcApi
 public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -706,19 +674,15 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     public override var value: String by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as StringValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -726,7 +690,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -769,7 +732,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
                 checkForPlatformDecodeException {
                     StringValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -786,6 +748,7 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     }
 }
 
+@InternalRpcApi
 public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -800,19 +763,15 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     public override var value: ByteString by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as BytesValueInternal
-        other.checkRequiredFields()
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -820,7 +779,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -863,7 +821,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
                 checkForPlatformDecodeException {
                     BytesValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -878,11 +835,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     public companion object {
         public val DEFAULT: BytesValue by lazy { BytesValueInternal() }
     }
-}
-
-@InternalRpcApi
-public fun DoubleValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -904,8 +856,8 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED64 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED64 -> {
                 msg.value = decoder.readDouble()
             }
             else -> {
@@ -933,7 +885,7 @@ public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, de
 private fun DoubleValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0.0) {
-        __result += (WireSize.tag(1, WireType.FIXED64) + WireSize.double(this.value))
+        __result += WireSize.tag(1, WireType.FIXED64) + WireSize.double(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -943,11 +895,6 @@ private fun DoubleValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun DoubleValue.asInternal(): DoubleValueInternal {
     return this as? DoubleValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun FloatValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -969,8 +916,8 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.FIXED32 -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.FIXED32 -> {
                 msg.value = decoder.readFloat()
             }
             else -> {
@@ -998,7 +945,7 @@ public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, deco
 private fun FloatValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0.0f) {
-        __result += (WireSize.tag(1, WireType.FIXED32) + WireSize.float(this.value))
+        __result += WireSize.tag(1, WireType.FIXED32) + WireSize.float(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1008,11 +955,6 @@ private fun FloatValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun FloatValue.asInternal(): FloatValueInternal {
     return this as? FloatValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun Int64ValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -1034,8 +976,8 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readInt64()
             }
             else -> {
@@ -1063,7 +1005,7 @@ public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, deco
 private fun Int64ValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0L) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.value))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1073,11 +1015,6 @@ private fun Int64ValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun Int64Value.asInternal(): Int64ValueInternal {
     return this as? Int64ValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun UInt64ValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -1099,8 +1036,8 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readUInt64()
             }
             else -> {
@@ -1128,7 +1065,7 @@ public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, de
 private fun UInt64ValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0uL) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.value))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.uInt64(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1138,11 +1075,6 @@ private fun UInt64ValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun UInt64Value.asInternal(): UInt64ValueInternal {
     return this as? UInt64ValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun Int32ValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -1164,8 +1096,8 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readInt32()
             }
             else -> {
@@ -1193,7 +1125,7 @@ public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, deco
 private fun Int32ValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.value))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1203,11 +1135,6 @@ private fun Int32ValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun Int32Value.asInternal(): Int32ValueInternal {
     return this as? Int32ValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun UInt32ValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -1229,8 +1156,8 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readUInt32()
             }
             else -> {
@@ -1258,7 +1185,7 @@ public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, de
 private fun UInt32ValueInternal.computeSize(): Int {
     var __result = 0
     if (this.value != 0u) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.value))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.uInt32(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1271,13 +1198,8 @@ public fun UInt32Value.asInternal(): UInt32ValueInternal {
 }
 
 @InternalRpcApi
-public fun BoolValueInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    if (this.value != false) {
+    if (this.value) {
         encoder.writeBool(fieldNr = 1, value = this.value)
     }
 
@@ -1294,8 +1216,8 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.value = decoder.readBool()
             }
             else -> {
@@ -1322,8 +1244,8 @@ public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decode
 
 private fun BoolValueInternal.computeSize(): Int {
     var __result = 0
-    if (this.value != false) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.value))
+    if (this.value) {
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.value)
     }
 
     __result += _unknownFields.size.toInt()
@@ -1333,11 +1255,6 @@ private fun BoolValueInternal.computeSize(): Int {
 @InternalRpcApi
 public fun BoolValue.asInternal(): BoolValueInternal {
     return this as? BoolValueInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun StringValueInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -1359,8 +1276,8 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.value = decoder.readString()
             }
             else -> {
@@ -1401,11 +1318,6 @@ public fun StringValue.asInternal(): StringValueInternal {
 }
 
 @InternalRpcApi
-public fun BytesValueInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.value.isNotEmpty()) {
         encoder.writeBytes(fieldNr = 1, value = this.value)
@@ -1424,8 +1336,8 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.value = decoder.readBytes()
             }
             else -> {

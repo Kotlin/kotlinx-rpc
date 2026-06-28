@@ -1,8 +1,9 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf_test_messages.edition2023
 
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
@@ -16,9 +17,7 @@ import kotlinx.rpc.protobuf.internal.InternalPresenceObject
  * ```
  */
 operator fun ComplexMessage.Companion.invoke(body: ComplexMessage.Builder.() -> Unit): ComplexMessage {
-    val msg = ComplexMessageInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ComplexMessageInternal().apply(body)
 }
 
 /**
@@ -52,9 +51,7 @@ val ComplexMessage.dOrNull: Int? get() = if (this.presence.hasD) this.d else nul
  * ```
  */
 operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023.Builder.() -> Unit): TestAllTypesEdition2023 {
-    val msg = TestAllTypesEdition2023Internal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestAllTypesEdition2023Internal().apply(body)
 }
 
 /**
@@ -203,9 +200,7 @@ val TestAllTypesEdition2023.delimitedFieldOrNull: TestAllTypesEdition2023.GroupL
  * ```
  */
 operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023.Builder.() -> Unit): ForeignMessageEdition2023 {
-    val msg = ForeignMessageEdition2023Internal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ForeignMessageEdition2023Internal().apply(body)
 }
 
 /**
@@ -239,9 +234,7 @@ val ForeignMessageEdition2023.cOrNull: Int? get() = if (this.presence.hasC) this
  * ```
  */
 operator fun GroupLikeType.Companion.invoke(body: GroupLikeType.Builder.() -> Unit): GroupLikeType {
-    val msg = GroupLikeTypeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return GroupLikeTypeInternal().apply(body)
 }
 
 /**
@@ -275,9 +268,7 @@ val GroupLikeType.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
  * ```
  */
 operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit): TestAllTypesEdition2023.NestedMessage {
-    val msg = TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
 }
 
 /**
@@ -316,9 +307,7 @@ val TestAllTypesEdition2023.NestedMessage.corecursiveOrNull: TestAllTypesEdition
  * ```
  */
 operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
-    val msg = TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
 }
 
 /**

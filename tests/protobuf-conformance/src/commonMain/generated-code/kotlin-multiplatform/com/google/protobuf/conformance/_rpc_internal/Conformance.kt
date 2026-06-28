@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.conformance
 
 import kotlin.reflect.cast
@@ -29,6 +31,7 @@ import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
+@InternalRpcApi
 class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -47,7 +50,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     override var matchedName: String by __matchedNameDelegate
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.name.hashCode()
         result = 31 * result + this.failureMessage.hashCode()
         result = 31 * result + this.matchedName.hashCode()
@@ -55,15 +57,12 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as TestStatusInternal
-        other.checkRequiredFields()
         if (this.name != other.name) return false
         if (this.failureMessage != other.failureMessage) return false
-        if (this.matchedName != other.matchedName) return false
-        return true
+        return this.matchedName == other.matchedName
     }
 
     override fun toString(): String {
@@ -71,7 +70,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -118,7 +116,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
                 checkForPlatformDecodeException {
                     TestStatusInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -135,6 +132,7 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 }
 
+@InternalRpcApi
 class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -149,19 +147,15 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     override var test: List<TestStatus> by __testDelegate
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.test.hashCode()
         return result
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as FailureSetInternal
-        other.checkRequiredFields()
-        if (this.test != other.test) return false
-        return true
+        return this.test == other.test
     }
 
     override fun toString(): String {
@@ -169,7 +163,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -212,7 +205,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
                 checkForPlatformDecodeException {
                     FailureSetInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -229,8 +221,10 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     }
 }
 
+@InternalRpcApi
 class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 1) {
-    private object PresenceIndices {
+    @InternalRpcApi
+    internal object PresenceIndices {
         const val jspbEncodingOptions: Int = 0
     }
 
@@ -265,15 +259,14 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     val _presence: ConformanceRequestPresence = object : ConformanceRequestPresence, InternalPresenceObject {
         override val _message: ConformanceRequestInternal get() = _owner
 
-        override val hasJspbEncodingOptions: Boolean get() = presenceMask[0]
+        override val hasJspbEncodingOptions: Boolean get() = presenceMask[PresenceIndices.jspbEncodingOptions]
     }
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.requestedOutputFormat.hashCode()
         result = 31 * result + this.messageType.hashCode()
         result = 31 * result + this.testCategory.hashCode()
-        result = 31 * result + if (presenceMask[0]) this.jspbEncodingOptions.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.jspbEncodingOptions]) this.jspbEncodingOptions.hashCode() else 0
         result = 31 * result + this.printUnknownFields.hashCode()
         result = 31 * result + (this.payload?.oneOfHashCode() ?: 0)
         return result
@@ -291,19 +284,16 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ConformanceRequestInternal
-        other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
         if (this.requestedOutputFormat != other.requestedOutputFormat) return false
         if (this.messageType != other.messageType) return false
         if (this.testCategory != other.testCategory) return false
-        if (presenceMask[0] && this.jspbEncodingOptions != other.jspbEncodingOptions) return false
+        if (presenceMask[PresenceIndices.jspbEncodingOptions] && this.jspbEncodingOptions != other.jspbEncodingOptions) return false
         if (this.printUnknownFields != other.printUnknownFields) return false
-        if (this.payload != other.payload) return false
-        return true
+        return this.payload == other.payload
     }
 
     override fun toString(): String {
@@ -311,7 +301,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -319,7 +308,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}requestedOutputFormat=${this.requestedOutputFormat},")
         builder.appendLine("${nextIndentString}messageType=${this.messageType},")
         builder.appendLine("${nextIndentString}testCategory=${this.testCategory},")
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.jspbEncodingOptions]) {
             builder.appendLine("${nextIndentString}jspbEncodingOptions=${this.jspbEncodingOptions.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}jspbEncodingOptions=<unset>,")
@@ -341,7 +330,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         copy.requestedOutputFormat = this.requestedOutputFormat
         copy.messageType = this.messageType
         copy.testCategory = this.testCategory
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.jspbEncodingOptions]) {
             copy.jspbEncodingOptions = this.jspbEncodingOptions.copy()
         }
 
@@ -377,7 +366,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
                 checkForPlatformDecodeException {
                     ConformanceRequestInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -394,6 +382,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 }
 
+@InternalRpcApi
 class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -407,7 +396,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     override var result: ConformanceResponse.Result? = null
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = (this.result?.oneOfHashCode() ?: 0)
         return result
     }
@@ -429,13 +417,10 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ConformanceResponseInternal
-        other.checkRequiredFields()
-        if (this.result != other.result) return false
-        return true
+        return this.result == other.result
     }
 
     override fun toString(): String {
@@ -443,7 +428,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -491,7 +475,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
                 checkForPlatformDecodeException {
                     ConformanceResponseInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -508,6 +491,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 }
 
+@InternalRpcApi
 class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
@@ -522,19 +506,15 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     override var useJspbArrayAnyFormat: Boolean by __useJspbArrayAnyFormatDelegate
 
     override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.useJspbArrayAnyFormat.hashCode()
         return result
     }
 
     override fun equals(other: Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as JspbEncodingConfigInternal
-        other.checkRequiredFields()
-        if (this.useJspbArrayAnyFormat != other.useJspbArrayAnyFormat) return false
-        return true
+        return this.useJspbArrayAnyFormat == other.useJspbArrayAnyFormat
     }
 
     override fun toString(): String {
@@ -542,7 +522,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     }
 
     fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -585,7 +564,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
                 checkForPlatformDecodeException {
                     JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -600,11 +578,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     companion object {
         val DEFAULT: JspbEncodingConfig by lazy { JspbEncodingConfigInternal() }
     }
-}
-
-@InternalRpcApi
-fun TestStatusInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -634,14 +607,14 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.failureMessage = decoder.readString()
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.matchedName = decoder.readString()
             }
             else -> {
@@ -690,18 +663,10 @@ fun TestStatus.asInternal(): TestStatusInternal {
 }
 
 @InternalRpcApi
-fun FailureSetInternal.checkRequiredFields() {
-    // no required fields to check
-    this.test.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.test.isNotEmpty()) {
         this.test.forEach {
-            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -718,11 +683,11 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__testDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestStatusInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> TestStatusInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> TestStatusInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
             else -> {
@@ -750,7 +715,7 @@ fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: Wi
 private fun FailureSetInternal.computeSize(): Int {
     var __result = 0
     if (this.test.isNotEmpty()) {
-        __result += this.test.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.test.sumOf { element -> element.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     __result += _unknownFields.size.toInt()
@@ -760,14 +725,6 @@ private fun FailureSetInternal.computeSize(): Int {
 @InternalRpcApi
 fun FailureSet.asInternal(): FailureSetInternal {
     return this as? FailureSetInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-fun ConformanceRequestInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.jspbEncodingOptions.asInternal().checkRequiredFields()
-    }
 }
 
 @InternalRpcApi
@@ -784,16 +741,16 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeEnum(fieldNr = 5, value = this.testCategory.number)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 6, value = this.jspbEncodingOptions.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jspbEncodingOptions]) {
+        encoder.writeMessage(fieldNr = 6, value = this.jspbEncodingOptions.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
-    if (this.printUnknownFields != false) {
+    if (this.printUnknownFields) {
         encoder.writeBool(fieldNr = 9, value = this.printUnknownFields)
     }
 
-    this.payload?.also {
-        when (val value = it) {
+    this.payload?.also { value ->
+        when (value) {
             is ConformanceRequest.Payload.ProtobufPayload -> {
                 encoder.writeBytes(fieldNr = 1, value = value.value)
             }
@@ -822,33 +779,33 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 3 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            3 if tag.wireType == WireType.VARINT -> {
                 msg.requestedOutputFormat = WireFormat.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.messageType = decoder.readString()
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.VARINT -> {
+            5 if tag.wireType == WireType.VARINT -> {
                 msg.testCategory = TestCategory.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__jspbEncodingOptionsDelegate.getOrCreate(msg) { JspbEncodingConfigInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> JspbEncodingConfigInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> JspbEncodingConfigInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 9 && tag.wireType == WireType.VARINT -> {
+            9 if tag.wireType == WireType.VARINT -> {
                 msg.printUnknownFields = decoder.readBool()
             }
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.payload = ConformanceRequest.Payload.ProtobufPayload(decoder.readBytes())
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.payload = ConformanceRequest.Payload.JsonPayload(decoder.readString())
             }
-            tag.fieldNr == 7 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.payload = ConformanceRequest.Payload.JspbPayload(decoder.readString())
             }
-            tag.fieldNr == 8 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.payload = ConformanceRequest.Payload.TextPayload(decoder.readString())
             }
             else -> {
@@ -876,7 +833,7 @@ fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInter
 private fun ConformanceRequestInternal.computeSize(): Int {
     var __result = 0
     if (this.requestedOutputFormat != WireFormat.UNSPECIFIED) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.enum(this.requestedOutputFormat.number))
+        __result += WireSize.tag(3, WireType.VARINT) + WireSize.enum(this.requestedOutputFormat.number)
     }
 
     if (this.messageType.isNotEmpty()) {
@@ -884,30 +841,30 @@ private fun ConformanceRequestInternal.computeSize(): Int {
     }
 
     if (this.testCategory != TestCategory.UNSPECIFIED_TEST) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.testCategory.number))
+        __result += WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.testCategory.number)
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jspbEncodingOptions]) {
         __result += this.jspbEncodingOptions.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (this.printUnknownFields != false) {
-        __result += (WireSize.tag(9, WireType.VARINT) + WireSize.bool(this.printUnknownFields))
+    if (this.printUnknownFields) {
+        __result += WireSize.tag(9, WireType.VARINT) + WireSize.bool(this.printUnknownFields)
     }
 
-    this.payload?.also {
-        when (val value = it) {
+    this.payload?.also { value ->
+        __result += when (value) {
             is ConformanceRequest.Payload.ProtobufPayload -> {
-                __result += WireSize.bytes(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.bytes(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceRequest.Payload.JsonPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceRequest.Payload.JspbPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceRequest.Payload.TextPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
         }
     }
@@ -922,14 +879,9 @@ fun ConformanceRequest.asInternal(): ConformanceRequestInternal {
 }
 
 @InternalRpcApi
-fun ConformanceResponseInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.result?.also {
-        when (val value = it) {
+    this.result?.also { value ->
+        when (value) {
             is ConformanceResponse.Result.ParseError -> {
                 encoder.writeString(fieldNr = 1, value = value.value)
             }
@@ -973,32 +925,32 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoCo
 fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.ParseError(decoder.readString())
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.SerializeError(decoder.readString())
             }
-            tag.fieldNr == 9 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            9 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.TimeoutError(decoder.readString())
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.RuntimeError(decoder.readString())
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.ProtobufPayload(decoder.readBytes())
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.JsonPayload(decoder.readString())
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.Skipped(decoder.readString())
             }
-            tag.fieldNr == 7 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.JspbPayload(decoder.readString())
             }
-            tag.fieldNr == 8 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.result = ConformanceResponse.Result.TextPayload(decoder.readString())
             }
             else -> {
@@ -1025,34 +977,34 @@ fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInt
 
 private fun ConformanceResponseInternal.computeSize(): Int {
     var __result = 0
-    this.result?.also {
-        when (val value = it) {
+    this.result?.also { value ->
+        __result += when (value) {
             is ConformanceResponse.Result.ParseError -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.SerializeError -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.TimeoutError -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.RuntimeError -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.ProtobufPayload -> {
-                __result += WireSize.bytes(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.bytes(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.JsonPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.Skipped -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.JspbPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is ConformanceResponse.Result.TextPayload -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
         }
     }
@@ -1067,13 +1019,8 @@ fun ConformanceResponse.asInternal(): ConformanceResponseInternal {
 }
 
 @InternalRpcApi
-fun JspbEncodingConfigInternal.checkRequiredFields() {
-    // no required fields to check
-}
-
-@InternalRpcApi
 fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    if (this.useJspbArrayAnyFormat != false) {
+    if (this.useJspbArrayAnyFormat) {
         encoder.writeBool(fieldNr = 1, value = this.useJspbArrayAnyFormat)
     }
 
@@ -1090,8 +1037,8 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.useJspbArrayAnyFormat = decoder.readBool()
             }
             else -> {
@@ -1118,8 +1065,8 @@ fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInter
 
 private fun JspbEncodingConfigInternal.computeSize(): Int {
     var __result = 0
-    if (this.useJspbArrayAnyFormat != false) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.useJspbArrayAnyFormat))
+    if (this.useJspbArrayAnyFormat) {
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.bool(this.useJspbArrayAnyFormat)
     }
 
     __result += _unknownFields.size.toInt()

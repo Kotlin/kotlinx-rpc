@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("ClassName")
+
 package com.google.protobuf.conformance
 
 import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 

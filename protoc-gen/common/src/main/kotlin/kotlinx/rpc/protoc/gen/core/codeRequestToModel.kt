@@ -77,6 +77,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.RpcClasses.MsgFieldDelegate,
         FqName.RpcClasses.GrpcMarshaller,
         FqName.RpcClasses.KTag,
+        FqName.RpcClasses.ProtobufException,
         FqName.RpcClasses.ProtobufDecodingException,
         FqName.RpcClasses.ProtoConfig,
         FqName.RpcClasses.GrpcMarshallerConfig,
@@ -354,7 +355,10 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         nameTable.register { declaration.internalClassName }
         nameTable.register { declaration.builderClassName }
         nameTable.register { declaration.internalCompanionName }
-        nameTable.register { declaration.defaultObjectRef }
+
+        if (declaration.isUserFacing) {
+            nameTable.register { declaration.defaultObjectRef }
+        }
 
         if (declaration.isUserFacing && declaration.hasPresenceFieldsRecursive()) {
             nameTable.register { declaration.presenceInterfaceName }

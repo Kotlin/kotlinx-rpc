@@ -144,7 +144,7 @@ class ProtoTypeResolver(
     }
 }
 
-private val typeRefPattern = Regex("""\[([a-zA-Z_][\w.]*)\](\[])?""")
+private val typeRefPattern = Regex("""\[([a-zA-Z_][\w.]*)](\[])?""")
 
 private fun List<String>.protoCommentsToKotlin(
     resolver: ProtoTypeResolver? = null,

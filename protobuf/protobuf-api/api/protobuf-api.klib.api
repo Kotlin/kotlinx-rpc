@@ -66,7 +66,11 @@ final class kotlinx.rpc.protobuf/ProtobufEncodingException : kotlinx.rpc.protobu
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf/ProtobufEncodingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 }
 
-sealed class kotlinx.rpc.protobuf/ProtobufException : kotlin/RuntimeException // kotlinx.rpc.protobuf/ProtobufException|null[0]
+open class kotlinx.rpc.protobuf/ProtobufException : kotlin/RuntimeException { // kotlinx.rpc.protobuf/ProtobufException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.protobuf/ProtobufException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+
+    final object Companion // kotlinx.rpc.protobuf/ProtobufException.Companion|null[0]
+}
 
 final fun kotlinx.rpc.protobuf/ProtoConfig(kotlin/Function1<kotlinx.rpc.protobuf/ProtoConfig.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoConfig // kotlinx.rpc.protobuf/ProtoConfig|ProtoConfig(kotlin.Function1<kotlinx.rpc.protobuf.ProtoConfig.Builder,kotlin.Unit>){}[0]
 final fun kotlinx.rpc.protobuf/ProtoExtensionRegistry(kotlin/Function1<kotlinx.rpc.protobuf/ProtoExtensionRegistry.Builder, kotlin/Unit>): kotlinx.rpc.protobuf/ProtoExtensionRegistry // kotlinx.rpc.protobuf/ProtoExtensionRegistry|ProtoExtensionRegistry(kotlin.Function1<kotlinx.rpc.protobuf.ProtoExtensionRegistry.Builder,kotlin.Unit>){}[0]

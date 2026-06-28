@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -27,6 +29,7 @@ import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
+@InternalRpcApi
 public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -43,21 +46,17 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     public override var value: ByteString by __valueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.typeUrl.hashCode()
         result = 31 * result + this.value.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as AnyInternal
-        other.checkRequiredFields()
         if (this.typeUrl != other.typeUrl) return false
-        if (this.value != other.value) return false
-        return true
+        return this.value == other.value
     }
 
     public override fun toString(): String {
@@ -65,7 +64,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -110,7 +108,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
                 checkForPlatformDecodeException {
                     AnyInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -125,11 +122,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     public companion object {
         public val DEFAULT: Any by lazy { AnyInternal() }
     }
-}
-
-@InternalRpcApi
-public fun AnyInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -155,11 +147,11 @@ public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 public fun AnyInternal.Companion.decodeWith(msg: AnyInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.typeUrl = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.value = decoder.readBytes()
             }
             else -> {

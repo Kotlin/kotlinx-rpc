@@ -44,7 +44,7 @@ sealed interface FieldType {
     }
 
     data class Message(val dec: Lazy<MessageDeclaration>) : FieldType {
-        override val defaultValue: ScopedFormattedString by lazy { "%T.DEFAULT".scoped(dec.value.internalClassName) }
+        override val defaultValue: ScopedFormattedString by lazy { dec.value.defaultObjectRef.scoped() }
         override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 

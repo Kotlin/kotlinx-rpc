@@ -28,8 +28,8 @@ open class CodeGenerator(
     private var lastIsDeclaration: Boolean = false
     private var needsNewLineAfterDeclaration: Boolean = true
 
-    context(selectedNameTable: ScopedFqNameTable)
     @Suppress("FunctionName")
+    context(selectedNameTable: ScopedFqNameTable)
     private fun _append(
         value: ScopedFormattedString? = null,
         newLineBefore: Boolean = false,
@@ -159,7 +159,7 @@ open class CodeGenerator(
         block: (CodeGenerator.() -> Unit),
     ) {
         val pre = if (prefix.value.isNotEmpty()) {
-            prefix.wrapIn { it.trim() + " " }
+            prefix.wrapIn { it.toString().trim() + " " }
         } else {
             ScopedFormattedString.empty
         }
@@ -684,21 +684,21 @@ open class CodeGenerator(
         }
 
         leadingDetached.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if (leadingDetached.isNotEmpty() && (leading.isNotEmpty() || trailing.isNotEmpty())) {
             addLine(" *".scoped())
         }
         leading.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if ((leadingDetached.isNotEmpty() || leading.isNotEmpty()) && trailing.isNotEmpty()) {
             addLine(" *".scoped())
         }
         trailing.forEach {
-            addLine(it.wrapIn { " * $it" })
+            addLine(it.wrapIn { value -> " * $value" })
         }
 
         if (final) {
@@ -731,6 +731,7 @@ class FileGenerator(
     var packagePath: String? = packageName.toString(),
     var comments: List<Comment> = emptyList(),
     var fileOptIns: List<ScopedFormattedString> = emptyList(),
+    var fileSuppresses: List<String> = emptyList(),
     val imports: MutableSet<String> = mutableSetOf(),
     config: Config,
 ) : CodeGenerator("", config = config, nameTable = rawNameTable.scoped(packageName, imports)) {
@@ -769,12 +770,22 @@ class FileGenerator(
                 })
             }
 
+            if (this@FileGenerator.fileSuppresses.isNotEmpty()) {
+                val suppress = "@file:%T".scoped(FqName.Implicits.Suppress)
+                code(suppress.merge(this@FileGenerator.fileSuppresses.joinToString(", ") { "\"$it\"" }.scoped()) { suppress, it ->
+                    "$suppress($it)"
+                })
+            }
+
             val packageName = this@FileGenerator.stringPackageName
             if (packageName.isNotEmpty()) {
+                if (this@FileGenerator.fileOptIns.isNotEmpty() || this@FileGenerator.fileSuppresses.isNotEmpty()) {
+                    blankLine()
+                }
                 code("package $packageName".scoped())
             }
 
-            if (this@FileGenerator.fileOptIns.isNotEmpty() || packageName.isNotEmpty()) {
+            if (this@FileGenerator.fileOptIns.isNotEmpty() || this@FileGenerator.fileSuppresses.isNotEmpty() || packageName.isNotEmpty()) {
                 blankLine()
             }
 

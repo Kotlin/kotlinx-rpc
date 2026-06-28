@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun Api.Companion.invoke(body: Api.Builder.() -> Unit): Api {
-    val msg = ApiInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return ApiInternal().apply(body)
 }
 
 /**
@@ -49,9 +48,7 @@ public val Api.sourceContextOrNull: SourceContext? get() = if (this.presence.has
  * ```
  */
 public operator fun Method.Companion.invoke(body: Method.Builder.() -> Unit): Method {
-    val msg = MethodInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return MethodInternal().apply(body)
 }
 
 /**
@@ -75,9 +72,7 @@ public fun Method.copy(body: Method.Builder.() -> Unit = {}): Method {
  * ```
  */
 public operator fun Mixin.Companion.invoke(body: Mixin.Builder.() -> Unit): Mixin {
-    val msg = MixinInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return MixinInternal().apply(body)
 }
 
 /**

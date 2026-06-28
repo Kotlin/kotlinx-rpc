@@ -72,9 +72,7 @@ internal class NameResolver private constructor(
     }
 
     private fun resolveInScope(parents: List<String>, simpleName: String, scope: Node): FqName? {
-        val inScope = resolveFromNode(scope, parents, simpleName)
-
-        return when (inScope) {
+        return when (val inScope = resolveFromNode(scope, parents, simpleName)) {
             is ResolveResult.Success -> {
                 inScope.fqName
             }
@@ -84,9 +82,7 @@ internal class NameResolver private constructor(
             }
 
             is ResolveResult.NoResolve -> {
-                val inRoot = resolveFromNode(root, parents, simpleName)
-
-                when (inRoot) {
+                when (val inRoot = resolveFromNode(root, parents, simpleName)) {
                     is ResolveResult.Success -> {
                         inRoot.fqName
                     }

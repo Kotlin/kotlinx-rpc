@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun Timestamp.Companion.invoke(body: Timestamp.Builder.() -> Unit): Timestamp {
-    val msg = TimestampInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return TimestampInternal().apply(body)
 }
 
 /**

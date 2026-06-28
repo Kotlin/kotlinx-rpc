@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -33,6 +35,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
+@InternalRpcApi
 public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -47,19 +50,15 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     public override var paths: List<String> by __pathsDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.paths.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as FieldMaskInternal
-        other.checkRequiredFields()
-        if (this.paths != other.paths) return false
-        return true
+        return this.paths == other.paths
     }
 
     public override fun toString(): String {
@@ -67,7 +66,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -110,7 +108,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
                 checkForPlatformDecodeException {
                     FieldMaskInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -125,11 +122,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     public companion object {
         public val DEFAULT: FieldMask by lazy { FieldMaskInternal() }
     }
-}
-
-@InternalRpcApi
-public fun FieldMaskInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -153,8 +145,8 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__pathsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
@@ -184,7 +176,7 @@ public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decode
 private fun FieldMaskInternal.computeSize(): Int {
     var __result = 0
     if (this.paths.isNotEmpty()) {
-        __result += this.paths.sumOf { WireSize.string(it).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.paths.sumOf { element -> WireSize.string(element).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     __result += _unknownFields.size.toInt()

@@ -1,8 +1,9 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import com.google.protobuf.kotlin.asInternal
-import com.google.protobuf.kotlin.checkRequiredFields
 import com.google.protobuf.kotlin.copy
 import com.google.protobuf.kotlin.decodeWith
 import com.google.protobuf.kotlin.encodeWith
@@ -34,8 +35,10 @@ import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
+@InternalRpcApi
 public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1) {
-    private object PresenceIndices {
+    @InternalRpcApi
+    internal object PresenceIndices {
         public const val sourceContext: Int = 0
     }
 
@@ -73,36 +76,32 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     public val _presence: TypePresence = object : TypePresence, InternalPresenceObject {
         public override val _message: TypeInternal get() = _owner
 
-        public override val hasSourceContext: Boolean get() = presenceMask[0]
+        public override val hasSourceContext: Boolean get() = presenceMask[PresenceIndices.sourceContext]
     }
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.name.hashCode()
         result = 31 * result + this.fields.hashCode()
         result = 31 * result + this.oneofs.hashCode()
         result = 31 * result + this.options.hashCode()
-        result = 31 * result + if (presenceMask[0]) this.sourceContext.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.sourceContext]) this.sourceContext.hashCode() else 0
         result = 31 * result + this.syntax.hashCode()
         result = 31 * result + this.edition.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as TypeInternal
-        other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
         if (this.name != other.name) return false
         if (this.fields != other.fields) return false
         if (this.oneofs != other.oneofs) return false
         if (this.options != other.options) return false
-        if (presenceMask[0] && this.sourceContext != other.sourceContext) return false
+        if (presenceMask[PresenceIndices.sourceContext] && this.sourceContext != other.sourceContext) return false
         if (this.syntax != other.syntax) return false
-        if (this.edition != other.edition) return false
-        return true
+        return this.edition == other.edition
     }
 
     public override fun toString(): String {
@@ -110,7 +109,6 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -119,7 +117,7 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
         builder.appendLine("${nextIndentString}fields=${this.fields},")
         builder.appendLine("${nextIndentString}oneofs=${this.oneofs},")
         builder.appendLine("${nextIndentString}options=${this.options},")
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.sourceContext]) {
             builder.appendLine("${nextIndentString}sourceContext=${this.sourceContext.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}sourceContext=<unset>,")
@@ -142,7 +140,7 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
         copy.fields = this.fields.map { it.copy() }
         copy.oneofs = this.oneofs.map { it }
         copy.options = this.options.map { it.copy() }
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.sourceContext]) {
             copy.sourceContext = this.sourceContext.copy()
         }
 
@@ -173,7 +171,6 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
                 checkForPlatformDecodeException {
                     TypeInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -190,6 +187,7 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 }
 
+@InternalRpcApi
 public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -222,7 +220,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     public override var defaultValue: String by __defaultValueDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.kind.hashCode()
         result = 31 * result + this.cardinality.hashCode()
         result = 31 * result + this.number.hashCode()
@@ -237,11 +234,9 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as FieldInternal
-        other.checkRequiredFields()
         if (this.kind != other.kind) return false
         if (this.cardinality != other.cardinality) return false
         if (this.number != other.number) return false
@@ -251,8 +246,7 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
         if (this.packed != other.packed) return false
         if (this.options != other.options) return false
         if (this.jsonName != other.jsonName) return false
-        if (this.defaultValue != other.defaultValue) return false
-        return true
+        return this.defaultValue == other.defaultValue
     }
 
     public override fun toString(): String {
@@ -260,7 +254,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -321,7 +314,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
                 checkForPlatformDecodeException {
                     FieldInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -338,8 +330,10 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
     }
 }
 
+@InternalRpcApi
 public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1) {
-    private object PresenceIndices {
+    @InternalRpcApi
+    internal object PresenceIndices {
         public const val sourceContext: Int = 0
     }
 
@@ -375,34 +369,30 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     public val _presence: EnumPresence = object : EnumPresence, InternalPresenceObject {
         public override val _message: EnumInternal get() = _owner
 
-        public override val hasSourceContext: Boolean get() = presenceMask[0]
+        public override val hasSourceContext: Boolean get() = presenceMask[PresenceIndices.sourceContext]
     }
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.name.hashCode()
         result = 31 * result + this.enumvalue.hashCode()
         result = 31 * result + this.options.hashCode()
-        result = 31 * result + if (presenceMask[0]) this.sourceContext.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.sourceContext]) this.sourceContext.hashCode() else 0
         result = 31 * result + this.syntax.hashCode()
         result = 31 * result + this.edition.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as EnumInternal
-        other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
         if (this.name != other.name) return false
         if (this.enumvalue != other.enumvalue) return false
         if (this.options != other.options) return false
-        if (presenceMask[0] && this.sourceContext != other.sourceContext) return false
+        if (presenceMask[PresenceIndices.sourceContext] && this.sourceContext != other.sourceContext) return false
         if (this.syntax != other.syntax) return false
-        if (this.edition != other.edition) return false
-        return true
+        return this.edition == other.edition
     }
 
     public override fun toString(): String {
@@ -410,7 +400,6 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -418,7 +407,7 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
         builder.appendLine("${nextIndentString}name=${this.name},")
         builder.appendLine("${nextIndentString}enumvalue=${this.enumvalue},")
         builder.appendLine("${nextIndentString}options=${this.options},")
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.sourceContext]) {
             builder.appendLine("${nextIndentString}sourceContext=${this.sourceContext.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}sourceContext=<unset>,")
@@ -440,7 +429,7 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
         copy.name = this.name
         copy.enumvalue = this.enumvalue.map { it.copy() }
         copy.options = this.options.map { it.copy() }
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.sourceContext]) {
             copy.sourceContext = this.sourceContext.copy()
         }
 
@@ -471,7 +460,6 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
                 checkForPlatformDecodeException {
                     EnumInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -488,6 +476,7 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     }
 }
 
+@InternalRpcApi
 public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -506,7 +495,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     public override var options: List<Option> by __optionsDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.name.hashCode()
         result = 31 * result + this.number.hashCode()
         result = 31 * result + this.options.hashCode()
@@ -514,15 +502,12 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as EnumValueInternal
-        other.checkRequiredFields()
         if (this.name != other.name) return false
         if (this.number != other.number) return false
-        if (this.options != other.options) return false
-        return true
+        return this.options == other.options
     }
 
     public override fun toString(): String {
@@ -530,7 +515,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -577,7 +561,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
                 checkForPlatformDecodeException {
                     EnumValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -594,8 +577,10 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+@InternalRpcApi
 public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence = 1) {
-    private object PresenceIndices {
+    @InternalRpcApi
+    internal object PresenceIndices {
         public const val value: Int = 0
     }
 
@@ -623,26 +608,22 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     public val _presence: OptionPresence = object : OptionPresence, InternalPresenceObject {
         public override val _message: OptionInternal get() = _owner
 
-        public override val hasValue: Boolean get() = presenceMask[0]
+        public override val hasValue: Boolean get() = presenceMask[PresenceIndices.value]
     }
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.name.hashCode()
-        result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.value]) this.value.hashCode() else 0
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as OptionInternal
-        other.checkRequiredFields()
         if (presenceMask != other.presenceMask) return false
         if (this.name != other.name) return false
-        if (presenceMask[0] && this.value != other.value) return false
-        return true
+        return !presenceMask[PresenceIndices.value] || this.value == other.value
     }
 
     public override fun toString(): String {
@@ -650,13 +631,12 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("Option(")
         builder.appendLine("${nextIndentString}name=${this.name},")
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.value]) {
             builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
         } else {
             builder.appendLine("${nextIndentString}value=<unset>,")
@@ -674,7 +654,7 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     public fun copyInternal(body: OptionInternal.() -> Unit): OptionInternal {
         val copy = OptionInternal()
         copy.name = this.name
-        if (presenceMask[0]) {
+        if (presenceMask[PresenceIndices.value]) {
             copy.value = this.value.copy()
         }
 
@@ -703,7 +683,6 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
                 checkForPlatformDecodeException {
                     OptionInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -721,22 +700,6 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 }
 
 @InternalRpcApi
-public fun TypeInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.sourceContext.asInternal().checkRequiredFields()
-    }
-
-    this.fields.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.options.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
@@ -744,7 +707,7 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 
     if (this.fields.isNotEmpty()) {
         this.fields.forEach {
-            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -756,12 +719,12 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 
     if (this.options.isNotEmpty()) {
         this.options.forEach {
-            encoder.writeMessage(fieldNr = 4, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 4, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 5, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[TypeInternal.PresenceIndices.sourceContext]) {
+        encoder.writeMessage(fieldNr = 5, value = this.sourceContext.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.syntax != Syntax.PROTO2) {
@@ -785,35 +748,35 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__fieldsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FieldInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> FieldInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> FieldInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__oneofsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.VARINT -> {
+            6 if tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 7 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -845,23 +808,23 @@ private fun TypeInternal.computeSize(): Int {
     }
 
     if (this.fields.isNotEmpty()) {
-        __result += this.fields.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.fields.sumOf { element -> element.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.oneofs.isNotEmpty()) {
-        __result += this.oneofs.sumOf { WireSize.string(it).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.oneofs.sumOf { element -> WireSize.string(element).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.options.isNotEmpty()) {
-        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.options.sumOf { element -> element.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[TypeInternal.PresenceIndices.sourceContext]) {
         __result += this.sourceContext.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.syntax != Syntax.PROTO2) {
-        __result += (WireSize.tag(6, WireType.VARINT) + WireSize.enum(this.syntax.number))
+        __result += WireSize.tag(6, WireType.VARINT) + WireSize.enum(this.syntax.number)
     }
 
     if (this.edition.isNotEmpty()) {
@@ -875,14 +838,6 @@ private fun TypeInternal.computeSize(): Int {
 @InternalRpcApi
 public fun Type.asInternal(): TypeInternal {
     return this as? TypeInternal ?: error("Message ${this::class.simpleName} is a non-internal message type.")
-}
-
-@InternalRpcApi
-public fun FieldInternal.checkRequiredFields() {
-    // no required fields to check
-    this.options.forEach {
-        it.asInternal().checkRequiredFields()
-    }
 }
 
 @InternalRpcApi
@@ -911,13 +866,13 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
         encoder.writeInt32(fieldNr = 7, value = this.oneofIndex)
     }
 
-    if (this.packed != false) {
+    if (this.packed) {
         encoder.writeBool(fieldNr = 8, value = this.packed)
     }
 
     if (this.options.isNotEmpty()) {
         this.options.forEach {
-            encoder.writeMessage(fieldNr = 9, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 9, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -942,38 +897,38 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.kind = Field.Kind.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.cardinality = Field.Cardinality.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.VARINT -> {
+            3 if tag.wireType == WireType.VARINT -> {
                 msg.number = decoder.readInt32()
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.typeUrl = decoder.readString()
             }
-            tag.fieldNr == 7 && tag.wireType == WireType.VARINT -> {
+            7 if tag.wireType == WireType.VARINT -> {
                 msg.oneofIndex = decoder.readInt32()
             }
-            tag.fieldNr == 8 && tag.wireType == WireType.VARINT -> {
+            8 if tag.wireType == WireType.VARINT -> {
                 msg.packed = decoder.readBool()
             }
-            tag.fieldNr == 9 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            9 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 10 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            10 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.jsonName = decoder.readString()
             }
-            tag.fieldNr == 11 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            11 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.defaultValue = decoder.readString()
             }
             else -> {
@@ -1001,15 +956,15 @@ public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireD
 private fun FieldInternal.computeSize(): Int {
     var __result = 0
     if (this.kind != Field.Kind.TYPE_UNKNOWN) {
-        __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(this.kind.number))
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.enum(this.kind.number)
     }
 
     if (this.cardinality != Field.Cardinality.UNKNOWN) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.cardinality.number))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.enum(this.cardinality.number)
     }
 
     if (this.number != 0) {
-        __result += (WireSize.tag(3, WireType.VARINT) + WireSize.int32(this.number))
+        __result += WireSize.tag(3, WireType.VARINT) + WireSize.int32(this.number)
     }
 
     if (this.name.isNotEmpty()) {
@@ -1021,15 +976,15 @@ private fun FieldInternal.computeSize(): Int {
     }
 
     if (this.oneofIndex != 0) {
-        __result += (WireSize.tag(7, WireType.VARINT) + WireSize.int32(this.oneofIndex))
+        __result += WireSize.tag(7, WireType.VARINT) + WireSize.int32(this.oneofIndex)
     }
 
-    if (this.packed != false) {
-        __result += (WireSize.tag(8, WireType.VARINT) + WireSize.bool(this.packed))
+    if (this.packed) {
+        __result += WireSize.tag(8, WireType.VARINT) + WireSize.bool(this.packed)
     }
 
     if (this.options.isNotEmpty()) {
-        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.options.sumOf { element -> element.asInternal()._size.let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.jsonName.isNotEmpty()) {
@@ -1050,22 +1005,6 @@ public fun Field.asInternal(): FieldInternal {
 }
 
 @InternalRpcApi
-public fun EnumInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.sourceContext.asInternal().checkRequiredFields()
-    }
-
-    this.enumvalue.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-
-    this.options.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
@@ -1073,18 +1012,18 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 
     if (this.enumvalue.isNotEmpty()) {
         this.enumvalue.forEach {
-            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 2, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
     if (this.options.isNotEmpty()) {
         this.options.forEach {
-            encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 4, value = this.sourceContext.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[EnumInternal.PresenceIndices.sourceContext]) {
+        encoder.writeMessage(fieldNr = 4, value = this.sourceContext.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     if (this.syntax != Syntax.PROTO2) {
@@ -1108,30 +1047,30 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__enumvalueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = EnumValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> EnumValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> EnumValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.VARINT -> {
+            5 if tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -1163,19 +1102,19 @@ private fun EnumInternal.computeSize(): Int {
     }
 
     if (this.enumvalue.isNotEmpty()) {
-        __result += this.enumvalue.sumOf { it.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.enumvalue.sumOf { element -> element.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     if (this.options.isNotEmpty()) {
-        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.options.sumOf { element -> element.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[EnumInternal.PresenceIndices.sourceContext]) {
         __result += this.sourceContext.asInternal()._size.let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     if (this.syntax != Syntax.PROTO2) {
-        __result += (WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.syntax.number))
+        __result += WireSize.tag(5, WireType.VARINT) + WireSize.enum(this.syntax.number)
     }
 
     if (this.edition.isNotEmpty()) {
@@ -1192,14 +1131,6 @@ public fun Enum.asInternal(): EnumInternal {
 }
 
 @InternalRpcApi
-public fun EnumValueInternal.checkRequiredFields() {
-    // no required fields to check
-    this.options.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
@@ -1211,7 +1142,7 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 
     if (this.options.isNotEmpty()) {
         this.options.forEach {
-            encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 3, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -1228,17 +1159,17 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.VARINT -> {
+            2 if tag.wireType == WireType.VARINT -> {
                 msg.number = decoder.readInt32()
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
             else -> {
@@ -1270,11 +1201,11 @@ private fun EnumValueInternal.computeSize(): Int {
     }
 
     if (this.number != 0) {
-        __result += (WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.number))
+        __result += WireSize.tag(2, WireType.VARINT) + WireSize.int32(this.number)
     }
 
     if (this.options.isNotEmpty()) {
-        __result += this.options.sumOf { it.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.options.sumOf { element -> element.asInternal()._size.let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     __result += _unknownFields.size.toInt()
@@ -1287,21 +1218,13 @@ public fun EnumValue.asInternal(): EnumValueInternal {
 }
 
 @InternalRpcApi
-public fun OptionInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.value.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.name)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[OptionInternal.PresenceIndices.value]) {
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -1317,13 +1240,13 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.name = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { AnyInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -1353,7 +1276,7 @@ private fun OptionInternal.computeSize(): Int {
         __result += WireSize.string(this.name).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[OptionInternal.PresenceIndices.value]) {
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 

@@ -1,7 +1,8 @@
-@file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
+@file:Suppress("unused")
+
 package com.google.protobuf.kotlin
 
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -13,9 +14,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * ```
  */
 public operator fun FieldMask.Companion.invoke(body: FieldMask.Builder.() -> Unit): FieldMask {
-    val msg = FieldMaskInternal().apply(body)
-    msg.checkRequiredFields()
-    return msg
+    return FieldMaskInternal().apply(body)
 }
 
 /**

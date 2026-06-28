@@ -462,6 +462,36 @@ class CodeGeneratorTest {
         )
     }
 
+    // KRPC-261
+    @Test
+    fun testSimpleNameIsUsedWhenRootClashIsNotImported() = codeGeneratorTest(packageFqName = FqName.Package.fromString("other")) { nameTable ->
+        val rootMessage = FqName.Declaration("Message", FqName.Package.Root)
+        val testMessage = FqName.Declaration("Message", FqName.Package.fromString("test"))
+
+        nameTable.register(rootMessage)
+        nameTable.register(testMessage)
+
+        val (imports, generated) = generate {
+            clazz("Other", declarationType = CodeGenerator.DeclarationType.Interface) {
+                property(
+                    name = "message",
+                    type = testMessage.scoped(),
+                )
+            }
+        }
+
+        assertEquals(
+            """
+            interface Other {
+                val message: Message
+            }
+            """.trimIndent(),
+            generated.trim(),
+        )
+
+        assertEquals(setOf("test.Message"), imports)
+    }
+
     private class Env(
         private val generator: CodeGenerator,
     ) {

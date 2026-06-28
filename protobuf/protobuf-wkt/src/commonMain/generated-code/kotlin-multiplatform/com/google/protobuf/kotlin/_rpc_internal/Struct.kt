@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -33,6 +35,7 @@ import kotlinx.rpc.protobuf.internal.tag
 import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
+@InternalRpcApi
 public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -47,19 +50,15 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     public override var fields: Map<String, Value> by __fieldsDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.fields.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as StructInternal
-        other.checkRequiredFields()
-        if (this.fields != other.fields) return false
-        return true
+        return this.fields == other.fields
     }
 
     public override fun toString(): String {
@@ -67,7 +66,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -90,8 +88,10 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         return copy
     }
 
+    @InternalRpcApi
     public class FieldsEntryInternal: InternalMessage(fieldsWithPresence = 1) {
-        private object PresenceIndices {
+        @InternalRpcApi
+        internal object PresenceIndices {
             public const val value: Int = 0
         }
 
@@ -110,22 +110,18 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         public var value: Value by __valueDelegate
 
         public override fun hashCode(): Int {
-            checkRequiredFields()
             var result = this.key.hashCode()
-            result = 31 * result + if (presenceMask[0]) this.value.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.value]) this.value.hashCode() else 0
             return result
         }
 
         public override fun equals(other: kotlin.Any?): Boolean {
-            checkRequiredFields()
             if (this === other) return true
             if (other == null || this::class != other::class) return false
             other as FieldsEntryInternal
-            other.checkRequiredFields()
             if (presenceMask != other.presenceMask) return false
             if (this.key != other.key) return false
-            if (presenceMask[0] && this.value != other.value) return false
-            return true
+            return !presenceMask[PresenceIndices.value] || this.value == other.value
         }
 
         public override fun toString(): String {
@@ -133,13 +129,12 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
         }
 
         public fun asString(indent: Int = 0): String {
-            checkRequiredFields()
             val indentString = " ".repeat(indent)
             val nextIndentString = " ".repeat(indent + 4)
             val builder = StringBuilder()
             builder.appendLine("Struct.FieldsEntry(")
             builder.appendLine("${nextIndentString}key=${this.key},")
-            if (presenceMask[0]) {
+            if (presenceMask[PresenceIndices.value]) {
                 builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
             } else {
                 builder.appendLine("${nextIndentString}value=<unset>,")
@@ -177,7 +172,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
                 checkForPlatformDecodeException {
                     StructInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -194,6 +188,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     }
 }
 
+@InternalRpcApi
 public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -207,7 +202,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     public override var kind: Value.Kind? = null
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = (this.kind?.oneOfHashCode() ?: 0)
         return result
     }
@@ -238,13 +232,10 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ValueInternal
-        other.checkRequiredFields()
-        if (!oneOfEquals(this.kind, other.kind)) return false
-        return true
+        return oneOfEquals(this.kind, other.kind)
     }
 
     public override fun toString(): String {
@@ -252,7 +243,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -319,7 +309,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
                 checkForPlatformDecodeException {
                     ValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -336,6 +325,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     }
 }
 
+@InternalRpcApi
 public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -350,19 +340,15 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     public override var values: List<Value> by __valuesDelegate
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this.values.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ListValueInternal
-        other.checkRequiredFields()
-        if (this.values != other.values) return false
-        return true
+        return this.values == other.values
     }
 
     public override fun toString(): String {
@@ -370,7 +356,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
@@ -413,7 +398,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
                 checkForPlatformDecodeException {
                     ListValueInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -431,14 +415,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
 }
 
 @InternalRpcApi
-public fun StructInternal.checkRequiredFields() {
-    // no required fields to check
-    this.fields.values.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.fields.isNotEmpty()) {
         this.fields.forEach { kEntry ->
@@ -447,7 +423,7 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
                 value = kEntry.value
             }
             .also { entry ->
-                encoder.writeMessage(fieldNr = 1, value = entry.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 1, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -465,11 +441,11 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__fieldsDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(StructInternal.FieldsEntryInternal()) {
-                    decoder.readMessage(this.asInternal(), { msg, decoder -> StructInternal.FieldsEntryInternal.decodeWith(msg, decoder, config) })
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> StructInternal.FieldsEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
@@ -517,24 +493,9 @@ public fun Struct.asInternal(): StructInternal {
 }
 
 @InternalRpcApi
-public fun ValueInternal.checkRequiredFields() {
-    // no required fields to check
-    this.kind?.also {
-        when {
-            it is Value.Kind.StructValue -> {
-                it.value.asInternal().checkRequiredFields()
-            }
-            it is Value.Kind.ListValue -> {
-                it.value.asInternal().checkRequiredFields()
-            }
-        }
-    }
-}
-
-@InternalRpcApi
 public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.kind?.also {
-        when (val value = it) {
+    this.kind?.also { value ->
+        when (value) {
             is Value.Kind.NullValue -> {
                 encoder.writeEnum(fieldNr = 1, value = value.value.number)
             }
@@ -548,10 +509,10 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
                 encoder.writeBool(fieldNr = 4, value = value.value)
             }
             is Value.Kind.StructValue -> {
-                encoder.writeMessage(fieldNr = 5, value = value.value.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 5, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
             is Value.Kind.ListValue -> {
-                encoder.writeMessage(fieldNr = 6, value = value.value.asInternal()) { encodeWith(it, config) }
+                encoder.writeMessage(fieldNr = 6, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
             }
         }
     }
@@ -569,32 +530,32 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.VARINT -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
                 msg.kind = Value.Kind.NullValue(NullValue.fromNumber(decoder.readEnum()))
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.FIXED64 -> {
+            2 if tag.wireType == WireType.FIXED64 -> {
                 msg.kind = Value.Kind.NumberValue(decoder.readDouble())
             }
-            tag.fieldNr == 3 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.kind = Value.Kind.StringValue(decoder.readString())
             }
-            tag.fieldNr == 4 && tag.wireType == WireType.VARINT -> {
+            4 if tag.wireType == WireType.VARINT -> {
                 msg.kind = Value.Kind.BoolValue(decoder.readBool())
             }
-            tag.fieldNr == 5 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val field = (msg.kind as? Value.Kind.StructValue) ?: Value.Kind.StructValue(StructInternal()).also {
                     msg.kind = it
                 }
 
-                decoder.readMessage(field.value.asInternal(), { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(field.value.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
             }
-            tag.fieldNr == 6 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val field = (msg.kind as? Value.Kind.ListValue) ?: Value.Kind.ListValue(ListValueInternal()).also {
                     msg.kind = it
                 }
 
-                decoder.readMessage(field.value.asInternal(), { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(field.value.asInternal()) { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -620,25 +581,25 @@ public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireD
 
 private fun ValueInternal.computeSize(): Int {
     var __result = 0
-    this.kind?.also {
-        when (val value = it) {
+    this.kind?.also { value ->
+        __result += when (value) {
             is Value.Kind.NullValue -> {
-                __result += (WireSize.tag(1, WireType.VARINT) + WireSize.enum(value.value.number))
+                WireSize.tag(1, WireType.VARINT) + WireSize.enum(value.value.number)
             }
             is Value.Kind.NumberValue -> {
-                __result += (WireSize.tag(2, WireType.FIXED64) + WireSize.double(value.value))
+                WireSize.tag(2, WireType.FIXED64) + WireSize.double(value.value)
             }
             is Value.Kind.StringValue -> {
-                __result += WireSize.string(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                WireSize.string(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is Value.Kind.BoolValue -> {
-                __result += (WireSize.tag(4, WireType.VARINT) + WireSize.bool(value.value))
+                WireSize.tag(4, WireType.VARINT) + WireSize.bool(value.value)
             }
             is Value.Kind.StructValue -> {
-                __result += value.value.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                value.value.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
             is Value.Kind.ListValue -> {
-                __result += value.value.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+                value.value.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
             }
         }
     }
@@ -653,18 +614,10 @@ public fun Value.asInternal(): ValueInternal {
 }
 
 @InternalRpcApi
-public fun ListValueInternal.checkRequiredFields() {
-    // no required fields to check
-    this.values.forEach {
-        it.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.values.isNotEmpty()) {
         this.values.forEach {
-            encoder.writeMessage(fieldNr = 1, value = it.asInternal()) { encodeWith(it, config) }
+            encoder.writeMessage(fieldNr = 1, value = it.asInternal()) { encoder -> encodeWith(encoder, config) }
         }
     }
 
@@ -681,11 +634,11 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__valuesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ValueInternal()
-                decoder.readMessage(elem.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(elem.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
             else -> {
@@ -713,7 +666,7 @@ public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decode
 private fun ListValueInternal.computeSize(): Int {
     var __result = 0
     if (this.values.isNotEmpty()) {
-        __result += this.values.sumOf { it.asInternal()._size.let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
+        __result += this.values.sumOf { element -> element.asInternal()._size.let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it } }
     }
 
     __result += _unknownFields.size.toInt()
@@ -726,21 +679,13 @@ public fun ListValue.asInternal(): ListValueInternal {
 }
 
 @InternalRpcApi
-public fun StructInternal.FieldsEntryInternal.checkRequiredFields() {
-    // no required fields to check
-    if (presenceMask[0]) {
-        this.value.asInternal().checkRequiredFields()
-    }
-}
-
-@InternalRpcApi
 public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
 
-    if (presenceMask[0]) {
-        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encodeWith(it, config) }
+    if (presenceMask[StructInternal.FieldsEntryInternal.PresenceIndices.value]) {
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -756,13 +701,13 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
 public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructInternal.FieldsEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
-            tag.fieldNr == 1 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 msg.key = decoder.readString()
             }
-            tag.fieldNr == 2 && tag.wireType == WireType.LENGTH_DELIMITED -> {
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { ValueInternal() }
-                decoder.readMessage(target.asInternal(), { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) })
+                decoder.readMessage(target.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -792,7 +737,7 @@ private fun StructInternal.FieldsEntryInternal.computeSize(): Int {
         __result += WireSize.string(this.key).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
-    if (presenceMask[0]) {
+    if (presenceMask[StructInternal.FieldsEntryInternal.PresenceIndices.value]) {
         __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 

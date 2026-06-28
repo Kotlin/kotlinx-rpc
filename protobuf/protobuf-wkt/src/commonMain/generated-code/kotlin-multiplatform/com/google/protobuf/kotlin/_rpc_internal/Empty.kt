@@ -1,4 +1,6 @@
 @file:OptIn(ExperimentalRpcApi::class, InternalRpcApi::class)
+@file:Suppress("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
+
 package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
@@ -20,6 +22,7 @@ import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.protoToString
 
+@InternalRpcApi
 public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 0) {
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
@@ -31,17 +34,14 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
     public override fun hashCode(): Int {
-        checkRequiredFields()
         var result = this::class.hashCode()
         return result
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
-        checkRequiredFields()
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as EmptyInternal
-        other.checkRequiredFields()
         return true
     }
 
@@ -50,9 +50,7 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     }
 
     public fun asString(indent: Int = 0): String {
-        checkRequiredFields()
         val indentString = " ".repeat(indent)
-        val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("Empty(")
         builder.append("${indentString})")
@@ -91,7 +89,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
                 checkForPlatformDecodeException {
                     EmptyInternal.decodeWith(msg, it, config as? ProtoConfig)
                 }
-                msg.checkRequiredFields()
                 return msg
             }
         }
@@ -106,11 +103,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     public companion object {
         public val DEFAULT: Empty by lazy { EmptyInternal() }
     }
-}
-
-@InternalRpcApi
-public fun EmptyInternal.checkRequiredFields() {
-    // no required fields to check
 }
 
 @InternalRpcApi
@@ -129,7 +121,7 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtoConfig?) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when {
+        when (tag.fieldNr) {
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")
