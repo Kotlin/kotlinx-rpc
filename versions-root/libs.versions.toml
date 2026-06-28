@@ -9,9 +9,9 @@ kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSIO
 
 # internal standalone publications.
 # the version scheme is "<upstream-grpc-version>-<shim-version>"
-internal-native-grpc-shim = "1.80.0-1"
+internal-native-grpc-shim = "1.81.1-1"
 # the version scheme is "<upstream-protobuf-version>-<shim-version>"
-internal-native-protobuf-shim = "34.0-1"
+internal-native-protobuf-shim = "35.1-1"
 # the version numbers for the shim annotation
 internal-native-shim-annotation = "0.1.0"
 
@@ -40,9 +40,9 @@ develocity = "4.3.2"
 common-custom-user-data = "2.4.0"
 compat-patrouille = "0.0.2"
 lincheck = "3.4"
-grpc = "1.80.0"
+grpc = "1.81.1"
 grpc-kotlin = "1.5.0"
-protobuf = "4.34.0"
+protobuf = "4.35.1"
 buf-tool = "1.66.0"
 agp = "8.4.0"
 test-retry = "1.5.9"

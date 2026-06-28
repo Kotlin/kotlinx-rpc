@@ -12,6 +12,7 @@ import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import util.other.optionalPropertyValue
 import java.io.File
 
 // Shared Bazel/Konan helpers for native dependency builds.
@@ -38,6 +39,18 @@ val nativeDependencyTargets = listOf(
     NativeDependencyTarget("linuxArm64", "linux_arm64", "linuxarm64"),
     NativeDependencyTarget("linuxX64", "linux_x64", "linuxx64"),
 )
+
+/**
+ * The native dependency targets enabled for the current build: [nativeDependencyTargets] minus any
+ * disabled via `kotlinx.rpc.exclude.<kotlinName>=true` (e.g. `-Pkotlinx.rpc.exclude.iosArm64=true`).
+ *
+ * This is the same per-target exclusion convention used elsewhere in the project, applied to the shim
+ * builds. With no exclusions every target is returned, so the default behavior is unchanged. It is used
+ * to disable targets that cannot be built on a given host (e.g. the Apple targets on the Linux overlap
+ * check, where the shim Bazel build has no Apple CC toolchain).
+ */
+fun Project.enabledNativeDependencyTargets(): List<NativeDependencyTarget> =
+    nativeDependencyTargets.filterNot { optionalPropertyValue(it.kotlinName, "exclude") }
 
 fun Project.findKonanHome(): String {
     val userHome = System.getProperty("user.home")
@@ -134,19 +147,20 @@ private fun String.replaceBazelModuleVersion(variableName: String, version: Stri
     return replace(regex, """$variableName = "$version"""")
 }
 
-fun KotlinMultiplatformExtension.registerNativeDependencyTargets() {
-    iosArm64()
-    iosSimulatorArm64()
-    iosX64()
-    macosArm64()
-    tvosArm64()
-    tvosSimulatorArm64()
-    watchosArm32()
-    watchosArm64()
-    watchosDeviceArm64()
-    watchosSimulatorArm64()
-    linuxArm64()
-    linuxX64()
+fun KotlinMultiplatformExtension.registerNativeDependencyTargets(project: Project) {
+    val enabled = project.enabledNativeDependencyTargets().mapTo(mutableSetOf()) { it.kotlinName }
+    if ("iosArm64" in enabled) iosArm64()
+    if ("iosSimulatorArm64" in enabled) iosSimulatorArm64()
+    if ("iosX64" in enabled) iosX64()
+    if ("macosArm64" in enabled) macosArm64()
+    if ("tvosArm64" in enabled) tvosArm64()
+    if ("tvosSimulatorArm64" in enabled) tvosSimulatorArm64()
+    if ("watchosArm32" in enabled) watchosArm32()
+    if ("watchosArm64" in enabled) watchosArm64()
+    if ("watchosDeviceArm64" in enabled) watchosDeviceArm64()
+    if ("watchosSimulatorArm64" in enabled) watchosSimulatorArm64()
+    if ("linuxArm64" in enabled) linuxArm64()
+    if ("linuxX64" in enabled) linuxX64()
 }
 
 fun String.toTaskSuffix(): String = split('_').joinToString("") { part ->
