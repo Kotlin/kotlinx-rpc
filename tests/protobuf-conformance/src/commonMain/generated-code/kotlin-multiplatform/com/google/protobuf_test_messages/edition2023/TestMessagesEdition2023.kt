@@ -126,6 +126,11 @@ interface TestAllTypesEdition2023 {
     val mapStringForeignEnum: Map<String, ForeignEnumEdition2023>
     val groupliketype: GroupLikeType
     val delimitedField: GroupLikeType
+
+    /**
+     * recursive
+     */
+    val mapRecursive: Map<Int, TestAllTypesEdition2023>
     val oneofField: OneofField?
 
     sealed interface OneofField {

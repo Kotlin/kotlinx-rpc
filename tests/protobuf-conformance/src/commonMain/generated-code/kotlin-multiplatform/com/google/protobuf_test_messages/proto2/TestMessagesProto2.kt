@@ -241,6 +241,7 @@ interface TestAllTypesProto2 {
     @GeneratedProtoMessage
     interface MessageSetCorrectExtension2 {
         val i: Int
+        val subMsg: MessageSetCorrect
     }
 
     @GeneratedProtoMessage

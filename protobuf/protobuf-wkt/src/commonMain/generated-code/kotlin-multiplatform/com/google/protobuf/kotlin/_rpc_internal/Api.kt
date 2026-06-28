@@ -70,6 +70,8 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     public override var mixins: List<Mixin> by __mixinsDelegate
     internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
+    internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var edition: String by __editionDelegate
 
     private val _owner: ApiInternal = this
 
@@ -88,6 +90,7 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
         result = 31 * result + if (presenceMask[PresenceIndices.sourceContext]) this.sourceContext.hashCode() else 0
         result = 31 * result + this.mixins.hashCode()
         result = 31 * result + this.syntax.hashCode()
+        result = 31 * result + this.edition.hashCode()
         return result
     }
 
@@ -102,7 +105,8 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
         if (this.version != other.version) return false
         if (presenceMask[PresenceIndices.sourceContext] && this.sourceContext != other.sourceContext) return false
         if (this.mixins != other.mixins) return false
-        return this.syntax == other.syntax
+        if (this.syntax != other.syntax) return false
+        return this.edition == other.edition
     }
 
     public override fun toString(): String {
@@ -126,6 +130,7 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
 
         builder.appendLine("${nextIndentString}mixins=${this.mixins},")
         builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.appendLine("${nextIndentString}edition=${this.edition},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -147,6 +152,7 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
 
         copy.mixins = this.mixins.map { it.copy() }
         copy.syntax = this.syntax
+        copy.edition = this.edition
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -213,6 +219,8 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     public override var options: List<Option> by __optionsDelegate
     internal val __syntaxDelegate: MsgFieldDelegate<Syntax> = MsgFieldDelegate { Syntax.PROTO2 }
     public override var syntax: Syntax by __syntaxDelegate
+    internal val __editionDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
+    public override var edition: String by __editionDelegate
 
     public override fun hashCode(): Int {
         var result = this.name.hashCode()
@@ -222,6 +230,7 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         result = 31 * result + this.responseStreaming.hashCode()
         result = 31 * result + this.options.hashCode()
         result = 31 * result + this.syntax.hashCode()
+        result = 31 * result + this.edition.hashCode()
         return result
     }
 
@@ -235,7 +244,8 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         if (this.responseTypeUrl != other.responseTypeUrl) return false
         if (this.responseStreaming != other.responseStreaming) return false
         if (this.options != other.options) return false
-        return this.syntax == other.syntax
+        if (this.syntax != other.syntax) return false
+        return this.edition == other.edition
     }
 
     public override fun toString(): String {
@@ -254,6 +264,7 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         builder.appendLine("${nextIndentString}responseStreaming=${this.responseStreaming},")
         builder.appendLine("${nextIndentString}options=${this.options},")
         builder.appendLine("${nextIndentString}syntax=${this.syntax},")
+        builder.appendLine("${nextIndentString}edition=${this.edition},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -272,6 +283,7 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
         copy.responseStreaming = this.responseStreaming
         copy.options = this.options.map { it.copy() }
         copy.syntax = this.syntax
+        copy.edition = this.edition
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -444,6 +456,10 @@ public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 
+    if (this.edition.isNotEmpty()) {
+        encoder.writeString(fieldNr = 8, value = this.edition)
+    }
+
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
@@ -488,6 +504,9 @@ public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecod
             }
             7 if tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
+            }
+            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.edition = decoder.readString()
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -541,6 +560,10 @@ private fun ApiInternal.computeSize(): Int {
         __result += WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number)
     }
 
+    if (this.edition.isNotEmpty()) {
+        __result += WireSize.string(this.edition).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
     __result += _unknownFields.size.toInt()
     return __result
 }
@@ -582,6 +605,10 @@ public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
         encoder.writeEnum(fieldNr = 7, value = this.syntax.number)
     }
 
+    if (this.edition.isNotEmpty()) {
+        encoder.writeString(fieldNr = 8, value = this.edition)
+    }
+
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
@@ -619,6 +646,9 @@ public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: Wir
             }
             7 if tag.wireType == WireType.VARINT -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
+            }
+            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.edition = decoder.readString()
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -670,6 +700,10 @@ private fun MethodInternal.computeSize(): Int {
 
     if (this.syntax != Syntax.PROTO2) {
         __result += WireSize.tag(7, WireType.VARINT) + WireSize.enum(this.syntax.number)
+    }
+
+    if (this.edition.isNotEmpty()) {
+        __result += WireSize.string(this.edition).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()

@@ -836,6 +836,11 @@ val TestAllTypesProto2.MessageSetCorrectExtension2.presence: TestAllTypesProto2P
 val TestAllTypesProto2.MessageSetCorrectExtension2.iOrNull: Int? get() = if (this.presence.hasI) this.i else null
 
 /**
+ * Returns the value of the `subMsg` field if present, otherwise null.
+ */
+val TestAllTypesProto2.MessageSetCorrectExtension2.subMsgOrNull: TestAllTypesProto2.MessageSetCorrect? get() = if (this.presence.hasSubMsg) this.subMsg else null
+
+/**
  * Constructs a new message.
  * ```
  * val message = ExtensionWithOneof {
@@ -1306,6 +1311,8 @@ interface TestAllTypesProto2Presence {
      */
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
+
+        val hasSubMsg: Boolean
     }
 }
 

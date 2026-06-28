@@ -893,8 +893,10 @@ public interface FieldOptions {
     public val deprecated: Boolean
 
     /**
+     * DEPRECATED. DO NOT USE!
      * For Google-internal migration only. Do not use.
      */
+    @Deprecated("This declaration is deprecated in .proto file")
     public val weak: Boolean
 
     /**
@@ -1730,6 +1732,11 @@ public sealed class Edition(public open val number: Int) {
     public data object EDITION_2024: Edition(number = 1001)
 
     /**
+     * A placeholder edition for developing and testing unscheduled features.
+     */
+    public data object EDITION_UNSTABLE: Edition(number = 9999)
+
+    /**
      * Placeholder editions for testing feature resolution.  These should not be
      * used or relied on outside of tests.
      */
@@ -1753,7 +1760,7 @@ public sealed class Edition(public open val number: Int) {
     public data class UNRECOGNIZED(override val number: Int): Edition(number)
 
     public companion object {
-        public val entries: List<Edition> by lazy { listOf(EDITION_UNKNOWN, EDITION_1_TEST_ONLY, EDITION_2_TEST_ONLY, EDITION_LEGACY, EDITION_PROTO2, EDITION_PROTO3, EDITION_2023, EDITION_2024, EDITION_99997_TEST_ONLY, EDITION_99998_TEST_ONLY, EDITION_99999_TEST_ONLY, EDITION_MAX) }
+        public val entries: List<Edition> by lazy { listOf(EDITION_UNKNOWN, EDITION_1_TEST_ONLY, EDITION_2_TEST_ONLY, EDITION_LEGACY, EDITION_PROTO2, EDITION_PROTO3, EDITION_2023, EDITION_2024, EDITION_UNSTABLE, EDITION_99997_TEST_ONLY, EDITION_99998_TEST_ONLY, EDITION_99999_TEST_ONLY, EDITION_MAX) }
     }
 }
 
