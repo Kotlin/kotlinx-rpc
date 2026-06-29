@@ -29,10 +29,9 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import kotlinx.rpc.protoc.gen.core.model.hasRequiredFields
-import kotlinx.rpc.protoc.gen.core.model.importPath
 import kotlinx.rpc.protoc.gen.core.model.nested
-import kotlinx.rpc.protoc.gen.core.model.packageName
 import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
+import kotlinx.rpc.protoc.gen.core.model.topLevelFP
 import kotlinx.rpc.protoc.gen.core.scoped
 import kotlinx.rpc.protoc.gen.core.scopedAnnotation
 import kotlinx.rpc.protoc.gen.core.wrapIn
@@ -73,7 +72,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // Keep file-level extensions in top-level scope.
         fileDeclaration.extensions.forEach { extension ->
-            generateProtoExtensionProperty(extension, fileDeclaration.packageName)
+            generateProtoExtensionProperty(extension)
         }
 
         // Message-scoped extensions are emitted in namespace objects.
@@ -84,14 +83,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
     override fun FileGenerator.generateInternalDeclaredEntities(fileDeclaration: FileDeclaration) {
         fileSuppresses = listOf("PropertyName", "CanBeVal", "ConstPropertyName", "LocalVariableName", "DuplicatedCode")
-
-        // todo needs actual function name resolution if we want to not have unused imports
-        fileDeclaration.dependencies.forEach { dependency ->
-            dependency.packageName.addExtensionImports(
-                hasEnums = dependency.enumDeclarations.isNotEmpty() || dependency.messageDeclarations.any { it.hasEnums() },
-                checkRequiredFieldsGenerated = dependency.messageDeclarations.any { it.hasRequiredFieldsRecursively },
-            )
-        }
 
         generateInternalMessageEntities(fileDeclaration.messageDeclarations)
 
@@ -120,14 +111,6 @@ class ModelToProtobufKotlinCommonGenerator(
             generateMessageDecoder(message)
             generateInternalComputeSize(message)
             generateInternalCastExtension(message)
-        }
-
-        allMessages.forEach {
-            // add all required imports of submessage fields
-            // (e.g. asInternal() from messages in different packages)
-            //
-            // generated after all messages are processed for a proper checkRequiredFields check
-            it.addNecessaryInternalImports()
         }
     }
 
@@ -353,41 +336,6 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    /**
-     * Adds necessary imports required for this message declaration.
-     * E.g., the `asInternal()` and `copy()` functions of messages in other packages.
-     */
-    private fun MessageDeclaration.addNecessaryInternalImports() {
-        val pkg = name.packageName()
-        messageFields.map { (it.type as FieldType.Message).dec.value }.forEach { subMsg ->
-            val subMsgPkg = subMsg.name.packageName()
-            // if the subMsg is part of some other package and not a well-known type,
-            // we import all necessary functions
-            if (subMsgPkg != pkg) {
-                subMsgPkg.addExtensionImports(
-                    hasEnums = false,
-                    checkRequiredFieldsGenerated = subMsg.hasRequiredFieldsRecursively,
-                )
-            }
-        }
-
-        internalImports.add("kotlinx.io.bytestring.isNotEmpty")
-        internalImports.add("kotlinx.rpc.protobuf.internal.protoToString")
-    }
-
-    private fun FqName.Package.addExtensionImports(hasEnums: Boolean, checkRequiredFieldsGenerated: Boolean) {
-        internalImports.add(importPath("asInternal"))
-        internalImports.add(importPath("copy"))
-        if (checkRequiredFieldsGenerated) {
-            internalImports.add(importPath("checkRequiredFields"))
-        }
-        internalImports.add(importPath("decodeWith"))
-        internalImports.add(importPath("encodeWith"))
-        if (hasEnums) {
-            internalImports.add(importPath("fromNumber"))
-        }
-    }
-
     private fun CodeGenerator.generateCompanionObject(declaration: MessageDeclaration) {
         clazz(
             name = "",
@@ -407,7 +355,7 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = FqName.Implicits.Int.scoped(),
         ) {
             if (declaration.hasRequiredFieldsRecursively) {
-                code("checkRequiredFields()".scoped())
+                code("%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
             }
 
             when {
@@ -557,13 +505,13 @@ class ModelToProtobufKotlinCommonGenerator(
             returnType = FqName.Implicits.Boolean.scoped(),
         ) {
             if (declaration.hasRequiredFieldsRecursively) {
-                code("checkRequiredFields()".scoped())
+                code("%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
             }
             code("if (this === other) return true".scoped())
             code("if (other == null || this::class != other::class) return false".scoped())
             code("other as %T".scoped(declaration.internalClassName))
             if (declaration.hasRequiredFieldsRecursively) {
-                code("other.checkRequiredFields()".scoped())
+                code("other.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
             }
             var generatedFinalReturn = false
 
@@ -733,23 +681,28 @@ class ModelToProtobufKotlinCommonGenerator(
             code("val builder = StringBuilder()".scoped())
             code("builder.appendLine(\"%T(\")".scoped(declaration.name))
             declaration.actualFields.forEach { field ->
-                val suffix = when (field.type) {
+                val suffix = when (val type = field.type) {
                     FieldType.IntegralType.BYTES -> {
                         val nullable = if (field.nullable) "?" else ""
-                        "$nullable.protoToString()"
+                        "$nullable.%F()".scoped(FqName.TopLevelFP.protoToString)
                     }
 
                     is FieldType.Message -> {
                         ".asInternal().asString(indent = indent + ${config.indentSize})"
+                            .scoped(type.dec.value.name.topLevelFP("asInternal"))
                     }
 
                     else -> {
-                        ""
+                        ScopedFormattedString.empty
                     }
                 }
 
                 val valueBuilder: CodeGenerator.() -> Unit = {
-                    code($$"builder.appendLine(\"${nextIndentString}$${field.name}=${this.$${field.name}$$suffix},\")".scoped())
+                    val line = suffix.wrapIn { suffix ->
+                        $$"builder.appendLine(\"${nextIndentString}$${field.name}=${this.$${field.name}$$suffix},\")"
+                    }
+
+                    code(line)
                 }
 
                 if (field.presenceIdx != null) {
@@ -796,7 +749,10 @@ class ModelToProtobufKotlinCommonGenerator(
                 """.trimMargin()
             )
         ) {
-            code("return this.asInternal().copyInternal(body)".scoped())
+            code(
+                "return this.%F().copyInternal(body)"
+                    .scoped(declaration.name.topLevelFP("asInternal"))
+            )
         }
     }
 
@@ -875,7 +831,10 @@ class ModelToProtobufKotlinCommonGenerator(
                 "$varName.mapValues { $copyCall }"
             }
 
-            is FieldType.Message -> varName.wrapIn { varName -> "$varName.copy()" }
+            is FieldType.Message -> {
+                val copy = dec.value.name.topLevelFP("copy")
+                varName.merge(copy.scoped()) { varName, copy -> "$varName.$copy()" }
+            }
             is FieldType.OneOf -> varName.wrapIn { varName -> "$varName?.oneOfCopy()" }
         }
     }
@@ -977,7 +936,7 @@ class ModelToProtobufKotlinCommonGenerator(
             type = declaration.presenceInterfaceName.scoped(),
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             contextReceiver = declaration.name.scoped(),
-            value = "this.asInternal()._presence".scoped(),
+            value = "this.%F()._presence".scoped(declaration.name.topLevelFP("asInternal")),
             comment = Comment.leading(
                 declaration.name.scoped().wrapIn {
                     "Returns the field-presence view for this [$it] instance."
@@ -1005,17 +964,17 @@ class ModelToProtobufKotlinCommonGenerator(
             }
     }
 
-    private fun CodeGenerator.generateProtoExtensionProperty(
-        declaration: FieldDeclaration,
-        packageName: FqName.Package
-    ) {
+    private fun CodeGenerator.generateProtoExtensionProperty(declaration: FieldDeclaration) {
         val name = declaration.name
         val extendee = declaration.containingType.value
         val descriptorRef = requireNotNull(declaration.extensionDescriptorName) {
             "Missing extension descriptor name for ${declaration.name}"
         }
+        val asInternal = extendee.name.topLevelFP("asInternal")
 
-        var value = "asInternal().getExtensionValue(%T)".scoped(descriptorRef)
+        var value = "%F().getExtensionValue(%T)"
+            .scoped(asInternal, descriptorRef)
+
         if (!declaration.nullable) {
             // if the field is non-nullable, e.g. a message, we fallback to the defined default value
             val default = "%T.defaultValue.value".scoped(descriptorRef)
@@ -1034,11 +993,6 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             value = value,
         )
-
-        val extendeePackage = extendee.name.packageName()
-        if (extendeePackage != packageName) {
-            extImports.add(extendeePackage.importPath("asInternal"))
-        }
 
         // val MyMessage.Companion.myExtensionField: ProtoExtensionDescriptor<MyMessage, FieldType> get() =
         //  MyProtoFileKtExtensions.myExtensionField
@@ -1078,7 +1032,7 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
             isVar = true,
             value = value,
-            setter = "asInternal().setExtensionValue(%T, value)".scoped(descriptorRef)
+            setter = "%F().setExtensionValue(%T, value)".scoped(asInternal, descriptorRef)
         )
 
         // fun MyMessage.Builder.clearMyExtensionField { /* ... */ }
@@ -1087,7 +1041,7 @@ class ModelToProtobufKotlinCommonGenerator(
             contextReceiver = extendee.builderClassName.scoped(),
             returnType = "".scoped()
         ) {
-            code("asInternal().setExtensionValue(%T, null)".scoped(descriptorRef))
+            code("%F().setExtensionValue(%T, null)".scoped(asInternal, descriptorRef))
         }
     }
 
@@ -1103,7 +1057,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declarationType = CodeGenerator.DeclarationType.Object,
         ) {
             declaration.extensions.forEach { extension ->
-                generateProtoExtensionProperty(extension, declaration.name.packageName())
+                generateProtoExtensionProperty(extension)
             }
 
             nestedWithExtensions.forEach { nested ->
@@ -1250,9 +1204,12 @@ class ModelToProtobufKotlinCommonGenerator(
             ) {
                 code("val buffer = %T()".scoped(FqName.KotlinLibs.Buffer))
                 code("val encoder = %T(buffer)".scoped(FqName.RpcClasses.WireEncoder))
-                code("val internalMsg = value.asInternal()".scoped())
-                scope("checkForPlatformEncodeException".scoped(), nlAfterClosed = false) {
-                    code("internalMsg.encodeWith(encoder, config as? %T)".scoped(FqName.RpcClasses.ProtoConfig))
+                code("val internalMsg = value.%F()".scoped(declaration.name.topLevelFP("asInternal")))
+                scope(FqName.TopLevelFP.checkForPlatformEncodeException.scoped(), nlAfterClosed = false) {
+                    code(
+                        "internalMsg.%F(encoder, config as? %T)"
+                            .scoped(declaration.name.topLevelFP("encodeWith"), FqName.RpcClasses.ProtoConfig)
+                    )
                 }
                 code("encoder.flush()".scoped())
                 code("return buffer".scoped())
@@ -1273,26 +1230,24 @@ class ModelToProtobufKotlinCommonGenerator(
                             .scoped(FqName.RpcClasses.ProtoConfig)
                     )
                     code("val msg = %T()".scoped(declaration.internalClassName))
-                    scope("checkForPlatformDecodeException".scoped(), nlAfterClosed = false) {
+                    scope(FqName.TopLevelFP.checkForPlatformDecodeException.scoped(), nlAfterClosed = false) {
                         // if the message declaration is a group, we must pass null as the
                         // startGroup tag to indicate that this message is decoded as standalone (like a normal message)
                         val groupExtraArg = if (declaration.isGroup) ", null" else ""
                         code(
-                            "%T.decodeWith(msg, it, config as? %T$groupExtraArg)".scoped(
+                            "%T.%F(msg, it, config as? %T$groupExtraArg)".scoped(
                                 declaration.internalClassName,
+                                declaration.name.topLevelFP("decodeWith"),
                                 FqName.RpcClasses.ProtoConfig,
                             )
                         )
                     }
                     if (declaration.hasRequiredFieldsRecursively) {
-                        code("msg.checkRequiredFields()".scoped())
+                        code("msg.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
                     }
                     code("return msg".scoped())
                 }
             }
-
-            internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException")
-            internalImports.add("kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException")
         }
     }
 
@@ -1339,7 +1294,10 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         ) {
             val suffix = if (declaration.hasRequiredFieldsRecursively) {
-                ".apply(%T::checkRequiredFields)".scoped(declaration.internalClassName)
+                ".apply(%T::%F)".scoped(
+                    declaration.internalClassName,
+                    declaration.name.topLevelFP("checkRequiredFields")
+                )
             } else {
                 ScopedFormattedString.empty
             }
@@ -1626,7 +1584,7 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.List -> if (isPacked) {
                 val elementType = fieldType.value
                 val conversion = if (elementType is FieldType.Enum) {
-                    ".map { %T.fromNumber(it) }".scoped(elementType.dec.value.name)
+                    ".map { %T.%F(it) }".scoped(elementType.dec.value.name, elementType.dec.value.name.topLevelFP("fromNumber"))
                 } else {
                     "".scoped()
                 }
@@ -1653,8 +1611,8 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> {
-                val raw = "%T.fromNumber(decoder.read${fieldType.decodeEncodeFuncName()}())"
-                    .scoped(fieldType.dec.value.name)
+                val raw = "%T.%F(decoder.read${fieldType.decodeEncodeFuncName()}())"
+                    .scoped(fieldType.dec.value.name, fieldType.dec.value.name.topLevelFP("fromNumber"))
 
                 emitAssignment(raw)
             }
@@ -1663,16 +1621,27 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val msg = fieldType.dec.value
+                val asInternal: ScopedFormattedString = msg.name.topLevelFP("asInternal").scoped()
+                val decodeWith: ScopedFormattedString = msg.name.topLevelFP("decodeWith").scoped()
+
                 if (msg.isGroup) {
                     code(
-                        lvalue.merge(msg.internalClassName.scoped()) { target, internalClassName ->
-                            "decoder.readGroup($target.asInternal()) { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config, tag) }"
+                        lvalue.merge(
+                            other = asInternal,
+                            another = msg.internalClassName.scoped(),
+                            anotherOne = decodeWith,
+                        ) { target, asInternal, internalClassName, decodeWith ->
+                            "decoder.readGroup($target.$asInternal()) { msg, decoder -> $internalClassName.$decodeWith(msg, decoder, config, tag) }"
                         }
                     )
                 } else {
                     code(
-                        lvalue.merge(msg.internalClassName.scoped()) { target, internalClassName ->
-                            "decoder.readMessage($target.asInternal()) { msg, decoder -> $internalClassName.decodeWith(msg, decoder, config) }"
+                        lvalue.merge(
+                            other = asInternal,
+                            another = msg.internalClassName.scoped(),
+                            anotherOne = decodeWith,
+                        ) { target, asInternal, internalClassName, decodeWith ->
+                            "decoder.readMessage($target.$asInternal()) { msg, decoder -> $internalClassName.$decodeWith(msg, decoder, config) }"
                         }
                     )
                 }
@@ -1722,8 +1691,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // encode all extension values
         scope("_extensions.forEach".scoped(), paramDecl = "(key, value) ->".scoped()) {
             scope("value.descriptor.let".scoped(), paramDecl = "descriptor ->".scoped()) {
-                internalImports.add("kotlin.reflect.cast")
-                code("descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)".scoped())
+                code("descriptor.encode(encoder, key, descriptor.valueType.%F(value.value), config)".scoped(FqName.TopLevelFP.cast))
             }
         }
 
@@ -1844,9 +1812,11 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Message -> {
                 val writeMethod = if (type.dec.value.isGroup) "writeGroupMessage" else "writeMessage"
+                val asInternal = type.dec.value.name.topLevelFP("asInternal")
+                val encodeWith = type.dec.value.name.topLevelFP("encodeWith")
                 code(
-                    valueVar.wrapIn { valueVar ->
-                        "encoder.$writeMethod(fieldNr = ${number}, value = $valueVar.asInternal()) { encoder -> encodeWith(encoder, config) }"
+                    valueVar.merge(asInternal.scoped(), encodeWith.scoped()) { valueVar, asInternal, encodeWith ->
+                        "encoder.$writeMethod(fieldNr = $number, value = $valueVar.$asInternal()) { encoder -> $encodeWith(encoder, config) }"
                     }
                 )
             }
@@ -1896,7 +1866,14 @@ class ModelToProtobufKotlinCommonGenerator(
         declaration.messageFields.forEach { field ->
             if (field.type.hasRequiredFields) {
                 ifBranch(condition = "presenceMask[${field.presenceIdx}]".scoped(), ifBlock = {
-                    code("this.${field.name}.asInternal().checkRequiredFields()".scoped())
+                    val fieldMessageName = (field.type as FieldType.Message).dec.value.name
+                    code(
+                        "this.${field.name}.%F().%F()"
+                            .scoped(
+                                fieldMessageName.topLevelFP("asInternal"),
+                                fieldMessageName.topLevelFP("checkRequiredFields"),
+                            )
+                    )
                 })
             }
         }
@@ -1915,7 +1892,14 @@ class ModelToProtobufKotlinCommonGenerator(
 
                             if (variant.type.hasRequiredFields) {
                                 whenCase("it is %T".scoped(variantClassName)) {
-                                    code("it.value.asInternal().checkRequiredFields()".scoped())
+                                    val variantTypeName = (variant.type as FieldType.Message).dec.value.name
+                                    code(
+                                        "it.value.%F().%F()"
+                                            .scoped(
+                                                variantTypeName.topLevelFP("asInternal"),
+                                                variantTypeName.topLevelFP("checkRequiredFields"),
+                                            )
+                                    )
                                 }
                             }
                         }
@@ -1931,7 +1915,14 @@ class ModelToProtobufKotlinCommonGenerator(
 
             if (listType.value.hasRequiredFields) {
                 scope("this.${field.name}.forEach".scoped()) {
-                    code("it.asInternal().checkRequiredFields()".scoped())
+                    val listTypeName = (listType.value as FieldType.Message).dec.value.name
+                    code(
+                        "it.%F().%F()"
+                            .scoped(
+                                listTypeName.topLevelFP("asInternal"),
+                                listTypeName.topLevelFP("checkRequiredFields"),
+                            )
+                    )
                 }
             }
         }
@@ -1944,7 +1935,15 @@ class ModelToProtobufKotlinCommonGenerator(
 
             if (mapType.entry.value.hasRequiredFields) {
                 scope("this.${field.name}.values.forEach".scoped()) {
-                    code("it.asInternal().checkRequiredFields()".scoped())
+                    val mapEntryTypeName = (mapType.entry.value as FieldType.Message).dec.value.name
+
+                    code(
+                        "it.%F().%F()"
+                            .scoped(
+                                mapEntryTypeName.topLevelFP("asInternal"),
+                                mapEntryTypeName.topLevelFP("checkRequiredFields"),
+                            )
+                    )
                 }
             }
         }
@@ -2118,6 +2117,7 @@ class ModelToProtobufKotlinCommonGenerator(
         isPacked: Boolean = false,
     ): ScopedFormattedString {
         val sizeFuncName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
+        val sizeFuncFqName = sizeFuncName?.let { FqName.RpcClasses.WireSize.topLevelFP(it) }
 
         val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
             variable.wrapIn { variable -> "$variable.map { it.number }" }
@@ -2125,19 +2125,16 @@ class ModelToProtobufKotlinCommonGenerator(
             variable
         }
 
-        val sizeFunc = FqName.RpcClasses.WireSize.scoped().merge(convertedVariable) { wireSize, convertedVariable ->
-            "$wireSize.$sizeFuncName($convertedVariable)"
-        }
-
-        return when (this) {
-            is FieldType.IntegralType -> sizeFunc.also {
-                referenceExtension(FqName.RpcClasses.WireSize, sizeFuncName!!)
+        fun sizeFunc() = FqName.RpcClasses.WireSize.scoped()
+            .merge(sizeFuncFqName!!.scoped(), convertedVariable) { wireSize, sizeFuncName, convertedVariable ->
+                "$wireSize.$sizeFuncName($convertedVariable)"
             }
 
+        return when (this) {
+            is FieldType.IntegralType -> sizeFunc()
+
             is FieldType.List -> when {
-                isPacked -> sizeFunc.also {
-                    referenceExtension(FqName.RpcClasses.WireSize, sizeFuncName!!)
-                }
+                isPacked -> sizeFunc()
 
                 else -> {
                     // calculate the size of the values within the list.
@@ -2147,8 +2144,8 @@ class ModelToProtobufKotlinCommonGenerator(
                     val elementSize = when (value.wireType) {
                         WireType.LENGTH_DELIMITED -> {
                             valueSize.merge(
-                                tagSize,
-                                int32SizeCall("it".scoped())
+                                other = tagSize,
+                                another = int32SizeCall("it".scoped()),
                             ) { valueSize, tagSize, int32SizeCall ->
                                 "$valueSize.let { $tagSize + $int32SizeCall + it }"
                             }
@@ -2177,35 +2174,40 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> {
-                FqName.RpcClasses.WireSize.scoped().merge(variable) { wireSize, variable ->
-                    "$wireSize.$sizeFuncName($variable.number)"
-                }.also {
-                    referenceExtension(FqName.RpcClasses.WireSize, sizeFuncName!!)
-                }
+                FqName.RpcClasses.WireSize.scoped()
+                    .merge(sizeFuncFqName!!.scoped(), variable) { wireSize, sizeFuncName, variable ->
+                        "$wireSize.$sizeFuncName($variable.number)"
+                    }
             }
 
-            is FieldType.Message -> variable.wrapIn { variable -> "$variable.asInternal()._size" }
+            is FieldType.Message -> variable.merge(
+                dec.value.name.topLevelFP("asInternal").scoped()
+            ) { variable, asInternal ->
+                "$variable.$asInternal()._size"
+            }
+
             is FieldType.Map -> error("Map fields have no direct valueSizeCall")
             is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
         }
     }
 
     private fun tagSizeCall(number: Int, wireType: WireType): ScopedFormattedString {
-        return "%T.tag($number, %T)".scoped(
+        return "%T.%F($number, %T)".scoped(
             FqName.RpcClasses.WireSize,
+            FqName.RpcClasses.WireSize.topLevelFP("tag"),
             FqName.RpcClasses.WireType.nested(wireType.name)
-        ).also {
-            referenceExtension(FqName.RpcClasses.WireSize, "tag")
-        }
+        )
     }
 
     @Suppress("SameParameterValue")
     private fun int32SizeCall(number: ScopedFormattedString): ScopedFormattedString {
-        return FqName.RpcClasses.WireSize.scoped().merge(number) { wireSize, number ->
-            "$wireSize.int32($number)"
-        }.also {
-            referenceExtension(FqName.RpcClasses.WireSize, "int32")
-        }
+        return FqName.RpcClasses.WireSize.scoped()
+            .merge(
+                other = FqName.RpcClasses.WireSize.topLevelFP("int32").scoped(),
+                another = number,
+            ) { wireSize, int32, number ->
+                "$wireSize.$int32($number)"
+            }
     }
 
     private fun FieldDeclaration.notDefaultCheck(parent: MessageDeclaration): ScopedFormattedString {
@@ -2222,7 +2224,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
 
                     FieldType.IntegralType.BYTES if defaultValue == FieldType.IntegralType.BYTES.defaultValue -> {
-                        "this.$name.isNotEmpty()".scoped()
+                        "this.$name.%F()".scoped(FqName.TopLevelFP.byteStringIsNotEmpty)
                     }
 
                     FieldType.IntegralType.BOOL -> {
@@ -2461,7 +2463,7 @@ class ModelToProtobufKotlinCommonGenerator(
         val typeNonNull = extension.typeFqNameNonNullable()
         property(
             name = descriptorName,
-            type = "%T<%T, ".scoped(
+            type = "%T<%T,".scoped(
                 FqName.RpcClasses.InternalExtensionDescriptor,
                 messageName,
             ).merge(typeNonNull) { first, typeNonNull -> "$first $typeNonNull>" },
@@ -2504,7 +2506,7 @@ class ModelToProtobufKotlinCommonGenerator(
             namedArgs = field.baseExtensionDescriptorArgs() + listOf(
                 "valueType" to "%T::class".scoped(enumType),
                 "encodeValue" to "{ it.number }".scoped(),
-                "decodeValue" to "{ %T.fromNumber(it) }".scoped(enumType),
+                "decodeValue" to "{ %T.%F(it) }".scoped(enumType, enumType.topLevelFP("fromNumber")),
                 "defaultValue" to "{ %T }".scoped(defaultValue),
             ),
         )
@@ -2515,16 +2517,25 @@ class ModelToProtobufKotlinCommonGenerator(
         type: FieldType.Message,
     ) {
         val message = type.dec.value
+        val asInternal = message.name.topLevelFP("asInternal")
+        val encodeWith = message.name.topLevelFP("encodeWith")
+        val decodeWith = message.name.topLevelFP("decodeWith")
+
         if (message.isGroup) {
             functionCall(
                 function = "%T.group".scoped(FqName.RpcClasses.InternalExtensionDescriptor),
                 namedArgs = field.baseExtensionDescriptorArgs() + listOf(
                     "valueType" to "%T::class".scoped(message.name),
                     "default" to "{ %T }".scoped(message.defaultObjectRef),
-                    "asInternal" to "{ it.asInternal() }".scoped(),
-                    "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
-                    "decodeWith" to "{ value, decoder, config, startGroup -> %T.decodeWith(value.asInternal(), decoder, config, startGroup) }".scoped(
+                    "asInternal" to "{ it.%F() }".scoped(asInternal),
+                    "encodeWith" to "{ value, encoder, config -> value.%F().%F(encoder, config) }".scoped(
+                        asInternal,
+                        encodeWith
+                    ),
+                    "decodeWith" to "{ value, decoder, config, startGroup -> %T.%F(value.%F(), decoder, config, startGroup) }".scoped(
                         message.internalClassName,
+                        decodeWith,
+                        asInternal,
                     ),
                 ),
             )
@@ -2534,10 +2545,15 @@ class ModelToProtobufKotlinCommonGenerator(
                 namedArgs = field.baseExtensionDescriptorArgs() + listOf(
                     "valueType" to "%T::class".scoped(message.name),
                     "default" to "{ %T }".scoped(message.defaultObjectRef),
-                    "asInternal" to "{ it.asInternal() }".scoped(),
-                    "encodeWith" to "{ value, encoder, config -> value.asInternal().encodeWith(encoder, config) }".scoped(),
-                    "decodeWith" to "{ value, decoder, config -> %T.decodeWith(value.asInternal(), decoder, config) }".scoped(
+                    "asInternal" to "{ it.%F() }".scoped(asInternal),
+                    "encodeWith" to "{ value, encoder, config -> value.%F().%F(encoder, config) }".scoped(
+                        asInternal,
+                        encodeWith
+                    ),
+                    "decodeWith" to "{ value, decoder, config -> %T.%F(value.%F(), decoder, config) }".scoped(
                         message.internalClassName,
+                        decodeWith,
+                        asInternal,
                     ),
                 ),
             )

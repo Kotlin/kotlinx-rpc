@@ -160,7 +160,7 @@ internal class NameResolver private constructor(
         val name: String,
         val fqName: FqName,
         val parent: Node? = null,
-        val children: MutableMap<String, Node> = mutableMapOf<String, Node>(),
+        val children: MutableMap<String, Node> = mutableMapOf(),
     ) {
         private var _list: List<String>? = null
 

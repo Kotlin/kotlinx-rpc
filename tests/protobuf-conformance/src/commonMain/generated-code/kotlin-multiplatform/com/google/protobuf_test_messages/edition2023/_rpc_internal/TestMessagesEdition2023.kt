@@ -7,7 +7,6 @@ import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
-import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -6817,28 +6816,28 @@ fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAl
 
 @InternalRpcApi
 object TestMessagesEdition2023KtExtensions {
-    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> = 
+    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023, Int> = 
         InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val extensionString: InternalExtensionDescriptor<TestAllTypesEdition2023,  String> = 
+    val extensionString: InternalExtensionDescriptor<TestAllTypesEdition2023, String> = 
         InternalExtensionDescriptor.string(
             fieldNumber = 133,
             name = "extensionString",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023,  ByteString> = 
+    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023, ByteString> = 
         InternalExtensionDescriptor.bytes(
             fieldNumber = 134,
             name = "extensionBytes",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupliketype",
@@ -6850,7 +6849,7 @@ object TestMessagesEdition2023KtExtensions {
             decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
         )
 
-    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 122,
             name = "delimitedExt",
