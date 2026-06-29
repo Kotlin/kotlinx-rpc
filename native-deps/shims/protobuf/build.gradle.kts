@@ -101,9 +101,12 @@ fun findHostManagedLlvmObjcopy(): String {
         val exitCode = process.waitFor()
         if (exitCode == 0 && output.isNotBlank()) output else null
     }.getOrNull()
+    // Only accept llvm-objcopy here: it is architecture-agnostic and can rewrite symbols in objects
+    // for any target. A plain binutils objcopy on PATH is host-architecture-specific and must not be
+    // used for cross-compiled targets (e.g. it cannot read a linux_arm64 object on a linux_x64 agent).
     return xcrunLlvmObjcopy
-        ?: runCatching { findRequiredExecutable("llvm-objcopy", "objcopy") }.getOrNull()
-        ?: error("Required host objcopy executable not found. Expected llvm-objcopy or objcopy on PATH, or xcrun --find llvm-objcopy to succeed.")
+        ?: runCatching { findRequiredExecutable("llvm-objcopy") }.getOrNull()
+        ?: error("Required host objcopy executable not found. Expected llvm-objcopy on PATH, or xcrun --find llvm-objcopy to succeed.")
 }
 
 // KRPC-540 temporary helper for the protobuf-shim archive rewrite.
@@ -184,16 +187,20 @@ kotlin {
                 val llvmAr = runCatching { findKonanManagedLlvmAr(konanHome) }
                     .getOrElse { findRequiredExecutable("llvm-ar", "ar") }
                 val hostOs = System.getProperty("os.name").lowercase()
-                val llvmObjcopy = runCatching { findHostManagedLlvmObjcopy() }
-                    .getOrElse {
-                        // KRPC-540 fallback for Linux hosts only. The KONAN GCC bundles ship Linux-hosted
-                        // objcopy binaries, so they are not executable on macOS runners.
-                        if (hostOs.contains("linux")) {
-                            findKonanManagedObjcopy(konanHome, target.bazelName)
-                        } else {
-                            throw it
-                        }
-                    }
+                // objcopy must understand the *target* architecture's object format. The host's binutils
+                // objcopy is host-architecture-specific, so on a linux_x64 agent it cannot read a
+                // linux_arm64 object and fails with "Unable to recognise the format of the input file".
+                // On Linux, prefer the Kotlin/Native-managed, target-specific objcopy from the KONAN GCC
+                // bundle: it is always downloaded with the toolchain and always matches the target. Fall
+                // back to an architecture-agnostic llvm-objcopy only if that is unavailable. On macOS the
+                // KONAN GCC bundles ship Linux-hosted binaries that cannot run, so use the host
+                // (xcrun/PATH) llvm-objcopy, which is architecture-agnostic.
+                val llvmObjcopy = if (hostOs.contains("linux")) {
+                    runCatching { findKonanManagedObjcopy(konanHome, target.bazelName) }
+                        .getOrElse { findHostManagedLlvmObjcopy() }
+                } else {
+                    findHostManagedLlvmObjcopy()
+                }
                 val extractedObject = interopDir.resolve("symbolize.o")
 
                 runCheckedCommand(interopDir, llvmAr, "x", interopArchive.absolutePath, extractedObject.name)

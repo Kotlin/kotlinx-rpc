@@ -17,6 +17,16 @@ sealed interface FqName {
         }
     }
 
+    // can only be top level
+    data class TopLevelExtensionFunctionOrProperty(
+        override val simpleName: String,
+        override val parent: Package,
+    ) : FqName {
+        override fun toString(): String {
+            return fullName()
+        }
+    }
+
     class Package private constructor(
         override val simpleName: String,
         parent: Package? = null,
@@ -191,6 +201,14 @@ sealed interface FqName {
         val Flow = fqDec("kotlinx.coroutines.flow", "Flow")
         val JvmInline = fqDec("kotlin.jvm", "JvmInline")
     }
+
+    object TopLevelFP {
+        val protoToString = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "protoToString")
+        val checkForPlatformEncodeException = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "checkForPlatformEncodeException")
+        val checkForPlatformDecodeException = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "checkForPlatformDecodeException")
+        val byteStringIsNotEmpty = fqFuncOrProp("kotlinx.io.bytestring", "isNotEmpty")
+        val cast = fqFuncOrProp("kotlin.reflect", "cast")
+    }
 }
 
 fun FqName.nested(name: String): FqName.Declaration = FqName.Declaration(name, this)
@@ -216,12 +234,16 @@ fun FqName.fullName(classSuffix: String = ""): String {
 fun FqName.packageName(): FqName.Package {
     return when (this) {
         is FqName.Package -> this
+        is FqName.TopLevelExtensionFunctionOrProperty -> parent
         is FqName.Declaration -> parent.packageName()
     }
 }
 
 fun FqName.Package.importPath(entity: String): String =
     if (this == FqName.Package.Root) entity else "${fullName()}.$entity"
+
+fun FqName.topLevelFP(name: String): FqName.TopLevelExtensionFunctionOrProperty =
+    FqName.TopLevelExtensionFunctionOrProperty(name, packageName())
 
 internal fun FqName.fullNestedNameAsList(): List<String> {
     return when (val parentName = parent) {
@@ -241,6 +263,14 @@ internal fun FqName.fullNestedNameAsList(): List<String> {
 internal fun String.asParentsAndSimpleName(): Pair<List<String>, String> =
     split(".").takeIf { it.size > 1 }?.run { dropLast(1) to last() }
         ?: (emptyList<String>() to this)
+
+fun fq(packages: String): FqName.Package {
+    return FqName.Package.fromString(packages)
+}
+
+fun fqFuncOrProp(packages: String, name: String): FqName.TopLevelExtensionFunctionOrProperty {
+    return FqName.TopLevelExtensionFunctionOrProperty(name, fq(packages))
+}
 
 fun fq(packages: String, classes: String): FqName {
     return classFq(classes.split(".").filter { it.isNotBlank() }, packages)

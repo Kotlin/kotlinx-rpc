@@ -41,6 +41,14 @@ if [[ -z "${DEVELOPER_DIR:-}" && -d "/Applications/Xcode.app/Contents/Developer"
     echo "==> DEVELOPER_DIR set to $DEVELOPER_DIR" >&2
 fi
 
+# These targets are pure C/C++ (no Android). protobuf 35.x transitively pulls in
+# rules_android, whose android_sdk_repository_extension eagerly probes ANDROID_HOME
+# during analysis and aborts the build with "Unable to determine build tools version"
+# when the SDK lacks build-tools (as on the Linux CI agent, which mounts an incomplete
+# /android-sdk). Hiding these vars from Bazel makes the extension produce an empty
+# stub repository instead of failing. See KRPC native-deps shim build.
+unset ANDROID_HOME ANDROID_SDK_ROOT ANDROID_NDK_HOME
+
 KONAN_DEPS="${KONAN_DEPS:-$KONAN_HOME/../dependencies}"
 KONAN_LLVM_RESOURCE_DIR="$(
   KONAN_DEPS="$KONAN_DEPS" \

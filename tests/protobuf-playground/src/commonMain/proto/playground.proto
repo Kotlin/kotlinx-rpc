@@ -1,0 +1,7 @@
+edition = "2024";
+
+package playground;
+
+message Test {
+  string test = 1;
+}

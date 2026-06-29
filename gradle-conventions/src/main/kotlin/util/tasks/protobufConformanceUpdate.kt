@@ -383,9 +383,6 @@ fun Project.setupProtobufConformanceResources() {
 
         from(ejectedProtosDir)
 
-        // Exclude protos with unsupported edition values
-        exclude("**/test_messages_edition_unstable.proto")
-
         val destDir = project.layout.projectDirectory
             .dir("src")
             .dir("commonMain")

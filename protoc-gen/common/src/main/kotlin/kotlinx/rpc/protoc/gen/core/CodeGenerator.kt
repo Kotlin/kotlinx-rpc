@@ -7,7 +7,6 @@
 package kotlinx.rpc.protoc.gen.core
 
 import kotlinx.rpc.protoc.gen.core.model.FqName
-import kotlinx.rpc.protoc.gen.core.model.fullName
 
 @DslMarker
 annotation class CodegenDsl
@@ -21,7 +20,7 @@ open class CodeGenerator(
 ) {
     // test only
     @Suppress("PropertyName")
-    val __imports: Set<String> get() = nameTable.requiredImports
+    val __imports: Set<String> get() = nameTable.imports
 
     private var isEmpty: Boolean = true
     private var result: String? = null
@@ -741,11 +740,6 @@ class FileGenerator(
         imports.add(name)
     }
 
-    private val conditionalImports = mutableMapOf<String, Set<String>>()
-    fun importConditionally(imports: Map<FqName, Set<String>>) {
-        conditionalImports += imports.mapKeys { it.key.fullName() }
-    }
-
     override fun build(): String {
         // before builder to calculate imports
         val body = super.build()
@@ -789,17 +783,7 @@ class FileGenerator(
                 blankLine()
             }
 
-            val conditionalImports = this@FileGenerator.conditionalImports
-            val regularImports = this@FileGenerator.imports
-
-            conditionalImports.forEach { (fqName, imports) ->
-                if (regularImports.contains(fqName)) {
-                    regularImports += imports
-                }
-            }
-
-            val sortedImports = regularImports.toSortedSet()
-
+            val sortedImports = this@FileGenerator.imports.toSortedSet()
             for (import in sortedImports) {
                 code("import $import".scoped())
             }

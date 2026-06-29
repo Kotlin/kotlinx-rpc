@@ -7,7 +7,6 @@ import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
-import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -3927,10 +3926,11 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    class MessageSetCorrectExtension2Internal: TestAllTypesProto2.MessageSetCorrectExtension2.Builder, InternalMessage(fieldsWithPresence = 1) {
+    class MessageSetCorrectExtension2Internal: TestAllTypesProto2.MessageSetCorrectExtension2.Builder, InternalMessage(fieldsWithPresence = 2) {
         @InternalRpcApi
         internal object PresenceIndices {
             const val i: Int = 0
+            const val subMsg: Int = 1
         }
 
         @InternalRpcApi
@@ -3944,9 +3944,15 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         internal val __iDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.i) { 0 }
         override var i: Int by __iDelegate
-
         override fun clearI() {
             __iDelegate.clearField(this)
+        }
+
+        internal val __subMsgDelegate: MsgFieldDelegate<TestAllTypesProto2.MessageSetCorrect> = MsgFieldDelegate(PresenceIndices.subMsg) { MessageSetCorrectInternal.DEFAULT }
+        override var subMsg: TestAllTypesProto2.MessageSetCorrect by __subMsgDelegate
+
+        override fun clearSubMsg() {
+            __subMsgDelegate.clearField(this)
         }
 
         private val _owner: MessageSetCorrectExtension2Internal = this
@@ -3956,10 +3962,13 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             override val _message: MessageSetCorrectExtension2Internal get() = _owner
 
             override val hasI: Boolean get() = presenceMask[PresenceIndices.i]
+
+            override val hasSubMsg: Boolean get() = presenceMask[PresenceIndices.subMsg]
         }
 
         override fun hashCode(): Int {
             var result = if (presenceMask[PresenceIndices.i]) this.i.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.subMsg]) this.subMsg.hashCode() else 0
             return result
         }
 
@@ -3968,7 +3977,8 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             if (other == null || this::class != other::class) return false
             other as MessageSetCorrectExtension2Internal
             if (presenceMask != other.presenceMask) return false
-            return !presenceMask[PresenceIndices.i] || this.i == other.i
+            if (presenceMask[PresenceIndices.i] && this.i != other.i) return false
+            return !presenceMask[PresenceIndices.subMsg] || this.subMsg == other.subMsg
         }
 
         override fun toString(): String {
@@ -3986,6 +3996,12 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
                 builder.appendLine("${nextIndentString}i=<unset>,")
             }
 
+            if (presenceMask[PresenceIndices.subMsg]) {
+                builder.appendLine("${nextIndentString}subMsg=${this.subMsg.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}subMsg=<unset>,")
+            }
+
             builder.append("${indentString})")
             return builder.toString()
         }
@@ -3999,6 +4015,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             val copy = MessageSetCorrectExtension2Internal()
             if (presenceMask[PresenceIndices.i]) {
                 copy.i = this.i
+            }
+
+            if (presenceMask[PresenceIndices.subMsg]) {
+                copy.subMsg = this.subMsg.copy()
             }
 
             copy.apply(body)
@@ -12707,6 +12727,10 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.encodeWith(en
         encoder.writeInt32(fieldNr = 9, value = this.i)
     }
 
+    if (presenceMask[TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.PresenceIndices.subMsg]) {
+        encoder.writeMessage(fieldNr = 10, value = this.subMsg.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
@@ -12723,6 +12747,10 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.Companion.dec
         when (tag.fieldNr) {
             9 if tag.wireType == WireType.VARINT -> {
                 msg.i = decoder.readInt32()
+            }
+            10 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__subMsgDelegate.getOrCreate(msg) { TestAllTypesProto2Internal.MessageSetCorrectInternal() }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto2Internal.MessageSetCorrectInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -12750,6 +12778,10 @@ private fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.compu
     var __result = 0
     if (presenceMask[TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.PresenceIndices.i]) {
         __result += WireSize.tag(9, WireType.VARINT) + WireSize.int32(this.i)
+    }
+
+    if (presenceMask[TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.PresenceIndices.subMsg]) {
+        __result += this.subMsg.asInternal()._size.let { WireSize.tag(10, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()
@@ -13620,28 +13652,28 @@ fun TestAllRequiredTypesProto2.NestedEnum.Companion.fromNumber(number: Int): Tes
 
 @InternalRpcApi
 object TestMessagesProto2EditionsKtExtensions {
-    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  Int> = 
+    val extensionInt32: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2, Int> = 
         InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
         )
 
-    val extensionString: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  String> = 
+    val extensionString: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2, String> = 
         InternalExtensionDescriptor.string(
             fieldNumber = 133,
             name = "extensionString",
             extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
         )
 
-    val extensionBytes: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  ByteString> = 
+    val extensionBytes: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2, ByteString> = 
         InternalExtensionDescriptor.bytes(
             fieldNumber = 134,
             name = "extensionBytes",
             extendee = com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2::class,
         )
 
-    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2,  GroupField> = 
+    val groupfield: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2, GroupField> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupfield",
@@ -13655,7 +13687,7 @@ object TestMessagesProto2EditionsKtExtensions {
 
     object TestAllTypesProto2 {
         object MessageSetCorrectExtension1 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> = 
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect, com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension1> = 
                 InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
@@ -13669,7 +13701,7 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> = 
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect, com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrectExtension2> = 
                 InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",
@@ -13683,7 +13715,7 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object ExtensionWithOneof {
-            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof> = 
+            val extensionWithOneof: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.MessageSetCorrect, com.google.protobuf_test_messages.editions.proto2.TestAllTypesProto2.ExtensionWithOneof> = 
                 InternalExtensionDescriptor.message(
                     fieldNumber = 123456789,
                     name = "extensionWithOneof",
@@ -13699,7 +13731,7 @@ object TestMessagesProto2EditionsKtExtensions {
 
     object TestAllRequiredTypesProto2 {
         object MessageSetCorrectExtension1 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> = 
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect, com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension1> = 
                 InternalExtensionDescriptor.message(
                     fieldNumber = 1547769,
                     name = "messageSetExtension",
@@ -13713,7 +13745,7 @@ object TestMessagesProto2EditionsKtExtensions {
         }
 
         object MessageSetCorrectExtension2 {
-            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect,  com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> = 
+            val messageSetExtension: InternalExtensionDescriptor<com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrect, com.google.protobuf_test_messages.editions.proto2.TestAllRequiredTypesProto2.MessageSetCorrectExtension2> = 
                 InternalExtensionDescriptor.message(
                     fieldNumber = 4135312,
                     name = "messageSetExtension",

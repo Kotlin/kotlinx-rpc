@@ -8,6 +8,7 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.buf
 import kotlinx.rpc.protoc.generate
+import kotlinx.rpc.protoc.proto
 import kotlinx.rpc.protoc.protoTasks
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -40,6 +41,11 @@ kotlin {
                 implementation(libs.coroutines.core)
                 implementation(projects.grpc.grpcMarshaller)
                 implementation(projects.protobuf.protobufCore)
+            }
+
+            // Exclude protos with unsupported edition values from code generation. KRPC-273
+            proto {
+                exclude("**/test_messages_edition_unstable.proto")
             }
         }
 

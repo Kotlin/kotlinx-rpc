@@ -14,5 +14,5 @@ version = catalogVersion("internal-native-shim-annotation")
 
 kotlin {
     explicitApi()
-    registerNativeDependencyTargets()
+    registerNativeDependencyTargets(project)
 }

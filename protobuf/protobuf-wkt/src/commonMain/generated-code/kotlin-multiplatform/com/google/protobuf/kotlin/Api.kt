@@ -16,6 +16,11 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
  * sometimes simply referred to as "APIs" in other contexts, such as the name of
  * this message itself. See https://cloud.google.com/apis/design/glossary for
  * detailed terminology.
+ * 
+ * New usages of this message as an alternative to ServiceDescriptorProto are
+ * strongly discouraged. This message does not reliability preserve all
+ * information necessary to model the schema and preserve semantics. Instead
+ * make use of FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface Api {
@@ -73,10 +78,20 @@ public interface Api {
      * The source syntax of the service.
      */
     public val syntax: Syntax
+
+    /**
+     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+     */
+    public val edition: String
 }
 
 /**
  * Method represents a method of an API interface.
+ * 
+ * New usages of this message as an alternative to MethodDescriptorProto are
+ * strongly discouraged. This message does not reliability preserve all
+ * information necessary to model the schema and preserve semantics. Instead
+ * make use of FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface Method {
@@ -112,8 +127,21 @@ public interface Method {
 
     /**
      * The source syntax of this method.
+     * 
+     * This field should be ignored, instead the syntax should be inherited from
+     * Api. This is similar to Field and EnumValue.
      */
+    @Deprecated("This declaration is deprecated in .proto file")
     public val syntax: Syntax
+
+    /**
+     * The source edition string, only valid when syntax is SYNTAX_EDITIONS.
+     * 
+     * This field should be ignored, instead the edition should be inherited from
+     * Api. This is similar to Field and EnumValue.
+     */
+    @Deprecated("This declaration is deprecated in .proto file")
+    public val edition: String
 }
 
 /**

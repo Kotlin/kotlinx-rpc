@@ -6,14 +6,16 @@ package kotlinx.rpc.protoc.gen.core
 
 import kotlinx.rpc.protoc.gen.core.model.FqName
 
-class ScopedName(val name: String)
-
 fun String.scoped(vararg args: Any): ScopedFormattedString {
     return ScopedFormattedString(this, args.toList())
 }
 
 fun FqName.scoped(): ScopedFormattedString {
     return ScopedFormattedString("%T", listOf(this))
+}
+
+fun FqName.TopLevelExtensionFunctionOrProperty.scoped(): ScopedFormattedString {
+    return ScopedFormattedString("%F", listOf(this))
 }
 
 fun FqName.scopedAnnotation(): ScopedFormattedString {
@@ -266,6 +268,10 @@ fun List<ScopedFormattedString>.joinToScopedString(separator: String): ScopedFor
     )
 }
 
+/**
+ * %T is for Types
+ * %F is for top level extension functions or properties
+ */
 private fun formatCode(string: ScopedFormattedString, nameTable: ScopedFqNameTable): String = buildString {
     val args = string.args
     val string = string.value
@@ -285,8 +291,8 @@ private fun formatCode(string: ScopedFormattedString, nameTable: ScopedFqNameTab
                 val arg = args.getOrNull(argIndex++)
                     ?: error("Missing argument at position ${argIndex - 1} for %T")
 
-                if (arg !is FqName) {
-                    error("Expected FqName for %T at position ${argIndex - 1}, but got ${arg::class.simpleName}")
+                if (arg !is FqName.Declaration) {
+                    error("Expected FqName.Declaration for %T at position ${argIndex - 1}, but got ${arg::class.simpleName}")
                 }
 
                 append(nameTable.resolve(arg))
@@ -294,15 +300,17 @@ private fun formatCode(string: ScopedFormattedString, nameTable: ScopedFqNameTab
                 i += 2
             }
 
-            'N' -> {
+            'F' -> {
                 val arg = args.getOrNull(argIndex++)
-                    ?: error("Missing argument at position ${argIndex - 1} for %N")
+                    ?: error("Missing argument at position ${argIndex - 1} for %F")
 
-                if (arg !is ScopedName) {
-                    error("Expected ScopedName for %N at position ${argIndex - 1}, but got ${arg::class.simpleName}")
+                if (arg !is FqName.TopLevelExtensionFunctionOrProperty) {
+                    error("Expected FqName.TopLevelExtensionFunctionOrProperty for %F at position ${argIndex - 1}, but got ${arg::class.simpleName}")
                 }
 
-                append(arg.name)
+                // todo no name clash check
+                nameTable.addImport(arg)
+                append(arg.simpleName)
                 i += 2
             }
 

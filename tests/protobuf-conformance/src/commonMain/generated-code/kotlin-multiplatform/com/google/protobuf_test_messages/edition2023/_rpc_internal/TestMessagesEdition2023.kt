@@ -7,7 +7,6 @@ import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
-import kotlinx.io.bytestring.isNotEmpty
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
@@ -495,6 +494,8 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         __delimitedFieldDelegate.clearField(this)
     }
 
+    internal val __mapRecursiveDelegate: MsgFieldDelegate<Map<Int, TestAllTypesEdition2023>> = MsgFieldDelegate { emptyMap() }
+    override var mapRecursive: Map<Int, TestAllTypesEdition2023> by __mapRecursiveDelegate
     override var oneofField: TestAllTypesEdition2023.OneofField? = null
 
     private val _owner: TestAllTypesEdition2023Internal = this
@@ -645,6 +646,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + this.mapStringForeignEnum.hashCode()
         result = 31 * result + if (presenceMask[PresenceIndices.groupliketype]) this.groupliketype.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.delimitedField]) this.delimitedField.hashCode() else 0
+        result = 31 * result + this.mapRecursive.hashCode()
         result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
         result = 31 * result + extensionsHashCode()
         return result
@@ -778,6 +780,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
         if (presenceMask[PresenceIndices.groupliketype] && this.groupliketype != other.groupliketype) return false
         if (presenceMask[PresenceIndices.delimitedField] && this.delimitedField != other.delimitedField) return false
+        if (this.mapRecursive != other.mapRecursive) return false
         if (!oneOfEquals(this.oneofField, other.oneofField)) return false
         return extensionsEqual(other)
     }
@@ -1003,6 +1006,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             builder.appendLine("${nextIndentString}delimitedField=<unset>,")
         }
 
+        builder.appendLine("${nextIndentString}mapRecursive=${this.mapRecursive},")
         builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
         builder.appendExtensions(nextIndentString)
         builder.append("${indentString})")
@@ -1180,6 +1184,7 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
             copy.delimitedField = this.delimitedField.copy()
         }
 
+        copy.mapRecursive = this.mapRecursive.mapValues { it.value.copy() }
         copy.oneofField = this.oneofField?.oneOfCopy()
         copy.copyExtensionsFrom(this)
         copy.apply(body)
@@ -2825,6 +2830,76 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     }
 
     @InternalRpcApi
+    class MapRecursiveEntryInternal: InternalMessage(fieldsWithPresence = 2) {
+        @InternalRpcApi
+        internal object PresenceIndices {
+            const val key: Int = 0
+            const val value: Int = 1
+        }
+
+        @InternalRpcApi
+        override val _size: Int by lazy { computeSize() }
+
+        @InternalRpcApi
+        override val _unknownFields: Buffer = Buffer()
+
+        @InternalRpcApi
+        internal var _unknownFieldsEncoder: WireEncoder? = null
+
+        internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
+        var key: Int by __keyDelegate
+        internal val __valueDelegate: MsgFieldDelegate<TestAllTypesEdition2023> = MsgFieldDelegate(PresenceIndices.value) { DEFAULT }
+        var value: TestAllTypesEdition2023 by __valueDelegate
+
+        override fun hashCode(): Int {
+            var result = if (presenceMask[PresenceIndices.key]) this.key.hashCode() else 0
+            result = 31 * result + if (presenceMask[PresenceIndices.value]) this.value.hashCode() else 0
+            return result
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+            other as MapRecursiveEntryInternal
+            if (presenceMask != other.presenceMask) return false
+            if (presenceMask[PresenceIndices.key] && this.key != other.key) return false
+            return !presenceMask[PresenceIndices.value] || this.value == other.value
+        }
+
+        override fun toString(): String {
+            return asString()
+        }
+
+        fun asString(indent: Int = 0): String {
+            val indentString = " ".repeat(indent)
+            val nextIndentString = " ".repeat(indent + 4)
+            val builder = StringBuilder()
+            builder.appendLine("TestAllTypesEdition2023.MapRecursiveEntry(")
+            if (presenceMask[PresenceIndices.key]) {
+                builder.appendLine("${nextIndentString}key=${this.key},")
+            } else {
+                builder.appendLine("${nextIndentString}key=<unset>,")
+            }
+
+            if (presenceMask[PresenceIndices.value]) {
+                builder.appendLine("${nextIndentString}value=${this.value.asInternal().asString(indent = indent + 4)},")
+            } else {
+                builder.appendLine("${nextIndentString}value=<unset>,")
+            }
+
+            builder.append("${indentString})")
+            return builder.toString()
+        }
+
+        override fun copyInternal(): MapRecursiveEntryInternal {
+            return this
+        }
+
+        @InternalRpcApi
+        companion object
+    }
+
+    @InternalRpcApi
     object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023> {
         override fun encode(value: TestAllTypesEdition2023, config: GrpcMarshallerConfig?): Source {
             val buffer = Buffer()
@@ -3714,6 +3789,18 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
         encoder.writeGroupMessage(fieldNr = 202, value = this.delimitedField.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
+    if (this.mapRecursive.isNotEmpty()) {
+        this.mapRecursive.forEach { kEntry ->
+            TestAllTypesEdition2023Internal.MapRecursiveEntryInternal().apply {
+                key = kEntry.key
+                value = kEntry.value
+            }
+            .also { entry ->
+                encoder.writeMessage(fieldNr = 301, value = entry.asInternal()) { encoder -> encodeWith(encoder, config) }
+            }
+        }
+    }
+
     this.oneofField?.also { value ->
         when (value) {
             is TestAllTypesEdition2023.OneofField.OneofUint32 -> {
@@ -4390,6 +4477,13 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                 val target = msg.__delimitedFieldDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.GroupLikeTypeInternal() }
                 decoder.readGroup(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
             }
+            301 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__mapRecursiveDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
+                with(TestAllTypesEdition2023Internal.MapRecursiveEntryInternal()) {
+                    decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.decodeWith(msg, decoder, config) }
+                    target[key] = value
+                }
+            }
             111 if tag.wireType == WireType.VARINT -> {
                 msg.oneofField = TestAllTypesEdition2023.OneofField.OneofUint32(decoder.readUInt32())
             }
@@ -4933,6 +5027,16 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
 
     if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.delimitedField]) {
         __result += this.delimitedField.asInternal()._size.let { (2 * WireSize.tag(202, WireType.START_GROUP)) + it }
+    }
+
+    if (this.mapRecursive.isNotEmpty()) {
+        __result += this.mapRecursive.entries.sumOf { kEntry ->
+            TestAllTypesEdition2023Internal.MapRecursiveEntryInternal().apply {
+                key = kEntry.key
+                value = kEntry.value
+            }
+            ._size.let { WireSize.tag(301, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+        }
     }
 
     this.oneofField?.also { value ->
@@ -6600,6 +6704,78 @@ fun TestAllTypesEdition2023.GroupLikeType.asInternal(): TestAllTypesEdition2023I
 }
 
 @InternalRpcApi
+fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+    if (presenceMask[TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.PresenceIndices.key]) {
+        encoder.writeInt32(fieldNr = 1, value = this.key)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.PresenceIndices.value]) {
+        encoder.writeMessage(fieldNr = 2, value = this.value.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
+    _extensions.forEach { (key, value) ->
+        value.descriptor.let { descriptor ->
+            descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
+        }
+    }
+
+    encoder.writeRawBytes(_unknownFields)
+}
+
+@InternalRpcApi
+fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapRecursiveEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+    while (true) {
+        val tag = decoder.readTag() ?: break // EOF, we read the whole message
+        when (tag.fieldNr) {
+            1 if tag.wireType == WireType.VARINT -> {
+                msg.key = decoder.readInt32()
+            }
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = msg.__valueDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal() }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.decodeWith(msg, decoder, config) }
+            }
+            else -> {
+                if (tag.wireType == WireType.END_GROUP) {
+                    throw ProtobufDecodingException("Unexpected END_GROUP tag.")
+                }
+
+                if (config?.discardUnknownFields ?: false) {
+                    decoder.skipUnknownField(tag)
+                } else {
+                    if (msg._unknownFieldsEncoder == null) {
+                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
+                    }
+
+                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                }
+            }
+        }
+    }
+
+    msg._unknownFieldsEncoder?.flush()
+    msg._unknownFieldsEncoder = null
+}
+
+private fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.computeSize(): Int {
+    var __result = 0
+    if (presenceMask[TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.PresenceIndices.key]) {
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.int32(this.key)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.PresenceIndices.value]) {
+        __result += this.value.asInternal()._size.let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    __result += _unknownFields.size.toInt()
+    return __result
+}
+
+@InternalRpcApi
+fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.asInternal(): TestAllTypesEdition2023Internal.MapRecursiveEntryInternal {
+    return this
+}
+
+@InternalRpcApi
 fun ForeignEnumEdition2023.Companion.fromNumber(number: Int): ForeignEnumEdition2023 {
     return when (number) {
         0 -> {
@@ -6640,28 +6816,28 @@ fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAl
 
 @InternalRpcApi
 object TestMessagesEdition2023KtExtensions {
-    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023,  Int> = 
+    val extensionInt32: InternalExtensionDescriptor<TestAllTypesEdition2023, Int> = 
         InternalExtensionDescriptor.int32(
             fieldNumber = 120,
             name = "extensionInt32",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val extensionString: InternalExtensionDescriptor<TestAllTypesEdition2023,  String> = 
+    val extensionString: InternalExtensionDescriptor<TestAllTypesEdition2023, String> = 
         InternalExtensionDescriptor.string(
             fieldNumber = 133,
             name = "extensionString",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023,  ByteString> = 
+    val extensionBytes: InternalExtensionDescriptor<TestAllTypesEdition2023, ByteString> = 
         InternalExtensionDescriptor.bytes(
             fieldNumber = 134,
             name = "extensionBytes",
             extendee = TestAllTypesEdition2023::class,
         )
 
-    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+    val groupliketype: InternalExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 121,
             name = "groupliketype",
@@ -6673,7 +6849,7 @@ object TestMessagesEdition2023KtExtensions {
             decodeWith = { value, decoder, config -> GroupLikeTypeInternal.decodeWith(value.asInternal(), decoder, config) },
         )
 
-    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023,  GroupLikeType> = 
+    val delimitedExt: InternalExtensionDescriptor<TestAllTypesEdition2023, GroupLikeType> = 
         InternalExtensionDescriptor.message(
             fieldNumber = 122,
             name = "delimitedExt",

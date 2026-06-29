@@ -124,8 +124,10 @@ class ScopedFqNameTable internal constructor(
     private val table: FqNameTable,
     private val currentPackage: FqName.Package,
     private val scopePath: List<String>,
-    val requiredImports: MutableSet<String>,
+    private val requiredImports: MutableSet<String>,
 ) {
+    val imports: Set<String> get() = requiredImports
+
     /**
      * Map of simple name to the [FqName] that has been resolved to use that name.
      * This tracks which names are "taken" by previous resolutions, preventing conflicts.
@@ -136,6 +138,12 @@ class ScopedFqNameTable internal constructor(
      * Map of a simple name to implicit [FqName].
      */
     private val implicitTypesBySimpleName: Map<String, FqName> get() = table.implicitTypesBySimpleName
+
+    fun addImport(fqName: FqName) {
+        if (fqName.packageName() != currentPackage) {
+            requiredImports.add(fqName.toString())
+        }
+    }
 
     /**
      * Creates a new [ScopedFqNameTable] for a nested class.

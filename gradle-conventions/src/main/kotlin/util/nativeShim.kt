@@ -93,7 +93,7 @@ fun Project.configureNativeShimBuild(
     val patcherJar = patcherProject.tasks.named<Jar>("jar").flatMap { it.archiveFile }
 
     return NativeShimBuildSupport(
-        targets = nativeDependencyTargets,
+        targets = enabledNativeDependencyTargets(),
         konanHome = konanHome,
         checkBazel = checkBazel,
         checkKonanHome = checkKonanHome,

@@ -11,7 +11,7 @@ plugins {
 }
 
 kotlin {
-    registerNativeDependencyTargets()
+    registerNativeDependencyTargets(project)
 
     sourceSets {
         nativeMain {

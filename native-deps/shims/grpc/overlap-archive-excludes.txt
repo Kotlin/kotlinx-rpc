@@ -16,3 +16,15 @@
 # The duplicate plain C helper symbol is rewritten in the protobuf shim build instead.
 # Remove this note and the related protobuf-shim symbol rewrite once protobuf becomes Kotlin-only.
 all:protobuf+__third_party__utf8_range__libutf8_range.a
+linux_arm64:abseil-cpp+__absl__base__libspinlock_wait.a
+linux_arm64:abseil-cpp+__absl__base__libtracing_internal.a
+linux_arm64:abseil-cpp+__absl__container__libhashtablez_sampler.a
+linux_arm64:abseil-cpp+__absl__log__internal__liblog_message.a
+linux_arm64:abseil-cpp+__absl__synchronization__libsynchronization.a
+linux_arm64:abseil-cpp+__absl__time__libtime.a
+linux_x64:abseil-cpp+__absl__base__libspinlock_wait.a
+linux_x64:abseil-cpp+__absl__base__libtracing_internal.a
+linux_x64:abseil-cpp+__absl__container__libhashtablez_sampler.a
+linux_x64:abseil-cpp+__absl__log__internal__liblog_message.a
+linux_x64:abseil-cpp+__absl__synchronization__libsynchronization.a
+linux_x64:abseil-cpp+__absl__time__libtime.a

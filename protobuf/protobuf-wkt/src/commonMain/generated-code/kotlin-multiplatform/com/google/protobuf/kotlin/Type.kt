@@ -8,6 +8,11 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
  * A protocol buffer message type.
+ * 
+ * New usages of this message as an alternative to DescriptorProto are strongly
+ * discouraged. This message does not reliability preserve all information
+ * necessary to model the schema and preserve semantics. Instead make use of
+ * FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface Type {
@@ -49,6 +54,11 @@ public interface Type {
 
 /**
  * A single field of a message type.
+ * 
+ * New usages of this message as an alternative to FieldDescriptorProto are
+ * strongly discouraged. This message does not reliability preserve all
+ * information necessary to model the schema and preserve semantics. Instead
+ * make use of FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface Field {
@@ -244,6 +254,11 @@ public interface Field {
 
 /**
  * Enum type definition.
+ * 
+ * New usages of this message as an alternative to EnumDescriptorProto are
+ * strongly discouraged. This message does not reliability preserve all
+ * information necessary to model the schema and preserve semantics. Instead
+ * make use of FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface Enum {
@@ -280,6 +295,11 @@ public interface Enum {
 
 /**
  * Enum value definition.
+ * 
+ * New usages of this message as an alternative to EnumValueDescriptorProto are
+ * strongly discouraged. This message does not reliability preserve all
+ * information necessary to model the schema and preserve semantics. Instead
+ * make use of FileDescriptorSet which preserves the necessary information.
  */
 @GeneratedProtoMessage
 public interface EnumValue {
@@ -302,6 +322,10 @@ public interface EnumValue {
 /**
  * A protocol buffer option, which can be attached to a message, field,
  * enumeration, etc.
+ * 
+ * New usages of this message as an alternative to FileOptions, MessageOptions,
+ * FieldOptions, EnumOptions, EnumValueOptions, ServiceOptions, or MethodOptions
+ * are strongly discouraged.
  */
 @GeneratedProtoMessage
 public interface Option {

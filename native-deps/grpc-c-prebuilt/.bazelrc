@@ -1,5 +1,13 @@
 build --experimental_cc_static_library  --experimental_platform_in_output_dir
 
+# gRPC 1.81.x adopted protobuf 33.x's `upb_c_proto_library` rule, whose generated well-known-type
+# upb headers (e.g. google/protobuf/duration.upb.h) are not exported through a direct dependency's
+# Clang module in a layering_check-clean way. grpc_xds_client #includes them directly, so the macOS
+# host build (the only config enforcing layering_check) fails. gRPC 1.80.0 (protobuf 31.1 + the old
+# `upb_proto_library` rule) was layering-clean. Disabling layering_check is the standard mitigation
+# for this upstream gRPC/protobuf interaction and produces byte-identical archives.
+build --features=-layering_check
+
 build:release --compilation_mode=opt --strip=always
 
 build:macos_arm64 --platforms=@build_bazel_apple_support//platforms:macos_arm64 --apple_platform_type=macos

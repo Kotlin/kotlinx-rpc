@@ -11,7 +11,6 @@ import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.MessageDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.fullName
-import kotlinx.rpc.protoc.gen.core.model.packageName
 
 const val RPC_INTERNAL_PACKAGE_SUFFIX = "_rpc_internal"
 
@@ -32,20 +31,6 @@ abstract class AModelToKotlinCommonGenerator(
     protected abstract val FileDeclaration.hasInternalGeneratedContent: Boolean
 
     protected var currentPackage: FqName = FqName.Package.Root
-    protected val extImports = mutableSetOf<String>()
-    protected val internalImports = mutableSetOf<String>()
-
-    /**
-     * If the key is imported and not referenced by its FQ name, import all from the set.
-     */
-    protected val conditionalInternalImports = mutableMapOf<FqName, Set<String>>()
-
-    // todo this actually has to be tied to the resolution in scope
-    protected fun referenceExtension(receiver: FqName, extensionName: String) {
-        conditionalInternalImports.merge(receiver, setOf("${receiver.packageName()}.$extensionName")) {
-            old, new -> old + new
-        }
-    }
 
     /**
      * Public generated names that cannot be used by proto-supplied names (nested messages, enums, fields).
@@ -91,9 +76,6 @@ abstract class AModelToKotlinCommonGenerator(
     }
 
     private fun FileDeclaration.generateKotlinFiles(): List<FileGenerator> {
-        internalImports.clear()
-        extImports.clear()
-
         return listOfNotNull(
             if (hasPublicGeneratedContent) generatePublicKotlinFile() else null,
             if (hasExtensionGeneratedContent) generateExtensionKotlinFile() else null,
@@ -127,10 +109,6 @@ abstract class AModelToKotlinCommonGenerator(
             )
 
             generateExtensionEntities(this@generateExtensionKotlinFile)
-
-            extImports.forEach {
-                import(it)
-            }
         }
     }
 
@@ -148,12 +126,6 @@ abstract class AModelToKotlinCommonGenerator(
             )
 
             generateInternalDeclaredEntities(this@generateInternalKotlinFile)
-
-            internalImports.forEach {
-                import(it)
-            }
-
-            importConditionally(conditionalInternalImports)
         }
     }
 
