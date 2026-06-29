@@ -213,7 +213,12 @@ class GrpcCompressionTest : GrpcTestBase() {
 
             private fun parseHeaders(metadataBlock: String): Map<String, String> {
                 val headers = mutableMapOf<String, String>()
-                val headerRegex = Regex("""([^:,]+):\s*([^,]+(?:,\s*[^:,]+)*)(?=,\s+[^:,]+:|${'$'})""")
+                // Keys may be HTTP/2 pseudo-headers (e.g. `:method`, `:scheme`) that start with a colon, so the
+                // key pattern (and the next-key lookahead) must permit an optional leading colon. Without it, a
+                // header such as `grpc-encoding: gzip` followed by `:method: POST` is silently dropped because the
+                // lookahead fails to recognize the colon-prefixed key as the start of the next pair.
+                @Suppress("CanConvertToMultiDollarString")
+                val headerRegex = Regex("""(:?[^:,]+):\s*([^,]+(?:,\s*[^:,]+)*)(?=,\s+:?[^:,]+:|${'$'})""")
 
                 for (match in headerRegex.findAll(metadataBlock)) {
                     val key = match.groupValues[1].trim()
