@@ -179,7 +179,6 @@ kotlin {
                 bazelConfig = target.bazelName,
                 dumpFile = appleMinOsDumpFile,
                 archives = shimLibFile,
-                konanHome = nativeShim.konanHome,
                 dependsOn = listOf(buildGrpcShim, checkAppleMinOsDump),
             )
         }

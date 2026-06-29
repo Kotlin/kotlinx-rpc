@@ -28,9 +28,16 @@ import java.io.File
 // Without an explicit `--<platform>_minimum_os`, Bazel stamps Apple object files with a minimum
 // deployment target equal to the build machine's SDK version. That leaked the publisher's SDK (e.g.
 // iOS 26.2) into the shipped gRPC/shim artifacts and forced downstream apps to raise their deployment
-// target. We pin each Apple target to the SAME minimum that Kotlin/Native itself uses for that target
-// (so the native artifacts never become the limiting factor), sourced from the Kotlin/Native
-// distribution's konan.properties so the values track whatever Kotlin version the project currently uses.
+// target. We pin each Apple target to its real achievable minimum and verify every produced object
+// carries exactly that value.
+//
+// The pinned value is max(Kotlin/Native osVersionMin, the architecture's real floor):
+//  - Kotlin/Native's osVersionMin (from konan.properties) tracks whatever Kotlin version the project uses;
+//  - the architecture's real floor is what clang will actually emit — most arches accept the K/N value,
+//    but true-arm64 watchOS device only exists from watchOS 26 (Apple Watch S9/S10/Ultra2 moved off
+//    arm64_32), so its real minimum is 26.x even though K/N nominally lists 9.0.
+// Pinning the real minimum means clang has nothing to clamp, so the build deterministically emits exactly
+// the pinned value and the verification can be a strict equality check.
 
 /**
  * Apple platform "family" (Bazel config-name prefix) -> the Bazel flag that pins its minimum OS.
@@ -100,30 +107,79 @@ internal fun readKonanOsVersionMin(konanHome: File): Map<String, String> {
 /**
  * The clang target triple Kotlin/Native uses for [config] (e.g. `arm64-apple-watchos`,
  * `arm64-apple-ios-simulator`), read from konan.properties. The triple encodes the arch + OS that
- * determine the deployment-target floor, so it is exactly what the effective-minimum probe needs.
+ * determine the deployment-target floor, so it is exactly what the floor probe needs.
  */
 internal fun readKonanTargetTriple(konanPropertiesFile: File, config: String): String =
     parseKonanProperties(konanPropertiesFile)["targetTriple.$config"]
         ?: error("konan.properties has no targetTriple.$config entry")
 
+/** Runs [command], merging stderr into stdout; returns (exitCode, output). */
+internal fun runProcess(command: List<String>): Pair<Int, String> {
+    val process = ProcessBuilder(command).redirectErrorStream(true).start()
+    // Drain stdout (with stderr merged) fully before waiting, so a large output can't deadlock the pipe.
+    val output = process.inputStream.bufferedReader().use { it.readText() }
+    return process.waitFor() to output
+}
+
+/**
+ * The minimum OS clang actually stamps for [triple] at [requestedVersion]. clang clamps the requested
+ * version UP to the architecture's real floor when the platform has no OS that low (e.g. true-arm64
+ * watchOS, which only exists from watchOS 26), so this returns `max(requestedVersion, archFloor)`.
+ * Requires the Apple toolchain (clang/otool) — macOS only.
+ */
+internal fun probeAppleMinOs(triple: String, requestedVersion: String, workDir: File): String {
+    val versionedTriple = if (triple.endsWith("-simulator")) {
+        triple.removeSuffix("-simulator") + requestedVersion + "-simulator"
+    } else {
+        triple + requestedVersion
+    }
+    workDir.mkdirs()
+    val stub = workDir.resolve("apple-min-os-probe.c")
+    stub.writeText("int kotlinx_rpc_apple_min_os_probe(void) { return 0; }\n")
+    val probeObject = workDir.resolve("apple-min-os-probe.o")
+    val (clangExit, clangOutput) = runProcess(
+        listOf("xcrun", "clang", "-target", versionedTriple, "-c", stub.absolutePath, "-o", probeObject.absolutePath),
+    )
+    check(clangExit == 0) { "`xcrun clang -target $versionedTriple` failed (exit $clangExit):\n$clangOutput" }
+    val (otoolExit, otoolOutput) = runProcess(listOf("otool", "-l", probeObject.absolutePath))
+    check(otoolExit == 0) { "`otool -l` on the probe object failed (exit $otoolExit):\n$otoolOutput" }
+    return parseOtoolMinOs(otoolOutput, probeObject.name).values.firstOrNull()
+        ?: error("Probe object (triple $versionedTriple) carries no minimum-OS load command.")
+}
+
+/**
+ * Computes the pinned minimum OS for every Apple Bazel config: `max(Kotlin/Native osVersionMin, the
+ * architecture's real floor)`. The floor is obtained by probing clang with the target's triple, so it
+ * reflects what the build will actually emit. Requires the Apple toolchain — macOS only.
+ */
+internal fun computeApplePinnedMinOs(konanHome: File, workDir: File): Map<String, String> {
+    val osVersionMin = readKonanOsVersionMin(konanHome)
+    val konanProperties = konanPropertiesPath(konanHome)
+    return appleBazelConfigs.associateWith { config ->
+        val konanMin = osVersionMin[config]
+            ?: error("konan.properties has no osVersionMin.$config entry")
+        probeAppleMinOs(readKonanTargetTriple(konanProperties, config), konanMin, workDir)
+    }
+}
+
 /**
  * Renders the checked-in dump. The dump is valid Bazel rc syntax (it is `import`ed by each `.bazelrc`
  * to actually pin the flags) and is also parsed by [parseAppleMinOsDump] for verification.
  */
-internal fun renderAppleMinOsDump(kotlinNativeVersion: String, osVersionMin: Map<String, String>): String =
+internal fun renderAppleMinOsDump(kotlinNativeVersion: String, pinnedByConfig: Map<String, String>): String =
     buildString {
         appendLine("# Apple minimum OS (deployment target) pinning for the native-deps Bazel builds (KRPC-609).")
         appendLine("#")
-        appendLine("# GENERATED from the Kotlin/Native $kotlinNativeVersion konan.properties (osVersionMin.*).")
-        appendLine("# Do NOT edit by hand: run the 'generateAppleMinOsDump' Gradle task and commit the result.")
-        appendLine("# This file is imported by .bazelrc (to pin --<platform>_minimum_os) and read by the")
-        appendLine("# 'appleMinOsTest' verification task. It exists so the artifacts inherit Kotlin/Native's own")
-        appendLine("# per-target deployment target instead of the build machine's SDK version.")
+        appendLine("# GENERATED — do NOT edit by hand: run the 'generateAppleMinOsDump' Gradle task (on macOS) and commit.")
+        appendLine("# Each value is max(Kotlin/Native $kotlinNativeVersion osVersionMin, the architecture's real floor).")
+        appendLine("# The arch floor only dominates for true-arm64 watchOS device, which exists solely on watchOS 26+,")
+        appendLine("# so its minimum is 26.x even though Kotlin/Native nominally lists 9.0. Imported by .bazelrc to pin")
+        appendLine("# --<platform>_minimum_os, and checked object-by-object by the 'appleMinOsTest' verification.")
         appendLine()
         appleBazelConfigs.forEach { config ->
             val flag = appleMinOsFlagByFamily.getValue(appleFamilyOf(config))
-            val version = osVersionMin[config]
-                ?: error("konan.properties has no osVersionMin.$config entry for Kotlin/Native $kotlinNativeVersion")
+            val version = pinnedByConfig[config]
+                ?: error("No pinned minimum was computed for Bazel config '$config'")
             appendLine("build:$config --$flag=$version")
         }
     }
@@ -137,10 +193,10 @@ internal fun parseAppleMinOsDump(dumpFile: File): Map<String, String> =
     }.toMap()
 
 /**
- * Registers `generateAppleMinOsDump` (writes [dumpFile] from the current Kotlin/Native konan.properties)
- * and `checkAppleMinOsDump` (fails if the checked-in dump is stale). The check is cheap (no native
- * build) and is meant to be wired into `check` so a Kotlin/Native bump that changes deployment targets
- * is surfaced as an explicit, reviewable update.
+ * Registers `generateAppleMinOsDump` (writes [dumpFile] = max(Kotlin/Native osVersionMin, arch floor) per
+ * Apple target) and `checkAppleMinOsDump` (fails if the checked-in dump is stale). Both probe the Apple
+ * toolchain to learn the arch floor, so they only run on macOS; the cheap check is wired into `check` so a
+ * Kotlin/Native or toolchain change that shifts a minimum is surfaced as an explicit, reviewable update.
  */
 fun Project.registerAppleMinOsDumpTasks(
     konanHome: Provider<String>,
@@ -148,32 +204,33 @@ fun Project.registerAppleMinOsDumpTasks(
     dependsOn: List<Any> = emptyList(),
 ): Pair<TaskProvider<Task>, TaskProvider<Task>> {
     val kotlinNativeVersion = libs.versions.kotlin.lang.get()
-    // The konan.properties of the resolved Kotlin/Native distribution is the source of the pinned
-    // versions, so it (plus the version and the config list) fully determines the generated dump.
-    val konanProperties = konanHome.map { File(it).resolve("konan").resolve("konan.properties") }
+    val konanProperties = konanHome.map { konanPropertiesPath(File(it)) }
+    val probeDir = layout.buildDirectory.dir("apple-min-os/probe").get().asFile
     val checkMarker = layout.buildDirectory.file("apple-min-os/dump-check-ok.txt")
 
     val generate = tasks.register("generateAppleMinOsDump") {
         group = "build"
-        description = "Regenerates ${dumpFile.name} from the current Kotlin/Native konan.properties (osVersionMin.*)."
+        description = "Regenerates ${dumpFile.name}: max(Kotlin/Native osVersionMin, arch floor) per Apple target."
         dependsOn(dependsOn)
+        onlyIf { System.getProperty("os.name").lowercase().contains("mac") }
         inputs.file(konanProperties).withPropertyName("konanProperties").withPathSensitivity(PathSensitivity.NONE)
         inputs.property("kotlinNativeVersion", kotlinNativeVersion)
         inputs.property("appleBazelConfigs", appleBazelConfigs)
         outputs.file(dumpFile).withPropertyName("dump")
         doLast {
-            val rendered = renderAppleMinOsDump(kotlinNativeVersion, readKonanOsVersionMin(File(konanHome.get())))
-            dumpFile.writeText(rendered)
+            val pinned = computeApplePinnedMinOs(File(konanHome.get()), probeDir)
+            dumpFile.writeText(renderAppleMinOsDump(kotlinNativeVersion, pinned))
             logger.lifecycle("Wrote Apple minimum OS dump: ${dumpFile.absolutePath}")
         }
     }
 
     val checkTask = tasks.register("checkAppleMinOsDump") {
         group = "verification"
-        description = "Fails if ${dumpFile.name} is stale vs the current Kotlin/Native konan.properties."
+        description = "Fails if ${dumpFile.name} is stale vs the current Kotlin/Native + Apple toolchain."
         dependsOn(dependsOn)
-        // generate and check share the dump file (one writes it, the other reads it). They are not
-        // meant to run together, but order them so Gradle's graph stays valid if they ever do.
+        onlyIf { System.getProperty("os.name").lowercase().contains("mac") }
+        // generate and check share the dump file (one writes it, the other reads it). They are not meant
+        // to run together, but order them so Gradle's graph stays valid if they ever do.
         mustRunAfter(generate)
         inputs.file(konanProperties).withPropertyName("konanProperties").withPathSensitivity(PathSensitivity.NONE)
         inputs.file(dumpFile).withPropertyName("dump").withPathSensitivity(PathSensitivity.NONE).optional(true)
@@ -182,11 +239,14 @@ fun Project.registerAppleMinOsDumpTasks(
         // A stamp output so the (input-only) verification is properly up-to-date when nothing changed.
         outputs.file(checkMarker).withPropertyName("marker")
         doLast {
-            val expected = renderAppleMinOsDump(kotlinNativeVersion, readKonanOsVersionMin(File(konanHome.get())))
+            val expected = renderAppleMinOsDump(
+                kotlinNativeVersion,
+                computeApplePinnedMinOs(File(konanHome.get()), probeDir),
+            )
             val actual = dumpFile.takeIf { it.isFile }?.readText()
             check(actual == expected) {
-                "${dumpFile.absolutePath} is out of date for Kotlin/Native $kotlinNativeVersion.\n" +
-                    "Run the 'generateAppleMinOsDump' task and commit the result."
+                "${dumpFile.absolutePath} is out of date.\n" +
+                    "Run the 'generateAppleMinOsDump' task (on macOS) and commit the result."
             }
             checkMarker.get().asFile.apply {
                 parentFile.mkdirs()
@@ -199,9 +259,10 @@ fun Project.registerAppleMinOsDumpTasks(
 }
 
 /**
- * Verifies that every Mach-O object in the produced [archives] is stamped with the minimum OS recorded
- * for [bazelConfig] in the dump. Fails loudly on any mismatch — catching both an SDK version leaking in
- * (KRPC-609) and silent drift from the pinned values.
+ * Verifies that every Mach-O object in the produced [archives] carries exactly the minimum OS pinned for
+ * [bazelConfig] in the dump. Because the dump holds each target's real achievable minimum, this is a
+ * strict equality check — it fails on any object stamped higher (an SDK version leaking in, KRPC-609) or
+ * lower than the pin.
  */
 abstract class VerifyAppleMinOsTask : DefaultTask() {
     @get:InputFiles
@@ -218,24 +279,14 @@ abstract class VerifyAppleMinOsTask : DefaultTask() {
     @get:Input
     abstract val otoolPath: Property<String>
 
-    // konan.properties supplies the target's clang triple, used to probe the toolchain's effective floor.
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.NONE)
-    abstract val konanPropertiesFile: RegularFileProperty
-
     @get:OutputFile
     abstract val reportFile: RegularFileProperty
 
     @TaskAction
     fun verify() {
         val config = bazelConfig.get()
-        val requested = parseAppleMinOsDump(dumpFile.get().asFile)[config]
+        val expected = parseAppleMinOsDump(dumpFile.get().asFile)[config]
             ?: error("Dump ${dumpFile.get().asFile.name} has no entry for Bazel config '$config'")
-        // The .bazelrc pins the Kotlin/Native (requested) minimum, but a target's clang triple can floor
-        // it higher — e.g. arm64 watchOS device clamps to the SDK's apple-s9 minimum. Verify against what
-        // the toolchain ACTUALLY produces for the requested minimum, so unavoidable SDK floors pass while
-        // a genuine SDK leak (a minimum higher than the toolchain's floor) still fails.
-        val expected = effectiveMinOs(config, requested)
 
         val archiveFiles = archives.files.filter { it.isFile && it.extension == "a" }
         check(archiveFiles.isNotEmpty()) {
@@ -259,84 +310,23 @@ abstract class VerifyAppleMinOsTask : DefaultTask() {
         }
         check(mismatches.isEmpty()) {
             buildString {
-                appendLine("Apple minimum OS mismatch for '$config' (expected $expected):")
-                mismatches.forEach { appendLine("  $it") }
+                appendLine("Apple minimum OS mismatch for '$config' (expected $expected): ${mismatches.size} object(s) differ.")
+                mismatches.take(40).forEach { appendLine("  $it") }
+                if (mismatches.size > 40) appendLine("  … and ${mismatches.size - 40} more")
                 append("These objects would force downstream consumers' deployment target (KRPC-609).")
             }
         }
-        val note = if (expected != requested) " (Kotlin/Native requests $requested; toolchain floors '$config' to $expected)" else ""
         reportFile.get().asFile.apply {
             parentFile.mkdirs()
-            writeText("verified $verifiedObjects object(s) for '$config' at minos=$expected$note\n")
+            writeText("verified $verifiedObjects object(s) for '$config' at minos=$expected\n")
         }
-        logger.lifecycle("appleMinOs[$config]: verified $verifiedObjects object(s) at minos=$expected$note")
-    }
-
-    /**
-     * The minimum OS the active toolchain actually produces for [config] when asked for [requestedVersion].
-     *
-     * Most targets honor the requested (Kotlin/Native) minimum. But a target's clang triple can floor it
-     * higher — e.g. true-arm64 watchOS device (`arm64-apple-watchos`) supports no OS below the current
-     * major, so clang clamps the deployment target up. We detect that by probing (compile a stub with the
-     * target triple and read its `LC_BUILD_VERSION`): if the requested version survives it is achievable
-     * and is the expected minimum; if clang raised it the target is floored, and the Apple build toolchain
-     * stamps such objects with the SDK version, so that is the achievable minimum the build produces.
-     */
-    private fun effectiveMinOs(config: String, requestedVersion: String): String {
-        val triple = readKonanTargetTriple(konanPropertiesFile.get().asFile, config)
-        val versionedTriple = if (triple.endsWith("-simulator")) {
-            triple.removeSuffix("-simulator") + requestedVersion + "-simulator"
-        } else {
-            triple + requestedVersion
-        }
-        val probed = probeMinOs(versionedTriple)
-        // Requested minimum is achievable (not floored) -> objects must carry exactly it.
-        if (probed == requestedVersion) return requestedVersion
-        // Floored by the platform -> the build stamps these objects with the SDK version.
-        return appleSdkVersion(triple)
-    }
-
-    /** Compiles a stub with [versionedTriple] and returns the `minos` clang stamps (after its own clamp). */
-    private fun probeMinOs(versionedTriple: String): String {
-        val stub = temporaryDir.resolve("apple-min-os-probe.c")
-        stub.writeText("int kotlinx_rpc_apple_min_os_probe(void) { return 0; }\n")
-        val probeObject = temporaryDir.resolve("apple-min-os-probe.o")
-        val (clangExit, clangOutput) = runProcess(
-            listOf("xcrun", "clang", "-target", versionedTriple, "-c", stub.absolutePath, "-o", probeObject.absolutePath),
-        )
-        check(clangExit == 0) { "`xcrun clang -target $versionedTriple` failed (exit $clangExit):\n$clangOutput" }
-        val (otoolExit, otoolOutput) = runProcess(listOf(otoolPath.get(), "-l", probeObject.absolutePath))
-        check(otoolExit == 0) { "`${otoolPath.get()} -l` on the probe object failed (exit $otoolExit):\n$otoolOutput" }
-        return parseOtoolMinOs(otoolOutput, probeObject.name).values.firstOrNull()
-            ?: error("Probe object (triple $versionedTriple) carries no minimum-OS load command.")
-    }
-
-    /** The active SDK version for the Apple platform of [triple] (e.g. `arm64-apple-watchos` -> `26.5`). */
-    private fun appleSdkVersion(triple: String): String {
-        val os = triple.substringAfter("-apple-").removeSuffix("-simulator")
-        val simulator = triple.endsWith("-simulator")
-        val sdk = when (os) {
-            "ios" -> if (simulator) "iphonesimulator" else "iphoneos"
-            "macos" -> "macosx"
-            "tvos" -> if (simulator) "appletvsimulator" else "appletvos"
-            "watchos" -> if (simulator) "watchsimulator" else "watchos"
-            else -> error("Unsupported Apple OS '$os' in target triple '$triple'.")
-        }
-        val (exit, output) = runProcess(listOf("xcrun", "--sdk", sdk, "--show-sdk-version"))
-        check(exit == 0) { "`xcrun --sdk $sdk --show-sdk-version` failed (exit $exit):\n$output" }
-        return output.trim()
+        logger.lifecycle("appleMinOs[$config]: verified $verifiedObjects object(s) at minos=$expected")
     }
 
     private fun readArchiveMinOs(otool: String, archive: File): Map<String, String> {
         val (exitCode, output) = runProcess(listOf(otool, "-l", archive.absolutePath))
         check(exitCode == 0) { "`$otool -l ${archive.absolutePath}` failed (exit $exitCode):\n$output" }
         return parseOtoolMinOs(output, archive.name)
-    }
-
-    private fun runProcess(command: List<String>): Pair<Int, String> {
-        val process = ProcessBuilder(command).redirectErrorStream(true).start()
-        val output = process.inputStream.bufferedReader().readText()
-        return process.waitFor() to output
     }
 }
 
@@ -370,16 +360,14 @@ internal fun parseOtoolMinOs(otoolOutput: String, archiveName: String): Map<Stri
 }
 
 /**
- * Creates a [VerifyAppleMinOsTask] for one Bazel config. macOS-only (otool/clang + Apple SDKs are
- * required); skipped on other hosts. [konanHome] supplies konan.properties, from which the target's
- * clang triple is read to probe the toolchain's effective minimum OS.
+ * Creates a [VerifyAppleMinOsTask] for one Bazel config. macOS-only (otool + Apple SDKs are required);
+ * skipped on other hosts.
  */
 fun Project.registerVerifyAppleMinOsTask(
     taskName: String,
     bazelConfig: String,
     dumpFile: File,
     archives: Any,
-    konanHome: Provider<String>,
     dependsOn: List<Any>,
 ): TaskProvider<VerifyAppleMinOsTask> = tasks.register<VerifyAppleMinOsTask>(taskName) {
     group = "verification"
@@ -389,7 +377,6 @@ fun Project.registerVerifyAppleMinOsTask(
     this.bazelConfig.set(bazelConfig)
     this.dumpFile.set(dumpFile)
     this.archives.from(archives)
-    this.konanPropertiesFile.fileProvider(konanHome.map { konanPropertiesPath(File(it)) })
     this.otoolPath.convention("otool")
     this.reportFile.convention(layout.buildDirectory.file("apple-min-os/$bazelConfig.verified.txt"))
 }

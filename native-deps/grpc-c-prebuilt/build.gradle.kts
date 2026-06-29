@@ -139,7 +139,6 @@ publishing {
                     bazelConfig = target.bazelName,
                     dumpFile = appleMinOsDumpFile,
                     archives = buildArchives.map { it.outputs.files.asFileTree.matching { include("**/*.a") } },
-                    konanHome = konanHome,
                     dependsOn = listOf(buildArchives, checkAppleMinOsDump),
                 )
             }
