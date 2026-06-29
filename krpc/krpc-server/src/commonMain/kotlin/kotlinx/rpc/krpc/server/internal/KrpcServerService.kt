@@ -28,7 +28,9 @@ internal class KrpcServerService<@Rpc T : Any>(
     private val serverScope: CoroutineScope,
     private val supportedPlugins: Set<KrpcPlugin>,
 ) {
-    private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId(descriptor.fqName))
+    // Stable per-service-type name: logging backends cache one logger per name forever,
+    // so the name must not contain per-instance identity (GitHub #541).
+    private val logger = RpcInternalCommonLogger.logger("${KrpcServerService::class.simpleName}[${descriptor.fqName}]")
 
     private val requestMap = RpcInternalConcurrentHashMap<String, RpcRequest>()
 

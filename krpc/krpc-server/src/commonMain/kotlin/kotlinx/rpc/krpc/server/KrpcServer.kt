@@ -63,7 +63,7 @@ public abstract class KrpcServer(
         transport.coroutineContext + SupervisorJob(transport.coroutineContext.job)
     )
 
-    private val logger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
+    private val logger = RpcInternalCommonLogger.logger(this::class)
 
     private val connector by lazy {
         KrpcServerConnector(
