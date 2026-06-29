@@ -63,14 +63,12 @@ private fun appleFamilyOf(config: String): String =
     appleMinOsFlagByFamily.keys.firstOrNull { config == it || config.startsWith("${it}_") }
         ?: error("Cannot determine Apple platform family for Bazel config '$config'")
 
-/**
- * Reads `osVersionMin.<target>` from the Kotlin/Native distribution's konan.properties, resolving the
- * `$minVersion.<family>` indirections, and returns `target -> minimum OS version`.
- */
-internal fun readKonanOsVersionMin(konanHome: File): Map<String, String> {
-    val propertiesFile = konanHome.resolve("konan").resolve("konan.properties")
-    check(propertiesFile.isFile) { "konan.properties not found at ${propertiesFile.absolutePath}" }
+/** The konan.properties file inside a Kotlin/Native distribution. */
+internal fun konanPropertiesPath(konanHome: File): File = konanHome.resolve("konan").resolve("konan.properties")
 
+/** Parses konan.properties into a raw `key -> value` map (no `$`-indirection resolution). */
+private fun parseKonanProperties(propertiesFile: File): Map<String, String> {
+    check(propertiesFile.isFile) { "konan.properties not found at ${propertiesFile.absolutePath}" }
     val raw = mutableMapOf<String, String>()
     propertiesFile.forEachLine { line ->
         val trimmed = line.trim()
@@ -79,19 +77,34 @@ internal fun readKonanOsVersionMin(konanHome: File): Map<String, String> {
         }
         raw[trimmed.substringBefore('=').trim()] = trimmed.substringAfter('=').trim()
     }
+    return raw
+}
 
+/**
+ * Reads `osVersionMin.<target>` from the Kotlin/Native distribution's konan.properties, resolving the
+ * `$minVersion.<family>` indirections, and returns `target -> minimum OS version`.
+ */
+internal fun readKonanOsVersionMin(konanHome: File): Map<String, String> {
+    val raw = parseKonanProperties(konanPropertiesPath(konanHome))
     fun resolve(value: String): String =
         if (value.startsWith("$")) {
-            val reference = value.removePrefix("$")
-            resolve(raw[reference] ?: error("Unresolved konan.properties reference '$value'"))
+            resolve(raw[value.removePrefix("$")] ?: error("Unresolved konan.properties reference '$value'"))
         } else {
             value
         }
-
     return raw.asSequence()
         .filter { it.key.startsWith("osVersionMin.") }
         .associate { it.key.removePrefix("osVersionMin.") to resolve(it.value) }
 }
+
+/**
+ * The clang target triple Kotlin/Native uses for [config] (e.g. `arm64-apple-watchos`,
+ * `arm64-apple-ios-simulator`), read from konan.properties. The triple encodes the arch + OS that
+ * determine the deployment-target floor, so it is exactly what the effective-minimum probe needs.
+ */
+internal fun readKonanTargetTriple(konanPropertiesFile: File, config: String): String =
+    parseKonanProperties(konanPropertiesFile)["targetTriple.$config"]
+        ?: error("konan.properties has no targetTriple.$config entry")
 
 /**
  * Renders the checked-in dump. The dump is valid Bazel rc syntax (it is `import`ed by each `.bazelrc`
@@ -205,14 +218,24 @@ abstract class VerifyAppleMinOsTask : DefaultTask() {
     @get:Input
     abstract val otoolPath: Property<String>
 
+    // konan.properties supplies the target's clang triple, used to probe the toolchain's effective floor.
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val konanPropertiesFile: RegularFileProperty
+
     @get:OutputFile
     abstract val reportFile: RegularFileProperty
 
     @TaskAction
     fun verify() {
         val config = bazelConfig.get()
-        val expected = parseAppleMinOsDump(dumpFile.get().asFile)[config]
+        val requested = parseAppleMinOsDump(dumpFile.get().asFile)[config]
             ?: error("Dump ${dumpFile.get().asFile.name} has no entry for Bazel config '$config'")
+        // The .bazelrc pins the Kotlin/Native (requested) minimum, but a target's clang triple can floor
+        // it higher — e.g. arm64 watchOS device clamps to the SDK's apple-s9 minimum. Verify against what
+        // the toolchain ACTUALLY produces for the requested minimum, so unavoidable SDK floors pass while
+        // a genuine SDK leak (a minimum higher than the toolchain's floor) still fails.
+        val expected = effectiveMinOs(config, requested)
 
         val archiveFiles = archives.files.filter { it.isFile && it.extension == "a" }
         check(archiveFiles.isNotEmpty()) {
@@ -241,21 +264,79 @@ abstract class VerifyAppleMinOsTask : DefaultTask() {
                 append("These objects would force downstream consumers' deployment target (KRPC-609).")
             }
         }
+        val note = if (expected != requested) " (Kotlin/Native requests $requested; toolchain floors '$config' to $expected)" else ""
         reportFile.get().asFile.apply {
             parentFile.mkdirs()
-            writeText("verified $verifiedObjects object(s) for '$config' at minos=$expected\n")
+            writeText("verified $verifiedObjects object(s) for '$config' at minos=$expected$note\n")
         }
-        logger.lifecycle("appleMinOs[$config]: verified $verifiedObjects object(s) at minos=$expected")
+        logger.lifecycle("appleMinOs[$config]: verified $verifiedObjects object(s) at minos=$expected$note")
+    }
+
+    /**
+     * The minimum OS the active toolchain actually produces for [config] when asked for [requestedVersion].
+     *
+     * Most targets honor the requested (Kotlin/Native) minimum. But a target's clang triple can floor it
+     * higher — e.g. true-arm64 watchOS device (`arm64-apple-watchos`) supports no OS below the current
+     * major, so clang clamps the deployment target up. We detect that by probing (compile a stub with the
+     * target triple and read its `LC_BUILD_VERSION`): if the requested version survives it is achievable
+     * and is the expected minimum; if clang raised it the target is floored, and the Apple build toolchain
+     * stamps such objects with the SDK version, so that is the achievable minimum the build produces.
+     */
+    private fun effectiveMinOs(config: String, requestedVersion: String): String {
+        val triple = readKonanTargetTriple(konanPropertiesFile.get().asFile, config)
+        val versionedTriple = if (triple.endsWith("-simulator")) {
+            triple.removeSuffix("-simulator") + requestedVersion + "-simulator"
+        } else {
+            triple + requestedVersion
+        }
+        val probed = probeMinOs(versionedTriple)
+        // Requested minimum is achievable (not floored) -> objects must carry exactly it.
+        if (probed == requestedVersion) return requestedVersion
+        // Floored by the platform -> the build stamps these objects with the SDK version.
+        return appleSdkVersion(triple)
+    }
+
+    /** Compiles a stub with [versionedTriple] and returns the `minos` clang stamps (after its own clamp). */
+    private fun probeMinOs(versionedTriple: String): String {
+        val stub = temporaryDir.resolve("apple-min-os-probe.c")
+        stub.writeText("int kotlinx_rpc_apple_min_os_probe(void) { return 0; }\n")
+        val probeObject = temporaryDir.resolve("apple-min-os-probe.o")
+        val (clangExit, clangOutput) = runProcess(
+            listOf("xcrun", "clang", "-target", versionedTriple, "-c", stub.absolutePath, "-o", probeObject.absolutePath),
+        )
+        check(clangExit == 0) { "`xcrun clang -target $versionedTriple` failed (exit $clangExit):\n$clangOutput" }
+        val (otoolExit, otoolOutput) = runProcess(listOf(otoolPath.get(), "-l", probeObject.absolutePath))
+        check(otoolExit == 0) { "`${otoolPath.get()} -l` on the probe object failed (exit $otoolExit):\n$otoolOutput" }
+        return parseOtoolMinOs(otoolOutput, probeObject.name).values.firstOrNull()
+            ?: error("Probe object (triple $versionedTriple) carries no minimum-OS load command.")
+    }
+
+    /** The active SDK version for the Apple platform of [triple] (e.g. `arm64-apple-watchos` -> `26.5`). */
+    private fun appleSdkVersion(triple: String): String {
+        val os = triple.substringAfter("-apple-").removeSuffix("-simulator")
+        val simulator = triple.endsWith("-simulator")
+        val sdk = when (os) {
+            "ios" -> if (simulator) "iphonesimulator" else "iphoneos"
+            "macos" -> "macosx"
+            "tvos" -> if (simulator) "appletvsimulator" else "appletvos"
+            "watchos" -> if (simulator) "watchsimulator" else "watchos"
+            else -> error("Unsupported Apple OS '$os' in target triple '$triple'.")
+        }
+        val (exit, output) = runProcess(listOf("xcrun", "--sdk", sdk, "--show-sdk-version"))
+        check(exit == 0) { "`xcrun --sdk $sdk --show-sdk-version` failed (exit $exit):\n$output" }
+        return output.trim()
     }
 
     private fun readArchiveMinOs(otool: String, archive: File): Map<String, String> {
-        val process = ProcessBuilder(otool, "-l", archive.absolutePath)
-            .redirectErrorStream(true)
-            .start()
-        val output = process.inputStream.bufferedReader().readText()
-        val exitCode = process.waitFor()
+        val (exitCode, output) = runProcess(listOf(otool, "-l", archive.absolutePath))
         check(exitCode == 0) { "`$otool -l ${archive.absolutePath}` failed (exit $exitCode):\n$output" }
         return parseOtoolMinOs(output, archive.name)
+    }
+
+    private fun runProcess(command: List<String>): Pair<Int, String> {
+        val process = ProcessBuilder(command).redirectErrorStream(true).start()
+        val output = process.inputStream.bufferedReader().readText()
+        return process.waitFor() to output
     }
 }
 
@@ -289,14 +370,16 @@ internal fun parseOtoolMinOs(otoolOutput: String, archiveName: String): Map<Stri
 }
 
 /**
- * Creates a [VerifyAppleMinOsTask] for one Bazel config. macOS-only (otool + Apple SDKs are required);
- * skipped on other hosts.
+ * Creates a [VerifyAppleMinOsTask] for one Bazel config. macOS-only (otool/clang + Apple SDKs are
+ * required); skipped on other hosts. [konanHome] supplies konan.properties, from which the target's
+ * clang triple is read to probe the toolchain's effective minimum OS.
  */
 fun Project.registerVerifyAppleMinOsTask(
     taskName: String,
     bazelConfig: String,
     dumpFile: File,
     archives: Any,
+    konanHome: Provider<String>,
     dependsOn: List<Any>,
 ): TaskProvider<VerifyAppleMinOsTask> = tasks.register<VerifyAppleMinOsTask>(taskName) {
     group = "verification"
@@ -306,6 +389,7 @@ fun Project.registerVerifyAppleMinOsTask(
     this.bazelConfig.set(bazelConfig)
     this.dumpFile.set(dumpFile)
     this.archives.from(archives)
+    this.konanPropertiesFile.fileProvider(konanHome.map { konanPropertiesPath(File(it)) })
     this.otoolPath.convention("otool")
     this.reportFile.convention(layout.buildDirectory.file("apple-min-os/$bazelConfig.verified.txt"))
 }
