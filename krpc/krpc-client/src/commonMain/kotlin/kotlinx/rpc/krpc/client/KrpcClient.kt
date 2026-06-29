@@ -167,6 +167,15 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
                 }
 
                 requestChannels.clear()
+
+                // The connection may close before the handshake completes (e.g. the server fails
+                // during route setup). In that case nothing else will ever complete this deferred,
+                // so any call awaiting the handshake would dangle forever. Fail it explicitly.
+                if (!serverSupportedPlugins.isCompleted) {
+                    serverSupportedPlugins.completeExceptionally(
+                        CancellationException("Connection closed before the kRPC handshake completed")
+                    )
+                }
             }
         }
 
