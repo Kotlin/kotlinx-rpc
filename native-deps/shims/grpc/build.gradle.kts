@@ -3,13 +3,18 @@
  */
 
 import org.gradle.api.tasks.Sync
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.register
 import util.compositeCatalogVersion
 import util.configureNativeShimBuild
+import util.isApple
+import util.registerAppleMinOsDumpTasks
 import util.registerNativeShimBazelBuildTask
+import util.registerVerifyAppleMinOsTask
 import util.configureNativeShimTargets
 import util.configureSpacePackagesConsumerRepository
+import java.util.concurrent.Callable
 
 /**
  * Configures the gRPC module inside native-deps/shims to build and publish the gRPC shim KLIB.
@@ -56,6 +61,17 @@ val nativeShim = configureNativeShimBuild(
     moduleFile = grpcShimModuleFile,
     moduleVersion = grpcVersion,
 )
+
+// Apple minimum-OS pinning (KRPC-609): the dump is imported by .bazelrc to pin --<platform>_minimum_os
+// and is the reference the appleMinOsTest verification checks the produced shim objects against.
+val appleMinOsDumpFile = layout.projectDirectory.file("apple-min-os.dump").asFile
+val (generateAppleMinOsDump, checkAppleMinOsDump) = registerAppleMinOsDumpTasks(
+    konanHome = nativeShim.konanHome,
+    dumpFile = appleMinOsDumpFile,
+    dependsOn = listOf(nativeShim.checkKonanHome),
+)
+tasks.named("check") { dependsOn(checkAppleMinOsDump) }
+val appleMinOsVerifyTasks = mutableMapOf<String, TaskProvider<*>>()
 
 val grpcHeaders by configurations.creating {
     isCanBeConsumed = false
@@ -157,6 +173,16 @@ kotlin {
             outputFile = shimLibFile,
         )
 
+        if (target.isApple()) {
+            appleMinOsVerifyTasks[target.bazelName] = project.registerVerifyAppleMinOsTask(
+                taskName = "appleMinOs${taskSuffix}",
+                bazelConfig = target.bazelName,
+                dumpFile = appleMinOsDumpFile,
+                archives = shimLibFile,
+                dependsOn = listOf(buildGrpcShim, checkAppleMinOsDump),
+            )
+        }
+
         val prepareInterop = tasks.register("prepareGrpcShimInterop${taskSuffix}") {
             dependsOn(prepareGrpcBundle, buildGrpcShim)
             inputs.file(grpcOverlapArchiveExcludesFile)
@@ -254,4 +280,12 @@ kotlin {
         }
         listOf(prepareGrpcHeaders, generateInteropDef)
     }
+}
+
+// Opt-in: builds and verifies the gRPC shim library for every Apple target (expensive). The verify task
+// set is populated lazily by the per-target configuration above, so resolve it through a Callable.
+tasks.register("appleMinOsTest") {
+    group = "verification"
+    description = "Verifies Apple minimum OS of the produced gRPC shim library for all Apple targets (KRPC-609)."
+    dependsOn(Callable { appleMinOsVerifyTasks.values.toList() })
 }

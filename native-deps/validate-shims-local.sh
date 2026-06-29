@@ -115,7 +115,6 @@ HOST_OS="$(uname -s)"
 HOST_ARCH="$(uname -m)"
 case "$HOST_OS-$HOST_ARCH" in
   Darwin-arm64)            HOST_KOTLIN=macosArm64; HOST_BAZEL=macos_arm64 ;;
-  Darwin-x86_64)           HOST_KOTLIN=macosX64;   HOST_BAZEL=macos_x64 ;;
   Linux-x86_64)            HOST_KOTLIN=linuxX64;   HOST_BAZEL=linux_x64 ;;
   Linux-aarch64|Linux-arm64) HOST_KOTLIN=linuxArm64; HOST_BAZEL=linux_arm64 ;;
   *) die "Unsupported host: $HOST_OS-$HOST_ARCH" ;;

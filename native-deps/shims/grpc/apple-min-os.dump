@@ -1,0 +1,18 @@
+# Apple minimum OS (deployment target) pinning for the native-deps Bazel builds (KRPC-609).
+#
+# GENERATED from the Kotlin/Native 2.3.0 konan.properties (osVersionMin.*).
+# Do NOT edit by hand: run the 'generateAppleMinOsDump' Gradle task and commit the result.
+# This file is imported by .bazelrc (to pin --<platform>_minimum_os) and read by the
+# 'appleMinOsTest' verification task. It exists so the artifacts inherit Kotlin/Native's own
+# per-target deployment target instead of the build machine's SDK version.
+
+build:macos_arm64 --macos_minimum_os=11.0
+build:ios_arm64 --ios_minimum_os=14.0
+build:ios_simulator_arm64 --ios_minimum_os=14.0
+build:ios_x64 --ios_minimum_os=14.0
+build:tvos_arm64 --tvos_minimum_os=14.0
+build:tvos_simulator_arm64 --tvos_minimum_os=14.0
+build:watchos_arm32 --watchos_minimum_os=7.0
+build:watchos_arm64 --watchos_minimum_os=7.0
+build:watchos_device_arm64 --watchos_minimum_os=9.0
+build:watchos_simulator_arm64 --watchos_minimum_os=7.0
