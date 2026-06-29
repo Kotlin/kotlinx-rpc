@@ -52,7 +52,7 @@ sourceSets.main.get().proto {
     exclude(
         // buf incompatibilities:
         "**/unittest_custom_options.proto", // buf: legacy 'message set wire format' (proto1)
-        // buf: cannot resolve the `feature_support` option on custom edition features
+        // buf is behind on built-in WKT types
         "**/unittest_features.proto",
         "**/unittest_custom_features.proto",
         // buf: depends on the excluded unittest_custom_options.proto (file_opt1/message_opt1/field_opt1)
