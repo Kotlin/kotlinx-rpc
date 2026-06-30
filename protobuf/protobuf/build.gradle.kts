@@ -16,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.protobuf.protobufApi)
+                api(projects.protobuf.protobufLite)
                 api(projects.protobuf.protobufWkt)
                 api(projects.grpc.grpcMarshaller)
             }

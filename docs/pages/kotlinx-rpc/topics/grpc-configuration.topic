@@ -90,7 +90,7 @@
 
                     dependencies {
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-client:&lt;version&gt;")
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-server:&lt;version&gt;")
                         implementation("io.grpc:grpc-netty:&lt;grpc-java-version&gt;")
@@ -125,7 +125,7 @@
                         sourceSets {
                             commonMain.dependencies {
                                 api("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                                api("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                                api("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                             }
 
                             jvmMain.dependencies {
@@ -165,7 +165,7 @@
 
                     dependencies {
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                     }
 
                     rpc {

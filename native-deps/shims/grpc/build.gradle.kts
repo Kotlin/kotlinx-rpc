@@ -42,7 +42,7 @@ val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercas
 val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"
 val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/shim/InternalNativeRpcApi"
 val grpcInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
-// grpc-core already depends on protobuf-api, so grpc consumers see the protobuf shim transitively.
+// grpc-core already depends on protobuf-lite, so grpc consumers see the protobuf shim transitively.
 // Keep an explicit exclusion list here so the grpc shim can drop bundle archives whose symbols are
 // already owned by the protobuf shim and avoid duplicate native definitions at final link time.
 //
@@ -214,7 +214,7 @@ kotlin {
                         val normalizedPath = relativePath.normalizeGrpcArchivePath()
                         val targetName = normalizedPath.toInteropArchiveName()
                         // Exclude protobuf-owned archives before copying them into the grpc shim KLIB.
-                        // The final binary will still get those symbols from protobuf-api -> protobuf-shim.
+                        // The final binary will still get those symbols from protobuf-lite -> protobuf-shim.
                         if (relativePath in excludedArchives || normalizedPath in excludedArchives || targetName in excludedArchives) {
                             return@forEach
                         }

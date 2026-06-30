@@ -8,11 +8,11 @@ Primaraly used with by the generated code by protoc-gen plugins from `/protoc-ge
 ## Modules
 
 ```
-protobuf-api    -- Wire encoders/decoders, base message class, descriptor system, extensions, config, etc.
+protobuf-lite  -- Wire encoders/decoders, base message class, descriptor system, extensions, config, etc.
     |
-protobuf-wkt   -- Google well-known types (Any, Duration, Timestamp, Struct, Descriptor, etc.)
+protobuf-wkt   -- Google well-known types (Any, Duration, Timestamp, Struct, Descriptor, etc.).
     |
-protobuf-core  -- Aggregator; re-exports api + wkt + grpc-marshaller
+protobuf       -- Aggregator; re-exports lite + wkt + grpc-marshaller.
 ```
 
 ## Generated code contract
