@@ -43,6 +43,7 @@ internal class NativeManagedChannelBuilder(
             target,
             overrideAuthority = config?.overrideAuthority,
             keepAlive = config?.keepAlive,
+            userAgent = config?.userAgent,
             clientCredentials = credentials.value,
         )
     }
