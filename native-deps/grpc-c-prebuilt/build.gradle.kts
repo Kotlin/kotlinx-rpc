@@ -3,17 +3,21 @@
  */
 
 import org.gradle.api.tasks.Exec
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.kotlin.dsl.register
 import org.gradle.api.publish.maven.MavenPublication
 import util.compositeCatalogVersion
+import util.isApple
 import util.konanHomeProvider
 import util.nativeDependencyTargets
+import util.registerAppleMinOsDumpTasks
 import util.registerCheckBazelTask
 import util.registerCheckKonanHomeTask
 import util.registerPrepareKonanHomeTask
 import util.registerSyncBazelModuleVersionTask
+import util.registerVerifyAppleMinOsTask
 import util.toTaskSuffix
 
 plugins {
@@ -44,6 +48,20 @@ val syncGrpcVersionToBazelModule = registerSyncBazelModuleVersionTask(
     moduleFile = moduleFile,
     version = grpcVersion,
 )
+
+// Apple minimum-OS pinning (KRPC-609): the dump is imported by .bazelrc to pin --<platform>_minimum_os
+// and is the reference the appleMinOsTest verification checks the produced objects against.
+val appleMinOsDumpFile = layout.projectDirectory.file("apple-min-os.dump").asFile
+val (generateAppleMinOsDump, checkAppleMinOsDump) = registerAppleMinOsDumpTasks(
+    konanHome = konanHome,
+    dumpFile = appleMinOsDumpFile,
+    dependsOn = listOf(checkKonanHome),
+)
+tasks.named("check") { dependsOn(checkAppleMinOsDump) }
+
+// Per-target verification tasks for the freshly built gRPC bundle archives. These hold the upstream
+// gRPC/zlib objects (e.g. client_channel.o, inffast.o) that KRPC-609 reported as over-stamped.
+val appleMinOsVerifyTasks = mutableMapOf<String, TaskProvider<*>>()
 
 val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     dependsOn(syncGrpcVersionToBazelModule, checkBazel, checkKonanHome)
@@ -115,6 +133,16 @@ publishing {
                 )
             }
 
+            if (target.isApple()) {
+                appleMinOsVerifyTasks[target.bazelName] = registerVerifyAppleMinOsTask(
+                    taskName = "appleMinOs${taskSuffix}",
+                    bazelConfig = target.bazelName,
+                    dumpFile = appleMinOsDumpFile,
+                    archives = buildArchives.map { it.outputs.files.asFileTree.matching { include("**/*.a") } },
+                    dependsOn = listOf(buildArchives, checkAppleMinOsDump),
+                )
+            }
+
             val bundle = tasks.register<Zip>("packageGrpc${taskSuffix}") {
                 dependsOn(buildArchives)
                 group = "build"
@@ -138,4 +166,11 @@ publishing {
             }
         }
     }
+}
+
+// Opt-in: builds and verifies the gRPC bundle archives for every Apple target (expensive).
+tasks.register("appleMinOsTest") {
+    group = "verification"
+    description = "Verifies Apple minimum OS of the produced gRPC bundle archives for all Apple targets (KRPC-609)."
+    dependsOn(appleMinOsVerifyTasks.values)
 }

@@ -2,12 +2,17 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 import util.compositeCatalogVersion
 import util.configureNativeShimBuild
 import util.configureNativeShimTargets
+import util.isApple
+import util.registerAppleMinOsDumpTasks
 import util.registerNativeShimBazelBuildTask
+import util.registerVerifyAppleMinOsTask
 import java.io.File
+import java.util.concurrent.Callable
 
 /**
  * Configures the protobuf module inside native-deps/shims to build and publish the protobuf shim KLIB.
@@ -47,6 +52,17 @@ val nativeShim = configureNativeShimBuild(
     moduleVersionVariableName = "PROTOBUF_VERSION",
     syncTaskName = "syncProtobufVersionToBazelModule",
 )
+
+// Apple minimum-OS pinning (KRPC-609): the dump is imported by .bazelrc to pin --<platform>_minimum_os
+// and is the reference the appleMinOsTest verification checks the produced shim objects against.
+val appleMinOsDumpFile = layout.projectDirectory.file("apple-min-os.dump").asFile
+val (generateAppleMinOsDump, checkAppleMinOsDump) = registerAppleMinOsDumpTasks(
+    konanHome = nativeShim.konanHome,
+    dumpFile = appleMinOsDumpFile,
+    dependsOn = listOf(nativeShim.checkKonanHome),
+)
+tasks.named("check") { dependsOn(checkAppleMinOsDump) }
+val appleMinOsVerifyTasks = mutableMapOf<String, TaskProvider<*>>()
 
 fun findRequiredExecutable(vararg names: String): String {
     val pathEntries = (System.getenv("PATH") ?: "")
@@ -154,6 +170,16 @@ kotlin {
             outputFile = shimLibFile,
         )
 
+        if (target.isApple()) {
+            appleMinOsVerifyTasks[target.bazelName] = project.registerVerifyAppleMinOsTask(
+                taskName = "appleMinOs${taskSuffix}",
+                bazelConfig = target.bazelName,
+                dumpFile = appleMinOsDumpFile,
+                archives = shimLibFile,
+                dependsOn = listOf(buildProtobufShim, checkAppleMinOsDump),
+            )
+        }
+
         val prepareInterop = tasks.register("prepareProtobufShimInterop${taskSuffix}") {
             dependsOn(buildProtobufShim)
             inputs.file(shimLibFile)
@@ -224,4 +250,12 @@ kotlin {
         }
         listOf(prepareInterop)
     }
+}
+
+// Opt-in: builds and verifies the protobuf shim library for every Apple target (expensive). The verify
+// task set is populated lazily by the per-target configuration above, so resolve it through a Callable.
+tasks.register("appleMinOsTest") {
+    group = "verification"
+    description = "Verifies Apple minimum OS of the produced protobuf shim library for all Apple targets (KRPC-609)."
+    dependsOn(Callable { appleMinOsVerifyTasks.values.toList() })
 }
