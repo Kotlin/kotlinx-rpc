@@ -20,7 +20,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.protobuf.protobufApi)
+                api(projects.protobuf.protobufLite)
             }
         }
     }

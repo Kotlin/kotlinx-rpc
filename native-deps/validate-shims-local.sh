@@ -16,7 +16,7 @@
 #                              then rebuild the gRPC shim and re-check
 #   5. fixture tests        -> :tests:test (opt-in enforcement + KLIB metadata, both shims)
 #   6. publish both shims   -> publishAllPublicationsToNativeDepsBuildRepoRepository (LOCAL only)
-#   7. consumer compiles    -> :protobuf:protobuf-api + :grpc:grpc-core for the host KN target
+#   7. consumer compiles    -> :protobuf:protobuf-lite + :grpc:grpc-core for the host KN target
 #
 # Nothing is published to any remote repository.
 #
@@ -291,7 +291,7 @@ publish_shims_local() {
 consumer_compiles() {
   section "7/7  main-project consumer compiles: $HOST_KOTLIN"
   run_gradle "$REPO_ROOT" \
-    ":protobuf:protobuf-api:compileKotlin${HOST_KOTLIN_CAP}" \
+    ":protobuf:protobuf-lite:compileKotlin${HOST_KOTLIN_CAP}" \
     ":grpc:grpc-core:compileKotlin${HOST_KOTLIN_CAP}"
 }
 

@@ -18,7 +18,7 @@ Useful tasks:
 - `./gradlew :tests:test`
 
 gRPC overlap workflow (KRPC-540):
-- Problem: grpc-core already depends on protobuf-api, so a final native binary can see both shim KLIBs.
+- Problem: grpc-core already depends on protobuf-lite, so a final native binary can see both shim KLIBs.
   When grpc-shim and protobuf-shim each embed the same native protobuf/absl archives, Linux linking may fail
   with duplicate symbol errors such as `AbslInternalGetFileMappingHint`.
 - `utf8_range` can be excluded from grpc-shim because protobuf-shim already provides it transitively.

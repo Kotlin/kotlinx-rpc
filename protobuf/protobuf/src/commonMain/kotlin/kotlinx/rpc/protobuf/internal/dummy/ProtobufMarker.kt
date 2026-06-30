@@ -5,8 +5,8 @@
 package kotlinx.rpc.protobuf.internal.dummy
 
 /**
- * A dummy object that allows us to create library metadata for the protobuf-core aggregate module.
+ * A dummy object that allows us to create library metadata for the protobuf aggregate module.
  * Without this source, the Gradle task will fail.
  */
 @Suppress("unused")
-internal object ProtobufCoreMarker
+internal object ProtobufMarker

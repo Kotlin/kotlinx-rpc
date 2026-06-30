@@ -40,7 +40,7 @@ kotlin {
             dependencies {
                 implementation(libs.coroutines.core)
                 implementation(projects.grpc.grpcMarshaller)
-                implementation(projects.protobuf.protobufCore)
+                implementation(projects.protobuf.protobuf)
             }
 
             // Exclude protos with unsupported edition values from code generation. KRPC-273

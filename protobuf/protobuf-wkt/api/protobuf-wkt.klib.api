@@ -25,6 +25,8 @@ abstract interface com.google.protobuf.kotlin/Any { // com.google.protobuf.kotli
 }
 
 abstract interface com.google.protobuf.kotlin/Api { // com.google.protobuf.kotlin/Api|null[0]
+    abstract val edition // com.google.protobuf.kotlin/Api.edition|{}edition[0]
+        abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Api.edition.<get-edition>|<get-edition>(){}[0]
     abstract val methods // com.google.protobuf.kotlin/Api.methods|{}methods[0]
         abstract fun <get-methods>(): kotlin.collections/List<com.google.protobuf.kotlin/Method> // com.google.protobuf.kotlin/Api.methods.<get-methods>|<get-methods>(){}[0]
     abstract val mixins // com.google.protobuf.kotlin/Api.mixins|{}mixins[0]
@@ -41,6 +43,9 @@ abstract interface com.google.protobuf.kotlin/Api { // com.google.protobuf.kotli
         abstract fun <get-version>(): kotlin/String // com.google.protobuf.kotlin/Api.version.<get-version>|<get-version>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/Api { // com.google.protobuf.kotlin/Api.Builder|null[0]
+        abstract var edition // com.google.protobuf.kotlin/Api.Builder.edition|{}edition[0]
+            abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Api.Builder.edition.<get-edition>|<get-edition>(){}[0]
+            abstract fun <set-edition>(kotlin/String) // com.google.protobuf.kotlin/Api.Builder.edition.<set-edition>|<set-edition>(kotlin.String){}[0]
         abstract var methods // com.google.protobuf.kotlin/Api.Builder.methods|{}methods[0]
             abstract fun <get-methods>(): kotlin.collections/List<com.google.protobuf.kotlin/Method> // com.google.protobuf.kotlin/Api.Builder.methods.<get-methods>|<get-methods>(){}[0]
             abstract fun <set-methods>(kotlin.collections/List<com.google.protobuf.kotlin/Method>) // com.google.protobuf.kotlin/Api.Builder.methods.<set-methods>|<set-methods>(kotlin.collections.List<com.google.protobuf.kotlin.Method>){}[0]
@@ -2656,6 +2661,8 @@ abstract interface com.google.protobuf.kotlin/MessageOptionsPresence { // com.go
 }
 
 abstract interface com.google.protobuf.kotlin/Method { // com.google.protobuf.kotlin/Method|null[0]
+    abstract val edition // com.google.protobuf.kotlin/Method.edition|{}edition[0]
+        abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Method.edition.<get-edition>|<get-edition>(){}[0]
     abstract val name // com.google.protobuf.kotlin/Method.name|{}name[0]
         abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Method.name.<get-name>|<get-name>(){}[0]
     abstract val options // com.google.protobuf.kotlin/Method.options|{}options[0]
@@ -2672,6 +2679,9 @@ abstract interface com.google.protobuf.kotlin/Method { // com.google.protobuf.ko
         abstract fun <get-syntax>(): com.google.protobuf.kotlin/Syntax // com.google.protobuf.kotlin/Method.syntax.<get-syntax>|<get-syntax>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/Method { // com.google.protobuf.kotlin/Method.Builder|null[0]
+        abstract var edition // com.google.protobuf.kotlin/Method.Builder.edition|{}edition[0]
+            abstract fun <get-edition>(): kotlin/String // com.google.protobuf.kotlin/Method.Builder.edition.<get-edition>|<get-edition>(){}[0]
+            abstract fun <set-edition>(kotlin/String) // com.google.protobuf.kotlin/Method.Builder.edition.<set-edition>|<set-edition>(kotlin.String){}[0]
         abstract var name // com.google.protobuf.kotlin/Method.Builder.name|{}name[0]
             abstract fun <get-name>(): kotlin/String // com.google.protobuf.kotlin/Method.Builder.name.<get-name>|<get-name>(){}[0]
             abstract fun <set-name>(kotlin/String) // com.google.protobuf.kotlin/Method.Builder.name.<set-name>|<set-name>(kotlin.String){}[0]
@@ -3459,6 +3469,12 @@ sealed class com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/
         final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Edition.EDITION_UNKNOWN.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Edition.EDITION_UNKNOWN.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.google.protobuf.kotlin/Edition.EDITION_UNKNOWN.toString|toString(){}[0]
+    }
+
+    final object EDITION_UNSTABLE : com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/Edition.EDITION_UNSTABLE|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Edition.EDITION_UNSTABLE.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Edition.EDITION_UNSTABLE.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Edition.EDITION_UNSTABLE.toString|toString(){}[0]
     }
 }
 

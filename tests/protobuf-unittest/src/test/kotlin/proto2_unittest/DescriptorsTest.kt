@@ -12,6 +12,6 @@
 // interfaces without a runtime descriptor/reflection layer comparable to Java's protobuf library.
 //
 // The only descriptor-like API in kotlinx-rpc is ProtoDescriptor<T> (providing fullName),
-// which is tested separately in protobuf-api module tests.
+// which is tested separately in protobuf-lite module tests.
 
 package proto2_unittest

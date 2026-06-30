@@ -31,9 +31,9 @@ dependencyResolutionManagement {
 }
 
 include(":protobuf")
-includePublic(":protobuf:protobuf-api")
+includePublic(":protobuf:protobuf-lite")
 includePublic(":protobuf:protobuf-wkt")
-includePublic(":protobuf:protobuf-core")
+includePublic(":protobuf:protobuf")
 
 include(":grpc")
 includePublic(":grpc:grpc-core")

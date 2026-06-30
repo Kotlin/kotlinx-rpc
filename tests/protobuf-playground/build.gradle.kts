@@ -19,7 +19,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.grpc.grpcCore)
-                api(projects.protobuf.protobufCore)
+                api(projects.protobuf.protobuf)
             }
         }
     }

@@ -169,7 +169,7 @@
 </tr>
 
 <tr>
-<td>protobuf-api</td>
+<td>protobuf</td>
 <td>jvm</td>
 <td>-</td>
 <td>-</td>
@@ -177,7 +177,7 @@
 </tr>
 
 <tr>
-<td>protobuf-core</td>
+<td>protobuf-lite</td>
 <td>jvm</td>
 <td>-</td>
 <td>-</td>

@@ -236,7 +236,7 @@ Single test category examples:
 After publishing locally, build the shim consumers in the **main** project
 (default projectRoot) via `running_gradle_builds`:
 
-- Protobuf shim consumer: task `:protobuf:protobuf-api:compileKotlinMacosArm64`
+- Protobuf shim consumer: task `:protobuf:protobuf-lite:compileKotlinMacosArm64`
 - gRPC shim consumer: task `:grpc:grpc-core:compileKotlinMacosArm64`
 
 Use whichever native target matches your host. If both compile cleanly, the shim

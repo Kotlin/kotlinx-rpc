@@ -22,7 +22,7 @@ kotlin {
 
 dependencies {
     implementation(libs.coroutines.core)
-    implementation(projects.protobuf.protobufCore)
+    implementation(projects.protobuf.protobuf)
 
     testImplementation(libs.kotlin.test.junit5)
     testImplementation(projects.grpc.grpcMarshaller)

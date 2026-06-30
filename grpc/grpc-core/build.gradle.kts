@@ -44,7 +44,7 @@ kotlin {
                 implementation(libs.serialization.json)
 
                 implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
-                implementation(projects.protobuf.protobufApi)
+                implementation(projects.protobuf.protobufLite)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.tests.testProtos)
                 implementation(projects.tests.testUtils)
@@ -71,8 +71,6 @@ kotlin {
                 api(libs.grpc.api)
                 api(libs.grpc.util)
                 api(libs.grpc.stub)
-                api(libs.grpc.protobuf)
-                api(libs.grpc.protobuf.lite)
             }
         }
 
@@ -87,7 +85,7 @@ kotlin {
         nativeMain {
             dependencies {
                 // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
-                implementation(projects.protobuf.protobufApi)
+                implementation(projects.protobuf.protobufLite)
                 implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
         }

@@ -90,7 +90,7 @@
 
                     dependencies {
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-client:&lt;version&gt;")
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-server:&lt;version&gt;")
                         implementation("io.grpc:grpc-netty:&lt;grpc-java-version&gt;")
@@ -125,7 +125,7 @@
                         sourceSets {
                             commonMain.dependencies {
                                 api("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                                api("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                                api("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                             }
 
                             jvmMain.dependencies {
@@ -165,7 +165,7 @@
 
                     dependencies {
                         implementation("org.jetbrains.kotlinx:kotlinx-rpc-grpc-core:&lt;version&gt;")
-                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core:&lt;version&gt;")
+                        implementation("org.jetbrains.kotlinx:kotlinx-rpc-protobuf:&lt;version&gt;")
                     }
 
                     rpc {
@@ -189,6 +189,34 @@
                      src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fredirector.kotlinlang.org%2Fmaven%2Fkxrpc-grpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&amp;query=%2F%2Fmetadata%2Fversioning%2Flatest&amp;label=Latest%20dev%20version&amp;color=forest-green&amp;cacheSeconds=60"/>
             </a>
         </p>
+    </chapter>
+    <chapter title="Protobuf runtime artifacts" id="grpc-protobuf-artifacts">
+        <p>
+            The generated protobuf code needs a protobuf runtime on the classpath.
+            Two runtime artifacts are published, and they differ only in whether the Google
+            <a href="https://protobuf.dev/reference/protobuf/google.protobuf/">Well-Known Types</a> (WKT,
+            such as <code>Any</code>, <code>Duration</code>, <code>Timestamp</code>, and <code>Struct</code>)
+            are bundled:
+        </p>
+        <deflist>
+            <def title="kotlinx-rpc-protobuf" id="grpc-protobuf-artifact-full">
+                The full runtime, used in the setups above. It aggregates the lite runtime, the generated
+                Well-Known Types, and the gRPC marshaller. This is the recommended default — use it unless you
+                have a specific reason not to, since most schemas (and the gRPC integration itself) rely on the
+                Well-Known Types.
+            </def>
+            <def title="kotlinx-rpc-protobuf-lite" id="grpc-protobuf-artifact-lite">
+                The bare runtime: wire encoders/decoders, the base message type, and the descriptor system,
+                <b>without</b> the Well-Known Types. Depend on it only when your <path>.proto</path> files do not
+                use any Well-Known Type and you want to keep the dependency footprint minimal.
+            </def>
+        </deflist>
+        <note>
+            If you choose <code>kotlinx-rpc-protobuf-lite</code> but your schemas import a Well-Known Type
+            (for example <path>google/protobuf/timestamp.proto</path>), the generated code will not resolve those
+            types. Either switch to <code>kotlinx-rpc-protobuf</code> or add the <code>kotlinx-rpc-protobuf-wkt</code>
+            artifact, which supplies the Well-Known Types on top of the lite runtime.
+        </note>
     </chapter>
     <tip>
         Instead of adding <code>rpc { protoc() }</code> to each build script, you can enable protoc

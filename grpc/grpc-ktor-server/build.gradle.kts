@@ -24,7 +24,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(projects.protobuf.protobufApi)
+                implementation(projects.protobuf.protobufLite)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.grpc.grpcKtorServer)
 
