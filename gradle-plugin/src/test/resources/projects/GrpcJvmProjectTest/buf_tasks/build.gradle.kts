@@ -65,7 +65,7 @@ tasks.register("test_tasks") {
 
         val allTasks = protoTasks.buf
 
-        assertTasks("all", allTasks, "bufGenerateMain", "bufGenerateTest", "bufLintMain", "bufLintTest")
+        assertTasks("all", allTasks, "bufGenerateMain", "bufGenerateTest", "bufLintMain", "bufLintTest", "bufLockMain", "bufLockTest")
         assertTasks("all by type generate", allTasks.matchingType<BufGenerateTask>(), "bufGenerateMain", "bufGenerateTest")
         assertTasks("all by type lint", allTasks.matchingType<BufLintTask>(), "bufLintMain", "bufLintTest")
     }

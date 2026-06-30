@@ -16,16 +16,17 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import kotlinx.rpc.buf.BufGenerateExtension
-import kotlinx.rpc.protoc.DefaultProtoSourceSet
 import kotlinx.rpc.protoc.DefaultProtocExtension
 import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.SkipWhenEmpty
 import javax.inject.Inject
 
 /**
@@ -37,6 +38,30 @@ import javax.inject.Inject
 public abstract class BufGenerateTask @Inject internal constructor(
     properties: ProtoTask.Properties,
 ) : BufExecTask(properties) {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    public abstract val bufFile: Property<File>
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    public abstract val bufGenFile: Property<File>
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    @get:Optional
+    public abstract val bufLockFile: Property<File>
+
+    // unsued, but required for Gradle to properly recognise inputs
+    @get:InputFiles
+    @get:SkipWhenEmpty
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal abstract val protoFiles: ListProperty<File>
+
+    // unsued, but required for Gradle to properly recognise inputs
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal abstract val importProtoFiles: ListProperty<File>
+
     /**
      * List of plugin names used during `buf generate` command execution.
      *
@@ -149,18 +174,15 @@ public abstract class BufGenerateTask @Inject internal constructor(
 }
 
 internal fun Project.registerBufGenerateTask(
+    name: String,
     protocExtension: DefaultProtocExtension,
-    protoSourceSet: DefaultProtoSourceSet,
     workingDir: File,
     outputDirectory: File,
     includedPlugins: Provider<Set<ProtocPlugin>>,
     properties: ProtoTask.Properties,
     configure: BufGenerateTask.() -> Unit = {},
 ): TaskProvider<BufGenerateTask> {
-    val capitalName = protoSourceSet.name.replaceFirstChar { it.uppercase() }
-    val bufGenerateTaskName = "${BufGenerateTask.NAME_PREFIX}$capitalName"
-
-    return registerBufExecTask<BufGenerateTask>(bufGenerateTaskName, provider { workingDir }, properties) {
+    return registerBufExecTask<BufGenerateTask>("${BufGenerateTask.NAME_PREFIX}$name", provider { workingDir }, properties) {
         group = PROTO_GROUP
         description = "Generates code from .proto files using 'buf generate'"
 

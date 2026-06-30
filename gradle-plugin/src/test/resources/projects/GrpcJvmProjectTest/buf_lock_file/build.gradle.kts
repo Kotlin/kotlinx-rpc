@@ -1,9 +1,9 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import org.gradle.kotlin.dsl.version
-import kotlinx.rpc.protoc.kotlinMultiplatform
+import kotlinx.rpc.protoc.*
+import kotlinx.rpc.buf.*
 
 plugins {
     kotlin("jvm") version "<kotlin-version>"
