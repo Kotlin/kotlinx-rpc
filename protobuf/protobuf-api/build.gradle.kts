@@ -59,7 +59,7 @@ kotlin {
 
         jvmMain {
             dependencies {
-                implementation(libs.protobuf.java.util)
+                implementation(libs.protobuf.javalite)
             }
         }
 

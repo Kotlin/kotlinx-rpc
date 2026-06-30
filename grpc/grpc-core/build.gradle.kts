@@ -71,8 +71,6 @@ kotlin {
                 api(libs.grpc.api)
                 api(libs.grpc.util)
                 api(libs.grpc.stub)
-                api(libs.grpc.protobuf)
-                api(libs.grpc.protobuf.lite)
             }
         }
 
