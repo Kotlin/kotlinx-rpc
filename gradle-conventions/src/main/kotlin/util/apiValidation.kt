@@ -19,6 +19,7 @@ private val excludedProjects = setOf(
     "compiler-plugin-protos",
     "protobuf-conformance",
     "protobuf-unittest",
+    "protobuf-playground",
     "grpc-test-server",
     "test-protos",
 )

@@ -31,6 +31,7 @@ public final class com/google/protobuf/kotlin/Any_extKt {
 
 public abstract interface class com/google/protobuf/kotlin/Api {
 	public static final field Companion Lcom/google/protobuf/kotlin/Api$Companion;
+	public abstract fun getEdition ()Ljava/lang/String;
 	public abstract fun getMethods ()Ljava/util/List;
 	public abstract fun getMixins ()Ljava/util/List;
 	public abstract fun getName ()Ljava/lang/String;
@@ -42,6 +43,7 @@ public abstract interface class com/google/protobuf/kotlin/Api {
 
 public abstract interface class com/google/protobuf/kotlin/Api$Builder : com/google/protobuf/kotlin/Api {
 	public abstract fun clearSourceContext ()V
+	public abstract fun getEdition ()Ljava/lang/String;
 	public abstract fun getMethods ()Ljava/util/List;
 	public abstract fun getMixins ()Ljava/util/List;
 	public abstract fun getName ()Ljava/lang/String;
@@ -49,6 +51,7 @@ public abstract interface class com/google/protobuf/kotlin/Api$Builder : com/goo
 	public abstract fun getSourceContext ()Lcom/google/protobuf/kotlin/SourceContext;
 	public abstract fun getSyntax ()Lcom/google/protobuf/kotlin/Syntax;
 	public abstract fun getVersion ()Ljava/lang/String;
+	public abstract fun setEdition (Ljava/lang/String;)V
 	public abstract fun setMethods (Ljava/util/List;)V
 	public abstract fun setMixins (Ljava/util/List;)V
 	public abstract fun setName (Ljava/lang/String;)V
@@ -606,6 +609,13 @@ public final class com/google/protobuf/kotlin/Edition$EDITION_PROTO3 : com/googl
 
 public final class com/google/protobuf/kotlin/Edition$EDITION_UNKNOWN : com/google/protobuf/kotlin/Edition {
 	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_UNSTABLE : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_UNSTABLE;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -2730,6 +2740,7 @@ public abstract interface class com/google/protobuf/kotlin/MessageOptionsPresenc
 
 public abstract interface class com/google/protobuf/kotlin/Method {
 	public static final field Companion Lcom/google/protobuf/kotlin/Method$Companion;
+	public abstract fun getEdition ()Ljava/lang/String;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getOptions ()Ljava/util/List;
 	public abstract fun getRequestStreaming ()Z
@@ -2740,6 +2751,7 @@ public abstract interface class com/google/protobuf/kotlin/Method {
 }
 
 public abstract interface class com/google/protobuf/kotlin/Method$Builder : com/google/protobuf/kotlin/Method {
+	public abstract fun getEdition ()Ljava/lang/String;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getOptions ()Ljava/util/List;
 	public abstract fun getRequestStreaming ()Z
@@ -2747,6 +2759,7 @@ public abstract interface class com/google/protobuf/kotlin/Method$Builder : com/
 	public abstract fun getResponseStreaming ()Z
 	public abstract fun getResponseTypeUrl ()Ljava/lang/String;
 	public abstract fun getSyntax ()Lcom/google/protobuf/kotlin/Syntax;
+	public abstract fun setEdition (Ljava/lang/String;)V
 	public abstract fun setName (Ljava/lang/String;)V
 	public abstract fun setOptions (Ljava/util/List;)V
 	public abstract fun setRequestStreaming (Z)V
