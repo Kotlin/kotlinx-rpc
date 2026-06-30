@@ -178,6 +178,20 @@ abstract class GrpcBaseTest : BaseTest() {
             protoBuildDir.deleteRecursively()
         }
 
+        fun assertBufYaml(sourceSet: SSets, @Language("Yaml") content: String) {
+            val file = protoBuildDirSourceSets
+                .resolve(sourceSet.name)
+                .resolve("buf.yaml")
+
+            assert(file.exists()) {
+                "File '${file.absolutePathString()}' does not exist"
+            }
+
+            val fileContent = file.readLines().joinToString("\n")
+
+            assertEquals(content.trimIndent(), fileContent.trimIndent())
+        }
+
         fun assertBufGenYaml(sourceSet: SSets, @Language("Yaml") content: String) {
             val file = protoBuildDirSourceSets
                 .resolve(sourceSet.name)
@@ -518,6 +532,7 @@ inputs:
         fun extractProtoImport(sourceSet: SSets) = "extractProtoImport${sourceSet.capital}"
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
+        fun bufLock(sourceSet: SSets) = "bufLock${sourceSet.capital}"
 
         val mainSourceSet: SSets = when (type) {
             Type.Kmp -> SSetsKmp.Default.commonMain
@@ -544,6 +559,8 @@ inputs:
         val extractProtoCommonTest = extractProto(testSourceSet)
         val extractProtoImportCommonMain = extractProtoImport(mainSourceSet)
         val extractProtoImportCommonTest = extractProtoImport(testSourceSet)
+        val bufLockCommonMain = bufLock(mainSourceSet)
+        val bufLockCommonTest = bufLock(testSourceSet)
 
         val protoBuildDir: Path by lazy {
             projectDir

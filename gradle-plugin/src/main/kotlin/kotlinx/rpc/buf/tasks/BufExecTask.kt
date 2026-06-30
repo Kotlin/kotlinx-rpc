@@ -13,7 +13,6 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
@@ -27,11 +26,9 @@ import kotlinx.rpc.buf.BufTasksExtension
 import kotlinx.rpc.protoc.DefaultProtoTask
 import kotlinx.rpc.protoc.ProtoTask
 import org.gradle.api.logging.LogLevel
-import org.gradle.api.tasks.Classpath
-import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
-import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
 
@@ -46,16 +43,11 @@ import javax.inject.Inject
 public abstract class BufExecTask @Inject constructor(
     properties: ProtoTask.Properties,
 ) : DefaultProtoTask(properties) {
-    // unsued, but required for Gradle to properly recognise inputs
-    @get:InputFiles
-    @get:SkipWhenEmpty
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal abstract val protoFiles: ListProperty<File>
-
-    // unsued, but required for Gradle to properly recognise inputs
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal abstract val importProtoFiles: ListProperty<File>
+    /**
+     * The working directory for the `buf` command.
+     */
+    @get:Internal
+    internal abstract val workingDir: Property<File>
 
     @get:InputFile
     @get:PathSensitive(PathSensitivity.NONE)
@@ -84,14 +76,6 @@ public abstract class BufExecTask @Inject constructor(
     public abstract val args: ListProperty<String>
 
     /**
-     * The working directory for the `buf` command.
-     */
-    @get:InputDirectory
-    // https://docs.gradle.org/current/userguide/incremental_build.html#sec:configure_input_normalization
-    @get:Classpath
-    public abstract val workingDir: Property<File>
-
-    /**
      * The `buf.yaml` file to use via `--config` option.
      */
     @get:InputFile
@@ -112,7 +96,7 @@ public abstract class BufExecTask @Inject constructor(
     public abstract val bufTimeoutInWholeSeconds: Property<Long>
 
     @TaskAction
-    internal fun exec() {
+    internal open fun exec() {
         execBuf(listOf(command.get()) + args.get())
     }
 }

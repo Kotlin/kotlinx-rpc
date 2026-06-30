@@ -14,6 +14,8 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlin.io.path.Path
 import kotlin.io.path.appendText
+import kotlin.io.path.exists
+import kotlin.io.path.readText
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -559,6 +561,7 @@ inputs:
         val firstRunMain = runGradle(bufGenerateCommonMain)
 
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, firstRunMain.protoTaskOutcome(processCommonMainProtoFiles))
@@ -566,6 +569,7 @@ inputs:
         val secondRunMain = runGradle(bufGenerateCommonMain)
 
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunMain.protoTaskOutcome(processCommonMainProtoFiles))
@@ -575,6 +579,7 @@ inputs:
         val thirdRunMain = runGradle(bufGenerateCommonMain)
 
         assertEquals(TaskOutcome.FROM_CACHE, thirdRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, thirdRunMain.protoTaskOutcome(processCommonMainProtoFiles))
@@ -586,19 +591,34 @@ inputs:
         val fourthRunMain = runGradle(bufGenerateCommonMain)
 
         assertEquals(TaskOutcome.SUCCESS, fourthRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, fourthRunMain.protoTaskOutcome(processCommonMainProtoFiles))
 
+        projectDir
+            .resolve("buf.lock")
+            .appendText("# Force update lock task")
+
+        val fifthRunMain = runGradle(bufGenerateCommonMain)
+
+        assertEquals(TaskOutcome.SUCCESS, fifthRunMain.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.SUCCESS, fifthRunMain.protoTaskOutcome(bufLockCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(generateBufYamlCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(generateBufGenYamlCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fifthRunMain.protoTaskOutcome(processCommonMainProtoFiles))
+
         val firstRunTest = runGradle(bufGenerateCommonTest)
 
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.SUCCESS, firstRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, firstRunTest.protoTaskOutcome(processCommonMainProtoFiles))
@@ -606,12 +626,14 @@ inputs:
         val secondRunTest = runGradle(bufGenerateCommonTest)
 
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, secondRunTest.protoTaskOutcome(processCommonMainProtoFiles))
@@ -623,12 +645,14 @@ inputs:
         val thirdRunTest = runGradle(bufGenerateCommonTest)
 
         assertEquals(TaskOutcome.SUCCESS, thirdRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.SUCCESS, thirdRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, thirdRunTest.protoTaskOutcome(processCommonMainProtoFiles))
@@ -640,12 +664,14 @@ inputs:
         val fourthRunTest = runGradle(bufGenerateCommonTest)
 
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(bufGenerateCommonTest))
+        assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(bufLockCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufGenYamlCommonTest))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(processCommonTestProtoFiles))
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(processCommonTestProtoFilesImports))
 
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(bufGenerateCommonMain))
+        assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(bufLockCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufYamlCommonMain))
         assertEquals(TaskOutcome.UP_TO_DATE, fourthRunTest.protoTaskOutcome(generateBufGenYamlCommonMain))
         assertEquals(TaskOutcome.SUCCESS, fourthRunTest.protoTaskOutcome(processCommonMainProtoFiles))
@@ -728,5 +754,97 @@ inputs:
     @TestFactory
     fun `Buf Tasks`() = runGrpcTest {
         runGradle("test_tasks", "--no-configuration-cache")
+    }
+
+    @TestFactory
+    fun `Buf Dependencies`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+
+        assertBufYaml(mainSourceSet,
+            content = """
+version: v2
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+modules:
+  - path: proto
+deps:
+  - buf.build/googleapis/googleapis
+            """.trimIndent())
+
+        val workspaceLockFile = protoBuildDirSourceSets
+            .resolve(mainSourceSet.name)
+            .resolve("buf.lock")
+        assert(workspaceLockFile.exists()) { "buf.lock was not generated" }
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+            )
+        )
+    }
+
+    @TestFactory
+    fun `Buf Lock File`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+
+        assertBufYaml(mainSourceSet,
+            content = """
+version: v2
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+modules:
+  - path: proto
+deps:
+  - buf.build/googleapis/googleapis
+            """.trimIndent())
+
+        val workspaceLockFile = protoBuildDirSourceSets
+            .resolve(mainSourceSet.name)
+            .resolve("buf.lock")
+        assert(workspaceLockFile.exists()) { "buf.lock was not copied" }
+        assertEquals(
+            projectDir.resolve("buf.lock").readText(),
+            workspaceLockFile.readText(),
+        )
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+            )
+        )
+    }
+
+    @TestFactory
+    fun `Skip Buf Lock When No Deps`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SKIPPED, bufLockCommonMain)
     }
 }
