@@ -250,6 +250,27 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public var overrideAuthority: String? = null
 
+    /**
+     * A custom application `User-Agent` for this channel.
+     *
+     * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
+     * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
+     * JVM, or the `grpc-c/<version>` C-core token on native). A full override is not supported by the
+     * underlying gRPC implementations.
+     *
+     * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
+     * header and any value added to the metadata is overwritten by the gRPC runtime.
+     *
+     * Maps to `ManagedChannelBuilder.userAgent(...)` on JVM and the `GRPC_ARG_PRIMARY_USER_AGENT_STRING`
+     * channel argument on native. If `null` (the default), only the runtime's own token is sent.
+     *
+     * ```
+     * GrpcClient("example.com", 443) {
+     *     userAgent = "MyApp/1.2.3"
+     * }
+     * ```
+     */
+    public var userAgent: String? = null
 
     /**
      * Adds one or more client-side interceptors to the current gRPC client configuration.

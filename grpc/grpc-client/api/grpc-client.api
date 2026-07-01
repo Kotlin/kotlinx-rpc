@@ -69,6 +69,7 @@ public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
 	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
 	public final fun getOverrideAuthority ()Ljava/lang/String;
+	public final fun getUserAgent ()Ljava/lang/String;
 	public final fun intercept ([Lkotlinx/rpc/grpc/client/GrpcClientInterceptor;)V
 	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
 	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
@@ -76,6 +77,7 @@ public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
 	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
 	public final fun setOverrideAuthority (Ljava/lang/String;)V
+	public final fun setUserAgent (Ljava/lang/String;)V
 	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
 }
 
