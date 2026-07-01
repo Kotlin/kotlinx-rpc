@@ -6,12 +6,18 @@ package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -119,32 +125,33 @@ public fun <Request, Response> GrpcClient.bidirectionalStreamingRpc(
     )
 }
 
-private sealed interface ClientRequest<Request> {
-    suspend fun sendTo(
-        clientCall: ClientCall<Request, *>,
-        ready: Ready,
-    )
-
-    class Unary<Request>(private val request: Request) : ClientRequest<Request> {
-        override suspend fun sendTo(
-            clientCall: ClientCall<Request, *>,
-            ready: Ready,
-        ) {
-            clientCall.sendMessage(request)
+/**
+ * Pumps responses from the [responses] channel into this [FlowCollector], requesting the next
+ * message through [requestNext] after every emit and running [onError] cleanup (under
+ * [NonCancellable]) if the collection fails.
+ *
+ * If the surrounding coroutine has been cancelled, this completes with that cancellation instead of
+ * rethrowing the channel's close-cause. The for-loop reads an already-closed channel through a
+ * non-suspending fast path that does not observe coroutine cancellation, so without this guard a
+ * server status sitting in the closed [responses] channel would leak past cancellation to operators
+ * such as `retry()`/`catch()` instead of the expected [CancellationException]
+ * (KRPC-461, grpc-kotlin #318).
+ */
+internal suspend fun <Response> FlowCollector<Response>.emitResponses(
+    responses: ReceiveChannel<Response>,
+    requestNext: () -> Unit,
+    onError: suspend (Throwable) -> Unit,
+) {
+    try {
+        requestNext()
+        for (response in responses) {
+            emit(response)
+            requestNext()
         }
-    }
-
-    class Flowing<Request>(private val requestFlow: Flow<Request>) : ClientRequest<Request> {
-        override suspend fun sendTo(
-            clientCall: ClientCall<Request, *>,
-            ready: Ready,
-        ) {
-            ready.suspendUntilReady()
-            requestFlow.collect { request ->
-                clientCall.sendMessage(request)
-                ready.suspendUntilReady()
-            }
-        }
+    } catch (e: Exception) {
+        withContext(NonCancellable) { onError(e) }
+        currentCoroutineContext().ensureActive()
+        throw e
     }
 }
 
@@ -219,25 +226,49 @@ private class ClientCallScopeImpl<Request, Response>(
              */
             val responses = Channel<Response>(1)
             val ready = Ready { call.isReady() }
+            val fullMethodName = method.getFullMethodName()
+
+            // (KRPC-461 / grpc-kotlin #378) For client/bidi streaming, subscribe to the request flow
+            // eagerly — before the RPC is started and independently of readiness — so that the flow's
+            // initialization runs deterministically and cannot be skipped or interrupted by an early
+            // RPC failure. The collected messages are handed to the sender through a rendezvous
+            // channel, which keeps the original backpressure (the flow is pulled only as fast as
+            // messages are actually sent). Unary and server-streaming send a single, already
+            // materialized request, so there is nothing to subscribe eagerly.
+            val requestChannel: Channel<Request>? = when (method.methodType) {
+                GrpcMethodType.CLIENT_STREAMING, GrpcMethodType.BIDI_STREAMING -> Channel(Channel.RENDEZVOUS)
+                else -> null
+            }
+
+            val requestCollector: Job? = if (requestChannel != null) {
+                launch(
+                    context = CoroutineName("grpc-collect-requests-$fullMethodName"),
+                    start = CoroutineStart.UNDISPATCHED,
+                ) {
+                    try {
+                        request.collect { requestChannel.send(it) }
+                        requestChannel.close()
+                    } catch (e: Throwable) {
+                        requestChannel.close(e)
+                        throw e
+                    }
+                }
+            } else {
+                null
+            }
 
             call.start(channelResponseListener(call, responses, ready), requestHeaders)
 
-            suspend fun Flow<Request>.send() {
-                if (method.methodType == GrpcMethodType.UNARY || method.methodType == GrpcMethodType.SERVER_STREAMING) {
-                    call.sendMessage(single())
-                } else {
-                    ready.suspendUntilReady()
-                    this.collect { request ->
-                        call.sendMessage(request)
-                        ready.suspendUntilReady()
-                    }
-                }
-            }
-
-            val fullMethodName = method.getFullMethodName()
             val sender = launch(CoroutineName("grpc-send-message-$fullMethodName")) {
                 try {
-                    request.send()
+                    if (requestChannel != null) {
+                        for (message in requestChannel) {
+                            ready.suspendUntilReady()
+                            call.sendMessage(message)
+                        }
+                    } else {
+                        call.sendMessage(request.single())
+                    }
                     call.halfClose()
                 } catch (ex: Exception) {
                     call.cancel("Collection of requests completed exceptionally", ex)
@@ -245,25 +276,25 @@ private class ClientCallScopeImpl<Request, Response>(
                 }
             }
 
-            try {
-                call.request(1)
-                for (response in responses) {
-                    emit(response)
-                    call.request(1)
-                }
-            } catch (e: Exception) {
-                withContext(NonCancellable) {
+            emitResponses(
+                responses = responses,
+                requestNext = { call.request(1) },
+                onError = { e ->
                     sender.cancel("Collection of responses completed exceptionally", e)
                     sender.join()
+                    requestCollector?.cancel("Collection of responses completed exceptionally", e)
+                    requestCollector?.join()
                     // we want the sender to be done cancelling before we cancel the handler, or it might try
                     // sending to a dead call, which results in ugly exception messages
                     call.cancel("Collection of responses completed exceptionally", e)
-                }
-                throw e
-            }
+                },
+            )
 
             if (!sender.isCompleted) {
                 sender.cancel("Collection of responses completed before collection of requests")
+            }
+            if (requestCollector?.isCompleted == false) {
+                requestCollector.cancel("Collection of responses completed before collection of requests")
             }
         }
     }
