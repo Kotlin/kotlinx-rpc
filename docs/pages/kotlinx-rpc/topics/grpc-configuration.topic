@@ -461,6 +461,11 @@
                                 includeFileLevelComments = true
                             }
                         }
+
+                        deps {
+                            module("buf.build/googleapis/googleapis")
+                            lockFile = File("buf.lock")
+                        }
                     }
                 }
             }
@@ -517,6 +522,15 @@
             <def title="generate.comments.includeFileLevelComments" id="grpc-buf-generate-file-comments">
                 Controls whether file-level comments are copied to generated Kotlin sources.
                 This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
+            </def>
+            <def title="deps.module(name)" id="grpc-buf-deps-module">
+                Adds a
+                <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">BSR module dependency</a>
+                to the generated <path>buf.yaml</path>.
+            </def>
+            <def title="deps.lockFile" id="grpc-buf-deps-lock-file">
+                When set, the provided <path>buf.lock</path> file is copied directly into the
+                generated workspace instead of running <code>buf dep update</code>.
             </def>
         </deflist>
     </chapter>

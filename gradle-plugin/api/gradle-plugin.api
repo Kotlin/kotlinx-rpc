@@ -45,9 +45,17 @@ public class kotlinx/rpc/buf/BufCommentsExtension {
 	public final fun getIncludeFileLevelComments ()Lorg/gradle/api/provider/Property;
 }
 
+public class kotlinx/rpc/buf/BufDepsExtension {
+	public final fun getLockFile ()Lorg/gradle/api/provider/Property;
+	public final fun getModules ()Lorg/gradle/api/provider/ListProperty;
+	public final fun module (Ljava/lang/String;)V
+}
+
 public class kotlinx/rpc/buf/BufExtension {
+	public final fun deps (Lorg/gradle/api/Action;)V
 	public final fun generate (Lorg/gradle/api/Action;)V
 	public final fun getConfigFile ()Lorg/gradle/api/provider/Property;
+	public final fun getDeps ()Lkotlinx/rpc/buf/BufDepsExtension;
 	public final fun getGenerate ()Lkotlinx/rpc/buf/BufGenerateExtension;
 	public final fun getLogFormat ()Lorg/gradle/api/provider/Property;
 	public final fun getTasks ()Lkotlinx/rpc/buf/BufTasksExtension;
@@ -106,7 +114,6 @@ public abstract class kotlinx/rpc/buf/tasks/BufExecTask : kotlinx/rpc/protoc/Def
 	public abstract fun getConfigFile ()Lorg/gradle/api/provider/Property;
 	public abstract fun getDebug ()Lorg/gradle/api/provider/Property;
 	public abstract fun getLogFormat ()Lorg/gradle/api/provider/Property;
-	public abstract fun getWorkingDir ()Lorg/gradle/api/provider/Property;
 }
 
 public final class kotlinx/rpc/buf/tasks/BufExecTaskKt {
@@ -117,6 +124,9 @@ public final class kotlinx/rpc/buf/tasks/BufExecTaskKt {
 public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/tasks/BufExecTask {
 	public static final field NAME_PREFIX Ljava/lang/String;
 	public abstract fun getAdditionalArgs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBufFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBufGenFile ()Lorg/gradle/api/provider/Property;
+	public abstract fun getBufLockFile ()Lorg/gradle/api/provider/Property;
 	public abstract fun getErrorFormat ()Lorg/gradle/api/provider/Property;
 	public abstract fun getExecutableFiles ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getIncludeImports ()Lorg/gradle/api/provider/Property;
@@ -124,6 +134,13 @@ public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/ta
 	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getOutputSourceDirectories ()Lorg/gradle/api/provider/Provider;
 	public abstract fun getPluginNames ()Lorg/gradle/api/provider/ListProperty;
+}
+
+public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/BufExecTask {
+	public static final field NAME_PREFIX Ljava/lang/String;
+	public abstract fun getBsrDeps ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getBufLockFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getSourceLockFile ()Lorg/gradle/api/provider/Property;
 }
 
 public abstract class kotlinx/rpc/buf/tasks/GenerateBufGenYaml : kotlinx/rpc/protoc/DefaultProtoTask {
