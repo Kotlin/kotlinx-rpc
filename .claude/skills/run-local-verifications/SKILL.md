@@ -23,8 +23,8 @@ on push/PR and cannot be triggered from here.
 
 Use the `running_gradle_builds` skill for all Gradle build/generation tasks and the
 `running_gradle_tests` skill for all Gradle test tasks. Do NOT run `./gradlew` directly
-via shell. The only exception is `./update_implicit_types.sh` and
-`./validatePublishedArtifacts.sh` which are standalone shell scripts.
+via shell. The only exception is `./scripts/update_implicit_types.sh` and
+`./scripts/validate_published_artifacts.sh` which are standalone shell scripts.
 
 ## Quick Start: Identify What Changed
 
@@ -41,7 +41,7 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | Any public API in published modules (`core/`, `krpc/`, `grpc/`, `protobuf/`, `utils/`) | ABI compatibility       | `checkLegacyAbi`                                                                          | Ensures binary compatibility is preserved for library consumers                    |
 | Any Kotlin/Java source file                                                            | Detekt static analysis  | `detekt`                                                                                  | Code quality. Does NOT fail the build, but check console output for new violations |
 | Any published JVM or KMP module source (including `commonMain`)                        | JPMS check              | `:jpms-check:compileJava`                                                                 | Verifies Java module system compatibility. commonMain code compiles to JVM too     |
-| New/removed modules or KMP target changes                                              | Artifact validation     | Shell: `./validatePublishedArtifacts.sh -s`                                               | Ensures the published artifact list stays consistent                               |
+| New/removed modules or KMP target changes                                              | Artifact validation     | Shell: `./scripts/validate_published_artifacts.sh -s`                                               | Ensures the published artifact list stays consistent                               |
 | New/removed modules or KMP target changes                                              | Platform table          | `dumpPlatformTable --no-configuration-cache` then check git status                        | Updates docs/pages platform table                                                  |
 | `gradle.properties` in any module                                                      | Properties sync         | `updateProperties` then check git status                                                  | Keeps all module gradle.properties in sync with root                               |
 | `compiler-plugin/` sources or templates                                                | Compiler plugin tests   | `:tests:compiler-plugin-tests:test` (use `running_gradle_tests`)                          | Validates codegen and diagnostics                                                  |
@@ -49,7 +49,7 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
 | `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:test` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
 | `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
-| `protoc-gen/` sources (any change)                                                     | Implicit imports        | Shell: `./update_implicit_types.sh` then check git status                                 | Keeps protoc-gen implicit import list current                                      |
+| `protoc-gen/` sources (any change)                                                     | Implicit imports        | Shell: `./scripts/update_implicit_types.sh` then check git status                                 | Keeps protoc-gen implicit import list current                                      |
 | `protobuf/protobuf-wkt/` sources                                                       | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Regenerates WKT code                                                               |
 | `krpc/` protocol wire format or serialization                                          | Protocol compat tests   | `:tests:krpc-protocol-compatibility-tests:jvmTest` (use `running_gradle_tests`)           | Ensures wire format backward compatibility                                         |
 | `krpc/` any changes                                                                    | kRPC compat tests       | `:tests:krpc-compatibility-tests:jvmTest` (use `running_gradle_tests`)                    | Ensures old/new API compatibility                                                  |
@@ -85,7 +85,7 @@ Examples:
 
 ### "I added a new published module"
 1. Run `dumpPlatformTable --no-configuration-cache` via `running_gradle_builds` then commit if changed
-2. Run `./validatePublishedArtifacts.sh --dump -s` via shell then commit if changed
+2. Run `./scripts/validate_published_artifacts.sh --dump -s` via shell then commit if changed
 3. Run `updateProperties` via `running_gradle_builds` then commit if changed
 4. Run `checkLegacyAbi` via `running_gradle_builds`
 5. Run `:jpms-check:compileJava` via `running_gradle_builds`
@@ -94,7 +94,7 @@ Examples:
 1. Run `:protobuf:protobuf-wkt:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
 2. Run `tests:protobuf-conformance:bufGenerateCommonMain` via `running_gradle_builds` then commit if changed
 3. Run `:tests:protobuf-unittest:test` via `running_gradle_tests`
-4. Run `./update_implicit_types.sh` via shell then commit if changed (if protoc-gen changed)
+4. Run `./scripts/update_implicit_types.sh` via shell then commit if changed (if protoc-gen changed)
 5. Run `checkLegacyAbi` via `running_gradle_builds`
 6. Run relevant module `jvmTest` via `running_gradle_tests`
 

@@ -5,10 +5,10 @@ incompatibilities before a Kotlin version is officially released.
 
 ## Step 1: Download Kotlin Master Artifacts
 
-Run the `dowload_kotlin_master.sh` script in the project root:
+Run the `scripts/download_kotlin_master.sh` script in the project root:
 
 ```bash
-./dowload_kotlin_master.sh
+./scripts/download_kotlin_master.sh
 ```
 
 This requires a `BUILD_SERVER_TOKEN` -- either as an environment variable or in

@@ -24,6 +24,7 @@ jobs:
 
       - name: Check if changelog is up-to-date
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep docs/pages/kotlinx-rpc/topics/changelog.md)" ]]; then
             echo "Changelog is not up-to-date. Please run './gradlew updateDocsChangelog' and commit changes"
             git status --porcelain

@@ -42,7 +42,8 @@ set -euo pipefail
 
 # ----------------------------------------------------------------------------- paths / constants
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-NATIVE_DEPS="$SCRIPT_DIR"
+# This script lives in native-deps/scripts/, so native-deps is its parent directory.
+NATIVE_DEPS="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_ROOT="$(cd "$NATIVE_DEPS/.." && pwd)"
 SHIMS="$NATIVE_DEPS/shims"
 PREBUILT="$NATIVE_DEPS/grpc-c-prebuilt"
@@ -62,7 +63,7 @@ ANALYSIS_ONLY=0      # only run the overlap analysis against already-built klibs
 
 usage() {
   cat <<EOF
-Usage: native-deps/validate-shims-local.sh [options]
+Usage: native-deps/scripts/validate_shims_local.sh [options]
 
   --no-write-excludes   Run overlap analysis read-only (do not modify overlap-archive-excludes.txt)
   --skip-prebuilt       Skip building/mirroring the gRPC C prebuilt (assume native-deps/build/repo is populated)

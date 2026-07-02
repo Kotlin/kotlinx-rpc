@@ -24,6 +24,7 @@ jobs:
 
       - name: Check if readme is changed in a propper branch
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep README.md)" ]]; then
             target_branch=${{ github.base_ref }}
             pr_branch=${{ github.head_ref }}

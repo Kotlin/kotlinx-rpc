@@ -9,7 +9,7 @@ the single strongest piece of evidence that a fix is right.
 ## Before/after verification protocol
 
 1. **Baseline (before fix)**: Before applying your fix, publish the library locally
-   from the worktree's current state (`./publishLocal.sh`). Clone or set up the
+   from the worktree's current state (`./scripts/publish_local.sh`). Clone or set up the
    reproducer project, point it at the local publication, and **confirm the bug
    exists** — the reproducer must actually fail/crash/misbehave as described in the
    issue. If it doesn't reproduce, investigate why before proceeding (wrong version,

@@ -66,11 +66,12 @@ val appleMinOsVerifyTasks = mutableMapOf<String, TaskProvider<*>>()
 val buildGrpcHeaders = tasks.register<Exec>("buildGrpcHeaders") {
     dependsOn(syncGrpcVersionToBazelModule, checkBazel, checkKonanHome)
     group = "build"
+    // Run from this module dir (owns the Bazel workspace); the script now lives in native-deps/scripts.
     workingDir = layout.projectDirectory.asFile
     val outputDir = headersDir.get().asFile
     outputs.dir(outputDir)
     commandLine(
-        "./extract_include_dir.sh",
+        "../scripts/extract_include_dir.sh",
         ":grpc_include_dir",
         outputDir.absolutePath,
         konanHome.get(),

@@ -24,7 +24,7 @@ Before pushing, run (maybe separately):
 Beware, that `detekt` doesn't fail the build, but outputs messages into the console.
 Makes sense to run it separately. You can also see generated reports
 
-Also, artifact checks: `./validatePublishedArtifacts.sh -s`. 
+Also, artifact checks: `./scripts/validate_published_artifacts.sh -s`. 
 See the [section](#tasks-to-know-about) below. 
 
 ### How to work with the compiler plugin
@@ -146,10 +146,10 @@ It must return `"OK"` if test passes and error message otherwise.
 - In `.kt` files place code to compile and directives (like `// RUN_PIPELINE_TILL: BACKEND`)
 - Other files will be generated and test run
   - If a file didn't exist or content changed — the test will fail and tell about content mismatch
-  - To update use `./updateTestData.sh <test-class-name> <?optional-test-name>` script. 
-For example, run `./updateTestData.sh DiagnosticTest` 
+  - To update use `./scripts/update_test_data.sh <test-class-name> <?optional-test-name>` script. 
+For example, run `./scripts/update_test_data.sh DiagnosticTest` 
 to update tests in [DiagnosticTestGenerated.java](../tests/compiler-plugin-tests/src/test-gen/kotlinx/rpc/codegen/test/runners/DiagnosticTestGenerated.java).
-Or `./updateTestData.sh DiagnosticTest testCheckedAnnotation` to update specific test.
+Or `./scripts/update_test_data.sh DiagnosticTest testCheckedAnnotation` to update specific test.
   - Check logs and git to distinguish between content update fails and compilation/other problems.
   - ALWAYS check new content `.fir.txt` and `.fir.ir.txt` files to see if the changes adhere to what you expected to see there.
 
@@ -183,7 +183,7 @@ Check TeamCity build `Java, JS, WASM and Linux, Master` and see the steps.
 
 Remember to set `kotlinx.rpc.kotlinMasterBuild=true` in [gradle.properties](../gradle.properties).
 
-To download it locally - use `./download_kotlin_master.sh` script.
+To download it locally - use `./scripts/download_kotlin_master.sh` script.
 
 ### How to disable KMP target compilation for modules
 
@@ -225,7 +225,7 @@ Non-trivial tests are located in `tests` module.
 
 ### How to test a local library version with an external project
 
-Use `./publishLocal.sh` script. All artifacts will be in the local directory of `<REPO_ROOT>/build/repo/` .
+Use `./scripts/publish_local.sh` script. All artifacts will be in the local directory of `<REPO_ROOT>/build/repo/` .
 
 ## How to debug tests/protobuf-conformance
 
@@ -285,7 +285,7 @@ usually after Kotlin version update.
   - `clean` - everything
   - `cleanTest` - JVM test results
   - `cleanAllTests` - KMP test results
-- `validatePublishedArtifacts` task and more importantly `./validatePublishedArtifacts.sh` script.
+- `validatePublishedArtifacts` task and more importantly `./scripts/validate_published_artifacts.sh` script.
   
   They are used to validate published artifacts and ensure you didn't delete or published something accidentally.
   

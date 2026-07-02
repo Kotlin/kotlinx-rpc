@@ -41,13 +41,13 @@ Use the `running_gradle_builds` skill for these tasks:
 
 Non-Gradle validation:
 ```bash
-./validatePublishedArtifacts.sh -s # Artifact validation (-v verbose, --dump update)
+./scripts/validate_published_artifacts.sh -s # Artifact validation (-v verbose, --dump update)
 ```
 
 ### Other specialized commands
 
 ```bash
-./publishLocal.sh                  # Publish to build/repo/ for local testing
+./scripts/publish_local.sh                  # Publish to build/repo/ for local testing
 ```
 
 ## Generated Code — Do Not Edit Manually

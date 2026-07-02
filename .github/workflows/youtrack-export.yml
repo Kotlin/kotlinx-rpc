@@ -15,6 +15,7 @@ jobs:
       - name: Map issue type
         id: map-type
         run: |
+          set -euo pipefail
           LABELS='${{ toJson(github.event.issue.labels.*.name) }}'
           echo "GitHub labels: $LABELS"
 
@@ -32,6 +33,7 @@ jobs:
       - name: Resolve github-issue tag ID
         id: resolve-tag
         run: |
+          set -euo pipefail
           TAG_ID=$(curl -sf \
             -H "Authorization: Bearer $YOUTRACK_TOKEN" \
             "$YOUTRACK_URL/api/tags?fields=id,name&query=github-issue" \
@@ -59,6 +61,7 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
           YT_TYPE: ${{ steps.map-type.outputs.yt_type }}
         run: |
+          set -euo pipefail
           echo "Creating YouTrack issue for: $ISSUE_TITLE"
           echo "  Type: $YT_TYPE"
           echo "  Source: $ISSUE_URL"
@@ -116,6 +119,7 @@ jobs:
           ISSUE_ID: ${{ steps.create-issue.outputs.issue_id }}
           TAG_ID: ${{ steps.resolve-tag.outputs.tag_id }}
         run: |
+          set -euo pipefail
           echo "Tagging $ISSUE_ID with 'github-issue' (tag ID: $TAG_ID)..."
 
           RESPONSE=$(curl -s -w "\n%{http_code}" \

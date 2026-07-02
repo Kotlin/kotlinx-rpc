@@ -77,7 +77,7 @@ used for debugging purposes.
 
 **1. BuildRepo (recommended)**
 
-Run `./publishLocal.sh` to publish all artifacts (including the compiler plugin, Gradle plugin, and protoc-gen)
+Run `./scripts/publish_local.sh` to publish all artifacts (including the compiler plugin, Gradle plugin, and protoc-gen)
 to the `build/repo/` directory. Then add this directory as a Maven repository in your sample project's `settings.gradle(.kts)`:
 
 ```kotlin
