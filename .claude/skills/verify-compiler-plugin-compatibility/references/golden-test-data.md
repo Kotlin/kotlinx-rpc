@@ -4,13 +4,13 @@ After fixing CSM templates, the compiler plugin's generated IR/FIR output may ch
 causing golden file mismatches in `:tests:compiler-plugin-tests`. Update them with:
 
 ```bash
-./updateTestData.sh <TestRunner> [testMethod]
+./scripts/update_test_data.sh <TestRunner> [testMethod]
 ```
 
 Examples:
-- `./updateTestData.sh BoxTest` -- update all box test golden files
-- `./updateTestData.sh DiagnosticTest` -- update all diagnostic test golden files
-- `./updateTestData.sh BoxTest mySpecificTest` -- update a single test's golden file
+- `./scripts/update_test_data.sh BoxTest` -- update all box test golden files
+- `./scripts/update_test_data.sh DiagnosticTest` -- update all diagnostic test golden files
+- `./scripts/update_test_data.sh BoxTest mySpecificTest` -- update a single test's golden file
 
 The script passes `-Pkotlin.test.update.test.data=true` to Gradle, which the build script
 forwards to the test JVM as a system property. The test framework then overwrites golden

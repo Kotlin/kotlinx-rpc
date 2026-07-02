@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: Fail build after no labels present
         run: |
+          set -euo pipefail
           echo "Pull request does not contain any required labels"
           echo "Please use at least one of 'feature', 'bug', 'breaking', 'infra', 'docs', 'deprecation', 'release', 'housekeeping', 'Main Branch Update' or 'dependencies' labels"
           exit 1

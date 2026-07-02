@@ -79,7 +79,7 @@ gradlew     text eol=lf
 # Generated compiler-plugin test runners
 tests/compiler-plugin-tests/src/test-gen/**             linguist-generated
 
-# Implicit import lists — `update_implicit_types.sh`
+# Implicit import lists — `scripts/update_implicit_types.sh`
 protoc-gen/common/src/main/resources/implicit-imports/*.txt linguist-generated
 
 # Class-dump golden files used by kRPC tests

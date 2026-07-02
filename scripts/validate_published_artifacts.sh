@@ -4,6 +4,21 @@
 # Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
 #
 
+# validate_published_artifacts.sh
+#
+# Validates that the set of published artifacts stays consistent by running the
+# `validatePublishedArtifacts` Gradle task for every publication (per KMP target).
+#
+# Usage:
+#   ./scripts/validate_published_artifacts.sh [options]
+# Options:
+#   -v          Verbose Gradle output (--info --stacktrace)
+#   -s          Silent mode (-q --console=plain)
+#   --dump      Update (dump) the expected artifact list
+#   --no-proxy  Set kotlinx.rpc.useProxyRepositories=false
+#
+# Run from the repository root.
+
 set -euo pipefail
 
 function fancyEcho() {
@@ -12,7 +27,7 @@ function fancyEcho() {
 
 function usageAndFail() {
     fancyEcho "Usage: "
-    fancyEcho "./validatePublishedArtifacts.sh [options]"
+    fancyEcho "./scripts/validate_published_artifacts.sh [options]"
     fancyEcho "Options:"
     fancyEcho "  -v --- Verbose Gradle output"
     fancyEcho "  -s --- Silent mode"

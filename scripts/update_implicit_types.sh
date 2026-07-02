@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
-# Script to update implicit type definitions from official API documentation
-# This script fetches the latest type definitions from Kotlin and Java documentation
-# and updates the resource files used by FqNameTable for name resolution.
+# update_implicit_types.sh
+#
+# Updates the implicit type definitions used by protoc-gen's FqNameTable for name
+# resolution. Fetches the latest Kotlin stdlib and Java SE type lists from the official
+# online API documentation and regenerates the resource files under
+# protoc-gen/common/src/main/resources/implicit-imports.
+#
+# Usage:
+#   ./scripts/update_implicit_types.sh
+#
+# Prerequisites: network access (curl). Run from the repository root. The latest entry in
+# the KOTLIN_VERSIONS array below must match the project's kotlin-lang version.
 
-set -e
+set -euo pipefail
 
 RESOURCES_DIR="protoc-gen/common/src/main/resources/implicit-imports"
 VERSIONS_FILE="versions-root/libs.versions.toml"
@@ -30,10 +39,11 @@ echo -e "${BLUE}Updating implicit type definitions from official documentation${
 
 # Auto-detect all available Java SE versions
 echo -n "Detecting available Java SE versions... "
+# The empty-result check below handles curl/grep failures, hence `|| true`.
 JAVA_VERSIONS_RAW=$(curl -s "https://docs.oracle.com/en/java/javase/" 2>/dev/null | \
     grep -oE 'JDK [0-9]+' | \
     grep -oE '[0-9]+' | \
-    sort -n -u)
+    sort -n -u || true)
 
 if [ -z "$JAVA_VERSIONS_RAW" ]; then
     echo -e "${RED}failed${NC}"
@@ -50,7 +60,8 @@ echo ""
 
 # Check that the latest version matches the project's Kotlin version
 if [ -f "$VERSIONS_FILE" ]; then
-    PROJECT_KOTLIN_VERSION=$(grep '^kotlin-lang = ' "$VERSIONS_FILE" | sed -E 's/.*"([0-9]+\.[0-9]+)\..*/\1/')
+    # `|| true` so a missing key falls through to the version-mismatch error below.
+    PROJECT_KOTLIN_VERSION=$(grep '^kotlin-lang = ' "$VERSIONS_FILE" | sed -E 's/.*"([0-9]+\.[0-9]+)\..*/\1/' || true)
     # Get the last element of the array
     LATEST_VERSION="${KOTLIN_VERSIONS[${#KOTLIN_VERSIONS[@]}-1]}"
 
@@ -91,12 +102,14 @@ fetch_kotlin_types_version() {
     # We filter for Classlikes (not Functions, Properties, etc.)
     # Note: Using index.html explicitly to ensure we get the full HTML including deprecated classes
     # Note: Using -L to follow redirects (latest version redirects index.html to directory)
+    # Some packages legitimately yield no types (e.g. kotlin.comparisons), so a
+    # non-matching grep must not kill the script under pipefail.
     curl -sL "$url" 2>/dev/null | \
         grep -oE 'anchor-label="[^"]+".* data-filterable-set="[^"]*"' | \
         grep '%2FClasslikes%2F' | \
         sed -E 's/anchor-label="([^"]+)".*/\1/' | \
         grep -E '^[A-Z]' | \
-        LC_ALL=C sort -u > "$output_file"
+        LC_ALL=C sort -u > "$output_file" || true
 }
 
 # Function to extract types from Kotlin API documentation across multiple versions
@@ -149,12 +162,14 @@ fetch_java_types_version() {
     # JDK 7-10: <td class="colFirst"><code>...<a ... title="class in java.lang">TypeName</a>
     # Both formats work with the same extraction pattern
     # We filter for types in the java.lang package and exclude nested classes (with dot notation)
+    # A fetch/parse miss produces an empty per-version file instead of killing
+    # the script under pipefail; the merged result is what matters.
     curl -s "$url" 2>/dev/null | \
         grep -oE 'title="[^"]*in java\.lang">[^<]+' | \
         sed 's/.*>//' | \
         grep -vE '\.' | \
         grep -E '^[A-Z]' | \
-        LC_ALL=C sort -u > "$output_file"
+        LC_ALL=C sort -u > "$output_file" || true
 }
 
 # Function to extract types from Java API documentation across multiple versions

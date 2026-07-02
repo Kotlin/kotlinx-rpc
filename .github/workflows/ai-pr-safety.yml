@@ -34,6 +34,7 @@ jobs:
       - name: Determine PR number and head SHA
         id: get-pr
         run: |
+          set -euo pipefail
           if [ "${{ github.event_name }}" = "issue_comment" ]; then
             PR_NUMBER="${{ github.event.issue.number }}"
             # HEAD SHA is not in the issue_comment payload — fetch from PR API
@@ -49,6 +50,7 @@ jobs:
       - name: Verify PR is bot-authored
         id: verify-bot
         run: |
+          set -euo pipefail
           PR_AUTHOR=$(gh api "repos/${{ github.repository }}/pulls/${{ steps.get-pr.outputs.pr_number }}" \
             --jq '.user.login')
 
@@ -65,6 +67,7 @@ jobs:
         id: fetch-comments
         if: steps.verify-bot.outputs.skip == 'false'
         run: |
+          set -euo pipefail
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"
 
@@ -93,6 +96,7 @@ jobs:
         id: evaluate
         if: steps.verify-bot.outputs.skip == 'false'
         run: |
+          set -euo pipefail
           ALL_COMMENTS='${{ steps.fetch-comments.outputs.all_comments }}'
 
           EXCLUDED_LOGINS='["ai-agent-kxrpc[bot]", "github-actions[bot]"]'
@@ -134,6 +138,7 @@ jobs:
           IS_SAFE: ${{ steps.evaluate.outputs.is_safe }}
           UNSAFE_SUMMARY: ${{ steps.evaluate.outputs.unsafe_summary }}
         run: |
+          set -euo pipefail
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"
 
@@ -175,6 +180,7 @@ jobs:
       - name: Set commit status
         if: steps.verify-bot.outputs.skip == 'false'
         run: |
+          set -euo pipefail
           REPO="${{ github.repository }}"
           PR_SHA="${{ steps.get-pr.outputs.pr_sha }}"
           PR_NUMBER="${{ steps.get-pr.outputs.pr_number }}"

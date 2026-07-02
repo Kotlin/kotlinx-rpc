@@ -21,6 +21,7 @@ jobs:
         run: ./gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain --info --stacktrace
       - name: Check if Well-Known Types are up-to-date
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep protobuf/protobuf-wkt/)" ]]; then
             echo "Well-Known Types are not up-to-date. Please run './gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain' and commit changes"
             git status --porcelain

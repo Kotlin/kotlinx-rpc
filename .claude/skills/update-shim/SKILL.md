@@ -67,10 +67,17 @@ native-deps/shims/
   tests/                         # Gradle TestKit fixture tests
     src/test/kotlin/...
 
-  build_target.sh                # Runs Bazel for one target, copies static library out
   settings.gradle.kts
   gradle.properties
+
+native-deps/scripts/
+  build_target.sh                # Runs Bazel for one target, copies static library out
 ```
+
+The build helper `build_target.sh` lives in the sibling `native-deps/scripts/`
+directory (alongside the other native-deps utility scripts). It is still invoked
+from each shim module directory (which owns the Bazel workspace) by the
+`registerNativeShimBazelBuildTask` Gradle helper.
 
 The `native-deps/grpc-c-prebuilt/` sibling directory publishes raw `.a` static
 archives and headers consumed by the gRPC shim. The protobuf shim builds its own

@@ -21,6 +21,7 @@ jobs:
         run: ./gradlew updateProperties --info --stacktrace
       - name: Verify Properties
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep '\.properties')" ]]; then
             echo "Properties file is not up-to-date. Please run `./gradlew updateProperties` and commit changes"
             git status --porcelain

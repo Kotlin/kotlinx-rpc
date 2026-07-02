@@ -106,7 +106,7 @@ fun Project.configureNativeShimBuild(
 /**
  * Registers the standard Bazel-backed static library build task used by shim modules.
  *
- * The actual script lives once under native-deps/shims and expects to be run from
+ * The actual script lives once under native-deps/scripts and expects to be run from
  * the module directory that owns the Bazel workspace. This helper wires the common
  * Gradle-side dependencies and command-line arguments for one target.
  */
@@ -122,7 +122,7 @@ fun Project.registerNativeShimBazelBuildTask(
     workingDir = layout.projectDirectory.asFile
     outputs.file(outputFile)
     commandLine(
-        layout.projectDirectory.dir("..").file("build_target.sh").asFile.absolutePath,
+        layout.projectDirectory.dir("../../scripts").file("build_target.sh").asFile.absolutePath,
         label,
         outputFile.get().asFile.absolutePath,
         target.bazelName,
