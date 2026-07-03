@@ -21,6 +21,7 @@ jobs:
         run: ./gradlew tests:protobuf-conformance:bufGenerateCommonMain --info --stacktrace
       - name: Check if protobuf-conformance test is up-to-date
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep tests/protobuf-conformance/)" ]]; then
             echo "Protobuf conformance test is not up to date. Please run './gradlew tests:protobuf-conformance:bufGenerateCommonMain' and commit changes"
             git status --porcelain

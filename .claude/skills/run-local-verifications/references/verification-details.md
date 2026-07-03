@@ -69,7 +69,7 @@ kotlinx-rpc modules, verifying they declare proper JPMS exports. Uses Java 17 to
 
 ## 4. Artifact Validation
 
-**Command**: Shell script `./validatePublishedArtifacts.sh -s`
+**Command**: Shell script `./scripts/validate_published_artifacts.sh -s`
 
 **When**: Adding/removing published modules, changing which KMP targets a module supports,
 or modifying publication configuration.
@@ -78,7 +78,7 @@ or modifying publication configuration.
 stored in `gradle/artifacts/` dump files.
 
 **If it fails**:
-- If you intentionally changed artifacts, run `./validatePublishedArtifacts.sh --dump -s` and commit
+- If you intentionally changed artifacts, run `./scripts/validate_published_artifacts.sh --dump -s` and commit
 - Review the diff in `gradle/artifacts/` to confirm only expected changes
 
 ## 5. Properties Sync
@@ -114,11 +114,11 @@ Diagnostic tests verify the compiler plugin reports errors/warnings correctly.
 
 **Test data**: `tests/compiler-plugin-tests/src/testData/box/` and `.../diagnostics/`
 
-**Updating golden files**: Use the `updateTestData.sh` script:
+**Updating golden files**: Use the `scripts/update_test_data.sh` script:
 ```bash
-./updateTestData.sh BoxTest           # update all box test golden files
-./updateTestData.sh DiagnosticTest    # update all diagnostic test golden files
-./updateTestData.sh BoxTest testName  # update a single test's golden file
+./scripts/update_test_data.sh BoxTest           # update all box test golden files
+./scripts/update_test_data.sh DiagnosticTest    # update all diagnostic test golden files
+./scripts/update_test_data.sh BoxTest testName  # update a single test's golden file
 ```
 
 The script passes `-Pkotlin.test.update.test.data=true` to Gradle. The build script at
@@ -142,7 +142,7 @@ Several checks follow the same pattern: run a generation task, then verify no fi
 changed in git. These catch cases where generated files are stale.
 
 **Pattern for all of these**:
-1. Run the generation task via `running_gradle_builds` (or shell for `./update_implicit_types.sh`)
+1. Run the generation task via `running_gradle_builds` (or shell for `./scripts/update_implicit_types.sh`)
 2. Check `git status` for changes in the relevant directory
 3. If files changed, commit the regenerated files with your PR
 
@@ -180,7 +180,7 @@ produces output consumed by conformance tests, unit tests, WKT, and implicit imp
    `nativeConformance()` (builds and executes the host native binary). No separate
    native test task is needed.
 4. Task `:protobuf:protobuf-wkt:bufGenerateCommonMain` (use `running_gradle_builds`) then check git status
-5. Shell: `./update_implicit_types.sh` then check git status
+5. Shell: `./scripts/update_implicit_types.sh` then check git status
 
 ## 11. Yarn Lock Updates
 

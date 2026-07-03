@@ -157,7 +157,7 @@ workflow.
 
 After fixing CSM templates, golden file mismatches may occur in
 `:tests:compiler-plugin-tests`. Read `references/golden-test-data.md` for the
-`updateTestData.sh` usage and important caveats about passing properties to the test JVM.
+`scripts/update_test_data.sh` usage and important caveats about passing properties to the test JVM.
 
 ## Debugging Tips
 

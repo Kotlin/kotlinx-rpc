@@ -97,6 +97,7 @@ jobs:
 
       - name: Download Dokka
         run: |
+          set -euo pipefail
           if [ -z "${{ inputs.build_id }}" ]; then
             echo "'build_id' is not set"
             exit 1
@@ -118,7 +119,7 @@ jobs:
         run: unzip -O UTF-8 -qq '${{ env.DOKKA_ARTIFACT }}' -d ${{ env.ASSEMBLE_DIR }}/api
 
       - name: Update sitemap.xml
-        run: chmod +x updateSitemap.sh && ./updateSitemap.sh ${{ env.ASSEMBLE_DIR }}/sitemap.xml ${{ env.ASSEMBLE_DIR }}/api
+        run: chmod +x scripts/update_sitemap.sh && ./scripts/update_sitemap.sh ${{ env.ASSEMBLE_DIR }}/sitemap.xml ${{ env.ASSEMBLE_DIR }}/api
 
       - name: Assemble file
         run: cd ${{ env.ASSEMBLE_DIR }} && zip -r ../${{ env.ASSEMBLE_ARTIFACT }} .
@@ -172,6 +173,7 @@ jobs:
           name: kotlinx-rpc
       - name: Unzip artifact
         run: |
+          set -euo pipefail
           unzip -O UTF-8 -qq '${{ env.ALGOLIA_ARTIFACT }}' -d algolia-indexes
           env algolia-key='${{env.ALGOLIA_KEY}}' java -jar /opt/builder/help-publication-agent.jar \
           update-index \

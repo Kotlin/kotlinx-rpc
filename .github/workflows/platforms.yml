@@ -21,6 +21,7 @@ jobs:
         run: ./gradlew dumpPlatformTable --no-configuration-cache --info --stacktrace
       - name: Verify Platforms Table
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep docs/pages/kotlinx-rpc/topics/platforms.topic)" ]]; then
             echo "Platform table is not up-to-date. Please run `./gradlew dumpPlatformTable --no-configuration-cache` and commit changes"
             git status --porcelain

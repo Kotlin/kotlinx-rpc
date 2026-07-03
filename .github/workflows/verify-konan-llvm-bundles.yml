@@ -23,10 +23,12 @@ jobs:
 
       - name: Generate Konan LLVM bundle mapping
         run: |
+          set -euo pipefail
           cd native-deps/bazel-support
           ./toolchain/precompute_konan_llvm_bundles.py
       - name: Check if Konan LLVM bundle mapping is up-to-date
         run: |
+          set -euo pipefail
           if [[ -n "$(git status --porcelain | grep native-deps/bazel-support/toolchain/konan_llvm_bundles.json)" ]]; then
             echo "Konan LLVM bundle mapping is not up to date. Please run './native-deps/bazel-support/toolchain/precompute_konan_llvm_bundles.py' and commit changes"
             git status --porcelain

@@ -23,6 +23,7 @@ jobs:
       - name: Skip if PR is not bot-authored
         id: verify-bot
         run: |
+          set -euo pipefail
           PR_AUTHOR="${{ github.event.pull_request.user.login }}"
           if [ "$PR_AUTHOR" != "$BOT_LOGIN" ]; then
             echo "PR author is '$PR_AUTHOR', not '$BOT_LOGIN'. Skipping."
@@ -37,6 +38,7 @@ jobs:
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
+          set -euo pipefail
           echo "Title: $PR_TITLE"
           echo "Pattern: $TITLE_PATTERN"
 
@@ -52,6 +54,7 @@ jobs:
 
       - name: Set commit status
         run: |
+          set -euo pipefail
           REPO="${{ github.repository }}"
           PR_SHA="${{ github.event.pull_request.head.sha }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"

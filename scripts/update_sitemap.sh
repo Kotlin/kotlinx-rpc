@@ -4,8 +4,22 @@
 # Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
 #
 
+# update_sitemap.sh
+#
+# Appends a <url> entry for every generated API-docs HTML page to a sitemap.xml file,
+# used when publishing documentation to https://kotlin.github.io/kotlinx-rpc/.
+#
+# Usage:
+#   ./scripts/update_sitemap.sh <sitemap_file> <api_docs_dir>
+# Example:
+#   ./scripts/update_sitemap.sh build/dokka/sitemap.xml build/dokka/api
+#
+# Run from the repository root.
+
+set -euo pipefail
+
 # Check if the required arguments are provided
-if [ -z "$1" ] || [ -z "$2" ]; then
+if [ -z "${1:-}" ] || [ -z "${2:-}" ]; then
   echo "Usage: $0 <sitemap_file> <api_docs_dir>"
   echo "Example: $0 sitemap.xml docs/pages/api"
   exit 1

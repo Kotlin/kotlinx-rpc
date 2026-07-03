@@ -8,7 +8,7 @@
 # memory map is interleaved into stderr on crash.
 #
 # Usage:
-#   scripts/stress-native-grpc.sh [TARGET] [RUNS]
+#   scripts/stress_native_grpc.sh [TARGET] [RUNS]
 #     TARGET — linuxX64 | macosArm64 (default: auto-detect from host)
 #     RUNS   — number of iterations (default: 400)
 #
@@ -31,7 +31,7 @@
 # Exit code: 0 if zero crashes, 1 otherwise. Test failures (assertion mismatches)
 # are NOT counted as crashes — only process-exit signatures are.
 
-set -u
+set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 
@@ -230,8 +230,8 @@ for i in $(seq 1 "$RUNS"); do
     label="$(printf '%03d/%03d' "$i" "$RUNS")"
     tc_msg "##teamcity[progressMessage 'Stress run $label']"
 
-    run_kexe "$OUT"
-    rc=$?
+    rc=0
+    run_kexe "$OUT" || rc=$?
 
     if [ $rc -eq 0 ]; then
         echo "[$ts] run $label: ok"
@@ -239,7 +239,7 @@ for i in $(seq 1 "$RUNS"); do
     elif grep -qE "SIGSEGV|SIGBUS|SIGABRT|SIGKILL|signal 11|signal 6|signal 9|Check failed:|core dumped|Aborted|Segmentation fault|pure virtual method called|terminate called|crashbt: signal" "$OUT"; then
         echo "[$ts] run $label: CRASH (rc=$rc)"
         crashes=$((crashes + 1))
-        sig="$(grep -oE 'pure virtual method called|Segmentation fault|Aborted|SIGSEGV|SIGBUS|SIGABRT|Check failed:[^\\n]*|crashbt: signal [0-9]+' "$OUT" | head -1)"
+        sig="$(grep -oE 'pure virtual method called|Segmentation fault|Aborted|SIGSEGV|SIGBUS|SIGABRT|Check failed:[^\\n]*|crashbt: signal [0-9]+' "$OUT" | head -1 || true)"
         crash_signatures+=("run $i: $sig")
     elif grep -qE "FAILED|Assertion|AssertionError" "$OUT"; then
         echo "[$ts] run $label: test fail (rc=$rc)"
@@ -254,7 +254,7 @@ done
 # ---- summary ---------------------------------------------------------------
 
 total=$((successes + failures + crashes))
-crash_frac=$(awk -v c="$crashes" -v t="$total" 'BEGIN { printf "%.4f", c / t }')
+crash_frac=$(awk -v c="$crashes" -v t="$total" 'BEGIN { printf "%.4f", (t ? c / t : 0) }')
 
 echo
 echo "=== Summary ==="

@@ -15,6 +15,7 @@ jobs:
       - name: Resolve github-issue tag ID
         id: resolve-tag
         run: |
+          set -euo pipefail
           TAG_ID=$(curl -sf \
             -H "Authorization: Bearer $YOUTRACK_TOKEN" \
             "$YOUTRACK_URL/api/tags?fields=id,name&query=github-issue" \
@@ -35,10 +36,10 @@ jobs:
           echo "Resolved tag ID: $TAG_ID"
 
       - name: Fetch and export all issues
-        shell: bash {0}
         env:
           TAG_ID: ${{ steps.resolve-tag.outputs.tag_id }}
         run: |
+          set -euo pipefail
           PAGE=1
           EXPORTED=0
           SKIPPED=0
@@ -48,10 +49,8 @@ jobs:
 
           while true; do
             echo "--- Fetching page $PAGE ---"
-            ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=open&per_page=100&page=$PAGE&sort=created&direction=asc" \
-              --jq '[.[] | select(.pull_request == null)]')
-
-            if [ $? -ne 0 ]; then
+            if ! ISSUES=$(gh api "repos/${{ github.repository }}/issues?state=open&per_page=100&page=$PAGE&sort=created&direction=asc" \
+              --jq '[.[] | select(.pull_request == null)]'); then
               echo "::error::Failed to fetch issues page $PAGE"
               exit 1
             fi
@@ -93,10 +92,11 @@ jobs:
 
               # Check if already exported by searching YouTrack
               echo "  -> Checking for duplicates in YouTrack..."
+              # `|| true`: a failed duplicate check falls through to the create path.
               SEARCH_RESULT=$(curl -s \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -G --data-urlencode "query=project: KRPC tag: github-issue summary: [GitHub] $ISSUE_TITLE" \
-                "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1")
+                "$YOUTRACK_URL/api/issues?fields=idReadable&\$top=1" || true)
 
               EXISTING=$(echo "$SEARCH_RESULT" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
               if [ "$EXISTING" -gt 0 ]; then
@@ -132,14 +132,16 @@ jobs:
                 }')
 
               echo "  -> Creating YouTrack issue..."
+              # `|| true`: a transport failure is counted as FAILED below, not fatal.
               RESPONSE=$(curl -s -w "\n%{http_code}" \
                 -X POST \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -H "Content-Type: application/json" \
                 -d "$PAYLOAD" \
-                "$YOUTRACK_URL/api/issues?fields=idReadable")
+                "$YOUTRACK_URL/api/issues?fields=idReadable" || true)
 
               HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+              HTTP_CODE=${HTTP_CODE:-000}
               BODY=$(echo "$RESPONSE" | sed '$d')
 
               if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
@@ -153,14 +155,16 @@ jobs:
 
               # Tag issue
               echo "  -> Tagging $YT_ID with 'github-issue' (tag ID: $TAG_ID)..."
+              # `|| true`: tagging failure only produces the WARNING below.
               TAG_RESPONSE=$(curl -s -w "\n%{http_code}" \
                 -X POST \
                 -H "Authorization: Bearer $YOUTRACK_TOKEN" \
                 -H "Content-Type: application/json" \
                 -d "{\"id\": \"$TAG_ID\"}" \
-                "$YOUTRACK_URL/api/issues/$YT_ID/tags")
+                "$YOUTRACK_URL/api/issues/$YT_ID/tags" || true)
 
               TAG_HTTP=$(echo "$TAG_RESPONSE" | tail -1)
+              TAG_HTTP=${TAG_HTTP:-000}
               TAG_BODY=$(echo "$TAG_RESPONSE" | sed '$d')
 
               if [ "$TAG_HTTP" -lt 200 ] || [ "$TAG_HTTP" -ge 300 ]; then
