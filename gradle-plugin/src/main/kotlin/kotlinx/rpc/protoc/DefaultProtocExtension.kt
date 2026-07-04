@@ -181,10 +181,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("generateFileLevelComments", buf.generate.comments.includeFileLevelComments)
         options.put("generateOptionalFieldOrNullGetters", buf.generate.optionalFieldOrNullGetters)
         options.put("indentSize", buf.generate.indentSize)
-
-        if (name == GRPC_KOTLIN_MULTIPLATFORM) {
-            options.put("camelCaseGrpcMethods", buf.generate.camelCaseGrpcMethods)
-        }
+        options.put("camelCaseNames", buf.generate.camelCaseNames)
     }
 
     private fun configureTasks(protoSourceSet: DefaultProtoSourceSet) {

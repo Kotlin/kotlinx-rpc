@@ -29,7 +29,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -57,7 +57,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -80,7 +80,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 rpc("GetUser", input = "Request", output = "Response")
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
         assertContains(
             file.trim(),
             """
@@ -100,8 +100,8 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             service("ExampleService") {
                 rpc("GetUser", input = "Request", output = "Response")
             }
-        }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = true)
+        }.toGrpcModel(camelCaseNames = true)
+        val file = generateGrpcFile(model = model, camelCaseNames = true)
 
         assertContains(
             file.trim(),
@@ -123,8 +123,8 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             service("ExampleService") {
                 rpc("Class", input = "Request", output = "Response")
             }
-        }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = true)
+        }.toGrpcModel(camelCaseNames = true)
+        val file = generateGrpcFile(model = model, camelCaseNames = true)
 
         assertContains(
             file.trim(),
@@ -152,7 +152,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -182,7 +182,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -209,7 +209,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -236,7 +236,7 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                 )
             }
         }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = false)
+        val file = generateGrpcFile(model = model, camelCaseNames = false)
 
         assertContains(
             file.trim(),
@@ -262,8 +262,8 @@ class ModelToGrpcKotlinCommonGeneratorTest {
                     output = "Response",
                 )
             }
-        }.toGrpcModel()
-        val file = generateGrpcFile(model = model, camelCaseGrpcMethods = true)
+        }.toGrpcModel(camelCaseNames = true)
+        val file = generateGrpcFile(model = model, camelCaseNames = true)
 
         assertContains(
             file.trim(),
@@ -278,10 +278,10 @@ class ModelToGrpcKotlinCommonGeneratorTest {
 
     private fun generateGrpcFile(
         model: Model,
-        camelCaseGrpcMethods: Boolean,
+        camelCaseNames: Boolean,
     ): String {
         return ModelToGrpcKotlinCommonGenerator(
-            config = grpcGeneratorConfig(camelCaseGrpcMethods),
+            config = grpcGeneratorConfig(camelCaseNames),
             generatedMetadata = GeneratedMetadata(),
             model = model,
         ).generateKotlinFiles().single().build()

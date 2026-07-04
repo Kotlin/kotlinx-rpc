@@ -364,6 +364,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
@@ -374,7 +375,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
-      - camelCaseGrpcMethods=true
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
@@ -446,6 +447,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
@@ -456,7 +458,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
-      - camelCaseGrpcMethods=true
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [path, to, protoc-gen-myplugin.exe]
@@ -501,6 +503,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=jvm
   - local: [protoc-gen-grpc-kotlin-multiplatform]
@@ -511,7 +514,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
-      - camelCaseGrpcMethods=true
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=jvm
   - remote: my.remote.plugin
@@ -672,6 +675,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
@@ -698,7 +702,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
-      - camelCaseGrpcMethods=true
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
@@ -708,7 +712,7 @@ inputs:
     }
 
     @TestFactory
-    fun `Camel Case Grpc Methods Option`() = runGrpcTest {
+    fun `Turned Off Camel Case Names Option`() = runGrpcTest {
         runGradle(generateBufGenYamlCommonMain)
 
         assertBufGenYaml(
@@ -723,7 +727,9 @@ plugins:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=false
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
@@ -732,8 +738,9 @@ plugins:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
-      - camelCaseGrpcMethods=false
+      - camelCaseNames=false
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
 inputs:
