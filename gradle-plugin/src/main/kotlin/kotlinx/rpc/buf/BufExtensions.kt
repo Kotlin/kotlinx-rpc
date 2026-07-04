@@ -204,11 +204,11 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
     public val indentSize: Property<Int> = project.objects.property<Int>().convention(4)
 
     /**
-     * Whether to generate Kotlin gRPC method names in lower camel case.
+     * Whether to generate Kotlin names in camel case.
      *
      * Default value: `true`.
      */
-    public val camelCaseGrpcMethods: Property<Boolean> =
+    public val camelCaseNames: Property<Boolean> =
         project.objects.property<Boolean>().convention(true)
 
     /**

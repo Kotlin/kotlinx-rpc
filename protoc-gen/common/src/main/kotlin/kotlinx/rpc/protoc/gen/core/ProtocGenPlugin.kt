@@ -37,7 +37,7 @@ class Config(
     val indentSize: Int,
     val platform: Platform,
     val protoNamesOutput: String?,
-    val camelCaseGrpcMethods: Boolean,
+    val camelCaseNames: Boolean,
 )
 
 abstract class ProtocGenPlugin {
@@ -50,7 +50,7 @@ abstract class ProtocGenPlugin {
         private const val GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS = "generateOptionalFieldOrNullGetters"
         private const val INDENT_SIZE_OPTION = "indentSize"
         private const val PLATFORM_OPTION = "platform"
-        private const val CAMEL_CASE_GRPC_METHODS = "camelCaseGrpcMethods"
+        private const val CAMEL_CASE_NAMES = "camelCaseNames"
     }
 
     private var debugOutput: String? = null
@@ -98,8 +98,8 @@ abstract class ProtocGenPlugin {
 
         val protoNamesOutput = parameters[PROTO_NAMES_OUTPUT_OPTION]
 
-        val camelCaseGrpcMethods =
-            parameters[CAMEL_CASE_GRPC_METHODS]?.toBooleanStrictOrNull() ?: true
+        val camelCaseNames =
+            parameters[CAMEL_CASE_NAMES]?.toBooleanStrictOrNull() ?: true
 
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
@@ -109,7 +109,7 @@ abstract class ProtocGenPlugin {
             indentSize = indentSize,
             platform = Platform.fromString(platform),
             protoNamesOutput = protoNamesOutput,
-            camelCaseGrpcMethods = camelCaseGrpcMethods,
+            camelCaseNames = camelCaseNames,
         )
 
         val generatedMetadata = GeneratedMetadata()

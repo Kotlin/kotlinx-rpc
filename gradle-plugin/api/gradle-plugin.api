@@ -67,7 +67,7 @@ public final class kotlinx/rpc/buf/BufExtension$LogFormat : java/lang/Enum {
 
 public class kotlinx/rpc/buf/BufGenerateExtension {
 	public final fun comments (Lorg/gradle/api/Action;)V
-	public final fun getCamelCaseGrpcMethods ()Lorg/gradle/api/provider/Property;
+	public final fun getCamelCaseNames ()Lorg/gradle/api/provider/Property;
 	public final fun getComments ()Lkotlinx/rpc/buf/BufCommentsExtension;
 	public final fun getErrorFormat ()Lorg/gradle/api/provider/Property;
 	public final fun getIncludeImports ()Lorg/gradle/api/provider/Property;

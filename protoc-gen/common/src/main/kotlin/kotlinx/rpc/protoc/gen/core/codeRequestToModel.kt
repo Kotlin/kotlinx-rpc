@@ -26,6 +26,7 @@ import kotlin.contracts.contract
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
 private val enumPrefixCache = mutableMapOf<Descriptors.EnumDescriptor, String?>()
+private var camelCaseNames: Boolean = true
 
 /**
  * Converts a [CodeGeneratorRequest] into the protoc plugin [Model] of the protobuf.
@@ -34,6 +35,11 @@ private val enumPrefixCache = mutableMapOf<Descriptors.EnumDescriptor, String?>(
  *         the converted protobuf files.
  */
 fun CodeGeneratorRequest.toModel(config: Config): Model {
+    camelCaseNames = config.camelCaseNames
+
+    nameCache.clear()
+    modelCache.clear()
+
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
@@ -223,25 +229,25 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         return nameCache[this]!!
     }
 
-    val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
-    val nameLower = name.simpleProtoNameToKotlin()
+    val preserveName = KotlinKeywords.escapeIfKeyword(name)
+    val upperName = if (camelCaseNames) name.simpleProtoNameToKotlin(CamelCaseFormat.UPPER_CAMEL) else preserveName
+    val lowerName = if (camelCaseNames) name.simpleProtoNameToKotlin(CamelCaseFormat.LOWER_CAMEL) else preserveName
 
     val fqName = when (this) {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
-        is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.Descriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.FieldDescriptor -> {
-            val usedName = if (realContainingOneof != null) nameCapital else nameLower
-            FqName.Declaration(usedName, containingType?.fqName() ?: file.fqName())
+            FqName.Declaration(if (realContainingOneof != null) upperName else lowerName, containingType?.fqName() ?: file.fqName())
         }
 
-        is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
-        is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.OneofDescriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
+        is Descriptors.EnumDescriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumValueDescriptor -> {
             val strippedName = type.enumValuePrefix()?.let { prefix -> name.removePrefix(prefix) } ?: name
             FqName.Declaration(KotlinKeywords.escapeIfKeyword(strippedName), type.fqName())
         }
-        is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file.fqName())
-        is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
+        is Descriptors.ServiceDescriptor -> FqName.Declaration(upperName, file.fqName())
+        is Descriptors.MethodDescriptor -> FqName.Declaration(lowerName, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
 
@@ -316,11 +322,14 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         .map { it.toModel(comments, nameTable) }
 
     regularFields = regularFields + oneOfs.map {
-        val escapedName = KotlinKeywords.escapeIfKeyword(it.name.simpleName.decapitalize())
-        val rawName = it.dec.name.simpleProtoNameToKotlinRaw()
+        // oneofs simple name is generated as upper camel case
+        // TODO: すでにescapeされてる場合はちゃんと動く?
+        val lowerCamelCasedName = it.name.simpleName.simpleProtoNameToKotlin(CamelCaseFormat.LOWER_CAMEL)
+        val lowerCamelCasedRawName = it.dec.name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL)
+
         FieldDeclaration(
-            name = escapedName,
-            rawName = rawName,
+            name = if (camelCaseNames) lowerCamelCasedName else it.name.simpleName,
+            rawName = if (camelCaseNames) lowerCamelCasedRawName else it.dec.name,
             type = FieldType.OneOf(it),
             doc = it.doc,
             dec = it.variants.first().dec,
@@ -396,10 +405,12 @@ private fun Descriptors.FieldDescriptor.toModel(
     presenceIdx: Int? = null,
 ): FieldDeclaration =
     cached {
-        val rawName = if (realContainingOneof != null) {
-            name.simpleProtoNameToKotlinRaw(firstLetterUpper = true)
+        val rawName = if (camelCaseNames) {
+            name.simpleProtoNameToKotlinRaw(
+                if (realContainingOneof != null) CamelCaseFormat.UPPER_CAMEL else CamelCaseFormat.LOWER_CAMEL
+            )
         } else {
-            name.simpleProtoNameToKotlinRaw()
+            name
         }
 
         FieldDeclaration(
@@ -502,7 +513,7 @@ private fun Descriptors.ServiceDescriptor.toModel(comments: Comments, nameTable:
 private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: FqNameTable): MethodDeclaration =
     cached {
         MethodDeclaration(
-            name = name.simpleProtoNameToKotlin(),
+            name = fqName().simpleName,
             inputType = lazy { inputType.toModel(null, nameTable) },
             outputType = lazy { outputType.toModel(null, nameTable) },
             dec = this,
@@ -571,7 +582,7 @@ private fun Descriptors.FileDescriptor.kotlinPackage(): String {
 }
 
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {
-    return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
+    return name.removeSuffix(".proto").fullProtoNameToKotlin(CamelCaseFormat.UPPER_CAMEL)
 }
 
 private fun Descriptors.FileDescriptor.internalExtensionDescriptorObjectName(): FqName.Declaration {
@@ -594,34 +605,35 @@ private fun Descriptors.FieldDescriptor.extensionDescriptorName(): FqName.Declar
     return FqName.Declaration(fqName().simpleName, parent)
 }
 
-private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
+private enum class CamelCaseFormat {
+    UPPER_CAMEL,
+    LOWER_CAMEL,
+}
+
+private fun String.fullProtoNameToKotlin(camelCaseFormat: CamelCaseFormat): String {
     val lastDelimiterIndex = indexOfLast { it == '.' || it == '/' }
-    return if (lastDelimiterIndex != -1) {
-        val name = substring(lastDelimiterIndex + 1)
-        name.simpleProtoNameToKotlin(firstLetterUpper = true)
-    } else {
-        simpleProtoNameToKotlin(firstLetterUpper)
-    }
+    val protoName = if (lastDelimiterIndex != -1) substring(lastDelimiterIndex + 1) else this
+    return protoName.simpleProtoNameToKotlin(camelCaseFormat)
 }
 
 private val snakeRegExp = "(_[a-z]|-[a-z])".toRegex()
 
-private fun String.snakeToCamelCase(): String {
-    return replace(snakeRegExp) { it.value.last().uppercase() }
-}
-
-private fun String.simpleProtoNameToKotlinRaw(firstLetterUpper: Boolean = false): String {
-    return snakeToCamelCase().run {
-        if (firstLetterUpper) {
-            replaceFirstChar { it.uppercase() }
-        } else {
-            this
+private fun String.snakeToCamelCase(camelCaseFormat: CamelCaseFormat): String {
+    val camelCased = replace(snakeRegExp) { match -> match.value.last().uppercase() }
+    return camelCased.replaceFirstChar { firstChar ->
+        when (camelCaseFormat) {
+            CamelCaseFormat.UPPER_CAMEL -> firstChar.uppercase()
+            CamelCaseFormat.LOWER_CAMEL -> firstChar.lowercase()
         }
     }
 }
 
-private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
-    return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(firstLetterUpper))
+private fun String.simpleProtoNameToKotlinRaw(camelCaseFormat: CamelCaseFormat): String {
+    return snakeToCamelCase(camelCaseFormat)
+}
+
+private fun String.simpleProtoNameToKotlin(camelCaseFormat: CamelCaseFormat): String {
+    return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(camelCaseFormat))
 }
 
 private val camelToSnakeRegex1 = "([a-z0-9])([A-Z])".toRegex()

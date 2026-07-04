@@ -13,7 +13,7 @@ rpc {
     protoc {
         buf {
             generate {
-                camelCaseGrpcMethods = false
+                camelCaseNames = false
             }
         }
     }

@@ -516,7 +516,7 @@ class CodeGeneratorTest {
                 indentSize = 4,
                 platform = platform,
                 protoNamesOutput = null,
-                camelCaseGrpcMethods = true,
+                camelCaseNames = true,
             ),
             nameTable = nameTable.scoped(packageFqName, mutableSetOf()),
             indent = "",

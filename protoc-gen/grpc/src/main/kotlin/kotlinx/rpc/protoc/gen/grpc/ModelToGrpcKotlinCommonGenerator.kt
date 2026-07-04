@@ -10,7 +10,6 @@ import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
-import kotlinx.rpc.protoc.gen.core.KotlinKeywords
 import kotlinx.rpc.protoc.gen.core.NameConflictCollector
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
@@ -55,11 +54,7 @@ class ModelToGrpcKotlinCommonGenerator(
                 val inputType = method.inputType
                 val outputType = method.outputType
 
-                val methodName = if (config.camelCaseGrpcMethods) {
-                    KotlinKeywords.escapeIfKeyword(name = method.name.replaceFirstChar { it.lowercase() })
-                } else {
-                    method.name
-                }
+                val methodName = method.name
 
                 val annotationArgs = buildList {
                     if (methodName != method.dec.name) add("""name = "${method.dec.name}"""")
