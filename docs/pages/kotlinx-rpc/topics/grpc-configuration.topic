@@ -455,7 +455,7 @@
                             errorFormat = BufGenerateExtension.ErrorFormat.Json
                             indentSize = 4
                             optionalFieldOrNullGetters = true
-                            camelCaseGrpcMethods = true
+                            camelCaseNames = true
 
                             comments {
                                 copyComments = true
@@ -510,8 +510,13 @@
                 The main generated property keeps returning the protobuf default value when the field is absent,
                 while the generated <code>OrNull</code> accessor returns <code>null</code> when the field is not present.
                 Default value: <code>false</code>. This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
-            <def title="generate.camelCaseGrpcMethods" id="grpc-buf-generate-camel-case-grpc-methods">
-                Controls whether generated Kotlin gRPC method names are converted to lower camel case.
+            </def>
+            <def title="generate.camelCaseNames" id="grpc-buf-generate-camel-case-names">
+                Controls whether generated Kotlin declaration and member names are converted to camel case.
+                When enabled, the generated Kotlin code complies with
+                <a href="https://kotlinlang.org/docs/coding-conventions.html#naming-rules">Kotlin naming conventions</a>
+                When disabled, proto names are preserved where Kotlin identifiers allow it.
+                Default value: <code>true</code>.
                 This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
             </def>
             <def title="generate.comments.copyComments" id="grpc-buf-generate-copy-comments">
