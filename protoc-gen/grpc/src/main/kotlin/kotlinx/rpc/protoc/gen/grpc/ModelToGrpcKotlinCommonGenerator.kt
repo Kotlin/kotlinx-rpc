@@ -54,10 +54,8 @@ class ModelToGrpcKotlinCommonGenerator(
                 val inputType = method.inputType
                 val outputType = method.outputType
 
-                val methodName = method.name
-
                 val annotationArgs = buildList {
-                    if (methodName != method.dec.name) add("""name = "${method.dec.name}"""")
+                    if (method.name != method.dec.name) add("""name = "${method.dec.name}"""")
                     when (method.dec.options.idempotencyLevel) {
                         null, DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENCY_UNKNOWN -> {}
                         DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENT -> {
@@ -80,7 +78,7 @@ class ModelToGrpcKotlinCommonGenerator(
                     .wrapIn { "message: $it" }
 
                 function(
-                    name = methodName,
+                    name = method.name,
                     comment = method.doc,
                     modifiers = if (method.dec.isServerStreaming) "" else "suspend",
                     args = arg,

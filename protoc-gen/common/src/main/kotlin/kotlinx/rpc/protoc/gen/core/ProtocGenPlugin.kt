@@ -98,8 +98,7 @@ abstract class ProtocGenPlugin {
 
         val protoNamesOutput = parameters[PROTO_NAMES_OUTPUT_OPTION]
 
-        val camelCaseNames =
-            parameters[CAMEL_CASE_NAMES]?.toBooleanStrictOrNull() ?: true
+        val camelCaseNames = parameters[CAMEL_CASE_NAMES]?.toBooleanStrictOrNull() ?: true
 
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
