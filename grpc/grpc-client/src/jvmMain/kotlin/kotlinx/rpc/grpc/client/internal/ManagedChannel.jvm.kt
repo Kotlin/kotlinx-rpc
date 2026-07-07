@@ -91,5 +91,6 @@ internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfi
     }
 
     config.overrideAuthority?.let { overrideAuthority(it) }
+    config.userAgent?.let { userAgent(it) }
     return this
 }

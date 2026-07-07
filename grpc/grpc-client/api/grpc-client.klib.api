@@ -89,6 +89,9 @@ final class kotlinx.rpc.grpc.client/GrpcClientConfiguration { // kotlinx.rpc.grp
     final var overrideAuthority // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority|{}overrideAuthority[0]
         final fun <get-overrideAuthority>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<get-overrideAuthority>|<get-overrideAuthority>(){}[0]
         final fun <set-overrideAuthority>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.overrideAuthority.<set-overrideAuthority>|<set-overrideAuthority>(kotlin.String?){}[0]
+    final var userAgent // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent|{}userAgent[0]
+        final fun <get-userAgent>(): kotlin/String? // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent.<get-userAgent>|<get-userAgent>(){}[0]
+        final fun <set-userAgent>(kotlin/String?) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.userAgent.<set-userAgent>|<set-userAgent>(kotlin.String?){}[0]
 
     final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.client/GrpcClientInterceptor>...) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.client.GrpcClientInterceptor>...){}[0]
     final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientConfiguration.KeepAlive,kotlin.Unit>){}[0]

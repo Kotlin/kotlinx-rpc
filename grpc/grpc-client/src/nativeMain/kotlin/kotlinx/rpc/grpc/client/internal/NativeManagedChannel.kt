@@ -65,6 +65,7 @@ internal class NativeManagedChannel(
     target: String,
     val overrideAuthority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
+    val userAgent: String?,
     // this is not a composite channel credentials
     clientCredentials: GrpcClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
@@ -91,6 +92,14 @@ internal class NativeManagedChannel(
             // instead, it can be done by setting the "grpc.ssl_target_name_override" argument.
             args.add(GrpcArg.Str(
                     key = "grpc.ssl_target_name_override",
+                    value = it
+            ))
+        }
+
+        userAgent?.let {
+            // GRPC_ARG_PRIMARY_USER_AGENT_STRING — prepended to the C-core's own User-Agent token.
+            args.add(GrpcArg.Str(
+                    key = "grpc.primary_user_agent",
                     value = it
             ))
         }
