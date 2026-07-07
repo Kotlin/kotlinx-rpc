@@ -1,6 +1,37 @@
 # 0.11.0-grpc-189
 > Published 7 Jul 2026
 
+## Migration from 0.10.0-grpc-188
+
+Several things have changed in this release. 
+Please update your code accordingly.
+
+### Artifact names
+
+`org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api` was changed to `org.jetbrains.kotlinx:kotlinx-rpc-protobuf-lite`.
+`org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core` was changed to `org.jetbrains.kotlinx:kotlinx-rpc-protobuf`.
+
+### Nullability
+
+All Protobuf messages are not nullable any more. 
+If the value was not set - the default will be returned. 
+This aligns us with the core principles of Protobuf and explicit presence.
+However, to ensure Kotlin's nullability is still used, we provide a way to generate nullable getters.
+Use `rpc.protoc.buf.generate.optionalFieldOrNullGetters` property for this.
+Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html#grpc-optional-fields-and-clearing
+
+### Deprecated Apple Target
+
+Apple Targets `macosX64`, `tvosX64`, and `watchosX64` were removed from publication.
+They are officially deprecated in Kotlin.
+
+### Other 
+
+Exception `Message '<messageName>' is missing a required field: <fieldName>` 
+is now `ProtobufException` instead of `ProtobufDecodingException`.
+
+## Changes
+
 ### Features 🎉
 * KRPC-238: Add proto and protoImport dependency configurations to Gradle plugin by @ai-agent-kxrpc[bot] in https://github.com/Kotlin/kotlinx-rpc/pull/679
 * protoc-gen: Refactor optional field generation (KRPC-262) by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/644

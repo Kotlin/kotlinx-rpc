@@ -7,6 +7,37 @@ This page contains all changes throughout releases of the library.
 
 **Full Changelog**: [0.11.0-grpc-188...0.11.0-grpc-189](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-188...0.11.0-grpc-189)
 
+### Migration from 0.10.0-grpc-188 {id=Migration_from_0.10.0-grpc-188_0_11_0-grpc-189}
+
+Several things have changed in this release. 
+Please update your code accordingly.
+
+#### Artifact names {id=Artifact_names_0_11_0-grpc-189}
+
+`org.jetbrains.kotlinx:kotlinx-rpc-protobuf-api` was changed to `org.jetbrains.kotlinx:kotlinx-rpc-protobuf-lite`.
+`org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core` was changed to `org.jetbrains.kotlinx:kotlinx-rpc-protobuf`.
+
+#### Nullability {id=Nullability_0_11_0-grpc-189}
+
+All Protobuf messages are not nullable any more. 
+If the value was not set - the default will be returned. 
+This aligns us with the core principles of Protobuf and explicit presence.
+However, to ensure Kotlin's nullability is still used, we provide a way to generate nullable getters.
+Use `rpc.protoc.buf.generate.optionalFieldOrNullGetters` property for this.
+Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html#grpc-optional-fields-and-clearing
+
+#### Deprecated Apple Target {id=Deprecated_Apple_Target_0_11_0-grpc-189}
+
+Apple Targets `macosX64`, `tvosX64`, and `watchosX64` were removed from publication.
+They are officially deprecated in Kotlin.
+
+#### Other  {id=Other_0_11_0-grpc-189}
+
+Exception `Message '<messageName>' is missing a required field: <fieldName>` 
+is now `ProtobufException` instead of `ProtobufDecodingException`.
+
+### Changes {id=Changes_0_11_0-grpc-189}
+
 #### Features 🎉 {id=Features_0_11_0-grpc-189}
 * KRPC-238: Add proto and protoImport dependency configurations to Gradle plugin by [@ai-agent-kxrpc](https://github.com/ai-agent-kxrpc)[bot] in [#679](https://github.com/Kotlin/kotlinx-rpc/pull/679)
 * protoc-gen: Refactor optional field generation (KRPC-262) by [@Jozott00](https://github.com/Jozott00) in [#644](https://github.com/Kotlin/kotlinx-rpc/pull/644)
