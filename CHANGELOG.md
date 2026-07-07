@@ -1,3 +1,41 @@
+# 0.11.0-grpc-189
+> Published 7 Jul 2026
+
+### Features 🎉
+* KRPC-238: Add proto and protoImport dependency configurations to Gradle plugin by @ai-agent-kxrpc[bot] in https://github.com/Kotlin/kotlinx-rpc/pull/679
+* protoc-gen: Refactor optional field generation (KRPC-262) by @Jozott00 in https://github.com/Kotlin/kotlinx-rpc/pull/644
+* gRPC: Enable iOS targets for grpc-server by @mlilienberg in https://github.com/Kotlin/kotlinx-rpc/pull/741
+* gRPC: Add channel-level userAgent configuration to client by @mlilienberg in https://github.com/Kotlin/kotlinx-rpc/pull/742
+
+### Breaking Changes 🔴
+* KRPC-598: Use RegularFileProperty/DirectoryProperty for buf task outputs by @ai-agent-kxrpc[bot] in https://github.com/Kotlin/kotlinx-rpc/pull/714
+* Remove 2.1 Kotlin support and add 2.4 to docs by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/724
+* KRPC-607 Updated protobuf dependency graph to make it light by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/738
+
+### Bug fixes 🐛
+* Fixed kotlin master builds and for-ide deps + master compat by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/723
+* Fix compiler plugin compatibility with Kotlin 2.4.20 by @eminasljivic in https://github.com/Kotlin/kotlinx-rpc/pull/727
+* Fix getValueArgumentVS by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/732
+* KRPC-609 Apple OS min values by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/737
+* gRPC: Race condition in requests; Request flow subscription fix by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/740
+
+### Infra 🚧
+* Updated actions by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/715
+* Move around, rename, and fortify scripts by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/743
+
+### Other Changes 🧹
+* Use providers.gradleProperty for Gradle plugin property lookups by @nataphon-ktsystems in https://github.com/Kotlin/kotlinx-rpc/pull/726
+* Remove depraceted targets + add androidNative to core and kRPC by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/731
+* KRPC-620 Protobuf codegen fixes for small bugs and code smells by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/733
+* Update grpc, protobuf, and buf versions, supported editions 2024 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/736
+* Fix logger memory leak from per-instance logger names by @nickjn92 in https://github.com/Kotlin/kotlinx-rpc/pull/734
+
+## New Contributors
+* @nataphon-ktsystems made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/726
+* @mlilienberg made their first contribution in https://github.com/Kotlin/kotlinx-rpc/pull/741
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-188...0.11.0-grpc-189
+
 # 0.11.0-grpc-188
 > Published 2 April 2026
 
