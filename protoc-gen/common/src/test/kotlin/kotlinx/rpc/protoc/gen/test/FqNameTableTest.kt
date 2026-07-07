@@ -23,7 +23,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("MyClass", scoped.resolve(name))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -33,7 +33,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("OtherClass", scoped.resolve(name))
-        assertEquals(setOf("com.other.OtherClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.OtherClass"), scoped.imports)
     }
 
     @Test
@@ -45,9 +45,9 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("OtherClass", scoped.resolve(other))
-        assertEquals(setOf("com.other.OtherClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.OtherClass"), scoped.imports)
         assertEquals("com.another.OtherClass", scoped.resolve(another))
-        assertEquals(setOf("com.other.OtherClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.OtherClass"), scoped.imports)
     }
 
     @Test
@@ -57,7 +57,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("String", scoped.resolve(name))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -94,7 +94,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("MyClass.NestedClass", scoped.resolve(nested))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -104,7 +104,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("OuterClass.InnerClass", scoped.resolve(nested))
-        assertEquals(setOf("com.other.OuterClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.OuterClass"), scoped.imports)
     }
 
     @Test
@@ -120,7 +120,7 @@ class FqNameTableTest {
         val kotlinString = fq("kotlin", "String")
         assertEquals("String", scoped.resolve(kotlinString))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -161,7 +161,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("OtherClass", scoped.resolve(name1))
-        assertEquals(setOf("com.other.OtherClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.OtherClass"), scoped.imports)
 
         // kotlin.String is shadowed by package-level String
         val kotlinString = fq("kotlin", "String")
@@ -176,7 +176,7 @@ class FqNameTableTest {
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("String", scoped.resolve(kotlinString1))
         assertEquals("String", scoped.resolve(kotlinString2))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -185,7 +185,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("Object", scoped.resolve(javaObject))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -194,7 +194,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("Console", scoped.resolve(console))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -204,7 +204,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("A.B.C.D", scoped.resolve(deepNested))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -223,7 +223,7 @@ class FqNameTableTest {
         assertEquals("com.other.MyClass.Inner", scoped.resolve(inner2))
         assertEquals("com.other.MyClass", scoped.resolve(myClass2))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -261,7 +261,7 @@ class FqNameTableTest {
         assertEquals("kotlin.Int", scoped.resolve(kotlinInt))
         assertEquals("kotlin.Float", scoped.resolve(kotlinFloat))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -289,7 +289,7 @@ class FqNameTableTest {
         assertEquals("com.example.String", insideNestedString.resolve(packageString))
         assertEquals("kotlin.String", insideNestedString.resolve(kotlinString))
 
-        assertTrue(insideNestedString.requiredImports.isEmpty())
+        assertTrue(insideNestedString.imports.isEmpty())
     }
 
     @Test
@@ -313,7 +313,7 @@ class FqNameTableTest {
         assertEquals("kotlin.String", scoped.resolve(kotlinString))
         assertEquals("kotlin.Int", scoped.resolve(kotlinInt))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -345,7 +345,7 @@ class FqNameTableTest {
         val kotlinString = fq("kotlin", "String")
         assertEquals("kotlin.String", insideNested.resolve(kotlinString))
 
-        assertTrue(insideNested.requiredImports.isEmpty())
+        assertTrue(insideNested.imports.isEmpty())
     }
 
     @Test
@@ -533,13 +533,13 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("String", scoped.resolve(kotlinString))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
 
         // java.lang types are NOT implicitly available on Native (unlike JVM)
         val javaObject = fq("java.lang", "Object")
         table.register(javaObject)
         assertEquals("Object", scoped.resolve(javaObject))
-        assertEquals(setOf("java.lang.Object"), scoped.requiredImports)
+        assertEquals(setOf("java.lang.Object"), scoped.imports)
     }
 
     @Test
@@ -550,13 +550,13 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("Int", scoped.resolve(kotlinInt))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
 
         // kotlin.js types are NOT implicitly available on Wasm (unlike JS)
         val console = fq("kotlin.js", "Console")
         table.register(console)
         assertEquals("Console", scoped.resolve(console))
-        assertEquals(setOf("kotlin.js.Console"), scoped.requiredImports)
+        assertEquals(setOf("kotlin.js.Console"), scoped.imports)
     }
 
     @Test
@@ -580,7 +580,7 @@ class FqNameTableTest {
 
         // At package level, can import MyClass and access MyClass.String
         assertEquals("MyClass.String", scoped.resolve(otherMyClassString))
-        assertEquals(setOf("com.other.MyClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.MyClass"), scoped.imports)
 
         // kotlin.String should still be accessible as simple name at package level
         val kotlinString = fq("kotlin", "String")
@@ -596,7 +596,7 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("MyClass", scoped.resolve(myClass))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -607,12 +607,12 @@ class FqNameTableTest {
 
         val scoped = table.scoped(FqName.Package.fromString(""))
         assertEquals("MyClass", scoped.resolve(myClass))
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
 
         // From a different package, accessing root package class
         val otherScoped = table.scoped(FqName.Package.fromString("com.example"))
         assertEquals("MyClass", otherScoped.resolve(myClass))
-        assertEquals(setOf("MyClass"), otherScoped.requiredImports)
+        assertEquals(setOf("MyClass"), otherScoped.imports)
     }
 
     @Test
@@ -634,7 +634,7 @@ class FqNameTableTest {
 
         // MyClass should be accessible by simple name from inside Inner
         assertEquals("MyClass", insideInner.resolve(myClass))
-        assertTrue(insideInner.requiredImports.isEmpty())
+        assertTrue(insideInner.imports.isEmpty())
     }
 
     @Test
@@ -715,7 +715,7 @@ class FqNameTableTest {
 
         assertEquals(
             setOf("com.package1.ClassA", "com.package2.ClassB", "com.package3.ClassC"),
-            scoped.requiredImports
+            scoped.imports
         )
     }
 
@@ -742,7 +742,7 @@ class FqNameTableTest {
 
         // com.other.MyClass can be imported
         assertEquals("MyClass", scoped.resolve(otherMyClass))
-        assertEquals(setOf("com.other.MyClass"), scoped.requiredImports)
+        assertEquals(setOf("com.other.MyClass"), scoped.imports)
 
         // com.other.MyClass.String - "String" part doesn't conflict because it's nested
         assertEquals("MyClass.String", scoped.resolve(otherNestedString))
@@ -878,7 +878,7 @@ class FqNameTableTest {
         // com.other.MyClass.Inner must also use FQN
         assertEquals("com.other.MyClass.Inner", scoped.resolve(otherInner))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -917,7 +917,7 @@ class FqNameTableTest {
         // MyClass from subpackage requires FQN
         assertEquals("com.example.other.MyClass", scoped.resolve(myClass2))
 
-        assertTrue(scoped.requiredImports.isEmpty())
+        assertTrue(scoped.imports.isEmpty())
     }
 
     @Test
@@ -951,14 +951,14 @@ class FqNameTableTest {
 
         // Parent can be imported
         assertEquals("Parent", scoped.resolve(parent))
-        assertEquals(setOf("com.other.Parent"), scoped.requiredImports)
+        assertEquals(setOf("com.other.Parent"), scoped.imports)
 
         // Child and GrandChild use the imported Parent
         assertEquals("Parent.Child", scoped.resolve(child))
         assertEquals("Parent.Child.GrandChild", scoped.resolve(grandChild))
 
         // Imports shouldn't change
-        assertEquals(setOf("com.other.Parent"), scoped.requiredImports)
+        assertEquals(setOf("com.other.Parent"), scoped.imports)
     }
 
     @Test
@@ -1001,7 +1001,7 @@ class FqNameTableTest {
 
         // kotlin.Int should be accessible by simple name since nothing shadows it
         assertEquals("Int", insideC.resolve(kotlinInt))
-        assertTrue(insideC.requiredImports.isEmpty())
+        assertTrue(insideC.imports.isEmpty())
     }
 
     @Test

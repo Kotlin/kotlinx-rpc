@@ -61,7 +61,9 @@ class LoggerLeakTest {
                         "connections, found ${serverServiceLoggers.size}: ${serverServiceLoggers.map { it.name }}",
             )
 
-            val clientLoggers = loggerContext.loggerList.filter { it.name.startsWith(KrpcTestClient::class.simpleName!!) }
+            val clientLoggers = loggerContext.loggerList.filter {
+                it.name.startsWith(KrpcTestClient::class.simpleName!!)
+            }
             assertEquals(
                 1,
                 clientLoggers.size,
@@ -69,7 +71,9 @@ class LoggerLeakTest {
                         "connections, found ${clientLoggers.size}: ${clientLoggers.map { it.name }}",
             )
 
-            val serverLoggers = loggerContext.loggerList.filter { it.name.startsWith(KrpcTestServer::class.simpleName!!) }
+            val serverLoggers = loggerContext.loggerList.filter {
+                it.name.startsWith(KrpcTestServer::class.simpleName!!)
+            }
             assertEquals(
                 1,
                 serverLoggers.size,
