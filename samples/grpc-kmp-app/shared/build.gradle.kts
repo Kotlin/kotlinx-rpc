@@ -19,7 +19,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.kotlinx.rpc.grpc.core)
-            api(libs.kotlinx.rpc.protobuf.core)
+            api(libs.kotlinx.rpc.protobuf)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -7,11 +7,11 @@ androidx-lifecycle = "2.9.6"
 compose = "1.10.5"
 composeHotReload = "1.0.0"
 composeMultiplatform = "1.10.2"
-kotlin = "2.3.10"
+kotlin = "2.4.0"
 kotlinx-coroutines = "1.10.2"
 ktor = "3.4.1"
 logback = "1.5.32"
-kotlinx-rpc = "0.11.0-grpc-188"
+kotlinx-rpc = "0.11.0-grpc-189"
 grpc = "1.79.0"
 kotlinx-datatime = "0.7.1"
 
@@ -28,7 +28,7 @@ kotlinx-rpc-grpc-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-core"
 kotlinx-rpc-grpc-client = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-client", version.ref = "kotlinx-rpc" }
 kotlinx-rpc-grpc-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-server", version.ref = "kotlinx-rpc" }
 kotlinx-rpc-grpc-ktor-server = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server", version.ref = "kotlinx-rpc" }
-kotlinx-rpc-protobuf-core = { module = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-core", version.ref = "kotlinx-rpc" }
+kotlinx-rpc-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf", version.ref = "kotlinx-rpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datatime" }
 ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
