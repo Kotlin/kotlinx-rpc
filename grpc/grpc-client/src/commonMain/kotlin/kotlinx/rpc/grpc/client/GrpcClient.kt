@@ -261,8 +261,7 @@ public class GrpcClientConfiguration internal constructor() {
      * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
      * header and any value added to the metadata is overwritten by the gRPC runtime.
      *
-     * Maps to `ManagedChannelBuilder.userAgent(...)` on JVM and the `GRPC_ARG_PRIMARY_USER_AGENT_STRING`
-     * channel argument on native. If `null` (the default), only the runtime's own token is sent.
+     * If `null` (the default), only the runtime's own token is sent.
      *
      * ```
      * GrpcClient("example.com", 443) {
