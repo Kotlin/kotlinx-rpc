@@ -188,7 +188,7 @@ public abstract class KrpcClient : RpcClient, KrpcEndpoint {
 
     private val callCounter = atomic(0L)
 
-    private val logger: RpcInternalCommonLogger = RpcInternalCommonLogger.logger(rpcInternalObjectId())
+    private val logger: RpcInternalCommonLogger = RpcInternalCommonLogger.logger(this::class)
 
     private val serverSupportedPlugins: CompletableDeferred<Set<KrpcPlugin>> = CompletableDeferred()
 
