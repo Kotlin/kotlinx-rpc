@@ -37,6 +37,7 @@ import java.net.ServerSocket
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.seconds
 
@@ -354,6 +355,46 @@ class KtorTransportTest {
         serverJob.join()
 
         newPool.close()
+    }
+
+    @Test
+    fun testClientCallFailsWhenServerThrowsDuringRouteSetup() = testApplication {
+        install(Krpc)
+        routing {
+            rpc("/rpc") {
+                rpcConfig {
+                    serialization {
+                        json()
+                    }
+                }
+
+                // Throw during route/service setup, before the kRPC handshake is processed. Ktor closes
+                // the WebSocket without any protocol message reaching the client (see issue #506).
+                error("Simulated server-side failure during route setup")
+            }
+        }
+
+        val client = createClient {
+            installKrpc {
+                serialization {
+                    json()
+                }
+            }
+        }
+
+        // The service is never registered on the server, but the call must not dangle: it must fail
+        // once the server closes the connection without ever completing the handshake.
+        val service = client.rpc("/rpc").withService<SlowService>()
+
+        assertFailsWith<CancellationException> {
+            service.verySlow()
+        }
+
+        // The failure must come from the dangling handshake being cancelled, not from the caller's
+        // own scope being torn down.
+        currentCoroutineContext().ensureActive()
+
+        client.cancel()
     }
 
     private fun findFreePort(): Int {
