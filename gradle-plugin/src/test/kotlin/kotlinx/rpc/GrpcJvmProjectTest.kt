@@ -362,6 +362,7 @@ plugins:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
@@ -371,6 +372,7 @@ plugins:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
@@ -441,6 +443,7 @@ plugins:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
@@ -450,6 +453,7 @@ plugins:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
@@ -493,6 +497,7 @@ plugins:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=jvm
@@ -502,6 +507,7 @@ plugins:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=jvm
@@ -661,6 +667,7 @@ plugins:
       - debugOutput=protoc-gen-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
@@ -686,6 +693,7 @@ plugins:
       - debugOutput=protoc-gen-grpc-kotlin-multiplatform.log
       - generateComments=true
       - generateFileLevelComments=true
+      - generateOptionalFieldOrNullGetters=false
       - indentSize=4
       - explicitApiModeEnabled=false
       - platform=${PlatformOption.JVM}
