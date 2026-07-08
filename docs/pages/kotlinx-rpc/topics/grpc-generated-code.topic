@@ -292,18 +292,18 @@
             val echo = client.withService&lt;Echo&gt;()
 
             // Server streaming
-            echo.ServerStream(EchoRequest { text = "hello" }).collect {
+            echo.serverStream(EchoRequest { text = "hello" }).collect {
                 println(it.text)
             }
 
             // Client streaming
-            val result = echo.ClientStream(flow {
+            val result = echo.clientStream(flow {
                 emit(EchoRequest { text = "one" })
                 emit(EchoRequest { text = "two" })
             })
 
             // Bidirectional streaming
-            echo.BidiStream(flow {
+            echo.bidiStream(flow {
                 emit(EchoRequest { text = "ping" })
             }).collect {
                 println(it.text)
