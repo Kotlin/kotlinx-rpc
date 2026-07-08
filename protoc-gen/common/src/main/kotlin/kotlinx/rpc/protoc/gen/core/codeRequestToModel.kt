@@ -322,8 +322,6 @@ private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNam
         .map { it.toModel(comments, nameTable) }
 
     regularFields = regularFields + oneOfs.map {
-        // oneofs simple name is generated as upper camel case
-        // TODO: すでにescapeされてる場合はちゃんと動く?
         val lowerCamelCasedName = it.name.simpleName.simpleProtoNameToKotlin(CamelCaseFormat.LOWER_CAMEL)
         val lowerCamelCasedRawName = it.dec.name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL)
 
