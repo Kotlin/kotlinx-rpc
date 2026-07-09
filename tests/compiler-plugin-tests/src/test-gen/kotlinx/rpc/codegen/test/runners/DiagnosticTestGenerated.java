@@ -33,6 +33,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("optionalParameters.kt")
+  public void testOptionalParameters() {
+    runTest("src/testData/diagnostics/optionalParameters.kt");
+  }
+
+  @Test
   @TestMetadata("protoMessage.kt")
   public void testProtoMessage() {
     runTest("src/testData/diagnostics/protoMessage.kt");

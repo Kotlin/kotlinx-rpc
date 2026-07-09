@@ -78,6 +78,10 @@ sealed interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcInvokator { // kotli
     abstract fun interface <#A1: kotlin/Any> UnaryResponse : kotlinx.rpc.descriptor/RpcInvokator<#A1> { // kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse|null[0]
         abstract suspend fun call(#A1, kotlin/Array<kotlin/Any?>): kotlin/Any? // kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse.call|call(1:0;kotlin.Array<kotlin.Any?>){}[0]
     }
+
+    final object Absent { // kotlinx.rpc.descriptor/RpcInvokator.Absent|null[0]
+        final fun toString(): kotlin/String // kotlinx.rpc.descriptor/RpcInvokator.Absent.toString|toString(){}[0]
+    }
 }
 
 final class kotlinx.rpc/RpcCall { // kotlinx.rpc/RpcCall|null[0]

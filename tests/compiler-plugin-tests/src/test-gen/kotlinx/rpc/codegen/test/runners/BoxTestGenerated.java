@@ -45,6 +45,12 @@ public class BoxTestGenerated extends AbstractBoxTest {
   }
 
   @Test
+  @TestMetadata("optionalParameters.kt")
+  public void testOptionalParameters() {
+    runTest("src/testData/box/optionalParameters.kt");
+  }
+
+  @Test
   @TestMetadata("protoMessage.kt")
   public void testProtoMessage() {
     runTest("src/testData/box/protoMessage.kt");

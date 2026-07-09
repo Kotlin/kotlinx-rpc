@@ -48,6 +48,12 @@ object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
             factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_INTERFACE,
             message = "Type parameters are not allowed in @Rpc interfaces.",
         )
+
+        map.put(
+            factory = FirRpcDiagnostics.TOO_MANY_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION,
+            message = "Rpc functions can declare at most {0} parameters with default values.",
+            rendererA = Renderer { it.toString() },
+        )
     }
 }
 

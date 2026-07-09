@@ -1,0 +1,21 @@
+FILE: optionalParameters.kt
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface WithinLimit : R|kotlin/Any| {
+        public abstract suspend fun atLimit(required: R|kotlin/Int|, p1: R|kotlin/Int| = Int(1), p2: R|kotlin/Int| = Int(2), p3: R|kotlin/Int| = Int(3), p4: R|kotlin/Int| = Int(4), p5: R|kotlin/Int| = Int(5), p6: R|kotlin/Int| = Int(6), p7: R|kotlin/Int| = Int(7), p8: R|kotlin/Int| = Int(8)): R|kotlin/Int|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface OverLimit : R|kotlin/Any| {
+        public abstract suspend fun tooMany(required: R|kotlin/Int|, p1: R|kotlin/Int| = Int(1), p2: R|kotlin/Int| = Int(2), p3: R|kotlin/Int| = Int(3), p4: R|kotlin/Int| = Int(4), p5: R|kotlin/Int| = Int(5), p6: R|kotlin/Int| = Int(6), p7: R|kotlin/Int| = Int(7), p8: R|kotlin/Int| = Int(8), p9: R|kotlin/Int| = Int(9)): R|kotlin/Int|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }

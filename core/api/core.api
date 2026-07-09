@@ -41,6 +41,11 @@ public abstract interface class kotlinx/rpc/descriptor/RpcCallable {
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator {
 }
 
+public final class kotlinx/rpc/descriptor/RpcInvokator$Absent {
+	public static final field INSTANCE Lkotlinx/rpc/descriptor/RpcInvokator$Absent;
+	public fun toString ()Ljava/lang/String;
+}
+
 public abstract interface class kotlinx/rpc/descriptor/RpcInvokator$FlowResponse : kotlinx/rpc/descriptor/RpcInvokator {
 	public abstract fun call (Ljava/lang/Object;[Ljava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }

@@ -1,0 +1,85 @@
+FILE: optionalParameters.kt
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlin/Any| {
+        public abstract suspend fun withDefaults(a: R|kotlin/Int|, b: R|kotlin/String| = String(b), c: R|kotlin/String?| = String(c)): R|kotlin/String|
+
+        public abstract fun streamWithDefaults(a: R|kotlin/Int|, b: R|kotlin/String| = String(s)): R|kotlinx/coroutines/flow/Flow<kotlin/String>|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final class BoxServiceImpl : R|BoxService| {
+        public constructor(): R|BoxServiceImpl| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override suspend fun withDefaults(a: R|kotlin/Int|, b: R|kotlin/String|, c: R|kotlin/String?|): R|kotlin/String| {
+            ^withDefaults <strcat>(R|<local>/a|, String(-), R|<local>/b|, String(-), R|<local>/c|)
+        }
+
+        public open override fun streamWithDefaults(a: R|kotlin/Int|, b: R|kotlin/String|): R|kotlinx/coroutines/flow/Flow<kotlin/String>| {
+            ^streamWithDefaults R|kotlinx/coroutines/flow/flowOf|<R|kotlin/String|>(<strcat>(R|<local>/a|, String(-), R|<local>/b|))
+        }
+
+    }
+    @R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))) public final fun box(): R|kotlin/String| {
+        ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
+            lval callable: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>| = R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|BoxService|>().R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.getCallable: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>?|>|(String(withDefaults)) ?: ^@runBlocking String(Fail: no callable)
+            lval service: R|BoxServiceImpl| = R|/BoxServiceImpl.BoxServiceImpl|()
+            lval allAbsent: R|kotlin/Any?| = R|<local>/callable|.R|kotlinx/rpc/descriptor/unaryInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.UnaryResponse.call: R|kotlin/Any?|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(1), Q|kotlinx/rpc/descriptor/RpcInvokator.Absent|, Q|kotlinx/rpc/descriptor/RpcInvokator.Absent|)))
+            when () {
+                !=(R|<local>/allAbsent|, String(1-b-c)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/allAbsent|)
+                }
+            }
+
+            lval nullForNonNullable: R|kotlin/Any?| = R|<local>/callable|.R|kotlinx/rpc/descriptor/unaryInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.UnaryResponse.call: R|kotlin/Any?|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(2), Null(null), String(override))))
+            when () {
+                !=(R|<local>/nullForNonNullable|, String(2-b-override)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/nullForNonNullable|)
+                }
+            }
+
+            lval explicitNull: R|kotlin/Any?| = R|<local>/callable|.R|kotlinx/rpc/descriptor/unaryInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.UnaryResponse.call: R|kotlin/Any?|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(3), String(override), Null(null))))
+            when () {
+                !=(R|<local>/explicitNull|, String(3-override-null)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/explicitNull|)
+                }
+            }
+
+            lval allPresent: R|kotlin/Any?| = R|<local>/callable|.R|kotlinx/rpc/descriptor/unaryInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.UnaryResponse.call: R|kotlin/Any?|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(4), String(b2), String(c2))))
+            when () {
+                !=(R|<local>/allPresent|, String(4-b2-c2)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/allPresent|)
+                }
+            }
+
+            lval streamCallable: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>| = R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|BoxService|>().R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcServiceDescriptor.getCallable: R|kotlinx/rpc/descriptor/RpcCallable<BoxService>?|>|(String(streamWithDefaults)) ?: ^@runBlocking String(Fail: no stream callable)
+            lval streamAbsent: R|kotlin/Any?| = R|<local>/streamCallable|.R|kotlinx/rpc/descriptor/flowInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.FlowResponse.call: R|kotlinx/coroutines/flow/Flow<kotlin/Any?>|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(5), Q|kotlinx/rpc/descriptor/RpcInvokator.Absent|))).R|kotlinx/coroutines/flow/single|<R|kotlin/Any?|>()
+            when () {
+                !=(R|<local>/streamAbsent|, String(5-s)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/streamAbsent|)
+                }
+            }
+
+            lval streamNullForNonNullable: R|kotlin/Any?| = R|<local>/streamCallable|.R|kotlinx/rpc/descriptor/flowInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.FlowResponse.call: R|kotlinx/coroutines/flow/Flow<kotlin/Any?>|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(6), Null(null)))).R|kotlinx/coroutines/flow/single|<R|kotlin/Any?|>()
+            when () {
+                !=(R|<local>/streamNullForNonNullable|, String(6-s)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/streamNullForNonNullable|)
+                }
+            }
+
+            lval streamPresent: R|kotlin/Any?| = R|<local>/streamCallable|.R|kotlinx/rpc/descriptor/flowInvokator|<R|BoxService|>.R|SubstitutionOverride<kotlinx/rpc/descriptor/RpcInvokator.FlowResponse.call: R|kotlinx/coroutines/flow/Flow<kotlin/Any?>|>|(R|<local>/service|, R|kotlin/arrayOf|<R|kotlin/Any?|>(vararg(Int(7), String(s2)))).R|kotlinx/coroutines/flow/single|<R|kotlin/Any?|>()
+            when () {
+                !=(R|<local>/streamPresent|, String(7-s2)) ->  {
+                    ^@runBlocking <strcat>(String(Fail: ), R|<local>/streamPresent|)
+                }
+            }
+
+            ^ String(OK)
+        }
+        )
+    }

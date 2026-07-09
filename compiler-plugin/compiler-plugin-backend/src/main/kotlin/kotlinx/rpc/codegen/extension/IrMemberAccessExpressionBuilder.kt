@@ -13,14 +13,15 @@ class IrMemberAccessExpressionData(
     val dispatchReceiver: IrExpression?,
     val extensionReceiver: IrExpression?,
     val typeArguments: List<IrType>,
-    val valueArguments: List<IrExpression>,
+    // null entries are skipped, leaving the argument unset (the callee's default value applies)
+    val valueArguments: List<IrExpression?>,
 )
 
 class IrMemberAccessExpressionBuilder {
     var dispatchReceiver: IrExpression? = null
     var extensionReceiver: IrExpression? = null
 
-    private var valueArguments: List<IrExpression> = emptyList()
+    private var valueArguments: List<IrExpression?> = emptyList()
     private var typeArguments: List<IrType> = emptyList()
 
     val typeBuilder = TypeBuilder()
@@ -44,6 +45,14 @@ class IrMemberAccessExpressionBuilder {
     inner class ValueBuilder {
         operator fun IrExpression.unaryPlus() {
             valueArguments += this
+        }
+
+        /**
+         * Leaves the argument at the current position unset.
+         * Only valid for parameters with a default value.
+         */
+        fun skip() {
+            valueArguments += null
         }
     }
 

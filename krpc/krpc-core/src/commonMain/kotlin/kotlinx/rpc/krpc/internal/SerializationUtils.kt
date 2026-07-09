@@ -5,6 +5,7 @@
 package kotlinx.rpc.krpc.internal
 
 import kotlinx.rpc.descriptor.RpcCallable
+import kotlinx.rpc.descriptor.RpcInvokator
 import kotlinx.rpc.descriptor.RpcType
 import kotlinx.rpc.descriptor.RpcTypeKrpc
 import kotlinx.rpc.internal.rpcInternalKClass
@@ -98,6 +99,17 @@ public fun <T> decodeMessageData(
     }
 }
 
+/**
+ * Serializes RPC call arguments as a class-like structure keyed by parameter names.
+ *
+ * Optional parameters (declared with a default value):
+ * - elements absent from the payload decode as [RpcInvokator.Absent], and the invokator applies the default;
+ * - [RpcInvokator.Absent] elements are skipped on encode.
+ *
+ * Parameters unknown to the receiving side fail decoding unless the configured format
+ * ignores unknown keys — adding an optional parameter is backward compatible
+ * (old client, new server), not forward compatible (new client, old server).
+ */
 @InternalRpcApi
 public class CallableParametersSerializer(
     private val callable: RpcCallable<*>,
@@ -125,6 +137,15 @@ public class CallableParametersSerializer(
     ) {
         encoder.encodeStructure(descriptor) {
             for (i in callable.parameters.indices) {
+                if (value[i] === RpcInvokator.Absent) {
+                    check(callable.parameters[i].isOptional) {
+                        "Parameter '${callable.parameters[i].name}' of '${callable.name}' " +
+                                "is not optional, but no argument was provided"
+                    }
+
+                    continue
+                }
+
                 encodeSerializableElement(descriptor, i, callableSerializers[i], value[i])
             }
         }
@@ -132,11 +153,23 @@ public class CallableParametersSerializer(
 
     override fun deserialize(decoder: Decoder): Array<Any?> {
         return decoder.decodeStructure(descriptor) {
-            val result = arrayOfNulls<Any?>(callable.parameters.size)
+            // optional parameters not present in the payload stay Absent,
+            // the invokator substitutes their default values
+            val result = Array<Any?>(callable.parameters.size) { i ->
+                if (callable.parameters[i].isOptional) RpcInvokator.Absent else null
+            }
+
             while (true) {
                 val index = decodeElementIndex(descriptor)
                 if (index == CompositeDecoder.DECODE_DONE) {
                     break
+                }
+
+                if (index !in result.indices) {
+                    throw SerializationException(
+                        "Unexpected parameter index $index for '${callable.name}', " +
+                                "expected 0..${result.lastIndex}"
+                    )
                 }
 
                 result[index] = decodeSerializableElement(descriptor, index, callableSerializers[index])

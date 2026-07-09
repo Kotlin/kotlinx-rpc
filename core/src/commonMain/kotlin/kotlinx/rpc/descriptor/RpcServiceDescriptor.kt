@@ -80,6 +80,23 @@ public sealed interface RpcInvokator<@Rpc Service : Any> {
     public fun interface FlowResponse<@Rpc Service : Any> : RpcInvokator<Service> {
         public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
+
+    /**
+     * Marker for an absent argument of an optional parameter (one declared with a default value,
+     * see [RpcParameter.isOptional]) in the `arguments` array of a
+     * [UnaryResponse.call] or [FlowResponse.call].
+     *
+     * When an element of `arguments` is [Absent], the default value of the corresponding parameter is used.
+     * For parameters of a non-nullable type, `null` is treated the same way as [Absent].
+     *
+     * [Absent] must remain a plain `object`: generated code compares it by identity (`===`),
+     * and stubs compiled against versions without absence handling rely on `Absent as? T`
+     * producing `null` for nullable parameter types.
+     */
+    @ExperimentalRpcApi
+    public object Absent {
+        override fun toString(): String = "Absent"
+    }
 }
 
 @ExperimentalRpcApi

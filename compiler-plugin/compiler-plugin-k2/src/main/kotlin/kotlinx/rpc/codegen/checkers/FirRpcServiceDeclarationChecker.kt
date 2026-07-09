@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.FirCheckersContext
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.common.RpcLimits
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -45,6 +46,17 @@ object FirRpcServiceDeclarationChecker {
                 reporter.reportOn(
                     source = function.source,
                     factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_FUNCTION,
+                    context = context,
+                )
+            }
+
+            // invokators branch on every subset of absent optional parameters (2^n call sites),
+            // unbounded n means unbounded generated code
+            if (function.valueParameterSymbols.count { it.hasDefaultValue } > RpcLimits.MAX_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION) {
+                reporter.reportOn(
+                    source = function.source,
+                    factory = FirRpcDiagnostics.TOO_MANY_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION,
+                    a = RpcLimits.MAX_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION,
                     context = context,
                 )
             }

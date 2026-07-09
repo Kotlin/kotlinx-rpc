@@ -179,6 +179,10 @@ internal class RpcIrContext(
         rpcInvokator.subClass("FlowResponse")
     }
 
+    val rpcInvokatorAbsent by lazy {
+        rpcInvokator.subClass("Absent")
+    }
+
     val rpcParameter by lazy {
         referenceRpcIrClassSymbol("RpcParameter", "descriptor")
     }

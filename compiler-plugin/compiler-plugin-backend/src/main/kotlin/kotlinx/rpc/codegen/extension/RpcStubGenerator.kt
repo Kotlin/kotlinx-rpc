@@ -26,9 +26,11 @@ import org.jetbrains.kotlin.ir.builders.irBlockBody
 import org.jetbrains.kotlin.ir.builders.irBranch
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irCallConstructor
+import org.jetbrains.kotlin.ir.builders.irEqeqeq
 import org.jetbrains.kotlin.ir.builders.irEqualsNull
 import org.jetbrains.kotlin.ir.builders.irGet
 import org.jetbrains.kotlin.ir.builders.irIfNull
+import org.jetbrains.kotlin.ir.builders.irIfThenElse
 import org.jetbrains.kotlin.ir.builders.irReturn
 import org.jetbrains.kotlin.ir.builders.irTemporary
 import org.jetbrains.kotlin.ir.builders.irTrue
@@ -608,6 +610,22 @@ internal class RpcStubGenerator(
      * Where:
      *  - `<method-name>` - the name of the method
      *  - <argument-type-k> - type of the kth argument
+     *
+     * Arguments of optional parameters (declared with a default value) are checked for absence,
+     * so that the default value is applied (GitHub issue #543):
+     * ```kotlin
+     * private val <method-name>Invokator = RpcInvokator.UnaryResponse<MyService> {
+     *     service: MyService, arguments: Array<Any?> ->
+     *
+     *     val optionalArg1 = arguments[1]
+     *     if (optionalArg1 === RpcInvokator.Absent || optionalArg1 == null /* non-nullable types only */) {
+     *         service.<method-name>(arguments[0] as <argument-type-1>)
+     *     } else {
+     *         service.<method-name>(arguments[0] as <argument-type-1>, optionalArg1 as <argument-type-2>)
+     *     }
+     * }
+     * ```
+     * With one `if` per optional parameter, nested (2^n branches for n optional parameters).
      */
     private fun IrClass.generateInvokator(callable: ServiceDeclaration.Callable) {
         check(callable is ServiceDeclaration.Method) {
@@ -658,38 +676,7 @@ internal class RpcStubGenerator(
                     }
 
                     body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
-                        val call = irCall(callable.function).apply {
-                            arguments {
-                                dispatchReceiver = irGet(serviceParameter)
-
-                                values {
-                                    callable.arguments.forEachIndexed { argIndex, arg ->
-                                        val argument = irCall(
-                                            callee = ctx.functions.arrayGet.symbol,
-                                            type = ctx.anyNullable,
-                                        ).apply {
-                                            vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
-
-                                            arguments {
-                                                dispatchReceiver = irGet(argumentsParameter)
-
-                                                values {
-                                                    +intConst(argIndex)
-                                                }
-                                            }
-                                        }
-
-                                        if (vsApi { arg.type.isNullableVS() }) {
-                                            +irSafeAs(argument, arg.type)
-                                        } else {
-                                            +irAs(argument, arg.type)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        +irReturn(call)
+                        invokatorLambdaBody(callable, serviceParameter, argumentsParameter)
                     }
                 }
 
@@ -731,6 +718,104 @@ internal class RpcStubGenerator(
                 visibility = DescriptorVisibilities.PRIVATE
             }
         }
+    }
+
+    /**
+     * Body of the invokator lambda, see [generateInvokator] for the shape of the generated code.
+     */
+    private fun IrBlockBodyBuilder.invokatorLambdaBody(
+        callable: ServiceDeclaration.Method,
+        serviceParameter: IrValueParameter,
+        argumentsParameter: IrValueParameter,
+    ) {
+        fun irGetArrayElement(argIndex: Int): IrExpression {
+            return irCall(
+                callee = ctx.functions.arrayGet.symbol,
+                type = ctx.anyNullable,
+            ).apply {
+                vsApi { originVS = IrStatementOrigin.GET_ARRAY_ELEMENT }
+
+                arguments {
+                    dispatchReceiver = irGet(argumentsParameter)
+
+                    values {
+                        +intConst(argIndex)
+                    }
+                }
+            }
+        }
+
+        // arguments of optional parameters are hoisted into locals to check them for absence
+        val optionalArguments = callable.arguments
+            .withIndex()
+            .filter { (_, arg) -> arg.isOptional }
+            .associate { (argIndex, _) ->
+                argIndex to irTemporary(
+                    value = irGetArrayElement(argIndex),
+                    nameHint = "optionalArg$argIndex",
+                )
+            }
+
+        fun irCastedArgument(argIndex: Int, arg: ServiceDeclaration.Method.Argument): IrExpression {
+            val argument = optionalArguments[argIndex]?.let { irGet(it) }
+                ?: irGetArrayElement(argIndex)
+
+            return if (vsApi { arg.type.isNullableVS() }) {
+                irSafeAs(argument, arg.type)
+            } else {
+                irAs(argument, arg.type)
+            }
+        }
+
+        fun irCallWithAbsent(absentArgs: Set<Int>): IrExpression {
+            return irCall(callable.function).apply {
+                arguments {
+                    dispatchReceiver = irGet(serviceParameter)
+
+                    values {
+                        callable.arguments.forEachIndexed { argIndex, arg ->
+                            if (argIndex in absentArgs) {
+                                skip() // unset, the default value is applied
+                            } else {
+                                +irCastedArgument(argIndex, arg)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        fun irCallBranchingOnAbsence(optionalIndexes: List<Int>, absentArgs: Set<Int>): IrExpression {
+            val argIndex = optionalIndexes.firstOrNull()
+                ?: return irCallWithAbsent(absentArgs)
+
+            val rest = optionalIndexes.subList(1, optionalIndexes.size)
+            val temporary = optionalArguments.getValue(argIndex)
+
+            val isAbsentMarker = irEqeqeq(irGet(temporary), irGetObjectValue(ctx.rpcInvokatorAbsent))
+
+            val isAbsent = if (vsApi { callable.arguments[argIndex].type.isNullableVS() }) {
+                isAbsentMarker
+            } else {
+                // null cannot be a valid argument for a non-nullable type, treat it as absent too
+                irIfThenElse(
+                    type = ctx.irBuiltIns.booleanType,
+                    condition = irEqualsNull(irGet(temporary)),
+                    thenPart = irTrue(),
+                    elsePart = isAbsentMarker,
+                    origin = IrStatementOrigin.OROR,
+                )
+            }
+
+            return irIfThenElse(
+                type = callable.function.returnType,
+                condition = isAbsent,
+                thenPart = irCallBranchingOnAbsence(rest, absentArgs + argIndex),
+                elsePart = irCallBranchingOnAbsence(rest, absentArgs),
+            )
+        }
+
+        +irReturn(irCallBranchingOnAbsence(optionalArguments.keys.sorted(), emptySet()))
     }
 
     private var callables: IrProperty by Delegates.notNull()
@@ -1853,6 +1938,13 @@ internal class RpcStubGenerator(
         endOffset = UNDEFINED_OFFSET,
         type = ctx.irBuiltIns.booleanType,
         value = value,
+    )
+
+    private fun irGetObjectValue(symbol: IrClassSymbol) = IrGetObjectValueImpl(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        type = symbol.defaultType,
+        symbol = symbol,
     )
 
     private fun IrType.unwrapFlow(from: IrFile): IrType {

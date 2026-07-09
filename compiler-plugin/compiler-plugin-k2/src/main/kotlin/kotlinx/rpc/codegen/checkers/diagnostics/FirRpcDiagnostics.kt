@@ -31,6 +31,7 @@ object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
     val AD_HOC_POLYMORPHISM_IN_RPC_SERVICE by error2<KtElement, Int, Name>()
     val TYPE_PARAMETERS_IN_RPC_FUNCTION by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
     val TYPE_PARAMETERS_IN_RPC_INTERFACE by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
+    val TOO_MANY_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION by error1<KtElement, Int>()
 
     override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
         return RpcDiagnosticRendererFactory

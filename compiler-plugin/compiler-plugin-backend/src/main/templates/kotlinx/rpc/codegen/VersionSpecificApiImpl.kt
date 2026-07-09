@@ -306,7 +306,18 @@ object VersionSpecificApiImpl : VersionSpecificApi {
         }
 
         valueArguments.forEachIndexed { index, irExpression ->
-            access.arguments[offset + index] = irExpression
+            if (irExpression == null) {
+                // unset on purpose, the callee's default value applies;
+                // fake overrides carry defaults on their overridden declarations, so they are not checked
+                val callee = (access.symbol.owner as? IrSimpleFunction)?.takeIf { !it.isFakeOverride }
+
+                require(callee == null || callee.valueParametersVS().getOrNull(index)?.defaultValue != null) {
+                    "Unset argument at index $index for '${callee?.name}': " +
+                            "only parameters with default values can be skipped"
+                }
+            } else {
+                access.arguments[offset + index] = irExpression
+            }
         }
 
         typeArguments.forEachIndexed { index, irType ->

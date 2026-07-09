@@ -31,6 +31,15 @@ object RpcNames {
     val CHECK_FOR_ARGUMENT_NAME = Name.identifier("checkFor")
 }
 
+object RpcLimits {
+    /**
+     * Invokators branch on every subset of absent optional parameters (2^n call sites),
+     * see `RpcStubGenerator.generateInvokator`.
+     * The FIR checker rejects functions above this limit to keep generated code bounded.
+     */
+    const val MAX_OPTIONAL_PARAMETERS_IN_RPC_FUNCTION: Int = 8
+}
+
 object ProtoClassId {
     val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoMessage"))
     val protoDescriptor = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("ProtoDescriptor"))
