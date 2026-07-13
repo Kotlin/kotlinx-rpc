@@ -46,7 +46,7 @@ class GrpcTlsTest : GrpcTestBase() {
             val request = HelloRequest {
                 greeting = "world"
             }
-            val result = service.SayHello(request)
+            val result = service.sayHello(request)
 
             assertEquals("hello world", result.reply)
         } finally {
@@ -154,6 +154,6 @@ class GrpcTlsTest : GrpcTestBase() {
 private suspend fun defaultUnaryTest(client: GrpcClient) {
     val service = client.withService<EchoService>()
     val request = EchoRequest { message = "Echo" }
-    val response = service.UnaryEcho(request)
+    val response = service.unaryEcho(request)
     assertEquals("Echo", response.message)
 }

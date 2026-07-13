@@ -57,7 +57,7 @@ class ProtosTest {
     }
 
     // PresenceCheck wire bytes that contain only the optional field (field 2),
-    // i.e. the required `RequiredPresence` (field 1) is missing.
+    // i.e. the required `requiredPresence` (field 1) is missing.
     private fun presenceCheckMissingRequired(): ByteArray = encodeToBytes {
         it.writeFloat(2, 1f)
     }
@@ -133,7 +133,7 @@ class ProtosTest {
     fun testRepeatedWithRequiredSubField() {
         assertFailsWith<ProtobufException> {
             RepeatedWithRequired {
-                msgList = listOf(PresenceCheck { RequiredPresence = 2 }, PresenceCheck { })
+                msgList = listOf(PresenceCheck { requiredPresence = 2 }, PresenceCheck { })
             }
         }
     }
@@ -483,12 +483,12 @@ class ProtosTest {
         val mapMarshaller = grpcMarshallerOf<TestMap>()
         val populatedMap = TestMap {
             primitives = mapOf("one" to 1L)
-            messages = mapOf(1 to PresenceCheck { RequiredPresence = 7 })
+            messages = mapOf(1 to PresenceCheck { requiredPresence = 7 })
         }
 
         val decodedMap = encodeDecode(populatedMap, mapMarshaller)
         assertEquals(mapOf("one" to 1L), decodedMap.primitives)
-        assertEquals(7, decodedMap.messages.getValue(1).RequiredPresence)
+        assertEquals(7, decodedMap.messages.getValue(1).requiredPresence)
 
         val emptyMap = mapMarshaller.decode(Buffer())
         assertTrue(emptyMap.primitives.isEmpty())
@@ -501,8 +501,8 @@ class ProtosTest {
         val msg = TestMap {
             primitives = mapOf("one" to 1, "two" to 2, "three" to 3)
             messages = mapOf(
-                1 to PresenceCheck { RequiredPresence = 1 },
-                2 to PresenceCheck { RequiredPresence = 2; OptionalPresence = 3F }
+                1 to PresenceCheck { requiredPresence = 1 },
+                2 to PresenceCheck { requiredPresence = 2; optionalPresence = 3F }
             )
         }
 
@@ -510,8 +510,8 @@ class ProtosTest {
         assertEquals(msg.primitives, decoded.primitives)
         assertEquals(msg.messages.size, decoded.messages.size)
         for ((key, value) in msg.messages) {
-            assertEquals(value.RequiredPresence, decoded.messages[key]!!.RequiredPresence)
-            assertEquals(value.OptionalPresence, decoded.messages[key]!!.OptionalPresence)
+            assertEquals(value.requiredPresence, decoded.messages[key]!!.requiredPresence)
+            assertEquals(value.optionalPresence, decoded.messages[key]!!.optionalPresence)
         }
     }
 

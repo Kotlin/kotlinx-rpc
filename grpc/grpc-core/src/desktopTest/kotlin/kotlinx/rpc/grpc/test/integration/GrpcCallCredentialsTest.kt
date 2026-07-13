@@ -326,7 +326,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
 private suspend fun unaryCall(grpcClient: GrpcClient) {
     val service = grpcClient.withService<EchoService>()
-    val response = service.UnaryEcho(EchoRequest { message = "Echo" })
+    val response = service.unaryEcho(EchoRequest { message = "Echo" })
     assertEquals("Echo", response.message)
 }
 

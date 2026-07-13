@@ -20,7 +20,7 @@ actual fun GrpcTestBase.testUserAgent(
             this.userAgent = userAgent
         }
     ) {
-        it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
 
         // grpc-java stores the composed user-agent ("<prefix> grpc-java-<transport>/<version>")
         // on ManagedChannelImpl, reachable through the forwarding wrapper's `delegate`.

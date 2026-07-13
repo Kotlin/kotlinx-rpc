@@ -32,7 +32,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class ReferenceTestServiceImpl : ReferenceTestService {
-    override suspend fun Get(message: References): kotlinx.rpc.grpc.test.References {
+    override suspend fun get(message: References): kotlinx.rpc.grpc.test.References {
         return kotlinx.rpc.grpc.test.References {
             other = kotlinx.rpc.grpc.test.Other {
                 field = message.other.arg.toInt()
@@ -42,27 +42,27 @@ class ReferenceTestServiceImpl : ReferenceTestService {
         }
     }
 
-    override suspend fun Enum(message: UsingEnum): UsingEnum {
+    override suspend fun `enum`(message: UsingEnum): UsingEnum {
         return message
     }
 
-    override suspend fun Optional(message: OptionalTypes): OptionalTypes {
+    override suspend fun optional(message: OptionalTypes): OptionalTypes {
         return message
     }
 
-    override suspend fun Repeated(message: Repeated): Repeated {
+    override suspend fun repeated(message: Repeated): Repeated {
         return message
     }
 
-    override suspend fun Nested(message: Nested): Nested {
+    override suspend fun nested(message: Nested): Nested {
         return message
     }
 
-    override suspend fun Map(message: TestMap): TestMap {
+    override suspend fun map(message: TestMap): TestMap {
         return message
     }
 
-    override suspend fun OneOf(message: OneOf): OneOf {
+    override suspend fun oneOf(message: OneOf): OneOf {
         return message
     }
 }
@@ -81,7 +81,7 @@ class TestReferenceService : GrpcTestBase() {
             }
         }
 
-        val result = service.Get(arg)
+        val result = service.get(arg)
 
         assertEquals("42", result.primitive)
         assertEquals(42, result.other.field)
@@ -90,7 +90,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testEnum() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Enum(UsingEnum {
+        val result = service.`enum`(UsingEnum {
             enum = kotlinx.rpc.grpc.test.Enum.ONE
         })
 
@@ -100,7 +100,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testOptional() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val resultNotNull = service.Optional(OptionalTypes {
+        val resultNotNull = service.optional(OptionalTypes {
             name = "test"
             age = 42
             reference = kotlinx.rpc.grpc.test.Other {
@@ -112,7 +112,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(42, resultNotNull.age)
         assertEquals(42, resultNotNull.reference.field)
 
-        val resultNullable = service.Optional(OptionalTypes {
+        val resultNullable = service.optional(OptionalTypes {
             clearName()
             clearAge()
         })
@@ -125,7 +125,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testRepeated() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Repeated(Repeated {
+        val result = service.repeated(Repeated {
             listFixed32 = listOf(0u, 1u, 2u)
             listInt32 = listOf(0, 1, 2)
             listString = listOf("test", "hello")
@@ -142,7 +142,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(1, result.listReference.size)
         assertEquals(42, result.listReference[0].other.field)
 
-        val resultEmpty = service.Repeated(Repeated {})
+        val resultEmpty = service.repeated(Repeated {})
 
         assertEquals(emptyList(), resultEmpty.listString)
         assertEquals(emptyList(), resultEmpty.listFixed32)
@@ -153,7 +153,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testNested() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Nested(Nested {
+        val result = service.nested(Nested {
             inner1 = Nested.Inner1 {
                 inner11 = Nested.Inner1.Inner11 {
                     reference12 = Nested.Inner1.Inner12 { }
@@ -222,7 +222,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testMap() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Map(TestMap {
+        val result = service.map(TestMap {
             primitives = mapOf("1" to 2, "2" to 1)
             references = mapOf("ref" to kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
@@ -238,7 +238,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testOneOf() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result1 = service.OneOf(OneOf {
+        val result1 = service.oneOf(OneOf {
             primitives = OneOf.Primitives.StringValue("42")
             references = OneOf.References.Other(kotlinx.rpc.grpc.test.Other {
                 field = 42
@@ -252,7 +252,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(42L, (result1.mixed as OneOf.Mixed.Int64).value)
         assertEquals(ByteString(42), (result1.single as OneOf.Single.Bytes).value)
 
-        val result2 = service.OneOf(OneOf {
+        val result2 = service.oneOf(OneOf {
             primitives = OneOf.Primitives.Bool(true)
             references = OneOf.References.InnerReferences(kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
@@ -269,7 +269,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals("42", (result2.mixed as OneOf.Mixed.AllPrimitives).value.string)
         assertEquals(null, result2.single)
 
-        val result3 = service.OneOf(OneOf {
+        val result3 = service.oneOf(OneOf {
             primitives = OneOf.Primitives.Int32(42)
         })
 

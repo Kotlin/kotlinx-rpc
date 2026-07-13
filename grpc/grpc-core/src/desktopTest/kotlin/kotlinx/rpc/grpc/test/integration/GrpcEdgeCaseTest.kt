@@ -33,7 +33,7 @@ class GrpcEdgeCaseTest {
             assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
                 runTest {
                     val service = client.withService<EchoService>()
-                    service.ServerStreamingEcho(message = EchoRequest {
+                    service.serverStreamingEcho(message = EchoRequest {
                         message = "Echo"
                     }).retryWhen { cause, attempt ->
                         // we expect the cause to be UNAVAILABLE for every retry

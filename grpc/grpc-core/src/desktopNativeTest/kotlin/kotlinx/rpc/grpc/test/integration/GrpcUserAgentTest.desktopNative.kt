@@ -23,7 +23,7 @@ actual fun GrpcTestBase.testUserAgent(
                 this.userAgent = userAgent
             }
         ) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         }
     }
 

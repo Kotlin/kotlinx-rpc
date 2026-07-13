@@ -425,7 +425,7 @@ class MetadataTest : GrpcTestBase() {
 
     private suspend fun unaryEcho(grpcClient: GrpcClient) {
         val service = grpcClient.withService<EchoService>()
-        val response = service.UnaryEcho(EchoRequest { message = "Echo" })
+        val response = service.unaryEcho(EchoRequest { message = "Echo" })
         assertEquals("Echo", response.message)
     }
 

@@ -11,7 +11,7 @@ import kotlinx.rpc.grpc.test.HelloRequest
 import kotlinx.rpc.grpc.test.invoke
 
 internal class GreeterServiceImpl : GreeterService {
-    override suspend fun SayHello(message: HelloRequest): HelloReply {
+    override suspend fun sayHello(message: HelloRequest): HelloReply {
         delay(message.timeout?.toLong() ?: 0)
         return HelloReply {
             this.message = "Hello ${message.name}"
