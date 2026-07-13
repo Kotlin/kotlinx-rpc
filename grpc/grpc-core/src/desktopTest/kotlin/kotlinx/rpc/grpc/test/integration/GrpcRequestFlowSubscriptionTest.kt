@@ -42,7 +42,7 @@ class GrpcRequestFlowSubscriptionTest : GrpcTestBase() {
             // point before we cancel: an eagerly-subscribed request flow has already run its
             // initialization, a lazily/dispatched one has not.
             val job = launch(start = CoroutineStart.UNDISPATCHED) {
-                service.BidirectionalStreamingEcho(
+                service.bidirectionalStreamingEcho(
                     flow {
                         requestFlowSubscribed = true
                         awaitCancellation()

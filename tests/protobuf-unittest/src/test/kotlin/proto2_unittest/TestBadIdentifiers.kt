@@ -37,10 +37,10 @@ class TestBadIdentifiers {
         // If this compiles, the generator correctly escapes Kotlin keywords.
         val msg = BadFieldNames {
             `for` = 42
-            this.OptionalInt32 = 1
+            this.optionalInt32 = 1
         }
         assertNotNull(msg)
         assertEquals(42, msg.`for`)
-        assertEquals(1, msg.OptionalInt32)
+        assertEquals(1, msg.optionalInt32)
     }
 }

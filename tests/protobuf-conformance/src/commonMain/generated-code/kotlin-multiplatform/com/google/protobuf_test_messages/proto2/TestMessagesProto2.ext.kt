@@ -243,9 +243,9 @@ val TestAllTypesProto2.fieldname1OrNull: Int? get() = if (this.presence.hasField
 val TestAllTypesProto2.fieldName2OrNull: Int? get() = if (this.presence.hasFieldName2) this.fieldName2 else null
 
 /**
- * Returns the value of the `FieldName3` field if present, otherwise null.
+ * Returns the value of the `fieldName3` field if present, otherwise null.
  */
-val TestAllTypesProto2.FieldName3OrNull: Int? get() = if (this.presence.hasFieldName3) this.FieldName3 else null
+val TestAllTypesProto2.fieldName3OrNull: Int? get() = if (this.presence.hasFieldName3) this.fieldName3 else null
 
 /**
  * Returns the value of the `field_Name4_` field if present, otherwise null.
@@ -268,9 +268,9 @@ val TestAllTypesProto2.field_0Name6OrNull: Int? get() = if (this.presence.hasFie
 val TestAllTypesProto2.fieldName7OrNull: Int? get() = if (this.presence.hasFieldName7) this.fieldName7 else null
 
 /**
- * Returns the value of the `FieldName8` field if present, otherwise null.
+ * Returns the value of the `fieldName8` field if present, otherwise null.
  */
-val TestAllTypesProto2.FieldName8OrNull: Int? get() = if (this.presence.hasFieldName8) this.FieldName8 else null
+val TestAllTypesProto2.fieldName8OrNull: Int? get() = if (this.presence.hasFieldName8) this.fieldName8 else null
 
 /**
  * Returns the value of the `field_Name9` field if present, otherwise null.
@@ -278,19 +278,19 @@ val TestAllTypesProto2.FieldName8OrNull: Int? get() = if (this.presence.hasField
 val TestAllTypesProto2.field_Name9OrNull: Int? get() = if (this.presence.hasField_Name9) this.field_Name9 else null
 
 /**
- * Returns the value of the `Field_Name10` field if present, otherwise null.
+ * Returns the value of the `field_Name10` field if present, otherwise null.
  */
-val TestAllTypesProto2.Field_Name10OrNull: Int? get() = if (this.presence.hasField_Name10) this.Field_Name10 else null
+val TestAllTypesProto2.field_Name10OrNull: Int? get() = if (this.presence.hasField_Name10) this.field_Name10 else null
 
 /**
- * Returns the value of the `FIELD_NAME11` field if present, otherwise null.
+ * Returns the value of the `fIELD_NAME11` field if present, otherwise null.
  */
-val TestAllTypesProto2.FIELD_NAME11OrNull: Int? get() = if (this.presence.hasFIELD_NAME11) this.FIELD_NAME11 else null
+val TestAllTypesProto2.fIELD_NAME11OrNull: Int? get() = if (this.presence.hasFIELD_NAME11) this.fIELD_NAME11 else null
 
 /**
- * Returns the value of the `FIELDName12` field if present, otherwise null.
+ * Returns the value of the `fIELDName12` field if present, otherwise null.
  */
-val TestAllTypesProto2.FIELDName12OrNull: Int? get() = if (this.presence.hasFIELDName12) this.FIELDName12 else null
+val TestAllTypesProto2.fIELDName12OrNull: Int? get() = if (this.presence.hasFIELDName12) this.fIELDName12 else null
 
 /**
  * Returns the value of the `_FieldName13` field if present, otherwise null.
@@ -318,9 +318,9 @@ val TestAllTypesProto2.field__Name16OrNull: Int? get() = if (this.presence.hasFi
 val TestAllTypesProto2.fieldName17__OrNull: Int? get() = if (this.presence.hasFieldName17__) this.fieldName17__ else null
 
 /**
- * Returns the value of the `FieldName18__` field if present, otherwise null.
+ * Returns the value of the `fieldName18__` field if present, otherwise null.
  */
-val TestAllTypesProto2.FieldName18__OrNull: Int? get() = if (this.presence.hasFieldName18__) this.FieldName18__ else null
+val TestAllTypesProto2.fieldName18__OrNull: Int? get() = if (this.presence.hasFieldName18__) this.fieldName18__ else null
 
 /**
  * Returns the value of the `messageSetCorrect` field if present, otherwise null.

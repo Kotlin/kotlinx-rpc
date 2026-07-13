@@ -43,7 +43,7 @@ class GrpcAnnotationsTest {
                 as GrpcServiceDescriptor<GrpcAnnotationsService>
         val methodDescriptor = descriptor
             .delegate(unitMarshaller, null)
-            .getMethodDescriptor("Empty")
+            .getMethodDescriptor("empty")
 
         assertNotNull(methodDescriptor)
 

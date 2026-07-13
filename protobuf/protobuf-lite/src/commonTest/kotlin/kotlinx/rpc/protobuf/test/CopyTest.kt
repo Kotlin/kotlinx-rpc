@@ -87,7 +87,7 @@ class CopyTest {
     fun `copy maps - deep copy keys and values`() {
         val original = TestMap {
             primitives = mapOf("a" to 10L, "b" to 20L)
-            messages = mapOf(1 to PresenceCheck { RequiredPresence = 1 }, 2 to PresenceCheck { RequiredPresence = 2 })
+            messages = mapOf(1 to PresenceCheck { requiredPresence = 1 }, 2 to PresenceCheck { requiredPresence = 2 })
         }
 
         val copy = original.copy()
@@ -99,7 +99,7 @@ class CopyTest {
         // deep copy for message map values
         for ((k, v) in original.messages) {
             val cv = copy.messages.getValue(k)
-            assertEquals(v.RequiredPresence, cv.RequiredPresence)
+            assertEquals(v.requiredPresence, cv.requiredPresence)
             assertTrue(v !== cv)
         }
 
@@ -146,24 +146,24 @@ class CopyTest {
 
     @Test
     fun `copy preserves presence and required fields`() {
-        val p = PresenceCheck { RequiredPresence = 1 }
+        val p = PresenceCheck { requiredPresence = 1 }
         val cp = p.copy()
-        assertEquals(1, cp.RequiredPresence)
-        assertEquals(0f, cp.OptionalPresence)
-        assertNull(cp.OptionalPresenceOrNull)
+        assertEquals(1, cp.requiredPresence)
+        assertEquals(0f, cp.optionalPresence)
+        assertNull(cp.optionalPresenceOrNull)
         assertFalse(cp.presence.hasOptionalPresence)
 
-        val cp2 = p.copy { OptionalPresence = 5f }
-        assertEquals(1, cp2.RequiredPresence)
-        assertEquals(5f, cp2.OptionalPresence)
-        assertEquals(5f, cp2.OptionalPresenceOrNull)
+        val cp2 = p.copy { optionalPresence = 5f }
+        assertEquals(1, cp2.requiredPresence)
+        assertEquals(5f, cp2.optionalPresence)
+        assertEquals(5f, cp2.optionalPresenceOrNull)
     }
 
     @Test
     fun `copy clear optional scalar removes presence and stays cleared after round trip`() {
         val original = PresenceCheck {
-            RequiredPresence = 1
-            OptionalPresence = 5f
+            requiredPresence = 1
+            optionalPresence = 5f
         }
 
         val cleared = original.copy {
@@ -171,18 +171,18 @@ class CopyTest {
         }
 
         assertTrue(original.presence.hasOptionalPresence)
-        assertEquals(5f, original.OptionalPresence)
-        assertEquals(5f, original.OptionalPresenceOrNull)
+        assertEquals(5f, original.optionalPresence)
+        assertEquals(5f, original.optionalPresenceOrNull)
 
         assertFalse(cleared.presence.hasOptionalPresence)
-        assertEquals(0f, cleared.OptionalPresence)
-        assertNull(cleared.OptionalPresenceOrNull)
+        assertEquals(0f, cleared.optionalPresence)
+        assertNull(cleared.optionalPresenceOrNull)
 
         val decoded = cleared.encodeDecode(grpcMarshallerOf<PresenceCheck>())
-        assertEquals(1, decoded.RequiredPresence)
+        assertEquals(1, decoded.requiredPresence)
         assertFalse(decoded.presence.hasOptionalPresence)
-        assertEquals(0f, decoded.OptionalPresence)
-        assertNull(decoded.OptionalPresenceOrNull)
+        assertEquals(0f, decoded.optionalPresence)
+        assertNull(decoded.optionalPresenceOrNull)
     }
 
     @Test
@@ -266,8 +266,8 @@ class CopyTest {
     @Test
     fun `copy with nested messages - user mutation after copy should not affect copy`() {
         val userMessages = mutableMapOf(
-            1 to PresenceCheck { RequiredPresence = 1 },
-            2 to PresenceCheck { RequiredPresence = 2 }
+            1 to PresenceCheck { requiredPresence = 1 },
+            2 to PresenceCheck { requiredPresence = 2 }
         )
         val original = TestMap {
             messages = userMessages
@@ -276,7 +276,7 @@ class CopyTest {
         val copy = original.copy()
 
         // Mutate user's map after copy
-        userMessages[3] = PresenceCheck { RequiredPresence = 3 }
+        userMessages[3] = PresenceCheck { requiredPresence = 3 }
 
         // Original has all 3, copy should only have original 2
         assertEquals(3, original.messages.size)
