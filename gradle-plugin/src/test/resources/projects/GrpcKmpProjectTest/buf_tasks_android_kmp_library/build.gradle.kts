@@ -152,6 +152,15 @@ tasks.register("test_tasks") {
             "bufLintMacosArm64Main", "bufLintMacosArm64Test",
             "bufLintJvmMain", "bufLintJvmTest",
             "bufLintAndroidMain",
+
+            // lock
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+            "bufLockAndroidMain",
         )
 
         assertTasks(
@@ -175,6 +184,17 @@ tasks.register("test_tasks") {
             "bufLintMacosArm64Main", "bufLintMacosArm64Test",
             "bufLintJvmMain", "bufLintJvmTest",
             "bufLintAndroidMain",
+        )
+
+        assertTasks(
+            "all by type lock", allTasks.matchingType<BufLockTask>(),
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+            "bufLockAndroidMain",
         )
     }
 }

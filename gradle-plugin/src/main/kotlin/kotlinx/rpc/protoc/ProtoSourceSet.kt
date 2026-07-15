@@ -176,6 +176,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
 
     /**
      * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
+     * Its BSR module dependencies are included as well, and its `buf.lock` file, if set, is adopted.
      *
      * Example:
      * ```kotlin
@@ -193,6 +194,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
 
     /**
      * Proto files from [protoSourceSet] will be available as import, but will not be used for code generation.
+     * Its BSR module dependencies are included as well, and its `buf.lock` file, if set, is adopted.
      *
      * Example:
      * ```kotlin
@@ -210,6 +212,8 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
 
     /**
      * Proto files from [protoSourceSets] will be available as import, but will not be used for code generation.
+     * Their BSR module dependencies are included as well, and the first `buf.lock` file found among
+     * them, if any, is adopted.
      *
      * Example:
      * ```kotlin
@@ -249,7 +253,8 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
     /**
      * Proto source sets that this source set extends from.
      * All proto files from [protoSourceSet] will be used for code generation.
-     * All imports [protoSourceSet] will be included as well.
+     * All imports from [protoSourceSet] will be included as well, along with its BSR module dependencies.
+     * Its `buf.lock` file, if set, is adopted by this source set.
      *
      * Example:
      * ```kotlin
@@ -264,6 +269,42 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * ```
      */
     public fun extendsFrom(protoSourceSet: ProtoSourceSet)
+
+    /**
+     * BSR (Buf Schema Registry) module dependencies for this source set.
+     *
+     * These are inherited by source sets that [extendsFrom] this one.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             bsrDeps.module("buf.build/googleapis/googleapis")
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public val bsrDeps: ProtocBufDeps
+
+    /**
+     * Configures the [bsrDeps] of this source set.
+     *
+     * Example:
+     * ```kotlin
+     * kotlin.sourceSets {
+     *     commonMain {
+     *         proto {
+     *             bsrDeps {
+     *                 module("buf.build/googleapis/googleapis")
+     *             }
+     *         }
+     *     }
+     * }
+     * ```
+     */
+    public fun bsrDeps(configure: Action<ProtocBufDeps>)
 }
 
 /**

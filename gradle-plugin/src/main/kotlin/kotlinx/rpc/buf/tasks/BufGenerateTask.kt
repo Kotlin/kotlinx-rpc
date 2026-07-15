@@ -51,13 +51,13 @@ public abstract class BufGenerateTask @Inject internal constructor(
     @get:Optional
     public abstract val bufLockFile: Property<File>
 
-    // unsued, but required for Gradle to properly recognise inputs
+    // unused, but required for Gradle to properly recognise inputs
     @get:InputFiles
     @get:SkipWhenEmpty
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal abstract val protoFiles: ListProperty<File>
 
-    // unsued, but required for Gradle to properly recognise inputs
+    // unused, but required for Gradle to properly recognise inputs
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal abstract val importProtoFiles: ListProperty<File>

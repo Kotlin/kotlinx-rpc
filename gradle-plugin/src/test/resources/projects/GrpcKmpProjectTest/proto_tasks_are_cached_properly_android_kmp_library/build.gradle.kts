@@ -27,5 +27,11 @@ kotlin {
 }
 
 rpc {
-    protoc()
+    protoc {
+        buf {
+            deps {
+                module("buf.build/googleapis/googleapis")
+            }
+        }
+    }
 }

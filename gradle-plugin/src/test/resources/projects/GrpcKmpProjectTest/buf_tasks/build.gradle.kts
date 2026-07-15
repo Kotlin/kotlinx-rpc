@@ -139,6 +139,16 @@ tasks.register("test_tasks") {
             "bufLintJvmMain", "bufLintJvmTest",
             "bufLintWebMain".ifKotlinAtLeast("2.2.20"), "bufLintWebTest".ifKotlinAtLeast("2.2.20"),
             "bufLintJsMain", "bufLintJsTest",
+
+            // lock
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+            "bufLockWebMain".ifKotlinAtLeast("2.2.20"), "bufLockWebTest".ifKotlinAtLeast("2.2.20"),
+            "bufLockJsMain", "bufLockJsTest",
         )
 
         assertTasks(
@@ -164,6 +174,18 @@ tasks.register("test_tasks") {
             "bufLintJvmMain", "bufLintJvmTest",
             "bufLintWebMain".ifKotlinAtLeast("2.2.20"), "bufLintWebTest".ifKotlinAtLeast("2.2.20"),
             "bufLintJsMain", "bufLintJsTest",
+        )
+
+        assertTasks(
+            "all by type lock", allTasks.matchingType<BufLockTask>(),
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+            "bufLockWebMain".ifKotlinAtLeast("2.2.20"), "bufLockWebTest".ifKotlinAtLeast("2.2.20"),
+            "bufLockJsMain", "bufLockJsTest",
         )
     }
 }
