@@ -267,6 +267,21 @@ tasks.register("test_tasks") {
             "bufLintAndroidInstrumentedTestDebug",
             "bufLintAndroidUnitTestDebug",
             "bufLintAndroidUnitTestRelease",
+
+            // lock
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+
+            // android lock
+            "bufLockAndroidDebug",
+            "bufLockAndroidRelease",
+            "bufLockAndroidInstrumentedTestDebug",
+            "bufLockAndroidUnitTestDebug",
+            "bufLockAndroidUnitTestRelease",
         )
 
         assertTasks(
@@ -302,6 +317,23 @@ tasks.register("test_tasks") {
             "bufLintAndroidInstrumentedTestDebug",
             "bufLintAndroidUnitTestDebug",
             "bufLintAndroidUnitTestRelease",
+        )
+
+        assertTasks(
+            "all by type lock", allTasks.matchingType<BufLockTask>(),
+            "bufLockCommonMain", "bufLockCommonTest",
+            "bufLockNativeMain", "bufLockNativeTest",
+            "bufLockAppleMain", "bufLockAppleTest",
+            "bufLockMacosMain", "bufLockMacosTest",
+            "bufLockMacosArm64Main", "bufLockMacosArm64Test",
+            "bufLockJvmMain", "bufLockJvmTest",
+
+            // android lock
+            "bufLockAndroidDebug",
+            "bufLockAndroidRelease",
+            "bufLockAndroidInstrumentedTestDebug",
+            "bufLockAndroidUnitTestDebug",
+            "bufLockAndroidUnitTestRelease",
         )
     }
 }

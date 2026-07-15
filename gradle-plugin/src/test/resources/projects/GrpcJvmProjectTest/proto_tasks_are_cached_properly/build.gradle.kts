@@ -15,7 +15,6 @@ rpc {
         buf {
             deps {
                 module("buf.build/googleapis/googleapis")
-                lockFile = file("buf.lock")
             }
         }
     }

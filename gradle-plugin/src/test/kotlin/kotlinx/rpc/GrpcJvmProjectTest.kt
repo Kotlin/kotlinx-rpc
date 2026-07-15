@@ -597,7 +597,7 @@ inputs:
         assertEquals(TaskOutcome.SUCCESS, fourthRunMain.protoTaskOutcome(processCommonMainProtoFiles))
 
         projectDir
-            .resolve("buf.lock")
+            .resolve("buf/${mainSourceSet.name}/buf.lock")
             .appendText("# Force update lock task")
 
         val fifthRunMain = runGradle(bufGenerateCommonMain)
@@ -783,50 +783,6 @@ deps:
             .resolve(mainSourceSet.name)
             .resolve("buf.lock")
         assert(workspaceLockFile.exists()) { "buf.lock was not generated" }
-
-        result.assertMainTaskExecuted(
-            protoFiles = listOf(
-                Path("some.proto")
-            ),
-            generatedFiles = listOf(
-                Path("Some.kt"),
-                Path("Some.ext.kt"),
-                Path(RPC_INTERNAL, "Some.kt"),
-            )
-        )
-    }
-
-    @TestFactory
-    fun `Buf Lock File`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
-
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
-        result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
-
-        assertBufYaml(mainSourceSet,
-            content = """
-version: v2
-lint:
-  use:
-    - STANDARD
-breaking:
-  use:
-    - FILE
-modules:
-  - path: proto
-deps:
-  - buf.build/googleapis/googleapis
-            """.trimIndent())
-
-        val workspaceLockFile = protoBuildDirSourceSets
-            .resolve(mainSourceSet.name)
-            .resolve("buf.lock")
-        assert(workspaceLockFile.exists()) { "buf.lock was not copied" }
-        assertEquals(
-            projectDir.resolve("buf.lock").readText(),
-            workspaceLockFile.readText(),
-        )
 
         result.assertMainTaskExecuted(
             protoFiles = listOf(

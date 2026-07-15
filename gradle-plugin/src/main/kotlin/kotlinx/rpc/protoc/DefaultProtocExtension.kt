@@ -276,13 +276,15 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
         val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
 
+        val bsrDependencies = buf.deps.modules.zip(protoSourceSet.bsrDeps.modules) {a, b -> a + b }.map { it.distinct() }
+
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
             withImport = withImport,
-            depModules = buf.deps.modules,
+            depModules = bsrDependencies,
             properties = properties,
         ) {
             dependsOn(processProtoTask)
@@ -301,10 +303,10 @@ internal open class DefaultProtocExtension @Inject constructor(
         val bufLockTask = project.registerBufLockTask(
             name = capitalName,
             workingDir = buildSourceSetsDir,
-            bsrDependencies = buf.deps.modules,
+            bsrDependencies = bsrDependencies,
+            lockFile = protoSourceSet.bsrDeps.lockFile,
             properties = properties,
         ) {
-            sourceLockFile.convention(buf.deps.lockFile)
             dependsOn(generateBufYamlTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)

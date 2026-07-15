@@ -276,11 +276,13 @@ public open class BufCommentsExtension @Inject internal constructor(internal val
 }
 
 /**
- * Configures BSR dependencies for the `buf.yaml` file.
+ * Extension for configuring BSR module dependencies.
  *
  * @see <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">buf.yaml deps reference</a>
  */
-public open class BufDepsExtension @Inject internal constructor(internal val project: Project) {
+public open class BufDepsExtension @Inject internal constructor(
+    internal val project: Project
+) {
     /**
      * BSR modules defined by their name and optionally followed by a colon and either a commit id or tag.
      */
@@ -292,9 +294,4 @@ public open class BufDepsExtension @Inject internal constructor(internal val pro
     public fun module(name: String) {
         modules.add(name)
     }
-
-    /**
-     * When set, the `buf.lock` file is copied from this path instead of being generated via `buf dep update`.
-     */
-    public val lockFile: Property<File> = project.objects.property<File>()
 }
