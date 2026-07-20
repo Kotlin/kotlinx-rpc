@@ -16,15 +16,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StreamingTestServiceImpl : StreamingTestService {
-    override fun Server(message: References): Flow<References> {
+    override fun server(message: References): Flow<References> {
         return flow { emit(message); emit(message); emit(message) }
     }
 
-    override suspend fun Client(message: Flow<References>): References {
+    override suspend fun client(message: Flow<References>): References {
         return message.last()
     }
 
-    override fun Bidi(message: Flow<References>): Flow<References> {
+    override fun bidi(message: Flow<References>): Flow<References> {
         return message
     }
 }
@@ -37,7 +37,7 @@ class StreamingTest : GrpcTestBase() {
     @Test
     fun testServerStreaming() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<StreamingTestService>()
-        service.Server(References {
+        service.server(References {
             other = Other {
                 field = 42
             }
@@ -53,7 +53,7 @@ class StreamingTest : GrpcTestBase() {
     @Test
     fun testClientStreaming() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<StreamingTestService>()
-        val result = service.Client(flow {
+        val result = service.client(flow {
             repeat(3) {
                 emit(References {
                     other = Other {
@@ -69,7 +69,7 @@ class StreamingTest : GrpcTestBase() {
     @Test
     fun testBidiStreaming() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<StreamingTestService>()
-        service.Bidi(flow {
+        service.bidi(flow {
             repeat(3) {
                 emit(References {
                     other = Other {

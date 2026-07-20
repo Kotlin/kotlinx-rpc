@@ -10,10 +10,10 @@ import kotlinx.rpc.protoc.gen.core.CodeGenerator
 import kotlinx.rpc.protoc.gen.core.Config
 import kotlinx.rpc.protoc.gen.core.FileGenerator
 import kotlinx.rpc.protoc.gen.core.GeneratedMetadata
+import kotlinx.rpc.protoc.gen.core.NameConflictCollector
 import kotlinx.rpc.protoc.gen.core.model.FileDeclaration
 import kotlinx.rpc.protoc.gen.core.model.FqName
 import kotlinx.rpc.protoc.gen.core.model.Model
-import kotlinx.rpc.protoc.gen.core.NameConflictCollector
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
 import kotlinx.rpc.protoc.gen.core.model.fullName
 import kotlinx.rpc.protoc.gen.core.scoped
@@ -53,18 +53,24 @@ class ModelToGrpcKotlinCommonGenerator(
             service.methods.forEach { method ->
                 val inputType = method.inputType
                 val outputType = method.outputType
-                val annotations = when (method.dec.options.idempotencyLevel) {
-                    null, DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENCY_UNKNOWN -> {
-                        emptyList()
-                    }
 
-                    DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENT -> {
-                        listOf("@%T(idempotent = true)".scoped(FqName.Annotations.GrpcMethod))
+                val annotationArgs = buildList {
+                    if (method.name != method.dec.name) add("""name = "${method.dec.name}"""")
+                    when (method.dec.options.idempotencyLevel) {
+                        null, DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENCY_UNKNOWN -> {}
+                        DescriptorProtos.MethodOptions.IdempotencyLevel.IDEMPOTENT -> {
+                            add("idempotent = true")
+                        }
+                        DescriptorProtos.MethodOptions.IdempotencyLevel.NO_SIDE_EFFECTS -> {
+                            add("idempotent = true")
+                            add("safe = true")
+                        }
                     }
-
-                    DescriptorProtos.MethodOptions.IdempotencyLevel.NO_SIDE_EFFECTS -> {
-                        listOf("@%T(idempotent = true, safe = true)".scoped(FqName.Annotations.GrpcMethod))
-                    }
+                }
+                val annotations = if (annotationArgs.isEmpty()) {
+                    emptyList()
+                } else {
+                    listOf("@%T(${annotationArgs.joinToString() })".scoped(FqName.Annotations.GrpcMethod))
                 }
 
                 val arg = inputType.value.name.scoped()

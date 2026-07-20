@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.grpc.test.invoke
 
 internal class EchoServiceImpl: EchoService {
-    override suspend fun UnaryEcho(message: EchoRequest): EchoResponse {
+    override suspend fun unaryEcho(message: EchoRequest): EchoResponse {
         delay(message.timeout.toLong())
         return EchoResponse { this.message = message.message }
     }
 
-    override fun ServerStreamingEcho(message: EchoRequest): Flow<EchoResponse> {
+    override fun serverStreamingEcho(message: EchoRequest): Flow<EchoResponse> {
         val count = message.serverStreamReps ?: 5u
         return flow {
             repeat(count.toInt()) {
@@ -25,12 +25,12 @@ internal class EchoServiceImpl: EchoService {
         }
     }
 
-    override suspend fun ClientStreamingEcho(message: Flow<EchoRequest>): EchoResponse {
+    override suspend fun clientStreamingEcho(message: Flow<EchoRequest>): EchoResponse {
         val result = message.toList().joinToString(", ") { it.message }
         return EchoResponse { this.message = result }
     }
 
-    override fun BidirectionalStreamingEcho(message: Flow<EchoRequest>): Flow<EchoResponse> {
+    override fun bidirectionalStreamingEcho(message: Flow<EchoRequest>): Flow<EchoResponse> {
         return flow {
             message.collect {
                 emit(EchoResponse { this.message = it.message })

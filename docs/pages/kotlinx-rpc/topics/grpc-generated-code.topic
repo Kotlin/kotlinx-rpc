@@ -255,9 +255,14 @@
         <code-block lang="Kotlin">
             @Grpc
             interface Echo {
-                fun ServerStream(message: EchoRequest): Flow&lt;EchoResponse&gt;
-                suspend fun ClientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse
-                fun BidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt;
+                @Grpc.Method(name = "ServerStream")
+                fun serverStream(message: EchoRequest): Flow&lt;EchoResponse&gt;
+
+                @Grpc.Method(name = "ClientStream")
+                suspend fun clientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse
+
+                @Grpc.Method(name = "BidiStream")
+                fun bidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt;
             }
         </code-block>
         <p>
@@ -265,17 +270,17 @@
         </p>
         <code-block lang="Kotlin">
             class EchoImpl : Echo {
-                override fun ServerStream(message: EchoRequest): Flow&lt;EchoResponse&gt; {
+                override fun serverStream(message: EchoRequest): Flow&lt;EchoResponse&gt; {
                     return flow {
                         repeat(3) { emit(EchoResponse { text = message.text }) }
                     }
                 }
 
-                override suspend fun ClientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse {
+                override suspend fun clientStream(message: Flow&lt;EchoRequest&gt;): EchoResponse {
                     return EchoResponse { text = message.last().text }
                 }
 
-                override fun BidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt; {
+                override fun bidiStream(message: Flow&lt;EchoRequest&gt;): Flow&lt;EchoResponse&gt; {
                     return message.map { EchoResponse { text = it.text } }
                 }
             }
@@ -287,18 +292,18 @@
             val echo = client.withService&lt;Echo&gt;()
 
             // Server streaming
-            echo.ServerStream(EchoRequest { text = "hello" }).collect {
+            echo.serverStream(EchoRequest { text = "hello" }).collect {
                 println(it.text)
             }
 
             // Client streaming
-            val result = echo.ClientStream(flow {
+            val result = echo.clientStream(flow {
                 emit(EchoRequest { text = "one" })
                 emit(EchoRequest { text = "two" })
             })
 
             // Bidirectional streaming
-            echo.BidiStream(flow {
+            echo.bidiStream(flow {
                 emit(EchoRequest { text = "ping" })
             }).collect {
                 println(it.text)

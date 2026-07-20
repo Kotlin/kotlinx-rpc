@@ -135,9 +135,9 @@ class EvilNamesProto3Test {
     @Test
     fun testLeadingUnderscoreField() {
         val msg = EvilNamesProto3 {
-            LeadingUnderscore = "leading"
+            leadingUnderscore = "leading"
         }
-        assertEquals("leading", msg.LeadingUnderscore)
+        assertEquals("leading", msg.leadingUnderscore)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
@@ -160,16 +160,16 @@ class EvilNamesProto3Test {
     @Test
     fun testDeprecatedFieldNames() {
         val msg = EvilNamesProto3 {
-            DEPRECATEDFoo = "deprecated"
+            dEPRECATEDFoo = "deprecated"
             __DEPRECATED_Bar = "also_deprecated"
             not_DEPRECATEDFoo = "not_deprecated"
-            ID = "id-123"
+            iD = "id-123"
             aBNotification = "notif"
         }
-        assertEquals("deprecated", msg.DEPRECATEDFoo)
+        assertEquals("deprecated", msg.dEPRECATEDFoo)
         assertEquals("also_deprecated", msg.__DEPRECATED_Bar)
         assertEquals("not_deprecated", msg.not_DEPRECATEDFoo)
-        assertEquals("id-123", msg.ID)
+        assertEquals("id-123", msg.iD)
         assertEquals("notif", msg.aBNotification)
     }
 
@@ -239,7 +239,7 @@ class EvilNamesProto3Test {
         val marshaller = grpcMarshallerOf<EvilNamesProto3>()
         val msg = EvilNamesProto3 {
             hasFoo = true
-            Bar = "test"
+            bar = "test"
             `class` = "cls"
             int = 3.14
             long = false
@@ -253,14 +253,14 @@ class EvilNamesProto3Test {
             builder = true
             k = mapOf(1 to 2)
             v = mapOf("x" to "y")
-            ALL_CAPS = listOf("X")
-            ALL_CAPS_MAP = mapOf(1 to true)
+            aLL_CAPS = listOf("X")
+            aLL_CAPS_MAP = mapOf(1 to true)
         }
         val encoded = marshaller.encode(msg)
         val decoded = marshaller.decode(encoded)
 
         assertEquals(msg.hasFoo, decoded.hasFoo)
-        assertEquals(msg.Bar, decoded.Bar)
+        assertEquals(msg.bar, decoded.bar)
         assertEquals(msg.`class`, decoded.`class`)
         assertEquals(msg.int, decoded.int)
         assertEquals(msg.long, decoded.long)
@@ -274,8 +274,8 @@ class EvilNamesProto3Test {
         assertEquals(msg.builder, decoded.builder)
         assertEquals(msg.k, decoded.k)
         assertEquals(msg.v, decoded.v)
-        assertEquals(msg.ALL_CAPS, decoded.ALL_CAPS)
-        assertEquals(msg.ALL_CAPS_MAP, decoded.ALL_CAPS_MAP)
+        assertEquals(msg.aLL_CAPS, decoded.aLL_CAPS)
+        assertEquals(msg.aLL_CAPS_MAP, decoded.aLL_CAPS_MAP)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testHardKeywordGettersAndSetters

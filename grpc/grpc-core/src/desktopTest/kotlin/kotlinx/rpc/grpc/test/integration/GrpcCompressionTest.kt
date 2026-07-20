@@ -84,7 +84,7 @@ class GrpcCompressionTest : GrpcTestBase() {
                 proceed(it)
             }
         ) { client ->
-            client.withService<EchoService>().UnaryEcho(EchoRequest.invoke { message = "Unknown compression" })
+            client.withService<EchoService>().unaryEcho(EchoRequest.invoke { message = "Unknown compression" })
         }
     }
 
@@ -116,7 +116,7 @@ class GrpcCompressionTest : GrpcTestBase() {
                 }
             ) {
                 val message = "Echo with ${clientCompression?.name}"
-                val response = it.withService<EchoService>().UnaryEcho(EchoRequest.invoke { this.message = message })
+                val response = it.withService<EchoService>().unaryEcho(EchoRequest.invoke { this.message = message })
 
                 // Verify the call succeeded and data is correct
                 assertEquals(message, response.message)

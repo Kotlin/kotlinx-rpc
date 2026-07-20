@@ -1086,7 +1086,7 @@ internal class RpcStubGenerator(
             keyType = ctx.irBuiltIns.stringType,
             valueType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
             declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.grpcName) to irMethodDescriptor(callable, resolver, marshallerConfig)
+                stringConst(callable.name) to irMethodDescriptor(callable, resolver, marshallerConfig)
             },
         )
     }
