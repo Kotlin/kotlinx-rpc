@@ -38,6 +38,7 @@ abstract class GrpcBaseTest : BaseTest() {
         runNonExistentTask(extractProtoImport(set))
         runNonExistentTask(generateBufYaml(set))
         runNonExistentTask(generateBufGenYaml(set))
+        runNonExistentTask(bufLock(set))
     }
 
     protected fun runGrpcTest(
@@ -55,12 +56,14 @@ abstract class GrpcBaseTest : BaseTest() {
             bufGenYaml: TaskOutcome? = null,
             protoFiles: TaskOutcome? = null,
             protoFilesImports: TaskOutcome? = null,
+            bufLock: TaskOutcome? = null,
         ) {
             assertOutcome(generate, bufGenerate(sourceSet))
             assertOutcome(bufYaml, generateBufYaml(sourceSet))
             assertOutcome(bufGenYaml, generateBufGenYaml(sourceSet))
             assertOutcome(protoFiles, processProtoFiles(sourceSet))
             assertOutcome(protoFilesImports, processProtoFilesImports(sourceSet))
+            assertOutcome(bufLock, bufLock(sourceSet))
         }
 
         fun BuildResult.assertOutcome(expected: TaskOutcome?, task: String) {
@@ -176,6 +179,46 @@ abstract class GrpcBaseTest : BaseTest() {
         @OptIn(ExperimentalPathApi::class)
         fun cleanProtoBuildDir() {
             protoBuildDir.deleteRecursively()
+        }
+
+        fun assertBufYaml(sourceSet: SSets, @Language("Yaml") content: String) {
+            val file = protoBuildDirSourceSets
+                .resolve(sourceSet.name)
+                .resolve("buf.yaml")
+
+            assert(file.exists()) {
+                "File '${file.absolutePathString()}' does not exist"
+            }
+
+            val fileContent = file.readLines().joinToString("\n")
+
+            assertEquals(content.trimIndent(), fileContent.trimIndent())
+        }
+
+
+        fun bsrModule(sourceSet: SSets): String = "buf.build/kotlinx-rpc/${sourceSet.kebab}"
+
+        fun assertBufYamlDeps(sourceSet: SSets, expected: Set<String>) {
+            val file = protoBuildDirSourceSets
+                .resolve(sourceSet.name)
+                .resolve("buf.yaml")
+
+            assert(file.exists()) {
+                "File '${file.absolutePathString()}' does not exist"
+            }
+
+            val lines = file.readLines().map { it.trim() }
+            val depsIndex = lines.indexOf("deps:")
+            val actual = if (depsIndex == -1) {
+                emptySet()
+            } else {
+                lines.drop(depsIndex + 1)
+                    .takeWhile { it.startsWith("- ") }
+                    .map { it.removePrefix("- ").trim() }
+                    .toSet()
+            }
+
+            assertEquals(expected, actual, "buf.yaml deps for source set '${sourceSet.name}'")
         }
 
         fun assertBufGenYaml(sourceSet: SSets, @Language("Yaml") content: String) {
@@ -332,6 +375,18 @@ abstract class GrpcBaseTest : BaseTest() {
             }
         }
 
+        fun GrpcTestEnv.runAndCheckBufDeps(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extended: List<SSets> = emptyList(),
+        ) {
+            cleanProtoBuildDir()
+
+            runForSet(sourceSet).assertBufDepsSourceSet(sourceSet, *imports, extendedProto = extended)
+
+            dryRunCompilation(sourceSet)
+        }
+
         fun GrpcTestEnv.runAndCheckZipFiles(
             sourceSet: SSets,
             vararg imports: SSets,
@@ -382,6 +437,54 @@ abstract class GrpcBaseTest : BaseTest() {
             }
 
             return runGradle(bufGenerate(sourceSet))
+        }
+
+        private fun BuildResult.assertBufDepsSourceSet(
+            sourceSet: SSets,
+            vararg imports: SSets,
+            extendedProto: List<SSets>,
+        ) {
+            if (!sourceSet.applicable()) {
+                println(
+                    "Skipping ${sourceSet.capital} source set " +
+                        "because it's not applicable for the current Kotlin version"
+                )
+                return
+            }
+
+            val importsSet = imports
+                .onEach {
+                    if (!it.applicable()) {
+                        println(
+                            "Skipping ${it.capital} import source set " +
+                                "because it's not applicable for the current Kotlin version"
+                        )
+                    }
+                }
+                .filter { it.applicable() }
+                .toSet()
+
+            val generateFor = extendedProto.filter { it.applicable() } + sourceSet
+            // because every sset has import dependency too for these tests
+            val fullImports = importsSet + generateFor
+
+            // This scenario carries no local .proto files: the dependencies come purely from BSR
+            // modules, so nothing is copied or generated locally. We only verify the task graph
+            // wiring and that the generated buf.yaml declares the expected deps.
+            assertTaskExecuted(
+                sourceSet = sourceSet,
+                protoFiles = emptyList(),
+                importProtoFiles = emptyList(),
+                generatedFiles = emptyList(),
+                notExecuted = sourceSet.all().filter { it != sourceSet && it !in fullImports },
+            )
+
+            // The generated buf.yaml must declare the source set's own BSR module plus every module
+            // inherited from its parent (import) source sets in the KMP hierarchy.
+            val expectedModules = (setOf(sourceSet) + importsSet + generateFor)
+                .map { bsrModule(it) }
+                .toSet()
+            assertBufYamlDeps(sourceSet, expectedModules)
         }
 
         private fun BuildResult.assertZipSourceSet(
@@ -518,6 +621,7 @@ inputs:
         fun extractProtoImport(sourceSet: SSets) = "extractProtoImport${sourceSet.capital}"
         fun generateBufYaml(sourceSet: SSets) = "generateBufYaml${sourceSet.capital}"
         fun generateBufGenYaml(sourceSet: SSets) = "generateBufGenYaml${sourceSet.capital}"
+        fun bufLock(sourceSet: SSets) = "bufLock${sourceSet.capital}"
 
         val mainSourceSet: SSets = when (type) {
             Type.Kmp -> SSetsKmp.Default.commonMain
@@ -544,6 +648,8 @@ inputs:
         val extractProtoCommonTest = extractProto(testSourceSet)
         val extractProtoImportCommonMain = extractProtoImport(mainSourceSet)
         val extractProtoImportCommonTest = extractProtoImport(testSourceSet)
+        val bufLockCommonMain = bufLock(mainSourceSet)
+        val bufLockCommonTest = bufLock(testSourceSet)
 
         val protoBuildDir: Path by lazy {
             projectDir
@@ -765,6 +871,7 @@ inputs:
 typealias plm = PluginMode
 
 private val SSets.capital get() = name.replaceFirstChar { it.titlecase() }
+private val SSets.kebab get() = name.replace(Regex("([a-z0-9])([A-Z])"), "$1-$2").lowercase()
 
 private fun SSets.compileTaskName(mode: PluginMode): String {
     return when (mode) {

@@ -11,7 +11,9 @@ import kotlinx.rpc.protoc.protoTasks
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
 import javax.inject.Inject
@@ -94,6 +96,22 @@ public open class BufExtension @Inject internal constructor(objects: ObjectFacto
      */
     public fun tasks(configure: Action<BufTasksExtension>) {
         configure.execute(tasks)
+    }
+
+    /**
+     * Configures BSR module dependencies for this workspace.
+     *
+     * @see [BufDepsExtension]
+     */
+    public val deps: BufDepsExtension = objects.newInstance(BufDepsExtension::class.java)
+
+    /**
+     * Configures BSR module dependencies for this workspace.
+     *
+     * @see [BufDepsExtension]
+     */
+    public fun deps(configure: Action<BufDepsExtension>) {
+        configure.execute(deps)
     }
 }
 
@@ -255,4 +273,25 @@ public open class BufCommentsExtension @Inject internal constructor(internal val
      * - Comments on the `editions` declaration.
      */
     public val includeFileLevelComments: Property<Boolean> = project.objects.property<Boolean>().convention(true)
+}
+
+/**
+ * Extension for configuring BSR module dependencies.
+ *
+ * @see <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">buf.yaml deps reference</a>
+ */
+public open class BufDepsExtension @Inject internal constructor(
+    internal val project: Project
+) {
+    /**
+     * BSR modules defined by their name and optionally followed by a colon and either a commit id or tag.
+     */
+    public val modules: ListProperty<String> = project.objects.listProperty<String>()
+
+    /**
+     * BSR modules defined by their name and optionally followed by a colon and either a commit id or tag.
+     */
+    public fun module(name: String) {
+        modules.add(name)
+    }
 }

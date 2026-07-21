@@ -256,6 +256,7 @@
             <li><code>generateBufGenYaml&lt;SourceSet&gt;</code> — writes <path>buf.gen.yaml</path>.</li>
             <li><code>process&lt;SourceSet&gt;ProtoFiles</code> — copies the source set's own <path>.proto</path> files.</li>
             <li><code>process&lt;SourceSet&gt;ProtoFilesImports</code> — copies imported <path>.proto</path> files.</li>
+            <li><code>bufLock&lt;SourceSet&gt;</code> — runs <code>buf deps update</code> or copies the defined <path>buf.lock</path>.</li>
             <li><code>bufGenerate&lt;SourceSet&gt;</code> — runs <code>buf generate</code> for the prepared workspace.</li>
         </list>
         <p>
@@ -407,6 +408,11 @@
                     plugin({ options.put("mode", "lite") }) {
                         getByName("myPlugin")
                     }
+
+                    bsrDeps {
+                        module("buf.build/googleapis/googleapis")
+                        lockFile = File("buf.lock")
+                    }
                 }
             }
         </code-block>
@@ -428,7 +434,15 @@
                 Adds standalone imported proto files that do not belong to another proto source set.
             </def>
             <def title="extendsFrom" id="grpc-proto-source-set-extends-from">
-                Reuses another proto source set as generation input and inherits its imports and plugins.
+                Reuses another proto source set as generation input and inherits its imports, plugins and bsr modules.
+            </def>
+            <def title="bsrDeps.module" id="grpc-proto-source-set-bsrDeps-module">
+                Adds a
+                <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">BSR module dependency</a>
+                to the generated <path>buf.yaml</path>.
+            </def>
+            <def title="bsrDeps.lockFile" id="grpc-proto-source-set-bsrDeps-lock-file">
+                Location of the persistent buf.lock file. Used as input if it exists, or generated here if it doesn't. Default: <path>buf/&lt;sourceSet>/buf.lock</path>.
             </def>
         </deflist>
     </chapter>
@@ -437,6 +451,10 @@
             <code>kotlinx.rpc</code> uses the Buf CLI to prepare the workspace and run generation.
             Buf configuration lives under <code>rpc.protoc.buf</code>.
         </p>
+        <note>
+            The Buf CLI applies rate limits to public BSR modules. To increase your limits,
+            see the <a href="https://buf.build/docs/bsr/rate-limits/#raising-your-limits">Buf documentation</a>.
+        </note>
         <code-block lang="Kotlin">
             import kotlinx.rpc.buf.*
             import kotlin.time.Duration.Companion.seconds
@@ -460,6 +478,10 @@
                                 copyComments = true
                                 includeFileLevelComments = true
                             }
+                        }
+
+                        deps {
+                            module("buf.build/googleapis/googleapis")
                         }
                     }
                 }
@@ -517,6 +539,11 @@
             <def title="generate.comments.includeFileLevelComments" id="grpc-buf-generate-file-comments">
                 Controls whether file-level comments are copied to generated Kotlin sources.
                 This is a <code>kotlinx.rpc</code>-specific option, not a Buf flag.
+            </def>
+            <def title="deps.module(name)" id="grpc-buf-deps-module">
+                Adds a
+                <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">BSR module dependency</a>
+                to the generated <path>buf.yaml</path>.
             </def>
         </deflist>
     </chapter>

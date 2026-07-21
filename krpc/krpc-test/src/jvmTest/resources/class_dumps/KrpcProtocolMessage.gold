@@ -1,7 +1,7 @@
 org.jetbrains.krpc.internal.transport.RPCProtocolMessage [Declared name: kotlinx.rpc.krpc.internal.KrpcProtocolMessage]
-  - pluginParams: kotlin.collections.Map
   - connectionId: kotlin.Long
     - Nullable
+  - pluginParams: kotlin.collections.Map
 
   org.jetbrains.krpc.internal.transport.RPCProtocolMessage.Failure
   - Declared name: kotlinx.rpc.krpc.internal.KrpcProtocolMessage.Failure

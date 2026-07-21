@@ -228,6 +228,8 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         runNonExistentTask(generateBufYamlCommonTest)
         runNonExistentTask(generateBufGenYamlCommonMain)
         runNonExistentTask(generateBufGenYamlCommonTest)
+        runNonExistentTask(bufLockCommonMain)
+        runNonExistentTask(bufLockCommonTest)
     }
 
     @TestFactory
@@ -242,6 +244,382 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
                 Path("Some.kt"),
                 Path("Some.ext.kt"),
                 Path(RPC_INTERNAL, "Some.kt"),
+            )
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy`() = runGrpcTest {
+        runAndCheckBufDeps(
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.jvmTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.jvmMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.webMain,
+            SSetsKmp.Default.commonMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.webTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+            SSetsKmp.Default.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.jsTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.webMain, SSetsKmp.Default.jsMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.webTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.commonTest, SSetsKmp.Default.nativeTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonMain, SSetsKmp.Default.nativeMain, SSetsKmp.Default.appleMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.macosTest,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+        )
+        runAndCheckBufDeps(
+            SSetsKmp.Default.macosArm64Test,
+            SSetsKmp.Default.commonMain,
+            SSetsKmp.Default.nativeMain,
+            SSetsKmp.Default.appleMain,
+            SSetsKmp.Default.macosMain,
+            SSetsKmp.Default.macosArm64Main,
+            SSetsKmp.Default.commonTest,
+            SSetsKmp.Default.nativeTest,
+            SSetsKmp.Default.appleTest,
+            SSetsKmp.Default.macosTest,
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy Android KMP Library`() = runGrpcTest {
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy Android KMP Library With Test Tasks`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
+    ) {
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy Android KMP Library With Test Tasks Not Wired`() = runGrpcTest(
+        versionsPredicate = { versionsWhereAndroidKmpLibExist() },
+    ) {
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.jvmTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.jvmMain,
+            SSetsKmp.AndroidKmpLib.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidMain,
+            SSetsKmp.AndroidKmpLib.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidHostTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.commonTest,
+            SSetsKmp.AndroidKmpLib.androidMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.AndroidKmpLib.androidDeviceTest,
+            SSetsKmp.AndroidKmpLib.commonMain, SSetsKmp.AndroidKmpLib.androidMain,
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy Legacy Android`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+    }
+
+    @TestFactory
+    fun `BSR Dependency KMP Hierarchy Legacy Android Not Wired`() = runGrpcTest(
+        versionsPredicate = { !isAgp9 },
+    ) {
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.commonTest,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonMain,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.jvmTest,
+            SSetsKmp.LegacyAndroid.commonMain, SSetsKmp.LegacyAndroid.jvmMain,
+            SSetsKmp.LegacyAndroid.commonTest,
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.debug,
+            ),
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonMain,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,
+                SSetsKmp.LegacyAndroid.release,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidUnitTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain,  SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidUnitTestRelease,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.release, SSetsKmp.LegacyAndroid.androidRelease,
+            SSetsKmp.LegacyAndroid.commonTest,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.test,
+                SSetsKmp.LegacyAndroid.androidUnitTest,
+                SSetsKmp.LegacyAndroid.testRelease,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesRelease,
+            )
+        )
+
+        runAndCheckBufDeps(
+            SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug,
+            SSetsKmp.LegacyAndroid.main, SSetsKmp.LegacyAndroid.androidMain, SSetsKmp.LegacyAndroid.commonMain,
+            SSetsKmp.LegacyAndroid.debug, SSetsKmp.LegacyAndroid.androidDebug,
+            extended = listOf(
+                SSetsKmp.LegacyAndroid.androidTest,
+                SSetsKmp.LegacyAndroid.androidInstrumentedTest,
+                SSetsKmp.LegacyAndroid.androidTestDebug,
+                SSetsKmp.LegacyAndroid.testFixtures,
+                SSetsKmp.LegacyAndroid.testFixturesDebug,
             )
         )
     }
@@ -1007,6 +1385,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS
         )
 
         // didn't run
@@ -1035,6 +1414,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         cleanProtoBuildDir()
@@ -1048,6 +1428,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.Default.commonMain.sourceDir()
@@ -1063,6 +1444,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         val firstRunMacosArm64Main = runForSet(SSetsKmp.Default.macosArm64Main)
@@ -1074,6 +1456,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Main.assertOutcomes(
@@ -1083,6 +1466,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Main.assertOutcomes(
@@ -1092,6 +1476,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Main.assertOutcomes(
@@ -1101,6 +1486,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Main.assertOutcomes(
@@ -1110,6 +1496,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1133,6 +1520,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1142,6 +1530,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1151,6 +1540,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1160,6 +1550,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1169,6 +1560,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1178,6 +1570,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1187,6 +1580,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1196,6 +1590,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         firstRunMacosArm64Test.assertOutcomes(
@@ -1205,6 +1600,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1228,6 +1624,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1256,6 +1653,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Main.assertOutcomes(
@@ -1265,6 +1663,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Main.assertOutcomes(
@@ -1274,6 +1673,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Main.assertOutcomes(
@@ -1283,6 +1683,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Main.assertOutcomes(
@@ -1292,6 +1693,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1315,6 +1717,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1324,6 +1727,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1333,6 +1737,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1342,6 +1747,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1351,6 +1757,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1360,6 +1767,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1369,6 +1777,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1378,6 +1787,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunMacosArm64Test.assertOutcomes(
@@ -1387,6 +1797,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1406,6 +1817,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunJvmMain.assertOutcomes(
@@ -1415,6 +1827,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1446,6 +1859,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunJvmMain.assertOutcomes(
@@ -1455,6 +1869,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1487,6 +1902,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1506,6 +1922,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         cleanProtoBuildDir()
@@ -1519,6 +1936,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.AndroidKmpLib.commonMain.sourceDir()
@@ -1534,6 +1952,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.AndroidKmpLib.androidMain.sourceDir()
@@ -1549,6 +1968,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1568,6 +1988,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         val firstRunAndroidHostTest = runForSet(SSetsKmp.AndroidKmpLib.androidHostTest)
@@ -1579,6 +2000,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunAndroidHostTest.assertOutcomes(
@@ -1588,6 +2010,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.AndroidKmpLib.androidHostTest.sourceDir()
@@ -1603,6 +2026,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunAndroidHostTest.assertOutcomes(
@@ -1612,6 +2036,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         val firstRunJvmMain = runForSet(SSetsKmp.AndroidKmpLib.jvmMain)
@@ -1623,6 +2048,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunJvmMain.assertOutcomes(
@@ -1632,6 +2058,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1654,6 +2081,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunJvmMain.assertOutcomes(
@@ -1663,6 +2091,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1686,6 +2115,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1707,6 +2137,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         cleanProtoBuildDir()
@@ -1720,6 +2151,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.LegacyAndroid.commonMain.sourceDir()
@@ -1735,6 +2167,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.LegacyAndroid.androidMain.sourceDir()
@@ -1750,6 +2183,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -1771,6 +2205,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.LegacyAndroid.main.sourceDir()
@@ -1786,6 +2221,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.LegacyAndroid.debug.sourceDir()
@@ -1801,6 +2237,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         val firstRunAndroidUnitTestDebug = runForSet(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
@@ -1812,6 +2249,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunAndroidUnitTestDebug.assertOutcomes(
@@ -1821,6 +2259,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsKmp.LegacyAndroid.androidUnitTestDebug.sourceDir()
@@ -1836,6 +2275,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunAndroidUnitTestDebug.assertOutcomes(
@@ -1845,6 +2285,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.LegacyAndroid.testFixtures.sourceDir()
@@ -1860,6 +2301,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         thirdRunAndroidUnitTestDebug.assertOutcomes(
@@ -1869,6 +2311,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.LegacyAndroid.testFixturesRelease.sourceDir()
@@ -1884,6 +2327,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         fourthRunAndroidUnitTestDebug.assertOutcomes(
@@ -1893,6 +2337,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         SSetsKmp.LegacyAndroid.test.sourceDir()
@@ -1908,6 +2353,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         fifthRunAndroidUnitTestDebug.assertOutcomes(
@@ -1917,6 +2363,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         val firstRunJvmMain = runForSet(SSetsKmp.LegacyAndroid.jvmMain)
@@ -1928,6 +2375,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunJvmMain.assertOutcomes(
@@ -1937,6 +2385,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -1961,6 +2410,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunJvmMain.assertOutcomes(
@@ -1970,6 +2420,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
