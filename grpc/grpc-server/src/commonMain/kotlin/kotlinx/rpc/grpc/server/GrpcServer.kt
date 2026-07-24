@@ -8,11 +8,16 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.grpc.server.internal.GrpcServerImpl
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
+import kotlinx.rpc.grpc.server.internal.applyConfig
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Server for listening for and dispatching incoming calls.
@@ -127,6 +132,7 @@ public fun GrpcServer(
     val config = GrpcServerConfiguration().apply(configure)
     val serverBuilder = ServerBuilder(port, config.credentials).apply {
         config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
+        applyConfig(config)
     }
 
     return GrpcServerImpl(
@@ -149,6 +155,7 @@ public fun GrpcServer(
 public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
+    internal var keepAlive: KeepAlive? = null
 
     /**
      * Sets the credentials to be used by the gRPC server for secure communication.
@@ -175,6 +182,73 @@ public class GrpcServerConfiguration internal constructor() {
     public var marshallerConfig: GrpcMarshallerConfig? = null
 
     /**
+     * The maximum size, in bytes, of an inbound message accepted by this server.
+     *
+     * If `null` (the default), the gRPC runtime's default limit is used. Values must be non-negative.
+     */
+    public var maxInboundMessageSize: Int? = null
+        set(value) {
+            require(value == null || value >= 0) { "maxInboundMessageSize must be >= 0" }
+            field = value
+        }
+
+    /**
+     * The maximum size, in bytes, of inbound metadata accepted by this server.
+     *
+     * If `null` (the default), the gRPC runtime's default limit is used. Values must be positive.
+     */
+    public var maxInboundMetadataSize: Int? = null
+        set(value) {
+            require(value == null || value > 0) { "maxInboundMetadataSize must be > 0" }
+            field = value
+        }
+
+    /**
+     * The maximum time a connection may have no active RPCs before it is gracefully closed.
+     *
+     * If `null` (the default) or [Duration.INFINITE], the limit is disabled. Finite values must be
+     * at least one second and less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
+     * provider does.
+     */
+    public var maxConnectionIdle: Duration? = null
+        set(value) {
+            value.validateConnectionDuration("maxConnectionIdle", 1.seconds)
+            field = value
+        }
+
+    /**
+     * The maximum time a connection may exist before it is gracefully closed.
+     *
+     * If `null` (the default) or [Duration.INFINITE], the limit is disabled. Finite values must be
+     * at least one second and less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
+     * provider does.
+     */
+    public var maxConnectionAge: Duration? = null
+        set(value) {
+            value.validateConnectionDuration("maxConnectionAge", 1.seconds)
+            field = value
+        }
+
+    /**
+     * The grace period for active RPCs after [maxConnectionAge] is reached.
+     *
+     * If `null` (the default) or [Duration.INFINITE], active RPCs may finish without a deadline.
+     * Finite values must not be negative and must be less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
+     * provider does.
+     */
+    public var maxConnectionAgeGrace: Duration? = null
+        set(value) {
+            value.validateConnectionDuration("maxConnectionAgeGrace", Duration.ZERO)
+            field = value
+        }
+
+    /**
      * Sets a custom [GrpcHandlerRegistry] to be used by the gRPC server for resolving service implementations
      * that were not registered before via the [services] configuration block.
      *
@@ -196,6 +270,39 @@ public class GrpcServerConfiguration internal constructor() {
      */
     public fun intercept(vararg interceptors: GrpcServerInterceptor) {
         this.interceptors.addAll(interceptors)
+    }
+
+    /**
+     * Configures server-side keepalive pings.
+     *
+     * The default settings are a two-hour interval and a 20-second timeout.
+     * Both durations must be positive and, unless [Duration.INFINITE] (which disables
+     * keepalive pings), less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
+     * provider does.
+     */
+    public fun keepAlive(configure: KeepAlive.() -> Unit) {
+        keepAlive = KeepAlive().apply(configure)
+    }
+
+    /**
+     * Server-side keepalive settings.
+     *
+     * @property time The time without read activity before a keepalive ping is sent.
+     * @property timeout The time to wait for read activity after sending a keepalive ping.
+     */
+    public class KeepAlive internal constructor() {
+        public var time: Duration = 2.hours
+            set(value) {
+                value.validateConnectionDuration("keepalive time", 1.milliseconds)
+                field = value
+            }
+        public var timeout: Duration = 20.seconds
+            set(value) {
+                value.validateConnectionDuration("keepalive timeout", 1.milliseconds)
+                field = value
+            }
     }
 
     /**
