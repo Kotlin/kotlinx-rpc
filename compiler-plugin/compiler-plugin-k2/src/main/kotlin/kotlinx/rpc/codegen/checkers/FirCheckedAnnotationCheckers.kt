@@ -177,13 +177,11 @@ object FirCheckedAnnotationHelper {
                 }
 
                 typeArgument is ConeTypeParameterType -> {
-                    typeArgument.lookupTag.typeParameterSymbol
+                    vsApi { typeArgument.typeParameterSymbolVS() }
                 }
 
                 typeArgument is FirTypeProjectionWithVariance -> {
-                    (typeArgument.typeRef.coneType as? ConeTypeParameterType)
-                        ?.lookupTag
-                        ?.typeParameterSymbol
+                    vsApi { (typeArgument.typeRef.coneType as? ConeTypeParameterType)?.typeParameterSymbolVS() }
                 }
 
                 else -> {
@@ -202,7 +200,7 @@ object FirCheckedAnnotationHelper {
                 }
 
                 typeArgument is ConeTypeParameterType -> {
-                    originSource ?: typeArgument.lookupTag.typeParameterSymbol.source
+                    originSource ?: vsApi { typeArgument.typeParameterSymbolVS() }?.source
                 }
 
                 typeArgument is FirTypeProjectionWithVariance -> {

@@ -16,7 +16,9 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.name.ClassId
@@ -57,6 +59,8 @@ interface FirVersionSpecificApi {
     var DeclarationBuildingContext<*>.sourceVS: KtSourceElement?
 
     fun pluginGeneratedElementKindVS(marker: Any? = null): KtFakeSourceElementKind
+
+    fun ConeTypeParameterType.typeParameterSymbolVS(): FirTypeParameterSymbol?
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {
