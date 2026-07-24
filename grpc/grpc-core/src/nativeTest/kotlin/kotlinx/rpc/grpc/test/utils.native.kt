@@ -21,6 +21,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import platform.posix.STDERR_FILENO
+import platform.posix.STDOUT_FILENO
 import platform.posix.close
 import platform.posix.dup
 import platform.posix.dup2
@@ -28,6 +29,7 @@ import platform.posix.fflush
 import platform.posix.pipe
 import platform.posix.read
 import platform.posix.stderr
+import platform.posix.stdout
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tracer_set_enabled
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.unsetenv
@@ -76,6 +78,41 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineS
         }
 
         // wait reading to finish
+        readJob.join()
+        outputBuf.toString()
+    }
+}
+
+@OptIn(UnsafeNumber::class)
+actual suspend fun captureStdOut(block: suspend () -> Unit): String = coroutineScope {
+    memScoped {
+        val pipeOut = allocArray<IntVar>(2)
+        check(pipe(pipeOut) == 0) { "pipe stdout failed" }
+
+        val savedStdout = dup(STDOUT_FILENO)
+
+        check(dup2(pipeOut[1], STDOUT_FILENO) != -1) { "dup2 stdout failed" }
+        close(pipeOut[1])
+
+        val outputBuf = StringBuilder()
+        val readJob = launch(Dispatchers.IO) {
+            val buf = ByteArray(4096)
+            var r: Long
+            do {
+                r = read(pipeOut[0], buf.refTo(0), buf.size.convert()).convert()
+                if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
+            } while (r > 0)
+            close(pipeOut[0])
+        }
+
+        try {
+            block()
+        } finally {
+            fflush(stdout)
+            dup2(savedStdout, STDOUT_FILENO)
+            close(savedStdout)
+        }
+
         readJob.join()
         outputBuf.toString()
     }
