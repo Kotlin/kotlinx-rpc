@@ -1,9 +1,9 @@
 org.jetbrains.krpc.internal.transport.RPCMessage.CallData [Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallData]
+  - callId: kotlin.String
   - callType: org.jetbrains.krpc.internal.transport.RPCMessage.CallType
     - Nullable
     - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallType
   - callableName: kotlin.String
-  - callId: kotlin.String
   - connectionId: kotlin.Long
     - Nullable
   - pluginParams: kotlin.collections.Map
