@@ -352,6 +352,17 @@ internal class NativeClientCall<Request, Response>(
                             // if the batch doesn't succeed, this is reflected in the recv status op batch.
                             onSuccess()
                         }
+                    } catch (e: Throwable) {
+                        // Catch exceptions to prevent them from escaping onto the native gRPC
+                        // completion queue thread, where no coroutine can handle them — causing
+                        // terminateWithUnhandledException → SIGABRT on iOS. Convert to a gRPC
+                        // cancellation so the error is routed through RECV_STATUS_ON_CLIENT →
+                        // listener → coroutine, where application-level try/catch can handle it.
+                        // See https://github.com/Kotlin/kotlinx-rpc/issues/749
+                        cancelInternal(
+                            grpc_status_code.GRPC_STATUS_INTERNAL,
+                            "Batch callback failed: ${e.message}"
+                        )
                     } finally {
                         // ignore failure, as it is reflected in the client status op
                         cleanup()

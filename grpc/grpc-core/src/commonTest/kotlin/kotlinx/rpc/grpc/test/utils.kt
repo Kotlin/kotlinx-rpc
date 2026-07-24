@@ -42,6 +42,14 @@ expect val runtime: Runtime
  */
 expect suspend fun captureStdErr(block: suspend () -> Unit): String
 
+/**
+ * Captures the standard output written during the execution of the provided suspending block.
+ *
+ * @param block A suspending lambda function whose standard output will be captured.
+ * @return A string containing the captured standard output.
+ */
+expect suspend fun captureStdOut(block: suspend () -> Unit): String
+
 expect suspend fun captureGrpcLogs(
     jvmLogLevel: String = "DEBUG",
     jvmLoggers: List<String> = listOf("io.grpc"),
