@@ -35,6 +35,12 @@ class GrpcKeepAliveTest : GrpcTestBase() {
     )
 
     @Test
+    fun `server keepalive set - should propagate settings to core libraries`() = testServerKeepAlive(
+        time = 15.seconds,
+        timeout = 5.seconds,
+    )
+
+    @Test
     fun `test keepalive negative time - should fail`() {
         val error = assertFailsWith<IllegalArgumentException> {
             runGrpcTest(
@@ -47,7 +53,7 @@ class GrpcKeepAliveTest : GrpcTestBase() {
                 // not reached
             }
         }
-        assertContains(error.message!!, "keepalive time must be positive")
+        assertContains(error.message!!, "keepalive time must be at least 1ms")
     }
 
     @Test
@@ -63,7 +69,39 @@ class GrpcKeepAliveTest : GrpcTestBase() {
                 // not reached
             }
         }
-        assertContains(error.message!!, "keepalive timeout must be positive")
+        assertContains(error.message!!, "keepalive timeout must be at least 1ms")
+    }
+
+    @Test
+    fun `server keepalive negative time - should fail`() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            runGrpcTest(
+                serverConfiguration = {
+                    keepAlive {
+                        this.time = (-1).seconds
+                    }
+                }
+            ) {
+                // not reached
+            }
+        }
+        assertContains(error.message!!, "keepalive time must be at least 1ms")
+    }
+
+    @Test
+    fun `server keepalive negative timeout - should fail`() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            runGrpcTest(
+                serverConfiguration = {
+                    keepAlive {
+                        this.timeout = (-1).seconds
+                    }
+                }
+            ) {
+                // not reached
+            }
+        }
+        assertContains(error.message!!, "keepalive timeout must be at least 1ms")
     }
 }
 
@@ -71,4 +109,9 @@ expect fun GrpcTestBase.testKeepAlive(
     time: Duration,
     timeout: Duration,
     withoutCalls: Boolean,
+)
+
+expect fun GrpcTestBase.testServerKeepAlive(
+    time: Duration,
+    timeout: Duration,
 )
