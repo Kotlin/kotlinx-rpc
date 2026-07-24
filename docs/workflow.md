@@ -193,7 +193,6 @@ Set `kotlinx.rpc.exclude.<target_name>=true` in `gradle.properties` of a module
 Example:
 ```properties
 kotlinx.rpc.exclude.wasmWasi=true
-kotlinx.rpc.exclude.watchosArm32=true
 kotlinx.rpc.exclude.watchosDeviceArm64=true
 ```
 

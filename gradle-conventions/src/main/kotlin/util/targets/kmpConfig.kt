@@ -36,7 +36,6 @@ private val NATIVE_TARGET_FACTORIES: Map<String, (KotlinMultiplatformExtension) 
     "iosX64" to { it.iosX64() },
     "iosArm64" to { it.iosArm64() },
     "iosSimulatorArm64" to { it.iosSimulatorArm64() },
-    "watchosArm32" to { it.watchosArm32() },
     "watchosArm64" to { it.watchosArm64() },
     "watchosSimulatorArm64" to { it.watchosSimulatorArm64() },
     "watchosDeviceArm64" to { it.watchosDeviceArm64() },
