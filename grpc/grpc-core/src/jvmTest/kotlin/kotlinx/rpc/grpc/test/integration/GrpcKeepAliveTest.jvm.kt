@@ -4,15 +4,18 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.withService
-import java.lang.reflect.Field
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 
 actual fun GrpcTestBase.testKeepAlive(
     time: Duration,
@@ -46,25 +49,23 @@ actual fun GrpcTestBase.testKeepAlive(
     }
 }
 
-private inline fun <reified R> Any.getField(vararg names: String): R {
-    var curr: Any = this
-    for (name in names) {
-        val field = findFieldInHierarchy(curr::class.java, name)
-            ?: throw NoSuchFieldException("Field '$name' not found in ${curr::class.java}")
-        field.isAccessible = true
-        curr = field.get(curr) as Any
-    }
-    return curr as R
-}
-
-private fun findFieldInHierarchy(clazz: Class<*>, name: String): Field? {
-    var c: Class<*>? = clazz
-    while (c != null) {
-        try {
-            return c.getDeclaredField(name)
-        } catch (_: NoSuchFieldException) {
-            c = c.superclass
+actual fun GrpcTestBase.testServerKeepAlive(
+    time: Duration,
+    timeout: Duration,
+) = runBlocking {
+    val server = GrpcServer(0) {
+        keepAlive {
+            this.time = time
+            this.timeout = timeout
         }
     }
-    return null
+
+    try {
+        val builder = server.getField<ServerBuilder<*>>("serverBuilder")
+        assertEquals(time, builder.getField<Long>("keepAliveTimeInNanos").nanoseconds)
+        assertEquals(timeout, builder.getField<Long>("keepAliveTimeoutInNanos").nanoseconds)
+    } finally {
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
+    }
 }

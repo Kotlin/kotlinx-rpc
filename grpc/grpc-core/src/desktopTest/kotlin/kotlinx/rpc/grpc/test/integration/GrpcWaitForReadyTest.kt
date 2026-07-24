@@ -30,6 +30,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
         // port by binding and releasing it, this cannot race with a concurrent test suite
         // being handed the same port between release and dial.
         const val UNAVAILABLE_PORT = 1
+        val FAIL_FAST_TIMEOUT = 10.seconds
     }
 
     override fun RpcServer.registerServices() {
@@ -83,9 +84,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
             credentials = plaintext()
             clientInterceptor {
                 callOptions.waitForReady = waitForReady
-                // Hang guard: a call that incorrectly waits for ready hits this deadline and
-                // surfaces as DEADLINE_EXCEEDED, failing the UNAVAILABLE assertion below.
-                callOptions.timeout = 10.seconds
+                callOptions.timeout = FAIL_FAST_TIMEOUT
                 proceed(it)
             }.forEach { intercept(it) }
         }
@@ -100,5 +99,4 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
             client.awaitTermination(30.seconds)
         }
     }
-
 }
