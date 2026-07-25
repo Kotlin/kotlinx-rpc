@@ -34,6 +34,8 @@ import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 //##csm /specific
 //##csm specific=[2.2.20...2.2.*]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
@@ -64,6 +66,8 @@ import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 //##csm /specific
 //##csm specific=[2.3.0...2.4.*]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
