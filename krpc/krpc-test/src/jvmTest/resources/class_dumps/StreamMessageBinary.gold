@@ -3,10 +3,10 @@ org.jetbrains.krpc.internal.transport.RPCMessage.StreamMessageBinary [Declared n
   - connectionId: kotlin.Long
     - Nullable
   - data: kotlin.ByteArray
+  - flowId: kotlin.String
+    - Declared name: streamId
   - pluginParams: kotlin.collections.Map
     - Nullable
   - serviceId: kotlin.Long
     - Nullable
   - serviceType: kotlin.String
-  - flowId: kotlin.String
-    - Declared name: streamId

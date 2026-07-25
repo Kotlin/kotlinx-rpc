@@ -108,7 +108,7 @@ private fun ApiTestContext.checkEnum(kClass: KClass<Enum<*>>) {
 }
 
 private fun ApiTestContext.serialProperties(kClass: KClass<*>): List<String> {
-    return kClass.memberProperties.map { serialProperty(it) }
+    return kClass.memberProperties.sortedBy { it.serialName() }.map { serialProperty(it) }
 }
 
 private fun ApiTestContext.serialProperty(property: KProperty<*>): String {

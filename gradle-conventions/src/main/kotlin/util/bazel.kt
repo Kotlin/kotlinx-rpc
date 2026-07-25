@@ -32,7 +32,6 @@ val nativeDependencyTargets = listOf(
     NativeDependencyTarget("macosArm64", "macos_arm64", "macosarm64"),
     NativeDependencyTarget("tvosArm64", "tvos_arm64", "tvosarm64"),
     NativeDependencyTarget("tvosSimulatorArm64", "tvos_simulator_arm64", "tvossimulatorarm64"),
-    NativeDependencyTarget("watchosArm32", "watchos_arm32", "watchosarm32"),
     NativeDependencyTarget("watchosArm64", "watchos_arm64", "watchosarm64"),
     NativeDependencyTarget("watchosDeviceArm64", "watchos_device_arm64", "watchosdevicearm64"),
     NativeDependencyTarget("watchosSimulatorArm64", "watchos_simulator_arm64", "watchossimulatorarm64"),
@@ -155,7 +154,6 @@ fun KotlinMultiplatformExtension.registerNativeDependencyTargets(project: Projec
     if ("macosArm64" in enabled) macosArm64()
     if ("tvosArm64" in enabled) tvosArm64()
     if ("tvosSimulatorArm64" in enabled) tvosSimulatorArm64()
-    if ("watchosArm32" in enabled) watchosArm32()
     if ("watchosArm64" in enabled) watchosArm64()
     if ("watchosDeviceArm64" in enabled) watchosDeviceArm64()
     if ("watchosSimulatorArm64" in enabled) watchosSimulatorArm64()

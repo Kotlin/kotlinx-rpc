@@ -54,7 +54,7 @@ ROOT_REPO_DIR="$REPO_ROOT/build/repo/org/jetbrains/kotlinx"
 NATIVE_DEPS_REPO_DIR="$NATIVE_DEPS/build/repo/org/jetbrains/kotlinx"
 
 # kotlinName:bazelName for every native-deps target.
-ALL_TARGETS="iosArm64:ios_arm64 iosSimulatorArm64:ios_simulator_arm64 iosX64:ios_x64 macosArm64:macos_arm64 tvosArm64:tvos_arm64 tvosSimulatorArm64:tvos_simulator_arm64 watchosArm32:watchos_arm32 watchosArm64:watchos_arm64 watchosDeviceArm64:watchos_device_arm64 watchosSimulatorArm64:watchos_simulator_arm64 linuxArm64:linux_arm64 linuxX64:linux_x64"
+ALL_TARGETS="iosArm64:ios_arm64 iosSimulatorArm64:ios_simulator_arm64 iosX64:ios_x64 macosArm64:macos_arm64 tvosArm64:tvos_arm64 tvosSimulatorArm64:tvos_simulator_arm64 watchosArm64:watchos_arm64 watchosDeviceArm64:watchos_device_arm64 watchosSimulatorArm64:watchos_simulator_arm64 linuxArm64:linux_arm64 linuxX64:linux_x64"
 
 # ----------------------------------------------------------------------------- options
 WRITE_EXCLUDES=1     # merge overlap excludes (default on; --no-write-excludes to disable)

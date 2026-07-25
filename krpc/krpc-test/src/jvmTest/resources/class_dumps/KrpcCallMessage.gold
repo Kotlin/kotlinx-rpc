@@ -1,12 +1,12 @@
 org.jetbrains.krpc.RPCMessage [Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage]
   - callId: kotlin.String
-  - serviceId: kotlin.Long
-    - Nullable
-  - serviceType: kotlin.String
   - connectionId: kotlin.Long
     - Nullable
   - pluginParams: kotlin.collections.Map
     - Nullable
+  - serviceId: kotlin.Long
+    - Nullable
+  - serviceType: kotlin.String
 
   org.jetbrains.krpc.internal.transport.RPCMessage.CallData
   - Declared name: kotlinx.rpc.krpc.internal.KrpcCallMessage.CallData
