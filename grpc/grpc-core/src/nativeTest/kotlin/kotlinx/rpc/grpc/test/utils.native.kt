@@ -8,7 +8,6 @@ package kotlinx.rpc.grpc.test
 
 import platform.posix.setenv
 
-import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.UnsafeNumber
@@ -29,7 +28,6 @@ import platform.posix.dup2
 import platform.posix.fflush
 import platform.posix.pipe
 import platform.posix.read
-import platform.posix.FILE
 import platform.posix.stderr
 import platform.posix.stdout
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tracer_set_enabled
@@ -48,48 +46,78 @@ fun clearNativeEnv(key: String) {
 }
 
 @OptIn(UnsafeNumber::class)
-private suspend fun captureFileDescriptor(
-    fileno: Int,
-    stream: CPointer<FILE>,
-    block: suspend () -> Unit,
-): String = coroutineScope {
+actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineScope {
     memScoped {
-        val pipeFd = allocArray<IntVar>(2)
-        check(pipe(pipeFd) == 0) { "pipe failed" }
+        val pipeErr = allocArray<IntVar>(2)
+        check(pipe(pipeErr) == 0) { "pipe stderr failed" }
 
-        val saved = dup(fileno)
-        check(dup2(pipeFd[1], fileno) != -1) { "dup2 failed" }
-        close(pipeFd[1])
+        val savedStderr = dup(STDERR_FILENO)
+
+        // redirect stderr write end
+        check(dup2(pipeErr[1], STDERR_FILENO) != -1) { "dup2 stderr failed" }
+        close(pipeErr[1])
 
         val outputBuf = StringBuilder()
         val readJob = launch(Dispatchers.IO) {
             val buf = ByteArray(4096)
             var r: Long
             do {
-                r = read(pipeFd[0], buf.refTo(0), buf.size.convert()).convert()
+                r = read(pipeErr[0], buf.refTo(0), buf.size.convert()).convert()
                 if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
             } while (r > 0)
-            close(pipeFd[0])
+            close(pipeErr[0])
         }
 
         try {
             block()
         } finally {
-            fflush(stream)
-            dup2(saved, fileno)
-            close(saved)
+            fflush(stderr)
+            // restore stderr
+            dup2(savedStderr, STDERR_FILENO)
+            close(savedStderr)
+        }
+
+        // wait reading to finish
+        readJob.join()
+        outputBuf.toString()
+    }
+}
+
+// Same as captureStdErr but for stdout.
+@OptIn(UnsafeNumber::class)
+actual suspend fun captureStdOut(block: suspend () -> Unit): String = coroutineScope {
+    memScoped {
+        val pipeOut = allocArray<IntVar>(2)
+        check(pipe(pipeOut) == 0) { "pipe stdout failed" }
+
+        val savedStdout = dup(STDOUT_FILENO)
+
+        check(dup2(pipeOut[1], STDOUT_FILENO) != -1) { "dup2 stdout failed" }
+        close(pipeOut[1])
+
+        val outputBuf = StringBuilder()
+        val readJob = launch(Dispatchers.IO) {
+            val buf = ByteArray(4096)
+            var r: Long
+            do {
+                r = read(pipeOut[0], buf.refTo(0), buf.size.convert()).convert()
+                if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
+            } while (r > 0)
+            close(pipeOut[0])
+        }
+
+        try {
+            block()
+        } finally {
+            fflush(stdout)
+            dup2(savedStdout, STDOUT_FILENO)
+            close(savedStdout)
         }
 
         readJob.join()
         outputBuf.toString()
     }
 }
-
-actual suspend fun captureStdErr(block: suspend () -> Unit): String =
-    captureFileDescriptor(STDERR_FILENO, stderr!!, block)
-
-actual suspend fun captureStdOut(block: suspend () -> Unit): String =
-    captureFileDescriptor(STDOUT_FILENO, stdout!!, block)
 
 actual suspend fun captureGrpcLogs(
     jvmLogLevel: String,
