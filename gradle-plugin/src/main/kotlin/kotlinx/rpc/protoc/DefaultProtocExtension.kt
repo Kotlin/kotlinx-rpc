@@ -276,7 +276,10 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
         val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
 
-        val bsrDependencies = buf.deps.modules.zip(protoSourceSet.bsrDeps.modules) {a, b -> a + b }.map { it.distinct() }
+        val bsrDependencies = buf.deps.modules
+            .zip(protoSourceSet.bsrDeps.modules) { a, b -> a + b }
+            .map { it.map { "${it.name}${it.version?.let { ":$it" } ?: ""}" } }
+            .map { it.distinct() }
 
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = capitalName,

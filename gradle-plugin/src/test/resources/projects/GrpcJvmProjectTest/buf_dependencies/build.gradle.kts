@@ -14,7 +14,17 @@ rpc {
     protoc {
         buf {
             deps {
-                module("buf.build/googleapis/googleapis")
+                module("buf.build/googleapis/googleapis") version "main"
+            }
+        }
+    }
+}
+
+kotlin.sourceSets {
+    main {
+        proto {
+            bsrDeps {
+                module("buf.build/googleapis/googleapis") version "main"
             }
         }
     }

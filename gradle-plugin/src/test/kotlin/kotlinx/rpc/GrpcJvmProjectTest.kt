@@ -776,7 +776,7 @@ breaking:
 modules:
   - path: proto
 deps:
-  - buf.build/googleapis/googleapis
+  - buf.build/googleapis/googleapis:main
             """.trimIndent())
 
         val workspaceLockFile = protoBuildDirSourceSets
