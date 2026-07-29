@@ -614,16 +614,26 @@ private fun String.fullProtoNameToKotlin(camelCaseFormat: CamelCaseFormat): Stri
     return protoName.simpleProtoNameToKotlin(camelCaseFormat)
 }
 
-private val snakeRegExp = "(_[a-z]|-[a-z])".toRegex()
-
 private fun String.snakeToCamelCase(camelCaseFormat: CamelCaseFormat): String {
-    val camelCased = replace(snakeRegExp) { match -> match.value.last().uppercase() }
-    return camelCased.replaceFirstChar { firstChar ->
-        when (camelCaseFormat) {
-            CamelCaseFormat.UPPER_CAMEL -> firstChar.uppercase()
-            CamelCaseFormat.LOWER_CAMEL -> firstChar.lowercase()
+    val leadingUnderscores = takeWhile { it == '_' }
+    val trailingUnderscores = takeLastWhile { it == '_' }
+    val name = trim('_')
+    val hasSeparators = name.any { it == '_' || it == '-' }
+    val words = name.split('_', '-').filter { it.isNotEmpty() }
+    if (words.isEmpty()) return this
+
+    val camelCasedName = words.mapIndexed { index, word ->
+        val format = if (index == 0) camelCaseFormat else CamelCaseFormat.UPPER_CAMEL
+        val normalizedWord = if (index == 0 && hasSeparators) word.lowercase() else word
+        normalizedWord.replaceFirstChar { firstChar ->
+            when (format) {
+                CamelCaseFormat.UPPER_CAMEL -> firstChar.uppercase()
+                CamelCaseFormat.LOWER_CAMEL -> firstChar.lowercase()
+            }
         }
-    }
+    }.joinToString(separator = "")
+
+    return leadingUnderscores + camelCasedName + trailingUnderscores
 }
 
 private fun String.simpleProtoNameToKotlinRaw(camelCaseFormat: CamelCaseFormat): String {

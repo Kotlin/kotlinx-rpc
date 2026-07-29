@@ -90,6 +90,9 @@ class ModelToProtobufKotlinCommonGeneratorTest {
         val model = protobufProto {
             message("user_profile") {
                 field("display_name")
+                field("_leading_name")
+                field("trailing_name_")
+                field("foo__bar")
                 oneOf("contact_info") {
                     field("email_address")
                     field("phone_number")
@@ -114,6 +117,9 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             @GeneratedProtoMessage
             interface user_profile {
                 val display_name: String
+                val _leading_name: String
+                val trailing_name_: String
+                val foo__bar: String
                 val contact_info: contact_info?
 
                 sealed interface contact_info {
@@ -153,9 +159,15 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             message("weird__message_2") {
                 field("foo__bar")
                 field("foo_1_bar")
+                field("foo_2fa")
                 field("foo2_bar")
+                field("HTTP_status")
                 field("_leading_name")
+                field("__double_leading_name")
+                field("_GetUser")
+                field("__GetUser__")
                 field("trailing_name_")
+                field("double_trailing_name__")
                 field("already_HTTP_2_response")
                 oneOf("odd__choice_2") {
                     field("first__choice")
@@ -179,21 +191,27 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             generated,
             """
             @GeneratedProtoMessage
-            interface Weird_Message_2 {
-                val foo_Bar: String
-                val foo_1Bar: String
+            interface WeirdMessage2 {
+                val fooBar: String
+                val foo1Bar: String
+                val foo2fa: String
                 val foo2Bar: String
-                val leadingName: String
+                val httpStatus: String
+                val _leadingName: String
+                val __doubleLeadingName: String
+                val _getUser: String
+                val __getUser__: String
                 val trailingName_: String
-                val already_HTTP_2Response: String
-                val odd_Choice_2: Odd_Choice_2?
+                val doubleTrailingName__: String
+                val alreadyHTTP2Response: String
+                val oddChoice2: OddChoice2?
 
-                sealed interface Odd_Choice_2 {
+                sealed interface OddChoice2 {
                     @JvmInline
-                    value class First_Choice(val value: String): Odd_Choice_2
+                    value class FirstChoice(val value: String): OddChoice2
 
                     @JvmInline
-                    value class Second_2Choice(val value: String): Odd_Choice_2
+                    value class Second2Choice(val value: String): OddChoice2
                 }
             }
             """.trimIndent(),
@@ -201,10 +219,10 @@ class ModelToProtobufKotlinCommonGeneratorTest {
         assertContains(
             generated,
             """
-            sealed class Status_Code_2(open val number: Int) {
-                data object UNSPECIFIED: Status_Code_2(number = 0)
+            sealed class StatusCode2(open val number: Int) {
+                data object UNSPECIFIED: StatusCode2(number = 0)
 
-                data object ACTIVE: Status_Code_2(number = 1)
+                data object ACTIVE: StatusCode2(number = 1)
             """.trimIndent(),
         )
     }

@@ -192,20 +192,20 @@ interface TestAllTypesProto3 {
      */
     val fieldname1: Int
     val fieldName2: Int
-    val fieldName3: Int
-    val field_Name4_: Int
+    val _fieldName3: Int
+    val fieldName4_: Int
     val field0name5: Int
-    val field_0Name6: Int
+    val field0Name6: Int
     val fieldName7: Int
     val fieldName8: Int
-    val field_Name9: Int
-    val field_Name10: Int
-    val fIELD_NAME11: Int
-    val fIELDName12: Int
-    val _FieldName13: Int
-    val __FieldName14: Int
-    val field_Name15: Int
-    val field__Name16: Int
+    val fieldName9: Int
+    val fieldName10: Int
+    val fieldNAME11: Int
+    val fieldName12: Int
+    val __fieldName13: Int
+    val __fieldName14: Int
+    val fieldName15: Int
+    val fieldName16: Int
     val fieldName17__: Int
     val fieldName18__: Int
     val oneofField: OneofField?

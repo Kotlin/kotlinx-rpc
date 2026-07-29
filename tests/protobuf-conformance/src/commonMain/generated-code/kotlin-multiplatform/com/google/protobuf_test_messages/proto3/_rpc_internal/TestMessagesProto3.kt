@@ -460,34 +460,34 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var fieldname1: Int by __fieldname1Delegate
     internal val __fieldName2Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName2: Int by __fieldName2Delegate
-    internal val __fieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var fieldName3: Int by __fieldName3Delegate
-    internal val __field_Name4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name4_: Int by __field_Name4_Delegate
+    internal val ___fieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var _fieldName3: Int by ___fieldName3Delegate
+    internal val __fieldName4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName4_: Int by __fieldName4_Delegate
     internal val __field0name5Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var field0name5: Int by __field0name5Delegate
-    internal val __field_0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_0Name6: Int by __field_0Name6Delegate
+    internal val __field0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field0Name6: Int by __field0Name6Delegate
     internal val __fieldName7Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName7: Int by __fieldName7Delegate
     internal val __fieldName8Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName8: Int by __fieldName8Delegate
-    internal val __field_Name9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name9: Int by __field_Name9Delegate
-    internal val __field_Name10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name10: Int by __field_Name10Delegate
-    internal val __fIELD_NAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var fIELD_NAME11: Int by __fIELD_NAME11Delegate
-    internal val __fIELDName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var fIELDName12: Int by __fIELDName12Delegate
-    internal val ___FieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var _FieldName13: Int by ___FieldName13Delegate
-    internal val ____FieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var __FieldName14: Int by ____FieldName14Delegate
-    internal val __field_Name15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name15: Int by __field_Name15Delegate
-    internal val __field__Name16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field__Name16: Int by __field__Name16Delegate
+    internal val __fieldName9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName9: Int by __fieldName9Delegate
+    internal val __fieldName10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName10: Int by __fieldName10Delegate
+    internal val __fieldNAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldNAME11: Int by __fieldNAME11Delegate
+    internal val __fieldName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName12: Int by __fieldName12Delegate
+    internal val ____fieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var __fieldName13: Int by ____fieldName13Delegate
+    internal val ____fieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var __fieldName14: Int by ____fieldName14Delegate
+    internal val __fieldName15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName15: Int by __fieldName15Delegate
+    internal val __fieldName16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName16: Int by __fieldName16Delegate
     internal val __fieldName17__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName17__: Int by __fieldName17__Delegate
     internal val __fieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
@@ -667,20 +667,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.repeatedEmpty.hashCode()
         result = 31 * result + this.fieldname1.hashCode()
         result = 31 * result + this.fieldName2.hashCode()
-        result = 31 * result + this.fieldName3.hashCode()
-        result = 31 * result + this.field_Name4_.hashCode()
+        result = 31 * result + this._fieldName3.hashCode()
+        result = 31 * result + this.fieldName4_.hashCode()
         result = 31 * result + this.field0name5.hashCode()
-        result = 31 * result + this.field_0Name6.hashCode()
+        result = 31 * result + this.field0Name6.hashCode()
         result = 31 * result + this.fieldName7.hashCode()
         result = 31 * result + this.fieldName8.hashCode()
-        result = 31 * result + this.field_Name9.hashCode()
-        result = 31 * result + this.field_Name10.hashCode()
-        result = 31 * result + this.fIELD_NAME11.hashCode()
-        result = 31 * result + this.fIELDName12.hashCode()
-        result = 31 * result + this._FieldName13.hashCode()
-        result = 31 * result + this.__FieldName14.hashCode()
-        result = 31 * result + this.field_Name15.hashCode()
-        result = 31 * result + this.field__Name16.hashCode()
+        result = 31 * result + this.fieldName9.hashCode()
+        result = 31 * result + this.fieldName10.hashCode()
+        result = 31 * result + this.fieldNAME11.hashCode()
+        result = 31 * result + this.fieldName12.hashCode()
+        result = 31 * result + this.__fieldName13.hashCode()
+        result = 31 * result + this.__fieldName14.hashCode()
+        result = 31 * result + this.fieldName15.hashCode()
+        result = 31 * result + this.fieldName16.hashCode()
         result = 31 * result + this.fieldName17__.hashCode()
         result = 31 * result + this.fieldName18__.hashCode()
         result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
@@ -852,20 +852,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedEmpty != other.repeatedEmpty) return false
         if (this.fieldname1 != other.fieldname1) return false
         if (this.fieldName2 != other.fieldName2) return false
-        if (this.fieldName3 != other.fieldName3) return false
-        if (this.field_Name4_ != other.field_Name4_) return false
+        if (this._fieldName3 != other._fieldName3) return false
+        if (this.fieldName4_ != other.fieldName4_) return false
         if (this.field0name5 != other.field0name5) return false
-        if (this.field_0Name6 != other.field_0Name6) return false
+        if (this.field0Name6 != other.field0Name6) return false
         if (this.fieldName7 != other.fieldName7) return false
         if (this.fieldName8 != other.fieldName8) return false
-        if (this.field_Name9 != other.field_Name9) return false
-        if (this.field_Name10 != other.field_Name10) return false
-        if (this.fIELD_NAME11 != other.fIELD_NAME11) return false
-        if (this.fIELDName12 != other.fIELDName12) return false
-        if (this._FieldName13 != other._FieldName13) return false
-        if (this.__FieldName14 != other.__FieldName14) return false
-        if (this.field_Name15 != other.field_Name15) return false
-        if (this.field__Name16 != other.field__Name16) return false
+        if (this.fieldName9 != other.fieldName9) return false
+        if (this.fieldName10 != other.fieldName10) return false
+        if (this.fieldNAME11 != other.fieldNAME11) return false
+        if (this.fieldName12 != other.fieldName12) return false
+        if (this.__fieldName13 != other.__fieldName13) return false
+        if (this.__fieldName14 != other.__fieldName14) return false
+        if (this.fieldName15 != other.fieldName15) return false
+        if (this.fieldName16 != other.fieldName16) return false
         if (this.fieldName17__ != other.fieldName17__) return false
         if (this.fieldName18__ != other.fieldName18__) return false
         return oneOfEquals(this.oneofField, other.oneofField)
@@ -1102,20 +1102,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}repeatedEmpty=${this.repeatedEmpty},")
         builder.appendLine("${nextIndentString}fieldname1=${this.fieldname1},")
         builder.appendLine("${nextIndentString}fieldName2=${this.fieldName2},")
-        builder.appendLine("${nextIndentString}fieldName3=${this.fieldName3},")
-        builder.appendLine("${nextIndentString}field_Name4_=${this.field_Name4_},")
+        builder.appendLine("${nextIndentString}_fieldName3=${this._fieldName3},")
+        builder.appendLine("${nextIndentString}fieldName4_=${this.fieldName4_},")
         builder.appendLine("${nextIndentString}field0name5=${this.field0name5},")
-        builder.appendLine("${nextIndentString}field_0Name6=${this.field_0Name6},")
+        builder.appendLine("${nextIndentString}field0Name6=${this.field0Name6},")
         builder.appendLine("${nextIndentString}fieldName7=${this.fieldName7},")
         builder.appendLine("${nextIndentString}fieldName8=${this.fieldName8},")
-        builder.appendLine("${nextIndentString}field_Name9=${this.field_Name9},")
-        builder.appendLine("${nextIndentString}field_Name10=${this.field_Name10},")
-        builder.appendLine("${nextIndentString}fIELD_NAME11=${this.fIELD_NAME11},")
-        builder.appendLine("${nextIndentString}fIELDName12=${this.fIELDName12},")
-        builder.appendLine("${nextIndentString}_FieldName13=${this._FieldName13},")
-        builder.appendLine("${nextIndentString}__FieldName14=${this.__FieldName14},")
-        builder.appendLine("${nextIndentString}field_Name15=${this.field_Name15},")
-        builder.appendLine("${nextIndentString}field__Name16=${this.field__Name16},")
+        builder.appendLine("${nextIndentString}fieldName9=${this.fieldName9},")
+        builder.appendLine("${nextIndentString}fieldName10=${this.fieldName10},")
+        builder.appendLine("${nextIndentString}fieldNAME11=${this.fieldNAME11},")
+        builder.appendLine("${nextIndentString}fieldName12=${this.fieldName12},")
+        builder.appendLine("${nextIndentString}__fieldName13=${this.__fieldName13},")
+        builder.appendLine("${nextIndentString}__fieldName14=${this.__fieldName14},")
+        builder.appendLine("${nextIndentString}fieldName15=${this.fieldName15},")
+        builder.appendLine("${nextIndentString}fieldName16=${this.fieldName16},")
         builder.appendLine("${nextIndentString}fieldName17__=${this.fieldName17__},")
         builder.appendLine("${nextIndentString}fieldName18__=${this.fieldName18__},")
         builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
@@ -1314,20 +1314,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.repeatedEmpty = this.repeatedEmpty.map { it.copy() }
         copy.fieldname1 = this.fieldname1
         copy.fieldName2 = this.fieldName2
-        copy.fieldName3 = this.fieldName3
-        copy.field_Name4_ = this.field_Name4_
+        copy._fieldName3 = this._fieldName3
+        copy.fieldName4_ = this.fieldName4_
         copy.field0name5 = this.field0name5
-        copy.field_0Name6 = this.field_0Name6
+        copy.field0Name6 = this.field0Name6
         copy.fieldName7 = this.fieldName7
         copy.fieldName8 = this.fieldName8
-        copy.field_Name9 = this.field_Name9
-        copy.field_Name10 = this.field_Name10
-        copy.fIELD_NAME11 = this.fIELD_NAME11
-        copy.fIELDName12 = this.fIELDName12
-        copy._FieldName13 = this._FieldName13
-        copy.__FieldName14 = this.__FieldName14
-        copy.field_Name15 = this.field_Name15
-        copy.field__Name16 = this.field__Name16
+        copy.fieldName9 = this.fieldName9
+        copy.fieldName10 = this.fieldName10
+        copy.fieldNAME11 = this.fieldNAME11
+        copy.fieldName12 = this.fieldName12
+        copy.__fieldName13 = this.__fieldName13
+        copy.__fieldName14 = this.__fieldName14
+        copy.fieldName15 = this.fieldName15
+        copy.fieldName16 = this.fieldName16
         copy.fieldName17__ = this.fieldName17__
         copy.fieldName18__ = this.fieldName18__
         copy.oneofField = this.oneofField?.oneOfCopy()
@@ -3550,20 +3550,20 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 402, value = this.fieldName2)
     }
 
-    if (this.fieldName3 != 0) {
-        encoder.writeInt32(fieldNr = 403, value = this.fieldName3)
+    if (this._fieldName3 != 0) {
+        encoder.writeInt32(fieldNr = 403, value = this._fieldName3)
     }
 
-    if (this.field_Name4_ != 0) {
-        encoder.writeInt32(fieldNr = 404, value = this.field_Name4_)
+    if (this.fieldName4_ != 0) {
+        encoder.writeInt32(fieldNr = 404, value = this.fieldName4_)
     }
 
     if (this.field0name5 != 0) {
         encoder.writeInt32(fieldNr = 405, value = this.field0name5)
     }
 
-    if (this.field_0Name6 != 0) {
-        encoder.writeInt32(fieldNr = 406, value = this.field_0Name6)
+    if (this.field0Name6 != 0) {
+        encoder.writeInt32(fieldNr = 406, value = this.field0Name6)
     }
 
     if (this.fieldName7 != 0) {
@@ -3574,36 +3574,36 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 408, value = this.fieldName8)
     }
 
-    if (this.field_Name9 != 0) {
-        encoder.writeInt32(fieldNr = 409, value = this.field_Name9)
+    if (this.fieldName9 != 0) {
+        encoder.writeInt32(fieldNr = 409, value = this.fieldName9)
     }
 
-    if (this.field_Name10 != 0) {
-        encoder.writeInt32(fieldNr = 410, value = this.field_Name10)
+    if (this.fieldName10 != 0) {
+        encoder.writeInt32(fieldNr = 410, value = this.fieldName10)
     }
 
-    if (this.fIELD_NAME11 != 0) {
-        encoder.writeInt32(fieldNr = 411, value = this.fIELD_NAME11)
+    if (this.fieldNAME11 != 0) {
+        encoder.writeInt32(fieldNr = 411, value = this.fieldNAME11)
     }
 
-    if (this.fIELDName12 != 0) {
-        encoder.writeInt32(fieldNr = 412, value = this.fIELDName12)
+    if (this.fieldName12 != 0) {
+        encoder.writeInt32(fieldNr = 412, value = this.fieldName12)
     }
 
-    if (this._FieldName13 != 0) {
-        encoder.writeInt32(fieldNr = 413, value = this._FieldName13)
+    if (this.__fieldName13 != 0) {
+        encoder.writeInt32(fieldNr = 413, value = this.__fieldName13)
     }
 
-    if (this.__FieldName14 != 0) {
-        encoder.writeInt32(fieldNr = 414, value = this.__FieldName14)
+    if (this.__fieldName14 != 0) {
+        encoder.writeInt32(fieldNr = 414, value = this.__fieldName14)
     }
 
-    if (this.field_Name15 != 0) {
-        encoder.writeInt32(fieldNr = 415, value = this.field_Name15)
+    if (this.fieldName15 != 0) {
+        encoder.writeInt32(fieldNr = 415, value = this.fieldName15)
     }
 
-    if (this.field__Name16 != 0) {
-        encoder.writeInt32(fieldNr = 416, value = this.field__Name16)
+    if (this.fieldName16 != 0) {
+        encoder.writeInt32(fieldNr = 416, value = this.fieldName16)
     }
 
     if (this.fieldName17__ != 0) {
@@ -4463,16 +4463,16 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 msg.fieldName2 = decoder.readInt32()
             }
             403 if tag.wireType == WireType.VARINT -> {
-                msg.fieldName3 = decoder.readInt32()
+                msg._fieldName3 = decoder.readInt32()
             }
             404 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name4_ = decoder.readInt32()
+                msg.fieldName4_ = decoder.readInt32()
             }
             405 if tag.wireType == WireType.VARINT -> {
                 msg.field0name5 = decoder.readInt32()
             }
             406 if tag.wireType == WireType.VARINT -> {
-                msg.field_0Name6 = decoder.readInt32()
+                msg.field0Name6 = decoder.readInt32()
             }
             407 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName7 = decoder.readInt32()
@@ -4481,28 +4481,28 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 msg.fieldName8 = decoder.readInt32()
             }
             409 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name9 = decoder.readInt32()
+                msg.fieldName9 = decoder.readInt32()
             }
             410 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name10 = decoder.readInt32()
+                msg.fieldName10 = decoder.readInt32()
             }
             411 if tag.wireType == WireType.VARINT -> {
-                msg.fIELD_NAME11 = decoder.readInt32()
+                msg.fieldNAME11 = decoder.readInt32()
             }
             412 if tag.wireType == WireType.VARINT -> {
-                msg.fIELDName12 = decoder.readInt32()
+                msg.fieldName12 = decoder.readInt32()
             }
             413 if tag.wireType == WireType.VARINT -> {
-                msg._FieldName13 = decoder.readInt32()
+                msg.__fieldName13 = decoder.readInt32()
             }
             414 if tag.wireType == WireType.VARINT -> {
-                msg.__FieldName14 = decoder.readInt32()
+                msg.__fieldName14 = decoder.readInt32()
             }
             415 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name15 = decoder.readInt32()
+                msg.fieldName15 = decoder.readInt32()
             }
             416 if tag.wireType == WireType.VARINT -> {
-                msg.field__Name16 = decoder.readInt32()
+                msg.fieldName16 = decoder.readInt32()
             }
             417 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName17__ = decoder.readInt32()
@@ -5190,20 +5190,20 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2)
     }
 
-    if (this.fieldName3 != 0) {
-        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.fieldName3)
+    if (this._fieldName3 != 0) {
+        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this._fieldName3)
     }
 
-    if (this.field_Name4_ != 0) {
-        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_)
+    if (this.fieldName4_ != 0) {
+        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.fieldName4_)
     }
 
     if (this.field0name5 != 0) {
         __result += WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5)
     }
 
-    if (this.field_0Name6 != 0) {
-        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6)
+    if (this.field0Name6 != 0) {
+        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field0Name6)
     }
 
     if (this.fieldName7 != 0) {
@@ -5214,36 +5214,36 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.fieldName8)
     }
 
-    if (this.field_Name9 != 0) {
-        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9)
+    if (this.fieldName9 != 0) {
+        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.fieldName9)
     }
 
-    if (this.field_Name10 != 0) {
-        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.field_Name10)
+    if (this.fieldName10 != 0) {
+        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.fieldName10)
     }
 
-    if (this.fIELD_NAME11 != 0) {
-        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.fIELD_NAME11)
+    if (this.fieldNAME11 != 0) {
+        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.fieldNAME11)
     }
 
-    if (this.fIELDName12 != 0) {
-        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.fIELDName12)
+    if (this.fieldName12 != 0) {
+        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.fieldName12)
     }
 
-    if (this._FieldName13 != 0) {
-        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13)
+    if (this.__fieldName13 != 0) {
+        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this.__fieldName13)
     }
 
-    if (this.__FieldName14 != 0) {
-        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14)
+    if (this.__fieldName14 != 0) {
+        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__fieldName14)
     }
 
-    if (this.field_Name15 != 0) {
-        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15)
+    if (this.fieldName15 != 0) {
+        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.fieldName15)
     }
 
-    if (this.field__Name16 != 0) {
-        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16)
+    if (this.fieldName16 != 0) {
+        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.fieldName16)
     }
 
     if (this.fieldName17__ != 0) {

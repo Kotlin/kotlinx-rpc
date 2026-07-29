@@ -105,20 +105,20 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         const val defaultBytes: Int = 38
         const val fieldname1: Int = 39
         const val fieldName2: Int = 40
-        const val fieldName3: Int = 41
-        const val field_Name4_: Int = 42
+        const val _fieldName3: Int = 41
+        const val fieldName4_: Int = 42
         const val field0name5: Int = 43
-        const val field_0Name6: Int = 44
+        const val field0Name6: Int = 44
         const val fieldName7: Int = 45
         const val fieldName8: Int = 46
-        const val field_Name9: Int = 47
-        const val field_Name10: Int = 48
-        const val fIELD_NAME11: Int = 49
-        const val fIELDName12: Int = 50
-        const val _FieldName13: Int = 51
-        const val __FieldName14: Int = 52
-        const val field_Name15: Int = 53
-        const val field__Name16: Int = 54
+        const val fieldName9: Int = 47
+        const val fieldName10: Int = 48
+        const val fieldNAME11: Int = 49
+        const val fieldName12: Int = 50
+        const val __fieldName13: Int = 51
+        const val __fieldName14: Int = 52
+        const val fieldName15: Int = 53
+        const val fieldName16: Int = 54
         const val fieldName17__: Int = 55
         const val fieldName18__: Int = 56
         const val messageSetCorrect: Int = 57
@@ -523,16 +523,16 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         __fieldName2Delegate.clearField(this)
     }
 
-    internal val __fieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName3) { 0 }
-    override var fieldName3: Int by __fieldName3Delegate
-    override fun clearFieldName3() {
-        __fieldName3Delegate.clearField(this)
+    internal val ___fieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices._fieldName3) { 0 }
+    override var _fieldName3: Int by ___fieldName3Delegate
+    override fun clear_fieldName3() {
+        ___fieldName3Delegate.clearField(this)
     }
 
-    internal val __field_Name4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name4_) { 0 }
-    override var field_Name4_: Int by __field_Name4_Delegate
-    override fun clearField_Name4_() {
-        __field_Name4_Delegate.clearField(this)
+    internal val __fieldName4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName4_) { 0 }
+    override var fieldName4_: Int by __fieldName4_Delegate
+    override fun clearFieldName4_() {
+        __fieldName4_Delegate.clearField(this)
     }
 
     internal val __field0name5Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field0name5) { 0 }
@@ -541,10 +541,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         __field0name5Delegate.clearField(this)
     }
 
-    internal val __field_0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_0Name6) { 0 }
-    override var field_0Name6: Int by __field_0Name6Delegate
-    override fun clearField_0Name6() {
-        __field_0Name6Delegate.clearField(this)
+    internal val __field0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field0Name6) { 0 }
+    override var field0Name6: Int by __field0Name6Delegate
+    override fun clearField0Name6() {
+        __field0Name6Delegate.clearField(this)
     }
 
     internal val __fieldName7Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName7) { 0 }
@@ -559,52 +559,52 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         __fieldName8Delegate.clearField(this)
     }
 
-    internal val __field_Name9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name9) { 0 }
-    override var field_Name9: Int by __field_Name9Delegate
-    override fun clearField_Name9() {
-        __field_Name9Delegate.clearField(this)
+    internal val __fieldName9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName9) { 0 }
+    override var fieldName9: Int by __fieldName9Delegate
+    override fun clearFieldName9() {
+        __fieldName9Delegate.clearField(this)
     }
 
-    internal val __field_Name10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name10) { 0 }
-    override var field_Name10: Int by __field_Name10Delegate
-    override fun clearField_Name10() {
-        __field_Name10Delegate.clearField(this)
+    internal val __fieldName10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName10) { 0 }
+    override var fieldName10: Int by __fieldName10Delegate
+    override fun clearFieldName10() {
+        __fieldName10Delegate.clearField(this)
     }
 
-    internal val __fIELD_NAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fIELD_NAME11) { 0 }
-    override var fIELD_NAME11: Int by __fIELD_NAME11Delegate
-    override fun clearFIELD_NAME11() {
-        __fIELD_NAME11Delegate.clearField(this)
+    internal val __fieldNAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldNAME11) { 0 }
+    override var fieldNAME11: Int by __fieldNAME11Delegate
+    override fun clearFieldNAME11() {
+        __fieldNAME11Delegate.clearField(this)
     }
 
-    internal val __fIELDName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fIELDName12) { 0 }
-    override var fIELDName12: Int by __fIELDName12Delegate
-    override fun clearFIELDName12() {
-        __fIELDName12Delegate.clearField(this)
+    internal val __fieldName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName12) { 0 }
+    override var fieldName12: Int by __fieldName12Delegate
+    override fun clearFieldName12() {
+        __fieldName12Delegate.clearField(this)
     }
 
-    internal val ___FieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices._FieldName13) { 0 }
-    override var _FieldName13: Int by ___FieldName13Delegate
-    override fun clear_FieldName13() {
-        ___FieldName13Delegate.clearField(this)
+    internal val ____fieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.__fieldName13) { 0 }
+    override var __fieldName13: Int by ____fieldName13Delegate
+    override fun clear__fieldName13() {
+        ____fieldName13Delegate.clearField(this)
     }
 
-    internal val ____FieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.__FieldName14) { 0 }
-    override var __FieldName14: Int by ____FieldName14Delegate
-    override fun clear__FieldName14() {
-        ____FieldName14Delegate.clearField(this)
+    internal val ____fieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.__fieldName14) { 0 }
+    override var __fieldName14: Int by ____fieldName14Delegate
+    override fun clear__fieldName14() {
+        ____fieldName14Delegate.clearField(this)
     }
 
-    internal val __field_Name15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field_Name15) { 0 }
-    override var field_Name15: Int by __field_Name15Delegate
-    override fun clearField_Name15() {
-        __field_Name15Delegate.clearField(this)
+    internal val __fieldName15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName15) { 0 }
+    override var fieldName15: Int by __fieldName15Delegate
+    override fun clearFieldName15() {
+        __fieldName15Delegate.clearField(this)
     }
 
-    internal val __field__Name16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.field__Name16) { 0 }
-    override var field__Name16: Int by __field__Name16Delegate
-    override fun clearField__Name16() {
-        __field__Name16Delegate.clearField(this)
+    internal val __fieldName16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName16) { 0 }
+    override var fieldName16: Int by __fieldName16Delegate
+    override fun clearFieldName16() {
+        __fieldName16Delegate.clearField(this)
     }
 
     internal val __fieldName17__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.fieldName17__) { 0 }
@@ -715,33 +715,33 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         override val hasFieldName2: Boolean get() = presenceMask[PresenceIndices.fieldName2]
 
-        override val hasFieldName3: Boolean get() = presenceMask[PresenceIndices.fieldName3]
+        override val has_fieldName3: Boolean get() = presenceMask[PresenceIndices._fieldName3]
 
-        override val hasField_Name4_: Boolean get() = presenceMask[PresenceIndices.field_Name4_]
+        override val hasFieldName4_: Boolean get() = presenceMask[PresenceIndices.fieldName4_]
 
         override val hasField0name5: Boolean get() = presenceMask[PresenceIndices.field0name5]
 
-        override val hasField_0Name6: Boolean get() = presenceMask[PresenceIndices.field_0Name6]
+        override val hasField0Name6: Boolean get() = presenceMask[PresenceIndices.field0Name6]
 
         override val hasFieldName7: Boolean get() = presenceMask[PresenceIndices.fieldName7]
 
         override val hasFieldName8: Boolean get() = presenceMask[PresenceIndices.fieldName8]
 
-        override val hasField_Name9: Boolean get() = presenceMask[PresenceIndices.field_Name9]
+        override val hasFieldName9: Boolean get() = presenceMask[PresenceIndices.fieldName9]
 
-        override val hasField_Name10: Boolean get() = presenceMask[PresenceIndices.field_Name10]
+        override val hasFieldName10: Boolean get() = presenceMask[PresenceIndices.fieldName10]
 
-        override val hasFIELD_NAME11: Boolean get() = presenceMask[PresenceIndices.fIELD_NAME11]
+        override val hasFieldNAME11: Boolean get() = presenceMask[PresenceIndices.fieldNAME11]
 
-        override val hasFIELDName12: Boolean get() = presenceMask[PresenceIndices.fIELDName12]
+        override val hasFieldName12: Boolean get() = presenceMask[PresenceIndices.fieldName12]
 
-        override val has_FieldName13: Boolean get() = presenceMask[PresenceIndices._FieldName13]
+        override val has__fieldName13: Boolean get() = presenceMask[PresenceIndices.__fieldName13]
 
-        override val has__FieldName14: Boolean get() = presenceMask[PresenceIndices.__FieldName14]
+        override val has__fieldName14: Boolean get() = presenceMask[PresenceIndices.__fieldName14]
 
-        override val hasField_Name15: Boolean get() = presenceMask[PresenceIndices.field_Name15]
+        override val hasFieldName15: Boolean get() = presenceMask[PresenceIndices.fieldName15]
 
-        override val hasField__Name16: Boolean get() = presenceMask[PresenceIndices.field__Name16]
+        override val hasFieldName16: Boolean get() = presenceMask[PresenceIndices.fieldName16]
 
         override val hasFieldName17__: Boolean get() = presenceMask[PresenceIndices.fieldName17__]
 
@@ -862,20 +862,20 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         result = 31 * result + if (presenceMask[PresenceIndices.defaultBytes]) this.defaultBytes.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldname1]) this.fieldname1.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldName2]) this.fieldName2.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.fieldName3]) this.fieldName3.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field_Name4_]) this.field_Name4_.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices._fieldName3]) this._fieldName3.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName4_]) this.fieldName4_.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.field0name5]) this.field0name5.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field_0Name6]) this.field_0Name6.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.field0Name6]) this.field0Name6.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldName7]) this.fieldName7.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldName8]) this.fieldName8.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field_Name9]) this.field_Name9.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field_Name10]) this.field_Name10.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.fIELD_NAME11]) this.fIELD_NAME11.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.fIELDName12]) this.fIELDName12.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices._FieldName13]) this._FieldName13.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.__FieldName14]) this.__FieldName14.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field_Name15]) this.field_Name15.hashCode() else 0
-        result = 31 * result + if (presenceMask[PresenceIndices.field__Name16]) this.field__Name16.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName9]) this.fieldName9.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName10]) this.fieldName10.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldNAME11]) this.fieldNAME11.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName12]) this.fieldName12.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.__fieldName13]) this.__fieldName13.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.__fieldName14]) this.__fieldName14.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName15]) this.fieldName15.hashCode() else 0
+        result = 31 * result + if (presenceMask[PresenceIndices.fieldName16]) this.fieldName16.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldName17__]) this.fieldName17__.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.fieldName18__]) this.fieldName18__.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.messageSetCorrect]) this.messageSetCorrect.hashCode() else 0
@@ -1031,20 +1031,20 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         if (presenceMask[PresenceIndices.defaultBytes] && this.defaultBytes != other.defaultBytes) return false
         if (presenceMask[PresenceIndices.fieldname1] && this.fieldname1 != other.fieldname1) return false
         if (presenceMask[PresenceIndices.fieldName2] && this.fieldName2 != other.fieldName2) return false
-        if (presenceMask[PresenceIndices.fieldName3] && this.fieldName3 != other.fieldName3) return false
-        if (presenceMask[PresenceIndices.field_Name4_] && this.field_Name4_ != other.field_Name4_) return false
+        if (presenceMask[PresenceIndices._fieldName3] && this._fieldName3 != other._fieldName3) return false
+        if (presenceMask[PresenceIndices.fieldName4_] && this.fieldName4_ != other.fieldName4_) return false
         if (presenceMask[PresenceIndices.field0name5] && this.field0name5 != other.field0name5) return false
-        if (presenceMask[PresenceIndices.field_0Name6] && this.field_0Name6 != other.field_0Name6) return false
+        if (presenceMask[PresenceIndices.field0Name6] && this.field0Name6 != other.field0Name6) return false
         if (presenceMask[PresenceIndices.fieldName7] && this.fieldName7 != other.fieldName7) return false
         if (presenceMask[PresenceIndices.fieldName8] && this.fieldName8 != other.fieldName8) return false
-        if (presenceMask[PresenceIndices.field_Name9] && this.field_Name9 != other.field_Name9) return false
-        if (presenceMask[PresenceIndices.field_Name10] && this.field_Name10 != other.field_Name10) return false
-        if (presenceMask[PresenceIndices.fIELD_NAME11] && this.fIELD_NAME11 != other.fIELD_NAME11) return false
-        if (presenceMask[PresenceIndices.fIELDName12] && this.fIELDName12 != other.fIELDName12) return false
-        if (presenceMask[PresenceIndices._FieldName13] && this._FieldName13 != other._FieldName13) return false
-        if (presenceMask[PresenceIndices.__FieldName14] && this.__FieldName14 != other.__FieldName14) return false
-        if (presenceMask[PresenceIndices.field_Name15] && this.field_Name15 != other.field_Name15) return false
-        if (presenceMask[PresenceIndices.field__Name16] && this.field__Name16 != other.field__Name16) return false
+        if (presenceMask[PresenceIndices.fieldName9] && this.fieldName9 != other.fieldName9) return false
+        if (presenceMask[PresenceIndices.fieldName10] && this.fieldName10 != other.fieldName10) return false
+        if (presenceMask[PresenceIndices.fieldNAME11] && this.fieldNAME11 != other.fieldNAME11) return false
+        if (presenceMask[PresenceIndices.fieldName12] && this.fieldName12 != other.fieldName12) return false
+        if (presenceMask[PresenceIndices.__fieldName13] && this.__fieldName13 != other.__fieldName13) return false
+        if (presenceMask[PresenceIndices.__fieldName14] && this.__fieldName14 != other.__fieldName14) return false
+        if (presenceMask[PresenceIndices.fieldName15] && this.fieldName15 != other.fieldName15) return false
+        if (presenceMask[PresenceIndices.fieldName16] && this.fieldName16 != other.fieldName16) return false
         if (presenceMask[PresenceIndices.fieldName17__] && this.fieldName17__ != other.fieldName17__) return false
         if (presenceMask[PresenceIndices.fieldName18__] && this.fieldName18__ != other.fieldName18__) return false
         if (presenceMask[PresenceIndices.messageSetCorrect] && this.messageSetCorrect != other.messageSetCorrect) return false
@@ -1377,16 +1377,16 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}fieldName2=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.fieldName3]) {
-            builder.appendLine("${nextIndentString}fieldName3=${this.fieldName3},")
+        if (presenceMask[PresenceIndices._fieldName3]) {
+            builder.appendLine("${nextIndentString}_fieldName3=${this._fieldName3},")
         } else {
-            builder.appendLine("${nextIndentString}fieldName3=<unset>,")
+            builder.appendLine("${nextIndentString}_fieldName3=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field_Name4_]) {
-            builder.appendLine("${nextIndentString}field_Name4_=${this.field_Name4_},")
+        if (presenceMask[PresenceIndices.fieldName4_]) {
+            builder.appendLine("${nextIndentString}fieldName4_=${this.fieldName4_},")
         } else {
-            builder.appendLine("${nextIndentString}field_Name4_=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName4_=<unset>,")
         }
 
         if (presenceMask[PresenceIndices.field0name5]) {
@@ -1395,10 +1395,10 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}field0name5=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field_0Name6]) {
-            builder.appendLine("${nextIndentString}field_0Name6=${this.field_0Name6},")
+        if (presenceMask[PresenceIndices.field0Name6]) {
+            builder.appendLine("${nextIndentString}field0Name6=${this.field0Name6},")
         } else {
-            builder.appendLine("${nextIndentString}field_0Name6=<unset>,")
+            builder.appendLine("${nextIndentString}field0Name6=<unset>,")
         }
 
         if (presenceMask[PresenceIndices.fieldName7]) {
@@ -1413,52 +1413,52 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             builder.appendLine("${nextIndentString}fieldName8=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field_Name9]) {
-            builder.appendLine("${nextIndentString}field_Name9=${this.field_Name9},")
+        if (presenceMask[PresenceIndices.fieldName9]) {
+            builder.appendLine("${nextIndentString}fieldName9=${this.fieldName9},")
         } else {
-            builder.appendLine("${nextIndentString}field_Name9=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName9=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field_Name10]) {
-            builder.appendLine("${nextIndentString}field_Name10=${this.field_Name10},")
+        if (presenceMask[PresenceIndices.fieldName10]) {
+            builder.appendLine("${nextIndentString}fieldName10=${this.fieldName10},")
         } else {
-            builder.appendLine("${nextIndentString}field_Name10=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName10=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.fIELD_NAME11]) {
-            builder.appendLine("${nextIndentString}fIELD_NAME11=${this.fIELD_NAME11},")
+        if (presenceMask[PresenceIndices.fieldNAME11]) {
+            builder.appendLine("${nextIndentString}fieldNAME11=${this.fieldNAME11},")
         } else {
-            builder.appendLine("${nextIndentString}fIELD_NAME11=<unset>,")
+            builder.appendLine("${nextIndentString}fieldNAME11=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.fIELDName12]) {
-            builder.appendLine("${nextIndentString}fIELDName12=${this.fIELDName12},")
+        if (presenceMask[PresenceIndices.fieldName12]) {
+            builder.appendLine("${nextIndentString}fieldName12=${this.fieldName12},")
         } else {
-            builder.appendLine("${nextIndentString}fIELDName12=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName12=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices._FieldName13]) {
-            builder.appendLine("${nextIndentString}_FieldName13=${this._FieldName13},")
+        if (presenceMask[PresenceIndices.__fieldName13]) {
+            builder.appendLine("${nextIndentString}__fieldName13=${this.__fieldName13},")
         } else {
-            builder.appendLine("${nextIndentString}_FieldName13=<unset>,")
+            builder.appendLine("${nextIndentString}__fieldName13=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.__FieldName14]) {
-            builder.appendLine("${nextIndentString}__FieldName14=${this.__FieldName14},")
+        if (presenceMask[PresenceIndices.__fieldName14]) {
+            builder.appendLine("${nextIndentString}__fieldName14=${this.__fieldName14},")
         } else {
-            builder.appendLine("${nextIndentString}__FieldName14=<unset>,")
+            builder.appendLine("${nextIndentString}__fieldName14=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field_Name15]) {
-            builder.appendLine("${nextIndentString}field_Name15=${this.field_Name15},")
+        if (presenceMask[PresenceIndices.fieldName15]) {
+            builder.appendLine("${nextIndentString}fieldName15=${this.fieldName15},")
         } else {
-            builder.appendLine("${nextIndentString}field_Name15=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName15=<unset>,")
         }
 
-        if (presenceMask[PresenceIndices.field__Name16]) {
-            builder.appendLine("${nextIndentString}field__Name16=${this.field__Name16},")
+        if (presenceMask[PresenceIndices.fieldName16]) {
+            builder.appendLine("${nextIndentString}fieldName16=${this.fieldName16},")
         } else {
-            builder.appendLine("${nextIndentString}field__Name16=<unset>,")
+            builder.appendLine("${nextIndentString}fieldName16=<unset>,")
         }
 
         if (presenceMask[PresenceIndices.fieldName17__]) {
@@ -1726,20 +1726,20 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             copy.fieldName2 = this.fieldName2
         }
 
-        if (presenceMask[PresenceIndices.fieldName3]) {
-            copy.fieldName3 = this.fieldName3
+        if (presenceMask[PresenceIndices._fieldName3]) {
+            copy._fieldName3 = this._fieldName3
         }
 
-        if (presenceMask[PresenceIndices.field_Name4_]) {
-            copy.field_Name4_ = this.field_Name4_
+        if (presenceMask[PresenceIndices.fieldName4_]) {
+            copy.fieldName4_ = this.fieldName4_
         }
 
         if (presenceMask[PresenceIndices.field0name5]) {
             copy.field0name5 = this.field0name5
         }
 
-        if (presenceMask[PresenceIndices.field_0Name6]) {
-            copy.field_0Name6 = this.field_0Name6
+        if (presenceMask[PresenceIndices.field0Name6]) {
+            copy.field0Name6 = this.field0Name6
         }
 
         if (presenceMask[PresenceIndices.fieldName7]) {
@@ -1750,36 +1750,36 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             copy.fieldName8 = this.fieldName8
         }
 
-        if (presenceMask[PresenceIndices.field_Name9]) {
-            copy.field_Name9 = this.field_Name9
+        if (presenceMask[PresenceIndices.fieldName9]) {
+            copy.fieldName9 = this.fieldName9
         }
 
-        if (presenceMask[PresenceIndices.field_Name10]) {
-            copy.field_Name10 = this.field_Name10
+        if (presenceMask[PresenceIndices.fieldName10]) {
+            copy.fieldName10 = this.fieldName10
         }
 
-        if (presenceMask[PresenceIndices.fIELD_NAME11]) {
-            copy.fIELD_NAME11 = this.fIELD_NAME11
+        if (presenceMask[PresenceIndices.fieldNAME11]) {
+            copy.fieldNAME11 = this.fieldNAME11
         }
 
-        if (presenceMask[PresenceIndices.fIELDName12]) {
-            copy.fIELDName12 = this.fIELDName12
+        if (presenceMask[PresenceIndices.fieldName12]) {
+            copy.fieldName12 = this.fieldName12
         }
 
-        if (presenceMask[PresenceIndices._FieldName13]) {
-            copy._FieldName13 = this._FieldName13
+        if (presenceMask[PresenceIndices.__fieldName13]) {
+            copy.__fieldName13 = this.__fieldName13
         }
 
-        if (presenceMask[PresenceIndices.__FieldName14]) {
-            copy.__FieldName14 = this.__FieldName14
+        if (presenceMask[PresenceIndices.__fieldName14]) {
+            copy.__fieldName14 = this.__fieldName14
         }
 
-        if (presenceMask[PresenceIndices.field_Name15]) {
-            copy.field_Name15 = this.field_Name15
+        if (presenceMask[PresenceIndices.fieldName15]) {
+            copy.fieldName15 = this.fieldName15
         }
 
-        if (presenceMask[PresenceIndices.field__Name16]) {
-            copy.field__Name16 = this.field__Name16
+        if (presenceMask[PresenceIndices.fieldName16]) {
+            copy.fieldName16 = this.fieldName16
         }
 
         if (presenceMask[PresenceIndices.fieldName17__]) {
@@ -7983,20 +7983,20 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 402, value = this.fieldName2)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName3]) {
-        encoder.writeInt32(fieldNr = 403, value = this.fieldName3)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices._fieldName3]) {
+        encoder.writeInt32(fieldNr = 403, value = this._fieldName3)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name4_]) {
-        encoder.writeInt32(fieldNr = 404, value = this.field_Name4_)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName4_]) {
+        encoder.writeInt32(fieldNr = 404, value = this.fieldName4_)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field0name5]) {
         encoder.writeInt32(fieldNr = 405, value = this.field0name5)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_0Name6]) {
-        encoder.writeInt32(fieldNr = 406, value = this.field_0Name6)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field0Name6]) {
+        encoder.writeInt32(fieldNr = 406, value = this.field0Name6)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName7]) {
@@ -8007,36 +8007,36 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 408, value = this.fieldName8)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name9]) {
-        encoder.writeInt32(fieldNr = 409, value = this.field_Name9)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName9]) {
+        encoder.writeInt32(fieldNr = 409, value = this.fieldName9)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name10]) {
-        encoder.writeInt32(fieldNr = 410, value = this.field_Name10)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName10]) {
+        encoder.writeInt32(fieldNr = 410, value = this.fieldName10)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fIELD_NAME11]) {
-        encoder.writeInt32(fieldNr = 411, value = this.fIELD_NAME11)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldNAME11]) {
+        encoder.writeInt32(fieldNr = 411, value = this.fieldNAME11)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fIELDName12]) {
-        encoder.writeInt32(fieldNr = 412, value = this.fIELDName12)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName12]) {
+        encoder.writeInt32(fieldNr = 412, value = this.fieldName12)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices._FieldName13]) {
-        encoder.writeInt32(fieldNr = 413, value = this._FieldName13)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__fieldName13]) {
+        encoder.writeInt32(fieldNr = 413, value = this.__fieldName13)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__FieldName14]) {
-        encoder.writeInt32(fieldNr = 414, value = this.__FieldName14)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__fieldName14]) {
+        encoder.writeInt32(fieldNr = 414, value = this.__fieldName14)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name15]) {
-        encoder.writeInt32(fieldNr = 415, value = this.field_Name15)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName15]) {
+        encoder.writeInt32(fieldNr = 415, value = this.fieldName15)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field__Name16]) {
-        encoder.writeInt32(fieldNr = 416, value = this.field__Name16)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName16]) {
+        encoder.writeInt32(fieldNr = 416, value = this.fieldName16)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName17__]) {
@@ -8793,16 +8793,16 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
                 msg.fieldName2 = decoder.readInt32()
             }
             403 if tag.wireType == WireType.VARINT -> {
-                msg.fieldName3 = decoder.readInt32()
+                msg._fieldName3 = decoder.readInt32()
             }
             404 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name4_ = decoder.readInt32()
+                msg.fieldName4_ = decoder.readInt32()
             }
             405 if tag.wireType == WireType.VARINT -> {
                 msg.field0name5 = decoder.readInt32()
             }
             406 if tag.wireType == WireType.VARINT -> {
-                msg.field_0Name6 = decoder.readInt32()
+                msg.field0Name6 = decoder.readInt32()
             }
             407 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName7 = decoder.readInt32()
@@ -8811,28 +8811,28 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(msg: TestAllTypesProto2Inter
                 msg.fieldName8 = decoder.readInt32()
             }
             409 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name9 = decoder.readInt32()
+                msg.fieldName9 = decoder.readInt32()
             }
             410 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name10 = decoder.readInt32()
+                msg.fieldName10 = decoder.readInt32()
             }
             411 if tag.wireType == WireType.VARINT -> {
-                msg.fIELD_NAME11 = decoder.readInt32()
+                msg.fieldNAME11 = decoder.readInt32()
             }
             412 if tag.wireType == WireType.VARINT -> {
-                msg.fIELDName12 = decoder.readInt32()
+                msg.fieldName12 = decoder.readInt32()
             }
             413 if tag.wireType == WireType.VARINT -> {
-                msg._FieldName13 = decoder.readInt32()
+                msg.__fieldName13 = decoder.readInt32()
             }
             414 if tag.wireType == WireType.VARINT -> {
-                msg.__FieldName14 = decoder.readInt32()
+                msg.__fieldName14 = decoder.readInt32()
             }
             415 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name15 = decoder.readInt32()
+                msg.fieldName15 = decoder.readInt32()
             }
             416 if tag.wireType == WireType.VARINT -> {
-                msg.field__Name16 = decoder.readInt32()
+                msg.fieldName16 = decoder.readInt32()
             }
             417 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName17__ = decoder.readInt32()
@@ -9477,20 +9477,20 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
         __result += WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName3]) {
-        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.fieldName3)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices._fieldName3]) {
+        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this._fieldName3)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name4_]) {
-        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName4_]) {
+        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.fieldName4_)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field0name5]) {
         __result += WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_0Name6]) {
-        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field0Name6]) {
+        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field0Name6)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName7]) {
@@ -9501,36 +9501,36 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
         __result += WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.fieldName8)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name9]) {
-        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName9]) {
+        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.fieldName9)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name10]) {
-        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.field_Name10)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName10]) {
+        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.fieldName10)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fIELD_NAME11]) {
-        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.fIELD_NAME11)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldNAME11]) {
+        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.fieldNAME11)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fIELDName12]) {
-        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.fIELDName12)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName12]) {
+        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.fieldName12)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices._FieldName13]) {
-        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__fieldName13]) {
+        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this.__fieldName13)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__FieldName14]) {
-        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.__fieldName14]) {
+        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__fieldName14)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field_Name15]) {
-        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName15]) {
+        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.fieldName15)
     }
 
-    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.field__Name16]) {
-        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16)
+    if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName16]) {
+        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.fieldName16)
     }
 
     if (presenceMask[TestAllTypesProto2Internal.PresenceIndices.fieldName17__]) {

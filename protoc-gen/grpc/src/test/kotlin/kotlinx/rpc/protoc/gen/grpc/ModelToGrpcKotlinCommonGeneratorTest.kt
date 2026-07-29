@@ -130,9 +130,9 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             generated,
             """
             @Grpc
-            interface User_Service_2 {
+            interface UserService2 {
                 @Grpc.Method(name = "get__HTTP_2_response")
-                suspend fun get__HTTP_2Response(message: Request_Message_2): Response_1Message
+                suspend fun getHTTP2Response(message: RequestMessage2): Response1Message
             }
             """.trimIndent(),
         )
