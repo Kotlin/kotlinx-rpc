@@ -135,9 +135,9 @@ class EvilNamesProto3Test {
     @Test
     fun testLeadingUnderscoreField() {
         val msg = EvilNamesProto3 {
-            leadingUnderscore = "leading"
+            _leadingUnderscore = "leading"
         }
-        assertEquals("leading", msg.leadingUnderscore)
+        assertEquals("leading", msg._leadingUnderscore)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
@@ -150,25 +150,25 @@ class EvilNamesProto3Test {
         assertEquals("test", (msg1.camelCase as EvilNamesProto3.CamelCase.FooBar).value)
 
         val msg2 = EvilNamesProto3 {
-            leadingUnderscoreOneof = EvilNamesProto3.LeadingUnderscoreOneof.Option(42)
+            _leadingUnderscoreOneof = EvilNamesProto3._LeadingUnderscoreOneof.Option(42)
         }
-        assertTrue(msg2.leadingUnderscoreOneof is EvilNamesProto3.LeadingUnderscoreOneof.Option)
-        assertEquals(42, (msg2.leadingUnderscoreOneof as EvilNamesProto3.LeadingUnderscoreOneof.Option).value)
+        assertTrue(msg2._leadingUnderscoreOneof is EvilNamesProto3._LeadingUnderscoreOneof.Option)
+        assertEquals(42, (msg2._leadingUnderscoreOneof as EvilNamesProto3._LeadingUnderscoreOneof.Option).value)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
     @Test
     fun testDeprecatedFieldNames() {
         val msg = EvilNamesProto3 {
-            dEPRECATEDFoo = "deprecated"
-            __DEPRECATED_Bar = "also_deprecated"
-            not_DEPRECATEDFoo = "not_deprecated"
+            deprecatedFoo = "deprecated"
+            __deprecatedBar = "also_deprecated"
+            notDEPRECATEDFoo = "not_deprecated"
             iD = "id-123"
             aBNotification = "notif"
         }
-        assertEquals("deprecated", msg.dEPRECATEDFoo)
-        assertEquals("also_deprecated", msg.__DEPRECATED_Bar)
-        assertEquals("not_deprecated", msg.not_DEPRECATEDFoo)
+        assertEquals("deprecated", msg.deprecatedFoo)
+        assertEquals("also_deprecated", msg.__deprecatedBar)
+        assertEquals("not_deprecated", msg.notDEPRECATEDFoo)
         assertEquals("id-123", msg.iD)
         assertEquals("notif", msg.aBNotification)
     }
@@ -253,8 +253,8 @@ class EvilNamesProto3Test {
             builder = true
             k = mapOf(1 to 2)
             v = mapOf("x" to "y")
-            aLL_CAPS = listOf("X")
-            aLL_CAPS_MAP = mapOf(1 to true)
+            allCAPS = listOf("X")
+            allCAPSMAP = mapOf(1 to true)
         }
         val encoded = marshaller.encode(msg)
         val decoded = marshaller.decode(encoded)
@@ -274,8 +274,8 @@ class EvilNamesProto3Test {
         assertEquals(msg.builder, decoded.builder)
         assertEquals(msg.k, decoded.k)
         assertEquals(msg.v, decoded.v)
-        assertEquals(msg.aLL_CAPS, decoded.aLL_CAPS)
-        assertEquals(msg.aLL_CAPS_MAP, decoded.aLL_CAPS_MAP)
+        assertEquals(msg.allCAPS, decoded.allCAPS)
+        assertEquals(msg.allCAPSMAP, decoded.allCAPSMAP)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testHardKeywordGettersAndSetters
