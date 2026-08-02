@@ -15,6 +15,7 @@ import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 
 actual fun GrpcTestBase.testKeepAlive(
     time: Duration,
@@ -65,6 +66,6 @@ actual fun GrpcTestBase.testServerKeepAlive(
         assertEquals(timeout, builder.getField<Long>("keepAliveTimeoutInNanos").nanoseconds)
     } finally {
         server.shutdownNow()
-        server.awaitTermination()
+        server.awaitTermination(30.seconds)
     }
 }

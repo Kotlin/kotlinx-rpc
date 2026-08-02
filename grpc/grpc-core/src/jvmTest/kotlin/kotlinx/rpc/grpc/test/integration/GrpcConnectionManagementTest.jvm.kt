@@ -10,6 +10,7 @@ import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 
 internal actual fun GrpcTestBase.testConnectionManagement(
     maxIdle: Duration,
@@ -29,6 +30,6 @@ internal actual fun GrpcTestBase.testConnectionManagement(
         assertEquals(maxAgeGrace, builder.getField<Long>("maxConnectionAgeGraceInNanos").nanoseconds)
     } finally {
         server.shutdownNow()
-        server.awaitTermination()
+        server.awaitTermination(30.seconds)
     }
 }

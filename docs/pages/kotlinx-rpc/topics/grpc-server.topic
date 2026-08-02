@@ -66,7 +66,8 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures server-side keep-alive pings to detect broken connections.
-                Defaults to a two-hour interval and a 20-second timeout.
+                Disabled by default. When enabled, uses a two-hour interval and a 20-second timeout
+                unless overridden.
             </def>
             <def title="maxConnectionIdle">
                 The maximum time a connection may have no active RPCs before it is gracefully closed.

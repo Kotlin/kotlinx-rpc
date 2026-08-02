@@ -275,7 +275,8 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * Configures server-side keepalive pings.
      *
-     * The default settings are a two-hour interval and a 20-second timeout.
+     * Calling this function enables keepalive with a two-hour interval and a 20-second timeout
+     * unless overridden in [configure].
      * Both durations must be positive and, unless [Duration.INFINITE] (which disables
      * keepalive pings), less than `Int.MAX_VALUE` milliseconds.
      *
