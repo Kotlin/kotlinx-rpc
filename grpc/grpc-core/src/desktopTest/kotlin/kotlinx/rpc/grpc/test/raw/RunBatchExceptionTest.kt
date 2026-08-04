@@ -5,8 +5,6 @@
 package kotlinx.rpc.grpc.test.raw
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
 import kotlinx.io.Source
@@ -15,6 +13,7 @@ import kotlinx.io.writeString
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.internal.unaryRpc
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.internal.serviceDescriptor
@@ -50,12 +49,9 @@ class RunBatchExceptionTest {
         }
     }
 
-    private suspend fun runWithThrowingMarshaller(
-        block: suspend (GrpcClient, descriptor: kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor<String, String>) -> Unit,
+    private suspend fun CoroutineScope.runWithThrowingMarshaller(
+        block: suspend (GrpcClient, descriptor: GrpcMethodDescriptor<String, String>) -> Unit,
     ) {
-        val serverJob = Job()
-        val serverScope = CoroutineScope(serverJob)
-
         val serverDescriptor = stringDescriptor(normalMarshaller)
         val clientDescriptor = stringDescriptor(throwingDecodeMarshaller)
 
@@ -67,7 +63,7 @@ class RunBatchExceptionTest {
                     schemaDescriptor = Unit,
                 ),
                 methods = listOf(
-                    serverScope.unaryServerMethodDefinition(
+                    unaryServerMethodDefinition(
                         serverDescriptor, typeOf<String>(), emptyList(),
                     ) { it + it }
                 ),
@@ -81,7 +77,6 @@ class RunBatchExceptionTest {
         try {
             block(client, clientDescriptor)
         } finally {
-            serverJob.cancelAndJoin()
             client.shutdownNow()
             server.shutdownNow()
             server.awaitTermination(30.seconds)
