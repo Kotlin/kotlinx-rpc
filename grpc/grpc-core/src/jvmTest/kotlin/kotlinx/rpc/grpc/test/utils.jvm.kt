@@ -26,6 +26,18 @@ actual suspend fun captureStdErr(block: suspend () -> Unit): String {
     }
 }
 
+actual suspend fun captureStdOut(block: suspend () -> Unit): String {
+    val orig = System.out
+    val baos = ByteArrayOutputStream()
+    System.setOut(PrintStream(baos))
+    try {
+        block()
+        return baos.toString()
+    } finally {
+        System.setOut(orig)
+    }
+}
+
 actual suspend fun captureGrpcLogs(
     jvmLogLevel: String,
     jvmLoggers: List<String>,

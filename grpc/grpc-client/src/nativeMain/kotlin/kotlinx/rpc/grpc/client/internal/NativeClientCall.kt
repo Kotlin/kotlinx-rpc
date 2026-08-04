@@ -352,6 +352,11 @@ internal class NativeClientCall<Request, Response>(
                             // if the batch doesn't succeed, this is reflected in the recv status op batch.
                             onSuccess()
                         }
+                    } catch (e: Throwable) {
+                        cancelInternal(
+                            grpc_status_code.GRPC_STATUS_INTERNAL,
+                            "Batch callback failed: ${e.message}"
+                        )
                     } finally {
                         // ignore failure, as it is reflected in the client status op
                         cleanup()
