@@ -275,15 +275,6 @@ public open class BufCommentsExtension @Inject internal constructor(internal val
     public val includeFileLevelComments: Property<Boolean> = project.objects.property<Boolean>().convention(true)
 }
 
-public class BsrModule(
-    public val name: String,
-    public var version: String? = null
-) {
-    public infix fun version(version: String) {
-        this.version = version
-    }
-}
-
 /**
  * Extension for configuring BSR module dependencies.
  *
@@ -295,12 +286,18 @@ public open class BufDepsExtension @Inject internal constructor(
     /**
      * BSR modules defined by their name and optionally followed by a colon and either a commit id or tag.
      */
-    public val modules: ListProperty<BsrModule> = project.objects.listProperty<BsrModule>()
+    public val modules: ListProperty<String> = project.objects.listProperty<String>()
 
     /**
      * BSR modules defined by their name and optionally followed by a colon and either a commit id or tag.
      */
-    public fun module(name: String): BsrModule {
-        return BsrModule(name).also { modules.add(it) }
+    public fun module(module: String) {
+        modules.add(module)
     }
+
+    /**
+     * Path to the buf.lock file. Used as input if it exists, or generated here if it doesn't.
+     * Default: buf/<sourceSet>/buf.lock.
+     */
+    public val lockFile: Property<String> = project.objects.property<String>()
 }

@@ -757,6 +757,14 @@ inputs:
     }
 
     @TestFactory
+    fun `Skip Buf Lock When No Deps`() = runGrpcTest {
+        val result = runGradle(bufGenerateCommonMain)
+
+        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+        result.assertOutcome(TaskOutcome.SKIPPED, bufLockCommonMain)
+    }
+
+    @TestFactory
     fun `Buf Dependencies`() = runGrpcTest {
         val result = runGradle(bufGenerateCommonMain)
 
@@ -764,7 +772,8 @@ inputs:
         result.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
         result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
 
-        assertBufYaml(mainSourceSet,
+        assertBufYaml(
+            mainSourceSet,
             content = """
 version: v2
 lint:
@@ -776,8 +785,9 @@ breaking:
 modules:
   - path: proto
 deps:
-  - buf.build/googleapis/googleapis:main
-            """.trimIndent())
+  - buf.build/googleapis/googleapis
+            """.trimIndent()
+        )
 
         val workspaceLockFile = protoBuildDirSourceSets
             .resolve(mainSourceSet.name)
@@ -797,10 +807,27 @@ deps:
     }
 
     @TestFactory
-    fun `Skip Buf Lock When No Deps`() = runGrpcTest {
-        val result = runGradle(bufGenerateCommonMain)
+    fun `Buf Lock File Defined in Extension`() = runGrpcTest {
+        val resultMain = runGradle(bufGenerateCommonMain)
 
-        result.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
-        result.assertOutcome(TaskOutcome.SKIPPED, bufLockCommonMain)
+        resultMain.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonMain)
+        resultMain.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonMain)
+
+        val mainLockFile = protoBuildDirSourceSets
+            .resolve(mainSourceSet.name)
+            .resolve("buf.lock")
+        assert(mainLockFile.exists()) { "buf.lock was not generated" }
+
+        mainLockFile.appendText("# Edit!")
+
+        val resultTest = runGradle(bufGenerateCommonTest)
+        resultTest.assertOutcome(TaskOutcome.SUCCESS, bufLockCommonTest)
+        resultTest.assertOutcome(TaskOutcome.SUCCESS, bufGenerateCommonTest)
+
+        val testLockFile = protoBuildDirSourceSets
+            .resolve(mainSourceSet.name)
+            .resolve("buf.lock")
+        assert(testLockFile.exists()) { "buf.lock was not copied" }
+        testLockFile.readText().contains("# Edit!")
     }
 }

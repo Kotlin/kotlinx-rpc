@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.rpc.buf.BufDepsExtension
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
 import kotlinx.rpc.util.extendsFromLazy
@@ -129,9 +130,9 @@ internal open class DefaultProtoSourceSet(
         }
     }
 
-    override val bsrDeps: ProtocBufDeps = project.objects.newInstance(ProtocBufDeps::class.java, name)
+    override val bsrDeps: BufDepsExtension = project.objects.newInstance(BufDepsExtension::class.java)
 
-    override fun bsrDeps(configure: Action<ProtocBufDeps>) {
+    override fun bsrDeps(configure: Action<BufDepsExtension>) {
         configure.execute(bsrDeps)
     }
 

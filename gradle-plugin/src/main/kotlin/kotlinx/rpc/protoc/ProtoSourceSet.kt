@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.rpc.buf.BufDepsExtension
 import org.gradle.api.Action
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
@@ -286,7 +287,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
-    public val bsrDeps: ProtocBufDeps
+    public val bsrDeps: BufDepsExtension
 
     /**
      * Configures the [bsrDeps] of this source set.
@@ -304,7 +305,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
-    public fun bsrDeps(configure: Action<ProtocBufDeps>)
+    public fun bsrDeps(configure: Action<BufDepsExtension>)
 }
 
 /**
