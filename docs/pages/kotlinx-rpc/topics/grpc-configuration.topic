@@ -411,7 +411,7 @@
 
                     bsrDeps {
                         module("buf.build/googleapis/googleapis")
-                        lockFile = File("buf.lock")
+                        lockFile = "path/to/buf.lock"
                     }
                 }
             }
