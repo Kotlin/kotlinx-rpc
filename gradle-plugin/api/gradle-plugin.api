@@ -40,23 +40,15 @@ public final class kotlinx/rpc/VersionsKt {
 	public static final field LIBRARY_VERSION Ljava/lang/String;
 }
 
-public final class kotlinx/rpc/buf/BsrModule {
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun getName ()Ljava/lang/String;
-	public final fun getVersion ()Ljava/lang/String;
-	public final fun setVersion (Ljava/lang/String;)V
-	public final fun version (Ljava/lang/String;)V
-}
-
 public class kotlinx/rpc/buf/BufCommentsExtension {
 	public final fun getCopyComments ()Lorg/gradle/api/provider/Property;
 	public final fun getIncludeFileLevelComments ()Lorg/gradle/api/provider/Property;
 }
 
 public class kotlinx/rpc/buf/BufDepsExtension {
+	public final fun getLockFile ()Lorg/gradle/api/provider/Property;
 	public final fun getModules ()Lorg/gradle/api/provider/ListProperty;
-	public final fun module (Ljava/lang/String;)Lkotlinx/rpc/buf/BsrModule;
+	public final fun module (Ljava/lang/String;)V
 }
 
 public class kotlinx/rpc/buf/BufExtension {
@@ -197,7 +189,7 @@ public abstract class kotlinx/rpc/protoc/ProcessProtoFiles : org/gradle/api/task
 public abstract interface class kotlinx/rpc/protoc/ProtoSourceSet : org/gradle/api/file/SourceDirectorySet {
 	public abstract fun bsrDeps (Lorg/gradle/api/Action;)V
 	public abstract fun extendsFrom (Lkotlinx/rpc/protoc/ProtoSourceSet;)V
-	public abstract fun getBsrDeps ()Lkotlinx/rpc/protoc/ProtocBufDeps;
+	public abstract fun getBsrDeps ()Lkotlinx/rpc/buf/BufDepsExtension;
 	public abstract fun getFileImports ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getImports ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getIncludeDefaultGrpcPlugin ()Lorg/gradle/api/provider/Property;
@@ -278,10 +270,6 @@ public final class kotlinx/rpc/protoc/ProtoTasksKt {
 	public static final fun getBuf (Lkotlinx/rpc/protoc/ProtoTasks;)Lkotlinx/rpc/protoc/ProtoTasks;
 	public static final fun getGenerate (Lkotlinx/rpc/protoc/ProtoTasks;)Lkotlinx/rpc/protoc/ProtoTasks;
 	public static final fun getProtoTasks (Lorg/gradle/api/Project;)Lkotlinx/rpc/protoc/ProtoTasks;
-}
-
-public class kotlinx/rpc/protoc/ProtocBufDeps : kotlinx/rpc/buf/BufDepsExtension {
-	public final fun getLockFile ()Lorg/gradle/api/provider/Property;
 }
 
 public abstract interface class kotlinx/rpc/protoc/ProtocExtension {

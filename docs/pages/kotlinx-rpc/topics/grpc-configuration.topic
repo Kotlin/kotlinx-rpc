@@ -545,6 +545,9 @@
                 <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">BSR module dependency</a>
                 to the generated <path>buf.yaml</path>.
             </def>
+            <def title="deps.lockFile" id="grpc-buf-deps-lock-file">
+                Location of the persistent buf.lock file. Used as input if it exists, or generated here if it doesn't. Default: <path>buf/&lt;sourceSet>/buf.lock</path>.
+            </def>
         </deflist>
     </chapter>
     <chapter title="Custom Buf tasks" id="grpc-custom-buf-tasks">
