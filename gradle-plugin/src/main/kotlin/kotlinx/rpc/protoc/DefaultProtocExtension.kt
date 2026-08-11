@@ -13,6 +13,7 @@ import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.buf.tasks.GenerateBufGenYaml
 import kotlinx.rpc.buf.tasks.GenerateBufYaml
+import kotlinx.rpc.buf.tasks.registerBufLockTask
 import kotlinx.rpc.buf.tasks.registerBufExecTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
@@ -276,12 +277,16 @@ internal open class DefaultProtocExtension @Inject constructor(
         }
         val withImport = hasProtoImports.zip(hasProtoImportConfig) { a, b -> a || b }
 
+        val bsrDependencies = buf.deps.modules
+            .zip(protoSourceSet.bsrDeps.modules) { a, b -> a + b }
+
         val generateBufYamlTask = project.registerGenerateBufYamlTask(
             name = capitalName,
             buildSourceSetsDir = buildSourceSetsDir,
             buildSourceSetsProtoDir = buildSourceSetsProtoDir,
             buildSourceSetsImportDir = buildSourceSetsImportDir,
             withImport = withImport,
+            depModules = bsrDependencies,
             properties = properties,
         ) {
             dependsOn(processProtoTask)
@@ -297,11 +302,27 @@ internal open class DefaultProtocExtension @Inject constructor(
             dependsOn(generateBufYamlTask)
         }
 
+        protoSourceSet.bsrDeps.lockFile.convention(
+            buf.deps.lockFile.orElse("buf/${protoSourceSet.name}/buf.lock")
+        )
+
+        val bufLockTask = project.registerBufLockTask(
+            name = capitalName,
+            workingDir = buildSourceSetsDir,
+            bsrDependencies = bsrDependencies,
+            lockFile = protoSourceSet.bsrDeps.lockFile,
+            properties = properties,
+        ) {
+            dependsOn(generateBufYamlTask)
+            dependsOn(processProtoTask)
+            dependsOn(processImportProtoTask)
+        }
+
         val sourceSetsProtoDirFileTree = project.fileTree(buildSourceSetsProtoDir)
 
         val bufGenerateTask = project.registerBufGenerateTask(
             protocExtension = this,
-            protoSourceSet = protoSourceSet,
+            name = capitalName,
             workingDir = buildSourceSetsDir,
             outputDirectory = project.protoBuildDirGenerated.resolve(baseName),
             includedPlugins = includedProtocPlugins,
@@ -324,8 +345,17 @@ internal open class DefaultProtocExtension @Inject constructor(
             protoFiles.convention(processProtoTask.map { it.outputs.files })
             importProtoFiles.convention(processImportProtoTask.map { it.outputs.files })
 
+            bufFile.convention(generateBufYamlTask.flatMap { it.bufFile.asFile })
+            bufGenFile.convention(generateBufGenYamlTask.flatMap { it.bufGenFile.asFile })
+            bufLockFile.convention(
+                bufLockTask.flatMap { task ->
+                    task.bufLockFile.asFile.takeIf { task.bsrDeps.get().isNotEmpty() }
+                }
+            )
+
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
+            dependsOn(bufLockTask)
             dependsOn(processProtoTask)
             dependsOn(processImportProtoTask)
             dependsOn(extractProtoTask)
@@ -361,10 +391,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             extractProtoImportTask = extractProtoImportTask,
             sourceSetsProtoDirFileTree = sourceSetsProtoDirFileTree,
             properties = properties,
-        ) {
-            protoFiles.convention(processProtoTask.map { it.outputs.files })
-            importProtoFiles.convention(processImportProtoTask.map { it.outputs.files })
-        }
+        )
 
         protoSourceSet.tasksConfigured.set(true)
     }
@@ -491,7 +518,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         extractProtoImportTask: TaskProvider<ExtractDependencyProtoImports>,
         sourceSetsProtoDirFileTree: ConfigurableFileTree,
         properties: ProtoTask.Properties,
-        configure: BufExecTask.() -> Unit,
+        configure: BufExecTask.() -> Unit = {}
     ) {
         val baseName = protoSourceSet.name
 
