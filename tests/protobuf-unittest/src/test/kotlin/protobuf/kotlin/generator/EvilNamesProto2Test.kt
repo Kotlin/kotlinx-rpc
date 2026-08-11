@@ -97,9 +97,9 @@ class EvilNamesProto2Test {
     @Test
     fun testBarField() {
         val msg = EvilNamesProto2 {
-            Bar = "hello"
+            bar = "hello"
         }
-        assertEquals("hello", msg.Bar)
+        assertEquals("hello", msg.bar)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
@@ -108,20 +108,20 @@ class EvilNamesProto2Test {
         val msg = EvilNamesProto2 {
             `class` = listOf(10, 20, 30)
             extension = listOf("ext1", "ext2")
-            ALL_CAPS = listOf("A", "B")
+            allCAPS = listOf("A", "B")
         }
         assertEquals(listOf(10, 20, 30), msg.`class`)
         assertEquals(listOf("ext1", "ext2"), msg.extension)
-        assertEquals(listOf("A", "B"), msg.ALL_CAPS)
+        assertEquals(listOf("A", "B"), msg.allCAPS)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
     @Test
     fun testMapField() {
         val msg = EvilNamesProto2 {
-            ALL_CAPS_MAP = mapOf(1 to true, 2 to false)
+            allCAPSMAP = mapOf(1 to true, 2 to false)
         }
-        assertEquals(mapOf(1 to true, 2 to false), msg.ALL_CAPS_MAP)
+        assertEquals(mapOf(1 to true, 2 to false), msg.allCAPSMAP)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
@@ -169,35 +169,35 @@ class EvilNamesProto2Test {
     @Test
     fun testDeprecatedFieldNames() {
         val msg = EvilNamesProto2 {
-            DEPRECATEDFoo = "deprecated"
-            __DEPRECATED_Bar = "also_deprecated"
-            not_DEPRECATEDFoo = "not_deprecated"
+            deprecatedFoo = "deprecated"
+            __deprecatedBar = "also_deprecated"
+            notDEPRECATEDFoo = "not_deprecated"
         }
-        assertEquals("deprecated", msg.DEPRECATEDFoo)
-        assertEquals("also_deprecated", msg.__DEPRECATED_Bar)
-        assertEquals("not_deprecated", msg.not_DEPRECATEDFoo)
+        assertEquals("deprecated", msg.deprecatedFoo)
+        assertEquals("also_deprecated", msg.__deprecatedBar)
+        assertEquals("not_deprecated", msg.notDEPRECATEDFoo)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
     @Test
     fun testIDField() {
         val msg = EvilNamesProto2 {
-            ID = "test-id"
+            iD = "test-id"
         }
-        assertEquals("test-id", msg.ID)
+        assertEquals("test-id", msg.iD)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testEvilNames
     @Test
     fun testUnderbarPrecedingNumericFields() {
         val msg = EvilNamesProto2 {
-            hasUnderbarPrecedingNumeric_1foo = true
-            hasUnderbarPrecedingNumeric_42bar = false
-            hasUnderbarPrecedingNumeric_123foo42barBaz = true
+            hasUnderbarPrecedingNumeric1foo = true
+            hasUnderbarPrecedingNumeric42bar = false
+            hasUnderbarPrecedingNumeric123foo42barBaz = true
         }
-        assertEquals(true, msg.hasUnderbarPrecedingNumeric_1foo)
-        assertEquals(false, msg.hasUnderbarPrecedingNumeric_42bar)
-        assertEquals(true, msg.hasUnderbarPrecedingNumeric_123foo42barBaz)
+        assertEquals(true, msg.hasUnderbarPrecedingNumeric1foo)
+        assertEquals(false, msg.hasUnderbarPrecedingNumeric42bar)
+        assertEquals(true, msg.hasUnderbarPrecedingNumeric123foo42barBaz)
     }
 
     // ---------- Hard keywords tests ----------
@@ -270,7 +270,7 @@ class EvilNamesProto2Test {
         val marshaller = grpcMarshallerOf<EvilNamesProto2>()
         val msg = EvilNamesProto2 {
             hasFoo = true
-            Bar = "test"
+            bar = "test"
             `class` = listOf(1, 2)
             int = 3.14
             long = false
@@ -279,15 +279,15 @@ class EvilNamesProto2Test {
             `interface` = 1.5f
             `object` = "obj"
             by = "by"
-            ALL_CAPS = listOf("X")
-            ALL_CAPS_MAP = mapOf(1 to true)
+            allCAPS = listOf("X")
+            allCAPSMAP = mapOf(1 to true)
             extension = listOf("e1")
         }
         val encoded = marshaller.encode(msg)
         val decoded = marshaller.decode(encoded)
 
         assertEquals(msg.hasFoo, decoded.hasFoo)
-        assertEquals(msg.Bar, decoded.Bar)
+        assertEquals(msg.bar, decoded.bar)
         assertEquals(msg.`class`, decoded.`class`)
         assertEquals(msg.int, decoded.int)
         assertEquals(msg.long, decoded.long)
@@ -296,8 +296,8 @@ class EvilNamesProto2Test {
         assertEquals(msg.`interface`, decoded.`interface`)
         assertEquals(msg.`object`, decoded.`object`)
         assertEquals(msg.by, decoded.by)
-        assertEquals(msg.ALL_CAPS, decoded.ALL_CAPS)
-        assertEquals(msg.ALL_CAPS_MAP, decoded.ALL_CAPS_MAP)
+        assertEquals(msg.allCAPS, decoded.allCAPS)
+        assertEquals(msg.allCAPSMAP, decoded.allCAPSMAP)
         assertEquals(msg.extension, decoded.extension)
     }
 

@@ -493,6 +493,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${platformOption}
   - local: [protoc-gen-grpc-kotlin-multiplatform]
@@ -503,6 +504,7 @@ plugins:
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
       - indentSize=4
+      - camelCaseNames=true
       - explicitApiModeEnabled=false
       - platform=${platformOption}
 inputs:

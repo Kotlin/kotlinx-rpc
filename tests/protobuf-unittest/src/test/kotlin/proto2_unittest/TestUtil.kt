@@ -642,7 +642,7 @@ object TestUtil {
         optionalStringExtension = "115"
         optionalBytesExtension = toBytes("116").asByteString()
 
-        optionalgroupExtension = OptionalGroupExtension { a = 117 }
+        optionalgroupExtension = OptionalgroupExtension { a = 117 }
         optionalNestedMessageExtension = TestAllTypes.NestedMessage { bb = 118 }
         optionalForeignMessageExtension = ForeignMessage { c = 119 }
         optionalImportMessageExtension = ImportMessage { d = 120 }
@@ -674,8 +674,8 @@ object TestUtil {
         repeatedBytesExtension = listOf(toBytes("216").asByteString(), toBytes("316").asByteString())
 
         repeatedgroupExtension = listOf(
-            RepeatedGroupExtension { a = 217 },
-            RepeatedGroupExtension { a = 317 },
+            RepeatedgroupExtension { a = 217 },
+            RepeatedgroupExtension { a = 317 },
         )
         repeatedNestedMessageExtension = listOf(
             TestAllTypes.NestedMessage { bb = 218 },

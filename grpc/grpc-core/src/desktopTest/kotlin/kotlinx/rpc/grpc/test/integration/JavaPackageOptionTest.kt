@@ -17,7 +17,7 @@ import kotlinx.rpc.withService
 import kotlin.test.Test
 
 class TheServiceImpl : TheService {
-    override suspend fun TheMethod(message: Empty): Empty {
+    override suspend fun theMethod(message: Empty): Empty {
         return Empty {}
     }
 }
@@ -56,7 +56,7 @@ class JavaPackageOptionTest : GrpcTestBase() {
     @Test
     fun testJavaPackageOptionStub() = runGrpcTest { client ->
         val service = client.withService<TheService>()
-        service.TheMethod(Empty {})
+        service.theMethod(Empty {})
 
         // just reach this without an error
     }
