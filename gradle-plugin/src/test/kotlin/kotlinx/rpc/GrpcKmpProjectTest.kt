@@ -11,6 +11,7 @@ import kotlinx.rpc.protoc.PlatformOption
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
+import kotlin.collections.emptyList
 import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -2531,5 +2532,61 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
         dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestDebug)
         dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidUnitTestRelease)
         dryRunAndroidPreBuild(SSetsKmp.LegacyAndroid.androidInstrumentedTestDebug)
+    }
+
+    @TestFactory
+    fun `Dependent Source Sets with Import`() = runGrpcTest {
+        val resultCommonMain = runGradle(bufGenerateCommonMain)
+        resultCommonMain.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto"),
+                Path("dependency.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+                Path("dependency", "Dependency.kt"),
+                Path("dependency", "Dependency.ext.kt"),
+                Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+            )
+        )
+
+        val resultNativeMain = runGradle(bufGenerate(SSetsKmp.Default.nativeMain))
+        resultNativeMain.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.nativeMain,
+            protoFiles = listOf(
+                Path("nativeMain.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+                Path("dependency.proto")
+            ),
+            generatedFiles = listOf(
+                Path("NativeMain.kt"),
+                Path("NativeMain.ext.kt"),
+                Path(RPC_INTERNAL, "NativeMain.kt")
+            ),
+            notExecuted = emptyList()
+        )
+
+        val resultAppleMain = runGradle(bufGenerate(SSetsKmp.Default.appleMain))
+        resultAppleMain.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.appleMain,
+            protoFiles = listOf(
+                Path("appleMain.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+                Path("dependency.proto"),
+                Path("nativeMain.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("AppleMain.kt"),
+                Path("AppleMain.ext.kt"),
+                Path(RPC_INTERNAL, "AppleMain.kt")
+            ),
+            notExecuted = emptyList()
+        )
     }
 }

@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "dependency.proto";
+
+message NativeMain {
+  dependency.DependencyMessage dep = 1;
+}

@@ -211,6 +211,7 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
         protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoConfiguration)
         protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
 
         bsrDeps.modules.addAll(protoSourceSet.bsrDeps.modules)
@@ -226,6 +227,10 @@ internal open class DefaultProtoSourceSet(
             legacyList = protoImportConfigurationLegacyList,
             provider = protoSourceSet.map { it.protoImportConfigurationNew },
         )
+        protoImportConfigurationNew.extendsFromLazy(
+            legacyList = protoImportConfigurationLegacyList,
+            provider = protoSourceSet.map { it.protoConfiguration },
+        )
         protoImportConfigurationLegacyList.addAll(protoSourceSet.flatMap { it.protoImportConfigurationLegacyList })
 
         bsrDeps.modules.addAll(protoSourceSet.flatMap { it.bsrDeps.modules })
@@ -239,6 +244,9 @@ internal open class DefaultProtoSourceSet(
 
         protoImportConfigurationLegacyList.addAll(
             protoSourceSets.map { list -> list.map { it.protoImportConfigurationNew } },
+        )
+        protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.map { it.protoConfiguration } },
         )
         protoImportConfigurationLegacyList.addAll(
             protoSourceSets.map { list -> list.flatMap { it.protoImportConfigurationLegacyList.get() } },
