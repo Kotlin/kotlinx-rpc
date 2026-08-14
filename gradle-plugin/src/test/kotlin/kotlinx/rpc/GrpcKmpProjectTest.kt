@@ -2535,7 +2535,7 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
     }
 
     @TestFactory
-    fun `Dependent Source Sets with Import`() = runGrpcTest {
+    fun `Proto Dependencies Propagate Through Hierarchy`() = runGrpcTest {
         val resultCommonMain = runGradle(bufGenerateCommonMain)
         resultCommonMain.assertMainTaskExecuted(
             protoFiles = listOf(
