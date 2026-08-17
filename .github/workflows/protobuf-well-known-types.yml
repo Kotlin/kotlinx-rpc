@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
       - name: Run Protobuf WKT Generation
         run: ./gradlew :protobuf:protobuf-wkt:bufGenerateCommonMain --info --stacktrace
       - name: Check if Well-Known Types are up-to-date
