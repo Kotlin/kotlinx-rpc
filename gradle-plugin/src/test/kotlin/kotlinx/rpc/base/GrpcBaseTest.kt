@@ -519,7 +519,7 @@ abstract class GrpcBaseTest : BaseTest() {
             assertTaskExecuted(
                 sourceSet = sourceSet,
                 protoFiles = generateFor.map { Path("${it.name}Dep.proto") },
-                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") },
+                importProtoFiles = fullImports.map { Path("${it.name}ImportDep.proto") } + importsSet.map { Path("${it.name}Dep.proto") },
                 generatedFiles = generateFor.flatMap {
                     val pascal = it.capital
                     listOf(
