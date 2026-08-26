@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.server.internal
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
@@ -27,6 +28,19 @@ public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials?):
 @InternalRpcApi
 public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
     return builder.build().toKotlin()
+}
+
+internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
+    config.maxInboundMessageSize?.let { maxInboundMessageSize(it) }
+    config.maxInboundMetadataSize?.let { maxInboundMetadataSize(it) }
+    config.keepAlive?.let {
+        keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+        keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    }
+    config.maxConnectionIdle?.let { maxConnectionIdle(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
+    config.maxConnectionAge?.let { maxConnectionAge(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
+    config.maxConnectionAgeGrace?.let { maxConnectionAgeGrace(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
+    return this
 }
 
 private fun io.grpc.Server.toKotlin(): PlatformServer {
