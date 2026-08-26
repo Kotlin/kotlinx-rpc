@@ -8,6 +8,7 @@ package kotlinx.rpc.codegen
 //##csm specific=[2.2.0...2.2.10]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -40,6 +41,7 @@ import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 //##csm specific=[2.2.20...2.2.*]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -72,6 +74,7 @@ import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 //##csm specific=[2.3.0...2.4.*]
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
@@ -236,6 +239,13 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         return KtFakeSourceElementKind.PluginGenerated
         //##csm /specific
         //##csm /ClassBuildingContext.sourceVS
+    }
+
+    // Since 2.5.0 `fakeElement` is a member of `KtSourceElement`;
+    // before that it was a top-level extension in `org.jetbrains.kotlin`.
+    // Only the import differs, see the import section above.
+    override fun KtSourceElement.fakeElementVS(kind: KtFakeSourceElementKind): KtSourceElement {
+        return fakeElement(kind)
     }
 
     override fun ConeTypeParameterType.typeParameterSymbolVS(): FirTypeParameterSymbol? {

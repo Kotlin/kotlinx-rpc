@@ -496,11 +496,15 @@ abstract class KrpcTransportTestBase {
     @Test
     fun testPR445() = runTest {
         assertFailsWith<SerializationException> {
-            val result = client.returnTestClassThatThrowsWhileDeserialization(42)
-            @Suppress("SENSELESS_COMPARISON")
-            if (result == null) {
-                assertNotNull(result, "result must not be null")
-            }
+            // The declared return type is non-null, but an unchecked cast can still let a null through
+            // at runtime -- that is exactly what this test guards against. The type is spelled out as
+            // nullable on purpose: with a non-null declared type the `== null` branch narrows to
+            // `Nothing` instead of `Nothing?`, which crashes Fir2Ir on Kotlin 2.5.0 with
+            // "Expected argument type to be Nothing?". Reported upstream; revert once that is fixed.
+            val result: TestClassThatThrowsWhileDeserialization? =
+                client.returnTestClassThatThrowsWhileDeserialization(42)
+
+            assertNotNull(result, "result must not be null")
         }
     }
 

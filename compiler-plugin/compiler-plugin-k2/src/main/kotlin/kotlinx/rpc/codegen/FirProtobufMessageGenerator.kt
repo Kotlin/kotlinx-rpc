@@ -5,12 +5,10 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.common.ProtoNames
-import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
-import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -113,7 +111,7 @@ class FirProtobufMessageGenerator(
                     modality = Modality.ABSTRACT
                     superType { owner.defaultType() }
                     vsApi {
-                        sourceVS = owner.source?.fakeElement(pluginGeneratedElementKindVS())
+                        sourceVS = owner.source?.fakeElementVS(pluginGeneratedElementKindVS())
                     }
                 }.symbol
             }
@@ -167,7 +165,7 @@ class FirProtobufMessageGenerator(
                     isOverride = true
                 }
                 vsApi {
-                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
+                    sourceVS = property.source?.fakeElementVS(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )
@@ -195,7 +193,7 @@ class FirProtobufMessageGenerator(
                 visibility = Visibilities.Public
                 modality = Modality.ABSTRACT
                 vsApi {
-                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
+                    sourceVS = property.source?.fakeElementVS(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )

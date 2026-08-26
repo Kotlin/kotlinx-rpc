@@ -60,6 +60,8 @@ interface FirVersionSpecificApi {
 
     fun pluginGeneratedElementKindVS(marker: Any? = null): KtFakeSourceElementKind
 
+    fun KtSourceElement.fakeElementVS(kind: KtFakeSourceElementKind): KtSourceElement
+
     fun ConeTypeParameterType.typeParameterSymbolVS(): FirTypeParameterSymbol?
 }
 
