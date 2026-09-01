@@ -2589,4 +2589,150 @@ class GrpcKmpProjectTest : GrpcBaseTest() {
             notExecuted = emptyList()
         )
     }
+
+    @TestFactory
+    fun `Proto Deduplication With Include Imports`() = runGrpcTest {
+        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto"),
+                Path("dependency.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+                Path("dependency", "Dependency.kt"),
+                Path("dependency", "Dependency.ext.kt"),
+                Path("dependency", RPC_INTERNAL, "Dependency.kt"),
+            )
+        )
+
+        result.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.jvmMain,
+            protoFiles = listOf(
+                Path("other.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+                Path("dependency.proto")
+            ),
+            generatedFiles = listOf(
+                Path("Other.kt"),
+                Path("Other.ext.kt"),
+                Path(RPC_INTERNAL, "Other.kt")
+            ),
+            notExecuted = emptyList()
+        )
+    }
+
+    @TestFactory
+    fun `Proto Deduplication With Include Imports And BsrDep`() = runGrpcTest {
+        val resultCommonMain = runGradle(bufGenerateCommonMain)
+        resultCommonMain.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+                Path("com/google/type", "Money.kt"),
+                Path("com/google/type", "Money.ext.kt"),
+                Path("com/google/type", RPC_INTERNAL, "Money.kt"),
+            )
+        )
+
+        val resultJvmMain = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+        resultJvmMain.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.jvmMain,
+            protoFiles = listOf(
+                Path("other.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Other.kt"),
+                Path("Other.ext.kt"),
+                Path(RPC_INTERNAL, "Other.kt"),
+            ),
+            notExecuted = emptyList()
+        )
+    }
+
+    @TestFactory
+    fun `Proto Deduplication With Nested Proto Directories`() = runGrpcTest {
+        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto"),
+                Path("nested", "nested.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+                Path("nested", "Nested.kt"),
+                Path("nested", "Nested.ext.kt"),
+                Path("nested", RPC_INTERNAL, "Nested.kt"),
+            )
+        )
+
+        result.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.jvmMain,
+            protoFiles = listOf(
+                Path("other.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+                Path("nested", "nested.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Other.kt"),
+                Path("Other.ext.kt"),
+                Path(RPC_INTERNAL, "Other.kt"),
+            ),
+            notExecuted = emptyList()
+        )
+    }
+
+    @TestFactory
+    fun `Proto Deduplication With Nested Proto Directories And Strategy All`() = runGrpcTest {
+        val result = runGradle(bufGenerate(SSetsKmp.Default.jvmMain))
+
+        result.assertMainTaskExecuted(
+            protoFiles = listOf(
+                Path("some.proto"),
+                Path("nested", "nested.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Some.kt"),
+                Path("Some.ext.kt"),
+                Path(RPC_INTERNAL, "Some.kt"),
+                Path("nested", "Nested.kt"),
+                Path("nested", "Nested.ext.kt"),
+                Path("nested", RPC_INTERNAL, "Nested.kt"),
+            )
+        )
+
+        result.assertTaskExecuted(
+            sourceSet = SSetsKmp.Default.jvmMain,
+            protoFiles = listOf(
+                Path("other.proto")
+            ),
+            importProtoFiles = listOf(
+                Path("some.proto"),
+                Path("nested", "nested.proto"),
+            ),
+            generatedFiles = listOf(
+                Path("Other.kt"),
+                Path("Other.ext.kt"),
+                Path(RPC_INTERNAL, "Other.kt"),
+            ),
+            notExecuted = emptyList()
+        )
+    }
 }

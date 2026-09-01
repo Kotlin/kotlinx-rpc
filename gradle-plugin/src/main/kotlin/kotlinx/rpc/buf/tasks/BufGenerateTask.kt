@@ -4,29 +4,31 @@
 
 package kotlinx.rpc.buf.tasks
 
+import kotlinx.rpc.buf.BufGenerateExtension
+import kotlinx.rpc.protoc.DefaultProtocExtension
+import kotlinx.rpc.protoc.PROTOC_INPUT_FILES_DIR
 import kotlinx.rpc.protoc.PROTO_GROUP
+import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.protoc.ProtocPlugin
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskProvider
-import java.io.File
-import kotlinx.rpc.buf.BufGenerateExtension
-import kotlinx.rpc.protoc.DefaultProtocExtension
-import kotlinx.rpc.protoc.ProtoTask
-import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputDirectories
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.SkipWhenEmpty
+import org.gradle.api.tasks.TaskProvider
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -141,6 +143,11 @@ public abstract class BufGenerateTask @Inject internal constructor(
     public val outputSourceDirectories: Provider<List<File>> = pluginNames.map { plugins ->
         val out = outputDirectory.get().asFile
         plugins.map { out.resolve(it) }
+    }
+
+    @get:OutputDirectories
+    public val protocInputFilesListDirectories: Provider<List<File>> = outputSourceDirectories.map { dirs ->
+        dirs.map { it.resolve(PROTOC_INPUT_FILES_DIR) }
     }
 
     init {
