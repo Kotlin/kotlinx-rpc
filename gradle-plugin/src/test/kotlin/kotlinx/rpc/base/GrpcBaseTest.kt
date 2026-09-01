@@ -19,6 +19,10 @@ import java.nio.file.Path
 import java.util.stream.Stream
 import kotlin.io.path.*
 import kotlin.io.path.name
+import kotlin.io.path.pathString
+import kotlin.io.path.readLines
+import kotlin.io.path.relativeTo
+import kotlin.io.path.walk
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
@@ -127,6 +131,10 @@ abstract class GrpcBaseTest : BaseTest() {
 
                 listDirectoryEntries().forEach { entry ->
                     when {
+                        entry.isDirectory() && entry.name == PROTOC_INPUT_FILES_DIR -> {
+                            // fine
+                        }
+
                         entry.isDirectory() -> {
                             entry.doAssert()
                         }
@@ -867,6 +875,7 @@ inputs:
     companion object {
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
+        private const val PROTOC_INPUT_FILES_DIR = "protocInputFiles"
     }
 }
 

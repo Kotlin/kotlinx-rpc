@@ -38,6 +38,7 @@ class Config(
     val platform: Platform,
     val protoNamesOutput: String?,
     val camelCaseNames: Boolean,
+    val ignoreFiles: List<String>,
 )
 
 abstract class ProtocGenPlugin {
@@ -51,6 +52,7 @@ abstract class ProtocGenPlugin {
         private const val INDENT_SIZE_OPTION = "indentSize"
         private const val PLATFORM_OPTION = "platform"
         private const val CAMEL_CASE_NAMES = "camelCaseNames"
+        private const val IGNORE_FILES = "ignoreFiles"
     }
 
     private var debugOutput: String? = null
@@ -100,6 +102,8 @@ abstract class ProtocGenPlugin {
 
         val camelCaseNames = parameters[CAMEL_CASE_NAMES]?.toBooleanStrictOrNull() ?: true
 
+        val ignoreFiles = parameters[IGNORE_FILES]?.takeIf { it.isNotBlank() }?.split(";")?.map { it.trim() } ?: emptyList()
+
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
             generateComments = generateComments,
@@ -109,6 +113,7 @@ abstract class ProtocGenPlugin {
             platform = Platform.fromString(platform),
             protoNamesOutput = protoNamesOutput,
             camelCaseNames = camelCaseNames,
+            ignoreFiles = ignoreFiles,
         )
 
         val generatedMetadata = GeneratedMetadata()
@@ -123,6 +128,15 @@ abstract class ProtocGenPlugin {
                     error = conflictCollector.formatErrors()
                 } else {
                     files.forEach(::addFile)
+
+                    input.fileToGenerateList.map { protoFile ->
+                        CodeGeneratorResponse.File.newBuilder()
+                            .apply {
+                                name = "protocInputFiles/$protoFile.txt"
+                                content = protoFile
+                            }
+                            .build()
+                    }.forEach(::addFile)
                 }
 
                 val features =
