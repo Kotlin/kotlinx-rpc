@@ -5,6 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
+import util.targets.configureNonIosNativeSourceSets
 import util.withBackgroundTask
 
 plugins {
@@ -19,9 +20,8 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    // we must re-apply the default hierarchy template again, because we added custom default source sets below,
-    // otherwise it wouldn't be applied.
-    applyDefaultHierarchyTemplate()
+    // The custom test hierarchy below prevents the default hierarchy template from being applied automatically.
+    configureNonIosNativeSourceSets()
 
     sourceSets {
         commonMain {
