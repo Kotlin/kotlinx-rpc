@@ -306,7 +306,7 @@ internal open class DefaultProtocExtension @Inject constructor(
             importedProtocIgnoreFileDirectories.set(
                 project.files(
                     importedGenerateTasks.map { tasks ->
-                        tasks.map { it.protocInputFilesListDirectories }
+                        tasks.map { it.protocInputFilesListDirectory }
                     }
                 )
             )
@@ -362,6 +362,8 @@ internal open class DefaultProtocExtension @Inject constructor(
                     task.bufLockFile.asFile.takeIf { task.bsrDeps.get().isNotEmpty() }
                 }
             )
+
+            protocInputFilesListDirectory.convention(project.layout.dir(project.provider { buildSourceSetsDir.resolve(PROTOC_INPUT_FILES_DIR) }))
 
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)

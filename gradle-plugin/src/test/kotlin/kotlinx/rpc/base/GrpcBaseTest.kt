@@ -131,10 +131,6 @@ abstract class GrpcBaseTest : BaseTest() {
 
                 listDirectoryEntries().forEach { entry ->
                     when {
-                        entry.isDirectory() && entry.name == PROTOC_INPUT_FILES_DIR -> {
-                            // fine
-                        }
-
                         entry.isDirectory() -> {
                             entry.doAssert()
                         }
@@ -875,7 +871,6 @@ inputs:
     companion object {
         private const val KOTLIN_MULTIPLATFORM_DIR = "kotlin-multiplatform"
         const val RPC_INTERNAL = "_rpc_internal"
-        private const val PROTOC_INPUT_FILES_DIR = "protocInputFiles"
     }
 }
 

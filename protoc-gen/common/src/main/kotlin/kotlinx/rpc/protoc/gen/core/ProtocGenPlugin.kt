@@ -128,15 +128,6 @@ abstract class ProtocGenPlugin {
                     error = conflictCollector.formatErrors()
                 } else {
                     files.forEach(::addFile)
-
-                    input.fileToGenerateList.map { protoFile ->
-                        CodeGeneratorResponse.File.newBuilder()
-                            .apply {
-                                name = "protocInputFiles/$protoFile.txt"
-                                content = protoFile
-                            }
-                            .build()
-                    }.forEach(::addFile)
                 }
 
                 val features =
@@ -193,6 +184,16 @@ $protoNames
                 } catch (e: Exception) {
                     logger.error("Failed to write proto names to file", e)
                 }
+            }
+
+            try {
+                this.fileToGenerateList.forEach { protoFile ->
+                    val file = File("protocInputFiles/$protoFile.txt")
+                    file.parentFile?.mkdirs()
+                    file.writeText(protoFile)
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to write protoc input files", e)
             }
 
             files
