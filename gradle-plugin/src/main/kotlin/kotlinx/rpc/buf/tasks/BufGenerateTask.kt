@@ -6,7 +6,6 @@ package kotlinx.rpc.buf.tasks
 
 import kotlinx.rpc.buf.BufGenerateExtension
 import kotlinx.rpc.protoc.DefaultProtocExtension
-import kotlinx.rpc.protoc.PROTOC_INPUT_FILES_DIR
 import kotlinx.rpc.protoc.PROTO_GROUP
 import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.protoc.ProtocPlugin
@@ -22,7 +21,6 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
@@ -145,10 +143,8 @@ public abstract class BufGenerateTask @Inject internal constructor(
         plugins.map { out.resolve(it) }
     }
 
-    @get:OutputDirectories
-    public val protocInputFilesListDirectories: Provider<List<File>> = outputSourceDirectories.map { dirs ->
-        dirs.map { it.resolve(PROTOC_INPUT_FILES_DIR) }
-    }
+    @get:OutputDirectory
+    public abstract val protocInputFilesListDirectory: DirectoryProperty
 
     init {
         command.set("generate")
