@@ -33,7 +33,7 @@ kotlin {
             }
         }
 
-        nativeMain {
+        named("nonIosNativeMain") {
             dependencies {
                 implementation(libs.atomicfu)
             }

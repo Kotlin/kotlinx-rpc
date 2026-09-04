@@ -82,7 +82,7 @@ kotlin {
             }
         }
 
-        nativeMain {
+        named("nonIosNativeMain") {
             dependencies {
                 // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
                 implementation(projects.protobuf.protobufLite)
