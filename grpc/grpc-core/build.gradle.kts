@@ -5,7 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import util.targets.configureNonIosNativeSourceSets
+import util.targets.configureNonIosSourceSets
 import util.withBackgroundTask
 
 plugins {
@@ -21,7 +21,7 @@ kotlin {
     }
 
     // The custom test hierarchy below prevents the default hierarchy template from being applied automatically.
-    configureNonIosNativeSourceSets()
+    configureNonIosSourceSets()
 
     sourceSets {
         commonMain {
