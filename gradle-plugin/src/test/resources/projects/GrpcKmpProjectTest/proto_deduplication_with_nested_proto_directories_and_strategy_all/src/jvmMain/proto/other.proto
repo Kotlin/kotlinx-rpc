@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "some.proto";
+import "nested/nested.proto";
+
+message Other {
+  Some some = 1;
+  nested.Nested nested = 2;
+}

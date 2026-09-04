@@ -17,7 +17,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
@@ -63,6 +66,10 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
     @get:Input
     internal abstract val plugins: ListProperty<ResolvedGrpcPlugin>
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal abstract val importedProtocIgnoreFileDirectories: ListProperty<File>
+
     /**
      * The `buf.gen.yaml` file to generate/update.
      */
@@ -95,11 +102,23 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
                     }
                 }
 
+                val ignoreFiles = importedProtocIgnoreFileDirectories.get()
+                    .flatMap { it.walk().toList() }
+                    .filter { it.isFile }
+                    .flatMap { it.readLines() }
+                    .distinct()
+
+                val options = plugin.options + if (ignoreFiles.isNotEmpty()) {
+                    mapOf("ignoreFiles" to ignoreFiles.joinToString(";"))
+                } else {
+                    emptyMap()
+                }
+
                 writer.appendLine("  - ${plugin.type.name}: $locatorLine")
                 writer.appendLine("    out: ${plugin.out}")
-                if (plugin.options.isNotEmpty()) {
+                if (options.isNotEmpty()) {
                     writer.appendLine("    opt:")
-                    plugin.options.forEach { (key, value) ->
+                    options.forEach { (key, value) ->
                         writer.appendLine("      - $key=$value")
                     }
                 }

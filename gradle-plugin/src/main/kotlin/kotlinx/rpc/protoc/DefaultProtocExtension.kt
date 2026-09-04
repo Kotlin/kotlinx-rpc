@@ -13,9 +13,9 @@ import kotlinx.rpc.buf.tasks.BufExecTask
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.buf.tasks.GenerateBufGenYaml
 import kotlinx.rpc.buf.tasks.GenerateBufYaml
-import kotlinx.rpc.buf.tasks.registerBufLockTask
 import kotlinx.rpc.buf.tasks.registerBufExecTask
 import kotlinx.rpc.buf.tasks.registerBufGenerateTask
+import kotlinx.rpc.buf.tasks.registerBufLockTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufGenYamlTask
 import kotlinx.rpc.buf.tasks.registerGenerateBufYamlTask
 import kotlinx.rpc.protoc.ProtocPlugin.Companion.GRPC_KOTLIN_MULTIPLATFORM
@@ -31,9 +31,9 @@ import kotlinx.rpc.util.ensureDirectoryExists
 import kotlinx.rpc.util.hasAndroidKmpLibrary
 import kotlinx.rpc.util.hasLegacyAndroid
 import kotlinx.rpc.util.kotlinPluginId
-import kotlinx.rpc.util.withLegacyAndroid
 import kotlinx.rpc.util.withKotlin
 import kotlinx.rpc.util.withLazyLegacyAndroidComponentsExtension
+import kotlinx.rpc.util.withLegacyAndroid
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
@@ -57,9 +57,6 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.utils.ObservableSet
 import java.io.File
 import javax.inject.Inject
-import kotlin.collections.filterIsInstance
-import kotlin.collections.filterNotNull
-import kotlin.collections.plus
 import kotlin.reflect.KClass
 
 internal open class DefaultProtocExtension @Inject constructor(
@@ -248,14 +245,14 @@ internal open class DefaultProtocExtension @Inject constructor(
 
         val extractProtoTask = project.registerExtractDependencyProtoTask(
             taskName = "extractProto${capitalName}",
-            destination = buildSourceSetsDir.resolve("protoExtracted"),
+            destination = buildSourceSetsDir.resolve(PROTO_FILES_EXTRACTED_DIR),
             dependencyArchives = protoSourceSet.protoConfiguration,
             properties = properties,
         )
 
         val extractProtoImportTask = project.registerExtractDependencyProtoTask(
             taskName = "extractProtoImport${capitalName}",
-            destination = buildSourceSetsDir.resolve("importExtracted"),
+            destination = buildSourceSetsDir.resolve(PROTO_FILES_IMPORT_EXTRACTED_DIR),
             dependencyArchives = protoSourceSet.protoImportConfiguration,
             properties = properties,
         )
@@ -300,6 +297,19 @@ internal open class DefaultProtocExtension @Inject constructor(
             properties = properties,
         ) {
             dependsOn(generateBufYamlTask)
+            val importedGenerateTasks = project.provider {
+                protoSourceSet.imports.get()
+                    .filterIsInstance<DefaultProtoSourceSet>()
+                    .mapNotNull { it.generateTask.orNull }
+            }
+            dependsOn(importedGenerateTasks)
+            importedProtocIgnoreFileDirectories.set(
+                project.files(
+                    importedGenerateTasks.map { tasks ->
+                        tasks.map { it.protocInputFilesListDirectory }
+                    }
+                )
+            )
         }
 
         protoSourceSet.bsrDeps.lockFile.convention(
@@ -352,6 +362,8 @@ internal open class DefaultProtocExtension @Inject constructor(
                     task.bufLockFile.asFile.takeIf { task.bsrDeps.get().isNotEmpty() }
                 }
             )
+
+            protocInputFilesListDirectory.convention(project.layout.dir(project.provider { buildSourceSetsDir.resolve(PROTOC_INPUT_FILES_DIR) }))
 
             dependsOn(generateBufGenYamlTask)
             dependsOn(generateBufYamlTask)
