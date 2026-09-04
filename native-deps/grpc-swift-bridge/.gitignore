@@ -1,0 +1,26 @@
+# copied from the grpc-swift-2 project
+.DS_Store
+project.xcworkspace
+xcuserdata
+DerivedData/
+.build
+.swiftpm
+build
+/protoc-gen-swift
+/protoc-gen-grpc-swift-2
+third_party/**
+/Echo
+/EchoNIO
+/test.out
+/echo.pid
+/*.xcodeproj
+/scripts/tmp/
+Examples/EchoWeb/dist
+Examples/EchoWeb/node_modules
+Examples/EchoWeb/package-lock.json
+dev/codegen-tests/**/generated/*
+/scripts/.swiftformat-source/
+/scripts/.swift-format-source/
+Package.resolved
+*.out.*
+/Performance/Benchmarks/.benchmarkBaselines/
