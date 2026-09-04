@@ -5,7 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import util.targets.configureNonIosNativeSourceSets
+import util.targets.configureNonIosSourceSets
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -13,7 +13,7 @@ plugins {
 }
 
 kotlin {
-    configureNonIosNativeSourceSets()
+    configureNonIosSourceSets()
 
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
