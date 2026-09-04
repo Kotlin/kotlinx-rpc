@@ -135,7 +135,7 @@ public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/ta
 	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getOutputSourceDirectories ()Lorg/gradle/api/provider/Provider;
 	public abstract fun getPluginNames ()Lorg/gradle/api/provider/ListProperty;
-	public final fun getProtocInputFilesListDirectories ()Lorg/gradle/api/provider/Provider;
+	public abstract fun getProtocInputFilesListDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 }
 
 public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/BufExecTask {
