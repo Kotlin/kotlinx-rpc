@@ -6,6 +6,14 @@ rootProject.name = "kotlinx-rpc"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+// grpc-swift is the sole owner of the SwiftPM cinterop. grpc-client consumes its Kotlin API,
+// without re-importing transitive SwiftPM metadata for all of its non-iOS Apple targets.
+gradle.beforeProject {
+    if (path == ":grpc:grpc-client") {
+        extensions.extraProperties["kotlin.disableSwiftPMImport"] = true
+    }
+}
+
 pluginManagement {
     includeBuild("gradle-conventions-settings")
     includeBuild("gradle-conventions")
@@ -38,6 +46,7 @@ includePublic(":protobuf:protobuf")
 include(":grpc")
 includePublic(":grpc:grpc-core")
 includePublic(":grpc:grpc-client")
+includePublic(":grpc:grpc-swift")
 includePublic(":grpc:grpc-server")
 includePublic(":grpc:grpc-ktor-server")
 includePublic(":grpc:grpc-marshaller")

@@ -1,6 +1,6 @@
 # gRPC-Swift Bridge
 
-This Swift package provides an bridge for grpc-swift-2, which is used
+This Swift package provides a bridge for grpc-swift-2, which is used
 for iOS clients for gRPC communication.
 
 It contains grpc-swift-2, grpc-swift-nio-transport and swift-nio as dependencies.

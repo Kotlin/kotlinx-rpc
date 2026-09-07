@@ -38,5 +38,11 @@ kotlin {
                 implementation(libs.atomicfu)
             }
         }
+
+        iosMain {
+            dependencies {
+                implementation(projects.grpc.grpcSwift)
+            }
+        }
     }
 }
