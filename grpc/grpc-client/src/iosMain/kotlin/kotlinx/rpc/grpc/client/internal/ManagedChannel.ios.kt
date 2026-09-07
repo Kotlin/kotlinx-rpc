@@ -3,33 +3,168 @@
  */
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+@file:OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.atomicfu.atomic
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder
+import kotlinx.rpc.grpc.client.realClientCredentials
+import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import platform.Foundation.NSError
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClient
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClientConfiguration
+import kotlin.time.Duration
+
+internal class SwiftManagedChannel(
+    internal val client: SwiftGrpcClient,
+) : ManagedChannel {
+    private val shutdown = atomic(false)
+    private val terminated = CompletableDeferred<Unit>()
+
+    init {
+        // Capture only the state so the Swift callback does not retain this channel and its client.
+        val shutdown = shutdown
+        val terminated = terminated
+        client.notifyWhenTerminated {
+            shutdown.value = true
+            terminated.complete(Unit)
+        }
+    }
+
+    override val isShutdown: Boolean
+        get() = shutdown.value
+
+    override val isTerminated: Boolean
+        get() = terminated.isCompleted
+
+    override suspend fun awaitTermination(duration: Duration): Boolean {
+        withTimeoutOrNull(duration) {
+            terminated.await()
+        } ?: return false
+        return true
+    }
+
+    override fun shutdown(): ManagedChannel {
+        if (shutdown.compareAndSet(expect = false, update = true)) {
+            client.beginGracefulShutdown()
+        }
+        return this
+    }
+
+    override fun shutdownNow(): ManagedChannel {
+        shutdown.value = true
+        client.shutdownNow()
+        return this
+    }
+}
 
 @InternalRpcApi
-public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
+public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>> {
+    internal var config: GrpcClientConfiguration? = null
+}
+
+private class SwiftManagedChannelBuilder(
+    private val target: GrpcClientTarget,
+    private val credentials: GrpcClientCredentials?,
+) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
+    fun buildChannel(): SwiftManagedChannel {
+        val clientCredentials = (credentials ?: GrpcTlsClientCredentials()).realClientCredentials
+        val swiftConfig = SwiftGrpcClientConfiguration(
+            host = target.host,
+            port = target.port.toLong(),
+            plaintext = when (clientCredentials) {
+                is GrpcInsecureClientCredentials -> true
+                is GrpcTlsClientCredentials -> {
+                    clientCredentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
+                    false
+                }
+                else -> internalError("Unknown client credentials type: $clientCredentials")
+            },
+        )
+
+        swiftConfig.overrideAuthority = config?.overrideAuthority
+        swiftConfig.userAgent = config?.userAgent
+        config?.keepAlive?.let { keepAlive ->
+            require(keepAlive.time.isPositive()) { "keepalive time must be positive" }
+            require(keepAlive.timeout.isPositive()) { "keepalive timeout must be positive" }
+            if (keepAlive.time.isFinite()) {
+                swiftConfig.keepAliveTimeMilliseconds = keepAlive.time.inWholeMilliseconds
+                swiftConfig.keepAliveTimeoutMilliseconds = keepAlive.timeout.inWholeMilliseconds
+                swiftConfig.keepAliveWithoutCalls = keepAlive.withoutCalls
+            }
+        }
+
+        val swiftClient = memScoped {
+            val error = alloc<ObjCObjectVar<NSError?>>()
+            error.value = null
+            val client = SwiftGrpcClient(
+                configuration = swiftConfig,
+                error = error.ptr,
+            )
+            error.value?.let { throw IllegalStateException(it.localizedDescription) }
+            client
+        }
+        return SwiftManagedChannel(swiftClient)
+    }
+}
+
+private object UnsupportedSwiftTlsClientCredentialsBuilder : GrpcTlsClientCredentialsBuilder {
+    override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {
+        error("Custom TLS trust roots are not yet supported by the iOS grpc-swift transport")
+    }
+
+    override fun keyManager(
+        certChainPem: String,
+        privateKeyPem: String,
+    ): GrpcTlsClientCredentialsBuilder {
+        error("Mutual TLS is not yet supported by the iOS grpc-swift transport")
+    }
+}
 
 @InternalRpcApi
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
     credentials: GrpcClientCredentials?,
-): ManagedChannelBuilder<*> = TODO("Implement the iOS gRPC client")
+): ManagedChannelBuilder<*> {
+    require(hostname.isNotBlank()) { "gRPC hostname must not be blank" }
+    require(port in 1..65535) { "gRPC target port must be in 1..65535, but was '$port'" }
+    return SwiftManagedChannelBuilder(GrpcClientTarget(hostname, port), credentials)
+}
 
 @InternalRpcApi
 public actual fun ManagedChannelBuilder(
     target: String,
     credentials: GrpcClientCredentials?,
-): ManagedChannelBuilder<*> = TODO("Implement the iOS gRPC client")
+): ManagedChannelBuilder<*> =
+    SwiftManagedChannelBuilder(GrpcClientTarget.parse(target), credentials)
 
 internal actual fun ManagedChannelBuilder<*>.applyConfig(
     config: GrpcClientConfiguration,
-): ManagedChannelBuilder<*> = TODO("Implement the iOS gRPC client")
+): ManagedChannelBuilder<*> {
+    this.config = config
+    return this
+}
 
 @InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel =
-    TODO("Implement the iOS gRPC client")
+public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+    check(this is SwiftManagedChannelBuilder) {
+        internalError("Wrong builder type, expected SwiftManagedChannelBuilder")
+    }
+    return buildChannel()
+}
