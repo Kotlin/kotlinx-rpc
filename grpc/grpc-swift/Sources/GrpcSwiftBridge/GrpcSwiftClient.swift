@@ -99,6 +99,16 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
         self.connectionTask.cancel()
     }
 
+    /// Invokes `completion` after the connection task has stopped and all transport resources have
+    /// been released. The callback may run on any Swift concurrency executor.
+    @objc public func notifyWhenTerminated(_ completion: @escaping @Sendable () -> Void) {
+        let connectionTask = self.connectionTask
+        Task {
+            await connectionTask.value
+            completion()
+        }
+    }
+
     deinit {
         self.client.beginGracefulShutdown()
         self.connectionTask.cancel()
