@@ -23,12 +23,10 @@ kotlin {
     explicitApi()
 
     // marker-abi-kmp
-    abiValidation {
-        enabled = enableAbiValidation
-        klib {
-            enabled = enableAbiValidation
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
         }
-        configureAbiFilters()
     }
     // /marker-abi-kmp
 }

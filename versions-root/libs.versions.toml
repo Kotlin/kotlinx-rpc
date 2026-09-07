@@ -4,7 +4,7 @@ kotlinx-rpc = "0.11.0-SNAPSHOT"
 grpc-dev = "0.11.0-grpc-189"
 
 # kotlin
-kotlin-lang = "2.3.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
+kotlin-lang = "2.4.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION or -Pkotlin.compiler=<version>
 
 # internal standalone publications.
