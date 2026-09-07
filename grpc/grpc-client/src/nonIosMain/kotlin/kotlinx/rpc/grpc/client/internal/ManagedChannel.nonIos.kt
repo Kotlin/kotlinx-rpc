@@ -10,11 +10,8 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
 @InternalRpcApi
-public actual abstract class GrpcChannel
-
-@InternalRpcApi
-public actual fun <RequestT, ResponseT> GrpcChannel.createCall(
+public expect fun <RequestT, ResponseT> ManagedChannel.createCall(
     methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,
     coroutineContext: CoroutineContext,
-): ClientCall<RequestT, ResponseT> = TODO("Implement the iOS gRPC client")
+): ClientCall<RequestT, ResponseT>

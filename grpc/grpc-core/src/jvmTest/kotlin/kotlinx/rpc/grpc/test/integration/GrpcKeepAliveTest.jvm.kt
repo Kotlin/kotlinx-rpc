@@ -30,8 +30,7 @@ actual fun GrpcTestBase.testKeepAlive(
     ) {
         it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         val nettyClientTransport = it.getField<ManagedChannel>("channel")
-            .platformApi
-            .getField<HashSet<Any>>("delegate", "subchannels")
+            .getField<HashSet<Any>>("channel", "delegate", "subchannels")
             .first()
             .getField<List<Any>>("transports").first()
             .getField<Any>("delegate", "delegate")

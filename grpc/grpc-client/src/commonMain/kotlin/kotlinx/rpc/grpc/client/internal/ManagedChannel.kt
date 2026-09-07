@@ -12,12 +12,6 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
 /**
- * Same as [ManagedChannel], but is platform-exposed.
- */
-@InternalRpcApi
-public expect abstract class ManagedChannelPlatform : GrpcChannel
-
-/**
  * A virtual connection to a conceptual endpoint, to perform RPCs.
  * A channel is free to have zero or many actual connections to the endpoint based on configuration,
  * load, etc. A channel is also free to determine which actual endpoints to use and may change it every RPC,
@@ -62,10 +56,6 @@ public interface ManagedChannel {
      */
     public fun shutdownNow(): ManagedChannel
 
-    /**
-     * Exposes the platform-specific version of this API.
-     */
-    public val platformApi: ManagedChannelPlatform
 }
 
 /**

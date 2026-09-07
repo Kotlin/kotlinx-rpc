@@ -9,18 +9,25 @@ package kotlinx.rpc.grpc.client.internal
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.toJvm
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
-/**
- * Same as [ManagedChannel], but is platform-exposed.
- */
 @InternalRpcApi
-public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
+public actual fun <RequestT, ResponseT> ManagedChannel.createCall(
+    methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
+    callOptions: GrpcCallOptions,
+    coroutineContext: CoroutineContext,
+): ClientCall<RequestT, ResponseT> {
+    check(this is JvmManagedChannel)
+    return channel.newCall(methodDescriptor, callOptions.toJvm(coroutineContext))
+}
 
 /**
  * Builder class for [ManagedChannel].
@@ -56,7 +63,7 @@ public fun io.grpc.ManagedChannel.toKotlin(): ManagedChannel {
     return JvmManagedChannel(this)
 }
 
-private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : ManagedChannel {
+private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedChannel {
     override val isShutdown: Boolean
         get() = channel.isShutdown
 
@@ -78,9 +85,6 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
         channel.shutdownNow()
         return this
     }
-
-    override val platformApi: ManagedChannelPlatform
-        get() = channel
 }
 
 internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {

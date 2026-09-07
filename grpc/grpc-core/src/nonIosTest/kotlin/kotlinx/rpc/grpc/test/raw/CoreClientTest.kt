@@ -57,7 +57,7 @@ class GrpcCoreClientTest {
     private fun ManagedChannel.newHelloCall(
         fullName: String = "kotlinx.rpc.grpc.test.GreeterService/SayHello",
     ): ClientCall<HelloRequest, HelloReply> =
-        platformApi.createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
+        createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
         target = "localhost:$PORT",
