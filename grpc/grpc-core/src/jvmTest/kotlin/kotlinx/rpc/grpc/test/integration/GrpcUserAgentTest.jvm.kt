@@ -25,8 +25,7 @@ actual fun GrpcTestBase.testUserAgent(
         // grpc-java stores the composed user-agent ("<prefix> grpc-java-<transport>/<version>")
         // on ManagedChannelImpl, reachable through the forwarding wrapper's `delegate`.
         val composedUserAgent = it.getField<ManagedChannel>("channel")
-            .platformApi
-            .getField<String>("delegate", "userAgent")
+            .getField<String>("channel", "delegate", "userAgent")
 
         assertTrue(
             composedUserAgent.startsWith(userAgent),

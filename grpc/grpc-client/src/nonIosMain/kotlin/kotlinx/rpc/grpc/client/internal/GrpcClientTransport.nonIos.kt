@@ -42,7 +42,7 @@ internal class NonIosGrpcClientTransport(
     ): Flow<GrpcClientCallEvents<Response>> = flow {
         coroutineScope {
             callOptions.callCredentials += callCredentials
-            val call = channel.platformApi.createCall(method, callOptions, coroutineContext)
+            val call = channel.createCall(method, callOptions, coroutineContext)
 
             // At most one response is requested at a time. Three slots are enough for the optional
             // headers, that response, and the terminal status to arrive without blocking a callback.

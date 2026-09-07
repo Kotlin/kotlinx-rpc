@@ -11,9 +11,6 @@ import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual abstract class ManagedChannelPlatform : GrpcChannel()
-
-@InternalRpcApi
 public actual abstract class ManagedChannelBuilder<T : ManagedChannelBuilder<T>>
 
 @InternalRpcApi

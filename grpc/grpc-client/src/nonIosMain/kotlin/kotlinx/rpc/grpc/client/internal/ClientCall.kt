@@ -1,12 +1,15 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.coroutines.CoroutineContext
 
 /**
  * This class represents a client-side call to a server.
