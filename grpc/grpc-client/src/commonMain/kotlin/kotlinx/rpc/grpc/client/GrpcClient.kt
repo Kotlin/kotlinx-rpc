@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.client.internal.GrpcClientTransport
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.applyConfig
@@ -45,6 +46,10 @@ public class GrpcClient internal constructor(
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
+
+    // Holds the transport used for making gRPC calls in an asynchronous manner.
+    // It is the common boundary of different implementations (grpc-java and grpc-swift API).
+    internal val transport = GrpcClientTransport(channel, callCredentials)
 
     public fun shutdown() {
         delegates.clear()

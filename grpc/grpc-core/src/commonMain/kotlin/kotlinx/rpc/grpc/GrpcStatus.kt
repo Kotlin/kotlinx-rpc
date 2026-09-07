@@ -13,9 +13,8 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * optional descriptive message.
  *
  * For clients, every remote call will return a status on completion.
- * In the case of errors this
- * status may be propagated to blocking stubs as a [RuntimeException] or to a listener as an
- * explicit parameter.
+ * In the case of errors this status may be propagated to blocking stubs
+ * as a [RuntimeException] or to a listener as an explicit parameter.
  *
  * Similarly, servers can report a status by throwing [GrpcStatusException]
  * or by passing the status to a callback.
