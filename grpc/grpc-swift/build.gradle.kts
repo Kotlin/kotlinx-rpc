@@ -31,12 +31,10 @@ kotlin {
 
     swiftPMDependencies {
         iosMinimumDeploymentTarget.set("18.0")
-        packageResolvedSynchronization = noSynchronization()
         discoverClangModulesImplicitly.set(false)
         localSwiftPackage(
             directory = project.layout.projectDirectory,
-            products = listOf("GrpcSwiftBridge"),
-            importedClangModules = listOf("GrpcSwiftBridge"),
+            products = listOf(product("GrpcSwiftBridge", platforms = setOf(iOS()))),
         )
     }
 }
