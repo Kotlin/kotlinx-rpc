@@ -8,35 +8,41 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class GrpcMethodDescriptor<Request, Response> internal constructor(
-    fullMethodName: String,
+    private val fullMethodName: String,
     public val requestMarshaller: GrpcMarshaller<Request>,
     public val responseMarshaller: GrpcMarshaller<Response>,
     public val methodType: GrpcMethodType,
-    schemaDescriptor: Any?,
-    idempotent: Boolean,
-    safe: Boolean,
-    sampledToLocalTracing: Boolean,
+    private val schemaDescriptor: Any?,
+    private val idempotent: Boolean,
+    private val safe: Boolean,
+    private val sampledToLocalTracing: Boolean,
 ) {
-    public actual fun getFullMethodName(): String = TODO("Implement iOS gRPC method descriptors")
+    public actual fun getFullMethodName(): String = fullMethodName
 
-    public actual fun getServiceName(): String? = TODO("Implement iOS gRPC method descriptors")
+    private val serviceName: String? by lazy {
+        extractFullServiceName(fullMethodName)
+    }
 
-    public actual fun getSchemaDescriptor(): Any? = TODO("Implement iOS gRPC method descriptors")
+    public actual fun getServiceName(): String? = serviceName
 
-    public actual fun isIdempotent(): Boolean = TODO("Implement iOS gRPC method descriptors")
+    public actual fun getSchemaDescriptor(): Any? = schemaDescriptor
 
-    public actual fun isSafe(): Boolean = TODO("Implement iOS gRPC method descriptors")
+    public actual fun isIdempotent(): Boolean = idempotent
 
-    public actual fun isSampledToLocalTracing(): Boolean = TODO("Implement iOS gRPC method descriptors")
+    public actual fun isSafe(): Boolean = safe
+
+    public actual fun isSampledToLocalTracing(): Boolean = sampledToLocalTracing
 
     public companion object {
-        public fun extractFullServiceName(fullMethodName: String): String? =
-            TODO("Implement iOS gRPC method descriptors")
+        public fun extractFullServiceName(fullMethodName: String): String? {
+            val index = fullMethodName.lastIndexOf('/')
+            return if (index == -1) null else fullMethodName.take(index)
+        }
     }
 }
 
 public actual val GrpcMethodDescriptor<*, *>.methodType: GrpcMethodType
-    get() = TODO("Implement iOS gRPC method descriptors")
+    get() = this.methodType
 
 @InternalRpcApi
 public actual fun <Request, Response> methodDescriptor(
@@ -48,4 +54,13 @@ public actual fun <Request, Response> methodDescriptor(
     idempotent: Boolean,
     safe: Boolean,
     sampledToLocalTracing: Boolean,
-): GrpcMethodDescriptor<Request, Response> = TODO("Implement iOS gRPC method descriptors")
+): GrpcMethodDescriptor<Request, Response> = GrpcMethodDescriptor(
+    fullMethodName = fullMethodName,
+    requestMarshaller = requestMarshaller,
+    responseMarshaller = responseMarshaller,
+    methodType = type,
+    schemaDescriptor = schemaDescriptor,
+    idempotent = idempotent,
+    safe = safe,
+    sampledToLocalTracing = sampledToLocalTracing,
+)

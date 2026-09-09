@@ -8,6 +8,9 @@ internal data class GrpcClientTarget(val host: String, val port: Int) {
     companion object
 }
 
+internal val GrpcClientTarget.authority: String
+    get() = if (':' in host) "[$host]:$port" else "$host:$port"
+
 /**
  * Parses `host[:port]` or `[IPv6][:port]`, optionally prefixed with `dns:///` (case-insensitive).
  * DNS authorities and other URI components are unsupported. The default port is 443, and IPv6
