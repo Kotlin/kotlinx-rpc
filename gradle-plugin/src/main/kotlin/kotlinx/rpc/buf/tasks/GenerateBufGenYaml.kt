@@ -109,7 +109,7 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
                     .distinct()
 
                 val options = plugin.options + if (ignoreFiles.isNotEmpty()) {
-                    mapOf("ignoreFiles" to ignoreFiles.joinToString(";"))
+                    mapOf("ignoreFiles" to ignoreFiles.joinToString("\u0000"))
                 } else {
                     emptyMap()
                 }
@@ -119,7 +119,7 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
                 if (options.isNotEmpty()) {
                     writer.appendLine("    opt:")
                     options.forEach { (key, value) ->
-                        writer.appendLine("      - $key=$value")
+                        writer.appendLine("      - ${prepareOption(key, value)}")
                     }
                 }
                 if (plugin.strategy != null) {
@@ -150,6 +150,19 @@ public abstract class GenerateBufGenYaml @Inject internal constructor(
 
             writer.flush()
         }
+    }
+
+    private fun prepareOption(key: String, value: Any): String {
+        val option = "$key=$value"
+
+        if (!option.contains("\u0000")) {
+            return option
+        }
+
+        return option.replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("\u0000", "\\0")
+            .let { "\"$it\"" }
     }
 
     internal companion object {
