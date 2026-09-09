@@ -7,10 +7,12 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.set
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.flow
@@ -19,10 +21,19 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withTimeout
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.append
+import kotlinx.rpc.grpc.appendBinary
+import kotlinx.rpc.grpc.getAll
+import kotlinx.rpc.grpc.getAllBinary
+import kotlinx.rpc.grpc.keys
+import kotlinx.rpc.grpc.remove
 import platform.Foundation.NSError
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -30,6 +41,56 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class SwiftGrpcBridgeTest {
+    @Test
+    fun kotlinMetadataVisitorPreservesValuesAcrossSwiftRoundTrip() {
+        val expected = ByteArray(20_000) { it.toByte() }
+        val metadata = GrpcMetadata().apply {
+            append("label", "first")
+            appendBinary("data-bin", expected)
+            append("label", "")
+            append("label", "caf\u00e9")
+            appendBinary("data-bin", byteArrayOf())
+            append("removed", "value")
+            remove("removed", "value")
+        }
+
+        val swift = metadata.toSwift()
+        val result = swift.toKotlin()
+        assertEquals(5L, swift.count)
+        assertEquals(listOf("label", "data-bin"), result.keys().toList())
+        assertEquals(metadata.getAll("label"), result.getAll("label"))
+        assertEquals(listOf("first", "", "caf?"), result.getAll("label"))
+        val binary = result.getAllBinary("data-bin")
+        assertEquals(2, binary.size)
+        assertContentEquals(expected, binary[0])
+        assertContentEquals(byteArrayOf(), binary[1])
+        assertEquals(0L, GrpcMetadata().toSwift().count)
+    }
+
+    @Test
+    fun metadataVisitorCopiesDuplicateAndEmptyValues() {
+        val metadata = SwiftGrpcMetadata()
+        metadata.addStringValue("first", forKey = "label")
+        metadata.addStringValue("", forKey = "label")
+        val expected = byteArrayOf(0, 127, -128, -1)
+        expected.usePinned { pinned ->
+            metadata.addBinaryValue(pinned.addressOf(0), expected.size.toLong(), forKey = "data-bin")
+        }
+        metadata.addBinaryValue(null, 0, forKey = "data-bin")
+
+        val result = metadata.toKotlin()
+        assertEquals(listOf("first", ""), result.getAll("label").toList())
+        val binary = result.getAllBinary("data-bin").toList()
+        assertEquals(2, binary.size)
+        assertContentEquals(expected, binary[0])
+        assertContentEquals(byteArrayOf(), binary[1])
+
+        // The Kotlin result owns its bytes independently of the Swift metadata.
+        binary[0][0] = 42
+        assertContentEquals(expected, metadata.toKotlin().getAllBinary("data-bin").first())
+        assertTrue(SwiftGrpcMetadata().toKotlin().keys().isEmpty())
+    }
+
     @Test
     fun requestMessageCopiesIntoBorrowedSwiftStorage() = memScoped {
         val expected = ByteArray(20_000) { it.toByte() }
