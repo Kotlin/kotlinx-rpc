@@ -5,22 +5,23 @@
 package kotlinx.rpc.grpc
 
 public actual class GrpcStatus internal constructor(
-    description: String?,
-    statusCode: GrpcStatusCode,
-    cause: Throwable?,
+    private val description: String?,
+    internal val statusCode: GrpcStatusCode,
+    private val cause: Throwable?,
 ) {
-    public actual fun getDescription(): String? = TODO("Implement iOS gRPC status")
+    public actual fun getDescription(): String? = description
 
-    public actual fun getCause(): Throwable? = TODO("Implement iOS gRPC status")
+    public actual fun getCause(): Throwable? = cause
 
-    override fun toString(): String = TODO("Implement iOS gRPC status")
+    override fun toString(): String =
+        "GrpcStatus(description=$description, statusCode=$statusCode, cause=$cause)"
 }
 
 public actual fun GrpcStatus(
     code: GrpcStatusCode,
     description: String?,
     cause: Throwable?,
-): GrpcStatus = TODO("Implement iOS gRPC status")
+): GrpcStatus = GrpcStatus(description, code, cause)
 
 public actual val GrpcStatus.statusCode: GrpcStatusCode
-    get() = TODO("Implement iOS gRPC status")
+    get() = this.statusCode

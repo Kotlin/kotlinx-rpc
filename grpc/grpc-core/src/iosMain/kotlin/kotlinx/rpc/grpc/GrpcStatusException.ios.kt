@@ -7,28 +7,44 @@ package kotlinx.rpc.grpc
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 public actual class GrpcStatusException : Exception {
-    public actual constructor(status: GrpcStatus) : super(
-        message = TODO("Implement iOS gRPC status exceptions")
-    )
+    private val status: GrpcStatus
+    private val trailers: GrpcMetadata?
+
+    public actual constructor(status: GrpcStatus) : this(status, null)
 
     public actual constructor(
         status: GrpcStatus,
         trailers: GrpcMetadata?,
-    ) : super(message = TODO("Implement iOS gRPC status exceptions"))
+    ) : super(
+        message = "${status.statusCode}: ${status.getDescription()}",
+        cause = status.getCause(),
+    ) {
+        this.status = status
+        this.trailers = trailers
+    }
 
-    internal actual fun getStatus(): GrpcStatus = TODO("Implement iOS gRPC status exceptions")
+    internal actual fun getStatus(): GrpcStatus = status
 
-    internal actual fun getTrailers(): GrpcMetadata? = TODO("Implement iOS gRPC status exceptions")
+    internal actual fun getTrailers(): GrpcMetadata? = trailers
 }
 
 @InternalRpcApi
 public actual class StatusRuntimeException : RuntimeException {
+    private val status: GrpcStatus
+    private val trailers: GrpcMetadata?
+
     internal actual constructor(
         status: GrpcStatus,
         trailers: GrpcMetadata?,
-    ) : super(message = TODO("Implement iOS gRPC status exceptions"))
+    ) : super(
+        message = "${status.statusCode}: ${status.getDescription()}",
+        cause = status.getCause(),
+    ) {
+        this.status = status
+        this.trailers = trailers
+    }
 
-    internal actual fun getStatus(): GrpcStatus = TODO("Implement iOS gRPC status exceptions")
+    internal actual fun getStatus(): GrpcStatus = status
 
-    internal actual fun getTrailers(): GrpcMetadata? = TODO("Implement iOS gRPC status exceptions")
+    internal actual fun getTrailers(): GrpcMetadata? = trailers
 }

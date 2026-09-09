@@ -9,16 +9,15 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
 public actual class ServiceDescriptor internal constructor(
-    name: String,
-    methods: Collection<GrpcMethodDescriptor<*, *>>,
-    schemaDescriptor: Any?,
+    private val name: String,
+    private val methods: Collection<GrpcMethodDescriptor<*, *>>,
+    private val schemaDescriptor: Any?,
 ) {
-    public actual fun getName(): String = TODO("Implement iOS gRPC service descriptors")
+    public actual fun getName(): String = name
 
-    public actual fun getMethods(): Collection<GrpcMethodDescriptor<*, *>> =
-        TODO("Implement iOS gRPC service descriptors")
+    public actual fun getMethods(): Collection<GrpcMethodDescriptor<*, *>> = methods
 
-    public actual fun getSchemaDescriptor(): Any? = TODO("Implement iOS gRPC service descriptors")
+    public actual fun getSchemaDescriptor(): Any? = schemaDescriptor
 }
 
 @InternalRpcApi
@@ -26,4 +25,4 @@ public actual fun serviceDescriptor(
     name: String,
     methods: Collection<GrpcMethodDescriptor<*, *>>,
     schemaDescriptor: Any?,
-): ServiceDescriptor = TODO("Implement iOS gRPC service descriptors")
+): ServiceDescriptor = ServiceDescriptor(name, methods, schemaDescriptor)
