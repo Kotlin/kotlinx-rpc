@@ -1,4 +1,5 @@
 import Foundation
+import GRPCCore
 
 /// The request/response streaming shape of a gRPC method.
 @objc(SwiftGrpcMethodType)
@@ -46,21 +47,60 @@ public enum SwiftGrpcMetadataValueKind: Int, Sendable {
     case binary = 2
 }
 
+/// Receives metadata entries synchronously in their stored order, including duplicate keys.
+@objc(SwiftGrpcMetadataVisitor)
+public protocol SwiftGrpcMetadataVisitor: AnyObject {
+    /// Receives one string entry.
+    @objc(visitStringWithKey:value:)
+    func visitString(key: String, value: String)
+
+    /// Receives one binary entry. The bytes are borrowed only for this callback and must not be retained.
+    @objc(visitBinaryWithKey:bytes:length:)
+    func visitBinary(key: String, bytes: UnsafeRawPointer?, length: Int)
+}
+
 /// An Objective-C-compatible, duplicate-preserving gRPC metadata container.
+///
+/// This class declaratively only exposes a minimal API that is required for
+/// fast metadata copying between Kotlin and Swift.
 @objc(SwiftGrpcMetadata)
 public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
+    
+    var metadata: Metadata
+    
     @objc public override init() {
+        self.metadata = Metadata()
+        super.init()
+    }
+    
+    public init (_ metadata: Metadata) {
+        self.metadata = metadata
         super.init()
     }
 
     /// The number of entries, including entries with duplicate keys.
     @objc public var count: Int {
-        fatalError("Not yet implemented")
+        metadata.count
+    }
+
+    /// Visits every entry synchronously without retaining the visitor or copying binary buffers.
+    @objc(visitEntries:)
+    public func visitEntries(_ visitor: any SwiftGrpcMetadataVisitor) {
+        for (key, value) in metadata {
+            switch value {
+            case .string(let string):
+                visitor.visitString(key: key, value: string)
+            case .binary(let binary):
+                binary.withUnsafeBytes { buffer in
+                    visitor.visitBinary(key: key, bytes: buffer.baseAddress, length: buffer.count)
+                }
+            }
+        }
     }
 
     @objc(addStringValue:forKey:)
     public func addStringValue(_ value: String, forKey key: String) {
-        fatalError("Not yet implemented")
+        metadata.addString(value, forKey: key)
     }
 
     /// Copies one binary metadata value. The pointer is borrowed for this invocation only.
@@ -70,32 +110,12 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
         length: Int,
         forKey key: String
     ) {
-        fatalError("Not yet implemented")
-    }
-
-    @objc(keyAtIndex:)
-    public func key(at index: Int) -> String? {
-        fatalError("Not yet implemented")
-    }
-
-    @objc(valueKindAtIndex:)
-    public func valueKind(at index: Int) -> SwiftGrpcMetadataValueKind {
-        fatalError("Not yet implemented")
-    }
-
-    @objc(stringValueAtIndex:)
-    public func stringValue(at index: Int) -> String? {
-        fatalError("Not yet implemented")
-    }
-
-    /// Provides scoped access to one binary value without an additional copy.
-    @objc(withBinaryValueAtIndex:body:)
-    @discardableResult
-    public func withBinaryValue(
-        at index: Int,
-        body: (UnsafeRawPointer?, Int) -> Void
-    ) -> Bool {
-        fatalError("Not yet implemented")
+        precondition(length >= 0, "Binary metadata length must be nonnegative")
+        precondition(bytes != nil || length == 0, "Nonempty metadata requires bytes")
+        precondition(key.hasSuffix("-bin"), "Binary metadata keys must end in -bin")
+        
+        let buffer = UnsafeRawBufferPointer(start: bytes, count: length)
+        metadata.addBinary(Array(buffer), forKey: key)
     }
 }
 

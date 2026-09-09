@@ -89,6 +89,29 @@ public actual fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T
 public actual fun GrpcMetadata.keys(): Set<String> =
     map.entries.filter { it.value.isNotEmpty() }.mapTo(mutableSetOf()) { it.key }
 
+/**
+ * Visits entries synchronously in key insertion order and value order within each key.
+ *
+ * Callbacks must not modify this metadata. Binary arrays are borrowed for the callback only;
+ * they must not be mutated or retained. Copy them if ownership is required.
+ *
+ * @param onString Receives each string entry decoded using the metadata ASCII rules.
+ * @param onBinary Receives each binary entry without copying its stored bytes.
+ */
+@InternalRpcApi
+public fun GrpcMetadata.visitEntries(
+    onString: (key: String, value: String) -> Unit,
+    onBinary: (key: String, value: ByteArray) -> Unit,
+): Unit {
+    for ((key, values) in map) {
+        if (key.endsWith("-bin")) {
+            for (value in values) onBinary(key, value)
+        } else {
+            for (value in values) onString(key, value.toAsciiString())
+        }
+    }
+}
+
 public actual operator fun GrpcMetadata.contains(key: String): Boolean = map.containsKey(key.lowercase())
 
 public actual fun GrpcMetadata.append(key: String, value: String): Unit = append(key.toAsciiKey(), value)
