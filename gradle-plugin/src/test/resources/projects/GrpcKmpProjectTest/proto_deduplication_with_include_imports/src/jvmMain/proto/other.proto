@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+import "some.proto";
+import "dependency.proto";
+
+message Other {
+  Some some = 1;
+  dependency.DependencyMessage dependency = 2;
+}

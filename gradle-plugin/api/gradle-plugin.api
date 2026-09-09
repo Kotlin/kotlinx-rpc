@@ -135,6 +135,7 @@ public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/ta
 	public abstract fun getOutputDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 	public final fun getOutputSourceDirectories ()Lorg/gradle/api/provider/Provider;
 	public abstract fun getPluginNames ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getProtocInputFilesListDirectory ()Lorg/gradle/api/file/DirectoryProperty;
 }
 
 public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/BufExecTask {
@@ -158,11 +159,14 @@ public abstract class kotlinx/rpc/buf/tasks/GenerateBufYaml : kotlinx/rpc/protoc
 public final class kotlinx/rpc/protoc/ConstsKt {
 	public static final field PROTOC_GEN_GRPC_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION Ljava/lang/String;
 	public static final field PROTOC_GEN_KOTLIN_MULTIPLATFORM_JAR_CONFIGURATION Ljava/lang/String;
+	public static final field PROTOC_INPUT_FILES_DIR Ljava/lang/String;
 	public static final field PROTO_BUILD_DIR Ljava/lang/String;
 	public static final field PROTO_BUILD_GENERATED Ljava/lang/String;
 	public static final field PROTO_BUILD_SOURCE_SETS Ljava/lang/String;
 	public static final field PROTO_FILES_DIR Ljava/lang/String;
+	public static final field PROTO_FILES_EXTRACTED_DIR Ljava/lang/String;
 	public static final field PROTO_FILES_IMPORT_DIR Ljava/lang/String;
+	public static final field PROTO_FILES_IMPORT_EXTRACTED_DIR Ljava/lang/String;
 	public static final field PROTO_GROUP Ljava/lang/String;
 	public static final field PROTO_SOURCE_DIRECTORY_NAME Ljava/lang/String;
 	public static final field PROTO_SOURCE_SETS Ljava/lang/String;

@@ -389,7 +389,6 @@ inputs:
 
         runGradle(processCommonTestProtoFiles)
         runGradle(processCommonTestProtoFilesImports)
-        runGradle(generateBufGenYamlCommonTest)
 
         assertWorkspaceProtoFilesCopied(
             testSourceSet,

@@ -24,6 +24,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = protobufProto {
             message("user_profile") {
@@ -86,6 +87,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = false,
+            ignoreFiles = emptyList(),
         )
         val model = protobufProto {
             message("user_profile") {
@@ -154,6 +156,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = protobufProto {
             message("weird__message_2") {
