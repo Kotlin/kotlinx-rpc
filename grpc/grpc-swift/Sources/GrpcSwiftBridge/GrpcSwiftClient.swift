@@ -109,6 +109,22 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
         }
     }
 
+    /// Starts one raw-message RPC.
+    ///
+    /// grpc-swift pulls request messages from `requestSource`; Kotlin pulls response events from
+    /// the returned call. A negative timeout means that the call has no deadline.
+    @objc(startCallWithFullMethodName:type:headers:timeoutMilliseconds:compression:requestSource:error:)
+    public func startCall(
+        fullMethodName: String,
+        type: SwiftGrpcMethodType,
+        headers: SwiftGrpcMetadata,
+        timeoutMilliseconds: Int64,
+        compression: SwiftGrpcCompression,
+        requestSource: any SwiftGrpcRequestSource
+    ) throws -> SwiftGrpcCall {
+        fatalError("Not yet implemented")
+    }
+
     deinit {
         self.client.beginGracefulShutdown()
         self.connectionTask.cancel()
