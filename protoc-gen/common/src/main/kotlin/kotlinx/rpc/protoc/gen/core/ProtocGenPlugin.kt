@@ -102,7 +102,7 @@ abstract class ProtocGenPlugin {
 
         val camelCaseNames = parameters[CAMEL_CASE_NAMES]?.toBooleanStrictOrNull() ?: true
 
-        val ignoreFiles = parameters[IGNORE_FILES]?.takeIf { it.isNotBlank() }?.split(";")?.map { it.trim() } ?: emptyList()
+        val ignoreFiles = parameters[IGNORE_FILES]?.split("\u0000") ?: emptyList()
 
         val config = Config(
             explicitApiModeEnabled = explicitApiModeEnabled,
