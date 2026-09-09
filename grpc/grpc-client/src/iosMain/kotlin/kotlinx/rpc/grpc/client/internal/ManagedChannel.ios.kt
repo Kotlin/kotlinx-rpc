@@ -17,12 +17,15 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.rpc.grpc.GrpcCompression
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder
 import kotlinx.rpc.grpc.client.realClientCredentials
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.Foundation.NSError
@@ -32,6 +35,8 @@ import kotlin.time.Duration
 
 internal class SwiftManagedChannel(
     internal val client: SwiftGrpcClient,
+    internal val authority: String,
+    internal val secure: Boolean,
 ) : ManagedChannel {
     private val shutdown = atomic(false)
     private val terminated = CompletableDeferred<Unit>()
@@ -71,6 +76,38 @@ internal class SwiftManagedChannel(
         client.shutdownNow()
         return this
     }
+
+    fun <Request, Response> startCall(
+        method: GrpcMethodDescriptor<Request, Response>,
+        headers: GrpcMetadata,
+        timeout: Duration?,
+        compression: GrpcCompression,
+        requestSource: KotlinGrpcRequestSource<Request>
+    ): SwiftGrpcCallAdapter<Response> {
+        // Map null and infinite timeouts to -1
+        val swiftTimeout = timeout
+            ?.takeUnless { it.isInfinite() }
+            ?.inWholeMicroseconds
+            ?: -1L
+
+        val swiftCall = memScoped {
+            val error = alloc<ObjCObjectVar<NSError?>>()
+            error.value = null
+            val call = client.startCallWithFullMethodName(
+                fullMethodName = method.getFullMethodName(),
+                type = method.methodType.toSwift(),
+                headers = headers.toSwift(),
+                timeoutMilliseconds = swiftTimeout,
+                compression = compression.toSwift(),
+                requestSource = requestSource,
+                error = error.ptr,
+            )
+            error.value?.let { throw SwiftGrpcInteropException(it) }
+            call ?: error("grpc-swift returned neither a call nor an NSError")
+        }
+        return SwiftGrpcCallAdapter(swiftCall, method)
+    }
+
 }
 
 @InternalRpcApi
@@ -84,17 +121,18 @@ private class SwiftManagedChannelBuilder(
 ) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
     fun buildChannel(): SwiftManagedChannel {
         val clientCredentials = (credentials ?: GrpcTlsClientCredentials()).realClientCredentials
+        val plaintext = when (clientCredentials) {
+            is GrpcInsecureClientCredentials -> true
+            is GrpcTlsClientCredentials -> {
+                clientCredentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
+                false
+            }
+            else -> internalError("Unknown client credentials type: $clientCredentials")
+        }
         val swiftConfig = SwiftGrpcClientConfiguration(
             host = target.host,
             port = target.port.toLong(),
-            plaintext = when (clientCredentials) {
-                is GrpcInsecureClientCredentials -> true
-                is GrpcTlsClientCredentials -> {
-                    clientCredentials.configure(UnsupportedSwiftTlsClientCredentialsBuilder)
-                    false
-                }
-                else -> internalError("Unknown client credentials type: $clientCredentials")
-            },
+            plaintext = plaintext,
         )
 
         swiftConfig.overrideAuthority = config?.overrideAuthority
@@ -119,7 +157,11 @@ private class SwiftManagedChannelBuilder(
             error.value?.let { throw IllegalStateException(it.localizedDescription) }
             client
         }
-        return SwiftManagedChannel(swiftClient)
+        return SwiftManagedChannel(
+            client = swiftClient,
+            authority = config?.overrideAuthority ?: target.authority,
+            secure = !plaintext,
+        )
     }
 }
 
