@@ -43,6 +43,8 @@ import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.createRaw
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_INITIAL_METADATA_WAIT_FOR_READY
+import kotlinx.rpc.grpc.internal.cinterop.GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_INITIAL_METADATA
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_MESSAGE
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_STATUS_ON_CLIENT
@@ -483,6 +485,12 @@ internal class NativeClientCall<Request, Response>(
         ops[0].op = GRPC_OP_SEND_INITIAL_METADATA
         ops[0].data.send_initial_metadata.count = sendInitialMetadata.count
         ops[0].data.send_initial_metadata.metadata = sendInitialMetadata.metadata
+        when (callOptions.waitForReady) {
+            true -> ops[0].flags = GRPC_INITIAL_METADATA_WAIT_FOR_READY or
+                    GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
+            false -> ops[0].flags = GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
+            null -> {}
+        }
 
         val recvInitialMetadata = arena.alloc<grpc_metadata_array>()
         grpc_metadata_array_init(recvInitialMetadata.ptr)

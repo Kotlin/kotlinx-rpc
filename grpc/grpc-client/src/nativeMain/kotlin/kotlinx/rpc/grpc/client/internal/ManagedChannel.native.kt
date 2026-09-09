@@ -44,6 +44,9 @@ internal class NativeManagedChannelBuilder(
             overrideAuthority = config?.overrideAuthority,
             keepAlive = config?.keepAlive,
             userAgent = config?.userAgent,
+            maxInboundMessageSize = config?.maxInboundMessageSize,
+            maxInboundMetadataSize = config?.maxInboundMetadataSize,
+            idleTimeout = config?.idleTimeout,
             clientCredentials = credentials.value,
         )
     }

@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
 import kotlinx.rpc.grpc.server.createInsecureServerCredentials
@@ -28,6 +29,7 @@ private class NativeServerBuilder(
 ) : ServerBuilder<NativeServerBuilder>() {
     private val services = mutableListOf<GrpcServerServiceDefinition>()
     private var fallbackRegistry: GrpcHandlerRegistry = DefaultFallbackRegistry
+    var config: GrpcServerConfiguration? = null
 
     override fun addService(service: GrpcServerServiceDefinition): NativeServerBuilder {
         services.add(service)
@@ -40,7 +42,18 @@ private class NativeServerBuilder(
     }
 
     override fun build(): PlatformServer {
-        return NativeServer(port, credentials, services, fallbackRegistry)
+        return NativeServer(
+            port,
+            credentials,
+            services,
+            fallbackRegistry,
+            maxInboundMessageSize = config?.maxInboundMessageSize,
+            maxInboundMetadataSize = config?.maxInboundMetadataSize,
+            keepAlive = config?.keepAlive,
+            maxConnectionIdle = config?.maxConnectionIdle,
+            maxConnectionAge = config?.maxConnectionAge,
+            maxConnectionAgeGrace = config?.maxConnectionAgeGrace,
+        )
     }
 }
 
@@ -52,6 +65,12 @@ public actual fun ServerBuilder(port: Int, credentials: GrpcServerCredentials?):
 @InternalRpcApi
 public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
     return builder.build()
+}
+
+internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
+    check(this is NativeServerBuilder) { "Expected NativeServerBuilder" }
+    this.config = config
+    return this
 }
 
 private object DefaultFallbackRegistry : GrpcHandlerRegistry() {

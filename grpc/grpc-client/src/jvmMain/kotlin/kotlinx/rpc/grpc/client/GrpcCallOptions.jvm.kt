@@ -14,6 +14,11 @@ internal fun GrpcCallOptions.toJvm(coroutineContext: CoroutineContext): CallOpti
     if (timeout != null) {
         default = default.withDeadlineAfter(timeout!!.inWholeMilliseconds, TimeUnit.MILLISECONDS)
     }
+    when (waitForReady) {
+        true -> default = default.withWaitForReady()
+        false -> default = default.withoutWaitForReady()
+        null -> {}
+    }
     if (compression !is GrpcCompression.None) {
         default = default.withCompression(compression.name)
     }

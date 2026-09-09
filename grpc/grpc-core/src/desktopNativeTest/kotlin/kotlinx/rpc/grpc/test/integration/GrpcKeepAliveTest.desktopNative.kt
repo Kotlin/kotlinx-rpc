@@ -41,6 +41,27 @@ actual fun GrpcTestBase.testKeepAlive(
     assertEquals(withoutCalls, keepAliveSettings.permitWithoutCalls)
 }
 
+/**
+ * C-core does not log server channel args, so this only asserts that a server configured with
+ * keepalive still serves calls. The arg mapping itself is covered by [ServerChannelArgsTest].
+ */
+actual fun GrpcTestBase.testServerKeepAlive(
+    time: Duration,
+    timeout: Duration,
+) {
+    runGrpcTest(
+        serverConfiguration = {
+            keepAlive {
+                this.time = time
+                this.timeout = timeout
+            }
+        }
+    ) {
+        val response = it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+        assertEquals("Hello", response.message)
+    }
+}
+
 private data class KeepAliveSettings(
     val permitWithoutCalls: Boolean,
     val time: Duration,

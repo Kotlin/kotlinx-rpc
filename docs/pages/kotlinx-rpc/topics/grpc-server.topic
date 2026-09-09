@@ -55,7 +55,49 @@
                 registered via <code>services { ... }</code>.
                 Unresolved services return <code>UNIMPLEMENTED</code> status by default.
             </def>
+            <def title="maxInboundMessageSize">
+                The maximum size, in bytes, of an inbound message.
+                Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
+                The gRPC runtime default applies when not set.
+            </def>
+            <def title="maxInboundMetadataSize">
+                The maximum size, in bytes, of inbound metadata.
+                The gRPC runtime default applies when not set.
+            </def>
+            <def title="keepAlive { ... }">
+                Configures server-side keep-alive pings to detect broken connections.
+                Disabled by default. When enabled, uses a two-hour interval and a 20-second timeout
+                unless overridden.
+            </def>
+            <def title="maxConnectionIdle">
+                The maximum time a connection may have no active RPCs before it is gracefully closed.
+                Disabled by default.
+            </def>
+            <def title="maxConnectionAge">
+                The maximum time a connection may exist before it is gracefully closed.
+                Disabled by default.
+            </def>
+            <def title="maxConnectionAgeGrace">
+                The grace period for active RPCs after <code>maxConnectionAge</code> is reached.
+                Without it, active RPCs may finish without a deadline.
+            </def>
         </deflist>
+        <note>
+            On the JVM, <code>keepAlive</code>, <code>maxConnectionIdle</code>,
+            <code>maxConnectionAge</code>, and <code>maxConnectionAgeGrace</code> require a server
+            provider that supports them. The bundled Netty provider does.
+        </note>
+        <note>
+            Duration options accept <code>Duration.INFINITE</code> to disable the behavior.
+            Finite values must be under <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
+            On Kotlin/Native these become gRPC channel arguments, whose values are a C
+            <code>int</code>. <code>Duration.INFINITE</code> is passed as
+            <code>Int.MAX_VALUE</code>, the largest value such an argument can hold and the one
+            gRPC treats as effectively unbounded, so a finite value must stay below it to remain
+            distinguishable. The bound is enforced on every platform so that the same
+            configuration behaves identically everywhere; out-of-range values throw
+            <code>IllegalArgumentException</code>.
+        </note>
     </chapter>
 
     <chapter title="Lifecycle" id="grpc-server-lifecycle">
