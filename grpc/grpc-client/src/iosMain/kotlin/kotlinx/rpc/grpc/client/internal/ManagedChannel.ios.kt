@@ -3,7 +3,7 @@
  */
 
 @file:Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-@file:OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
+@file:OptIn(BetaInteropApi::class, ExperimentalForeignApi::class, InternalRpcApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -27,6 +27,7 @@ import kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder
 import kotlinx.rpc.grpc.client.realClientCredentials
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClient
@@ -87,7 +88,7 @@ internal class SwiftManagedChannel(
         // Map null and infinite timeouts to -1
         val swiftTimeout = timeout
             ?.takeUnless { it.isInfinite() }
-            ?.inWholeMicroseconds
+            ?.inWholeMilliseconds
             ?: -1L
 
         val swiftCall = memScoped {
@@ -136,7 +137,8 @@ private class SwiftManagedChannelBuilder(
         )
 
         swiftConfig.overrideAuthority = config?.overrideAuthority
-        swiftConfig.userAgent = config?.userAgent
+        // The user provided user-agent is prepand to kotlinx-rpc-swift/$KOTLINX_RPC_VERSION
+        swiftConfig.userAgent = composeSwiftGrpcUserAgent(config?.userAgent)
         config?.keepAlive?.let { keepAlive ->
             require(keepAlive.time.isPositive()) { "keepalive time must be positive" }
             require(keepAlive.timeout.isPositive()) { "keepalive timeout must be positive" }
@@ -164,6 +166,12 @@ private class SwiftManagedChannelBuilder(
         )
     }
 }
+
+internal fun composeSwiftGrpcUserAgent(userAgentPrefix: String?): String =
+    listOfNotNull(
+        userAgentPrefix?.takeIf { it.isNotEmpty() },
+        "kotlinx-rpc-swift/$KOTLINX_RPC_VERSION",
+    ).joinToString(" ")
 
 private object UnsupportedSwiftTlsClientCredentialsBuilder : GrpcTlsClientCredentialsBuilder {
     override fun trustManager(rootCertsPem: String): GrpcTlsClientCredentialsBuilder {

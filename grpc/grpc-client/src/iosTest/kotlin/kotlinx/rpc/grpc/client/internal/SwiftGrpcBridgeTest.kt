@@ -2,7 +2,10 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+@file:OptIn(
+    kotlinx.cinterop.ExperimentalForeignApi::class,
+    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -28,6 +31,7 @@ import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.getAllBinary
 import kotlinx.rpc.grpc.keys
 import kotlinx.rpc.grpc.remove
+import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
@@ -41,6 +45,15 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
 class SwiftGrpcBridgeTest {
+    @Test
+    fun swiftUserAgentIncludesKotlinxRpcRuntimeToken() {
+        val runtimeToken = "kotlinx-rpc-swift/$KOTLINX_RPC_VERSION"
+
+        assertEquals(runtimeToken, composeSwiftGrpcUserAgent(null))
+        assertEquals(runtimeToken, composeSwiftGrpcUserAgent(""))
+        assertEquals("MyApp/1.2.3 $runtimeToken", composeSwiftGrpcUserAgent("MyApp/1.2.3"))
+    }
+
     @Test
     fun kotlinMetadataVisitorPreservesValuesAcrossSwiftRoundTrip() {
         val expected = ByteArray(20_000) { it.toByte() }
