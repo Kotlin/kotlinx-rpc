@@ -15,6 +15,18 @@ plugins {
     alias(libs.plugins.serialization) // for tests
 }
 
+// Only required because of KXRPC-677 (see below)
+val iosTestSwiftPMMetadata = configurations.dependencyScope("iosTestSwiftPMMetadata")
+dependencies {
+    iosTestSwiftPMMetadata(projects.grpc.grpcSwift)
+}
+
+// Work around KXRPC-677: KGP only discovers transitive SwiftPM metadata through Apple main
+// compilations, so make the Swift bridge metadata available without publishing it from grpc-core.
+configurations.matching { it.name == "swiftPMDependenciesMetadataClasspath" }.configureEach {
+    extendsFrom(iosTestSwiftPMMetadata)
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
