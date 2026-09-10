@@ -1,5 +1,6 @@
 import Foundation
 import GRPCCore
+import GRPCNIOTransportHTTP2TransportServices
 
 /// The request/response streaming shape of a gRPC method.
 @objc(SwiftGrpcMethodType)
@@ -65,7 +66,6 @@ public protocol SwiftGrpcMetadataVisitor: AnyObject {
 /// fast metadata copying between Kotlin and Swift.
 @objc(SwiftGrpcMetadata)
 public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
-    
     var metadata: Metadata
     
     @objc public override init() {
@@ -121,7 +121,7 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
 
 /// A serialized request message supplied by Kotlin.
 @objc(SwiftGrpcRequestMessage)
-public protocol SwiftGrpcRequestMessage: AnyObject {
+public protocol SwiftGrpcRequestMessage: AnyObject, Sendable {
     /// The exact number of serialized protobuf bytes.
     @objc var length: Int { get }
 
@@ -133,7 +133,7 @@ public protocol SwiftGrpcRequestMessage: AnyObject {
 
 /// A pull-based source backed by a Kotlin request `Flow`.
 @objc(SwiftGrpcRequestSource)
-public protocol SwiftGrpcRequestSource: AnyObject {
+public protocol SwiftGrpcRequestSource: AnyObject, Sendable {
     /// Asynchronously supplies the next message.
     ///
     /// A `(nil, nil)` result marks normal completion of the request flow. An error marks failure of
@@ -172,34 +172,45 @@ public class SwiftGrpcCallEvent: NSObject, @unchecked Sendable {
 /// Initial response metadata. At most one headers event is emitted.
 @objc(SwiftGrpcHeadersEvent)
 public final class SwiftGrpcHeadersEvent: SwiftGrpcCallEvent, @unchecked Sendable {
-    @objc public var headers: SwiftGrpcMetadata {
-        fatalError("Not yet implemented")
+    @objc public let headers: SwiftGrpcMetadata
+    
+    internal init(headers: SwiftGrpcMetadata) {
+        self.headers = headers
+        super.init()
     }
 }
 
 /// One serialized response message.
 @objc(SwiftGrpcMessageEvent)
 public final class SwiftGrpcMessageEvent: SwiftGrpcCallEvent, @unchecked Sendable {
+    let message: GRPCNIOTransportBytes
+    
+    internal init(message: GRPCNIOTransportBytes) {
+        self.message = message
+    }
+    
     @objc public var length: Int {
-        fatalError("Not yet implemented")
+        message.count
     }
 
     /// Provides scoped access to the grpc-swift-owned message buffer.
     /// The pointer must not be retained or used after `body` returns.
     @objc(withUnsafeBytes:)
     public func withUnsafeBytes(_ body: (UnsafeRawPointer?, Int) -> Void) {
-        fatalError("Not yet implemented")
+        message.withUnsafeBytes { buffer in
+            body(buffer.baseAddress, buffer.count)
+        }
     }
 }
 
 /// The terminal event. It is emitted exactly once after all response messages.
 @objc(SwiftGrpcClosedEvent)
 public final class SwiftGrpcClosedEvent: SwiftGrpcCallEvent, @unchecked Sendable {
-    @objc public var status: SwiftGrpcStatus {
-        fatalError("Not yet implemented")
-    }
-
-    @objc public var trailers: SwiftGrpcMetadata {
-        fatalError("Not yet implemented")
+    @objc public let status: SwiftGrpcStatus
+    @objc public let trailers: SwiftGrpcMetadata
+    
+    internal init(status: SwiftGrpcStatus, trailers: SwiftGrpcMetadata) {
+        self.status = status
+        self.trailers = trailers
     }
 }
