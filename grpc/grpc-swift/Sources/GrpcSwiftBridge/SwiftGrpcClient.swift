@@ -20,7 +20,7 @@ public final class SwiftGrpcClientConfiguration: NSObject {
     /// Overrides both the HTTP/2 `:authority` pseudo-header and the TLS SNI hostname.
     @objc public var overrideAuthority: String?
 
-    /// A custom user-agent prefix. Calls created by the client add the runtime token.
+    /// The complete user-agent value added to calls, if set.
     @objc public var userAgent: String?
 
     /// The keepalive interval in milliseconds, or a negative value to disable keepalive.
@@ -122,11 +122,80 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
         compression: SwiftGrpcCompression,
         requestSource: any SwiftGrpcRequestSource
     ) throws -> SwiftGrpcCall {
-        fatalError("Not yet implemented")
+        let descriptor = try MethodDescriptor(fullMethodName: fullMethodName, type: type)
+
+        var options = CallOptions.defaults
+        options.timeout = timeoutMilliseconds >= 0 ? .milliseconds(timeoutMilliseconds) : nil
+        options.compression = compression.grpcCompression
+
+        var metadata = headers.metadata
+        if let userAgent = self.userAgent {
+            metadata.replaceOrAddString(userAgent, forKey: "user-agent")
+        }
+
+        return SwiftGrpcCall(
+            owner: self,
+            descriptor: descriptor,
+            options: options,
+            metadata: metadata,
+            requestSource: requestSource
+        )
     }
 
     deinit {
         self.client.beginGracefulShutdown()
         self.connectionTask.cancel()
+    }
+}
+
+private extension MethodDescriptor {
+    init(fullMethodName: String, type: SwiftGrpcMethodType) throws {
+        let components = fullMethodName.split(separator: "/", omittingEmptySubsequences: false)
+        guard components.count == 2, components.allSatisfy({ !$0.isEmpty }) else {
+            throw SwiftGrpcClientError.invalidFullMethodName(fullMethodName)
+        }
+
+        self.init(
+            fullyQualifiedService: String(components[0]),
+            method: String(components[1]),
+            type: type.grpcType
+        )
+    }
+}
+
+private extension SwiftGrpcMethodType {
+    var grpcType: MethodDescriptor.RPCType {
+        switch self {
+        case .unary:
+            .unary
+        case .clientStreaming:
+            .clientStreaming
+        case .serverStreaming:
+            .serverStreaming
+        case .bidirectionalStreaming:
+            .bidirectionalStreaming
+        }
+    }
+}
+
+private extension SwiftGrpcCompression {
+    var grpcCompression: CompressionAlgorithm {
+        switch self {
+        case .none:
+            .none
+        case .gzip:
+            .gzip
+        }
+    }
+}
+
+private enum SwiftGrpcClientError: LocalizedError, Sendable {
+    case invalidFullMethodName(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidFullMethodName(let name):
+            "Invalid gRPC method name '\(name)'; expected 'fully.qualified.Service/Method'"
+        }
     }
 }
