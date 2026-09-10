@@ -83,10 +83,12 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
         metadata.count
     }
 
-    /// Visits every entry synchronously without retaining the visitor or copying binary buffers.
+    /// Visits every application-visible entry synchronously without retaining the visitor or
+    /// copying binary buffers.
     @objc(visitEntries:)
     public func visitEntries(_ visitor: any SwiftGrpcMetadataVisitor) {
-        for (key, value) in metadata {
+        for (key, value) in metadata where
+        Self.shouldPropagateMetadataEntry(forKey: key) {
             switch value {
             case .string(let string):
                 visitor.visitString(key: key, value: string)
@@ -96,6 +98,11 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
                 }
             }
         }
+    }
+
+    private static func shouldPropagateMetadataEntry(forKey key: String) -> Bool {
+        // HTTP/2 pseudo-headers carry transport state and are not application metadata.
+        !key.hasPrefix(":")
     }
 
     @objc(addStringValue:forKey:)

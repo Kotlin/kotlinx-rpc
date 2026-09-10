@@ -137,7 +137,7 @@ private class SwiftManagedChannelBuilder(
         )
 
         swiftConfig.overrideAuthority = config?.overrideAuthority
-        // The user provided user-agent is prepand to kotlinx-rpc-swift/$KOTLINX_RPC_VERSION
+        // Prefix the Swift runtime token with the application user-agent, when configured.
         swiftConfig.userAgent = composeSwiftGrpcUserAgent(config?.userAgent)
         config?.keepAlive?.let { keepAlive ->
             require(keepAlive.time.isPositive()) { "keepalive time must be positive" }

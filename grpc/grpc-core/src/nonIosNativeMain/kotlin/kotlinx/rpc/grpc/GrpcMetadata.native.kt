@@ -58,6 +58,7 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     internal fun validateForBinary() {
         validateName()
         require(isBinary) { "Binary header is named ${name}. It must end with '-bin'" }
+        require(name != "-bin") { "Binary header must have a non-empty name before '-bin'" }
     }
 
     internal companion object
@@ -308,6 +309,7 @@ private val VALID_KEY_CHARS by lazy {
 
 @OptIn(ObsoleteNativeApi::class)
 private fun <T> GrpcMetadataKey<T>.validateName() {
+    require(name.isNotEmpty()) { "Header name must not be empty." }
     for (char in name) {
         require(VALID_KEY_CHARS[char.code]) { "Header is named $name. It contains illegal character $char." }
     }
@@ -333,4 +335,3 @@ private val BinaryMarshaller = object : GrpcMarshaller<ByteArray> {
 
 private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiMarshaller)
 private fun String.toBinaryKey() = GrpcMetadataKey(this, BinaryMarshaller)
-
