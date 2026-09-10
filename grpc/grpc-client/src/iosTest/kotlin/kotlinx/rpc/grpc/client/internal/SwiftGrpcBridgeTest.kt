@@ -27,6 +27,7 @@ import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
+import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.getAllBinary
 import kotlinx.rpc.grpc.keys
@@ -38,6 +39,7 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessa
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
@@ -102,6 +104,22 @@ class SwiftGrpcBridgeTest {
         binary[0][0] = 42
         assertContentEquals(expected, metadata.toKotlin().getAllBinary("data-bin").first())
         assertTrue(SwiftGrpcMetadata().toKotlin().keys().isEmpty())
+    }
+
+    @Test
+    fun metadataVisitorFiltersHttp2PseudoHeaders() {
+        val metadata = SwiftGrpcMetadata().apply {
+            addStringValue("200", forKey = ":status")
+            addStringValue("application/grpc", forKey = "content-type")
+            addStringValue("gzip", forKey = "grpc-encoding")
+            addStringValue("value", forKey = "custom-header")
+        }
+
+        val result = metadata.toKotlin()
+        assertFalse(":status" in result.keys())
+        assertEquals("application/grpc", result["content-type"])
+        assertEquals("gzip", result["grpc-encoding"])
+        assertEquals("value", result["custom-header"])
     }
 
     @Test

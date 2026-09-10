@@ -37,6 +37,7 @@ public actual class GrpcMetadataKey<T> actual constructor(
     internal fun validateForBinary() {
         validateName()
         require(isBinary) { "Binary header is named $name. It must end with '-bin'" }
+        require(name != "-bin") { "Binary header must have a non-empty name before '-bin'" }
     }
 }
 
@@ -182,6 +183,7 @@ private fun String.toAsciiBytes(): ByteArray = ByteArray(length) { index ->
 }
 
 private fun <T> GrpcMetadataKey<T>.validateName() {
+    require(name.isNotEmpty()) { "Header name must not be empty." }
     for (char in name) {
         require(char == '-' || char == '_' || char == '.' || char in '0'..'9' || char in 'a'..'z') {
             "Header is named $name. It contains illegal character $char."
