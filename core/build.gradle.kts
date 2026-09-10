@@ -2,6 +2,8 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import util.other.generateSource
+
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
@@ -37,3 +39,16 @@ kotlin {
         }
     }
 }
+
+generateSource(
+    name = "CoreVersion",
+    text = """
+        package kotlinx.rpc.internal
+
+        import kotlinx.rpc.internal.utils.InternalRpcApi
+
+        @InternalRpcApi
+        public const val KOTLINX_RPC_VERSION: String = "$version"
+    """.trimIndent(),
+    chooseSourceSet = { named("commonMain") },
+)

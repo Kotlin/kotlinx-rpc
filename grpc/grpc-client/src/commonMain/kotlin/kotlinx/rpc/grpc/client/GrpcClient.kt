@@ -260,11 +260,10 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
      * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
-     * JVM, or the `grpc-c/<version>` C-core token on native). A full override is not supported by the
-     * underlying gRPC implementations.
+     * JVM, `grpc-c/<version>` on non-iOS native, or `kotlinx-rpc-swift/<version>` on iOS).
      *
      * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
-     * header and any value added to the metadata is overwritten by the gRPC runtime.
+     *  header, and any value added to the metadata is overwritten by the gRPC runtime.
      *
      * If `null` (the default), only the runtime's own token is sent.
      *
