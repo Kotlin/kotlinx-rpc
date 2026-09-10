@@ -15,6 +15,7 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "subpackages/_grpc_grpc-client"),
+    .package(path: "subpackages/_grpc_grpc-core"),
     .package(path: "subpackages/_grpc_grpc-swift"),
     .package(path: "subpackages/_grpc_grpc_swift")
   ],
@@ -23,6 +24,7 @@ let package = Package(
       name: "KotlinMultiplatformLinkedPackage",
       dependencies: [
         .product(name: "_grpc_grpc-client", package: "_grpc_grpc-client"),
+        .product(name: "_grpc_grpc-core", package: "_grpc_grpc-core"),
         .product(name: "_grpc_grpc-swift", package: "_grpc_grpc-swift"),
         .product(name: "_grpc_grpc_swift", package: "_grpc_grpc_swift")
       ]

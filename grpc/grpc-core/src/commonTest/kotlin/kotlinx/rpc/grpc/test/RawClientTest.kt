@@ -1,8 +1,8 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.grpc.test.raw
+package kotlinx.rpc.grpc.test
 
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -14,11 +14,6 @@ import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.test.EchoRequest
-import kotlinx.rpc.grpc.test.EchoRequestInternal
-import kotlinx.rpc.grpc.test.EchoResponse
-import kotlinx.rpc.grpc.test.EchoResponseInternal
-import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
