@@ -4,7 +4,12 @@
 
 package kotlinx.rpc.grpc.test
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
@@ -14,9 +19,12 @@ import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.message
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.measureTime
 
 /**
  * Tests for JVM and Native clients.
@@ -81,11 +89,40 @@ class RawClientTest {
         assertEquals(5, i)
     }
 
+    @Test
+    fun throughputBenchmark() = runTest(
+        methodName = "BidirectionalStreamingEcho",
+        type = GrpcMethodType.BIDI_STREAMING,
+    ) { client, descriptor ->
+        val msgSize = 10
+        val time = measureTime {
+            val response = client.bidirectionalStreamingRpc(descriptor, flow {
+                for (i in 1 .. 10000) {
+                    emit(EchoRequest { message = "$i: " + "E".repeat(msgSize) })
+
+                    if (i % 1000 == 0) {
+                        println("${(i.toDouble() / 10000) * 100}% emitted")
+                    }
+                }
+            })
+            var i = 0
+            response.collect {
+                i++
+
+                if (i % 1000 == 0) {
+                    println("${(i.toDouble() / 10000) * 100}% received")
+                }
+            }
+        }
+
+        println("Total time: $time ms")
+    }
+
     fun runTest(
         methodName: String,
         type: GrpcMethodType,
         block: suspend (GrpcClient, GrpcMethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
-    ) = runTest {
+    ) = runBlocking {
         val client = GrpcClient("localhost:50051") {
             credentials = plaintext()
         }
