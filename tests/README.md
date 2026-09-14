@@ -1,6 +1,6 @@
 # Overview
 
-The `tests/` directory contains integration, compatibility, conformance, and compiler plugin tests for kotlinx-rpc.
+The `tests/` directory contains integration, compatibility, conformance, performance benchmark, and compiler plugin infrastructure for kotlinx-rpc.
 This directory is intended to store tests that require a more complex setup than a simple unit test.
 None of these modules are published -- they exist solely for verification. All JVM test modules use JUnit 5 with `useJUnitPlatform()`.
 
@@ -23,6 +23,7 @@ Set the Gradle property to auto-update `.fir.txt` / `.fir.ir.txt` golden files:
 | `test-utils`                        | Shared KMP test utilities (`runTestWithCoroutinesProbes`, `WaitCounter`)              |
 | `test-protos`                       | Shared `.proto` definitions for gRPC tests                                            |
 | `grpc-test-server`                  | Standalone gRPC test server executable for gRPC tests                                 |
+| `grpc-benchmarks`                   | Cross-implementation gRPC performance benchmark clients, server, and protocol definitions |
 
 ## Compiler Plugin Tests
 
