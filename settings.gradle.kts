@@ -77,7 +77,6 @@ include(":tests:test-protos")
 include(":tests:grpc-test-server")
 include(":tests:grpc-benchmarks")
 include(":tests:grpc-benchmarks:protos")
-include(":tests:grpc-benchmarks:server")
 include(":tests:grpc-benchmarks:kotlinx-rpc-client")
 val onWindows = providers.systemProperty("os.name").get().contains("Windows", ignoreCase = true)
 if (!onWindows) {
