@@ -1,0 +1,31 @@
+// Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+
+// The wire-compatible subset of the official gRPC benchmark protocol used by
+// this client. Keeping the schema focused makes it easy to add another service
+// or benchmark family without copying the entire upstream integration schema.
+syntax = "proto3";
+
+package grpc.testing;
+
+enum PayloadType {
+  COMPRESSABLE = 0;
+}
+
+message Payload {
+  PayloadType type = 1;
+  bytes body = 2;
+}
+
+message SimpleRequest {
+  PayloadType response_type = 1;
+  int32 response_size = 2;
+  Payload payload = 3;
+}
+
+message SimpleResponse {
+  Payload payload = 1;
+}
+
+service BenchmarkService {
+  rpc UnaryCall(SimpleRequest) returns (SimpleResponse);
+}
