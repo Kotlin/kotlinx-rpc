@@ -17,6 +17,7 @@ internal-native-shim-annotation = "0.1.0"
 
 # kotlin independent versions
 detekt-analyzer = "1.23.8"
+clikt = "5.1.0"
 coroutines = "1.10.2"
 ktor = "3.4.0"
 kotlin-logging = "7.0.14"
@@ -132,6 +133,7 @@ grpc-protoc-gen-java = { module = "io.grpc:protoc-gen-grpc-java", version.ref = 
 grpc-protoc-gen-kotlin = { module = "io.grpc:protoc-gen-grpc-kotlin", version.ref = "grpc-kotlin" }
 
 # other
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 kotlin-logging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-logging-legacy = { module = "io.github.microutils:kotlin-logging", version.ref = "kotlin-logging" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
