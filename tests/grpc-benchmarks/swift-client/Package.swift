@@ -20,7 +20,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/grpc/grpc-swift-2.git", exact: "2.4.3"),
-        .package(url: "https://github.com/grpc/grpc-swift-nio-transport.git", exact: "2.4.3"),
+        .package(url: "https://github.com/grpc/grpc-swift-nio-transport.git", exact: "2.9.2"),
         .package(url: "https://github.com/grpc/grpc-swift-protobuf.git", exact: "2.4.0"),
     ],
     targets: [

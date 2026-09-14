@@ -23,7 +23,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/grpc/grpc-swift-nio-transport.git",
-            exact: "2.4.3"
+            exact: "2.9.2"
         ),
         .package(
             url: "https://github.com/apple/swift-async-algorithms.git",
