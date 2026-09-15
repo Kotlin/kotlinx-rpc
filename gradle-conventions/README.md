@@ -8,17 +8,6 @@ It is an **included build** — not a standalone project.
 Its companion, `gradle-conventions-settings/`, provides settings-phase plugins (repositories, version resolution, Develocity). 
 Both are included from the root `settings.gradle.kts`.
 
-## Marker-Based Code Rewriting
-
-`settings.gradle.kts` rewrites source files at configuration time based on the Kotlin version. 
-Files contain marker comments like `// marker-imports` / `// /marker-imports`, and the content between them is replaced. 
-This handles API differences between Kotlin 2.3.x and 2.4.0+. Affected files:
-- `util/apiValidation.kt` — ABI validation API changed between versions
-- `conventions-kmp.gradle.kts` — klib validation block
-- `conventions-jvm.gradle.kts` — enabled flag
-
-**Do not remove marker comments** — they are structural, not documentation.
-
 ## Key Patterns
 
 - **`OptionalProperty`** (`util/other/optionalProperty.kt`) — Property delegation for feature toggling via `gradle.properties`. Properties follow `kotlinx.rpc.*` naming.
