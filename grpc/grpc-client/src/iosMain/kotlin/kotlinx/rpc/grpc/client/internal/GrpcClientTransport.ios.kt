@@ -8,9 +8,11 @@ package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.*
 import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
@@ -95,7 +97,11 @@ internal class SwiftGrpcClientTransport(
                 throw cause
             } finally {
                 requestSource.cancel()
-                if (!closed) call?.cancel("Kotlin response collection stopped before the call closed")
+                if (!closed) {
+                    withContext(NonCancellable) {
+                        call?.cancelAndWait("Kotlin response collection stopped before the call closed")
+                    }
+                }
             }
         }
     }

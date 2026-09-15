@@ -42,6 +42,13 @@ case "${PLATFORM}" in
         run_transient_command \
             "platform=ios-simulator-arm64 implementation=current" \
             "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}"
+        readonly SWIFT_RUNTIME_DIR="$(dirname -- "${BENCHMARK_BINARY}")/Frameworks"
+        mkdir -p -- "${SWIFT_RUNTIME_DIR}"
+        xcrun swift-stdlib-tool \
+            --copy \
+            --scan-executable "${BENCHMARK_BINARY}" \
+            --platform iphonesimulator \
+            --destination "${SWIFT_RUNTIME_DIR}"
         SIMULATOR="$(ensure_ios_simulator)"
         readonly SIMULATOR
         exec xcrun simctl spawn "${SIMULATOR}" "${BENCHMARK_BINARY}" "$@"

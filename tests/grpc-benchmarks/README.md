@@ -57,22 +57,36 @@ measurement.
 
 - [ ] `server-streaming-latency` — Time to first message and completion for one
   request followed by many small responses.
-- [ ] `server-streaming-throughput` — Download goodput for many small messages
+- [x] `server-streaming-throughput` — Download goodput for many small messages
   and for fewer large messages.
-- [ ] `client-streaming-throughput` — Upload goodput for many small messages
+- [x] `client-streaming-throughput` — Upload goodput for many small messages
   and for fewer large messages; also record latency from the final request to
   the response.
-- [ ] `bidi-ping-pong` — Strict send-one/receive-one latency, plus a small fixed
-  window of messages in flight.
-- [ ] `bidi-full-duplex` — Independent concurrent upload and download, with
+- [x] `bidi-ping-pong` — Strict send-one/receive-one latency.
+- [x] `bidi-full-duplex` — Independent concurrent upload and download, with
   balanced and asymmetric message sizes.
-- [ ] `stream-message-overhead` — Send the same 64 MiB total as
-  65,536 × 1 KiB, 1,024 × 64 KiB, 64 × 1 MiB, and 4 × 16 MiB.
-- [ ] `stream-concurrency-sweep` — 1, 2, 4, 8, 16, 32, and 64 concurrent
+- [x] `stream-message-overhead` — Send the same 64 MiB total as
+  65,536 × 1 KiB, 1,024 × 64 KiB, 64 × 1 MiB, and sixteen
+  (4 MiB - 1 KiB) messages plus one 16 KiB remainder. The last case stays under
+  the legacy client's fixed 4 MiB message limit.
+- [x] `stream-concurrency-sweep` — 1, 2, 4, 8, 16, and 32 concurrent
   streams on one channel.
 
 The fixed-total-byte benchmark is required because it separates per-message
 interop and scheduling overhead from bulk byte-copying cost.
+
+For streaming benchmarks, `calls` is the total number of messages in each
+measured direction and `concurrency` is the number of streams sharing the
+channel. Latency samples represent ping-pong round trips, request-write
+suspension, or response inter-arrival time, depending on the call shape. CSV
+output includes the actual request and response message counts, total messages
+per second, time to first response, and final-response latency when applicable.
+The full-duplex workload uses a finite `StreamingCall` echo stream because the
+pinned asynchronous C++ benchmark server does not register `StreamingBothWays`.
+The server-streaming concurrency sweep stops at 32 because `StreamingFromServer`
+is unbounded and each completed measurement resets its stream. SwiftNIO retains
+32 recently reset streams by default, so a larger simultaneous batch can reject
+late frames for an evicted stream and close the shared connection.
 
 ### Backpressure and mixed load
 
@@ -175,6 +189,11 @@ choose another directory. Multi-case runs report a progress bar to stderr with
 the current platform, implementation, benchmark, and case; CSV output remains
 machine-readable.
 
+Open [`plot-results.ipynb`](plot-results.ipynb) with a Kotlin-Jupyter kernel and
+run all cells to plot every CSV in `output/`. The notebook can be run from the
+repository root or this directory, and `selectedFiles` can be narrowed to a
+single run when needed.
+
 Build output uses one transient terminal line and is cleared after a successful
 build. If a build fails, its captured output is printed for diagnosis. Set
 `KXRPC_BENCHMARK_VERBOSE_BUILD=1` to keep the complete build output visible.
@@ -191,7 +210,7 @@ the corresponding benchmarks are added:
 - [x] Calls per second.
 - [x] Application bytes per second.
 - [x] Latency minimum, mean, p50, p90, p95, p99, p99.9, and maximum.
-- [ ] Messages per second for streaming benchmarks.
+- [x] Messages per second for streaming benchmarks.
 - [ ] Time to headers, first message, final response, and terminal status where
   applicable.
 - [ ] Wire bytes per second for compression and network benchmarks.

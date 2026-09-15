@@ -248,6 +248,38 @@ struct BenchmarkResult: Sendable {
     let elapsed: Duration
     let applicationBytes: Int64
     let latency: LatencyStatistics
+    let requestMessages: Int64?
+    let responseMessages: Int64?
+    let timeToFirstResponse: Duration?
+    let finalResponseLatency: Duration?
+
+    init(
+        benchmarkName: String,
+        caseName: String,
+        implementationName: String,
+        platform: String,
+        parameters: BenchmarkParameters,
+        elapsed: Duration,
+        applicationBytes: Int64,
+        latency: LatencyStatistics,
+        requestMessages: Int64? = nil,
+        responseMessages: Int64? = nil,
+        timeToFirstResponse: Duration? = nil,
+        finalResponseLatency: Duration? = nil
+    ) {
+        self.benchmarkName = benchmarkName
+        self.caseName = caseName
+        self.implementationName = implementationName
+        self.platform = platform
+        self.parameters = parameters
+        self.elapsed = elapsed
+        self.applicationBytes = applicationBytes
+        self.latency = latency
+        self.requestMessages = requestMessages
+        self.responseMessages = responseMessages
+        self.timeToFirstResponse = timeToFirstResponse
+        self.finalResponseLatency = finalResponseLatency
+    }
 
     var callsPerSecond: Double {
         Double(self.parameters.calls) / self.elapsed.seconds
@@ -255,6 +287,11 @@ struct BenchmarkResult: Sendable {
 
     var applicationBytesPerSecond: Double {
         Double(self.applicationBytes) / self.elapsed.seconds
+    }
+
+    var messagesPerSecond: Double? {
+        guard self.requestMessages != nil || self.responseMessages != nil else { return nil }
+        return Double((self.requestMessages ?? 0) + (self.responseMessages ?? 0)) / self.elapsed.seconds
     }
 }
 

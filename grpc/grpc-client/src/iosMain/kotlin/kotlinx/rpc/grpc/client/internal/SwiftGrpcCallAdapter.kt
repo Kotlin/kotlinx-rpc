@@ -12,6 +12,8 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcCallEvent
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClosedEvent
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcHeadersEvent
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMessageEvent
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Bridges the Kotlin side with the Swift gRPC call object.
@@ -49,6 +51,14 @@ internal class SwiftGrpcCallAdapter<Response>(
 
     fun cancel(message: String?) {
         call.cancelWithMessage(message)
+    }
+
+    suspend fun cancelAndWait(message: String?) {
+        suspendCoroutine { continuation ->
+            call.cancelAndWaitWithMessage(message) {
+                continuation.resume(Unit)
+            }
+        }
     }
 
     private fun SwiftGrpcMessageEvent.decodeMessage(): Response {

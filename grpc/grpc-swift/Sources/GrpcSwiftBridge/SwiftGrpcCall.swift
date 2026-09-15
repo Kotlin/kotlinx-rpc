@@ -107,6 +107,22 @@ public final class SwiftGrpcCall: NSObject, @unchecked Sendable {
         self.requestSource.cancel()
     }
 
+    /// Cancels the RPC and invokes `completion` after its task has stopped.
+    ///
+    /// The callback may run on any Swift concurrency executor.
+    @objc(cancelAndWaitWithMessage:completion:)
+    public func cancelAndWait(
+        message: String?,
+        completion: @escaping @Sendable () -> Void
+    ) {
+        let callTask = self.callTask
+        self.cancel(message: message)
+        Task {
+            await callTask.value
+            completion()
+        }
+    }
+
     deinit {
         self.callTask.cancel()
         self.requestSource.cancel()

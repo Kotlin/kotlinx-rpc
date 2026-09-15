@@ -38,6 +38,14 @@ private fun BenchmarkResult.renderHuman(target: String): String = buildString {
         "throughput: ${callsPerSecond.format(2)} calls/s, " +
             "${applicationBytesPerSecond.formatBytesPerSecond()} application data",
     )
+    messagesPerSecond?.let { messageRate ->
+        appendLine(
+            "messages: $requestMessages request / $responseMessages response, " +
+                "${messageRate.format(2)} total messages/s",
+        )
+        timeToFirstResponse?.let { appendLine("time to first response: ${it.micros()} us") }
+        finalResponseLatency?.let { appendLine("final response latency: ${it.micros()} us") }
+    }
     appendLine("latency (us):")
     appendLine("  min=${latency.minimum.micros()} mean=${latency.mean.micros()} p50=${latency.p50.micros()}")
     appendLine("  p90=${latency.p90.micros()} p95=${latency.p95.micros()} p99=${latency.p99.micros()}")
@@ -48,7 +56,8 @@ private const val CSV_HEADER =
     "benchmark,case,implementation,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes," +
         "elapsed_seconds," +
         "calls_per_second,application_bytes_per_second,latency_min_us,latency_mean_us,latency_p50_us," +
-        "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us"
+        "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us," +
+        "request_messages,response_messages,messages_per_second,time_to_first_response_us,final_response_latency_us"
 
 private fun BenchmarkResult.renderCsv(target: String): String {
     return listOf(
@@ -73,6 +82,11 @@ private fun BenchmarkResult.renderCsv(target: String): String {
         latency.p99.micros(),
         latency.p999.micros(),
         latency.maximum.micros(),
+        requestMessages ?: "",
+        responseMessages ?: "",
+        messagesPerSecond?.format(4) ?: "",
+        timeToFirstResponse?.micros() ?: "",
+        finalResponseLatency?.micros() ?: "",
     ).joinToString(",")
 }
 

@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.seconds
 
 internal fun benchmarkCommand(
     backend: BenchmarkBackend,
-    registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks(backend)),
+    registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks(backend) + streamingBenchmarks(backend)),
 ): CliktCommand = BenchmarkRootCommand().subcommands(
     HelpCommand(),
     ListBenchmarksCommand(registry),
@@ -144,59 +144,59 @@ private class RunBenchmarksCommand(
 
         val results = try {
             runBlocking {
-                val client = GrpcClient(target) {
-                    credentials = plaintext()
-                }
-                try {
-                    val results = mutableListOf<BenchmarkResult>()
-                    for ((index, benchmarkAndCase) in benchmarkCases.withIndex()) {
-                        val (benchmark, benchmarkCase) = benchmarkAndCase
-                        if (benchmarkCases.size > 1) {
-                            val progress = renderBenchmarkProgress(
-                                completed = index,
-                                total = benchmarkCases.size,
-                                platform = currentPlatform,
-                                implementation = implementationName,
-                                benchmark = benchmark.name,
-                                benchmarkCase = benchmarkCase.name,
-                            )
-                            echo(
-                                renderBenchmarkProgressUpdate(
-                                    progress = progress,
-                                    previousLength = progressLineLength,
-                                    finished = false,
-                                ),
-                                trailingNewline = false,
-                                err = true,
-                            )
-                            progressLineLength = progress.length
-                        }
-                        val parameters = overrides.applyTo(benchmarkCase.parameters)
-                        results += benchmark.run(client, benchmarkCase, parameters)
-                    }
+                val results = mutableListOf<BenchmarkResult>()
+                for ((index, benchmarkAndCase) in benchmarkCases.withIndex()) {
+                    val (benchmark, benchmarkCase) = benchmarkAndCase
                     if (benchmarkCases.size > 1) {
                         val progress = renderBenchmarkProgress(
-                            completed = benchmarkCases.size,
+                            completed = index,
                             total = benchmarkCases.size,
                             platform = currentPlatform,
                             implementation = implementationName,
+                            benchmark = benchmark.name,
+                            benchmarkCase = benchmarkCase.name,
                         )
                         echo(
                             renderBenchmarkProgressUpdate(
                                 progress = progress,
                                 previousLength = progressLineLength,
-                                finished = true,
+                                finished = false,
                             ),
                             trailingNewline = false,
                             err = true,
                         )
-                        progressLineLength = 0
+                        progressLineLength = progress.length
                     }
-                    results
-                } finally {
-                    client.shutdownNow()
-                    client.awaitTermination(30.seconds)
+                    val parameters = overrides.applyTo(benchmarkCase.parameters)
+                    val client = GrpcClient(target) {
+                        credentials = plaintext()
+                    }
+                    try {
+                        results += benchmark.run(client, benchmarkCase, parameters)
+                    } finally {
+                        client.shutdownNow()
+                        client.awaitTermination(30.seconds)
+                    }
                 }
+                if (benchmarkCases.size > 1) {
+                    val progress = renderBenchmarkProgress(
+                        completed = benchmarkCases.size,
+                        total = benchmarkCases.size,
+                        platform = currentPlatform,
+                        implementation = implementationName,
+                    )
+                    echo(
+                        renderBenchmarkProgressUpdate(
+                            progress = progress,
+                            previousLength = progressLineLength,
+                            finished = true,
+                        ),
+                        trailingNewline = false,
+                        err = true,
+                    )
+                    progressLineLength = 0
+                }
+                results
             }
         } catch (error: Throwable) {
             echo(renderBenchmarkProgressLineBreak(progressLineLength), trailingNewline = false, err = true)

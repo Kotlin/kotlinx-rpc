@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.benchmarks.client
 import grpc.testing.BenchmarkService
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.withService
 
@@ -17,5 +18,25 @@ internal object CurrentBenchmarkBackend : BenchmarkBackend {
     override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse {
         val service = client.withService<BenchmarkService>()
         return { request -> service.unaryCall(request) }
+    }
+
+    override fun preparePingPongCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> {
+        val service = client.withService<BenchmarkService>()
+        return service::streamingCall
+    }
+
+    override fun prepareClientStreamingCall(client: GrpcClient): suspend (Flow<SimpleRequest>) -> SimpleResponse {
+        val service = client.withService<BenchmarkService>()
+        return service::streamingFromClient
+    }
+
+    override fun prepareServerStreamingCall(client: GrpcClient): (SimpleRequest) -> Flow<SimpleResponse> {
+        val service = client.withService<BenchmarkService>()
+        return service::streamingFromServer
+    }
+
+    override fun prepareFullDuplexCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> {
+        val service = client.withService<BenchmarkService>()
+        return service::streamingCall
     }
 }

@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.benchmarks.client
 import com.github.ajalt.clikt.testing.test
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -144,6 +145,18 @@ class BenchmarkCliTest {
         override val implementationName: String = "test"
 
         override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse =
+            error("Benchmark execution is not expected in CLI parsing tests")
+
+        override fun preparePingPongCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
+            error("Benchmark execution is not expected in CLI parsing tests")
+
+        override fun prepareClientStreamingCall(client: GrpcClient): suspend (Flow<SimpleRequest>) -> SimpleResponse =
+            error("Benchmark execution is not expected in CLI parsing tests")
+
+        override fun prepareServerStreamingCall(client: GrpcClient): (SimpleRequest) -> Flow<SimpleResponse> =
+            error("Benchmark execution is not expected in CLI parsing tests")
+
+        override fun prepareFullDuplexCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
             error("Benchmark execution is not expected in CLI parsing tests")
     }
 }

@@ -41,7 +41,7 @@ struct CLIError: Error, Equatable, CustomStringConvertible, Sendable {
 struct BenchmarkCLI: Sendable {
     let registry: BenchmarkRegistry
 
-    init(registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks())) {
+    init(registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks() + streamingBenchmarks())) {
         self.registry = registry
     }
 
@@ -185,64 +185,63 @@ struct BenchmarkCLI: Sendable {
         let target = configuration.target
 
         do {
-            let transport = try HTTP2ClientTransport.TransportServices(
-                target: .dns(host: target.host, port: target.port),
-                transportSecurity: .plaintext
-            )
-            let results = try await withGRPCClient(transport: transport) { client in
-                var results: [BenchmarkResult] = []
-                let benchmarkCases = try selected.flatMap { benchmark in
-                    try self.selectedCases(benchmark, named: configuration.caseName).map { (benchmark, $0) }
-                }
-                var progressLineLength = 0
-                do {
-                    for (index, benchmarkAndCase) in benchmarkCases.enumerated() {
-                        let (benchmark, benchmarkCase) = benchmarkAndCase
-                        if benchmarkCases.count > 1 {
-                            let progress = renderBenchmarkProgress(
-                                completed: index,
-                                total: benchmarkCases.count,
-                                platform: currentPlatform,
-                                implementation: "swift",
-                                benchmark: benchmark.name,
-                                benchmarkCase: benchmarkCase.name
-                            )
-                            writeBenchmarkProgress(
-                                progress: progress,
-                                previousLength: progressLineLength,
-                                finished: false
-                            )
-                            progressLineLength = progress.count
-                        }
-                        let parameters = try configuration.overrides.applying(to: benchmarkCase.parameters)
-                        results.append(
+            var results: [BenchmarkResult] = []
+            let benchmarkCases = try selected.flatMap { benchmark in
+                try self.selectedCases(benchmark, named: configuration.caseName).map { (benchmark, $0) }
+            }
+            var progressLineLength = 0
+            do {
+                for (index, benchmarkAndCase) in benchmarkCases.enumerated() {
+                    let (benchmark, benchmarkCase) = benchmarkAndCase
+                    if benchmarkCases.count > 1 {
+                        let progress = renderBenchmarkProgress(
+                            completed: index,
+                            total: benchmarkCases.count,
+                            platform: currentPlatform,
+                            implementation: "swift",
+                            benchmark: benchmark.name,
+                            benchmarkCase: benchmarkCase.name
+                        )
+                        writeBenchmarkProgress(
+                            progress: progress,
+                            previousLength: progressLineLength,
+                            finished: false
+                        )
+                        progressLineLength = progress.count
+                    }
+                    let parameters = try configuration.overrides.applying(to: benchmarkCase.parameters)
+                    let transport = try HTTP2ClientTransport.TransportServices(
+                        target: .dns(host: target.host, port: target.port),
+                        transportSecurity: .plaintext
+                    )
+                    results.append(
+                        try await withGRPCClient(transport: transport) { client in
                             try await benchmark.run(
                                 client: client,
                                 benchmarkCase: benchmarkCase,
                                 parameters: parameters
                             )
-                        )
-                    }
-                    if benchmarkCases.count > 1 {
-                        let progress = renderBenchmarkProgress(
-                            completed: benchmarkCases.count,
-                            total: benchmarkCases.count,
-                            platform: currentPlatform,
-                            implementation: "swift"
-                        )
-                        writeBenchmarkProgress(
-                            progress: progress,
-                            previousLength: progressLineLength,
-                            finished: true
-                        )
-                    }
-                } catch {
-                    writeStandardErrorWithoutNewline(
-                        renderBenchmarkProgressLineBreak(previousLength: progressLineLength)
+                        }
                     )
-                    throw error
                 }
-                return results
+                if benchmarkCases.count > 1 {
+                    let progress = renderBenchmarkProgress(
+                        completed: benchmarkCases.count,
+                        total: benchmarkCases.count,
+                        platform: currentPlatform,
+                        implementation: "swift"
+                    )
+                    writeBenchmarkProgress(
+                        progress: progress,
+                        previousLength: progressLineLength,
+                        finished: true
+                    )
+                }
+            } catch {
+                writeStandardErrorWithoutNewline(
+                    renderBenchmarkProgressLineBreak(previousLength: progressLineLength)
+                )
+                throw error
             }
             print(render(results: results, target: target, format: configuration.format))
         } catch {
@@ -373,11 +372,22 @@ private let csvHeader =
     "benchmark,case,implementation,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes," +
     "elapsed_seconds," +
     "calls_per_second,application_bytes_per_second,latency_min_us,latency_mean_us,latency_p50_us," +
-    "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us"
+    "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us," +
+    "request_messages,response_messages,messages_per_second,time_to_first_response_us,final_response_latency_us"
 
 private extension BenchmarkResult {
     func renderHuman(target: ServerTarget) -> String {
-        """
+        let messageSummary = self.messagesPerSecond.map {
+            "\nmessages: \(self.requestMessages!) request / \(self.responseMessages!) response, " +
+                "\($0.formatted(2)) total messages/s"
+        } ?? ""
+        let firstResponseSummary = self.timeToFirstResponse.map {
+            "\ntime to first response: \(($0.seconds * 1_000_000).formatted(3)) us"
+        } ?? ""
+        let finalResponseSummary = self.finalResponseLatency.map {
+            "\nfinal response latency: \(($0.seconds * 1_000_000).formatted(3)) us"
+        } ?? ""
+        return """
         benchmark: \(self.benchmarkName)
         case: \(self.caseName)
         implementation: \(self.implementationName)
@@ -387,7 +397,7 @@ private extension BenchmarkResult {
         concurrency: \(self.parameters.concurrency)
         payload: \(self.parameters.requestBytes) B request / \(self.parameters.responseBytes) B response
         elapsed: \(self.elapsed.seconds.formatted(6)) s
-        throughput: \(self.callsPerSecond.formatted(2)) calls/s, \(self.applicationBytesPerSecond.bytesPerSecond)
+        throughput: \(self.callsPerSecond.formatted(2)) calls/s, \(self.applicationBytesPerSecond.bytesPerSecond)\(messageSummary)\(firstResponseSummary)\(finalResponseSummary)
         latency (us):
           min=\(self.latency.minimumNanoseconds.microseconds) mean=\(self.latency.meanNanoseconds.microseconds) p50=\(self.latency.p50Nanoseconds.microseconds)
           p90=\(self.latency.p90Nanoseconds.microseconds) p95=\(self.latency.p95Nanoseconds.microseconds) p99=\(self.latency.p99Nanoseconds.microseconds)
@@ -418,6 +428,11 @@ private extension BenchmarkResult {
             self.latency.p99Nanoseconds.microseconds,
             self.latency.p999Nanoseconds.microseconds,
             self.latency.maximumNanoseconds.microseconds,
+            self.requestMessages.map(String.init) ?? "",
+            self.responseMessages.map(String.init) ?? "",
+            self.messagesPerSecond?.formatted(4) ?? "",
+            self.timeToFirstResponse.map { ($0.seconds * 1_000_000).formatted(3) } ?? "",
+            self.finalResponseLatency.map { ($0.seconds * 1_000_000).formatted(3) } ?? "",
         ].joined(separator: ",")
     }
 }
