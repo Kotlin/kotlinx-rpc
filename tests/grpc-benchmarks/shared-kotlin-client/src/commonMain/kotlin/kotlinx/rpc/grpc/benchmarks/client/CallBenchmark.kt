@@ -21,11 +21,15 @@ internal data class MeasuredCall(
 internal class CallBenchmark(
     override val name: String,
     override val description: String,
-    override val defaults: BenchmarkParameters,
+    override val cases: List<BenchmarkCase>,
     private val implementationName: String,
     private val prepare: (GrpcClient, BenchmarkParameters) -> MeasuredCall,
 ) : Benchmark {
-    override suspend fun run(client: GrpcClient, parameters: BenchmarkParameters): BenchmarkResult {
+    override suspend fun run(
+        client: GrpcClient,
+        benchmarkCase: BenchmarkCase,
+        parameters: BenchmarkParameters,
+    ): BenchmarkResult {
         val call = prepare(client, parameters)
 
         executeCalls(
@@ -46,6 +50,7 @@ internal class CallBenchmark(
 
         return BenchmarkResult(
             benchmarkName = name,
+            caseName = benchmarkCase.name,
             implementationName = implementationName,
             platform = currentPlatform,
             parameters = parameters,

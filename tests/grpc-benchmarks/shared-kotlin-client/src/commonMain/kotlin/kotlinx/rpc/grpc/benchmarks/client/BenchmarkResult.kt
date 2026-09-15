@@ -46,6 +46,7 @@ internal data class LatencyStatistics(
 /** Contains the measured duration, throughput inputs, and latency statistics of a benchmark run. */
 internal data class BenchmarkResult(
     val benchmarkName: String,
+    val caseName: String,
     val implementationName: String,
     val platform: String,
     val parameters: BenchmarkParameters,

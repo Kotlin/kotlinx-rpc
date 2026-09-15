@@ -20,6 +20,10 @@ class BenchmarkCliTest {
         assertEquals(0, result.statusCode)
         assertContains(result.stdout, "unary-latency")
         assertContains(result.stdout, "unary-throughput")
+        assertContains(result.stdout, "unary-payload-sweep")
+        assertContains(result.stdout, "unary-concurrency-sweep")
+        assertContains(result.stdout, "symmetric-1m")
+        assertContains(result.stdout, "1k-c128")
     }
 
     @Test
@@ -44,7 +48,9 @@ class BenchmarkCliTest {
         assertEquals(0, result.statusCode)
         assertContains(result.stdout, "--target")
         assertContains(result.stdout, "--concurrency")
+        assertContains(result.stdout, "--case")
         assertContains(result.stdout, "--request-bytes")
+        assertContains(result.stdout, "--case")
         assertContains(result.stdout, "--format")
     }
 
@@ -63,6 +69,22 @@ class BenchmarkCliTest {
 
         assertEquals(1, result.statusCode)
         assertContains(result.stderr, "registered benchmark")
+    }
+
+    @Test
+    fun rejectsUnknownBenchmarkCases() {
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run unary-payload-sweep --case missing")
+
+        assertEquals(1, result.statusCode)
+        assertContains(result.stderr, "has no case 'missing'")
+    }
+
+    @Test
+    fun rejectsCaseSelectionForAllBenchmarks() {
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run all --case default")
+
+        assertEquals(1, result.statusCode)
+        assertContains(result.stderr, "requires a specific benchmark")
     }
 
     private object TestBenchmarkBackend : BenchmarkBackend {

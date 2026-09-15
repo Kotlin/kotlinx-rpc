@@ -2,6 +2,7 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+#include <grpc/impl/channel_arg_names.h>
 #include <grpc/support/time.h>
 #include <signal.h>
 
@@ -19,6 +20,8 @@
 ABSL_FLAG(int32_t, port, 50051, "Port on which the benchmark server listens");
 ABSL_FLAG(std::string, server_type, "async",
           "C++ server implementation: async, callback, or sync");
+ABSL_FLAG(int32_t, max_message_bytes, 32 * 1024 * 1024,
+          "Maximum request and response message size");
 
 namespace {
 
@@ -53,6 +56,14 @@ int main(int argc, char** argv) {
   grpc::testing::ServerConfig config;
   config.set_port(absl::GetFlag(FLAGS_port));
   config.set_protocol(grpc::testing::Protocol::HTTP2);
+  const int32_t max_message_bytes =
+      absl::GetFlag(FLAGS_max_message_bytes);
+  for (const char* name : {GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
+                           GRPC_ARG_MAX_SEND_MESSAGE_LENGTH}) {
+    grpc::testing::ChannelArg* argument = config.add_channel_args();
+    argument->set_name(name);
+    argument->set_int_value(max_message_bytes);
+  }
 
   const std::string server_type = absl::GetFlag(FLAGS_server_type);
   std::unique_ptr<grpc::testing::Server> server =
@@ -65,7 +76,8 @@ int main(int argc, char** argv) {
   signal(SIGTERM, HandleSignal);
 
   LOG(INFO) << "C++ benchmark server listening on [::]:" << server->port()
-            << " using the " << server_type << " implementation";
+            << " using the " << server_type << " implementation"
+            << " with a " << max_message_bytes << " byte message limit";
 
   while (!stop_requested) {
     gpr_sleep_until(gpr_time_add(gpr_now(GPR_CLOCK_REALTIME),

@@ -66,7 +66,19 @@ private class ListBenchmarksCommand(
             buildString {
                 appendLine("Available benchmarks:")
                 for (benchmark in registry.all) {
-                    appendLine("  ${benchmark.name.padEnd(20)} ${benchmark.description}")
+                    val cases = if (benchmark.cases.size == 1) "" else " (${benchmark.cases.size} cases)"
+                    appendLine("  ${benchmark.name.padEnd(28)} ${benchmark.description}$cases")
+                    if (benchmark.cases.size > 1) {
+                        for (benchmarkCase in benchmark.cases) {
+                            val parameters = benchmarkCase.parameters
+                            appendLine(
+                                "    ${benchmarkCase.name.padEnd(18)} " +
+                                    "warmup=${parameters.warmupCalls}, calls=${parameters.calls}, " +
+                                    "concurrency=${parameters.concurrency}, " +
+                                    "request=${parameters.requestBytes} B, response=${parameters.responseBytes} B",
+                            )
+                        }
+                    }
                 }
             }.trimEnd(),
         )
@@ -96,6 +108,7 @@ private class RunBenchmarksCommand(
     private val concurrency by positiveIntOption("--concurrency", "Concurrent workers")
     private val requestBytes by nonNegativeIntOption("--request-bytes", "Request payload bytes")
     private val responseBytes by nonNegativeIntOption("--response-bytes", "Response payload bytes")
+    private val caseName by option("--case", help = "Run one named benchmark case")
     private val format by option("--format", help = "Output format")
         .choice("human" to OutputFormat.HUMAN, "csv" to OutputFormat.CSV)
         .default(OutputFormat.HUMAN)
@@ -112,8 +125,20 @@ private class RunBenchmarksCommand(
         } else {
             listOf(requireNotNull(registry.find(benchmarkName)))
         }
+        if (caseName != null && benchmarkName == "all") {
+            currentContext.fail("--case requires a specific benchmark name")
+        }
+
+        val benchmarkCases = benchmarks.flatMap { benchmark ->
+            val cases = caseName?.let { requestedCase ->
+                listOf(
+                    benchmark.cases.firstOrNull { it.name == requestedCase }
+                        ?: currentContext.fail("Benchmark '${benchmark.name}' has no case '$requestedCase'"),
+                )
+            } ?: benchmark.cases
+            cases.map { benchmark to it }
+        }
         val overrides = BenchmarkOverrides(warmupCalls, calls, concurrency, requestBytes, responseBytes)
-        val parameterSets = benchmarks.associateWith { overrides.applyTo(it.defaults) }
 
         val results = try {
             runBlocking {
@@ -121,7 +146,12 @@ private class RunBenchmarksCommand(
                     credentials = plaintext()
                 }
                 try {
-                    benchmarks.map { benchmark -> benchmark.run(client, parameterSets.getValue(benchmark)) }
+                    val results = mutableListOf<BenchmarkResult>()
+                    for ((benchmark, benchmarkCase) in benchmarkCases) {
+                        val parameters = overrides.applyTo(benchmarkCase.parameters)
+                        results += benchmark.run(client, benchmarkCase, parameters)
+                    }
+                    results
                 } finally {
                     client.shutdownNow()
                     client.awaitTermination(30.seconds)

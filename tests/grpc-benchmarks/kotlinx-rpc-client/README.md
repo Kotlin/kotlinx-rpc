@@ -16,6 +16,8 @@ Build the release binary if necessary and run it with the helper script:
 ./run.sh ios run unary-latency
 ./run.sh ios run unary-throughput \
     --request-bytes 4096 --response-bytes 4096 --concurrency 32 --format csv
+./run.sh ios run unary-payload-sweep --case symmetric-1m
+./run.sh ios run unary-concurrency-sweep --case 1k-c64 --format csv
 ```
 
 The same helper runs the native macOS and JVM clients:
@@ -46,9 +48,10 @@ a macOS binary:
 ./build/bin/macosArm64/releaseExecutable/kotlinx-rpc-grpc-benchmark-client.kexe list
 ```
 
-Use `run all` to execute every registered benchmark. Command-line values
-override a benchmark's defaults, which makes payload and concurrency sweeps easy
-to script.
+Use `run all` to execute every registered benchmark and every named case. The
+payload and concurrency sweeps enumerate their required points automatically;
+use `--case NAME` to run one point. Command-line values override the selected
+case defaults for ad hoc experiments.
 
 ## Adding a benchmark
 
