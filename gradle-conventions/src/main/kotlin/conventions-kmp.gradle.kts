@@ -21,16 +21,10 @@ plugins {
 kotlin {
     explicitApi()
 
-    abiValidation {
-        enabled = enableAbiValidation
-
-        // marker-klib
-        klib {
-            enabled = enableAbiValidation
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
         }
-        // /marker-klib
-
-        configureAbiFilters()
     }
 }
 

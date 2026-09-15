@@ -26,10 +26,10 @@ configureKotlinCompatibility("2.0.0")
 kotlin {
     explicitApi()
 
-    abiValidation {
-        enabled = enableAbiValidation
-
-        configureAbiFilters()
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
+        }
     }
 }
 

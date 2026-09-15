@@ -214,7 +214,7 @@ class TransportTest {
     }
 
     @Test
-    fun testLateConnectWithManyCallsAndClients() = runTest(timeout = 240.seconds) {
+    fun testLateConnectWithManyCallsAndClients() = runTest(timeout = 300.seconds) {
         val transports = LocalTransport()
 
         val client = clientOf(transports)

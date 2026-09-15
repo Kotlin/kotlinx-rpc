@@ -1,5 +1,5 @@
 FILE: b.kt
-    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
     public final data class InnerFlow : R|kotlin/Any| {
         public constructor(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|InnerFlow| {
             super<R|kotlin/Any|>()

@@ -4,11 +4,9 @@
 
 package util
 
-// marker-imports
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-// /marker-imports
 
 private val excludedProjects = setOf(
     "krpc-test",
@@ -19,16 +17,13 @@ private val excludedProjects = setOf(
 
 val Project.enableAbiValidation get() = name !in excludedProjects
 
-// marker-configureAbiFilters
 @OptIn(ExperimentalAbiValidation::class)
-fun AbiValidationVariantSpec.configureAbiFilters() {
+fun AbiValidationExtension.configureAbiFilters() {
     filters {
-        @Suppress("DEPRECATION_ERROR") // todo: temp, remove after update to 2.3.20
-        excluded {
+        exclude {
             annotatedWith.add("kotlinx.rpc.internal.utils.InternalRpcApi")
             byNames.add("kotlinx.rpc.internal.**")
             byNames.add("kotlinx.rpc.krpc.internal.**")
         }
     }
 }
-// /marker-configureAbiFilters
