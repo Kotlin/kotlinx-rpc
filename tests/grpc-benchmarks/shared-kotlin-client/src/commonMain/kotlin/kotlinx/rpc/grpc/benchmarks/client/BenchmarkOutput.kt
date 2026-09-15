@@ -26,6 +26,7 @@ internal fun render(results: List<BenchmarkResult>, target: String, format: Outp
 
 private fun BenchmarkResult.renderHuman(target: String): String = buildString {
     appendLine("benchmark: $benchmarkName")
+    appendLine("implementation: $implementationName")
     appendLine("platform: $platform")
     appendLine("target: $target")
     appendLine("calls: ${parameters.calls} (${parameters.warmupCalls} warmup)")
@@ -43,13 +44,15 @@ private fun BenchmarkResult.renderHuman(target: String): String = buildString {
 }
 
 private const val CSV_HEADER =
-    "benchmark,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes,elapsed_seconds," +
+    "benchmark,implementation,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes," +
+        "elapsed_seconds," +
         "calls_per_second,application_bytes_per_second,latency_min_us,latency_mean_us,latency_p50_us," +
         "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us"
 
 private fun BenchmarkResult.renderCsv(target: String): String {
     return listOf(
         benchmarkName,
+        implementationName,
         platform,
         target,
         parameters.warmupCalls,

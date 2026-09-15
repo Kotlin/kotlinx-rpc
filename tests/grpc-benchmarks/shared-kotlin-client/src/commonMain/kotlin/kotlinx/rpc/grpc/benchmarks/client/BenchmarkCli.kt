@@ -22,7 +22,8 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.time.Duration.Companion.seconds
 
 internal fun benchmarkCommand(
-    registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks()),
+    backend: BenchmarkBackend,
+    registry: BenchmarkRegistry = BenchmarkRegistry(unaryBenchmarks(backend)),
 ): CliktCommand = BenchmarkRootCommand().subcommands(
     HelpCommand(),
     ListBenchmarksCommand(registry),

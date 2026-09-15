@@ -5,6 +5,9 @@
 package kotlinx.rpc.grpc.benchmarks.client
 
 import com.github.ajalt.clikt.testing.test
+import io.grpc.testing.integration.SimpleRequest
+import io.grpc.testing.integration.SimpleResponse
+import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -12,7 +15,7 @@ import kotlin.test.assertEquals
 class BenchmarkCliTest {
     @Test
     fun listsBenchmarks() {
-        val result = benchmarkCommand().test("list")
+        val result = benchmarkCommand(TestBenchmarkBackend).test("list")
 
         assertEquals(0, result.statusCode)
         assertContains(result.stdout, "unary-latency")
@@ -21,8 +24,8 @@ class BenchmarkCliTest {
 
     @Test
     fun showsHelpCommand() {
-        val rootHelp = benchmarkCommand().test("help")
-        val runHelp = benchmarkCommand().test("help run")
+        val rootHelp = benchmarkCommand(TestBenchmarkBackend).test("help")
+        val runHelp = benchmarkCommand(TestBenchmarkBackend).test("help run")
 
         assertEquals(0, rootHelp.statusCode)
         assertContains(rootHelp.stdout, "Commands:")
@@ -36,7 +39,7 @@ class BenchmarkCliTest {
 
     @Test
     fun describesRunOptions() {
-        val result = benchmarkCommand().test("run --help")
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run --help")
 
         assertEquals(0, result.statusCode)
         assertContains(result.stdout, "--target")
@@ -47,7 +50,7 @@ class BenchmarkCliTest {
 
     @Test
     fun rejectsInvalidNumbers() {
-        val result = benchmarkCommand().test("run unary-latency --calls many")
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run unary-latency --calls many")
 
         assertEquals(1, result.statusCode)
         assertContains(result.stderr, "--calls")
@@ -56,9 +59,16 @@ class BenchmarkCliTest {
 
     @Test
     fun rejectsUnknownBenchmarks() {
-        val result = benchmarkCommand().test("run unknown")
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run unknown")
 
         assertEquals(1, result.statusCode)
         assertContains(result.stderr, "registered benchmark")
+    }
+
+    private object TestBenchmarkBackend : BenchmarkBackend {
+        override val implementationName: String = "test"
+
+        override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse =
+            error("Benchmark execution is not expected in CLI parsing tests")
     }
 }

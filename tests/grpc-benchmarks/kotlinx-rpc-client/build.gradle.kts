@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
+val sharedKotlinClientSources = layout.projectDirectory.dir("../shared-kotlin-client/src")
+
 kotlin {
     jvm {
         binaries {
@@ -28,6 +30,8 @@ kotlin {
 
     sourceSets {
         commonMain {
+            kotlin.srcDir(sharedKotlinClientSources.dir("commonMain/kotlin"))
+
             dependencies {
                 implementation(libs.clikt)
                 implementation(libs.coroutines.core)
@@ -37,9 +41,15 @@ kotlin {
         }
 
         commonTest {
+            kotlin.srcDir(sharedKotlinClientSources.dir("commonTest/kotlin"))
+
             dependencies {
                 implementation(kotlin("test"))
             }
+        }
+
+        iosMain {
+            kotlin.srcDir(sharedKotlinClientSources.dir("iosMain/kotlin"))
         }
 
         jvmMain {
