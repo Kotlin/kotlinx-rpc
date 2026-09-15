@@ -312,6 +312,14 @@ Two approaches are supported:
 
 **Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.11.0-grpc-185
 
+# 0.10.4
+> Published 17 September 2026
+
+### Features 🎉
+* Update Kotlin to 2.4.0 by @Mr3zee in https://github.com/Kotlin/kotlinx-rpc/pull/761
+
+**Full Changelog**: https://github.com/Kotlin/kotlinx-rpc/compare/0.10.3...0.10.4
+
 # 0.10.3
 > Published 23 June 2026
 
