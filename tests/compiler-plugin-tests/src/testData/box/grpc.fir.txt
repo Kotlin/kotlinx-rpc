@@ -1,6 +1,6 @@
 FILE: grpc.kt
-    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|)))
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|Custom.Companion|)) public final class Custom : R|kotlin/Any| {
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|))])
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|Custom.Companion|) [evaluated = <getClass>(Q|Custom.Companion|)]) public final class Custom : R|kotlin/Any| {
         public constructor(content: R|kotlin/String|): R|Custom| {
             super<R|kotlin/Any|>()
         }
@@ -44,7 +44,7 @@ FILE: grpc.kt
         }
 
     }
-    @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = <strcat>(String(my.proto.), String(package))) public abstract interface ProtoPkgService : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/annotations/Grpc|(protoPackage = <strcat>(String(my.proto.), String(package)) [evaluated = String(my.proto.package)]) public abstract interface ProtoPkgService : R|kotlin/Any| {
         public abstract suspend fun unit(): R|kotlin/Unit|
 
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {

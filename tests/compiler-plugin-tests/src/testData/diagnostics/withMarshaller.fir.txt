@@ -1,18 +1,18 @@
 FILE: module_main_withMarshaller.kt
-    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|)) public open class Test : R|kotlin/Any| {
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|) [evaluated = <getClass>(Q|TestMarshaller|)]) public open class Test : R|kotlin/Any| {
         public constructor(): R|Test| {
             super<R|kotlin/Any|>()
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|)) public final class Test1 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|) [evaluated = <getClass>(Q|TestMarshaller|)]) public final class Test1 : R|kotlin/Any| {
         public constructor(): R|Test1| {
             super<R|kotlin/Any|>()
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|)) public final class Test2 : R|Test| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller|) [evaluated = <getClass>(Q|TestMarshaller|)]) public final class Test2 : R|Test| {
         public constructor(): R|Test2| {
             super<R|Test|>()
         }
@@ -32,7 +32,7 @@ FILE: module_main_withMarshaller.kt
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller3|)) public final class Test3 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller3|) [evaluated = <getClass>(Q|TestMarshaller3|)]) public final class Test3 : R|kotlin/Any| {
         public constructor(): R|Test3| {
             super<R|kotlin/Any|>()
         }
@@ -52,7 +52,7 @@ FILE: module_main_withMarshaller.kt
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller4|)) public final class Test4 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller4|) [evaluated = <getClass>(Q|TestMarshaller4|)]) public final class Test4 : R|kotlin/Any| {
         public constructor(): R|Test4| {
             super<R|kotlin/Any|>()
         }
@@ -80,7 +80,7 @@ FILE: module_main_withMarshaller.kt
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller4|)) public final class Test5 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller4|) [evaluated = <getClass>(Q|TestMarshaller4|)]) public final class Test5 : R|kotlin/Any| {
         public constructor(): R|Test5| {
             super<R|kotlin/Any|>()
         }
@@ -94,7 +94,7 @@ FILE: module_main_withMarshaller.kt
     }
     public abstract interface CustomMarshaller4<D> : R|CustomMarshaller3<D>|, R|CustomMarshaller1<D>| {
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller8|)) public final class Test8 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller8|) [evaluated = <getClass>(Q|TestMarshaller8|)]) public final class Test8 : R|kotlin/Any| {
         public constructor(): R|Test8| {
             super<R|kotlin/Any|>()
         }
@@ -114,7 +114,7 @@ FILE: module_main_withMarshaller.kt
         }
 
     }
-    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller9|)) public final class Test9 : R|kotlin/Any| {
+    @R|kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller|(marshaller = <getClass>(Q|TestMarshaller9|) [evaluated = <getClass>(Q|TestMarshaller9|)]) public final class Test9 : R|kotlin/Any| {
         public constructor(): R|Test9| {
             super<R|kotlin/Any|>()
         }
