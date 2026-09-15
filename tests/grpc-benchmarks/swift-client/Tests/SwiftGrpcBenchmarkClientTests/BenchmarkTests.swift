@@ -127,6 +127,63 @@ final class BenchmarkTests: XCTestCase {
         )
     }
 
+    func testStreamingBenchmarkCasesMatchKotlinClient() throws {
+        let registry = BenchmarkRegistry(streamingBenchmarks())
+
+        XCTAssertEqual(
+            registry.all.map(\.name),
+            [
+                "bidi-full-duplex",
+                "bidi-ping-pong",
+                "client-streaming-throughput",
+                "server-streaming-throughput",
+                "stream-concurrency-sweep",
+                "stream-message-overhead",
+            ]
+        )
+        let overheadCases = try XCTUnwrap(registry.find("stream-message-overhead")?.cases)
+        XCTAssertEqual(overheadCases.map(\.name), ["1k", "64k", "1m", "near-4m"])
+        XCTAssertEqual(
+            overheadCases.last?.parameters,
+            try BenchmarkParameters(
+                warmupCalls: 1,
+                calls: 17,
+                concurrency: 1,
+                requestBytes: 4 * 1_024 * 1_024 - 1_024,
+                responseBytes: 0
+            )
+        )
+        let largestOverheadCase = try XCTUnwrap(overheadCases.last?.parameters)
+        XCTAssertEqual(
+            Int64(largestOverheadCase.requestBytes) * Int64(largestOverheadCase.calls - 1) + 16 * 1_024,
+            64 * 1_024 * 1_024
+        )
+        XCTAssertEqual(
+            registry.find("stream-concurrency-sweep")?.cases.map(\.name),
+            ["c1", "c2", "c4", "c8", "c16", "c32"]
+        )
+        XCTAssertEqual(
+            registry.find("server-streaming-throughput")?.cases.first { $0.name == "64k" }?.parameters,
+            try BenchmarkParameters(
+                warmupCalls: 10,
+                calls: 1_000,
+                concurrency: 1,
+                requestBytes: 64,
+                responseBytes: 64 * 1_024
+            )
+        )
+        XCTAssertEqual(
+            registry.find("client-streaming-throughput")?.cases.first { $0.name == "64k" }?.parameters,
+            try BenchmarkParameters(
+                warmupCalls: 10,
+                calls: 1_000,
+                concurrency: 1,
+                requestBytes: 64 * 1_024,
+                responseBytes: 64
+            )
+        )
+    }
+
     func testAppliesParameterOverrides() throws {
         let defaults = try BenchmarkParameters(
             warmupCalls: 1,
@@ -194,5 +251,37 @@ final class BenchmarkTests: XCTestCase {
 
         XCTAssertTrue(output.contains("benchmark,case,implementation,platform"))
         XCTAssertTrue(output.contains("example,example-case,swift,macos"))
+    }
+
+    func testCSVOutputIncludesStreamingMeasurements() throws {
+        let result = BenchmarkResult(
+            benchmarkName: "streaming-example",
+            caseName: "default",
+            implementationName: "swift",
+            platform: "macos",
+            parameters: try BenchmarkParameters(
+                warmupCalls: 0,
+                calls: 10,
+                concurrency: 1,
+                requestBytes: 1_024,
+                responseBytes: 64
+            ),
+            elapsed: .seconds(1),
+            applicationBytes: 10_304,
+            latency: LatencyStatistics(samples: [1]),
+            requestMessages: 10,
+            responseMessages: 1,
+            timeToFirstResponse: .nanoseconds(2),
+            finalResponseLatency: .nanoseconds(3)
+        )
+
+        let output = render(
+            results: [result],
+            target: ServerTarget(host: "localhost", port: 50051),
+            format: .csv
+        )
+
+        XCTAssertTrue(output.contains("request_messages,response_messages,messages_per_second"))
+        XCTAssertTrue(output.contains(",10,1,11.0000,0.002,0.003"))
     }
 }

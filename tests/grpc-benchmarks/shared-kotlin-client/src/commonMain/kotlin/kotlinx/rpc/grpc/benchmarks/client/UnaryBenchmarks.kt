@@ -61,7 +61,7 @@ private fun unaryBenchmark(
 ): Benchmark {
     return CallBenchmark(name, description, cases, backend.implementationName) { client, parameters ->
         val unaryCall = backend.prepareUnaryCall(client)
-        val request = request(parameters.requestBytes, parameters.responseBytes)
+        val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
 
         MeasuredCall(
             applicationBytes = parameters.requestBytes.toLong() + parameters.responseBytes,
@@ -138,7 +138,7 @@ private fun concurrencySweepCases(): List<BenchmarkCase> = buildList {
     }
 }
 
-private fun benchmarkCase(
+internal fun benchmarkCase(
     name: String = "default",
     warmupCalls: Int,
     calls: Int,
@@ -158,7 +158,7 @@ private fun benchmarkCase(
 
 private const val PAYLOAD_SWEEP_ANCHOR_BYTES = 64
 
-private fun request(requestBytes: Int, responseBytes: Int): SimpleRequest {
+internal fun benchmarkRequest(requestBytes: Int, responseBytes: Int): SimpleRequest {
     val body = ByteString(*ByteArray(requestBytes) { index -> (index % 251).toByte() })
     return SimpleRequest {
         responseType = PayloadType.COMPRESSABLE

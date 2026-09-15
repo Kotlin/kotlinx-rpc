@@ -8,6 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.nanoseconds
+import kotlin.time.Duration.Companion.seconds
 
 class BenchmarkOutputTest {
     @Test
@@ -36,5 +37,28 @@ class BenchmarkOutputTest {
 
         assertContains(output, "benchmark,case,implementation,platform")
         assertContains(output, "example,example-case,current,ios")
+    }
+
+    @Test
+    fun includesStreamingMeasurementsInOutput() {
+        val result = BenchmarkResult(
+            benchmarkName = "streaming-example",
+            caseName = "default",
+            implementationName = "current",
+            platform = "ios",
+            parameters = BenchmarkParameters(0, 10, 1, 1_024, 64),
+            elapsed = 1.seconds,
+            applicationBytes = 10_304,
+            latency = LatencyStatistics.from(longArrayOf(1)),
+            requestMessages = 10,
+            responseMessages = 1,
+            timeToFirstResponse = 2.nanoseconds,
+            finalResponseLatency = 3.nanoseconds,
+        )
+
+        val output = render(listOf(result), "localhost:50051", OutputFormat.CSV)
+
+        assertContains(output, "request_messages,response_messages,messages_per_second")
+        assertContains(output, ",10,1,11.0000,0.002,0.003")
     }
 }

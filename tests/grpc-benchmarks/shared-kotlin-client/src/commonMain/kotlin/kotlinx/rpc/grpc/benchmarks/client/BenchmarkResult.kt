@@ -53,10 +53,21 @@ internal data class BenchmarkResult(
     val elapsed: Duration,
     val applicationBytes: Long,
     val latency: LatencyStatistics,
+    val requestMessages: Long? = null,
+    val responseMessages: Long? = null,
+    val timeToFirstResponse: Duration? = null,
+    val finalResponseLatency: Duration? = null,
 ) {
     val callsPerSecond: Double
         get() = parameters.calls / elapsed.inWholeNanoseconds.toDouble() * 1_000_000_000.0
 
     val applicationBytesPerSecond: Double
         get() = applicationBytes / elapsed.inWholeNanoseconds.toDouble() * 1_000_000_000.0
+
+    val messagesPerSecond: Double?
+        get() {
+            if (requestMessages == null && responseMessages == null) return null
+            val messages = (requestMessages ?: 0) + (responseMessages ?: 0)
+            return messages / elapsed.inWholeNanoseconds.toDouble() * 1_000_000_000.0
+        }
 }

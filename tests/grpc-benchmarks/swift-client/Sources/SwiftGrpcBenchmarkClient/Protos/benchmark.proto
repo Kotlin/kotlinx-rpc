@@ -28,4 +28,8 @@ message SimpleResponse {
 
 service BenchmarkService {
   rpc UnaryCall(SimpleRequest) returns (SimpleResponse);
+  rpc StreamingCall(stream SimpleRequest) returns (stream SimpleResponse);
+  rpc StreamingFromClient(stream SimpleRequest) returns (SimpleResponse);
+  rpc StreamingFromServer(SimpleRequest) returns (stream SimpleResponse);
+  rpc StreamingBothWays(stream SimpleRequest) returns (stream SimpleResponse);
 }
