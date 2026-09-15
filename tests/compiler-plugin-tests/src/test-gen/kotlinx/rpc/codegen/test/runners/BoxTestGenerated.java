@@ -15,6 +15,10 @@ import java.util.regex.Pattern;
 @TestMetadata("src/testData/box")
 @TestDataPath("$PROJECT_ROOT")
 public class BoxTestGenerated extends AbstractBoxTest {
+  private void run(String fileName) {
+    runTest("src/testData/box/" + fileName);
+  }
+
   @Test
   public void testAllFilesPresentInBox() {
     KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("src/testData/box"), Pattern.compile("^(.+)\\.kt$"), null, true);
@@ -23,30 +27,30 @@ public class BoxTestGenerated extends AbstractBoxTest {
   @Test
   @TestMetadata("customParameterTypes.kt")
   public void testCustomParameterTypes() {
-    runTest("src/testData/box/customParameterTypes.kt");
+    run("customParameterTypes.kt");
   }
 
   @Test
   @TestMetadata("flowParameter.kt")
   public void testFlowParameter() {
-    runTest("src/testData/box/flowParameter.kt");
+    run("flowParameter.kt");
   }
 
   @Test
   @TestMetadata("multiModule.kt")
   public void testMultiModule() {
-    runTest("src/testData/box/multiModule.kt");
+    run("multiModule.kt");
   }
 
   @Test
   @TestMetadata("serviceDescriptor.kt")
   public void testServiceDescriptor() {
-    runTest("src/testData/box/serviceDescriptor.kt");
+    run("serviceDescriptor.kt");
   }
 
   @Test
   @TestMetadata("simple.kt")
   public void testSimple() {
-    runTest("src/testData/box/simple.kt");
+    run("simple.kt");
   }
 }

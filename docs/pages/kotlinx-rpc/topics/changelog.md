@@ -2,6 +2,24 @@
 
 This page contains all changes throughout releases of the library.
 
+## 0.10.4
+> Published 15 September 2026
+
+**Full Changelog**: [0.10.3...0.10.4](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.3...0.10.4)
+
+#### Features 🎉 {id=Features_0_10_4}
+* Update Kotlin to 2.4.0 by [@Mr3zee](https://github.com/Mr3zee) in [#761](https://github.com/Kotlin/kotlinx-rpc/pull/761)
+
+
+## 0.10.3
+> Published 23 June 2026
+
+**Full Changelog**: [0.10.2...0.10.3](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.2...0.10.3)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_10_3}
+* KRPC-560: Fix Native segfault in callables property itable dispatch (… by [@eminasljivic](https://github.com/eminasljivic) in [#728](https://github.com/Kotlin/kotlinx-rpc/pull/728)
+
+
 ## 0.10.2
 > Published 15 February 2026
 
