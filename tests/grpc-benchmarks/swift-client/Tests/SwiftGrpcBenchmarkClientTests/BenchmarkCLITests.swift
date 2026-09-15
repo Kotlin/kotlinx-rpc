@@ -89,4 +89,53 @@ final class BenchmarkCLITests: XCTestCase {
     func testRejectsCaseSelectionForAllBenchmarks() {
         XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "all", "--case", "default"]))
     }
+
+    func testRendersRunningBenchmarkProgress() {
+        XCTAssertEqual(
+            renderBenchmarkProgress(
+                completed: 2,
+                total: 8,
+                platform: "ios",
+                implementation: "swift",
+                benchmark: "unary-payload-sweep",
+                benchmarkCase: "symmetric-1m"
+            ),
+            "[=====>--------------] 2/8 complete, 6 remaining | " +
+                "platform=ios implementation=swift | " +
+                "running benchmark=unary-payload-sweep case=symmetric-1m"
+        )
+    }
+
+    func testRendersCompletedBenchmarkProgress() {
+        XCTAssertEqual(
+            renderBenchmarkProgress(
+                completed: 8,
+                total: 8,
+                platform: "ios",
+                implementation: "swift"
+            ),
+            "[====================] 8/8 complete, 0 remaining | " +
+                "platform=ios implementation=swift | finished"
+        )
+    }
+
+    func testRendersProgressUpdatesOnOneTerminalLine() {
+        XCTAssertEqual(
+            renderBenchmarkProgressUpdate(progress: "progress", previousLength: 0, finished: false),
+            "progress"
+        )
+        XCTAssertEqual(
+            renderBenchmarkProgressUpdate(progress: "progress", previousLength: 8, finished: false),
+            "\r        \rprogress"
+        )
+        XCTAssertEqual(
+            renderBenchmarkProgressUpdate(progress: "finished", previousLength: 8, finished: true),
+            "\r        \rfinished\n"
+        )
+    }
+
+    func testStartsNonProgressOutputOnTheLineAfterActiveProgress() {
+        XCTAssertEqual(renderBenchmarkProgressLineBreak(previousLength: 0), "")
+        XCTAssertEqual(renderBenchmarkProgressLineBreak(previousLength: 8), "\n")
+    }
 }

@@ -87,6 +87,59 @@ class BenchmarkCliTest {
         assertContains(result.stderr, "requires a specific benchmark")
     }
 
+    @Test
+    fun rendersRunningBenchmarkProgress() {
+        assertEquals(
+            "[=====>--------------] 2/8 complete, 6 remaining | " +
+                "platform=ios implementation=current | " +
+                "running benchmark=unary-payload-sweep case=symmetric-1m",
+            renderBenchmarkProgress(
+                completed = 2,
+                total = 8,
+                platform = "ios",
+                implementation = "current",
+                benchmark = "unary-payload-sweep",
+                benchmarkCase = "symmetric-1m",
+            ),
+        )
+    }
+
+    @Test
+    fun rendersCompletedBenchmarkProgress() {
+        assertEquals(
+            "[====================] 8/8 complete, 0 remaining | " +
+                "platform=ios implementation=current | finished",
+            renderBenchmarkProgress(
+                completed = 8,
+                total = 8,
+                platform = "ios",
+                implementation = "current",
+            ),
+        )
+    }
+
+    @Test
+    fun rendersProgressUpdatesOnOneTerminalLine() {
+        assertEquals(
+            "progress",
+            renderBenchmarkProgressUpdate(progress = "progress", previousLength = 0, finished = false),
+        )
+        assertEquals(
+            "\r        \rprogress",
+            renderBenchmarkProgressUpdate(progress = "progress", previousLength = 8, finished = false),
+        )
+        assertEquals(
+            "\r        \rfinished\n",
+            renderBenchmarkProgressUpdate(progress = "finished", previousLength = 8, finished = true),
+        )
+    }
+
+    @Test
+    fun startsNonProgressOutputOnTheLineAfterActiveProgress() {
+        assertEquals("", renderBenchmarkProgressLineBreak(previousLength = 0))
+        assertEquals("\n", renderBenchmarkProgressLineBreak(previousLength = 8))
+    }
+
     private object TestBenchmarkBackend : BenchmarkBackend {
         override val implementationName: String = "test"
 

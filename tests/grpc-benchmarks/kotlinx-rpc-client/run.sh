@@ -9,6 +9,7 @@ readonly REPOSITORY_ROOT="$(cd -- "${SCRIPT_DIR}/../../.." && pwd)"
 readonly GRPC_BENCHMARKS_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
 source "${GRPC_BENCHMARKS_DIR}/scripts/ios-simulator.sh"
+source "${GRPC_BENCHMARKS_DIR}/scripts/transient-command.sh"
 
 usage() {
     cat <<'EOF'
@@ -34,12 +35,13 @@ fi
 readonly PLATFORM="$1"
 shift
 
-# Keep Gradle output away from stdout so machine-readable benchmark output remains valid.
 case "${PLATFORM}" in
     ios)
         readonly BUILD_TASK=":tests:grpc-benchmarks:kotlinx-rpc-client:linkReleaseExecutableIosSimulatorArm64"
         readonly BENCHMARK_BINARY="${SCRIPT_DIR}/build/bin/iosSimulatorArm64/releaseExecutable/kotlinx-rpc-grpc-benchmark-client.kexe"
-        "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}" >&2
+        run_transient_command \
+            "platform=ios-simulator-arm64 implementation=current" \
+            "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}"
         SIMULATOR="$(ensure_ios_simulator)"
         readonly SIMULATOR
         exec xcrun simctl spawn "${SIMULATOR}" "${BENCHMARK_BINARY}" "$@"
@@ -47,13 +49,17 @@ case "${PLATFORM}" in
     macos)
         readonly BUILD_TASK=":tests:grpc-benchmarks:kotlinx-rpc-client:linkReleaseExecutableMacosArm64"
         readonly BENCHMARK_BINARY="${SCRIPT_DIR}/build/bin/macosArm64/releaseExecutable/kotlinx-rpc-grpc-benchmark-client.kexe"
-        "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}" >&2
+        run_transient_command \
+            "platform=macos-arm64 implementation=current" \
+            "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}"
         exec "${BENCHMARK_BINARY}" "$@"
         ;;
     jvm)
         readonly BUILD_TASK=":tests:grpc-benchmarks:kotlinx-rpc-client:installJvmDist"
         readonly BENCHMARK_BINARY="${SCRIPT_DIR}/build/install/kotlinx-rpc-client-jvm/bin/kotlinx-rpc-client"
-        "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}" >&2
+        run_transient_command \
+            "platform=jvm implementation=current" \
+            "${REPOSITORY_ROOT}/gradlew" "${BUILD_TASK}"
         exec "${BENCHMARK_BINARY}" "$@"
         ;;
     *)

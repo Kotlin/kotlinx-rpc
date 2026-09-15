@@ -15,6 +15,8 @@ export CLANG_MODULE_CACHE_PATH="${MODULE_CACHE}"
 export SWIFTPM_MODULECACHE_OVERRIDE="${MODULE_CACHE}"
 
 swift build \
+    --package-path "${SCRIPT_DIR}" \
+    --scratch-path "${SCRIPT_DIR}/.build" \
     --disable-sandbox \
     --configuration release \
     --triple "${TARGET}" \

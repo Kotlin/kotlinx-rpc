@@ -191,8 +191,29 @@ struct BenchmarkCLI: Sendable {
             )
             let results = try await withGRPCClient(transport: transport) { client in
                 var results: [BenchmarkResult] = []
-                for benchmark in selected {
-                    for benchmarkCase in try self.selectedCases(benchmark, named: configuration.caseName) {
+                let benchmarkCases = try selected.flatMap { benchmark in
+                    try self.selectedCases(benchmark, named: configuration.caseName).map { (benchmark, $0) }
+                }
+                var progressLineLength = 0
+                do {
+                    for (index, benchmarkAndCase) in benchmarkCases.enumerated() {
+                        let (benchmark, benchmarkCase) = benchmarkAndCase
+                        if benchmarkCases.count > 1 {
+                            let progress = renderBenchmarkProgress(
+                                completed: index,
+                                total: benchmarkCases.count,
+                                platform: currentPlatform,
+                                implementation: "swift",
+                                benchmark: benchmark.name,
+                                benchmarkCase: benchmarkCase.name
+                            )
+                            writeBenchmarkProgress(
+                                progress: progress,
+                                previousLength: progressLineLength,
+                                finished: false
+                            )
+                            progressLineLength = progress.count
+                        }
                         let parameters = try configuration.overrides.applying(to: benchmarkCase.parameters)
                         results.append(
                             try await benchmark.run(
@@ -202,6 +223,24 @@ struct BenchmarkCLI: Sendable {
                             )
                         )
                     }
+                    if benchmarkCases.count > 1 {
+                        let progress = renderBenchmarkProgress(
+                            completed: benchmarkCases.count,
+                            total: benchmarkCases.count,
+                            platform: currentPlatform,
+                            implementation: "swift"
+                        )
+                        writeBenchmarkProgress(
+                            progress: progress,
+                            previousLength: progressLineLength,
+                            finished: true
+                        )
+                    }
+                } catch {
+                    writeStandardErrorWithoutNewline(
+                        renderBenchmarkProgressLineBreak(previousLength: progressLineLength)
+                    )
+                    throw error
                 }
                 return results
             }
@@ -257,6 +296,68 @@ private func parseInteger(_ value: String, option: String) throws -> Int {
         throw CLIError.usage("Invalid value '\(value)' for \(option); expected an integer")
     }
     return result
+}
+
+private let progressBarWidth = 20
+
+func renderBenchmarkProgressUpdate(progress: String, previousLength: Int, finished: Bool) -> String {
+    let overwrite = previousLength > 0 ? renderBenchmarkProgressClear(length: previousLength) : ""
+    return overwrite + progress + (finished ? "\n" : "")
+}
+
+func renderBenchmarkProgressLineBreak(previousLength: Int) -> String {
+    previousLength > 0 ? "\n" : ""
+}
+
+private func renderBenchmarkProgressClear(length: Int) -> String {
+    "\r" + String(repeating: " ", count: length) + "\r"
+}
+
+func renderBenchmarkProgress(
+    completed: Int,
+    total: Int,
+    platform: String,
+    implementation: String,
+    benchmark: String? = nil,
+    benchmarkCase: String? = nil
+) -> String {
+    precondition(total > 0, "Progress total must be positive")
+    precondition((0...total).contains(completed), "Completed benchmark count must be between 0 and total")
+    precondition(
+        (benchmark == nil) == (benchmarkCase == nil),
+        "Benchmark and case must either both be specified or both be omitted"
+    )
+
+    let filled = progressBarWidth * completed / total
+    let bar: String
+    if completed < total {
+        bar = String(repeating: "=", count: filled) + ">" +
+            String(repeating: "-", count: progressBarWidth - filled - 1)
+    } else {
+        bar = String(repeating: "=", count: progressBarWidth)
+    }
+    let activity: String
+    if let benchmark, let benchmarkCase {
+        activity = "running benchmark=\(benchmark) case=\(benchmarkCase)"
+    } else {
+        activity = "finished"
+    }
+    return "[\(bar)] \(completed)/\(total) complete, \(total - completed) remaining | " +
+        "platform=\(platform) implementation=\(implementation) | \(activity)"
+}
+
+private func writeBenchmarkProgress(progress: String, previousLength: Int, finished: Bool) {
+    writeStandardErrorWithoutNewline(
+        renderBenchmarkProgressUpdate(
+            progress: progress,
+            previousLength: previousLength,
+            finished: finished
+        )
+    )
+}
+
+private func writeStandardErrorWithoutNewline(_ message: String) {
+    FileHandle.standardError.write(Data(message.utf8))
 }
 
 func render(results: [BenchmarkResult], target: ServerTarget, format: OutputFormat) -> String {

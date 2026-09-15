@@ -10,6 +10,8 @@ readonly BUILD_DIR="${GRPC_BENCHMARK_BUILD_DIR:-"${SCRIPT_DIR}/.build"}"
 readonly GRPC_ARCHIVE="${BUILD_DIR}/grpc-${GRPC_REVISION}.tar.gz"
 readonly GRPC_DIR="${BUILD_DIR}/grpc-${GRPC_REVISION}"
 readonly BIN_DIR="${BUILD_DIR}/bin"
+readonly SERVER_ASYNC_SOURCE="${GRPC_DIR}/test/cpp/qps/server_async.cc"
+readonly SERVER_ASYNC_PATCH="${SCRIPT_DIR}/server_async_zero_payload.patch"
 
 if command -v bazelisk >/dev/null 2>&1; then
     readonly BAZEL_COMMAND="bazelisk"
@@ -32,6 +34,12 @@ fi
 if [[ ! -d "${GRPC_DIR}" ]]; then
     tar -xzf "${GRPC_ARCHIVE}" -C "${BUILD_DIR}"
 fi
+
+if [[ ! -f "${SERVER_ASYNC_SOURCE}.upstream" ]]; then
+    cp "${SERVER_ASYNC_SOURCE}" "${SERVER_ASYNC_SOURCE}.upstream"
+fi
+cp "${SERVER_ASYNC_SOURCE}.upstream" "${SERVER_ASYNC_SOURCE}"
+patch --directory="${GRPC_DIR}" --strip=1 < "${SERVER_ASYNC_PATCH}"
 
 if [[ ! -f "${GRPC_DIR}/test/cpp/qps/BUILD.upstream" ]]; then
     cp "${GRPC_DIR}/test/cpp/qps/BUILD" \

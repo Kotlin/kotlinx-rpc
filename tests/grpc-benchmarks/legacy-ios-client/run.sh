@@ -9,6 +9,7 @@ readonly GRPC_BENCHMARKS_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 readonly BENCHMARK_BINARY="${SCRIPT_DIR}/build/bin/iosSimulatorArm64/releaseExecutable/legacy-grpc-benchmark-client.kexe"
 
 source "${GRPC_BENCHMARKS_DIR}/scripts/ios-simulator.sh"
+source "${GRPC_BENCHMARKS_DIR}/scripts/transient-command.sh"
 
 usage() {
     cat <<'EOF'
@@ -31,8 +32,9 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
-# Keep Gradle output away from stdout so machine-readable benchmark output remains valid.
-"${SCRIPT_DIR}/gradlew" --project-dir "${SCRIPT_DIR}" linkReleaseExecutableIosSimulatorArm64 >&2
+run_transient_command \
+    "platform=ios-simulator-arm64 implementation=legacy" \
+    "${SCRIPT_DIR}/gradlew" --project-dir "${SCRIPT_DIR}" linkReleaseExecutableIosSimulatorArm64
 SIMULATOR="$(ensure_ios_simulator)"
 readonly SIMULATOR
 exec xcrun simctl spawn "${SIMULATOR}" "${BENCHMARK_BINARY}" "$@"
