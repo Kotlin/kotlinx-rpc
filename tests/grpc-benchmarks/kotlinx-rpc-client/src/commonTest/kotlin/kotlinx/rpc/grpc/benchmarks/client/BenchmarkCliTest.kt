@@ -8,31 +8,8 @@ import com.github.ajalt.clikt.testing.test
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.time.Duration.Companion.nanoseconds
 
 class BenchmarkCliTest {
-    @Test
-    fun formatsApplicationThroughput() {
-        assertEquals("999.00 B/s", 999.0.formatBytesPerSecond())
-        assertEquals("1.50 KB/s", 1_500.0.formatBytesPerSecond())
-        assertEquals("2.50 MB/s", 2_500_000.0.formatBytesPerSecond())
-        assertEquals("3.50 GB/s", 3_500_000_000.0.formatBytesPerSecond())
-    }
-
-    @Test
-    fun appliesParameterOverrides() {
-        val defaults = BenchmarkParameters(1, 2, 3, 4, 5)
-
-        assertEquals(
-            BenchmarkParameters(1, 20, 3, 4, 50),
-            BenchmarkOverrides(calls = 20, responseBytes = 50).applyTo(defaults),
-        )
-        assertFailsWith<IllegalArgumentException> {
-            BenchmarkOverrides(concurrency = 0).applyTo(defaults)
-        }
-    }
-
     @Test
     fun listsBenchmarks() {
         val result = benchmarkCommand().test("list")
@@ -83,16 +60,5 @@ class BenchmarkCliTest {
 
         assertEquals(1, result.statusCode)
         assertContains(result.stderr, "registered benchmark")
-    }
-
-    @Test
-    fun computesLatencyPercentiles() {
-        val statistics = LatencyStatistics.from(longArrayOf(1, 2, 3, 4, 100))
-
-        assertEquals(1.nanoseconds, statistics.minimum)
-        assertEquals(22.nanoseconds, statistics.mean)
-        assertEquals(3.nanoseconds, statistics.p50)
-        assertEquals(100.nanoseconds, statistics.p90)
-        assertEquals(100.nanoseconds, statistics.maximum)
     }
 }

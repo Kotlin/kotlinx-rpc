@@ -6,6 +6,6 @@ package kotlinx.rpc.grpc.benchmarks.client
 
 import com.github.ajalt.clikt.core.main
 
-public fun main(arguments: Array<String>) {
+fun main(arguments: Array<String>) {
     benchmarkCommand().main(arguments)
 }
