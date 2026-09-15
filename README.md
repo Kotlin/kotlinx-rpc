@@ -108,7 +108,7 @@ To ensure that all IDE features of our compiler plugin work properly on IntelliJ
 We support all stable Kotlin versions starting from 2.2.0:
 - 2.2.0, 2.2.10, 2.2.20, 2.2.21
 - 2.3.0, 2.3.10, 2.3.20, 2.3.21
-- 2.4.0
+- 2.4.0, 2.4.10, 2.4.20
 
 For a full compatibility checklist,
 see [Versions](https://kotlin.github.io/kotlinx-rpc/versions.html).

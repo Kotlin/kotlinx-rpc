@@ -123,7 +123,6 @@ public final class kotlinx/rpc/buf/tasks/BufExecTaskKt {
 }
 
 public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/tasks/BufExecTask {
-	public static final field NAME_PREFIX Ljava/lang/String;
 	public abstract fun getAdditionalArgs ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getBufFile ()Lorg/gradle/api/provider/Property;
 	public abstract fun getBufGenFile ()Lorg/gradle/api/provider/Property;
@@ -138,7 +137,6 @@ public abstract class kotlinx/rpc/buf/tasks/BufGenerateTask : kotlinx/rpc/buf/ta
 }
 
 public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/BufExecTask {
-	public static final field NAME_PREFIX Ljava/lang/String;
 	public abstract fun getBsrDeps ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getBufLockFile ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getPersistentLockFile ()Lorg/gradle/api/file/RegularFileProperty;
@@ -146,12 +144,10 @@ public abstract class kotlinx/rpc/buf/tasks/BufLockTask : kotlinx/rpc/buf/tasks/
 }
 
 public abstract class kotlinx/rpc/buf/tasks/GenerateBufGenYaml : kotlinx/rpc/protoc/DefaultProtoTask {
-	public static final field NAME_PREFIX Ljava/lang/String;
 	public abstract fun getBufGenFile ()Lorg/gradle/api/file/RegularFileProperty;
 }
 
 public abstract class kotlinx/rpc/buf/tasks/GenerateBufYaml : kotlinx/rpc/protoc/DefaultProtoTask {
-	public static final field NAME_PREFIX Ljava/lang/String;
 	public abstract fun getBufFile ()Lorg/gradle/api/file/RegularFileProperty;
 }
 

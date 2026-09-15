@@ -4,7 +4,7 @@ kotlinx-rpc = "0.11.0-SNAPSHOT"
 grpc-dev = "0.11.0-grpc-189"
 
 # kotlin
-kotlin-lang = "2.3.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
+kotlin-lang = "2.4.0" # or env.KOTLIN_VERSION or -Pkotlin.lang=<version>
 kotlin-compiler = "0.0.0" # default to kotlin-lang or env.KOTLIN_COMPILER_VERSION or -Pkotlin.compiler=<version>
 
 # internal standalone publications.
@@ -26,7 +26,6 @@ gradle-plugin-publish = "2.1.1"
 kotlin-wrappers = "2026.3.7"
 junit4 = "4.13.2"
 junit5 = "5.14.2"
-intellij = "241.19416.19"
 kotlinx-browser = "0.5.0"
 kotlinx-io = "0.9.0"
 kotlinx-collections = "0.4.0"
@@ -139,7 +138,6 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "coroutines" }
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers" }
-intellij-util = { module = "com.jetbrains.intellij.platform:util", version.ref = "intellij" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 develocity = { module = "com.gradle:develocity-gradle-plugin", version.ref = "develocity" }
 common-custom-user-data = { module = "com.gradle:common-custom-user-data-gradle-plugin", version.ref = "common-custom-user-data" }
