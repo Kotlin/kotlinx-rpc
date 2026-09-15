@@ -4,6 +4,11 @@ This module contains command-line benchmarks for the current kotlinx-rpc iOS
 gRPC client. Benchmarks use the official gRPC benchmark service in `../protos`
 and the standalone C++ server in `../cpp-server`.
 
+The benchmark harness and tests live in `../shared-kotlin-client`. They are
+compiled independently by this module and `../legacy-ios-client`; only the
+small generated-service adapters differ between implementations. Human and CSV
+results identify this client as the `current` implementation.
+
 Build the release binary if necessary and run it with the helper script:
 
 ```shell
@@ -47,8 +52,8 @@ to script.
 
 ## Adding a benchmark
 
-Add a `Benchmark` to the `BenchmarkRegistry` in `BenchmarkCli`. For ordinary
-request/response measurements, create a `CallBenchmark`: the shared runner
-handles warmup, concurrent workers, latency samples, aggregate throughput, and
-output formatting. Only preparation and one measured operation belong in the
-benchmark definition.
+Add shared benchmark definitions under `../shared-kotlin-client/src/commonMain`.
+For ordinary request/response measurements, create a `CallBenchmark`: the
+shared runner handles warmup, concurrent workers, latency samples, aggregate
+throughput, and output formatting. Keep only generated-service API differences
+in `CurrentBenchmarkBackend` and `LegacyBenchmarkBackend`.

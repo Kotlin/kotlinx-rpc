@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
+val sharedKotlinClientSources = layout.projectDirectory.dir("../shared-kotlin-client/src")
+
 group = "org.jetbrains.kotlinx.rpc.benchmarks"
 version = "1.0-SNAPSHOT"
 
@@ -21,13 +23,17 @@ kotlin {
     iosTargets.forEach { target: KotlinNativeTarget ->
         target.binaries.executable {
             baseName = "legacy-grpc-benchmark-client"
-            entryPoint = "kotlinx.rpc.grpc.benchmarks.legacy.main"
+            entryPoint = "kotlinx.rpc.grpc.benchmarks.client.main"
         }
     }
 
     sourceSets {
         commonMain {
+            kotlin.srcDir(sharedKotlinClientSources.dir("commonMain/kotlin"))
+
             dependencies {
+                implementation(libs.clikt)
+                implementation(libs.coroutines.core)
                 implementation(libs.kotlinx.rpc.grpc.client)
                 implementation(libs.kotlinx.rpc.protobuf)
             }
@@ -35,6 +41,10 @@ kotlin {
             proto {
                 setSrcDirs(listOf(layout.projectDirectory.dir("../protos/src/commonMain/proto")))
             }
+        }
+
+        iosMain {
+            kotlin.srcDir(sharedKotlinClientSources.dir("iosMain/kotlin"))
         }
     }
 }

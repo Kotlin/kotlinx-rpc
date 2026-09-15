@@ -4,16 +4,15 @@
 
 package kotlinx.rpc.grpc.benchmarks.client
 
-import grpc.testing.BenchmarkService
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.invoke
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.withService
 
-internal fun unaryBenchmarks() = listOf(
+internal fun unaryBenchmarks(backend: BenchmarkBackend) = listOf(
     unaryBenchmark(
+        backend = backend,
         name = "unary-latency",
         description = "Warm sequential unary call latency",
         defaults = BenchmarkParameters(
@@ -25,6 +24,7 @@ internal fun unaryBenchmarks() = listOf(
         ),
     ),
     unaryBenchmark(
+        backend = backend,
         name = "unary-throughput",
         description = "Warm concurrent unary call throughput",
         defaults = BenchmarkParameters(
@@ -38,18 +38,19 @@ internal fun unaryBenchmarks() = listOf(
 )
 
 private fun unaryBenchmark(
+    backend: BenchmarkBackend,
     name: String,
     description: String,
     defaults: BenchmarkParameters,
 ): Benchmark {
-    return CallBenchmark(name, description, defaults) { client, parameters ->
-        val service = client.withService<BenchmarkService>()
+    return CallBenchmark(name, description, defaults, backend.implementationName) { client, parameters ->
+        val unaryCall = backend.prepareUnaryCall(client)
         val request = request(parameters.requestBytes, parameters.responseBytes)
 
         MeasuredCall(
             applicationBytes = parameters.requestBytes.toLong() + parameters.responseBytes,
             execute = {
-                val response = service.unaryCall(request)
+                val response = unaryCall(request)
                 check(response.payload.body.size == parameters.responseBytes) {
                     "Expected ${parameters.responseBytes} response bytes, got ${response.payload.body.size}"
                 }
