@@ -12,6 +12,8 @@ Build and run it with:
 ./run.sh run unary-latency
 ./run.sh run unary-throughput \
     --request-bytes 4096 --response-bytes 4096 --concurrency 32 --format csv
+./run.sh run unary-payload-sweep --case symmetric-1m
+./run.sh run unary-concurrency-sweep --case 1k-c64 --format csv
 ```
 
 `run.sh` uses a currently booted simulator, or boots the first available
@@ -22,6 +24,9 @@ The initial presets match the kotlinx-rpc client:
 
 - `unary-latency`: 100 warmups, 1,000 measured calls, concurrency 1, empty payloads
 - `unary-throughput`: 100 warmups, 10,000 measured calls, concurrency 16, 1 KiB request and response
+
+The payload and concurrency sweeps emit one result per named case. Use
+`--case NAME` to run one point or omit it to run the complete sweep.
 
 ## Adding a benchmark
 

@@ -24,6 +24,8 @@ Build and run the Apple Silicon simulator executable with the helper script:
 ./run.sh list
 ./run.sh run unary-latency
 ./run.sh run unary-throughput --format csv
+./run.sh run unary-payload-sweep --case symmetric-1m
+./run.sh run unary-concurrency-sweep --case 1k-c64 --format csv
 ```
 
 The helper incrementally links the release executable, selects or boots an iOS

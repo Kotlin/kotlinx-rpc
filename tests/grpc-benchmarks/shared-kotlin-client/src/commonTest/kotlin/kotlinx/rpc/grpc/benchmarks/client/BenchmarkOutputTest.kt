@@ -23,6 +23,7 @@ class BenchmarkOutputTest {
         val parameters = BenchmarkParameters(0, 1, 1, 0, 0)
         val result = BenchmarkResult(
             benchmarkName = "example",
+            caseName = "example-case",
             implementationName = "current",
             platform = "ios",
             parameters = parameters,
@@ -33,7 +34,7 @@ class BenchmarkOutputTest {
 
         val output = render(listOf(result), "localhost:50051", OutputFormat.CSV)
 
-        assertContains(output, "benchmark,implementation,platform")
-        assertContains(output, "example,current,ios")
+        assertContains(output, "benchmark,case,implementation,platform")
+        assertContains(output, "example,example-case,current,ios")
     }
 }

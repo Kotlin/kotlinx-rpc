@@ -19,6 +19,7 @@ enum ParsedCommand: Equatable, Sendable {
 
 struct RunConfiguration: Equatable, Sendable {
     let benchmarkName: String
+    let caseName: String?
     let target: ServerTarget
     let overrides: BenchmarkOverrides
     let format: OutputFormat
@@ -90,8 +91,19 @@ struct BenchmarkCLI: Sendable {
     }
 
     func listBenchmarks() -> String {
-        let entries = self.registry.all.map { benchmark in
-            "  \(benchmark.name.padding(toLength: 20, withPad: " ", startingAt: 0)) \(benchmark.description)"
+        let entries = self.registry.all.flatMap { benchmark in
+            let caseCount = benchmark.cases.count == 1 ? "" : " (\(benchmark.cases.count) cases)"
+            let summary = "  \(benchmark.name.padding(toLength: 28, withPad: " ", startingAt: 0)) " +
+                "\(benchmark.description)\(caseCount)"
+            guard benchmark.cases.count > 1 else { return [summary] }
+            let cases = benchmark.cases.map { benchmarkCase in
+                let parameters = benchmarkCase.parameters
+                return "    \(benchmarkCase.name.padding(toLength: 18, withPad: " ", startingAt: 0)) " +
+                    "warmup=\(parameters.warmupCalls), calls=\(parameters.calls), " +
+                    "concurrency=\(parameters.concurrency), request=\(parameters.requestBytes) B, " +
+                    "response=\(parameters.responseBytes) B"
+            }
+            return [summary] + cases
         }
         return (["Available benchmarks:"] + entries).joined(separator: "\n")
     }
@@ -108,6 +120,7 @@ struct BenchmarkCLI: Sendable {
         }
 
         var target = try ServerTarget.parse("localhost:50051")
+        var caseName: String?
         var overrides = BenchmarkOverrides()
         var format = OutputFormat.human
         var index = 1
@@ -122,6 +135,8 @@ struct BenchmarkCLI: Sendable {
             switch option {
             case "--target":
                 target = try ServerTarget.parse(value)
+            case "--case":
+                caseName = value
             case "--warmup":
                 overrides.warmupCalls = try parseInteger(value, option: option)
             case "--calls":
@@ -145,15 +160,21 @@ struct BenchmarkCLI: Sendable {
 
         let configuration = RunConfiguration(
             benchmarkName: benchmarkName,
+            caseName: caseName,
             target: target,
             overrides: overrides,
             format: format
         )
+        if caseName != nil && benchmarkName == "all" {
+            throw CLIError.usage("--case requires a specific benchmark name")
+        }
         for benchmark in self.selectedBenchmarks(configuration) {
-            do {
-                _ = try overrides.applying(to: benchmark.defaults)
-            } catch {
-                throw CLIError.usage(String(describing: error))
+            for benchmarkCase in try self.selectedCases(benchmark, named: caseName) {
+                do {
+                    _ = try overrides.applying(to: benchmarkCase.parameters)
+                } catch {
+                    throw CLIError.usage(String(describing: error))
+                }
             }
         }
         return .run(configuration)
@@ -171,8 +192,16 @@ struct BenchmarkCLI: Sendable {
             let results = try await withGRPCClient(transport: transport) { client in
                 var results: [BenchmarkResult] = []
                 for benchmark in selected {
-                    let parameters = try configuration.overrides.applying(to: benchmark.defaults)
-                    results.append(try await benchmark.run(client: client, parameters: parameters))
+                    for benchmarkCase in try self.selectedCases(benchmark, named: configuration.caseName) {
+                        let parameters = try configuration.overrides.applying(to: benchmarkCase.parameters)
+                        results.append(
+                            try await benchmark.run(
+                                client: client,
+                                benchmarkCase: benchmarkCase,
+                                parameters: parameters
+                            )
+                        )
+                    }
                 }
                 return results
             }
@@ -187,6 +216,14 @@ struct BenchmarkCLI: Sendable {
             return self.registry.all
         }
         return [self.registry.find(configuration.benchmarkName)!]
+    }
+
+    private func selectedCases(_ benchmark: any Benchmark, named caseName: String?) throws -> [BenchmarkCase] {
+        guard let caseName else { return benchmark.cases }
+        guard let benchmarkCase = benchmark.cases.first(where: { $0.name == caseName }) else {
+            throw CLIError.usage("Benchmark '\(benchmark.name)' has no case '\(caseName)'")
+        }
+        return [benchmarkCase]
     }
 
     private static let rootHelp = """
@@ -205,6 +242,7 @@ struct BenchmarkCLI: Sendable {
 
         Options:
           --target HOST:PORT       Benchmark server (default: localhost:50051)
+          --case NAME              Run one named benchmark case
           --warmup COUNT           Warmup calls before measurement
           --calls COUNT            Measured calls
           --concurrency COUNT      Concurrent workers
@@ -231,7 +269,8 @@ func render(results: [BenchmarkResult], target: ServerTarget, format: OutputForm
 }
 
 private let csvHeader =
-    "benchmark,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes,elapsed_seconds," +
+    "benchmark,case,implementation,platform,target,warmup_calls,calls,concurrency,request_bytes,response_bytes," +
+    "elapsed_seconds," +
     "calls_per_second,application_bytes_per_second,latency_min_us,latency_mean_us,latency_p50_us," +
     "latency_p90_us,latency_p95_us,latency_p99_us,latency_p999_us,latency_max_us"
 
@@ -239,6 +278,8 @@ private extension BenchmarkResult {
     func renderHuman(target: ServerTarget) -> String {
         """
         benchmark: \(self.benchmarkName)
+        case: \(self.caseName)
+        implementation: \(self.implementationName)
         platform: \(self.platform)
         target: \(target)
         calls: \(self.parameters.calls) (\(self.parameters.warmupCalls) warmup)
@@ -256,6 +297,8 @@ private extension BenchmarkResult {
     func renderCSV(target: ServerTarget) -> String {
         [
             self.benchmarkName,
+            self.caseName,
+            self.implementationName,
             self.platform,
             target.description,
             String(self.parameters.warmupCalls),

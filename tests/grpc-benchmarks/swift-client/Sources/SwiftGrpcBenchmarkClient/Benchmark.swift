@@ -68,12 +68,27 @@ struct BenchmarkConfigurationError: Error, Equatable, CustomStringConvertible, S
     }
 }
 
+struct BenchmarkCase: Equatable, Sendable {
+    let name: String
+    let parameters: BenchmarkParameters
+
+    init(name: String = "default", parameters: BenchmarkParameters) {
+        precondition(!name.isEmpty, "Benchmark case name must not be empty")
+        self.name = name
+        self.parameters = parameters
+    }
+}
+
 protocol Benchmark: Sendable {
     var name: String { get }
     var description: String { get }
-    var defaults: BenchmarkParameters { get }
+    var cases: [BenchmarkCase] { get }
 
-    func run(client: BenchmarkClient, parameters: BenchmarkParameters) async throws -> BenchmarkResult
+    func run(
+        client: BenchmarkClient,
+        benchmarkCase: BenchmarkCase,
+        parameters: BenchmarkParameters
+    ) async throws -> BenchmarkResult
 }
 
 struct BenchmarkRegistry: Sendable {
@@ -82,6 +97,14 @@ struct BenchmarkRegistry: Sendable {
     init(_ benchmarks: [any Benchmark]) {
         let names = benchmarks.map(\.name)
         precondition(Set(names).count == names.count, "Benchmark names must be unique")
+        for benchmark in benchmarks {
+            precondition(!benchmark.cases.isEmpty, "Benchmark '\(benchmark.name)' has no cases")
+            let caseNames = benchmark.cases.map(\.name)
+            precondition(
+                Set(caseNames).count == caseNames.count,
+                "Benchmark '\(benchmark.name)' has duplicate case names"
+            )
+        }
         self.all = benchmarks.sorted { $0.name < $1.name }
     }
 
@@ -98,10 +121,14 @@ struct MeasuredCall: Sendable {
 struct CallBenchmark: Benchmark {
     let name: String
     let description: String
-    let defaults: BenchmarkParameters
+    let cases: [BenchmarkCase]
     let prepare: @Sendable (BenchmarkClient, BenchmarkParameters) -> MeasuredCall
 
-    func run(client: BenchmarkClient, parameters: BenchmarkParameters) async throws -> BenchmarkResult {
+    func run(
+        client: BenchmarkClient,
+        benchmarkCase: BenchmarkCase,
+        parameters: BenchmarkParameters
+    ) async throws -> BenchmarkResult {
         let call = self.prepare(client, parameters)
 
         _ = try await executeCalls(
@@ -123,6 +150,8 @@ struct CallBenchmark: Benchmark {
 
         return BenchmarkResult(
             benchmarkName: self.name,
+            caseName: benchmarkCase.name,
+            implementationName: "swift",
             platform: currentPlatform,
             parameters: parameters,
             elapsed: elapsed,
@@ -212,6 +241,8 @@ struct LatencyStatistics: Equatable, Sendable {
 
 struct BenchmarkResult: Sendable {
     let benchmarkName: String
+    let caseName: String
+    let implementationName: String
     let platform: String
     let parameters: BenchmarkParameters
     let elapsed: Duration

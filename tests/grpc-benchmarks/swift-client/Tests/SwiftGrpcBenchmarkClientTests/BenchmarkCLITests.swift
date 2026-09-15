@@ -13,6 +13,10 @@ final class BenchmarkCLITests: XCTestCase {
 
         XCTAssertTrue(output.contains("unary-latency"))
         XCTAssertTrue(output.contains("unary-throughput"))
+        XCTAssertTrue(output.contains("unary-payload-sweep"))
+        XCTAssertTrue(output.contains("unary-concurrency-sweep"))
+        XCTAssertTrue(output.contains("symmetric-1m"))
+        XCTAssertTrue(output.contains("1k-c128"))
     }
 
     func testRunHelpDescribesOptions() throws {
@@ -20,6 +24,7 @@ final class BenchmarkCLITests: XCTestCase {
 
         XCTAssertTrue(output.contains("--target"))
         XCTAssertTrue(output.contains("--concurrency"))
+        XCTAssertTrue(output.contains("--case"))
         XCTAssertTrue(output.contains("--request-bytes"))
         XCTAssertTrue(output.contains("--format"))
     }
@@ -37,9 +42,30 @@ final class BenchmarkCLITests: XCTestCase {
             .run(
                 RunConfiguration(
                     benchmarkName: "unary-throughput",
+                    caseName: nil,
                     target: ServerTarget(host: "::1", port: 1234),
                     overrides: BenchmarkOverrides(calls: 25),
                     format: .csv
+                )
+            )
+        )
+    }
+
+    func testParsesNamedCase() throws {
+        let command = try self.cli.parse(arguments: [
+            "run", "unary-payload-sweep",
+            "--case", "upload-1m",
+        ])
+
+        XCTAssertEqual(
+            command,
+            .run(
+                RunConfiguration(
+                    benchmarkName: "unary-payload-sweep",
+                    caseName: "upload-1m",
+                    target: ServerTarget(host: "localhost", port: 50051),
+                    overrides: BenchmarkOverrides(),
+                    format: .human
                 )
             )
         )
@@ -52,5 +78,15 @@ final class BenchmarkCLITests: XCTestCase {
 
     func testRejectsUnknownBenchmarks() {
         XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unknown"]))
+    }
+
+    func testRejectsUnknownBenchmarkCases() {
+        XCTAssertThrowsError(
+            try self.cli.parse(arguments: ["run", "unary-payload-sweep", "--case", "missing"])
+        )
+    }
+
+    func testRejectsCaseSelectionForAllBenchmarks() {
+        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "all", "--case", "default"]))
     }
 }

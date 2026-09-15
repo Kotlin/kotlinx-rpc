@@ -32,18 +32,26 @@ boundaries, and connection lifecycle.
   warm channel.
 - [x] `unary-throughput` — 1 KiB request and response, concurrent calls over
   one warm channel.
-- [ ] `unary-payload-sweep` — Independent request/response sizes of 64 B,
-  1 KiB, 64 KiB, 1 MiB, and 16 MiB; include upload-heavy, download-heavy, and
-  symmetric cases.
-- [ ] `unary-concurrency-sweep` — Concurrency 1, 2, 4, 8, 16, 32, 64, and 128
+- [x] `unary-payload-sweep` — Independent request/response sizes of 64 B,
+  1 KiB, 64 KiB, 1 MiB, and 4 MiB minus 1 KiB; include upload-heavy,
+  download-heavy, and symmetric cases.
+- [x] `unary-concurrency-sweep` — Concurrency 1, 2, 4, 8, 16, 32, 64, and 128
   on one warm channel, using empty and 1 KiB payloads.
 - [ ] `unary-connection-startup` — Cold channel creation and first call, first
   call on an unconnected channel, and a warm call on an established connection.
 
-The payload sweep stops at 16 MiB because that is sufficient to expose copying
-and buffering costs without making unusually large messages part of the default
-suite. Boundary-size testing should be added only when configurable message
-limits are introduced into the harness.
+The payload sweep stops just below 4 MiB because the published legacy client
+has a non-configurable 4 MiB receive limit. The final point uses a
+4 MiB-minus-1 KiB body so the serialized protobuf message, including fields
+beyond the body, remains below that limit. Larger-message testing should be
+added when configurable client message limits are available in every
+implementation.
+
+Sweeps emit one result per named case. Use `--case NAME` to run a single point;
+`list` enumerates every case and its parameters. Payload sweep operation counts
+decrease as payload sizes grow, while concurrency sweep operation counts
+increase where necessary to keep every worker active long enough for a stable
+measurement.
 
 ### Streaming calls
 

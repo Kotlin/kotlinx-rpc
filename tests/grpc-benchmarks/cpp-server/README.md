@@ -31,6 +31,8 @@ The following environment variables customize the launcher:
 - `GRPC_BENCHMARK_PORT`: listening port; defaults to `50051`.
 - `GRPC_BENCHMARK_SERVER_TYPE`: `async`, `callback`, or `sync`; defaults to
   `async`.
+- `GRPC_BENCHMARK_MAX_MESSAGE_BYTES`: maximum request and response message
+  size; defaults to 32 MiB for future large-message benchmark cases.
 - `GRPC_BENCHMARK_BUILD_DIR`: source and build directory; defaults to
   `.build` inside this directory.
 
