@@ -72,6 +72,22 @@ abstract class AModelToKotlinCommonGenerator(
             }
         }
 
+        // a oneof contributes a `<oneOf>` extension property on the message
+        for (oneOf in declaration.oneOfDeclarations) {
+            val name = oneOf.rawName
+            if (name in publicGeneratedNames) {
+                conflictCollector.addError(
+                    NameConflictError(
+                        protoFilePath = file.dec.name,
+                        messageName = declaration.name.fullName(),
+                        conflictingProtoName = oneOf.dec.name,
+                        conflictingGeneratedName = name,
+                        description = "Oneof '${oneOf.dec.name}' conflicts with generated '$name' extension.",
+                    )
+                )
+            }
+        }
+
         declaration.nestedDeclarations.forEach { validateNameConflicts(it, file) }
     }
 
@@ -143,8 +159,6 @@ abstract class AModelToKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> type.dec.value.name.scoped()
-
-            is FieldType.OneOf -> type.dec.name.scoped()
 
             is FieldType.IntegralType -> {
                 type.fqName.scoped()

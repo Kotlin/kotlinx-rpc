@@ -17,7 +17,8 @@ import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
-import kotlinx.rpc.protoc.gen.core.model.nested
+import kotlinx.rpc.protoc.gen.core.model.fullNestedNameAsList
+import kotlinx.rpc.protoc.gen.core.model.packageName
 import kotlin.Boolean
 import kotlin.collections.plus
 import kotlin.contracts.ExperimentalContracts
@@ -237,10 +238,21 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
         is Descriptors.Descriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.FieldDescriptor -> {
-            FqName.Declaration(if (realContainingOneof != null) upperName else lowerName, containingType?.fqName() ?: file.fqName())
+            FqName.Declaration(lowerName, containingType?.fqName() ?: file.fqName())
         }
 
-        is Descriptors.OneofDescriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
+        // the oneof is represented by its top-level `<Message><OneOf>Case` enum class,
+        // with the (possibly nested) containing message names flattened: `OuterInnerKindCase`
+        is Descriptors.OneofDescriptor -> {
+            val container = containingType.fqName() as FqName.Declaration
+            val flattenedContainer = container.fullNestedNameAsList().joinToString("")
+            val caseName = if (camelCaseNames) {
+                name.simpleProtoNameToKotlinRaw(CamelCaseFormat.UPPER_CAMEL)
+            } else {
+                name
+            }
+            FqName.Declaration("$flattenedContainer${caseName}Case", container.packageName())
+        }
         is Descriptors.EnumDescriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumValueDescriptor -> {
             val strippedName = type.enumValuePrefix()?.let { prefix -> name.removePrefix(prefix) } ?: name
@@ -308,40 +320,39 @@ private fun Descriptors.FileDescriptor.toModel(
 private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {
     ensureCommentsPresent(fqName(), comments)
 
+    // Presence indices are allocated in declaration order.
+    // The members of one oneof get consecutive indices (in the oneof's declaration order),
+    // so that setting a member can clear all sibling bits with a single range operation.
     var currPresenceIdx = 0
-    var regularFields = fields
-        // only fields that are not part of a oneOf declaration
-        .filter { field -> field.realContainingOneof == null }
-        .map {
-            val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
-            it.toModel(comments + Paths.messageFieldCommentPath + it.index, nameTable, presenceIdx = presenceIdx)
-        }
+    val presenceIndices = mutableMapOf<Descriptors.FieldDescriptor, Int>()
+    fields.forEach { field ->
+        val oneOf = field.realContainingOneof
+        when {
+            oneOf != null -> {
+                if (oneOf.fields.first() !in presenceIndices) {
+                    oneOf.fields.forEach { member -> presenceIndices[member] = currPresenceIdx++ }
+                }
+            }
 
+            field.hasPresence() -> presenceIndices[field] = currPresenceIdx++
+        }
+    }
+
+    // all fields in declaration order, oneof members included (they are flat member properties)
+    val allFields = fields.map {
+        it.toModel(comments + Paths.messageFieldCommentPath + it.index, nameTable, presenceIdx = presenceIndices[it])
+    }
+
+    // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
+    // the members are resolved through the model cache, so they are the same objects as in [allFields].
     val oneOfs = oneofs
         .filter { it.fields[0].realContainingOneof != null }
         .map { it.toModel(comments, nameTable) }
 
-    regularFields = regularFields + oneOfs.map {
-        val lowerCamelCasedName = it.name.simpleName.simpleProtoNameToKotlin(CamelCaseFormat.LOWER_CAMEL)
-        val lowerCamelCasedRawName = it.dec.name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL)
-
-        FieldDeclaration(
-            name = if (camelCaseNames) lowerCamelCasedName else it.name.simpleName,
-            rawName = if (camelCaseNames) lowerCamelCasedRawName else it.dec.name,
-            type = FieldType.OneOf(it),
-            doc = it.doc,
-            dec = it.variants.first().dec,
-            deprecated = options.deprecated,
-            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
-            extensionDescriptorName = null,
-        )
-    }
-
     MessageDeclaration(
         name = fqName(),
         presenceMaskSize = currPresenceIdx,
-        actualFields = regularFields,
-        // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
+        actualFields = allFields,
         oneOfDeclarations = oneOfs,
         enumDeclarations = enumTypes.map { it.toModel(comments + Paths.messageEnumCommentPath + it.index, nameTable) },
         nestedDeclarations = nestedTypes.map {
@@ -404,9 +415,7 @@ private fun Descriptors.FieldDescriptor.toModel(
 ): FieldDeclaration =
     cached {
         val rawName = if (camelCaseNames) {
-            name.simpleProtoNameToKotlinRaw(
-                if (realContainingOneof != null) CamelCaseFormat.UPPER_CAMEL else CamelCaseFormat.LOWER_CAMEL
-            )
+            name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL)
         } else {
             name
         }
@@ -421,6 +430,7 @@ private fun Descriptors.FieldDescriptor.toModel(
             deprecated = options.deprecated,
             containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
             extensionDescriptorName = extensionDescriptorName(),
+            containingOneOf = lazy { realContainingOneof?.let { modelCache[it] as OneOfDeclaration } },
         ).apply {
             extensionDescriptorName?.let { nameTable.register(it) }
         }
@@ -430,15 +440,19 @@ private fun Descriptors.OneofDescriptor.toModel(
     parentComments: Comments,
     nameTable: FqNameTable,
 ): OneOfDeclaration = cached {
+    val rawName = if (camelCaseNames) name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL) else name
+
     OneOfDeclaration(
-        name = fqName(),
+        name = KotlinKeywords.escapeIfKeyword(rawName),
+        rawName = rawName,
+        caseTypeName = fqName() as FqName.Declaration,
+        // members must already be in the model cache (with their presence index), see Descriptor.toModel
         variants = fields.map { it.toModel(parentComments + Paths.messageFieldCommentPath + it.index, nameTable) },
         doc = (parentComments + Paths.messageOneOfCommentPath + index).get(),
         dec = this,
+        containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
     ).also { declaration ->
-        declaration.variants.forEach { variant ->
-            nameTable.register { declaration.name.nested(variant.name) }
-        }
+        nameTable.register { declaration.caseTypeName }
     }
 }
 

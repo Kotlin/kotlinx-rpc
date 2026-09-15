@@ -29,6 +29,7 @@ import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.WireType
 import kotlinx.rpc.protoc.gen.core.model.hasRequiredFields
+import kotlinx.rpc.protoc.gen.core.model.isOneOfReferenceType
 import kotlinx.rpc.protoc.gen.core.model.nested
 import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
 import kotlinx.rpc.protoc.gen.core.model.topLevelFP
@@ -121,14 +122,20 @@ class ModelToProtobufKotlinCommonGenerator(
             generatePublicCopy(it)
             generatePublicPresenceGetter(it)
             if (config.generateOptionalFieldOrNullGetters) {
-                // generates orNull getters for optional fields
+                // generates orNull getters for optional fields (including oneof members)
                 generatePublicOrNullFieldGetters(it)
             }
+            generateOneOfExtensions(it)
         }
 
         // the presence interfaces are not generated in the flattened list
         // as nested classes are generated as nested presence interfaces
         messages.forEach { generatePresenceInterface(it) }
+
+        // the oneof case enums are top-level classes with flattened names
+        allMessages.forEach { message ->
+            message.oneOfDeclarations.forEach { oneOf -> generateOneOfCaseEnum(message, oneOf) }
+        }
     }
 
     private fun CodeGenerator.generatePublicMessage(declaration: MessageDeclaration) {
@@ -159,10 +166,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
             if (declaration.actualFields.isNotEmpty()) {
                 newLine()
-            }
-
-            declaration.oneOfDeclarations.forEach { oneOf ->
-                generateOneOfPublic(oneOf)
             }
 
             declaration.nestedDeclarations.forEach { nested ->
@@ -227,18 +230,25 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "null".scoped(),
             )
 
+            declaration.oneOfDeclarations.forEach { oneOf ->
+                generateOneOfInternalStorage(oneOf)
+            }
+
             declaration.actualFields.forEachIndexed { i, field ->
-                generatedInternalFieldPropertyDeclaration(i, field, declaration)
+                val oneOf = field.containingOneOf.value
+                if (oneOf != null) {
+                    generateOneOfMemberProperty(i, field, oneOf, declaration)
+                } else {
+                    generatedInternalFieldPropertyDeclaration(i, field, declaration)
+                }
                 generateInternalFieldClearFunction(field)
             }
 
             generateInternalPresenceObjectProperty(declaration)
             generateHashCode(declaration)
-            generateOneOfHashCode(declaration)
             generateEquals(declaration)
             generateToString(declaration)
             generateInternalCopy(declaration)
-            generateOneOfCopy(declaration)
 
             declaration.nestedDeclarations.forEach { nested ->
                 generateInternalMessage(nested)
@@ -255,62 +265,257 @@ class ModelToProtobufKotlinCommonGenerator(
         field: FieldDeclaration,
         msg: MessageDeclaration
     ) {
-        val isOneOfField = field.type is FieldType.OneOf
         val override = if (msg.isUserFacing) "override" else ""
-        val value = when {
-            isOneOfField -> {
-                "null".scoped()
-            }
-
-            else -> {
-                val fieldPresence = if (field.presenceIdx != null) {
-                    "(%T.${field.name})".scoped(msg.presenceIndicesName)
-                } else {
-                    ScopedFormattedString.empty
-                }
-
-                FqName.RpcClasses.MsgFieldDelegate
-                    .scoped()
-                    .merge(
-                        other = fieldPresence,
-                        another = field.safeDefaultValue(msg),
-                    ) { msgFieldDelegate, fieldPresence, fieldDefault ->
-                        "$msgFieldDelegate$fieldPresence { $fieldDefault }"
-                    }
-            }
+        val fieldPresence = if (field.presenceIdx != null) {
+            "(%T.${field.name})".scoped(msg.presenceIndicesName)
+        } else {
+            ScopedFormattedString.empty
         }
+
+        val value = FqName.RpcClasses.MsgFieldDelegate
+            .scoped()
+            .merge(
+                other = fieldPresence,
+                another = field.safeDefaultValue(msg),
+            ) { msgFieldDelegate, fieldPresence, fieldDefault ->
+                "$msgFieldDelegate$fieldPresence { $fieldDefault }"
+            }
 
         val delegateType = FqName.RpcClasses.MsgFieldDelegate.scoped()
             .merge(field.typeFqName()) { msgFieldDelegate, fieldFqName ->
                 "$msgFieldDelegate<$fieldFqName>"
             }
 
-        if (!isOneOfField) {
-            // create a delegate and store it using __<name>Delegate
-            property(
-                name = field.internalDelegateName,
-                modifiers = "internal",
-                type = delegateType,
-                value = value,
-                needsNewLineAfterDeclaration = false
-            )
-        }
-
-        val propertyValue = if (isOneOfField) value else field.internalDelegateName.scoped()
+        // create a delegate and store it using __<name>Delegate
+        property(
+            name = field.internalDelegateName,
+            modifiers = "internal",
+            type = delegateType,
+            value = value,
+            needsNewLineAfterDeclaration = false
+        )
 
         property(
             name = field.name,
             modifiers = override,
-            value = propertyValue,
+            value = field.internalDelegateName.scoped(),
             isVar = true,
             type = field.typeFqName(),
-            propertyInitializer = if (isOneOfField) {
-                CodeGenerator.PropertyInitializer.PLAIN
-            } else {
-                CodeGenerator.PropertyInitializer.DELEGATE
-            },
+            propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
             needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
         )
+    }
+
+    /**
+     * Generates the typed storage slots of a oneof on the internal class, the `_<oneOf>Case` getter that maps
+     * the active presence bit to the case enum entry, and `clear<OneOf>Internal()` that resets the oneof.
+     *
+     * The active case is not stored separately: it is the member whose presence bit is set.
+     * The members of one oneof have consecutive presence indices, so setting a member clears all
+     * sibling bits with a single range operation, see [BitSet.setExclusive].
+     */
+    private fun CodeGenerator.generateOneOfInternalStorage(oneOf: OneOfDeclaration) {
+        if (oneOf.hasReferenceSlot) {
+            property(
+                name = oneOf.referenceSlotName,
+                modifiers = "private",
+                isVar = true,
+                type = "%T?".scoped(FqName.Implicits.Any),
+                value = "null".scoped(),
+                needsNewLineAfterDeclaration = !oneOf.hasNumericSlot,
+            )
+        }
+
+        if (oneOf.hasNumericSlot) {
+            property(
+                name = oneOf.numericSlotName,
+                modifiers = "private",
+                isVar = true,
+                type = oneOf.numericSlotType(),
+                value = oneOf.numericSlotZero().scoped(),
+            )
+        }
+
+        // maps the set presence bit of the oneof range to the case enum entry
+        property(
+            name = oneOf.internalCaseGetterName,
+            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
+            type = oneOf.caseTypeName.scoped(),
+            propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+            value = "when".scoped(),
+        ) {
+            oneOf.variants.forEach { variant ->
+                code(
+                    variant.presenceIdxFieldName.merge(oneOf.caseTypeName.scoped()) { idx, caseType ->
+                        "presenceMask[$idx] -> $caseType.${oneOf.caseEntryName(variant)}"
+                    }
+                )
+            }
+            code(oneOf.caseTypeName.scoped().wrapIn { "else -> $it.${oneOf.notSetEntryName}" })
+        }
+
+        function(
+            name = oneOf.internalClearFunctionName,
+            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
+            returnType = "".scoped(),
+        ) {
+            code(
+                oneOf.variants.first().presenceIdxFieldName
+                    .merge(oneOf.variants.last().presenceIdxFieldName) { first, last ->
+                        "presenceMask.clearRange($first, $last)"
+                    }
+            )
+            if (oneOf.hasReferenceSlot) {
+                code("${oneOf.referenceSlotName} = null".scoped())
+            }
+            if (oneOf.hasNumericSlot) {
+                code("${oneOf.numericSlotName} = ${oneOf.numericSlotZero()}".scoped())
+            }
+        }
+    }
+
+    /**
+     * Generates a oneof member as a flat property backed by the oneof slots:
+     * the getter returns the proto default unless the member is the active case,
+     * the setter marks the member as the active case and stores the value in its slot.
+     */
+    private fun CodeGenerator.generateOneOfMemberProperty(
+        index: Int,
+        field: FieldDeclaration,
+        oneOf: OneOfDeclaration,
+        msg: MessageDeclaration,
+    ) {
+        val override = if (msg.isUserFacing) "override" else ""
+
+        val getter = field.presenceIdxFieldName.merge(
+            other = oneOf.slotReadExpr(field),
+            another = field.safeDefaultValue(msg),
+        ) { idx, read, default ->
+            "if (presenceMask[$idx]) $read else $default"
+        }
+
+        val setExclusive = field.presenceIdxFieldName.merge(
+            other = oneOf.variants.first().presenceIdxFieldName,
+            another = oneOf.variants.last().presenceIdxFieldName,
+        ) { idx, first, last ->
+            "presenceMask.setExclusive($idx, $first, $last)"
+        }
+
+        val resetOtherSlot = when {
+            field.type.isOneOfReferenceType && oneOf.hasNumericSlot ->
+                "; ${oneOf.numericSlotName} = ${oneOf.numericSlotZero()}"
+
+            !field.type.isOneOfReferenceType && oneOf.hasReferenceSlot ->
+                "; ${oneOf.referenceSlotName} = null"
+
+            else -> ""
+        }
+
+        val setter = setExclusive.wrapIn { setExclusive ->
+            "$setExclusive; ${oneOf.slotWriteExpr(field)}$resetOtherSlot"
+        }
+
+        property(
+            name = field.name,
+            modifiers = override,
+            isVar = true,
+            type = field.typeFqName(),
+            propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+            value = getter,
+            setter = setter,
+            deprecation = if (field.deprecated) DeprecationLevel.WARNING else null,
+            needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
+        )
+    }
+
+    private fun OneOfDeclaration.numericSlotType(): ScopedFormattedString =
+        if (numericSlotIs64Bit) FqName.Implicits.Long.scoped() else FqName.Implicits.Int.scoped()
+
+    private fun OneOfDeclaration.numericSlotZero(): String = if (numericSlotIs64Bit) "0L" else "0"
+
+    private fun OneOfDeclaration.numericSlotOne(): String = if (numericSlotIs64Bit) "1L" else "1"
+
+    /**
+     * Expression reading the value of [field] from its slot, converted back to the member type.
+     * Floats and doubles are stored as raw bits, enums as their number, bools as 0/1.
+     */
+    private fun OneOfDeclaration.slotReadExpr(field: FieldDeclaration): ScopedFormattedString {
+        val num = numericSlotName
+        val toInt = if (numericSlotIs64Bit) ".toInt()" else ""
+
+        return when (val type = field.type) {
+            is FieldType.Message -> "($referenceSlotName as %T)".scoped(type.dec.value.name)
+            is FieldType.Enum -> "%T.%F($num$toInt)".scoped(
+                type.dec.value.name,
+                type.dec.value.name.topLevelFP("fromNumber"),
+            )
+
+            FieldType.IntegralType.STRING -> "($referenceSlotName as %T)".scoped(FqName.Implicits.String)
+            FieldType.IntegralType.BYTES -> "($referenceSlotName as %T)".scoped(FqName.KotlinLibs.ByteString)
+            FieldType.IntegralType.BOOL -> "($num != ${numericSlotZero()})".scoped()
+            FieldType.IntegralType.FLOAT -> "%T.fromBits($num$toInt)".scoped(FqName.Implicits.Float)
+            FieldType.IntegralType.DOUBLE -> "%T.fromBits($num)".scoped(FqName.Implicits.Double)
+
+            FieldType.IntegralType.INT32,
+            FieldType.IntegralType.SINT32,
+            FieldType.IntegralType.SFIXED32,
+                -> "$num$toInt".scoped()
+
+            FieldType.IntegralType.UINT32,
+            FieldType.IntegralType.FIXED32,
+                -> "$num.toUInt()".scoped()
+
+            FieldType.IntegralType.INT64,
+            FieldType.IntegralType.SINT64,
+            FieldType.IntegralType.SFIXED64,
+                -> num.scoped()
+
+            FieldType.IntegralType.UINT64,
+            FieldType.IntegralType.FIXED64,
+                -> "$num.toULong()".scoped()
+
+            is FieldType.List, is FieldType.Map -> error("Oneof members cannot be repeated: ${field.name}")
+        }
+    }
+
+    /**
+     * Statement storing the setter `value` of [field] into its slot.
+     */
+    private fun OneOfDeclaration.slotWriteExpr(field: FieldDeclaration): String {
+        val num = numericSlotName
+        val toLong = if (numericSlotIs64Bit) ".toLong()" else ""
+
+        return when (field.type) {
+            is FieldType.Message,
+            FieldType.IntegralType.STRING,
+            FieldType.IntegralType.BYTES,
+                -> "$referenceSlotName = value"
+
+            is FieldType.Enum -> "$num = value.number$toLong"
+            FieldType.IntegralType.BOOL -> "$num = if (value) ${numericSlotOne()} else ${numericSlotZero()}"
+            FieldType.IntegralType.FLOAT -> "$num = value.toRawBits()$toLong"
+            FieldType.IntegralType.DOUBLE -> "$num = value.toRawBits()"
+
+            FieldType.IntegralType.INT32,
+            FieldType.IntegralType.SINT32,
+            FieldType.IntegralType.SFIXED32,
+                -> "$num = value$toLong"
+
+            FieldType.IntegralType.UINT32,
+            FieldType.IntegralType.FIXED32,
+                -> if (numericSlotIs64Bit) "$num = value.toLong()" else "$num = value.toInt()"
+
+            FieldType.IntegralType.INT64,
+            FieldType.IntegralType.SINT64,
+            FieldType.IntegralType.SFIXED64,
+                -> "$num = value"
+
+            FieldType.IntegralType.UINT64,
+            FieldType.IntegralType.FIXED64,
+                -> "$num = value.toLong()"
+
+            is FieldType.List, is FieldType.Map -> error("Oneof members cannot be repeated: ${field.name}")
+        }
     }
 
     /**
@@ -322,17 +527,21 @@ class ModelToProtobufKotlinCommonGenerator(
      */
     private fun CodeGenerator.generateInternalFieldClearFunction(field: FieldDeclaration) {
         // if the field must always be present, we don't have a clear function
-        if (field.presenceIdx == null
-            || field.type is FieldType.OneOf
-            || field.isPartOfMapEntry
-        ) return
+        if (field.presenceIdx == null || field.isPartOfMapEntry) return
+
+        val oneOf = field.containingOneOf.value
 
         function(
             name = "clear${field.rawName.capitalize()}",
             modifiers = "override",
             returnType = "".scoped(),
         ) {
-            code("${field.internalDelegateName}.clearField(this)".scoped())
+            if (oneOf != null) {
+                // clearing a oneof member only has an effect if it is the active case
+                code(field.presenceIdxFieldName.wrapIn { "if (presenceMask[$it]) ${oneOf.internalClearFunctionName}()" })
+            } else {
+                code("${field.internalDelegateName}.clearField(this)".scoped())
+            }
         }
     }
 
@@ -358,21 +567,34 @@ class ModelToProtobufKotlinCommonGenerator(
                 code("%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
             }
 
-            when {
-                fields.size == 1 -> {
-                    code(fields[0].hashExprForHashCode().wrapIn { "var result = $it" })
-                }
+            var isFirst = true
+            fun prefix(): String = if (isFirst) "var result =" else "result = 31 * result +"
 
-                fields.isNotEmpty() -> {
-                    code(fields.first().hashExprForHashCode().wrapIn { "var result = $it" })
-                    fields.drop(1).forEach { f ->
-                        code(f.hashExprForHashCode().wrapIn { "result = 31 * result + $it" })
+            val emittedOneOfs = mutableSetOf<OneOfDeclaration>()
+            fields.forEach { field ->
+                val oneOf = field.containingOneOf.value
+                if (oneOf == null) {
+                    code(field.hashExprForHashCode().wrapIn { "${prefix()} $it" })
+                } else if (emittedOneOfs.add(oneOf)) {
+                    // a oneof contributes `fieldNumber * 31 + valueHash` of the active member, or 0 if not set
+                    whenBlock(prefix = prefix().scoped()) {
+                        oneOf.variants.forEach { variant ->
+                            code(
+                                variant.presenceIdxFieldName.merge(variant.rawHashExpr()) { idx, hash ->
+                                    "presenceMask[$idx] -> ${variant.number} * 31 + $hash"
+                                }
+                            )
+                        }
+                        code("else -> 0".scoped())
                     }
+                } else {
+                    return@forEach
                 }
+                isFirst = false
+            }
 
-                else -> {
-                    code("var result = this::class.hashCode()".scoped())
-                }
+            if (isFirst) {
+                code("var result = this::class.hashCode()".scoped())
             }
 
             if (declaration.hasExtensionRange) {
@@ -383,116 +605,23 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun FieldDeclaration.hashExprForHashCode(): ScopedFormattedString {
+    /**
+     * Hash of the field value without any presence check. Floats and doubles hash their bits.
+     */
+    private fun FieldDeclaration.rawHashExpr(): ScopedFormattedString {
         val thisField = "this.$name"
-        return when (val t = type) {
-            is FieldType.IntegralType -> {
-                when (t) {
-                    FieldType.IntegralType.FLOAT -> {
-                        if (nullable) "($thisField?.toBits()?.hashCode() ?: 0)" else "$thisField.toBits().hashCode()"
-                    }
-
-                    FieldType.IntegralType.DOUBLE -> {
-                        if (nullable) "($thisField?.toBits()?.hashCode() ?: 0)" else "$thisField.toBits().hashCode()"
-                    }
-
-                    else -> {
-                        if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
-                    }
-                }
-            }
-
-            is FieldType.OneOf -> {
-                if (nullable) "($thisField?.oneOfHashCode() ?: 0)" else "$thisField.oneOfHashCode() + "
-            }
-
-            is FieldType.List -> {
-                if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
-            }
-
-            is FieldType.Message, is FieldType.Enum, is FieldType.Map -> {
-                if (nullable) "($thisField?.hashCode() ?: 0)" else "$thisField.hashCode()"
-            }
-        }.let { hashCodeExpr ->
-            if (presenceIdx != null) {
-                presenceIdxFieldName.wrapIn { index -> "if (presenceMask[$index]) $hashCodeExpr else 0" }
-            } else {
-                hashCodeExpr.scoped()
-            }
-        }
+        return when (type) {
+            FieldType.IntegralType.FLOAT, FieldType.IntegralType.DOUBLE -> "$thisField.toBits().hashCode()"
+            else -> "$thisField.hashCode()"
+        }.scoped()
     }
 
-    private fun CodeGenerator.generateOneOfHashCode(declaration: MessageDeclaration) {
-        declaration.oneOfDeclarations.forEach { oneOf ->
-            val hasFloatVariant = oneOf.variants.any {
-                it.type == FieldType.IntegralType.FLOAT || it.type == FieldType.IntegralType.DOUBLE
-            }
-            function(
-                name = "oneOfHashCode",
-                returnType = FqName.Implicits.Int.scoped(),
-                contextReceiver = oneOf.name.scoped(),
-            ) {
-                if (hasFloatVariant) {
-                    // Generate a when expression that handles ByteArray/Float/Double variants specially
-                    whenBlock(prefix = "return ".scoped(), condition = "this".scoped()) {
-                        oneOf.variants.forEachIndexed { index, variant ->
-                            val variantName = "%T.${variant.name}".scoped(oneOf.name)
-                            val hashExpr = when (variant.type) {
-                                FieldType.IntegralType.FLOAT -> "value.toBits().hashCode()"
-                                FieldType.IntegralType.DOUBLE -> "value.toBits().hashCode()"
-                                else -> "hashCode()"
-                            }
-                            code(variantName.wrapIn { "is $it -> $hashExpr + $index" })
-                        }
-                    }
-                } else {
-                    whenBlock(prefix = "val offset = ".scoped(), condition = "this".scoped()) {
-                        oneOf.variants.forEachIndexed { index, variant ->
-                            val variantName = "%T.${variant.name}".scoped(oneOf.name)
-                            code(variantName.wrapIn { "is $it -> $index" })
-                        }
-                    }
-                    code("return hashCode() + offset".scoped())
-                }
-            }
-
-            if (hasFloatVariant) {
-                // Generate a custom oneOfEquals for byte/float/double-aware comparison
-                function(
-                    name = "oneOfEquals",
-                    args = "a: %T?, b: %T?".scoped(oneOf.name, oneOf.name),
-                    returnType = FqName.Implicits.Boolean.scoped(),
-                ) {
-                    code("if (a === b) return true".scoped())
-                    code("if (a == null || b == null) return false".scoped())
-                    code("if (a::class != b::class) return false".scoped())
-                    whenBlock(prefix = "return ".scoped(), condition = "a".scoped()) {
-                        oneOf.variants.forEach { variant ->
-                            val variantFqName = oneOf.name.nested(variant.name)
-                            when (variant.type) {
-                                FieldType.IntegralType.FLOAT ->
-                                    code(
-                                        "is %T -> a.value.toBits() == (b as %T).value.toBits()".scoped(
-                                            variantFqName,
-                                            variantFqName
-                                        )
-                                    )
-
-                                FieldType.IntegralType.DOUBLE ->
-                                    code(
-                                        "is %T -> a.value.toBits() == (b as %T).value.toBits()".scoped(
-                                            variantFqName,
-                                            variantFqName
-                                        )
-                                    )
-
-                                else ->
-                                    code("is %T -> a == b".scoped(variantFqName))
-                            }
-                        }
-                    }
-                }
-            }
+    private fun FieldDeclaration.hashExprForHashCode(): ScopedFormattedString {
+        val hashCodeExpr = rawHashExpr()
+        return if (presenceIdx != null) {
+            presenceIdxFieldName.merge(hashCodeExpr) { index, hash -> "if (presenceMask[$index]) $hash else 0" }
+        } else {
+            hashCodeExpr
         }
     }
 
@@ -625,30 +754,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
             }
 
-            is FieldType.OneOf -> {
-                val hasFloatVariant = t.dec.variants.any {
-                    it.type == FieldType.IntegralType.FLOAT ||
-                        it.type == FieldType.IntegralType.DOUBLE
-                }
-                if (hasFloatVariant) {
-                    if (useFinalReturn) {
-                        code(
-                            presenceCheck.wrapIn { presenceCheck ->
-                                "return ${presenceCheck}oneOfEquals(this.${field.name}, other.${field.name})"
-                            }
-                        )
-                    } else {
-                        code(
-                            presenceCheck.wrapIn { presenceCheck ->
-                                "if (${presenceCheck}!oneOfEquals(this.${field.name}, other.${field.name})) return false"
-                            }
-                        )
-                    }
-                } else {
-                    default()
-                }
-            }
-
             is FieldType.Message,
             is FieldType.Enum,
             is FieldType.List,
@@ -705,7 +810,12 @@ class ModelToProtobufKotlinCommonGenerator(
                     code(line)
                 }
 
-                if (field.presenceIdx != null) {
+                if (field.isPartOfOneof) {
+                    // only the active member of a oneof is printed
+                    ifBranch(condition = field.presenceIdxFieldName.wrapIn { "presenceMask[$it]" }, ifBlock = {
+                        valueBuilder()
+                    })
+                } else if (field.presenceIdx != null) {
                     ifBranch(condition = field.presenceIdxFieldName.wrapIn { "presenceMask[$it]" }, ifBlock = {
                         valueBuilder()
                     }) {
@@ -834,55 +944,6 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.Message -> {
                 val copy = dec.value.name.topLevelFP("copy")
                 varName.merge(copy.scoped()) { varName, copy -> "$varName.$copy()" }
-            }
-            is FieldType.OneOf -> varName.wrapIn { varName -> "$varName?.oneOfCopy()" }
-        }
-    }
-
-    private fun CodeGenerator.generateOneOfCopy(declaration: MessageDeclaration) {
-        declaration.oneOfDeclarations.forEach { oneOf ->
-            function(
-                name = "oneOfCopy",
-                annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-                returnType = oneOf.name.scoped(),
-                contextReceiver = oneOf.name.scoped(),
-            ) {
-                // check if the type is copy by value (no need for deep copy)
-                val copyByValue = { type: FieldType ->
-                    type is FieldType.IntegralType || type is FieldType.Enum
-                }
-
-                // if all variants are integral or enum types, we can just return this directly.
-                val fastPath = oneOf.variants.all { copyByValue(it.type) }
-                if (fastPath) {
-                    code("return this".scoped())
-                } else {
-                    // dispatch on all possible variants and copy its value
-                    whenBlock(
-                        prefix = "return".scoped(),
-                        condition = "this".scoped(),
-                    ) {
-                        oneOf.variants.forEach { variant ->
-                            val variantName = oneOf.name.nested(variant.name).scoped()
-                            whenCase(variantName.wrapIn { "is $it" }) {
-                                if (copyByValue(variant.type)) {
-                                    // no need to reconstruct a new object, we can just return this
-                                    code("this".scoped())
-                                } else {
-                                    code(
-                                        variantName.merge(
-                                            other = variant.type.copyCall(
-                                                varName = "this.value".scoped(),
-                                            ),
-                                        ) { variantName, copyCall ->
-                                            "$variantName($copyCall)"
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -1427,12 +1488,9 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.readMatchCase(
-        field: FieldDeclaration,
-        lvalue: ScopedFormattedString = "msg.${field.name}".scoped(),
-        wrapperCtor: (ScopedFormattedString) -> ScopedFormattedString = { it },
-        beforeValueDecoding: CodeGenerator.() -> Unit = {},
-    ) {
+    private fun CodeGenerator.readMatchCase(field: FieldDeclaration) {
+        val lvalue = "msg.${field.name}".scoped()
+
         fun CodeGenerator.repeatedDecodeTarget(): ScopedFormattedString {
             code(
                 "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { mutableListOf() } as %T"
@@ -1449,12 +1507,24 @@ class ModelToProtobufKotlinCommonGenerator(
             return "target".scoped()
         }
 
-        fun CodeGenerator.messageDecodeTarget(internalClassName: FqName.Declaration): ScopedFormattedString {
-            if (field.isPartOfOneof) return lvalue
+        fun CodeGenerator.messageDecodeTarget(message: MessageDeclaration): ScopedFormattedString {
+            if (field.isPartOfOneof) {
+                // merge into the existing message if this member is the active case,
+                // otherwise a new instance becomes the active case (last field wins across cases)
+                code(
+                    field.presenceIdxFieldName.merge(
+                        other = message.name.topLevelFP("asInternal").scoped(),
+                        another = message.internalClassName.scoped(),
+                    ) { idx, asInternal, internalClassName ->
+                        "val target = if (msg.presenceMask[$idx]) msg.${field.name}.$asInternal() else $internalClassName().also { msg.${field.name} = it }"
+                    }
+                )
+                return "target".scoped()
+            }
 
             code(
                 "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { %T() }"
-                    .scoped(internalClassName)
+                    .scoped(message.internalClassName)
             )
             return "target".scoped()
         }
@@ -1464,8 +1534,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 "${field.number} if tag.wireType == %T"
                     .scoped(FqName.RpcClasses.WireType.nested(fieldType.wireType.name))
             ) {
-                beforeValueDecoding()
-                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
+                generateDecodeFieldValue(fieldType, lvalue)
             }
 
             is FieldType.List -> {
@@ -1478,8 +1547,7 @@ class ModelToProtobufKotlinCommonGenerator(
                             .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
                     ) {
                         val target = repeatedDecodeTarget()
-                        beforeValueDecoding()
-                        generateDecodeFieldValue(fieldType, target, isPacked = true, wrapperCtor = wrapperCtor)
+                        generateDecodeFieldValue(fieldType, target, isPacked = true)
                     }
                 }
 
@@ -1488,8 +1556,7 @@ class ModelToProtobufKotlinCommonGenerator(
                         .scoped(FqName.RpcClasses.WireType.nested(fieldType.value.wireType.name))
                 ) {
                     val target = repeatedDecodeTarget()
-                    beforeValueDecoding()
-                    generateDecodeFieldValue(fieldType, target, isPacked = false, wrapperCtor = wrapperCtor)
+                    generateDecodeFieldValue(fieldType, target, isPacked = false)
                 }
             }
 
@@ -1497,50 +1564,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 "${field.number} if tag.wireType == %T"
                     .scoped(FqName.RpcClasses.WireType_VARINT)
             ) {
-                beforeValueDecoding()
-                generateDecodeFieldValue(fieldType, lvalue, wrapperCtor = wrapperCtor)
-            }
-
-            is FieldType.OneOf -> {
-                fieldType.dec.variants.forEach { variant ->
-                    val variantName = fieldType.dec.name.nested(variant.name)
-
-                    if (variant.type is FieldType.Message) {
-                        // in case of a message, we must construct an empty message before reading the message
-                        val message = variant.type as FieldType.Message
-                        readMatchCase(
-                            field = variant,
-                            lvalue = "field.value".scoped(),
-                            beforeValueDecoding = {
-                                beforeValueDecoding()
-
-                                scope(
-                                    lvalue.merge(
-                                        other = variantName.scoped(),
-                                        another = variantName.scoped(),
-                                        anotherOne = message.dec.value.internalClassName.scoped(),
-                                    ) { lvalue, variantName1, variantName2, internalClassName ->
-                                        "val field = ($lvalue as? $variantName1) ?: $variantName2($internalClassName()).also"
-                                    }
-                                ) {
-                                    // write the constructed oneof variant to the field
-                                    code(lvalue.wrapIn { lvalue -> "$lvalue = it" })
-                                }
-                            },
-                        )
-                    } else {
-                        readMatchCase(
-                            field = variant,
-                            lvalue = lvalue,
-                            wrapperCtor = { raw ->
-                                variantName.scoped().merge(raw) { variantName, raw ->
-                                    "$variantName($raw)"
-                                }
-                            },
-                            beforeValueDecoding = beforeValueDecoding,
-                        )
-                    }
-                }
+                generateDecodeFieldValue(fieldType, lvalue)
             }
 
             is FieldType.Message -> {
@@ -1548,9 +1572,8 @@ class ModelToProtobufKotlinCommonGenerator(
                     "${field.number} if tag.wireType == %T"
                         .scoped(FqName.RpcClasses.WireType.nested(fieldType.wireType.name))
                 ) {
-                    val target = messageDecodeTarget(fieldType.dec.value.internalClassName)
-                    beforeValueDecoding()
-                    generateDecodeFieldValue(fieldType, target, wrapperCtor = wrapperCtor)
+                    val target = messageDecodeTarget(fieldType.dec.value)
+                    generateDecodeFieldValue(fieldType, target)
                 }
             }
 
@@ -1559,8 +1582,7 @@ class ModelToProtobufKotlinCommonGenerator(
                     .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
             ) {
                 val target = mapDecodeTarget()
-                beforeValueDecoding()
-                generateDecodeFieldValue(fieldType, target, wrapperCtor = wrapperCtor)
+                generateDecodeFieldValue(fieldType, target)
             }
         }
     }
@@ -1569,10 +1591,9 @@ class ModelToProtobufKotlinCommonGenerator(
         fieldType: FieldType,
         lvalue: ScopedFormattedString,
         isPacked: Boolean = false,
-        wrapperCtor: (ScopedFormattedString) -> ScopedFormattedString = { it },
     ) {
         fun emitAssignment(raw: ScopedFormattedString) {
-            code(lvalue.merge(wrapperCtor(raw)) { target, value -> "$target = $value" })
+            code(lvalue.merge(raw) { target, value -> "$target = $value" })
         }
 
         when (fieldType) {
@@ -1602,10 +1623,10 @@ class ModelToProtobufKotlinCommonGenerator(
                 when (val elemType = fieldType.value) {
                     is FieldType.Message -> {
                         code("val elem = %T()".scoped(elemType.dec.value.internalClassName))
-                        generateDecodeFieldValue(fieldType.value, "elem".scoped(), wrapperCtor = wrapperCtor)
+                        generateDecodeFieldValue(fieldType.value, "elem".scoped())
                     }
 
-                    else -> generateDecodeFieldValue(fieldType.value, "val elem".scoped(), wrapperCtor = wrapperCtor)
+                    else -> generateDecodeFieldValue(fieldType.value, "val elem".scoped())
                 }
                 code(lvalue.wrapIn { target -> "$target.add(elem)" })
             }
@@ -1616,8 +1637,6 @@ class ModelToProtobufKotlinCommonGenerator(
 
                 emitAssignment(raw)
             }
-
-            is FieldType.OneOf -> error("Oneof decoding is handled in readMatchCase")
 
             is FieldType.Message -> {
                 val msg = fieldType.dec.value
@@ -1653,7 +1672,6 @@ class ModelToProtobufKotlinCommonGenerator(
                         fieldType = FieldType.Message(fieldType.entry.dec),
                         lvalue = "this".scoped(),
                         isPacked = false,
-                        wrapperCtor = wrapperCtor
                     )
                     code(lvalue.wrapIn { target -> "$target[key] = value" })
                 }
@@ -1672,11 +1690,7 @@ class ModelToProtobufKotlinCommonGenerator(
             code("// no fields to encode".scoped())
         } else {
             declaration.actualFields.forEach { field ->
-                if (field.nullable) { // only oneOfs
-                    scope("this.${field.name}?.also".scoped(), paramDecl = "value ->".scoped()) {
-                        generateEncodeFieldValue(field, "value".scoped())
-                    }
-                } else if (field.presenceIdx != null) {
+                if (field.presenceIdx != null) {
                     ifBranch(condition = field.presenceIdxFieldName.wrapIn { "presenceMask[$it]" }, ifBlock = {
                         generateEncodeFieldValue(field, "this.${field.name}".scoped())
                     })
@@ -1786,15 +1800,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 )
             }
 
-            // valueVar == "value" from generateMessageEncoder 'if nullable' case
-            is FieldType.OneOf -> whenBlock(valueVar) {
-                type.dec.variants.forEach { variant ->
-                    whenCase("is %T".scoped(type.dec.name.nested(variant.name))) {
-                        generateEncodeFieldValue(variant, valueVar.wrapIn { "$it.value" })
-                    }
-                }
-            }
-
             is FieldType.Map -> {
                 scope(valueVar.wrapIn { valueVar -> "$valueVar.forEach" }, paramDecl = "kEntry ->".scoped()) {
                     generateMapConstruction(type, "kEntry.key".scoped(), "kEntry.value".scoped())
@@ -1878,36 +1883,6 @@ class ModelToProtobufKotlinCommonGenerator(
             }
         }
 
-        // check submessages in oneofs
-        declaration.oneOfFields.forEach { field ->
-            val oneOfType = field.type as FieldType.OneOf
-            val messageVariants = oneOfType.dec.variants.filter { it.type is FieldType.Message }
-            if (messageVariants.isEmpty()) return@forEach
-
-            if (messageVariants.any { it.type.hasRequiredFields }) {
-                scope("this.${field.name}?.also".scoped()) {
-                    whenBlock {
-                        messageVariants.forEach { variant ->
-                            val variantClassName = (field.type as FieldType.OneOf).dec.name.nested(variant.name)
-
-                            if (variant.type.hasRequiredFields) {
-                                whenCase("it is %T".scoped(variantClassName)) {
-                                    val variantTypeName = (variant.type as FieldType.Message).dec.value.name
-                                    code(
-                                        "it.value.%F().%F()"
-                                            .scoped(
-                                                variantTypeName.topLevelFP("asInternal"),
-                                                variantTypeName.topLevelFP("checkRequiredFields"),
-                                            )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         // check submessages in lists
         declaration.listFields.forEach { field ->
             val listType = field.type as FieldType.List
@@ -1959,11 +1934,7 @@ class ModelToProtobufKotlinCommonGenerator(
             code("var __result = 0".scoped())
             declaration.actualFields.forEach { field ->
                 val fieldName = "this.${field.name}"
-                if (field.nullable) {
-                    scope("$fieldName?.also".scoped(), paramDecl = "value ->".scoped()) {
-                        generateFieldComputeSizeCall(field, "value".scoped(), noResultUpdate = false)
-                    }
-                } else if (field.presenceIdx == null) {
+                if (field.presenceIdx == null) {
                     scope(field.notDefaultCheck(declaration).wrapIn { "if ($it)" }) {
                         generateFieldComputeSizeCall(field, fieldName.scoped(), noResultUpdate = false)
                     }
@@ -2063,16 +2034,6 @@ class ModelToProtobufKotlinCommonGenerator(
                             "._size.let { $tagSize + $int32SizeCall + it }"
                         }
                     )
-                }
-            }
-
-            // variable == "value" from generateInternalComputeSize 'if nullable' case
-            is FieldType.OneOf -> whenBlock(variable, prefix = resultPrefix.scoped()) {
-                (field.type as FieldType.OneOf).dec.variants.forEach { variant ->
-                    val variantName = (field.type as FieldType.OneOf).dec.name.nested(variant.name)
-                    whenCase("is %T".scoped(variantName)) {
-                        generateFieldComputeSizeCall(variant, variable.wrapIn { "$it.value" }, noResultUpdate = true)
-                    }
                 }
             }
 
@@ -2187,7 +2148,6 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Map -> error("Map fields have no direct valueSizeCall")
-            is FieldType.OneOf -> error("OneOf fields have no direct valueSizeCall")
         }
     }
 
@@ -2246,7 +2206,6 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Message -> error("Message fields should not be checked for default values.")
-            is FieldType.OneOf -> "null".scoped()
         }
     }
 
@@ -2271,6 +2230,9 @@ class ModelToProtobufKotlinCommonGenerator(
                     .replace("\u0000", "\\u0000")
                 "\"$escaped\"".scoped()
             }
+
+            // an explicit empty default is the type default; BytesDefaults only holds non-empty defaults
+            is ByteString if value.isEmpty -> FieldType.IntegralType.BYTES.defaultValue
 
             is ByteString -> {
                 "%T.$name".scoped(parent.bytesDefaultsName)
@@ -2339,27 +2301,118 @@ class ModelToProtobufKotlinCommonGenerator(
         is FieldType.List -> "Packed${value.decodeEncodeFuncName()}"
         is FieldType.Enum -> "Enum"
         is FieldType.Map -> null
-        is FieldType.OneOf -> null
         is FieldType.Message -> null
     }
 
-    private fun CodeGenerator.generateOneOfPublic(declaration: OneOfDeclaration) {
+    /**
+     * Generates the top-level `<Message><OneOf>Case` enum class with one entry per member (declaration order)
+     * and a final not-set entry.
+     */
+    private fun CodeGenerator.generateOneOfCaseEnum(declaration: MessageDeclaration, oneOf: OneOfDeclaration) {
+        if (!declaration.isUserFacing) return
+
+        val nameRef = declaration.name.scoped()
+        val comment = Comment(
+            leadingDetached = emptyList(),
+            leading = listOfNotNull(
+                nameRef.wrapIn { "Cases of the `${oneOf.dec.name}` oneof of [$it]." },
+                nameRef.wrapIn { "Retrieve the active case via the [$it.${oneOf.name}] extension property." },
+            ) + (oneOf.doc?.takeIf { !it.isEmpty() }?.let { doc -> doc.leadingDetached + doc.leading + doc.trailing }
+                ?: emptyList()),
+            trailing = emptyList(),
+        )
+
         clazz(
-            name = declaration.name.simpleName,
-            comment = declaration.doc,
-            modifiers = "sealed",
-            declarationType = CodeGenerator.DeclarationType.Interface,
+            name = oneOf.caseTypeName.simpleName,
+            comment = comment,
+            modifiers = "enum",
+            declarationType = CodeGenerator.DeclarationType.Class,
         ) {
-            declaration.variants.forEach { variant ->
-                clazz(
-                    name = variant.name,
-                    comment = variant.doc,
-                    modifiers = "value",
-                    constructorArgs = listOf(variant.typeFqName().wrapIn { "val value: $it" }),
-                    annotations = listOf(FqName.KotlinLibs.JvmInline.scopedAnnotation()),
-                    superTypes = listOf(declaration.name.scoped()),
-                    deprecation = if (variant.deprecated) DeprecationLevel.WARNING else null,
-                )
+            oneOf.variants.forEach { variant ->
+                appendComment(variant.doc)
+                code("${oneOf.caseEntryName(variant)},".scoped())
+            }
+            code("${oneOf.notSetEntryName},".scoped())
+        }
+    }
+
+    /**
+     * Generates the oneof extensions: the `<oneOf>` case property, `Builder.clear<OneOf>()`
+     * and, if enabled, the exhaustive `when<OneOf>` dispatch function.
+     */
+    private fun CodeGenerator.generateOneOfExtensions(declaration: MessageDeclaration) {
+        if (!declaration.isUserFacing) return
+
+        val asInternal = declaration.name.topLevelFP("asInternal")
+
+        declaration.oneOfDeclarations.forEach { oneOf ->
+            val caseType = oneOf.caseTypeName.scoped()
+
+            // val Event.payload: EventPayloadCase get() = this.asInternal()._payloadCase
+            property(
+                name = oneOf.name,
+                contextReceiver = declaration.name.scoped(),
+                type = caseType,
+                propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                value = "this.%F().${oneOf.internalCaseGetterName}".scoped(asInternal),
+                comment = Comment.leading(
+                    caseType.wrapIn { "The active case of the `${oneOf.dec.name}` oneof, or [$it.${oneOf.notSetEntryName}]." }
+                ),
+            )
+
+            // fun Event.Builder.clearPayload()
+            function(
+                name = oneOf.clearFunctionName,
+                contextReceiver = declaration.builderClassName.scoped(),
+                returnType = "".scoped(),
+                comment = Comment.leading("Clears the `${oneOf.dec.name}` oneof regardless of its active case."),
+            ) {
+                code("this.%F().${oneOf.internalClearFunctionName}()".scoped(asInternal))
+            }
+
+            if (config.generateOneOfWhenFunctions) {
+                generateOneOfWhenFunction(declaration, oneOf)
+            }
+        }
+    }
+
+    /**
+     * ```kotlin
+     * inline fun <R> Event.whenPayload(text: (String) -> R, ..., notSet: () -> R): R = when (payload) { ... }
+     * ```
+     * The function is inline, so no lambda objects are created and primitive parameters are not boxed.
+     */
+    private fun CodeGenerator.generateOneOfWhenFunction(declaration: MessageDeclaration, oneOf: OneOfDeclaration) {
+        val indent = " ".repeat(config.indentSize)
+        val caseType = oneOf.caseTypeName.scoped()
+
+        val args = oneOf.variants
+            .map { variant ->
+                variant.typeFqName().wrapIn { type -> "\n$indent${variant.name}: ($type) -> R," }
+            }
+            .plus("\n$indent${oneOf.notSetParameterName}: () -> R,\n".scoped())
+            .joinToScopedString("")
+
+        function(
+            name = oneOf.whenFunctionName,
+            modifiers = "inline",
+            typeParameters = "R".scoped(),
+            contextReceiver = declaration.name.scoped(),
+            args = args,
+            returnType = "R".scoped(),
+            comment = Comment.leading(
+                "Exhaustive, typed dispatch on the active case of the `${oneOf.dec.name}` oneof."
+            ),
+        ) {
+            whenBlock(prefix = "return".scoped(), condition = "this.${oneOf.name}".scoped()) {
+                oneOf.variants.forEach { variant ->
+                    code(
+                        caseType.wrapIn {
+                            "$it.${oneOf.caseEntryName(variant)} -> ${variant.name}(this.${variant.name})"
+                        }
+                    )
+                }
+                code(caseType.wrapIn { "$it.${oneOf.notSetEntryName} -> ${oneOf.notSetParameterName}()" })
             }
         }
     }
@@ -2480,7 +2533,6 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
             is FieldType.List -> generateRepeatedExtensionDescriptor(field, type)
             is FieldType.Map -> error("Extensions can't be of type Map")
-            is FieldType.OneOf -> error("Extensions can't be of type OneOf")
         }
     }
 
@@ -2590,7 +2642,6 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.Message -> generateMessageExtensionDescriptor(field, type)
             is FieldType.List -> error("Nested repeated extensions are not supported: ${field.name}")
             is FieldType.Map -> error("Map extensions are not supported: ${field.name}")
-            is FieldType.OneOf -> error("OneOf extensions are not supported: ${field.name}")
         }
     }
 }

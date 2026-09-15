@@ -26,7 +26,6 @@ class ToStringTest {
                 enum=<unset>,
                 list=[],
                 map={},
-                oneof=null,
             )
         """.trimIndent(), message.toString())
     }
@@ -52,7 +51,6 @@ class ToStringTest {
                 enum=VALUE1,
                 list=[],
                 map={},
-                oneof=null,
             )
         """.trimIndent(), message.toString())
     }
@@ -73,7 +71,6 @@ class ToStringTest {
                 enum=<unset>,
                 list=[a, b, c],
                 map={},
-                oneof=null,
             )
         """.trimIndent(), message.toString())
     }
@@ -94,7 +91,6 @@ class ToStringTest {
                 enum=<unset>,
                 list=[],
                 map={1=1, 2=2, 3=3},
-                oneof=null,
             )
         """.trimIndent(), message.toString())
     }
@@ -104,7 +100,7 @@ class ToStringTest {
         val message = ToString {
             text = "hello"
             bytes = byteArrayOf(1, 2, 3).asByteString()
-            oneof = ToString.Oneof.Option1("option1_value")
+            option1 = "option1_value"
         }
         assertEquals("""
             ToString(
@@ -113,16 +109,16 @@ class ToStringTest {
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
+                option1=option1_value,
                 list=[],
                 map={},
-                oneof=Option1(value=option1_value),
             )
         """.trimIndent(), message.toString())
 
         val message2 = ToString {
             text = "hello"
             bytes = byteArrayOf(1, 2, 3).asByteString()
-            oneof = ToString.Oneof.Option3(42)
+            option3 = 42
         }
         assertEquals("""
             ToString(
@@ -131,9 +127,9 @@ class ToStringTest {
                 optionalBytes=<unset>,
                 nested=<unset>,
                 enum=<unset>,
+                option3=42,
                 list=[],
                 map={},
-                oneof=Option3(value=42),
             )
         """.trimIndent(), message2.toString())
     }
@@ -165,7 +161,6 @@ class ToStringTest {
                 enum=<unset>,
                 list=[],
                 map={},
-                oneof=null,
             )
         """.trimIndent(), message.toString())
     }

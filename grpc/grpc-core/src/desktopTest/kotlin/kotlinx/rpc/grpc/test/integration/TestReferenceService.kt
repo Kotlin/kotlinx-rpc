@@ -13,6 +13,14 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Nested
 import kotlinx.rpc.grpc.test.OneOf
+import kotlinx.rpc.grpc.test.OneOfMixedCase
+import kotlinx.rpc.grpc.test.OneOfPrimitivesCase
+import kotlinx.rpc.grpc.test.OneOfReferencesCase
+import kotlinx.rpc.grpc.test.OneOfSingleCase
+import kotlinx.rpc.grpc.test.mixed
+import kotlinx.rpc.grpc.test.primitives
+import kotlinx.rpc.grpc.test.references
+import kotlinx.rpc.grpc.test.single
 import kotlinx.rpc.grpc.test.OptionalTypes
 import kotlinx.rpc.grpc.test.Repeated
 import kotlinx.rpc.grpc.test.TestMap
@@ -239,43 +247,51 @@ class TestReferenceService : GrpcTestBase() {
     fun testOneOf() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val result1 = service.oneOf(OneOf {
-            primitives = OneOf.Primitives.StringValue("42")
-            references = OneOf.References.Other(kotlinx.rpc.grpc.test.Other {
+            stringValue = "42"
+            other = kotlinx.rpc.grpc.test.Other {
                 field = 42
-            })
-            mixed = OneOf.Mixed.Int64(42L)
-            single = OneOf.Single.Bytes(ByteString(42))
+            }
+            int64 = 42L
+            bytes = ByteString(42)
         })
 
-        assertEquals("42", (result1.primitives as OneOf.Primitives.StringValue).value)
-        assertEquals(42, (result1.references as OneOf.References.Other).value.field)
-        assertEquals(42L, (result1.mixed as OneOf.Mixed.Int64).value)
-        assertEquals(ByteString(42), (result1.single as OneOf.Single.Bytes).value)
+        assertEquals(OneOfPrimitivesCase.STRING_VALUE, result1.primitives)
+        assertEquals("42", result1.stringValue)
+        assertEquals(OneOfReferencesCase.OTHER, result1.references)
+        assertEquals(42, result1.other.field)
+        assertEquals(OneOfMixedCase.INT64, result1.mixed)
+        assertEquals(42L, result1.int64)
+        assertEquals(OneOfSingleCase.BYTES, result1.single)
+        assertEquals(ByteString(42), result1.bytes)
 
         val result2 = service.oneOf(OneOf {
-            primitives = OneOf.Primitives.Bool(true)
-            references = OneOf.References.InnerReferences(kotlinx.rpc.grpc.test.References {
+            bool = true
+            innerReferences = kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
                     field = 42
                 }
-            })
-            mixed = OneOf.Mixed.AllPrimitives(AllPrimitives {
+            }
+            allPrimitives = AllPrimitives {
                 string = "42"
-            })
+            }
         })
 
-        assertEquals(true, (result2.primitives as OneOf.Primitives.Bool).value)
-        assertEquals(42, (result2.references as OneOf.References.InnerReferences).value.other.field)
-        assertEquals("42", (result2.mixed as OneOf.Mixed.AllPrimitives).value.string)
-        assertEquals(null, result2.single)
+        assertEquals(OneOfPrimitivesCase.BOOL, result2.primitives)
+        assertEquals(true, result2.bool)
+        assertEquals(OneOfReferencesCase.INNER_REFERENCES, result2.references)
+        assertEquals(42, result2.innerReferences.other.field)
+        assertEquals(OneOfMixedCase.ALLPRIMITIVES, result2.mixed)
+        assertEquals("42", result2.allPrimitives.string)
+        assertEquals(OneOfSingleCase.NOT_SET, result2.single)
 
         val result3 = service.oneOf(OneOf {
-            primitives = OneOf.Primitives.Int32(42)
+            int32 = 42
         })
 
-        assertEquals(42, (result3.primitives as OneOf.Primitives.Int32).value)
-        assertEquals(null, result3.references)
-        assertEquals(null, result3.mixed)
-        assertEquals(null, result3.single)
+        assertEquals(OneOfPrimitivesCase.INT32, result3.primitives)
+        assertEquals(42, result3.int32)
+        assertEquals(OneOfReferencesCase.NOT_SET, result3.references)
+        assertEquals(OneOfMixedCase.NOT_SET, result3.mixed)
+        assertEquals(OneOfSingleCase.NOT_SET, result3.single)
     }
 }

@@ -513,6 +513,7 @@ class CodeGeneratorTest {
                 generateComments = generateComments,
                 generateFileLevelComments = false,
                 generateOptionalFieldOrNullGetters = false,
+                generateOneOfWhenFunctions = true,
                 indentSize = 4,
                 platform = platform,
                 protoNamesOutput = null,

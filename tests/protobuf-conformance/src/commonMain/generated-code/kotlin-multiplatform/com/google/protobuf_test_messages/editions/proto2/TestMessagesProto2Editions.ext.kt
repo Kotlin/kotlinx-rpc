@@ -148,6 +148,51 @@ val TestAllTypesProto2.optionalCordOrNull: String? get() = if (this.presence.has
 val TestAllTypesProto2.recursiveMessageOrNull: TestAllTypesProto2? get() = if (this.presence.hasRecursiveMessage) this.recursiveMessage else null
 
 /**
+ * Returns the value of the `oneofUint32` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofUint32OrNull: UInt? get() = if (this.presence.hasOneofUint32) this.oneofUint32 else null
+
+/**
+ * Returns the value of the `oneofNestedMessage` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofNestedMessageOrNull: TestAllTypesProto2.NestedMessage? get() = if (this.presence.hasOneofNestedMessage) this.oneofNestedMessage else null
+
+/**
+ * Returns the value of the `oneofString` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofStringOrNull: String? get() = if (this.presence.hasOneofString) this.oneofString else null
+
+/**
+ * Returns the value of the `oneofBytes` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofBytesOrNull: ByteString? get() = if (this.presence.hasOneofBytes) this.oneofBytes else null
+
+/**
+ * Returns the value of the `oneofBool` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofBoolOrNull: Boolean? get() = if (this.presence.hasOneofBool) this.oneofBool else null
+
+/**
+ * Returns the value of the `oneofUint64` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofUint64OrNull: ULong? get() = if (this.presence.hasOneofUint64) this.oneofUint64 else null
+
+/**
+ * Returns the value of the `oneofFloat` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofFloatOrNull: Float? get() = if (this.presence.hasOneofFloat) this.oneofFloat else null
+
+/**
+ * Returns the value of the `oneofDouble` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofDoubleOrNull: Double? get() = if (this.presence.hasOneofDouble) this.oneofDouble else null
+
+/**
+ * Returns the value of the `oneofEnum` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofEnumOrNull: TestAllTypesProto2.NestedEnum? get() = if (this.presence.hasOneofEnum) this.oneofEnum else null
+
+/**
  * Returns the value of the `data` field if present, otherwise null.
  */
 val TestAllTypesProto2.dataOrNull: TestAllTypesProto2.Data? get() = if (this.presence.hasData) this.data else null
@@ -326,6 +371,47 @@ val TestAllTypesProto2.fieldName18__OrNull: Int? get() = if (this.presence.hasFi
  * Returns the value of the `messageSetCorrect` field if present, otherwise null.
  */
 val TestAllTypesProto2.messageSetCorrectOrNull: TestAllTypesProto2.MessageSetCorrect? get() = if (this.presence.hasMessageSetCorrect) this.messageSetCorrect else null
+
+/**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesProto2OneofFieldCase.NOT_SET].
+ */
+val TestAllTypesProto2.oneofField: TestAllTypesProto2OneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Clears the `oneof_field` oneof regardless of its active case.
+ */
+fun TestAllTypesProto2.Builder.clearOneofField() {
+    this.asInternal().clearOneofFieldInternal()
+}
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesProto2.whenOneofField(
+    oneofUint32: (UInt) -> R,
+    oneofNestedMessage: (TestAllTypesProto2.NestedMessage) -> R,
+    oneofString: (String) -> R,
+    oneofBytes: (ByteString) -> R,
+    oneofBool: (Boolean) -> R,
+    oneofUint64: (ULong) -> R,
+    oneofFloat: (Float) -> R,
+    oneofDouble: (Double) -> R,
+    oneofEnum: (TestAllTypesProto2.NestedEnum) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesProto2OneofFieldCase.ONEOF_UINT32 -> oneofUint32(this.oneofUint32)
+        TestAllTypesProto2OneofFieldCase.ONEOF_NESTED_MESSAGE -> oneofNestedMessage(this.oneofNestedMessage)
+        TestAllTypesProto2OneofFieldCase.ONEOF_STRING -> oneofString(this.oneofString)
+        TestAllTypesProto2OneofFieldCase.ONEOF_BYTES -> oneofBytes(this.oneofBytes)
+        TestAllTypesProto2OneofFieldCase.ONEOF_BOOL -> oneofBool(this.oneofBool)
+        TestAllTypesProto2OneofFieldCase.ONEOF_UINT64 -> oneofUint64(this.oneofUint64)
+        TestAllTypesProto2OneofFieldCase.ONEOF_FLOAT -> oneofFloat(this.oneofFloat)
+        TestAllTypesProto2OneofFieldCase.ONEOF_DOUBLE -> oneofDouble(this.oneofDouble)
+        TestAllTypesProto2OneofFieldCase.ONEOF_ENUM -> oneofEnum(this.oneofEnum)
+        TestAllTypesProto2OneofFieldCase.NOT_SET -> notSet()
+    }
+}
 
 /**
  * Constructs a new message.
@@ -605,7 +691,7 @@ val TestAllRequiredTypesProto2.optionalRecursiveMessageOrNull: TestAllRequiredTy
  * Constructs a new message.
  * ```
  * val message = TestLargeOneof {
- *    largeOneof = ...
+ *    a1 = ...
  * }
  * ```
  */
@@ -617,12 +703,75 @@ operator fun TestLargeOneof.Companion.invoke(body: TestLargeOneof.Builder.() -> 
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
- *    largeOneof = ...
+ *    a1 = ...
  * }
  * ```
  */
 fun TestLargeOneof.copy(body: TestLargeOneof.Builder.() -> Unit = {}): TestLargeOneof {
     return this.asInternal().copyInternal(body)
+}
+
+/**
+ * Returns the field-presence view for this [TestLargeOneof] instance.
+ */
+val TestLargeOneof.presence: TestLargeOneofPresence get() = this.asInternal()._presence
+
+/**
+ * Returns the value of the `a1` field if present, otherwise null.
+ */
+val TestLargeOneof.a1OrNull: TestLargeOneof.A1? get() = if (this.presence.hasA1) this.a1 else null
+
+/**
+ * Returns the value of the `a2` field if present, otherwise null.
+ */
+val TestLargeOneof.a2OrNull: TestLargeOneof.A2? get() = if (this.presence.hasA2) this.a2 else null
+
+/**
+ * Returns the value of the `a3` field if present, otherwise null.
+ */
+val TestLargeOneof.a3OrNull: TestLargeOneof.A3? get() = if (this.presence.hasA3) this.a3 else null
+
+/**
+ * Returns the value of the `a4` field if present, otherwise null.
+ */
+val TestLargeOneof.a4OrNull: TestLargeOneof.A4? get() = if (this.presence.hasA4) this.a4 else null
+
+/**
+ * Returns the value of the `a5` field if present, otherwise null.
+ */
+val TestLargeOneof.a5OrNull: TestLargeOneof.A5? get() = if (this.presence.hasA5) this.a5 else null
+
+/**
+ * The active case of the `large_oneof` oneof, or [TestLargeOneofLargeOneofCase.NOT_SET].
+ */
+val TestLargeOneof.largeOneof: TestLargeOneofLargeOneofCase get() = this.asInternal()._largeOneofCase
+
+/**
+ * Clears the `large_oneof` oneof regardless of its active case.
+ */
+fun TestLargeOneof.Builder.clearLargeOneof() {
+    this.asInternal().clearLargeOneofInternal()
+}
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `large_oneof` oneof.
+ */
+inline fun <R> TestLargeOneof.whenLargeOneof(
+    a1: (TestLargeOneof.A1) -> R,
+    a2: (TestLargeOneof.A2) -> R,
+    a3: (TestLargeOneof.A3) -> R,
+    a4: (TestLargeOneof.A4) -> R,
+    a5: (TestLargeOneof.A5) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.largeOneof) {
+        TestLargeOneofLargeOneofCase.A1 -> a1(this.a1)
+        TestLargeOneofLargeOneofCase.A2 -> a2(this.a2)
+        TestLargeOneofLargeOneofCase.A3 -> a3(this.a3)
+        TestLargeOneofLargeOneofCase.A4 -> a4(this.a4)
+        TestLargeOneofLargeOneofCase.A5 -> a5(this.a5)
+        TestLargeOneofLargeOneofCase.NOT_SET -> notSet()
+    }
 }
 
 /**
@@ -844,7 +993,7 @@ val TestAllTypesProto2.MessageSetCorrectExtension2.subMsgOrNull: TestAllTypesPro
  * Constructs a new message.
  * ```
  * val message = ExtensionWithOneof {
- *    oneofField = ...
+ *    a = ...
  * }
  * ```
  */
@@ -856,12 +1005,54 @@ operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(body: TestAl
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
- *    oneofField = ...
+ *    a = ...
  * }
  * ```
  */
 fun TestAllTypesProto2.ExtensionWithOneof.copy(body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit = {}): TestAllTypesProto2.ExtensionWithOneof {
     return this.asInternal().copyInternal(body)
+}
+
+/**
+ * Returns the field-presence view for this [TestAllTypesProto2.ExtensionWithOneof] instance.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.presence: TestAllTypesProto2Presence.ExtensionWithOneof get() = this.asInternal()._presence
+
+/**
+ * Returns the value of the `a` field if present, otherwise null.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.aOrNull: Int? get() = if (this.presence.hasA) this.a else null
+
+/**
+ * Returns the value of the `b` field if present, otherwise null.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.bOrNull: Int? get() = if (this.presence.hasB) this.b else null
+
+/**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesProto2ExtensionWithOneofOneofFieldCase.NOT_SET].
+ */
+val TestAllTypesProto2.ExtensionWithOneof.oneofField: TestAllTypesProto2ExtensionWithOneofOneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Clears the `oneof_field` oneof regardless of its active case.
+ */
+fun TestAllTypesProto2.ExtensionWithOneof.Builder.clearOneofField() {
+    this.asInternal().clearOneofFieldInternal()
+}
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesProto2.ExtensionWithOneof.whenOneofField(
+    a: (Int) -> R,
+    b: (Int) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.A -> a(this.a)
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.B -> b(this.b)
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.NOT_SET -> notSet()
+    }
 }
 
 /**
@@ -1193,6 +1384,24 @@ interface TestAllTypesProto2Presence {
 
     val hasRecursiveMessage: Boolean
 
+    val hasOneofUint32: Boolean
+
+    val hasOneofNestedMessage: Boolean
+
+    val hasOneofString: Boolean
+
+    val hasOneofBytes: Boolean
+
+    val hasOneofBool: Boolean
+
+    val hasOneofUint64: Boolean
+
+    val hasOneofFloat: Boolean
+
+    val hasOneofDouble: Boolean
+
+    val hasOneofEnum: Boolean
+
     val hasData: Boolean
 
     val hasMultiwordgroupfield: Boolean
@@ -1313,6 +1522,16 @@ interface TestAllTypesProto2Presence {
         val hasI: Boolean
 
         val hasSubMsg: Boolean
+    }
+
+    /**
+     * Interface providing field-presence information for [TestAllTypesProto2.ExtensionWithOneof] messages.
+     * Retrieve it via the [TestAllTypesProto2.ExtensionWithOneof.presence] extension property.
+     */
+    interface ExtensionWithOneof {
+        val hasA: Boolean
+
+        val hasB: Boolean
     }
 }
 
@@ -1498,6 +1717,62 @@ interface TestAllRequiredTypesProto2Presence {
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
     }
+}
+
+/**
+ * Interface providing field-presence information for [TestLargeOneof] messages.
+ * Retrieve it via the [TestLargeOneof.presence] extension property.
+ */
+interface TestLargeOneofPresence {
+    val hasA1: Boolean
+
+    val hasA2: Boolean
+
+    val hasA3: Boolean
+
+    val hasA4: Boolean
+
+    val hasA5: Boolean
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesProto2].
+ * Retrieve the active case via the [TestAllTypesProto2.oneofField] extension property.
+ */
+enum class TestAllTypesProto2OneofFieldCase {
+    ONEOF_UINT32,
+    ONEOF_NESTED_MESSAGE,
+    ONEOF_STRING,
+    ONEOF_BYTES,
+    ONEOF_BOOL,
+    ONEOF_UINT64,
+    ONEOF_FLOAT,
+    ONEOF_DOUBLE,
+    ONEOF_ENUM,
+    NOT_SET,
+}
+
+/**
+ * Cases of the `large_oneof` oneof of [TestLargeOneof].
+ * Retrieve the active case via the [TestLargeOneof.largeOneof] extension property.
+ */
+enum class TestLargeOneofLargeOneofCase {
+    A1,
+    A2,
+    A3,
+    A4,
+    A5,
+    NOT_SET,
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesProto2.ExtensionWithOneof].
+ * Retrieve the active case via the [TestAllTypesProto2.ExtensionWithOneof.oneofField] extension property.
+ */
+enum class TestAllTypesProto2ExtensionWithOneofOneofFieldCase {
+    A,
+    B,
+    NOT_SET,
 }
 
 val TestAllTypesProto2.extensionInt32: Int get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32) ?: TestMessagesProto2EditionsKtExtensions.extensionInt32.defaultValue.value

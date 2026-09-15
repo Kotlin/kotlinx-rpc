@@ -12,12 +12,14 @@ import com.google.protobuf.kotlin.FieldMask
 import com.google.protobuf.kotlin.FloatValue
 import com.google.protobuf.kotlin.Int32Value
 import com.google.protobuf.kotlin.Int64Value
+import com.google.protobuf.kotlin.NullValue
 import com.google.protobuf.kotlin.StringValue
 import com.google.protobuf.kotlin.Struct
 import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -63,6 +65,56 @@ val TestAllTypesProto3.optionalForeignMessageOrNull: ForeignMessage? get() = if 
  * Returns the value of the `recursiveMessage` field if present, otherwise null.
  */
 val TestAllTypesProto3.recursiveMessageOrNull: TestAllTypesProto3? get() = if (this.presence.hasRecursiveMessage) this.recursiveMessage else null
+
+/**
+ * Returns the value of the `oneofUint32` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofUint32OrNull: UInt? get() = if (this.presence.hasOneofUint32) this.oneofUint32 else null
+
+/**
+ * Returns the value of the `oneofNestedMessage` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofNestedMessageOrNull: TestAllTypesProto3.NestedMessage? get() = if (this.presence.hasOneofNestedMessage) this.oneofNestedMessage else null
+
+/**
+ * Returns the value of the `oneofString` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofStringOrNull: String? get() = if (this.presence.hasOneofString) this.oneofString else null
+
+/**
+ * Returns the value of the `oneofBytes` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofBytesOrNull: ByteString? get() = if (this.presence.hasOneofBytes) this.oneofBytes else null
+
+/**
+ * Returns the value of the `oneofBool` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofBoolOrNull: Boolean? get() = if (this.presence.hasOneofBool) this.oneofBool else null
+
+/**
+ * Returns the value of the `oneofUint64` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofUint64OrNull: ULong? get() = if (this.presence.hasOneofUint64) this.oneofUint64 else null
+
+/**
+ * Returns the value of the `oneofFloat` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofFloatOrNull: Float? get() = if (this.presence.hasOneofFloat) this.oneofFloat else null
+
+/**
+ * Returns the value of the `oneofDouble` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofDoubleOrNull: Double? get() = if (this.presence.hasOneofDouble) this.oneofDouble else null
+
+/**
+ * Returns the value of the `oneofEnum` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofEnumOrNull: TestAllTypesProto3.NestedEnum? get() = if (this.presence.hasOneofEnum) this.oneofEnum else null
+
+/**
+ * Returns the value of the `oneofNullValue` field if present, otherwise null.
+ */
+val TestAllTypesProto3.oneofNullValueOrNull: NullValue? get() = if (this.presence.hasOneofNullValue) this.oneofNullValue else null
 
 /**
  * Returns the value of the `optionalBoolWrapper` field if present, otherwise null.
@@ -143,6 +195,49 @@ val TestAllTypesProto3.optionalValueOrNull: Value? get() = if (this.presence.has
  * Returns the value of the `optionalEmpty` field if present, otherwise null.
  */
 val TestAllTypesProto3.optionalEmptyOrNull: Empty? get() = if (this.presence.hasOptionalEmpty) this.optionalEmpty else null
+
+/**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesProto3OneofFieldCase.NOT_SET].
+ */
+val TestAllTypesProto3.oneofField: TestAllTypesProto3OneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Clears the `oneof_field` oneof regardless of its active case.
+ */
+fun TestAllTypesProto3.Builder.clearOneofField() {
+    this.asInternal().clearOneofFieldInternal()
+}
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesProto3.whenOneofField(
+    oneofUint32: (UInt) -> R,
+    oneofNestedMessage: (TestAllTypesProto3.NestedMessage) -> R,
+    oneofString: (String) -> R,
+    oneofBytes: (ByteString) -> R,
+    oneofBool: (Boolean) -> R,
+    oneofUint64: (ULong) -> R,
+    oneofFloat: (Float) -> R,
+    oneofDouble: (Double) -> R,
+    oneofEnum: (TestAllTypesProto3.NestedEnum) -> R,
+    oneofNullValue: (NullValue) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesProto3OneofFieldCase.ONEOF_UINT32 -> oneofUint32(this.oneofUint32)
+        TestAllTypesProto3OneofFieldCase.ONEOF_NESTED_MESSAGE -> oneofNestedMessage(this.oneofNestedMessage)
+        TestAllTypesProto3OneofFieldCase.ONEOF_STRING -> oneofString(this.oneofString)
+        TestAllTypesProto3OneofFieldCase.ONEOF_BYTES -> oneofBytes(this.oneofBytes)
+        TestAllTypesProto3OneofFieldCase.ONEOF_BOOL -> oneofBool(this.oneofBool)
+        TestAllTypesProto3OneofFieldCase.ONEOF_UINT64 -> oneofUint64(this.oneofUint64)
+        TestAllTypesProto3OneofFieldCase.ONEOF_FLOAT -> oneofFloat(this.oneofFloat)
+        TestAllTypesProto3OneofFieldCase.ONEOF_DOUBLE -> oneofDouble(this.oneofDouble)
+        TestAllTypesProto3OneofFieldCase.ONEOF_ENUM -> oneofEnum(this.oneofEnum)
+        TestAllTypesProto3OneofFieldCase.ONEOF_NULL_VALUE -> oneofNullValue(this.oneofNullValue)
+        TestAllTypesProto3OneofFieldCase.NOT_SET -> notSet()
+    }
+}
 
 /**
  * Constructs a new message.
@@ -253,6 +348,26 @@ interface TestAllTypesProto3Presence {
 
     val hasRecursiveMessage: Boolean
 
+    val hasOneofUint32: Boolean
+
+    val hasOneofNestedMessage: Boolean
+
+    val hasOneofString: Boolean
+
+    val hasOneofBytes: Boolean
+
+    val hasOneofBool: Boolean
+
+    val hasOneofUint64: Boolean
+
+    val hasOneofFloat: Boolean
+
+    val hasOneofDouble: Boolean
+
+    val hasOneofEnum: Boolean
+
+    val hasOneofNullValue: Boolean
+
     val hasOptionalBoolWrapper: Boolean
 
     val hasOptionalInt32Wrapper: Boolean
@@ -292,4 +407,22 @@ interface TestAllTypesProto3Presence {
     interface NestedMessage {
         val hasCorecursive: Boolean
     }
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesProto3].
+ * Retrieve the active case via the [TestAllTypesProto3.oneofField] extension property.
+ */
+enum class TestAllTypesProto3OneofFieldCase {
+    ONEOF_UINT32,
+    ONEOF_NESTED_MESSAGE,
+    ONEOF_STRING,
+    ONEOF_BYTES,
+    ONEOF_BOOL,
+    ONEOF_UINT64,
+    ONEOF_FLOAT,
+    ONEOF_DOUBLE,
+    ONEOF_ENUM,
+    ONEOF_NULL_VALUE,
+    NOT_SET,
 }

@@ -27,7 +27,6 @@ import kotlinx.rpc.protobuf.ProtoConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -167,14 +166,17 @@ class GeneratedMessageTest {
     @Test
     fun testOneofEnumCase() {
         val msg = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(42u)
+            oneofUint32 = 42u
         }
-        assertIs<TestAllTypes.OneofField.OneofUint32>(msg.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, msg.oneofField)
 
         val msg2 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofString("hello")
+            oneofString = "hello"
         }
-        assertIs<TestAllTypes.OneofField.OneofString>(msg2.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_STRING, msg2.oneofField)
+
+        val empty = TestAllTypes {}
+        assertEquals(TestAllTypesOneofFieldCase.NOT_SET, empty.oneofField)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testClearOneof
@@ -182,28 +184,39 @@ class GeneratedMessageTest {
     fun testClearOneof() {
         // Start with a oneof set, then create a message without it
         val msg = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(42u)
+            oneofUint32 = 42u
         }
-        assertIs<TestAllTypes.OneofField.OneofUint32>(msg.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, msg.oneofField)
+        assertTrue(msg.presence.hasOneofUint32)
 
-        val cleared = TestAllTypes {}
-        assertNull(cleared.oneofField)
+        val cleared = msg.copy { clearOneofField() }
+        assertEquals(TestAllTypesOneofFieldCase.NOT_SET, cleared.oneofField)
+        assertFalse(cleared.presence.hasOneofUint32)
+        assertEquals(0u, cleared.oneofUint32)
+
+        val clearedMember = msg.copy { clearOneofUint32() }
+        assertEquals(TestAllTypesOneofFieldCase.NOT_SET, clearedMember.oneofField)
+
+        // clearing a member that is not the active case is a no-op
+        val untouched = msg.copy { clearOneofString() }
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, untouched.oneofField)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testSetOneofClearsOthers
     @Test
     fun testSetOneofClearsOthers() {
-        // In our API, only one variant of the sealed interface can be assigned at a time
         val msg1 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(42u)
+            oneofUint32 = 42u
         }
-        assertIs<TestAllTypes.OneofField.OneofUint32>(msg1.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, msg1.oneofField)
 
         val msg2 = msg1.copy {
-            oneofField = TestAllTypes.OneofField.OneofString("hello")
+            oneofString = "hello"
         }
-        assertIs<TestAllTypes.OneofField.OneofString>(msg2.oneofField)
-        assertEquals("hello", (msg2.oneofField as TestAllTypes.OneofField.OneofString).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_STRING, msg2.oneofField)
+        assertEquals("hello", msg2.oneofString)
+        assertFalse(msg2.presence.hasOneofUint32)
+        assertEquals(0u, msg2.oneofUint32)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testOneofTypes
@@ -211,32 +224,36 @@ class GeneratedMessageTest {
     fun testOneofTypes() {
         // Test each oneof variant type
         val withUint32 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(123u)
+            oneofUint32 = 123u
         }
-        assertEquals(123u, (withUint32.oneofField as TestAllTypes.OneofField.OneofUint32).value)
+        assertEquals(123u, withUint32.oneofUint32)
 
         val withString = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofString("test")
+            oneofString = "test"
         }
-        assertEquals("test", (withString.oneofField as TestAllTypes.OneofField.OneofString).value)
+        assertEquals("test", withString.oneofString)
 
         val withBytes = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofBytes("bytes".encodeToByteArray().asByteString())
+            oneofBytes = "bytes".encodeToByteArray().asByteString()
         }
-        assertByteArrayEquals(
-            "bytes".encodeToByteArray(),
-            (withBytes.oneofField as TestAllTypes.OneofField.OneofBytes).value,
-        )
+        assertByteArrayEquals("bytes".encodeToByteArray(), withBytes.oneofBytes)
 
         val withNestedMessage = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofNestedMessage(
-                TestAllTypes.NestedMessage { bb = 42 },
-            )
+            oneofNestedMessage = TestAllTypes.NestedMessage { bb = 42 }
         }
-        assertEquals(
-            42,
-            (withNestedMessage.oneofField as TestAllTypes.OneofField.OneofNestedMessage).value.bb,
+        assertEquals(42, withNestedMessage.oneofNestedMessage.bb)
+
+        val dispatched = withNestedMessage.whenOneofField(
+            oneofUint32 = { it.toString() },
+            oneofNestedMessage = { "bb=${it.bb}" },
+            oneofString = { it },
+            oneofBytes = { it.toString() },
+            oneofCord = { it },
+            oneofStringPiece = { it },
+            oneofLazyNestedMessage = { "lazy bb=${it.bb}" },
+            notSet = { "" },
         )
+        assertEquals("bb=42", dispatched)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testOneofSerialization
@@ -246,40 +263,32 @@ class GeneratedMessageTest {
 
         // Test round-trip for each oneof variant
         val withUint32 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(123u)
+            oneofUint32 = 123u
         }
         val decoded1 = TestUtil.encodeDecode(withUint32, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofUint32>(decoded1.oneofField)
-        assertEquals(123u, (decoded1.oneofField as TestAllTypes.OneofField.OneofUint32).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, decoded1.oneofField)
+        assertEquals(123u, decoded1.oneofUint32)
 
         val withString = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofString("hello")
+            oneofString = "hello"
         }
         val decoded2 = TestUtil.encodeDecode(withString, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofString>(decoded2.oneofField)
-        assertEquals("hello", (decoded2.oneofField as TestAllTypes.OneofField.OneofString).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_STRING, decoded2.oneofField)
+        assertEquals("hello", decoded2.oneofString)
 
         val withBytes = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofBytes("world".encodeToByteArray().asByteString())
+            oneofBytes = "world".encodeToByteArray().asByteString()
         }
         val decoded3 = TestUtil.encodeDecode(withBytes, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofBytes>(decoded3.oneofField)
-        assertByteArrayEquals(
-            "world".encodeToByteArray(),
-            (decoded3.oneofField as TestAllTypes.OneofField.OneofBytes).value,
-        )
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_BYTES, decoded3.oneofField)
+        assertByteArrayEquals("world".encodeToByteArray(), decoded3.oneofBytes)
 
         val withNestedMessage = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofNestedMessage(
-                TestAllTypes.NestedMessage { bb = 99 },
-            )
+            oneofNestedMessage = TestAllTypes.NestedMessage { bb = 99 }
         }
         val decoded4 = TestUtil.encodeDecode(withNestedMessage, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofNestedMessage>(decoded4.oneofField)
-        assertEquals(
-            99,
-            (decoded4.oneofField as TestAllTypes.OneofField.OneofNestedMessage).value.bb,
-        )
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_NESTED_MESSAGE, decoded4.oneofField)
+        assertEquals(99, decoded4.oneofNestedMessage.bb)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/GeneratedMessageTest.java#testRecursiveMessageDefaultInstance
