@@ -35,7 +35,7 @@ process.env.CHROME_BIN = require('child_process').execFileSync(
     [
         '--input-type=module',
         '-e',
-        'console.log(await (await import("puppeteer")).default.executablePath());'
+        'console.log(await (await import("puppeteer")).default.executablePath({headless: "shell"}));'
     ],
     {encoding: 'utf8', cwd: __dirname}
 ).trim();
