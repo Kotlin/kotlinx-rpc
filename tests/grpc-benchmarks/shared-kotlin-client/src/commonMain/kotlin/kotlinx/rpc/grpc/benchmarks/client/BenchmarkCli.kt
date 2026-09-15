@@ -27,7 +27,7 @@ internal fun benchmarkCommand(
 ): CliktCommand = BenchmarkRootCommand().subcommands(
     HelpCommand(),
     ListBenchmarksCommand(registry),
-    RunBenchmarksCommand(registry),
+    RunBenchmarksCommand(registry, backend.implementationName),
 )
 
 private class BenchmarkRootCommand : NoOpCliktCommand(name = "kotlinx-rpc-grpc-benchmark-client") {
@@ -87,6 +87,7 @@ private class ListBenchmarksCommand(
 
 private class RunBenchmarksCommand(
     private val registry: BenchmarkRegistry,
+    private val implementationName: String,
 ) : CliktCommand(name = "run") {
     override fun help(context: Context): String = "Run one benchmark, or all registered benchmarks."
 
@@ -139,6 +140,7 @@ private class RunBenchmarksCommand(
             cases.map { benchmark to it }
         }
         val overrides = BenchmarkOverrides(warmupCalls, calls, concurrency, requestBytes, responseBytes)
+        var progressLineLength = 0
 
         val results = try {
             runBlocking {
@@ -147,9 +149,48 @@ private class RunBenchmarksCommand(
                 }
                 try {
                     val results = mutableListOf<BenchmarkResult>()
-                    for ((benchmark, benchmarkCase) in benchmarkCases) {
+                    for ((index, benchmarkAndCase) in benchmarkCases.withIndex()) {
+                        val (benchmark, benchmarkCase) = benchmarkAndCase
+                        if (benchmarkCases.size > 1) {
+                            val progress = renderBenchmarkProgress(
+                                completed = index,
+                                total = benchmarkCases.size,
+                                platform = currentPlatform,
+                                implementation = implementationName,
+                                benchmark = benchmark.name,
+                                benchmarkCase = benchmarkCase.name,
+                            )
+                            echo(
+                                renderBenchmarkProgressUpdate(
+                                    progress = progress,
+                                    previousLength = progressLineLength,
+                                    finished = false,
+                                ),
+                                trailingNewline = false,
+                                err = true,
+                            )
+                            progressLineLength = progress.length
+                        }
                         val parameters = overrides.applyTo(benchmarkCase.parameters)
                         results += benchmark.run(client, benchmarkCase, parameters)
+                    }
+                    if (benchmarkCases.size > 1) {
+                        val progress = renderBenchmarkProgress(
+                            completed = benchmarkCases.size,
+                            total = benchmarkCases.size,
+                            platform = currentPlatform,
+                            implementation = implementationName,
+                        )
+                        echo(
+                            renderBenchmarkProgressUpdate(
+                                progress = progress,
+                                previousLength = progressLineLength,
+                                finished = true,
+                            ),
+                            trailingNewline = false,
+                            err = true,
+                        )
+                        progressLineLength = 0
                     }
                     results
                 } finally {
@@ -158,9 +199,57 @@ private class RunBenchmarksCommand(
                 }
             }
         } catch (error: Throwable) {
+            echo(renderBenchmarkProgressLineBreak(progressLineLength), trailingNewline = false, err = true)
             echo("Benchmark failed: ${error.message ?: error::class.simpleName}", err = true)
             throw ProgramResult(1)
         }
         echo(render(results, target, format))
     }
+}
+
+private const val PROGRESS_BAR_WIDTH = 20
+
+internal fun renderBenchmarkProgressUpdate(
+    progress: String,
+    previousLength: Int,
+    finished: Boolean,
+): String {
+    val overwrite = if (previousLength > 0) renderBenchmarkProgressClear(previousLength) else ""
+    return overwrite + progress + if (finished) "\n" else ""
+}
+
+internal fun renderBenchmarkProgressLineBreak(previousLength: Int): String = if (previousLength > 0) "\n" else ""
+
+private fun renderBenchmarkProgressClear(length: Int): String = "\r" + " ".repeat(length) + "\r"
+
+internal fun renderBenchmarkProgress(
+    completed: Int,
+    total: Int,
+    platform: String,
+    implementation: String,
+    benchmark: String? = null,
+    benchmarkCase: String? = null,
+): String {
+    require(total > 0) { "Progress total must be positive" }
+    require(completed in 0..total) { "Completed benchmark count must be between 0 and total" }
+    require((benchmark == null) == (benchmarkCase == null)) {
+        "Benchmark and case must either both be specified or both be omitted"
+    }
+
+    val filled = PROGRESS_BAR_WIDTH * completed / total
+    val bar = buildString(PROGRESS_BAR_WIDTH) {
+        append("=".repeat(filled))
+        if (completed < total) {
+            append('>')
+            append("-".repeat(PROGRESS_BAR_WIDTH - filled - 1))
+        }
+    }
+    val remaining = total - completed
+    val activity = if (benchmark != null) {
+        "running benchmark=$benchmark case=$benchmarkCase"
+    } else {
+        "finished"
+    }
+    return "[$bar] $completed/$total complete, $remaining remaining | " +
+        "platform=$platform implementation=$implementation | $activity"
 }

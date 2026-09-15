@@ -12,7 +12,7 @@ revision from which the benchmark protos were vendored.
 
 ## Requirements
 
-- `curl` and `tar`
+- `curl`, `patch`, and `tar`
 - Bazelisk or Bazel 8.7.0
 - A C++ build toolchain supported by gRPC
 
@@ -25,6 +25,10 @@ revision from which the benchmark protos were vendored.
 
 The server listens without TLS on `[::]:50051` and uses the asynchronous C++
 server by default. Benchmark clients can connect to `localhost:50051`.
+
+The build applies a local correctness patch to the pinned asynchronous server.
+Upstream reuses response objects between calls but does not clear an existing
+payload when a request asks for a zero-byte response.
 
 The following environment variables customize the launcher:
 

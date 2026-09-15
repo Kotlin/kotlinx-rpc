@@ -269,7 +269,7 @@ extension Duration {
     }
 }
 
-private let currentPlatform: String = {
+let currentPlatform: String = {
     #if os(iOS) && targetEnvironment(simulator) && arch(arm64)
     return "ios-simulator-arm64"
     #elseif os(iOS) && targetEnvironment(simulator)

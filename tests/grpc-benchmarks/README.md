@@ -159,6 +159,28 @@ Simulator loopback is the default optimization environment. Physical-device and
 network-profile runs validate that a local improvement remains relevant under
 realistic conditions; they do not need to be part of every development run.
 
+Run the same benchmark across the current kotlinx-rpc, published legacy, and
+direct Swift clients with the combined runner (the C++ benchmark server must
+already be running):
+
+```shell
+./run-all.sh unary-latency
+./run-all.sh all
+./run-all.sh --output-dir ./results unary-payload-sweep --case symmetric-1m
+```
+
+The runner uses the same iOS Simulator for all clients and writes their results
+to one timestamped CSV file under `output/` by default. Use `--output-dir` to
+choose another directory. Multi-case runs report a progress bar to stderr with
+the current platform, implementation, benchmark, and case; CSV output remains
+machine-readable.
+
+Build output uses one transient terminal line and is cleared after a successful
+build. If a build fails, its captured output is printed for diagnosis. Set
+`KXRPC_BENCHMARK_VERBOSE_BUILD=1` to keep the complete build output visible.
+When stderr is redirected or is otherwise not a terminal, build output remains
+plain so automation logs continue to show activity.
+
 ## Result requirements
 
 The clients must emit compatible machine-readable fields so their results can

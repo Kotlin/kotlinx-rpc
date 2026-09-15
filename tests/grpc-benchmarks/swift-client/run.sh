@@ -5,6 +5,10 @@
 set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly GRPC_BENCHMARKS_DIR="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+readonly BENCHMARK_BINARY="${SCRIPT_DIR}/.build/arm64-apple-ios-simulator/release/swift-grpc-benchmark-client"
+
+source "${GRPC_BENCHMARKS_DIR}/scripts/transient-command.sh"
 
 usage() {
     cat <<'EOF'
@@ -77,8 +81,9 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
-BENCHMARK_BINARY="$("${SCRIPT_DIR}/build.sh")"
-readonly BENCHMARK_BINARY
+run_transient_command \
+    "platform=ios-simulator-arm64 implementation=swift" \
+    "${SCRIPT_DIR}/build.sh"
 SIMULATOR="$(ensure_ios_simulator)"
 readonly SIMULATOR
 
