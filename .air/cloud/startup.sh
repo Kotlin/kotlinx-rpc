@@ -164,6 +164,16 @@ warm_gradle() {
     log "Gradle: compiling JVM main and test classes for all modules (this takes a while)"
     gradle jvmTestClasses
     log "Gradle: JVM warm-up finished"
+
+    # Best effort: fetch the Kotlin/Native distribution + LLVM/sysroot dependencies and the
+    # Kotlin/JS + Wasm compiler artifacts by compiling :core for one target of each kind. A failure
+    # here only means a colder cache for non-JVM work, so it must not fail the startup.
+    log "Gradle: priming Kotlin/Native, JS and Wasm toolchains via :core (best effort)"
+    if gradle :core:compileKotlinLinuxX64 :core:compileKotlinJs :core:compileKotlinWasmJs --continue; then
+        log "Gradle: non-JVM toolchain warm-up finished"
+    else
+        log "WARNING: non-JVM toolchain warm-up failed; continuing (JVM environment is unaffected)"
+    fi
 }
 
 # ---------------------------------------------------------------------------
