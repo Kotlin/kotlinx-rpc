@@ -4,7 +4,7 @@ let package = Package(
   name: "_grpc_grpc-core",
   platforms: [
     .iOS("18.0"),
-    .macOS("10.15")
+    .macOS("12.0")
   ],
   products: [
     .library(

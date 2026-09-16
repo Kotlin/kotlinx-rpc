@@ -3,7 +3,7 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.4.0"
+    kotlin("jvm") version "2.4.20"
     id("org.jetbrains.kotlinx.rpc.plugin") version "0.11.0-grpc-189"
 }
 
