@@ -5,20 +5,17 @@ description: >
   and protobuf shim) in native-deps/shims/. Use this skill whenever the user wants
   to change shim C/C++ source code, update shim headers or .def files, bump a shim
   upstream version, add or remove archives
-  from the overlap excludes list, patch KLIB metadata, update the annotation module,
-  run shim fixture tests, publish shim artifacts locally, or debug any native shim
-  build failure. Also trigger when the user mentions "shim", "cinterop", "native
-  interop", "grpc shim", "protobuf shim", "KLIB patcher", "overlap archives",
-  "native-deps", "Bazel shim build", or "shim verification".
+  from the overlap excludes list, update the annotation module, publish shim artifacts
+  locally, or debug any native shim build failure. Also trigger when the user mentions
+  "shim", "cinterop", "native interop", "grpc shim", "protobuf shim", "overlap
+  archives", "native-deps", "Bazel shim build", or "shim verification".
 ---
 
 # Updating Native Shims
 
 Native shims are Kotlin/Native cinterop wrappers around third-party C/C++ libraries
 (gRPC core and protobuf wire). They live in `native-deps/shims/` as a **standalone
-Gradle build** (separate from the main kotlinx-rpc project). Each shim produces a
-patched KLIB that requires explicit `@OptIn` to use, keeping native internals out
-of the public API surface.
+Gradle build** (separate from the main kotlinx-rpc project).
 
 ## How to Execute
 
@@ -61,12 +58,6 @@ native-deps/shims/
       kotlinx/rpc/protobuf/internal/shim/InternalNativeProtobufApi.kt
     build.gradle.kts
 
-  klib-patcher/                  # Internal build tool (not published)
-    src/main/kotlin/.../KlibPatcher.kt
-
-  tests/                         # Gradle TestKit fixture tests
-    src/test/kotlin/...
-
   settings.gradle.kts
   gradle.properties
 
@@ -88,10 +79,7 @@ fat archive via Bazel directly.
 1. **Bazel builds** a target-specific static library (`build_target.sh` wraps `bazel build`).
 2. **Gradle unpacks** prebuilt archives (gRPC) or uses the Bazel output directly (protobuf).
 3. **CInterop** generates Kotlin bindings from the `.def` file + headers + static libs.
-4. **KlibPatcher** post-processes the KLIB to inject `@RequiresOptIn` annotations on all
-   declarations, so consumers must `@OptIn(InternalNativeRpcApi::class)` (or the protobuf
-   equivalent) to use them.
-5. The patched KLIB is **published** alongside the annotation artifact.
+4. The generated KLIB is **published** alongside the annotation artifact.
 
 ## Versioning
 
@@ -142,13 +130,6 @@ After editing:
 
 Annotations live in `annotation/src/commonMain/kotlin/`. Both are `@RequiresOptIn(level = ERROR)`.
 Changes here are rare — typically only when adding a new shim family.
-
-### Changing the KLIB patcher
-
-`klib-patcher/src/main/kotlin/kotlinx/rpc/nativedeps/tooling/KlibPatcher.kt`
-patches KLIB metadata post-cinterop. It uses `kotlinx-metadata-klib` to rewrite
-`.knm` files, adding the opt-in annotation to every declaration in the target
-package. Changes here are delicate — test thoroughly.
 
 ### Managing archive overlaps (KRPC-540)
 
@@ -218,27 +199,7 @@ Task: `:kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRe
 
 ## Verification
 
-### 1. Run fixture tests
-
-The `tests/` module uses Gradle TestKit to publish shim artifacts to a temporary
-verification repo and compile throwaway consumer projects against them.
-
-Via `running_gradle_tests` (projectRoot: `native-deps/shims/`), task: `:tests:test`
-
-This runs 8 test cases (4 per shim):
-
-| Test         | What it verifies                                                                                       |
-|--------------|--------------------------------------------------------------------------------------------------------|
-| **negative** | Code using shim symbols without `@OptIn` fails to compile with the expected diagnostic message         |
-| **positive** | Code with `@OptIn(InternalNativeRpcApi::class)` compiles successfully                                  |
-| **scope**    | Unrelated native code is unaffected by shim markers                                                    |
-| **artifact** | Published KLIB manifest contains the annotation dependency and `.knm` metadata carries annotation markers |
-
-Single test category examples:
-- `:tests:test --tests "*grpcNegativeTest"`
-- `:tests:test --tests "*protobufArtifactTest"`
-
-### 2. Verify in the main project
+### 1. Verify in the main project
 
 After publishing locally, build the shim consumers in the **main** project
 (default projectRoot) via `running_gradle_builds`:
@@ -249,7 +210,7 @@ After publishing locally, build the shim consumers in the **main** project
 Use whichever native target matches your host. If both compile cleanly, the shim
 changes integrate correctly with the rest of the project.
 
-### 3. Check for symbol overlaps (when changing archives)
+### 2. Check for symbol overlaps (when changing archives)
 
 If you modified archive contents, overlap excludes, or bumped an upstream version:
 
@@ -288,10 +249,6 @@ check that the main project builds first.
 `AbslInternalGetFileMappingHint` errors, the KRPC-540 workaround in
 `protobuf/build.gradle.kts` may need updating. Check that `llvm-objcopy` is
 available (the build searches Konan dependencies, then PATH).
-
-**KLIB patcher failures**: Usually caused by a Kotlin version mismatch in the
-metadata API. Check that `klib-patcher/build.gradle.kts` dependencies match the
-Kotlin version used by the shim build.
 
 **Clean rebuild** (projectRoot: `native-deps/shims/`):
 1. Run `clean` task

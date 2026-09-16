@@ -6,14 +6,17 @@ import org.gradle.api.tasks.Sync
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import util.compositeCatalogVersion
 import util.configureNativeShimBuild
+import util.configureSpacePackagesConsumerRepository
 import util.isApple
 import util.registerAppleMinOsDumpTasks
 import util.registerNativeShimBazelBuildTask
 import util.registerVerifyAppleMinOsTask
-import util.configureNativeShimTargets
-import util.configureSpacePackagesConsumerRepository
+import util.toTaskSuffix
 import java.util.concurrent.Callable
 
 /**
@@ -22,7 +25,6 @@ import java.util.concurrent.Callable
  * This build process includes assembling a KLIB from the following components:
  * 1. gRPC headers and prebuilt archives provided by native-deps/grpc-c-prebuilt.
  * 2. A small target-specific native shim library built using Bazel.
- * 3. A post-processing step that applies the `InternalNativeRpcApi` marker.
  */
 
 plugins {
@@ -39,9 +41,6 @@ version = grpcShimVersion.full
 
 val grpcCoreInteropName = "grpcCoreInterop"
 val grpcCoreInteropTaskName = grpcCoreInteropName.replaceFirstChar { it.uppercase() }
-val grpcInteropPackageName = "kotlinx.rpc.grpc.internal.cinterop"
-val grpcInternalNativeRpcApiClassName = "kotlinx/rpc/grpc/internal/shim/InternalNativeRpcApi"
-val grpcInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
 // grpc-core already depends on protobuf-lite, so grpc consumers see the protobuf shim transitively.
 // Keep an explicit exclusion list here so the grpc shim can drop bundle archives whose symbols are
 // already owned by the protobuf shim and avoid duplicate native definitions at final link time.
@@ -145,15 +144,10 @@ val prepareGrpcHeaders = tasks.register<Sync>("prepareGrpcHeaders") {
 }
 
 kotlin {
-    configureNativeShimTargets(
-        nativeShim = nativeShim,
-        interopName = grpcCoreInteropName,
-        targetPackageName = grpcInteropPackageName,
-        annotationClassName = grpcInternalNativeRpcApiClassName,
-        annotationDependencyUniqueName = grpcInternalNativeRpcApiDependencyUniqueName,
-    ) { context ->
-        val target = context.target
-        val taskSuffix = context.taskSuffix
+    targets.withType<KotlinNativeTarget>().configureEach {
+        val target = nativeShim.targets.single { it.bazelName == konanTarget.visibleName }
+        val taskSuffix = target.bazelName.toTaskSuffix()
+        val publicationTaskSuffix = target.kotlinName.replaceFirstChar { it.uppercase() }
         val grpcPrebuiltDir = layout.buildDirectory.dir("grpc/${target.bazelName}/prebuilt")
         val interopLibDir = layout.buildDirectory.dir("grpc/${target.bazelName}/interop-libs")
         val generatedDefFile = layout.buildDirectory.file("grpc/${target.bazelName}/$grpcCoreInteropName.def")
@@ -278,7 +272,10 @@ kotlin {
             )
             extraOpts("-libraryPath", interopLibDir.get().asFile.absolutePath)
         }
-        listOf(prepareGrpcHeaders, generateInteropDef)
+        val cinteropTaskName = "cinterop$grpcCoreInteropTaskName$publicationTaskSuffix"
+        tasks.named(cinteropTaskName, CInteropProcess::class) {
+            dependsOn(prepareGrpcHeaders, generateInteropDef)
+        }
     }
 }
 
