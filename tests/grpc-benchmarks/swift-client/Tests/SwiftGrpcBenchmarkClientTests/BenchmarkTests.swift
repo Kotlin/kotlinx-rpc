@@ -160,7 +160,7 @@ final class BenchmarkTests: XCTestCase {
         )
         XCTAssertEqual(
             registry.find("stream-concurrency-sweep")?.cases.map(\.name),
-            ["c1", "c2", "c4", "c8", "c16", "c32"]
+            ["c1", "c2", "c4", "c8", "c16"]
         )
         XCTAssertEqual(
             registry.find("server-streaming-throughput")?.cases.first { $0.name == "64k" }?.parameters,

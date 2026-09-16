@@ -230,9 +230,9 @@ private fun messageOverheadCases(): List<BenchmarkCase> = listOf(
 )
 
 // StreamingFromServer is unbounded, so completing each measurement resets its stream. SwiftNIO
-// tracks 32 recently reset HTTP/2 streams and can close the connection when late frames arrive for
-// an evicted stream, making higher concurrency unsuitable for a cross-implementation comparison.
-private fun streamConcurrencyCases(): List<BenchmarkCase> = listOf(1, 2, 4, 8, 16, 32).map { concurrency ->
+// retains a bounded number of recently reset HTTP/2 streams and can close the connection when late
+// frames arrive for an evicted stream. Stop at 16 so the warmup does not exhaust that allowance.
+private fun streamConcurrencyCases(): List<BenchmarkCase> = listOf(1, 2, 4, 8, 16).map { concurrency ->
     benchmarkCase(
         name = "c$concurrency",
         warmupCalls = maxOf(128, concurrency * 4),

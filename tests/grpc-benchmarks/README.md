@@ -69,8 +69,9 @@ measurement.
   65,536 × 1 KiB, 1,024 × 64 KiB, 64 × 1 MiB, and sixteen
   (4 MiB - 1 KiB) messages plus one 16 KiB remainder. The last case stays under
   the legacy client's fixed 4 MiB message limit.
-- [x] `stream-concurrency-sweep` — 1, 2, 4, 8, 16, and 32 concurrent
-  streams on one channel.
+- [x] `stream-concurrency-sweep` — 1, 2, 4, 8, and 16 concurrent streams on
+  one channel. The sweep stops below SwiftNIO's recently reset stream limit
+  because this unbounded RPC is cancelled after each measurement.
 
 The fixed-total-byte benchmark is required because it separates per-message
 interop and scheduling overhead from bulk byte-copying cost.

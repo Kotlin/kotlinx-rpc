@@ -61,8 +61,8 @@ class StreamingBenchmarksTest {
     fun definesStreamConcurrencyCases() {
         val cases = requireNotNull(registry.find("stream-concurrency-sweep")).cases
 
-        assertEquals(listOf("c1", "c2", "c4", "c8", "c16", "c32"), cases.map(BenchmarkCase::name))
-        assertEquals(BenchmarkParameters(128, 8_192, 32, 64, 1_024), cases.last().parameters)
+        assertEquals(listOf("c1", "c2", "c4", "c8", "c16"), cases.map(BenchmarkCase::name))
+        assertEquals(BenchmarkParameters(128, 8_192, 16, 64, 1_024), cases.last().parameters)
     }
 
     private object TestBenchmarkBackend : BenchmarkBackend {
