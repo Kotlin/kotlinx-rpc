@@ -83,7 +83,6 @@ The most important modules have brief READMEs in their directories, read when yo
 - `native-deps/shims/grpc/` -- gRPC cinterop shim KLIB (`:kotlinx-rpc-grpc-core-shim`)
 - `native-deps/shims/protobuf/` -- Protobuf cinterop shim KLIB (`:kotlinx-rpc-protobuf-shim`)
 - `native-deps/shims/annotation/` -- Shared opt-in markers (`:kotlinx-rpc-native-shims-annotation`)
-- `native-deps/shims/klib-patcher/` -- Internal KLIB metadata patcher
 - `native-deps/grpc-c-prebuilt/` -- Prebuilt gRPC static archives and headers
 
 ### Included builds (separate Gradle projects)

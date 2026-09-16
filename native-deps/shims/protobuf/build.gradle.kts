@@ -4,13 +4,16 @@
 
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
 import util.compositeCatalogVersion
 import util.configureNativeShimBuild
-import util.configureNativeShimTargets
 import util.isApple
 import util.registerAppleMinOsDumpTasks
 import util.registerNativeShimBazelBuildTask
 import util.registerVerifyAppleMinOsTask
+import util.toTaskSuffix
 import java.io.File
 import java.util.concurrent.Callable
 
@@ -20,8 +23,6 @@ import java.util.concurrent.Callable
  * This build process includes:
  * 1. Building the target-specific `protowire_fat` static library with Bazel.
  * 2. Running cinterop against the published protowire headers and static library.
- * 3. Patching the produced cinterop KLIB so the generated declarations require
- *    explicit opt-in via `InternalNativeProtobufApi`.
  */
 plugins {
     id("conventions-native-shim")
@@ -34,9 +35,6 @@ version = protobufShimVersion.full
 val protowireInteropName = "libprotowire"
 val protowireInteropTaskName = protowireInteropName.replaceFirstChar { it.uppercase() }
 val protowireInteropDefFile = layout.projectDirectory.file("src/nativeInterop/cinterop/libprotowire.def")
-val protobufInteropPackageName = "kotlinx.rpc.protobuf.internal.cinterop"
-val protobufInternalNativeRpcApiClassName = "kotlinx/rpc/protobuf/internal/shim/InternalNativeProtobufApi"
-val protobufInternalNativeRpcApiDependencyUniqueName = "org.jetbrains.kotlinx\\:kotlinx-rpc-native-shims-annotation"
 val protobufShimModuleFile = layout.projectDirectory.file("MODULE.bazel").asFile
 // KRPC-540 temporary Linux linker workaround.
 // Remove this symbol rewrite once protobuf moves to a Kotlin-only implementation and this native
@@ -149,16 +147,10 @@ fun runCheckedCommand(workingDir: File, vararg args: String) {
 }
 
 kotlin {
-    configureNativeShimTargets(
-        nativeShim = nativeShim,
-        interopName = protowireInteropName,
-        targetPackageName = protobufInteropPackageName,
-        annotationClassName = protobufInternalNativeRpcApiClassName,
-        annotationDependencyUniqueName = protobufInternalNativeRpcApiDependencyUniqueName,
-    ) { context ->
-        val target = context.target
-        val taskSuffix = context.taskSuffix
-        val shimLibDir = layout.buildDirectory.dir("protobuf/${target.bazelName}")
+    targets.withType<KotlinNativeTarget>().configureEach {
+        val target = nativeShim.targets.single { it.bazelName == konanTarget.visibleName }
+        val taskSuffix = target.bazelName.toTaskSuffix()
+        val publicationTaskSuffix = target.kotlinName.replaceFirstChar { it.uppercase() }
         val shimLibFile = layout.buildDirectory.file("protobuf/${target.bazelName}/libprotowire_fat.${target.bazelName}.a")
         val interopLibDir = layout.buildDirectory.dir("protobuf/${target.bazelName}/interop-libs")
 
@@ -248,7 +240,10 @@ kotlin {
             includeDirs(layout.projectDirectory.dir("include").asFile)
             extraOpts("-libraryPath", interopLibDir.get().asFile.absolutePath)
         }
-        listOf(prepareInterop)
+        val cinteropTaskName = "cinterop$protowireInteropTaskName$publicationTaskSuffix"
+        tasks.named(cinteropTaskName, CInteropProcess::class) {
+            dependsOn(prepareInterop)
+        }
     }
 }
 
