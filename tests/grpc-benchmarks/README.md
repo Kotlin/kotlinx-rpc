@@ -200,6 +200,13 @@ build. If a build fails, its captured output is printed for diagnosis. Set
 When stderr is redirected or is otherwise not a terminal, build output remains
 plain so automation logs continue to show activity.
 
+## Analysis reports
+
+Source-level analyses of benchmark runs live under [`reports/`](reports). The first report,
+[`reports/2026-09-16-grpc-swift-parity`](reports/2026-09-16-grpc-swift-parity/README.md), explains the
+grpc-swift-2 versus gRPC C-core gap measured on the iOS Simulator and proposes parity-only changes; it ships the
+analysed CSV and the script that produces its ratio tables.
+
 ## Result requirements
 
 The clients must emit compatible machine-readable fields so their results can
