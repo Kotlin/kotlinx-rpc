@@ -44,8 +44,13 @@ internal class GrpcClientTestFixture(
     private var scenarioConfigured: Boolean = false
 
     /** Registers this fixture's scenario before its data-plane call starts. */
-    internal suspend fun configureScenario() {
-        controlService.configureScenario(ConfigureScenarioRequest { callId = this@GrpcClientTestFixture.callId })
+    internal suspend fun configureScenario(barriers: List<Barrier> = emptyList()) {
+        controlService.configureScenario(
+            ConfigureScenarioRequest {
+                callId = this@GrpcClientTestFixture.callId
+                this.barriers = barriers
+            }
+        )
         scenarioConfigured = true
     }
 
@@ -63,6 +68,35 @@ internal class GrpcClientTestFixture(
         )
     }
 
+    /** Releases one configured one-based reference-server barrier occurrence. */
+    internal suspend fun releaseServerBarrier(
+        barrier: BarrierType,
+        occurrence: UInt = 1U,
+    ) {
+        controlService.releaseBarrier(
+            ReleaseBarrierRequest {
+                callId = this@GrpcClientTestFixture.callId
+                this.barrier = barrier
+                this.occurrence = occurrence
+            }
+        )
+    }
+
+    /** Verifies an event is absent from the current trace, then releases its protecting barrier. */
+    internal suspend fun assertServerEventAbsentUntil(
+        event: EventType,
+        barrier: BarrierType,
+        occurrence: UInt = 1U,
+    ) {
+        val trace = serverTrace()
+        assertEquals(
+            null,
+            trace.events.firstOrNull { it.type == event && it.occurrence == occurrence },
+            "call_id='$callId', unexpectedly observed $event occurrence $occurrence:\n${trace.render()}",
+        )
+        releaseServerBarrier(barrier, occurrence)
+    }
+
     /** Returns the server's ordered event trace for this fixture. */
     internal suspend fun serverTrace(): CallTrace {
         return controlService.getTrace(GetTraceRequest { callId = this@GrpcClientTestFixture.callId })
@@ -75,27 +109,28 @@ internal class GrpcClientTestFixture(
         )
     }
 
+    /** Awaits terminal server closure and verifies the complete ordered trace. */
+    internal suspend fun assertServerTrace(expectedEvents: List<ExpectedServerEvent>) {
+        awaitServerEvent(EventType.CALL_CLOSED)
+        serverTrace().assertEvents(callId, expectedEvents)
+    }
+
+    /** Compares response payloads with call and server-trace context on failure. */
+    internal suspend fun assertResponsePayloads(
+        expected: List<ByteArray>,
+        actual: List<ByteArray>,
+    ) {
+        val trace = serverTrace()
+        assertPayloadSequence(
+            expected,
+            actual,
+            context = "call_id='$callId', server trace:\n${trace.render()}",
+        )
+    }
+
     /** Verifies the complete request-to-close lifecycle of one successful unary call. */
     internal suspend fun assertUnaryLifecycle() {
-        awaitServerEvent(EventType.CALL_CLOSED)
-        val trace = serverTrace()
-        val expectedTypes = listOf(
-            EventType.CALL_ACCEPTED,
-            EventType.REQUEST_MESSAGE_RECEIVED,
-            EventType.CLIENT_HALF_CLOSED,
-            EventType.INITIAL_HEADERS_SENT,
-            EventType.RESPONSE_MESSAGE_SENT,
-            EventType.CALL_CLOSED,
-        )
-
-        assertEquals(callId, trace.callId)
-        assertEquals(expectedTypes, trace.events.map { it.type }, trace.failureMessage())
-        assertEquals(
-            (1UL..expectedTypes.size.toULong()).toList(),
-            trace.events.map { it.sequence },
-            trace.failureMessage(),
-        )
-        assertEquals(List(expectedTypes.size) { 1U }, trace.events.map { it.occurrence }, trace.failureMessage())
+        assertServerTrace(successfulUnaryEvents())
     }
 
     /**
@@ -138,23 +173,13 @@ internal class GrpcClientTestFixture(
         return cleanupFailures.combine()
     }
 
-    private fun CallTrace.failureMessage(): String = "call_id='$callId', server trace:\n${render()}"
-
     private suspend fun assertScenarioCompleted() {
         awaitServerEvent(EventType.CALL_CLOSED)
         val trace = serverTrace()
-        assertEquals(1, trace.events.count { it.type == EventType.CALL_CLOSED }, trace.failureMessage())
-        assertEquals(EventType.CALL_CLOSED, trace.events.lastOrNull()?.type, trace.failureMessage())
-
-        val diagnostics = serverDiagnostics()
-        val diagnosticsMessage = "call_id='$callId', server diagnostics: $diagnostics"
-        assertEquals(0U, diagnostics.activeCallCount, diagnosticsMessage)
-        assertEquals(emptyList(), diagnostics.outstandingBarriers, diagnosticsMessage)
-        assertEquals(0U, diagnostics.controlWaiterCount, diagnosticsMessage)
-    }
-
-    private fun CallTrace.render(): String = events.joinToString(separator = "\n") { event ->
-        "  ${event.sequence}: ${event.type} occurrence ${event.occurrence}"
+        val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
+        assertEquals(1, trace.events.count { it.type == EventType.CALL_CLOSED }, failureMessage)
+        assertEquals(EventType.CALL_CLOSED, trace.events.lastOrNull()?.type, failureMessage)
+        serverDiagnostics().assertNoLeaks(callId, trace)
     }
 }
 
