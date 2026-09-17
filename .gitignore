@@ -53,3 +53,6 @@ gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
 
 # Local gRPC benchmark results
 /tests/grpc-benchmarks/output/
+
+# Local Agentic context
+.claude/plan
