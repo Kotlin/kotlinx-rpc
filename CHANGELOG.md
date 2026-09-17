@@ -1,4 +1,4 @@
-# 0.11.0-grpc-189
+# 0.11.0-grpc-190
 > Published 17 Sep 2026
 
 ## Migration from 0.10.0-grpc-189
