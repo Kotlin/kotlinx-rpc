@@ -116,6 +116,45 @@ class CallScenarioRegistryTest {
         }
     }
 
+    @Test
+    fun diagnosticsReportActiveCallsWaitersAndOutstandingBarriers() {
+        val registry = registry()
+        val responseBarrier = barrier(BarrierType.SEND_RESPONSE, 2)
+        val halfCloseBarrier = barrier(BarrierType.DELIVER_CLIENT_HALF_CLOSE, 1)
+        registry.configure(
+            ConfigureScenarioRequest.newBuilder()
+                .setCallId("diagnostics")
+                .addBarriers(responseBarrier)
+                .addBarriers(halfCloseBarrier)
+                .build()
+        )
+        registry.callAccepted("diagnostics")
+
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val waiter = executor.submit<CallEvent> {
+                registry.awaitEvent("diagnostics", EventType.CALL_CLOSED, 1)
+            }
+            registry.awaitWaiterCount("diagnostics", 1)
+
+            val active = registry.diagnostics("diagnostics")
+            assertEquals(1, active.activeCallCount)
+            assertEquals(listOf(responseBarrier, halfCloseBarrier), active.outstandingBarriersList)
+            assertEquals(1, active.controlWaiterCount)
+
+            registry.releaseBarrier("diagnostics", BarrierType.SEND_RESPONSE, 2)
+            val closed = registry.callClosed("diagnostics")
+            assertEquals(closed, waiter.get(1, TimeUnit.SECONDS))
+
+            val completed = registry.diagnostics("diagnostics")
+            assertEquals(0, completed.activeCallCount)
+            assertEquals(listOf(halfCloseBarrier), completed.outstandingBarriersList)
+            assertEquals(0, completed.controlWaiterCount)
+        } finally {
+            executor.shutdownNow()
+        }
+    }
+
     private fun registry(): CallScenarioRegistry = CallScenarioRegistry(Duration.ofSeconds(2))
 
     private fun scenario(callId: String, vararg barrierTypes: BarrierType): ConfigureScenarioRequest {
@@ -129,6 +168,13 @@ class CallScenarioRegistryTest {
                         .build()
                 }
             )
+            .build()
+    }
+
+    private fun barrier(type: BarrierType, occurrence: Int): Barrier {
+        return Barrier.newBuilder()
+            .setType(type)
+            .setOccurrence(occurrence)
             .build()
     }
 }

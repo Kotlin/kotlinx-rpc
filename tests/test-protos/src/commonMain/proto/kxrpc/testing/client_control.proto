@@ -21,6 +21,9 @@ service GrpcClientControlService {
   // Returns the currently recorded trace in sequence order.
   rpc GetTrace(GetTraceRequest) returns (CallTrace);
 
+  // Returns lifecycle and barrier state used to detect leaked scenario work.
+  rpc GetScenarioDiagnostics(GetScenarioDiagnosticsRequest) returns (ScenarioDiagnostics);
+
   // Removes all state associated with a call.
   rpc DiscardScenario(DiscardScenarioRequest) returns (ControlAck);
 }
@@ -35,7 +38,7 @@ message ConfigureScenarioRequest {
 message Barrier {
   BarrierType type = 1;
 
-  // One-based occurrence of this barrier type.
+  // One-based request or response message occurrence where applicable.
   uint32 occurrence = 2;
 }
 
@@ -44,6 +47,12 @@ enum BarrierType {
   SEND_INITIAL_HEADERS = 1;
   SEND_RESPONSE = 2;
   CLOSE_CALL = 3;
+
+  // Gates delivery of one received request message to the service implementation.
+  DELIVER_REQUEST_MESSAGE = 4;
+
+  // Gates delivery of the client's half-close to the service implementation.
+  DELIVER_CLIENT_HALF_CLOSE = 5;
 }
 
 message AwaitEventRequest {
@@ -64,6 +73,23 @@ message ReleaseBarrierRequest {
 
 message GetTraceRequest {
   string call_id = 1;
+}
+
+message GetScenarioDiagnosticsRequest {
+  string call_id = 1;
+}
+
+message ScenarioDiagnostics {
+  string call_id = 1;
+
+  // Data-plane calls accepted for this scenario which have not closed.
+  uint32 active_call_count = 2;
+
+  // Configured barriers which have not been released.
+  repeated Barrier outstanding_barriers = 3;
+
+  // Control operations currently blocked awaiting an event or barrier.
+  uint32 control_waiter_count = 4;
 }
 
 message DiscardScenarioRequest {

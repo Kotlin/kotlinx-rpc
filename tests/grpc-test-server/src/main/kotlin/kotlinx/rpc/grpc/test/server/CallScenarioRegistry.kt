@@ -8,11 +8,13 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
 import kxrpc.testing.CallTrace
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.ScenarioDiagnostics
 
 internal class CallScenarioRegistry(
     private val waitTimeout: Duration = Duration.ofSeconds(10),
@@ -42,6 +44,10 @@ internal class CallScenarioRegistry(
         return scenario(callId).recordEvent(type)
     }
 
+    internal fun callAccepted(callId: String): CallEvent = scenario(callId).callAccepted()
+
+    internal fun callClosed(callId: String): CallEvent = scenario(callId).callClosed()
+
     internal fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
         requireKnownEvent(type)
         require(occurrence > 0) { "event occurrence must be one-based" }
@@ -67,6 +73,8 @@ internal class CallScenarioRegistry(
     }
 
     internal fun trace(callId: String): CallTrace = scenario(callId).trace()
+
+    internal fun diagnostics(callId: String): ScenarioDiagnostics = scenario(callId).diagnostics()
 
     internal fun discard(callId: String) {
         val scenario = scenarios.remove(callId) ?: throw ScenarioNotFoundException(callId)
@@ -119,9 +127,30 @@ private class ScenarioState(
     private val releasedBarriers = mutableSetOf<BarrierKey>()
     private var discarded = false
     private var waiterCount = 0
+    private var controlWaiterCount = 0
+    private var activeCallCount = 0
+
+    fun callAccepted(): CallEvent = lock.withLock {
+        checkNotDiscarded()
+        val event = recordEventLocked(EventType.CALL_ACCEPTED)
+        activeCallCount++
+        event
+    }
+
+    fun callClosed(): CallEvent = lock.withLock {
+        checkNotDiscarded()
+        check(activeCallCount > 0) { "scenario '$callId' has no active call to close" }
+        val event = recordEventLocked(EventType.CALL_CLOSED)
+        activeCallCount--
+        event
+    }
 
     fun recordEvent(type: EventType): CallEvent = lock.withLock {
         checkNotDiscarded()
+        recordEventLocked(type)
+    }
+
+    private fun recordEventLocked(type: EventType): CallEvent {
         check(events.size < MAX_TRACE_EVENTS) {
             "scenario '$callId' exceeded the maximum trace size of $MAX_TRACE_EVENTS events"
         }
@@ -135,11 +164,11 @@ private class ScenarioState(
             .build()
         events += event
         changed.signalAll()
-        event
+        return event
     }
 
     fun awaitEvent(type: EventType, occurrence: Int, timeout: Duration): CallEvent = lock.withLock {
-        await(timeout, "event ${type.number} occurrence $occurrence") {
+        await(timeout, "event ${type.number} occurrence $occurrence", controlWaiter = true) {
             events.firstOrNull { it.type.number == type.number && it.occurrence == occurrence }
         }
     }
@@ -159,14 +188,14 @@ private class ScenarioState(
         check(key in configuredBarriers) {
             "barrier ${key.typeNumber} occurrence ${key.occurrence} is not configured for scenario '$callId'"
         }
-        await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}") {
+        await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}", controlWaiter = false) {
             if (key in releasedBarriers) Unit else null
         }
     }
 
     fun awaitBarrierIfConfigured(key: BarrierKey, timeout: Duration) = lock.withLock {
         if (key in configuredBarriers) {
-            await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}") {
+            await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}", controlWaiter = false) {
                 if (key in releasedBarriers) Unit else null
             }
         }
@@ -177,6 +206,25 @@ private class ScenarioState(
         CallTrace.newBuilder()
             .setCallId(callId)
             .addAllEvents(events)
+            .build()
+    }
+
+    fun diagnostics(): ScenarioDiagnostics = lock.withLock {
+        checkNotDiscarded()
+        val outstandingBarriers = (configuredBarriers - releasedBarriers)
+            .sortedWith(compareBy(BarrierKey::typeNumber, BarrierKey::occurrence))
+            .map { key ->
+                Barrier.newBuilder()
+                    .setType(BarrierType.forNumber(key.typeNumber))
+                    .setOccurrence(key.occurrence)
+                    .build()
+            }
+
+        ScenarioDiagnostics.newBuilder()
+            .setCallId(callId)
+            .setActiveCallCount(activeCallCount)
+            .addAllOutstandingBarriers(outstandingBarriers)
+            .setControlWaiterCount(controlWaiterCount)
             .build()
     }
 
@@ -196,8 +244,14 @@ private class ScenarioState(
         }
     }
 
-    private fun <T : Any> await(timeout: Duration, awaited: String, result: () -> T?): T {
+    private fun <T : Any> await(
+        timeout: Duration,
+        awaited: String,
+        controlWaiter: Boolean,
+        result: () -> T?,
+    ): T {
         waiterCount++
+        if (controlWaiter) controlWaiterCount++
         changed.signalAll()
         try {
             var remainingNanos = timeout.toNanos()
@@ -211,6 +265,7 @@ private class ScenarioState(
             }
         } finally {
             waiterCount--
+            if (controlWaiter) controlWaiterCount--
             changed.signalAll()
         }
     }

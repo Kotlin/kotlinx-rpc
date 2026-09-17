@@ -68,6 +68,13 @@ internal class GrpcClientTestFixture(
         return controlService.getTrace(GetTraceRequest { callId = this@GrpcClientTestFixture.callId })
     }
 
+    /** Returns server-side lifecycle and barrier state for teardown diagnostics. */
+    internal suspend fun serverDiagnostics(): ScenarioDiagnostics {
+        return controlService.getScenarioDiagnostics(
+            GetScenarioDiagnosticsRequest { callId = this@GrpcClientTestFixture.callId }
+        )
+    }
+
     /** Verifies the complete request-to-close lifecycle of one successful unary call. */
     internal suspend fun assertUnaryLifecycle() {
         awaitServerEvent(EventType.CALL_CLOSED)
@@ -111,6 +118,9 @@ internal class GrpcClientTestFixture(
                 runCleanup(cleanupFailures) {
                     println("grpcClientTest failed for call_id='$callId'; server trace:\n${serverTrace().render()}")
                 }
+                runCleanup(cleanupFailures) {
+                    println("grpcClientTest server diagnostics for call_id='$callId': ${serverDiagnostics()}")
+                }
             }
         }
 
@@ -135,6 +145,12 @@ internal class GrpcClientTestFixture(
         val trace = serverTrace()
         assertEquals(1, trace.events.count { it.type == EventType.CALL_CLOSED }, trace.failureMessage())
         assertEquals(EventType.CALL_CLOSED, trace.events.lastOrNull()?.type, trace.failureMessage())
+
+        val diagnostics = serverDiagnostics()
+        val diagnosticsMessage = "call_id='$callId', server diagnostics: $diagnostics"
+        assertEquals(0U, diagnostics.activeCallCount, diagnosticsMessage)
+        assertEquals(emptyList(), diagnostics.outstandingBarriers, diagnosticsMessage)
+        assertEquals(0U, diagnostics.controlWaiterCount, diagnosticsMessage)
     }
 
     private fun CallTrace.render(): String = events.joinToString(separator = "\n") { event ->

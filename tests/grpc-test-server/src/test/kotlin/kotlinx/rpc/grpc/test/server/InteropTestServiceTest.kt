@@ -35,9 +35,11 @@ import kxrpc.testing.BarrierType
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
+import kxrpc.testing.ScenarioDiagnostics
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -129,6 +131,54 @@ class InteropTestServiceTest {
     }
 
     @Test
+    fun requestMessageDeliveryWaitsForItsConfiguredOccurrenceBarrier() = withFixture { fixture ->
+        val callId = "request-message-barrier"
+        fixture.configure(callId, listOf(BarrierType.DELIVER_REQUEST_MESSAGE to 2))
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val requests = fixture.asyncTestClient(callId).fullDuplexCall(responses)
+
+        requests.onNext(streamingRequest(3))
+        assertEquals(3, responses.awaitNext().payload.body.size())
+        requests.onNext(streamingRequest(5))
+        fixture.awaitEvent(callId, EventType.REQUEST_MESSAGE_RECEIVED, occurrence = 2)
+        assertFalse(responses.hasEvent())
+        val blocked = fixture.diagnostics(callId)
+        assertEquals(1, blocked.activeCallCount)
+        assertEquals(1, blocked.outstandingBarriersCount)
+        assertEquals(BarrierType.DELIVER_REQUEST_MESSAGE, blocked.outstandingBarriersList.single().type)
+        assertEquals(2, blocked.outstandingBarriersList.single().occurrence)
+        assertEquals(0, blocked.controlWaiterCount)
+        fixture.release(callId, BarrierType.DELIVER_REQUEST_MESSAGE, occurrence = 2)
+        assertEquals(5, responses.awaitNext().payload.body.size())
+
+        requests.onCompleted()
+        responses.awaitCompleted()
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun clientHalfCloseDeliveryWaitsForItsConfiguredBarrier() = withFixture { fixture ->
+        val callId = "half-close-barrier"
+        fixture.configure(callId, listOf(BarrierType.DELIVER_CLIENT_HALF_CLOSE to 1))
+        val response = AwaitingObserver<StreamingInputCallResponse>()
+        val requests = fixture.asyncTestClient(callId).streamingInputCall(response)
+
+        requests.onNext(streamingInputRequest(7))
+        requests.onCompleted()
+        fixture.awaitEvent(callId, EventType.CLIENT_HALF_CLOSED)
+        assertFalse(response.hasEvent())
+        fixture.release(callId, BarrierType.DELIVER_CLIENT_HALF_CLOSE)
+
+        assertEquals(7, response.awaitNext().aggregatedPayloadSize)
+        response.awaitCompleted()
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
     fun streamingOutputCallReturnsRequestedPayloadsInOrder() = withFixture { fixture ->
         val responses = fixture.testClient()
             .streamingOutputCall(streamingRequest(0, 7, 13))
@@ -143,6 +193,25 @@ class InteropTestServiceTest {
         val responses = fixture.testClient().streamingOutputCall(streamingRequest())
 
         assertFalse(responses.hasNext())
+    }
+
+    @Test
+    fun streamingOutputCallGatesAnIndividualResponseOccurrence() = withFixture { fixture ->
+        val callId = "response-message-barrier"
+        fixture.configure(callId, listOf(BarrierType.SEND_RESPONSE to 2))
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+
+        fixture.asyncTestClient(callId).streamingOutputCall(streamingRequest(3, 5), responses)
+
+        assertEquals(3, responses.awaitNext().payload.body.size())
+        fixture.awaitEvent(callId, EventType.RESPONSE_MESSAGE_SENT, occurrence = 1)
+        assertFalse(responses.hasEvent())
+        fixture.release(callId, BarrierType.SEND_RESPONSE, occurrence = 2)
+        assertEquals(5, responses.awaitNext().payload.body.size())
+        responses.awaitCompleted()
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
     }
 
     @Test
@@ -242,14 +311,18 @@ class InteropTestServiceTest {
         private val control = GrpcClientControlServiceGrpc.newBlockingStub(controlChannel)
 
         fun configure(callId: String, vararg barriers: BarrierType) {
+            configure(callId, barriers.map { it to 1 })
+        }
+
+        fun configure(callId: String, barriers: List<Pair<BarrierType, Int>>) {
             control.configureScenario(
                 ConfigureScenarioRequest.newBuilder()
                     .setCallId(callId)
                     .addAllBarriers(
-                        barriers.map { type ->
+                        barriers.map { (type, occurrence) ->
                             Barrier.newBuilder()
                                 .setType(type)
-                                .setOccurrence(1)
+                                .setOccurrence(occurrence)
                                 .build()
                         }
                     )
@@ -266,28 +339,35 @@ class InteropTestServiceTest {
                 .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
         }
 
-        fun asyncTestClient(): TestServiceGrpc.TestServiceStub = TestServiceGrpc.newStub(dataChannel)
+        fun asyncTestClient(callId: String? = null): TestServiceGrpc.TestServiceStub {
+            if (callId == null) return TestServiceGrpc.newStub(dataChannel)
+            val metadata = Metadata().apply {
+                put(Metadata.Key.of(TEST_CALL_ID_METADATA_KEY_NAME, Metadata.ASCII_STRING_MARSHALLER), callId)
+            }
+            return TestServiceGrpc.newStub(dataChannel)
+                .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+        }
 
         fun unimplementedClient(): UnimplementedServiceGrpc.UnimplementedServiceBlockingStub {
             return UnimplementedServiceGrpc.newBlockingStub(dataChannel)
         }
 
-        fun awaitEvent(callId: String, type: EventType) {
+        fun awaitEvent(callId: String, type: EventType, occurrence: Int = 1) {
             control.awaitEvent(
                 AwaitEventRequest.newBuilder()
                     .setCallId(callId)
                     .setEvent(type)
-                    .setOccurrence(1)
+                    .setOccurrence(occurrence)
                     .build()
             )
         }
 
-        fun release(callId: String, type: BarrierType) {
+        fun release(callId: String, type: BarrierType, occurrence: Int = 1) {
             control.releaseBarrier(
                 ReleaseBarrierRequest.newBuilder()
                     .setCallId(callId)
                     .setBarrier(type)
-                    .setOccurrence(1)
+                    .setOccurrence(occurrence)
                     .build()
             )
         }
@@ -296,6 +376,19 @@ class InteropTestServiceTest {
             return control.getTrace(GetTraceRequest.newBuilder().setCallId(callId).build())
                 .eventsList
                 .map { it.type }
+        }
+
+        fun assertNoLeaks(callId: String) {
+            val diagnostics = diagnostics(callId)
+            assertEquals(0, diagnostics.activeCallCount)
+            assertEquals(emptyList(), diagnostics.outstandingBarriersList)
+            assertEquals(0, diagnostics.controlWaiterCount)
+        }
+
+        fun diagnostics(callId: String): ScenarioDiagnostics {
+            return control.getScenarioDiagnostics(
+                GetScenarioDiagnosticsRequest.newBuilder().setCallId(callId).build()
+            )
         }
 
         fun discard(callId: String) {
@@ -348,6 +441,8 @@ class InteropTestServiceTest {
             ObserverEvent.Completed -> throw AssertionError("Stream completed instead of failing")
             is ObserverEvent.Value -> throw AssertionError("Stream produced an unexpected value: ${event.value}")
         }
+
+        fun hasEvent(): Boolean = events.isNotEmpty()
 
         private fun awaitEvent(): ObserverEvent<T> {
             return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("Timed out waiting for stream event")

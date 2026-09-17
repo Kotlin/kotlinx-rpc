@@ -12,8 +12,10 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.ControlAck
 import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.GetTraceRequest
+import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
+import kxrpc.testing.ScenarioDiagnostics
 
 internal class GrpcClientControlService(
     private val registry: CallScenarioRegistry,
@@ -47,6 +49,15 @@ internal class GrpcClientControlService(
     override fun getTrace(request: GetTraceRequest, responseObserver: StreamObserver<CallTrace>) {
         respond(responseObserver) {
             registry.trace(request.callId)
+        }
+    }
+
+    override fun getScenarioDiagnostics(
+        request: GetScenarioDiagnosticsRequest,
+        responseObserver: StreamObserver<ScenarioDiagnostics>,
+    ) {
+        respond(responseObserver) {
+            registry.diagnostics(request.callId)
         }
     }
 

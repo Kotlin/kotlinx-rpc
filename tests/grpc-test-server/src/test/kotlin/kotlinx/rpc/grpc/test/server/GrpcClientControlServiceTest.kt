@@ -17,6 +17,7 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.GetTraceRequest
+import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
 import kotlin.test.Test
@@ -50,6 +51,7 @@ class GrpcClientControlServiceTest {
             )
             assertEquals(recorded, awaited)
             assertEquals(listOf(recorded), client.getTrace(getTraceRequest(callId)).eventsList)
+            assertEquals(callId, client.getScenarioDiagnostics(diagnosticsRequest(callId)).callId)
 
             client.discardScenario(DiscardScenarioRequest.newBuilder().setCallId(callId).build())
             val error = kotlin.runCatching { client.getTrace(getTraceRequest(callId)) }.exceptionOrNull()
@@ -108,6 +110,16 @@ class GrpcClientControlServiceTest {
         )
         assertEquals(listOf(recorded), trace.eventsList)
 
+        val diagnostics = assertSuccess(
+            observer = RecordingObserver(),
+            invoke = { observer ->
+                service.getScenarioDiagnostics(diagnosticsRequest(callId), observer)
+            },
+        )
+        assertEquals(0, diagnostics.activeCallCount)
+        assertEquals(1, diagnostics.outstandingBarriersCount)
+        assertEquals(0, diagnostics.controlWaiterCount)
+
         assertSuccess(
             observer = RecordingObserver(),
             invoke = { observer ->
@@ -137,6 +149,10 @@ class GrpcClientControlServiceTest {
 
     private fun getTraceRequest(callId: String): GetTraceRequest {
         return GetTraceRequest.newBuilder().setCallId(callId).build()
+    }
+
+    private fun diagnosticsRequest(callId: String): GetScenarioDiagnosticsRequest {
+        return GetScenarioDiagnosticsRequest.newBuilder().setCallId(callId).build()
     }
 
     private fun <T> assertSuccess(

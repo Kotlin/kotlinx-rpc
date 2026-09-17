@@ -32,7 +32,7 @@ internal class InteropMetadataInterceptor(
 
         val callId = callIds.single()
         try {
-            registry.recordEvent(callId, EventType.CALL_ACCEPTED)
+            registry.callAccepted(callId)
         } catch (error: Throwable) {
             return reject(call, error.toGrpcStatus())
         }
@@ -108,10 +108,11 @@ internal class InteropMetadataInterceptor(
             recordClosed()
         }
 
-        fun recordRequestEvent(type: EventType): Boolean {
+        fun recordRequestEvent(type: EventType, barrier: BarrierType): Boolean {
             if (closed) return false
             return try {
-                registry.recordEvent(callId, type)
+                val event = registry.recordEvent(callId, type)
+                registry.awaitBarrierIfConfigured(callId, barrier, event.occurrence)
                 true
             } catch (error: Throwable) {
                 fail(error)
@@ -131,7 +132,7 @@ internal class InteropMetadataInterceptor(
         }
 
         private fun recordClosed() {
-            runCatching { registry.recordEvent(callId, EventType.CALL_CLOSED) }
+            runCatching { registry.callClosed(callId) }
         }
     }
 
@@ -140,13 +141,21 @@ internal class InteropMetadataInterceptor(
         private val call: ScenarioServerCall<ReqT, RespT>,
     ) : ForwardingServerCallListener.SimpleForwardingServerCallListener<ReqT>(delegate) {
         override fun onMessage(message: ReqT) {
-            if (call.recordRequestEvent(EventType.REQUEST_MESSAGE_RECEIVED)) {
+            if (call.recordRequestEvent(
+                    EventType.REQUEST_MESSAGE_RECEIVED,
+                    BarrierType.DELIVER_REQUEST_MESSAGE,
+                )
+            ) {
                 super.onMessage(message)
             }
         }
 
         override fun onHalfClose() {
-            if (call.recordRequestEvent(EventType.CLIENT_HALF_CLOSED)) {
+            if (call.recordRequestEvent(
+                    EventType.CLIENT_HALF_CLOSED,
+                    BarrierType.DELIVER_CLIENT_HALF_CLOSE,
+                )
+            ) {
                 super.onHalfClose()
             }
         }
