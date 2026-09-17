@@ -32,6 +32,14 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
+                implementation(projects.tests.testProtos)
+                implementation(projects.tests.testUtils)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                implementation(libs.grpc.netty)
             }
         }
 
