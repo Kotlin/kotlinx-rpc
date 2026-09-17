@@ -1,44 +1,70 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.test.server
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.grpc.test.EchoRequest
-import kotlinx.rpc.grpc.test.EchoResponse
-import kotlinx.rpc.grpc.test.EchoService
-import kotlinx.rpc.grpc.test.invoke
+import io.grpc.stub.StreamObserver
+import kotlinx.rpc.grpc.test.EchoGrpc.EchoRequest
+import kotlinx.rpc.grpc.test.EchoGrpc.EchoResponse
+import kotlinx.rpc.grpc.test.EchoServiceGrpc
 
-internal class EchoServiceImpl: EchoService {
-    override suspend fun unaryEcho(message: EchoRequest): EchoResponse {
-        delay(message.timeout.toLong())
-        return EchoResponse { this.message = message.message }
+internal class EchoServiceImpl : EchoServiceGrpc.EchoServiceImplBase() {
+    override fun unaryEcho(request: EchoRequest, responseObserver: StreamObserver<EchoResponse>) {
+        sleep(request.timeout)
+        responseObserver.onNext(response(request.message))
+        responseObserver.onCompleted()
     }
 
-    override fun serverStreamingEcho(message: EchoRequest): Flow<EchoResponse> {
-        val count = message.serverStreamReps ?: 5u
-        return flow {
-            repeat(count.toInt()) {
-                emit(EchoResponse { this.message = message.message })
+    override fun serverStreamingEcho(request: EchoRequest, responseObserver: StreamObserver<EchoResponse>) {
+        val count = if (request.hasServerStreamReps()) request.serverStreamReps else 5
+        repeat(count) {
+            responseObserver.onNext(response(request.message))
+        }
+        responseObserver.onCompleted()
+    }
+
+    override fun clientStreamingEcho(responseObserver: StreamObserver<EchoResponse>): StreamObserver<EchoRequest> {
+        return object : StreamObserver<EchoRequest> {
+            private val messages = mutableListOf<String>()
+
+            override fun onNext(request: EchoRequest) {
+                messages += request.message
+            }
+
+            override fun onError(error: Throwable) {
+                responseObserver.onError(error)
+            }
+
+            override fun onCompleted() {
+                responseObserver.onNext(response(messages.joinToString(", ")))
+                responseObserver.onCompleted()
             }
         }
     }
 
-    override suspend fun clientStreamingEcho(message: Flow<EchoRequest>): EchoResponse {
-        val result = message.toList().joinToString(", ") { it.message }
-        return EchoResponse { this.message = result }
-    }
+    override fun bidirectionalStreamingEcho(responseObserver: StreamObserver<EchoResponse>): StreamObserver<EchoRequest> {
+        return object : StreamObserver<EchoRequest> {
+            override fun onNext(request: EchoRequest) {
+                responseObserver.onNext(response(request.message))
+            }
 
-    override fun bidirectionalStreamingEcho(message: Flow<EchoRequest>): Flow<EchoResponse> {
-        return flow {
-            message.collect {
-                emit(EchoResponse { this.message = it.message })
+            override fun onError(error: Throwable) {
+                responseObserver.onError(error)
+            }
+
+            override fun onCompleted() {
+                responseObserver.onCompleted()
             }
         }
     }
 
+    private fun response(message: String): EchoResponse {
+        return EchoResponse.newBuilder().setMessage(message).build()
+    }
+
+    private fun sleep(timeoutMillis: Int) {
+        if (timeoutMillis == 0) return
+        Thread.sleep(Integer.toUnsignedLong(timeoutMillis))
+    }
 }
