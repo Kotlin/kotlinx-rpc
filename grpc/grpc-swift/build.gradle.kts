@@ -7,11 +7,14 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import util.setPublicArtifactId
 import util.targets.configureNativePublication
+import util.targets.configureSwiftPMXcodeBuildConfiguration
 
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
 }
+
+configureSwiftPMXcodeBuildConfiguration("Release")
 
 kotlin {
     explicitApi()

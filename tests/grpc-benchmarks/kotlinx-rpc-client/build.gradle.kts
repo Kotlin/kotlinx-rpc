@@ -4,11 +4,14 @@
 
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import util.targets.configureSwiftPMXcodeBuildConfiguration
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
 }
+
+configureSwiftPMXcodeBuildConfiguration("Release")
 
 val sharedKotlinClientSources = layout.projectDirectory.dir("../shared-kotlin-client/src")
 
