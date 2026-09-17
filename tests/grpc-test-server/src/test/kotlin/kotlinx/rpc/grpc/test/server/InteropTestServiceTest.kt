@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test.server
 
+import com.google.protobuf.ByteString
 import grpc.testing.EmptyOuterClass.Empty
 import io.grpc.Metadata
 import io.grpc.ServerInterceptors
@@ -12,12 +13,21 @@ import io.grpc.StatusRuntimeException
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
 import io.grpc.stub.MetadataUtils
+import io.grpc.stub.StreamObserver
 import io.grpc.testing.integration.Messages.EchoStatus
+import io.grpc.testing.integration.Messages.Payload
+import io.grpc.testing.integration.Messages.ResponseParameters
 import io.grpc.testing.integration.Messages.SimpleRequest
 import io.grpc.testing.integration.Messages.SimpleResponse
+import io.grpc.testing.integration.Messages.StreamingInputCallRequest
+import io.grpc.testing.integration.Messages.StreamingInputCallResponse
+import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
+import io.grpc.testing.integration.Messages.StreamingOutputCallResponse
 import io.grpc.testing.integration.TestServiceGrpc
+import io.grpc.testing.integration.UnimplementedServiceGrpc
 import java.net.InetSocketAddress
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kxrpc.testing.AwaitEventRequest
 import kxrpc.testing.Barrier
@@ -118,16 +128,109 @@ class InteropTestServiceTest {
         }
     }
 
+    @Test
+    fun streamingOutputCallReturnsRequestedPayloadsInOrder() = withFixture { fixture ->
+        val responses = fixture.testClient()
+            .streamingOutputCall(streamingRequest(0, 7, 13))
+            .asSequence()
+            .toList()
+
+        assertEquals(listOf(0, 7, 13), responses.map { it.payload.body.size() })
+    }
+
+    @Test
+    fun streamingOutputCallSupportsAnEmptyResponseStream() = withFixture { fixture ->
+        val responses = fixture.testClient().streamingOutputCall(streamingRequest())
+
+        assertFalse(responses.hasNext())
+    }
+
+    @Test
+    fun streamingInputCallReturnsAggregatedPayloadSize() = withFixture { fixture ->
+        val response = AwaitingObserver<StreamingInputCallResponse>()
+        val requests = fixture.asyncTestClient().streamingInputCall(response)
+
+        requests.onNext(streamingInputRequest(3))
+        requests.onNext(streamingInputRequest(5))
+        requests.onNext(streamingInputRequest(8))
+        requests.onCompleted()
+
+        assertEquals(16, response.awaitNext().aggregatedPayloadSize)
+        response.awaitCompleted()
+    }
+
+    @Test
+    fun fullDuplexCallStreamsEachResponseBeforeClientHalfClose() = withFixture { fixture ->
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val requests = fixture.asyncTestClient().fullDuplexCall(responses)
+
+        requests.onNext(streamingRequest(3))
+        assertEquals(3, responses.awaitNext().payload.body.size())
+        requests.onNext(streamingRequest(5))
+        assertEquals(5, responses.awaitNext().payload.body.size())
+
+        requests.onCompleted()
+        responses.awaitCompleted()
+    }
+
+    @Test
+    fun fullDuplexCallReturnsRequestedStatus() = withFixture { fixture ->
+        val expectedMessage = "stream requested failure"
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val requests = fixture.asyncTestClient().fullDuplexCall(responses)
+
+        requests.onNext(
+            StreamingOutputCallRequest.newBuilder()
+                .setResponseStatus(
+                    EchoStatus.newBuilder()
+                        .setCode(Status.Code.DATA_LOSS.value())
+                        .setMessage(expectedMessage)
+                )
+                .build()
+        )
+
+        val error = responses.awaitError()
+        assertEquals(Status.Code.DATA_LOSS, Status.fromThrowable(error).code)
+        assertEquals(expectedMessage, Status.fromThrowable(error).description)
+    }
+
+    @Test
+    fun halfDuplexCallReturnsBufferedResponsesAfterClientHalfClose() = withFixture { fixture ->
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val requests = fixture.asyncTestClient().halfDuplexCall(responses)
+
+        requests.onNext(streamingRequest(2, 3))
+        requests.onNext(streamingRequest(5))
+        requests.onCompleted()
+
+        assertEquals(listOf(2, 3, 5), List(3) { responses.awaitNext().payload.body.size() })
+        responses.awaitCompleted()
+    }
+
+    @Test
+    fun generatedDefaultsReturnUnimplementedForMethodAndService() = withFixture { fixture ->
+        val methodError = assertFailsWith<StatusRuntimeException> {
+            fixture.testClient().unimplementedCall(Empty.getDefaultInstance())
+        }
+        val serviceError = assertFailsWith<StatusRuntimeException> {
+            fixture.unimplementedClient().unimplementedCall(Empty.getDefaultInstance())
+        }
+
+        assertEquals(Status.Code.UNIMPLEMENTED, methodError.status.code)
+        assertEquals(Status.Code.UNIMPLEMENTED, serviceError.status.code)
+    }
+
     private fun withFixture(test: (Fixture) -> Unit) {
         Fixture().use(test)
     }
 
     private class Fixture : AutoCloseable {
         private val registry = CallScenarioRegistry()
+        private val interopService = InteropTestService()
         private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
             .addService(
                 ServerInterceptors.intercept(
-                    InteropTestService(),
+                    interopService,
                     InteropMetadataInterceptor(registry),
                 )
             )
@@ -161,6 +264,12 @@ class InteropTestServiceTest {
             }
             return TestServiceGrpc.newBlockingStub(dataChannel)
                 .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+        }
+
+        fun asyncTestClient(): TestServiceGrpc.TestServiceStub = TestServiceGrpc.newStub(dataChannel)
+
+        fun unimplementedClient(): UnimplementedServiceGrpc.UnimplementedServiceBlockingStub {
+            return UnimplementedServiceGrpc.newBlockingStub(dataChannel)
         }
 
         fun awaitEvent(callId: String, type: EventType) {
@@ -197,11 +306,58 @@ class InteropTestServiceTest {
             dataChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS)
             controlChannel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS)
             server.shutdownNow().awaitTermination(5, TimeUnit.SECONDS)
+            interopService.close()
         }
 
         private fun channel() = NettyChannelBuilder.forAddress("127.0.0.1", server.port)
             .usePlaintext()
             .build()
+    }
+
+    private class AwaitingObserver<T : Any> : StreamObserver<T> {
+        private val events = LinkedBlockingQueue<ObserverEvent<T>>()
+
+        override fun onNext(value: T) {
+            events.add(ObserverEvent.Value(value))
+        }
+
+        override fun onError(error: Throwable) {
+            events.add(ObserverEvent.Error(error))
+        }
+
+        override fun onCompleted() {
+            events.add(ObserverEvent.Completed)
+        }
+
+        fun awaitNext(): T = when (val event = awaitEvent()) {
+            is ObserverEvent.Value -> event.value
+            is ObserverEvent.Error -> throw AssertionError("Stream failed before its next value", event.error)
+            ObserverEvent.Completed -> throw AssertionError("Stream completed before its next value")
+        }
+
+        fun awaitCompleted() {
+            when (val event = awaitEvent()) {
+                ObserverEvent.Completed -> Unit
+                is ObserverEvent.Error -> throw AssertionError("Stream failed instead of completing", event.error)
+                is ObserverEvent.Value -> throw AssertionError("Stream produced an unexpected value: ${event.value}")
+            }
+        }
+
+        fun awaitError(): Throwable = when (val event = awaitEvent()) {
+            is ObserverEvent.Error -> event.error
+            ObserverEvent.Completed -> throw AssertionError("Stream completed instead of failing")
+            is ObserverEvent.Value -> throw AssertionError("Stream produced an unexpected value: ${event.value}")
+        }
+
+        private fun awaitEvent(): ObserverEvent<T> {
+            return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("Timed out waiting for stream event")
+        }
+    }
+
+    private sealed interface ObserverEvent<out T : Any> {
+        data class Value<T : Any>(val value: T) : ObserverEvent<T>
+        data class Error(val error: Throwable) : ObserverEvent<Nothing>
+        data object Completed : ObserverEvent<Nothing>
     }
 
     private companion object {
@@ -213,5 +369,19 @@ class InteropTestServiceTest {
             EventType.RESPONSE_MESSAGE_SENT,
             EventType.CALL_CLOSED,
         )
+
+        fun streamingRequest(vararg responseSizes: Int): StreamingOutputCallRequest {
+            return StreamingOutputCallRequest.newBuilder()
+                .addAllResponseParameters(
+                    responseSizes.map { size -> ResponseParameters.newBuilder().setSize(size).build() }
+                )
+                .build()
+        }
+
+        fun streamingInputRequest(payloadSize: Int): StreamingInputCallRequest {
+            return StreamingInputCallRequest.newBuilder()
+                .setPayload(Payload.newBuilder().setBody(ByteString.copyFrom(ByteArray(payloadSize))))
+                .build()
+        }
     }
 }

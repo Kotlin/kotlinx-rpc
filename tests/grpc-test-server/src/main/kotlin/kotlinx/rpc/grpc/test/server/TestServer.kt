@@ -10,12 +10,13 @@ import java.net.InetSocketAddress
 
 public fun main() {
     val registry = CallScenarioRegistry()
+    val interopService = InteropTestService()
     val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 50051))
         .addService(EchoServiceImpl())
         .addService(GreeterServiceImpl())
         .addService(
             ServerInterceptors.intercept(
-                InteropTestService(),
+                interopService,
                 InteropMetadataInterceptor(registry),
             )
         )
@@ -28,5 +29,6 @@ public fun main() {
     } finally {
         server.shutdown()
         server.awaitTermination()
+        interopService.close()
     }
 }
