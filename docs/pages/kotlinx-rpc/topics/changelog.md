@@ -3,6 +3,47 @@
 This page contains all changes throughout releases of the library.
 
 ## 0.11.0-grpc-189
+> Published 17 Sep 2026
+
+**Full Changelog**: [0.11.0-grpc-189...0.11.0-grpc-190](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-189...0.11.0-grpc-190)
+
+### Migration from 0.10.0-grpc-189 {id=Migration_from_0.10.0-grpc-189_0_11_0-grpc-189}
+
+Several things have changed in this release.
+Please update your code accordingly.
+
+#### Method names {id=Method_names_0_11_0-grpc-189}
+
+All gRPC method names and protobuf message fields are now generated in lowerCamelCase by default.
+Use `rpc.buf.generate.camelCaseNames` property in Gradle DSL to disable this behavior.
+
+### Changes {id=Changes_0_11_0-grpc-189}
+
+#### Features 🎉 {id=Features_0_11_0-grpc-189}
+* "protoc-gen" Add an option to generate lowerCamelCase gRPC method names by [@hondaya14](https://github.com/hondaya14) in [#725](https://github.com/Kotlin/kotlinx-rpc/pull/725)
+* KRPC-585: Define BSR in Gradle plugin by [@eminasljivic](https://github.com/eminasljivic) in [#739](https://github.com/Kotlin/kotlinx-rpc/pull/739)
+* Update Kotlin to 2.4.0 by [@Mr3zee](https://github.com/Mr3zee) in [#761](https://github.com/Kotlin/kotlinx-rpc/pull/761)
+
+#### Bug fixes 🐛 {id=Bug_fixes_0_11_0-grpc-189}
+* Fix unhandled exception crash in NativeClientCall.runBatch on iOS by [@ArturRahimzyanov](https://github.com/ArturRahimzyanov) in [#750](https://github.com/Kotlin/kotlinx-rpc/pull/750)
+* KXRPC-673: Import proto configurations from imported source set by [@eminasljivic](https://github.com/eminasljivic) in [#755](https://github.com/Kotlin/kotlinx-rpc/pull/755)
+* KXRPC-679: Fix shim klib linking for Kotlin 2.4.20+ by [@Jozott00](https://github.com/Jozott00) in [#762](https://github.com/Kotlin/kotlinx-rpc/pull/762)
+
+#### Infra 🚧 {id=Infra_0_11_0-grpc-189}
+* docs ci fix by [@Mr3zee](https://github.com/Mr3zee) in [#745](https://github.com/Kotlin/kotlinx-rpc/pull/745)
+* Added intellij-dependencies Space repo to publication targets by [@Mr3zee](https://github.com/Mr3zee) in [#758](https://github.com/Kotlin/kotlinx-rpc/pull/758)
+* Add Github Stack Skill by [@Jozott00](https://github.com/Jozott00) in [#764](https://github.com/Kotlin/kotlinx-rpc/pull/764)
+
+#### Other Changes 🧹 {id=Other_Changes_0_11_0-grpc-189}
+* Remove watchosArm32 target and adjust to new kotlin version by [@eminasljivic](https://github.com/eminasljivic) in [#751](https://github.com/Kotlin/kotlinx-rpc/pull/751)
+* Fix compiler plugin compilation against Kotlin master 2.5.0 by [@Mr3zee](https://github.com/Mr3zee) in [#757](https://github.com/Kotlin/kotlinx-rpc/pull/757)
+
+### New Contributors {id=New_Contributors_0_11_0-grpc-189}
+* [@ArturRahimzyanov](https://github.com/ArturRahimzyanov) made their first contribution in [#750](https://github.com/Kotlin/kotlinx-rpc/pull/750)
+* [@hondaya14](https://github.com/hondaya14) made their first contribution in [#725](https://github.com/Kotlin/kotlinx-rpc/pull/725)
+
+
+## 0.11.0-grpc-189
 > Published 7 Jul 2026
 
 **Full Changelog**: [0.11.0-grpc-188...0.11.0-grpc-189](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-188...0.11.0-grpc-189)
@@ -319,6 +360,15 @@ Two approaches are supported:
 * Integration tests for gRPC + Protoc generated files by [@Mr3zee](https://github.com/Mr3zee) in [#444](https://github.com/Kotlin/kotlinx-rpc/pull/444)
 * Remove `InputStream` abstraction in common by [@Jozott00](https://github.com/Jozott00) in [#571](https://github.com/Kotlin/kotlinx-rpc/pull/571)
 * Konan LLVM bundle mapping update by [@Jozott00](https://github.com/Jozott00) in [#585](https://github.com/Kotlin/kotlinx-rpc/pull/585)
+
+
+## 0.10.4
+> Published 17 September 2026
+
+**Full Changelog**: [0.10.3...0.10.4](https://github.com/Kotlin/kotlinx-rpc/compare/0.10.3...0.10.4)
+
+#### Features 🎉 {id=Features_0_10_4}
+* Update Kotlin to 2.4.0 by [@Mr3zee](https://github.com/Mr3zee) in [#761](https://github.com/Kotlin/kotlinx-rpc/pull/761)
 
 
 ## 0.10.3
