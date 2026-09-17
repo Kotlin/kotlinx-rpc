@@ -43,7 +43,9 @@ internal class EchoServiceImpl : EchoServiceGrpc.EchoServiceImplBase() {
         }
     }
 
-    override fun bidirectionalStreamingEcho(responseObserver: StreamObserver<EchoResponse>): StreamObserver<EchoRequest> {
+    override fun bidirectionalStreamingEcho(
+        responseObserver: StreamObserver<EchoResponse>,
+    ): StreamObserver<EchoRequest> {
         return object : StreamObserver<EchoRequest> {
             override fun onNext(request: EchoRequest) {
                 responseObserver.onNext(response(request.message))

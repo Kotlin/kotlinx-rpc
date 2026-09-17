@@ -60,6 +60,12 @@ internal class CallScenarioRegistry(
         scenario(callId).awaitBarrier(BarrierKey(type.number, occurrence), waitTimeout)
     }
 
+    internal fun awaitBarrierIfConfigured(callId: String, type: BarrierType, occurrence: Int) {
+        requireKnownBarrier(type)
+        require(occurrence > 0) { "barrier occurrence must be one-based" }
+        scenario(callId).awaitBarrierIfConfigured(BarrierKey(type.number, occurrence), waitTimeout)
+    }
+
     internal fun trace(callId: String): CallTrace = scenario(callId).trace()
 
     internal fun discard(callId: String) {
@@ -116,6 +122,9 @@ private class ScenarioState(
 
     fun recordEvent(type: EventType): CallEvent = lock.withLock {
         checkNotDiscarded()
+        check(events.size < MAX_TRACE_EVENTS) {
+            "scenario '$callId' exceeded the maximum trace size of $MAX_TRACE_EVENTS events"
+        }
         val occurrence = (eventOccurrences[type.number] ?: 0) + 1
         eventOccurrences[type.number] = occurrence
 
@@ -152,6 +161,14 @@ private class ScenarioState(
         }
         await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}") {
             if (key in releasedBarriers) Unit else null
+        }
+    }
+
+    fun awaitBarrierIfConfigured(key: BarrierKey, timeout: Duration) = lock.withLock {
+        if (key in configuredBarriers) {
+            await(timeout, "barrier ${key.typeNumber} occurrence ${key.occurrence}") {
+                if (key in releasedBarriers) Unit else null
+            }
         }
     }
 
@@ -200,5 +217,9 @@ private class ScenarioState(
 
     private fun checkNotDiscarded() {
         if (discarded) throw ScenarioDiscardedException(callId)
+    }
+
+    private companion object {
+        const val MAX_TRACE_EVENTS: Int = 1_024
     }
 }

@@ -26,6 +26,8 @@ service GrpcClientControlService {
 }
 
 message ConfigureScenarioRequest {
+  // Data-plane RPCs associate with this scenario using ASCII metadata key
+  // "kxrpc-test-call-id".
   string call_id = 1;
   repeated Barrier barriers = 2;
 }
