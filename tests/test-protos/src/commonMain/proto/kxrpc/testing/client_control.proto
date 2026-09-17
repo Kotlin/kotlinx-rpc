@@ -1,0 +1,94 @@
+// Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+
+syntax = "proto3";
+
+package kxrpc.testing;
+
+option java_multiple_files = true;
+option java_package = "kxrpc.testing";
+
+// Controls deterministic scenarios executed by the gRPC client reference server.
+service GrpcClientControlService {
+  // Registers a scenario before its data-plane call starts.
+  rpc ConfigureScenario(ConfigureScenarioRequest) returns (ControlAck);
+
+  // Blocks until the requested event occurrence has been recorded.
+  rpc AwaitEvent(AwaitEventRequest) returns (CallEvent);
+
+  // Releases one configured server-side barrier.
+  rpc ReleaseBarrier(ReleaseBarrierRequest) returns (ControlAck);
+
+  // Returns the currently recorded trace in sequence order.
+  rpc GetTrace(GetTraceRequest) returns (CallTrace);
+
+  // Removes all state associated with a call.
+  rpc DiscardScenario(DiscardScenarioRequest) returns (ControlAck);
+}
+
+message ConfigureScenarioRequest {
+  string call_id = 1;
+  repeated Barrier barriers = 2;
+}
+
+message Barrier {
+  BarrierType type = 1;
+
+  // One-based occurrence of this barrier type.
+  uint32 occurrence = 2;
+}
+
+enum BarrierType {
+  BARRIER_TYPE_UNSPECIFIED = 0;
+  SEND_INITIAL_HEADERS = 1;
+  SEND_RESPONSE = 2;
+  CLOSE_CALL = 3;
+}
+
+message AwaitEventRequest {
+  string call_id = 1;
+  EventType event = 2;
+
+  // One-based occurrence of this event type.
+  uint32 occurrence = 3;
+}
+
+message ReleaseBarrierRequest {
+  string call_id = 1;
+  BarrierType barrier = 2;
+
+  // One-based occurrence of this barrier type.
+  uint32 occurrence = 3;
+}
+
+message GetTraceRequest {
+  string call_id = 1;
+}
+
+message DiscardScenarioRequest {
+  string call_id = 1;
+}
+
+message ControlAck {}
+
+message CallEvent {
+  uint64 sequence = 1;
+  EventType type = 2;
+
+  // One-based occurrence of this event type.
+  uint32 occurrence = 3;
+}
+
+enum EventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  CALL_ACCEPTED = 1;
+  REQUEST_MESSAGE_RECEIVED = 2;
+  CLIENT_HALF_CLOSED = 3;
+  INITIAL_HEADERS_SENT = 4;
+  RESPONSE_MESSAGE_SENT = 5;
+  CALL_CLOSED = 6;
+}
+
+message CallTrace {
+  string call_id = 1;
+  repeated CallEvent events = 2;
+}
