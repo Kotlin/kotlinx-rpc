@@ -5,6 +5,8 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
+import org.gradle.api.tasks.testing.AbstractTestTask
+import util.grpc.withGrpcClientTestServer
 import util.targets.configureNonIosSourceSets
 
 plugins {
@@ -46,4 +48,8 @@ kotlin {
             }
         }
     }
+}
+
+tasks.withType(AbstractTestTask::class.java).configureEach {
+    withGrpcClientTestServer()
 }
