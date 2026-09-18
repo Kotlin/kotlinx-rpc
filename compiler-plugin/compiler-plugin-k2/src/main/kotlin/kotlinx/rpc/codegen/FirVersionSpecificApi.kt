@@ -13,7 +13,9 @@ import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 
@@ -36,6 +38,8 @@ interface FirVersionSpecificApi {
     ): FirResolvedTypeRef
 
     val messageCollectorKey: CompilerConfigurationKey<MessageCollector>
+
+    fun ConeTypeParameterType.typeParameterSymbolVS(): FirTypeParameterSymbol?
 }
 
 inline fun <T> vsApi(body: FirVersionSpecificApi.() -> T): T {

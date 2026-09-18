@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.codegen
 
+import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
+import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
+
 //##csm FirVersionSpecificApiImpl.kt-import
 //##csm specific=[2.0.0...2.0.10]
 import org.jetbrains.kotlin.KtSourceElement
@@ -123,6 +126,12 @@ import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 //##csm /specific
 //##csm /FirVersionSpecificApiImpl.kt-import
 
+//##csm ConeTypeParameterLookupTagImpl-import
+//##csm specific=[2.5.0...2.*]
+import org.jetbrains.kotlin.fir.symbols.ConeTypeParameterLookupTagImpl
+//##csm /specific
+//##csm /ConeTypeParameterLookupTagImpl-import
+
 object FirVersionSpecificApiImpl : FirVersionSpecificApi {
     override fun ConeKotlinType.toClassSymbolVS(session: FirSession): FirClassSymbol<*>? {
         //##csm ConeKotlinType.toClassSymbolVS
@@ -182,5 +191,16 @@ object FirVersionSpecificApiImpl : FirVersionSpecificApi {
         delegatedTypeRef: FirTypeRef?,
     ): FirResolvedTypeRef {
         return toFirResolvedTypeRef(source, delegatedTypeRef)
+    }
+
+    override fun ConeTypeParameterType.typeParameterSymbolVS(): FirTypeParameterSymbol? {
+        //##csm ConeTypeParameterType.typeParameterSymbolVS
+        //##csm default
+        return (lookupTag as? ConeTypeParameterLookupTagImpl)?.typeParameterSymbol
+        //##csm /default
+        //##csm specific=[2.0.0...2.4.99]
+        return lookupTag.typeParameterSymbol
+        //##csm /specific
+        //##csm /ConeTypeParameterType.typeParameterSymbolVS
     }
 }
