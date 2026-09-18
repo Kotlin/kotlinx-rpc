@@ -20,6 +20,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
@@ -52,15 +53,8 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             @GeneratedProtoMessage
             interface UserProfile {
                 val displayName: String
-                val contactInfo: ContactInfo?
-
-                sealed interface ContactInfo {
-                    @JvmInline
-                    value class EmailAddress(val value: String): ContactInfo
-
-                    @JvmInline
-                    value class PhoneNumber(val value: String): ContactInfo
-                }
+                val emailAddress: String
+                val phoneNumber: String
             }
             """.trimIndent(),
         )
@@ -82,6 +76,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
@@ -120,15 +115,8 @@ class ModelToProtobufKotlinCommonGeneratorTest {
                 val _leading_name: String
                 val trailing_name_: String
                 val foo__bar: String
-                val contact_info: contact_info?
-
-                sealed interface contact_info {
-                    @JvmInline
-                    value class email_address(val value: String): contact_info
-
-                    @JvmInline
-                    value class phone_number(val value: String): contact_info
-                }
+                val email_address: String
+                val phone_number: String
             }
             """.trimIndent(),
         )
@@ -150,6 +138,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
@@ -204,15 +193,8 @@ class ModelToProtobufKotlinCommonGeneratorTest {
                 val trailingName_: String
                 val doubleTrailingName__: String
                 val alreadyHTTP2Response: String
-                val oddChoice2: OddChoice2?
-
-                sealed interface OddChoice2 {
-                    @JvmInline
-                    value class FirstChoice(val value: String): OddChoice2
-
-                    @JvmInline
-                    value class Second2Choice(val value: String): OddChoice2
-                }
+                val firstChoice: String
+                val second2Choice: String
             }
             """.trimIndent(),
         )

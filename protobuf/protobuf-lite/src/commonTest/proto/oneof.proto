@@ -18,3 +18,46 @@ message OneOfWithRequired {
     kotlinx.rpc.protobuf.test.PresenceCheck msg = 2;
   }
 }
+
+// numeric-only members that all fit in 32 bits: single Int slot
+message OneOfNumeric32 {
+  oneof num {
+    int32 i32 = 1;
+    uint32 u32 = 2;
+    float f = 3;
+    bool b = 4;
+    sint32 s32 = 5;
+    fixed32 fx32 = 6;
+    sfixed32 sfx32 = 7;
+    kotlinx.rpc.protobuf.test.MyEnum enum = 8;
+  }
+}
+
+// at least one member needs 64 bits: single Long slot
+message OneOfNumeric64 {
+  oneof num {
+    int64 i64 = 1;
+    uint64 u64 = 2;
+    double d = 3;
+    float f = 4;
+    sint64 s64 = 5;
+    fixed64 fx64 = 6;
+    sfixed64 sfx64 = 7;
+    uint32 u32 = 8;
+    bool b = 9;
+  }
+}
+
+// reference-only members: single Any? slot
+message OneOfRefs {
+  oneof ref {
+    string str = 1;
+    bytes bytes = 2;
+    test.submsg.Other other = 3;
+  }
+}
+
+// same wire shape as OneOfNumeric32 { i32 = ... }, used as the allocation baseline
+message PlainNumeric {
+  optional int32 i32 = 1;
+}

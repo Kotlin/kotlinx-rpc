@@ -1,3 +1,27 @@
+# Unreleased
+
+## Migration from 0.11.0-grpc-190
+
+### Oneof fields
+
+The generated API for `oneof` declarations was redesigned. The nested sealed interface and its per-member
+wrapper classes are gone. Every oneof member is now a flat, non-nullable property of the message, and the
+oneof is represented by a top-level `<Message><Oneof>Case` enum class, a `<oneof>` extension property
+returning the active case, a `clear<Oneof>()` builder extension and an exhaustive `when<Oneof>` function.
+Members have `has<Member>` presence getters and `clear<Member>()` builder functions.
+
+| Before | After |
+|---|---|
+| `payload = Event.Payload.Text("hi")` | `text = "hi"` |
+| `(e.payload as Event.Payload.Text).value` | `e.text` or `e.textOrNull` |
+| `when (val p = e.payload) { is Event.Payload.Text -> p.value }` | `e.whenPayload(text = { it }, ...)` or `when (e.payload) { EventPayloadCase.TEXT -> e.text }` |
+| `e.payload == null` | `e.payload == EventPayloadCase.NOT_SET` |
+
+`toString()` of a message now prints only the active member of a oneof, as `text=hi`.
+The new `generateOneOfWhenFunctions` protoc option (`rpc.protoc.buf.generate.oneOfWhenFunctions` in Gradle,
+default `true`) controls the `when<Oneof>` functions.
+Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html#grpc-oneof-fields
+
 # 0.11.0-grpc-190
 > Published 17 Sep 2026
 

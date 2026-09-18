@@ -3,7 +3,6 @@
 
 package com.google.protobuf.conformance
 
-import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -44,6 +43,15 @@ interface FailureSet {
  */
 @GeneratedProtoMessage
 interface ConformanceRequest {
+    val protobufPayload: ByteString
+    val jsonPayload: String
+
+    /**
+     * Only used inside Google.  Opensource testees just skip it.
+     */
+    val jspbPayload: String
+    val textPayload: String
+
     /**
      * Which format should the testee serialize its message to?
      */
@@ -77,35 +85,6 @@ interface ConformanceRequest {
      * unknown fields instead of ignore. This feature is optional.
      */
     val printUnknownFields: Boolean
-
-    /**
-     * The payload (whether protobuf of JSON) is always for a
-     * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
-     * src/google/protobuf/proto3_test_messages.proto).
-     */
-    val payload: Payload?
-
-    /**
-     * The payload (whether protobuf of JSON) is always for a
-     * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
-     * src/google/protobuf/proto3_test_messages.proto).
-     */
-    sealed interface Payload {
-        @JvmInline
-        value class ProtobufPayload(val value: ByteString): Payload
-
-        @JvmInline
-        value class JsonPayload(val value: String): Payload
-
-        /**
-         * Only used inside Google.  Opensource testees just skip it.
-         */
-        @JvmInline
-        value class JspbPayload(val value: String): Payload
-
-        @JvmInline
-        value class TextPayload(val value: String): Payload
-    }
 }
 
 /**
@@ -113,79 +92,66 @@ interface ConformanceRequest {
  */
 @GeneratedProtoMessage
 interface ConformanceResponse {
-    val result: Result?
+    /**
+     * This string should be set to indicate parsing failed.  The string can
+     * provide more information about the parse error if it is available.
+     * 
+     * Setting this string does not necessarily mean the testee failed the
+     * test.  Some of the test cases are intentionally invalid input.
+     */
+    val parseError: String
 
-    sealed interface Result {
-        /**
-         * This string should be set to indicate parsing failed.  The string can
-         * provide more information about the parse error if it is available.
-         * 
-         * Setting this string does not necessarily mean the testee failed the
-         * test.  Some of the test cases are intentionally invalid input.
-         */
-        @JvmInline
-        value class ParseError(val value: String): Result
+    /**
+     * If the input was successfully parsed but errors occurred when
+     * serializing it to the requested output format, set the error message in
+     * this field.
+     */
+    val serializeError: String
 
-        /**
-         * If the input was successfully parsed but errors occurred when
-         * serializing it to the requested output format, set the error message in
-         * this field.
-         */
-        @JvmInline
-        value class SerializeError(val value: String): Result
+    /**
+     * This should be set if the test program timed out.  The string should
+     * provide more information about what the child process was doing when it
+     * was killed.
+     */
+    val timeoutError: String
 
-        /**
-         * This should be set if the test program timed out.  The string should
-         * provide more information about what the child process was doing when it
-         * was killed.
-         */
-        @JvmInline
-        value class TimeoutError(val value: String): Result
+    /**
+     * This should be set if some other error occurred.  This will always
+     * indicate that the test failed.  The string can provide more information
+     * about the failure.
+     */
+    val runtimeError: String
 
-        /**
-         * This should be set if some other error occurred.  This will always
-         * indicate that the test failed.  The string can provide more information
-         * about the failure.
-         */
-        @JvmInline
-        value class RuntimeError(val value: String): Result
+    /**
+     * If the input was successfully parsed and the requested output was
+     * protobuf, serialize it to protobuf and set it in this field.
+     */
+    val protobufPayload: ByteString
 
-        /**
-         * If the input was successfully parsed and the requested output was
-         * protobuf, serialize it to protobuf and set it in this field.
-         */
-        @JvmInline
-        value class ProtobufPayload(val value: ByteString): Result
+    /**
+     * If the input was successfully parsed and the requested output was JSON,
+     * serialize to JSON and set it in this field.
+     */
+    val jsonPayload: String
 
-        /**
-         * If the input was successfully parsed and the requested output was JSON,
-         * serialize to JSON and set it in this field.
-         */
-        @JvmInline
-        value class JsonPayload(val value: String): Result
+    /**
+     * For when the testee skipped the test, likely because a certain feature
+     * wasn't supported, like JSON input/output.
+     */
+    val skipped: String
 
-        /**
-         * For when the testee skipped the test, likely because a certain feature
-         * wasn't supported, like JSON input/output.
-         */
-        @JvmInline
-        value class Skipped(val value: String): Result
+    /**
+     * If the input was successfully parsed and the requested output was JSPB,
+     * serialize to JSPB and set it in this field. JSPB is only used inside
+     * Google. Opensource testees can just skip it.
+     */
+    val jspbPayload: String
 
-        /**
-         * If the input was successfully parsed and the requested output was JSPB,
-         * serialize to JSPB and set it in this field. JSPB is only used inside
-         * Google. Opensource testees can just skip it.
-         */
-        @JvmInline
-        value class JspbPayload(val value: String): Result
-
-        /**
-         * If the input was successfully parsed and the requested output was
-         * TEXT_FORMAT, serialize to TEXT_FORMAT and set it in this field.
-         */
-        @JvmInline
-        value class TextPayload(val value: String): Result
-    }
+    /**
+     * If the input was successfully parsed and the requested output was
+     * TEXT_FORMAT, serialize to TEXT_FORMAT and set it in this field.
+     */
+    val textPayload: String
 }
 
 /**

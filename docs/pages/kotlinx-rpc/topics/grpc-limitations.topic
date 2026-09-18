@@ -48,13 +48,6 @@
                 They are not mapped to Kotlin equivalents like <code>kotlinx.datetime.Instant</code>,
                 <code>kotlin.time.Duration</code>, or <code>Unit</code>.
             </def>
-            <def title="Oneof field access is being redesigned">
-                <code>oneof</code> fields are generated as Kotlin sealed classes and accessed
-                through a wrapper property (e.g. <code>message.either.success</code>).
-                A flatter access pattern (e.g. <code>message.success</code>) and
-                a more ergonomic builder syntax are being explored,
-                while preserving exhaustive <code>when</code> matching as the primary usage pattern.
-            </def>
             <def title="No kotlin_package option">
                 The <code>kotlin_package</code> file option is not supported.
                 Generated code uses the package derived from the proto <code>package</code> declaration.

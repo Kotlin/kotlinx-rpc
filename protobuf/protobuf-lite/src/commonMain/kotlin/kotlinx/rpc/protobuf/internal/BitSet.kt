@@ -37,6 +37,59 @@ public class BitSet(public val size: Int) {
         return (data[word] ushr (index and 63) and 1L) != 0L
     }
 
+    /**
+     * Clears every bit in the inclusive range [from]..[to].
+     * Used by generated oneof setters to reset all sibling presence bits at once.
+     */
+    public fun clearRange(from: Int, to: Int) {
+        require(from in 0..to && to < size) { "Range $from..$to out of bounds for length $size" }
+        var i = from
+        while (i <= to) {
+            val word = i ushr 6
+            val startBit = i and 63
+            val endBit = if ((to ushr 6) == word) (to and 63) else 63
+            data[word] = data[word] and rangeMask(startBit, endBit).inv()
+            i = (word + 1) shl 6
+        }
+    }
+
+    /**
+     * Clears every bit in the inclusive range [from]..[to] and then sets the bit at [index].
+     * [index] must lie within the range. This is a single mask operation when the range fits in one word.
+     */
+    public fun setExclusive(index: Int, from: Int, to: Int) {
+        require(index in from..to) { "Index $index is not within range $from..$to" }
+        val word = index ushr 6
+        if ((from ushr 6) == word && (to ushr 6) == word) {
+            require(to < size) { "Range $from..$to out of bounds for length $size" }
+            val mask = rangeMask(from and 63, to and 63)
+            data[word] = (data[word] and mask.inv()) or (1L shl (index and 63))
+        } else {
+            clearRange(from, to)
+            set(index, true)
+        }
+    }
+
+    /** Returns true if any bit in the inclusive range [from]..[to] is set. */
+    public fun anySet(from: Int, to: Int): Boolean {
+        require(from in 0..to && to < size) { "Range $from..$to out of bounds for length $size" }
+        var i = from
+        while (i <= to) {
+            val word = i ushr 6
+            val startBit = i and 63
+            val endBit = if ((to ushr 6) == word) (to and 63) else 63
+            if (data[word] and rangeMask(startBit, endBit) != 0L) return true
+            i = (word + 1) shl 6
+        }
+        return false
+    }
+
+    /** Mask with bits [startBit]..[endBit] (inclusive, both within 0..63) set. */
+    private fun rangeMask(startBit: Int, endBit: Int): Long {
+        val count = endBit - startBit + 1
+        return if (count == 64) -1L else ((1L shl count) - 1) shl startBit
+    }
+
     /** Clears all bits. */
     public fun clearAll() {
         data.fill(0L)

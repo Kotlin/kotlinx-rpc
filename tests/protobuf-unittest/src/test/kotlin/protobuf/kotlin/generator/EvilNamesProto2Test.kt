@@ -21,7 +21,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 class EvilNamesProto2Test {
 
@@ -128,11 +127,10 @@ class EvilNamesProto2Test {
     @Test
     fun testOneofField() {
         val msg = EvilNamesProto2 {
-            camelCase = EvilNamesProto2.CamelCase.FooBar("test")
+            fooBar = "test"
         }
-        val camelCase = msg.camelCase
-        assertTrue(camelCase is EvilNamesProto2.CamelCase.FooBar)
-        assertEquals("test", camelCase.value)
+        assertEquals(EvilNamesProto2CamelCaseCase.FOOBAR, msg.camelCase)
+        assertEquals("test", msg.fooBar)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto2Test.kt#testHardKeywordHazzers

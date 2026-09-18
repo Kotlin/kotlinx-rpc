@@ -181,6 +181,7 @@ internal open class DefaultProtocExtension @Inject constructor(
         options.put("generateComments", buf.generate.comments.copyComments)
         options.put("generateFileLevelComments", buf.generate.comments.includeFileLevelComments)
         options.put("generateOptionalFieldOrNullGetters", buf.generate.optionalFieldOrNullGetters)
+        options.put("generateOneOfWhenFunctions", buf.generate.oneOfWhenFunctions)
         options.put("indentSize", buf.generate.indentSize)
         options.put("camelCaseNames", buf.generate.camelCaseNames)
     }

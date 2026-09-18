@@ -97,28 +97,38 @@ import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
-class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 19) {
+class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 29) {
     @InternalRpcApi
     internal object PresenceIndices {
         const val optionalNestedMessage: Int = 0
         const val optionalForeignMessage: Int = 1
         const val recursiveMessage: Int = 2
-        const val optionalBoolWrapper: Int = 3
-        const val optionalInt32Wrapper: Int = 4
-        const val optionalInt64Wrapper: Int = 5
-        const val optionalUint32Wrapper: Int = 6
-        const val optionalUint64Wrapper: Int = 7
-        const val optionalFloatWrapper: Int = 8
-        const val optionalDoubleWrapper: Int = 9
-        const val optionalStringWrapper: Int = 10
-        const val optionalBytesWrapper: Int = 11
-        const val optionalDuration: Int = 12
-        const val optionalTimestamp: Int = 13
-        const val optionalFieldMask: Int = 14
-        const val optionalStruct: Int = 15
-        const val optionalAny: Int = 16
-        const val optionalValue: Int = 17
-        const val optionalEmpty: Int = 18
+        const val oneofUint32: Int = 3
+        const val oneofNestedMessage: Int = 4
+        const val oneofString: Int = 5
+        const val oneofBytes: Int = 6
+        const val oneofBool: Int = 7
+        const val oneofUint64: Int = 8
+        const val oneofFloat: Int = 9
+        const val oneofDouble: Int = 10
+        const val oneofEnum: Int = 11
+        const val oneofNullValue: Int = 12
+        const val optionalBoolWrapper: Int = 13
+        const val optionalInt32Wrapper: Int = 14
+        const val optionalInt64Wrapper: Int = 15
+        const val optionalUint32Wrapper: Int = 16
+        const val optionalUint64Wrapper: Int = 17
+        const val optionalFloatWrapper: Int = 18
+        const val optionalDoubleWrapper: Int = 19
+        const val optionalStringWrapper: Int = 20
+        const val optionalBytesWrapper: Int = 21
+        const val optionalDuration: Int = 22
+        const val optionalTimestamp: Int = 23
+        const val optionalFieldMask: Int = 24
+        const val optionalStruct: Int = 25
+        const val optionalAny: Int = 26
+        const val optionalValue: Int = 27
+        const val optionalEmpty: Int = 28
     }
 
     @InternalRpcApi
@@ -129,6 +139,31 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    private var _oneofFieldRef: Any? = null
+    private var _oneofFieldNum: Long = 0L
+
+    @InternalRpcApi
+    val _oneofFieldCase: TestAllTypesProto3OneofFieldCase get() = when {
+        presenceMask[PresenceIndices.oneofUint32] -> TestAllTypesProto3OneofFieldCase.ONEOF_UINT32
+        presenceMask[PresenceIndices.oneofNestedMessage] -> TestAllTypesProto3OneofFieldCase.ONEOF_NESTED_MESSAGE
+        presenceMask[PresenceIndices.oneofString] -> TestAllTypesProto3OneofFieldCase.ONEOF_STRING
+        presenceMask[PresenceIndices.oneofBytes] -> TestAllTypesProto3OneofFieldCase.ONEOF_BYTES
+        presenceMask[PresenceIndices.oneofBool] -> TestAllTypesProto3OneofFieldCase.ONEOF_BOOL
+        presenceMask[PresenceIndices.oneofUint64] -> TestAllTypesProto3OneofFieldCase.ONEOF_UINT64
+        presenceMask[PresenceIndices.oneofFloat] -> TestAllTypesProto3OneofFieldCase.ONEOF_FLOAT
+        presenceMask[PresenceIndices.oneofDouble] -> TestAllTypesProto3OneofFieldCase.ONEOF_DOUBLE
+        presenceMask[PresenceIndices.oneofEnum] -> TestAllTypesProto3OneofFieldCase.ONEOF_ENUM
+        presenceMask[PresenceIndices.oneofNullValue] -> TestAllTypesProto3OneofFieldCase.ONEOF_NULL_VALUE
+        else -> TestAllTypesProto3OneofFieldCase.NOT_SET
+    }
+
+    @InternalRpcApi
+    fun clearOneofFieldInternal() {
+        presenceMask.clearRange(PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue)
+        _oneofFieldRef = null
+        _oneofFieldNum = 0L
+    }
 
     internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var optionalInt32: Int by __optionalInt32Delegate
@@ -324,6 +359,86 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var mapStringNestedEnum: Map<String, TestAllTypesProto3.NestedEnum> by __mapStringNestedEnumDelegate
     internal val __mapStringForeignEnumDelegate: MsgFieldDelegate<Map<String, ForeignEnum>> = MsgFieldDelegate { emptyMap() }
     override var mapStringForeignEnum: Map<String, ForeignEnum> by __mapStringForeignEnumDelegate
+    override var oneofUint32: UInt
+        get() = if (presenceMask[PresenceIndices.oneofUint32]) _oneofFieldNum.toUInt() else 0u
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint32, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint32() {
+        if (presenceMask[PresenceIndices.oneofUint32]) clearOneofFieldInternal()
+    }
+
+    override var oneofNestedMessage: TestAllTypesProto3.NestedMessage
+        get() = if (presenceMask[PresenceIndices.oneofNestedMessage]) (_oneofFieldRef as TestAllTypesProto3.NestedMessage) else NestedMessageInternal.DEFAULT
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofNestedMessage, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofNestedMessage() {
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) clearOneofFieldInternal()
+    }
+
+    override var oneofString: String
+        get() = if (presenceMask[PresenceIndices.oneofString]) (_oneofFieldRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofString, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofString() {
+        if (presenceMask[PresenceIndices.oneofString]) clearOneofFieldInternal()
+    }
+
+    override var oneofBytes: ByteString
+        get() = if (presenceMask[PresenceIndices.oneofBytes]) (_oneofFieldRef as ByteString) else ByteString()
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBytes, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofBytes() {
+        if (presenceMask[PresenceIndices.oneofBytes]) clearOneofFieldInternal()
+    }
+
+    override var oneofBool: Boolean
+        get() = if (presenceMask[PresenceIndices.oneofBool]) (_oneofFieldNum != 0L) else false
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBool, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = if (value) 1L else 0L; _oneofFieldRef = null }
+
+    override fun clearOneofBool() {
+        if (presenceMask[PresenceIndices.oneofBool]) clearOneofFieldInternal()
+    }
+
+    override var oneofUint64: ULong
+        get() = if (presenceMask[PresenceIndices.oneofUint64]) _oneofFieldNum.toULong() else 0uL
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint64, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint64() {
+        if (presenceMask[PresenceIndices.oneofUint64]) clearOneofFieldInternal()
+    }
+
+    override var oneofFloat: Float
+        get() = if (presenceMask[PresenceIndices.oneofFloat]) Float.fromBits(_oneofFieldNum.toInt()) else 0.0f
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofFloat, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toRawBits().toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofFloat() {
+        if (presenceMask[PresenceIndices.oneofFloat]) clearOneofFieldInternal()
+    }
+
+    override var oneofDouble: Double
+        get() = if (presenceMask[PresenceIndices.oneofDouble]) Double.fromBits(_oneofFieldNum) else 0.0
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofDouble, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toRawBits(); _oneofFieldRef = null }
+
+    override fun clearOneofDouble() {
+        if (presenceMask[PresenceIndices.oneofDouble]) clearOneofFieldInternal()
+    }
+
+    override var oneofEnum: TestAllTypesProto3.NestedEnum
+        get() = if (presenceMask[PresenceIndices.oneofEnum]) TestAllTypesProto3.NestedEnum.fromNumber(_oneofFieldNum.toInt()) else TestAllTypesProto3.NestedEnum.FOO
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofEnum, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.number.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofEnum() {
+        if (presenceMask[PresenceIndices.oneofEnum]) clearOneofFieldInternal()
+    }
+
+    override var oneofNullValue: NullValue
+        get() = if (presenceMask[PresenceIndices.oneofNullValue]) NullValue.fromNumber(_oneofFieldNum.toInt()) else NullValue.NULL_VALUE
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofNullValue, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.number.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofNullValue() {
+        if (presenceMask[PresenceIndices.oneofNullValue]) clearOneofFieldInternal()
+    }
+
     internal val __optionalBoolWrapperDelegate: MsgFieldDelegate<BoolValue> = MsgFieldDelegate(PresenceIndices.optionalBoolWrapper) { BoolValueInternal.DEFAULT }
     override var optionalBoolWrapper: BoolValue by __optionalBoolWrapperDelegate
     override fun clearOptionalBoolWrapper() {
@@ -492,7 +607,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var fieldName17__: Int by __fieldName17__Delegate
     internal val __fieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName18__: Int by __fieldName18__Delegate
-    override var oneofField: TestAllTypesProto3.OneofField? = null
 
     private val _owner: TestAllTypesProto3Internal = this
 
@@ -505,6 +619,26 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override val hasOptionalForeignMessage: Boolean get() = presenceMask[PresenceIndices.optionalForeignMessage]
 
         override val hasRecursiveMessage: Boolean get() = presenceMask[PresenceIndices.recursiveMessage]
+
+        override val hasOneofUint32: Boolean get() = presenceMask[PresenceIndices.oneofUint32]
+
+        override val hasOneofNestedMessage: Boolean get() = presenceMask[PresenceIndices.oneofNestedMessage]
+
+        override val hasOneofString: Boolean get() = presenceMask[PresenceIndices.oneofString]
+
+        override val hasOneofBytes: Boolean get() = presenceMask[PresenceIndices.oneofBytes]
+
+        override val hasOneofBool: Boolean get() = presenceMask[PresenceIndices.oneofBool]
+
+        override val hasOneofUint64: Boolean get() = presenceMask[PresenceIndices.oneofUint64]
+
+        override val hasOneofFloat: Boolean get() = presenceMask[PresenceIndices.oneofFloat]
+
+        override val hasOneofDouble: Boolean get() = presenceMask[PresenceIndices.oneofDouble]
+
+        override val hasOneofEnum: Boolean get() = presenceMask[PresenceIndices.oneofEnum]
+
+        override val hasOneofNullValue: Boolean get() = presenceMask[PresenceIndices.oneofNullValue]
 
         override val hasOptionalBoolWrapper: Boolean get() = presenceMask[PresenceIndices.optionalBoolWrapper]
 
@@ -631,6 +765,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.mapStringForeignMessage.hashCode()
         result = 31 * result + this.mapStringNestedEnum.hashCode()
         result = 31 * result + this.mapStringForeignEnum.hashCode()
+        result = 31 * result + when {
+            presenceMask[PresenceIndices.oneofUint32] -> 111 * 31 + this.oneofUint32.hashCode()
+            presenceMask[PresenceIndices.oneofNestedMessage] -> 112 * 31 + this.oneofNestedMessage.hashCode()
+            presenceMask[PresenceIndices.oneofString] -> 113 * 31 + this.oneofString.hashCode()
+            presenceMask[PresenceIndices.oneofBytes] -> 114 * 31 + this.oneofBytes.hashCode()
+            presenceMask[PresenceIndices.oneofBool] -> 115 * 31 + this.oneofBool.hashCode()
+            presenceMask[PresenceIndices.oneofUint64] -> 116 * 31 + this.oneofUint64.hashCode()
+            presenceMask[PresenceIndices.oneofFloat] -> 117 * 31 + this.oneofFloat.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofDouble] -> 118 * 31 + this.oneofDouble.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofEnum] -> 119 * 31 + this.oneofEnum.hashCode()
+            presenceMask[PresenceIndices.oneofNullValue] -> 120 * 31 + this.oneofNullValue.hashCode()
+            else -> 0
+        }
+
         result = 31 * result + if (presenceMask[PresenceIndices.optionalBoolWrapper]) this.optionalBoolWrapper.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.optionalInt32Wrapper]) this.optionalInt32Wrapper.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.optionalInt64Wrapper]) this.optionalInt64Wrapper.hashCode() else 0
@@ -683,41 +831,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.fieldName16.hashCode()
         result = 31 * result + this.fieldName17__.hashCode()
         result = 31 * result + this.fieldName18__.hashCode()
-        result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
         return result
-    }
-
-    fun TestAllTypesProto3.OneofField.oneOfHashCode(): Int {
-        return when (this) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> hashCode() + 0
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> hashCode() + 1
-            is TestAllTypesProto3.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesProto3.OneofField.OneofBytes -> hashCode() + 3
-            is TestAllTypesProto3.OneofField.OneofBool -> hashCode() + 4
-            is TestAllTypesProto3.OneofField.OneofUint64 -> hashCode() + 5
-            is TestAllTypesProto3.OneofField.OneofFloat -> value.toBits().hashCode() + 6
-            is TestAllTypesProto3.OneofField.OneofDouble -> value.toBits().hashCode() + 7
-            is TestAllTypesProto3.OneofField.OneofEnum -> hashCode() + 8
-            is TestAllTypesProto3.OneofField.OneofNullValue -> hashCode() + 9
-        }
-    }
-
-    fun oneOfEquals(a: TestAllTypesProto3.OneofField?, b: TestAllTypesProto3.OneofField?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> a == b
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> a == b
-            is TestAllTypesProto3.OneofField.OneofString -> a == b
-            is TestAllTypesProto3.OneofField.OneofBytes -> a == b
-            is TestAllTypesProto3.OneofField.OneofBool -> a == b
-            is TestAllTypesProto3.OneofField.OneofUint64 -> a == b
-            is TestAllTypesProto3.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofFloat).value.toBits()
-            is TestAllTypesProto3.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofDouble).value.toBits()
-            is TestAllTypesProto3.OneofField.OneofEnum -> a == b
-            is TestAllTypesProto3.OneofField.OneofNullValue -> a == b
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -816,6 +930,16 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (this.mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
+        if (presenceMask[PresenceIndices.oneofUint32] && this.oneofUint32 != other.oneofUint32) return false
+        if (presenceMask[PresenceIndices.oneofNestedMessage] && this.oneofNestedMessage != other.oneofNestedMessage) return false
+        if (presenceMask[PresenceIndices.oneofString] && this.oneofString != other.oneofString) return false
+        if (presenceMask[PresenceIndices.oneofBytes] && this.oneofBytes != other.oneofBytes) return false
+        if (presenceMask[PresenceIndices.oneofBool] && this.oneofBool != other.oneofBool) return false
+        if (presenceMask[PresenceIndices.oneofUint64] && this.oneofUint64 != other.oneofUint64) return false
+        if (presenceMask[PresenceIndices.oneofFloat] && this.oneofFloat.toBits() != other.oneofFloat.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofDouble] && this.oneofDouble.toBits() != other.oneofDouble.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofEnum] && this.oneofEnum != other.oneofEnum) return false
+        if (presenceMask[PresenceIndices.oneofNullValue] && this.oneofNullValue != other.oneofNullValue) return false
         if (presenceMask[PresenceIndices.optionalBoolWrapper] && this.optionalBoolWrapper != other.optionalBoolWrapper) return false
         if (presenceMask[PresenceIndices.optionalInt32Wrapper] && this.optionalInt32Wrapper != other.optionalInt32Wrapper) return false
         if (presenceMask[PresenceIndices.optionalInt64Wrapper] && this.optionalInt64Wrapper != other.optionalInt64Wrapper) return false
@@ -867,8 +991,7 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.fieldName15 != other.fieldName15) return false
         if (this.fieldName16 != other.fieldName16) return false
         if (this.fieldName17__ != other.fieldName17__) return false
-        if (this.fieldName18__ != other.fieldName18__) return false
-        return oneOfEquals(this.oneofField, other.oneofField)
+        return this.fieldName18__ == other.fieldName18__
     }
 
     override fun toString(): String {
@@ -986,6 +1109,46 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}mapStringForeignMessage=${this.mapStringForeignMessage},")
         builder.appendLine("${nextIndentString}mapStringNestedEnum=${this.mapStringNestedEnum},")
         builder.appendLine("${nextIndentString}mapStringForeignEnum=${this.mapStringForeignEnum},")
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            builder.appendLine("${nextIndentString}oneofUint32=${this.oneofUint32},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            builder.appendLine("${nextIndentString}oneofNestedMessage=${this.oneofNestedMessage.asInternal().asString(indent = indent + 4)},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            builder.appendLine("${nextIndentString}oneofString=${this.oneofString},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            builder.appendLine("${nextIndentString}oneofBytes=${this.oneofBytes.protoToString()},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            builder.appendLine("${nextIndentString}oneofBool=${this.oneofBool},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            builder.appendLine("${nextIndentString}oneofUint64=${this.oneofUint64},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            builder.appendLine("${nextIndentString}oneofFloat=${this.oneofFloat},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            builder.appendLine("${nextIndentString}oneofDouble=${this.oneofDouble},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            builder.appendLine("${nextIndentString}oneofEnum=${this.oneofEnum},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofNullValue]) {
+            builder.appendLine("${nextIndentString}oneofNullValue=${this.oneofNullValue},")
+        }
+
         if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             builder.appendLine("${nextIndentString}optionalBoolWrapper=${this.optionalBoolWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
@@ -1118,7 +1281,6 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}fieldName16=${this.fieldName16},")
         builder.appendLine("${nextIndentString}fieldName17__=${this.fieldName17__},")
         builder.appendLine("${nextIndentString}fieldName18__=${this.fieldName18__},")
-        builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -1230,6 +1392,46 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
         copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            copy.oneofUint32 = this.oneofUint32
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            copy.oneofNestedMessage = this.oneofNestedMessage.copy()
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            copy.oneofString = this.oneofString
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            copy.oneofBytes = this.oneofBytes
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            copy.oneofBool = this.oneofBool
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            copy.oneofUint64 = this.oneofUint64
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            copy.oneofFloat = this.oneofFloat
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            copy.oneofDouble = this.oneofDouble
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            copy.oneofEnum = this.oneofEnum
+        }
+
+        if (presenceMask[PresenceIndices.oneofNullValue]) {
+            copy.oneofNullValue = this.oneofNullValue
+        }
+
         if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             copy.optionalBoolWrapper = this.optionalBoolWrapper.copy()
         }
@@ -1330,46 +1532,9 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.fieldName16 = this.fieldName16
         copy.fieldName17__ = this.fieldName17__
         copy.fieldName18__ = this.fieldName18__
-        copy.oneofField = this.oneofField?.oneOfCopy()
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    fun TestAllTypesProto3.OneofField.oneOfCopy(): TestAllTypesProto3.OneofField {
-        return when (this) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                TestAllTypesProto3.OneofField.OneofNestedMessage(this.value.copy())
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                this
-            }
-        }
     }
 
     @InternalRpcApi
@@ -3372,6 +3537,46 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         }
     }
 
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint32]) {
+        encoder.writeUInt32(fieldNr = 111, value = this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) {
+        encoder.writeMessage(fieldNr = 112, value = this.oneofNestedMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofString]) {
+        encoder.writeString(fieldNr = 113, value = this.oneofString)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBytes]) {
+        encoder.writeBytes(fieldNr = 114, value = this.oneofBytes)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBool]) {
+        encoder.writeBool(fieldNr = 115, value = this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint64]) {
+        encoder.writeUInt64(fieldNr = 116, value = this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofFloat]) {
+        encoder.writeFloat(fieldNr = 117, value = this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofDouble]) {
+        encoder.writeDouble(fieldNr = 118, value = this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofEnum]) {
+        encoder.writeEnum(fieldNr = 119, value = this.oneofEnum.number)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNullValue]) {
+        encoder.writeEnum(fieldNr = 120, value = this.oneofNullValue.number)
+    }
+
     if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
         encoder.writeMessage(fieldNr = 201, value = this.optionalBoolWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
@@ -3612,41 +3817,6 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
 
     if (this.fieldName18__ != 0) {
         encoder.writeInt32(fieldNr = 418, value = this.fieldName18__)
-    }
-
-    this.oneofField?.also { value ->
-        when (value) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                encoder.writeUInt32(fieldNr = 111, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                encoder.writeString(fieldNr = 113, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                encoder.writeBytes(fieldNr = 114, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                encoder.writeBool(fieldNr = 115, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                encoder.writeUInt64(fieldNr = 116, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                encoder.writeFloat(fieldNr = 117, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                encoder.writeDouble(fieldNr = 118, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                encoder.writeEnum(fieldNr = 119, value = value.value.number)
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                encoder.writeEnum(fieldNr = 120, value = value.value.number)
-            }
-        }
     }
 
     _extensions.forEach { (key, value) ->
@@ -4287,6 +4457,37 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                     target[key] = value
                 }
             }
+            111 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint32 = decoder.readUInt32()
+            }
+            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = if (msg.presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) msg.oneofNestedMessage.asInternal() else TestAllTypesProto3Internal.NestedMessageInternal().also { msg.oneofNestedMessage = it }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
+            }
+            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofString = decoder.readString()
+            }
+            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofBytes = decoder.readBytes()
+            }
+            115 if tag.wireType == WireType.VARINT -> {
+                msg.oneofBool = decoder.readBool()
+            }
+            116 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint64 = decoder.readUInt64()
+            }
+            117 if tag.wireType == WireType.FIXED32 -> {
+                msg.oneofFloat = decoder.readFloat()
+            }
+            118 if tag.wireType == WireType.FIXED64 -> {
+                msg.oneofDouble = decoder.readDouble()
+            }
+            119 if tag.wireType == WireType.VARINT -> {
+                msg.oneofEnum = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
+            }
+            120 if tag.wireType == WireType.VARINT -> {
+                msg.oneofNullValue = NullValue.fromNumber(decoder.readEnum())
+            }
             201 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalBoolWrapperDelegate.getOrCreate(msg) { BoolValueInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) }
@@ -4509,40 +4710,6 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
             }
             418 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName18__ = decoder.readInt32()
-            }
-            111 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofUint32(decoder.readUInt32())
-            }
-            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                val field = (msg.oneofField as? TestAllTypesProto3.OneofField.OneofNestedMessage) ?: TestAllTypesProto3.OneofField.OneofNestedMessage(TestAllTypesProto3Internal.NestedMessageInternal()).also {
-                    msg.oneofField = it
-                }
-
-                decoder.readMessage(field.value.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
-            }
-            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofString(decoder.readString())
-            }
-            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofBytes(decoder.readBytes())
-            }
-            115 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofBool(decoder.readBool())
-            }
-            116 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofUint64(decoder.readUInt64())
-            }
-            117 if tag.wireType == WireType.FIXED32 -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofFloat(decoder.readFloat())
-            }
-            118 if tag.wireType == WireType.FIXED64 -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofDouble(decoder.readDouble())
-            }
-            119 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofEnum(TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum()))
-            }
-            120 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofNullValue(NullValue.fromNumber(decoder.readEnum()))
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -5046,6 +5213,46 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint32]) {
+        __result += WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) {
+        __result += this.oneofNestedMessage.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofString]) {
+        __result += WireSize.string(this.oneofString).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBytes]) {
+        __result += WireSize.bytes(this.oneofBytes).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBool]) {
+        __result += WireSize.tag(115, WireType.VARINT) + WireSize.bool(this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint64]) {
+        __result += WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofFloat]) {
+        __result += WireSize.tag(117, WireType.FIXED32) + WireSize.float(this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofDouble]) {
+        __result += WireSize.tag(118, WireType.FIXED64) + WireSize.double(this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofEnum]) {
+        __result += WireSize.tag(119, WireType.VARINT) + WireSize.enum(this.oneofEnum.number)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNullValue]) {
+        __result += WireSize.tag(120, WireType.VARINT) + WireSize.enum(this.oneofNullValue.number)
+    }
+
     if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
         __result += this.optionalBoolWrapper.asInternal()._size.let { WireSize.tag(201, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
@@ -5252,41 +5459,6 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
 
     if (this.fieldName18__ != 0) {
         __result += WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.fieldName18__)
-    }
-
-    this.oneofField?.also { value ->
-        __result += when (value) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                value.value.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                WireSize.string(value.value).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                WireSize.bytes(value.value).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                WireSize.tag(115, WireType.VARINT) + WireSize.bool(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                WireSize.tag(117, WireType.FIXED32) + WireSize.float(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                WireSize.tag(118, WireType.FIXED64) + WireSize.double(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                WireSize.tag(119, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                WireSize.tag(120, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
-        }
     }
 
     __result += _unknownFields.size.toInt()

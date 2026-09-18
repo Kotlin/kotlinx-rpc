@@ -595,6 +595,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -606,6 +607,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false

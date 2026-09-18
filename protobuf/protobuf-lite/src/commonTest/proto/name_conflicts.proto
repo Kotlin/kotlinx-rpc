@@ -96,6 +96,14 @@ message KeywordOneof {
     }
 }
 
+// Test 6b: Oneof with a member literally named not_set (collides with the NOT_SET case entry)
+message NotSetOneof {
+    oneof choice {
+        int32 not_set = 1;
+        string other = 2;
+    }
+}
+
 // Test 7: Nested message + keyword field combination
 message NestedWithKeywords {
     message Inner {
@@ -111,7 +119,7 @@ message NestedWithKeywords {
 // Tests: hashCode's "other"/"result", asString's "indent"/"indentString"/"nextIndentString",
 // copyInternal's "body", encodeWith's "config", decodeWith's "decoder"/"tag",
 // computeSize's "result", map decode's "elem"/"entry"/"kEntry",
-// fromNumber's "number", oneOfHashCode's "offset", MARSHALLER's "internalMsg",
+// fromNumber's "number", MARSHALLER's "internalMsg",
 // and the internal property "unknownFieldsEncoder"
 message MoreInternalNameConflicts {
     int32 other = 1;
