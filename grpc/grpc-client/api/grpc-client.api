@@ -35,9 +35,11 @@ public final class kotlinx/rpc/grpc/client/GrpcCallOptions {
 	public final fun getCallCredentials ()Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
 	public final fun getCompression ()Lkotlinx/rpc/grpc/GrpcCompression;
 	public final fun getTimeout-FghU774 ()Lkotlin/time/Duration;
+	public final fun getWaitForReady ()Ljava/lang/Boolean;
 	public final fun setCallCredentials (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)V
 	public final fun setCompression (Lkotlinx/rpc/grpc/GrpcCompression;)V
 	public final fun setTimeout-BwNAW2A (Lkotlin/time/Duration;)V
+	public final fun setWaitForReady (Ljava/lang/Boolean;)V
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
@@ -66,7 +68,10 @@ public final class kotlinx/rpc/grpc/client/GrpcClientCallScope$DefaultImpls {
 
 public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
 	public final fun getCredentials ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public final fun getIdleTimeout-FghU774 ()Lkotlin/time/Duration;
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
+	public final fun getMaxInboundMessageSize ()Ljava/lang/Integer;
+	public final fun getMaxInboundMetadataSize ()Ljava/lang/Integer;
 	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
 	public final fun getOverrideAuthority ()Ljava/lang/String;
 	public final fun getUserAgent ()Ljava/lang/String;
@@ -74,7 +79,10 @@ public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
 	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
 	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
 	public final fun setCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)V
+	public final fun setIdleTimeout-BwNAW2A (Lkotlin/time/Duration;)V
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
+	public final fun setMaxInboundMessageSize (Ljava/lang/Integer;)V
+	public final fun setMaxInboundMetadataSize (Ljava/lang/Integer;)V
 	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
 	public final fun setOverrideAuthority (Ljava/lang/String;)V
 	public final fun setUserAgent (Ljava/lang/String;)V

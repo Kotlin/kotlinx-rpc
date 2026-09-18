@@ -9,7 +9,6 @@ import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.withService
-import java.lang.reflect.Field
 import kotlin.test.assertTrue
 
 actual fun GrpcTestBase.testUserAgent(
@@ -33,27 +32,4 @@ actual fun GrpcTestBase.testUserAgent(
             "Expected composed user-agent to start with '$userAgent', but was '$composedUserAgent'",
         )
     }
-}
-
-private inline fun <reified R> Any.getField(vararg names: String): R {
-    var curr: Any = this
-    for (name in names) {
-        val field = findFieldInHierarchy(curr::class.java, name)
-            ?: throw NoSuchFieldException("Field '$name' not found in ${curr::class.java}")
-        field.isAccessible = true
-        curr = field.get(curr) as Any
-    }
-    return curr as R
-}
-
-private fun findFieldInHierarchy(clazz: Class<*>, name: String): Field? {
-    var c: Class<*>? = clazz
-    while (c != null) {
-        try {
-            return c.getDeclaredField(name)
-        } catch (_: NoSuchFieldException) {
-            c = c.superclass
-        }
-    }
-    return null
 }
