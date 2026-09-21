@@ -4,6 +4,11 @@
 
 package kotlinx.rpc.grpc.client.testing
 
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcStatusException
+import kotlinx.rpc.grpc.description
+import kotlinx.rpc.grpc.status
+import kotlinx.rpc.grpc.statusCode
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallTrace
@@ -11,6 +16,7 @@ import kxrpc.testing.EventType
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.invoke
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 /** One expected occurrence in the reference server's ordered trace. */
 internal data class ExpectedServerEvent(
@@ -91,6 +97,31 @@ internal fun successfulServerStreamingEvents(responseCount: Int): List<ExpectedS
     if (responseCount > 0) add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
     addOccurrences(EventType.RESPONSE_MESSAGE_SENT, responseCount)
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
+}
+
+internal fun failedServerStreamingBeforeResponseEvents(): List<ExpectedServerEvent> = listOf(
+    ExpectedServerEvent(EventType.CALL_ACCEPTED),
+    ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED),
+    ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED),
+    ExpectedServerEvent(EventType.CALL_CLOSED),
+)
+
+/** Asserts the exact gRPC status propagated by a failed client operation. */
+internal suspend fun assertGrpcStatus(
+    code: GrpcStatusCode,
+    description: String? = null,
+    block: suspend () -> Unit,
+): GrpcStatusException {
+    val failure = try {
+        block()
+        null
+    } catch (error: Throwable) {
+        error
+    }
+    val exception = assertIs<GrpcStatusException>(failure, "expected gRPC status $code")
+    assertEquals(code, exception.status.statusCode)
+    assertEquals(description, exception.status.description)
+    return exception
 }
 
 internal fun successfulClientStreamingEvents(requestCount: Int): List<ExpectedServerEvent> = buildList {

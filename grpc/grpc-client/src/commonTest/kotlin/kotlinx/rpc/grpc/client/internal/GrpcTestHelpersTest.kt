@@ -29,6 +29,7 @@ import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kxrpc.testing.CallEvent
 import kxrpc.testing.CallTrace
 import kxrpc.testing.EventType
+import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertContentEquals

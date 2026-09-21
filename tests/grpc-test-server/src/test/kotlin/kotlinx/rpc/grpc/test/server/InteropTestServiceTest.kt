@@ -196,6 +196,26 @@ class InteropTestServiceTest {
     }
 
     @Test
+    fun streamingOutputCallReturnsRequestedStatus() = withFixture { fixture ->
+        val expectedMessage = "streaming output requested failure"
+        val error = assertFailsWith<StatusRuntimeException> {
+            fixture.testClient().streamingOutputCall(
+                StreamingOutputCallRequest.newBuilder()
+                    .setResponseStatus(
+                        EchoStatus.newBuilder()
+                            .setCode(Status.Code.DATA_LOSS.value())
+                            .setMessage(expectedMessage)
+                            .build()
+                    )
+                    .build()
+            ).hasNext()
+        }
+
+        assertEquals(Status.Code.DATA_LOSS, error.status.code)
+        assertEquals(expectedMessage, error.status.description)
+    }
+
+    @Test
     fun streamingOutputCallGatesAnIndividualResponseOccurrence() = withFixture { fixture ->
         val callId = "response-message-barrier"
         fixture.configure(callId, listOf(BarrierType.SEND_RESPONSE to 2))

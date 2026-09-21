@@ -63,6 +63,15 @@ internal class InteropTestService(
         request: StreamingOutputCallRequest,
         responseObserver: StreamObserver<StreamingOutputCallResponse>,
     ) {
+        if (request.hasResponseStatus()) {
+            responseObserver.onError(
+                Status.fromCodeValue(request.responseStatus.code)
+                    .withDescription(request.responseStatus.message)
+                    .asRuntimeException()
+            )
+            return
+        }
+
         ResponseDispatcher(responseObserver)
             .enqueue(request.toChunks())
             .completeInput()
