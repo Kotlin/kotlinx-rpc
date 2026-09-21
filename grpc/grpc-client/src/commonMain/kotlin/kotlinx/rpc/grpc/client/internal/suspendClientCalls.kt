@@ -23,6 +23,7 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.singleOrStatus
+import kotlinx.rpc.grpc.internal.singleOrStatusFlow
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -165,9 +166,18 @@ private class ClientCallScopeImpl<Request, Response>(
     }
 
     private fun doCall(request: Flow<Request>): Flow<Response> {
+        val validatedRequest = when (method.methodType) {
+            GrpcMethodType.UNARY,
+            GrpcMethodType.SERVER_STREAMING,
+            -> request.singleOrStatusFlow("request", method)
+            GrpcMethodType.CLIENT_STREAMING,
+            GrpcMethodType.BIDI_STREAMING,
+            GrpcMethodType.UNKNOWN,
+            -> request
+        }
         val events = client.transport.execute(
             method,
-            request,
+            validatedRequest,
             requestHeaders,
             callOptions,
         )
@@ -176,7 +186,9 @@ private class ClientCallScopeImpl<Request, Response>(
             events.collect { event ->
                 when (event) {
                     // Messages are emitted to the collector directly.
-                    is GrpcClientCallEvents.Message -> emit(event.response)
+                    is GrpcClientCallEvents.Message -> {
+                        emit(event.response)
+                    }
 
                     is GrpcClientCallEvents.Headers -> {
                         try {
