@@ -16,20 +16,25 @@ import kotlin.time.Duration.Companion.seconds
  * Runs a common gRPC client test with bounded execution and guaranteed fixture cleanup.
  *
  * @param clientConfig Additional configuration for the data-plane client.
+ * @param configureScenario Whether to configure server-side tracing for the data-plane call.
  * @param barriers Reference-server barriers configured before the data-plane call starts.
  * @param block Test body executed with a configured [GrpcClientTestFixture].
  * @return The platform-specific coroutine test result.
  */
 internal fun grpcClientTest(
     clientConfig: GrpcClientConfiguration.() -> Unit = {},
+    configureScenario: Boolean = true,
     barriers: List<Barrier> = emptyList(),
     block: suspend GrpcClientTestFixture.() -> Unit,
 ): TestResult = runTestWithCoroutinesProbes(timeout = 30.seconds) {
+    require(configureScenario || barriers.isEmpty()) {
+        "server barriers require a configured scenario"
+    }
     val fixture = GrpcClientTestFixture(clientConfig)
     var testFailure: Throwable? = null
 
     try {
-        fixture.configureScenario(barriers)
+        if (configureScenario) fixture.configureScenario(barriers)
         fixture.block()
     } catch (error: Throwable) {
         testFailure = error

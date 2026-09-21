@@ -89,6 +89,13 @@ internal fun successfulUnaryEvents(): List<ExpectedServerEvent> = buildList {
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }
 
+internal fun failedUnaryBeforeResponseEvents(): List<ExpectedServerEvent> = listOf(
+    ExpectedServerEvent(EventType.CALL_ACCEPTED),
+    ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED),
+    ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED),
+    ExpectedServerEvent(EventType.CALL_CLOSED),
+)
+
 internal fun successfulServerStreamingEvents(responseCount: Int): List<ExpectedServerEvent> = buildList {
     require(responseCount >= 0) { "response count must not be negative" }
     add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
@@ -112,6 +119,16 @@ internal suspend fun assertGrpcStatus(
     description: String? = null,
     block: suspend () -> Unit,
 ): GrpcStatusException {
+    val exception = assertGrpcStatusCode(code, block)
+    assertEquals(description, exception.status.description)
+    return exception
+}
+
+/** Asserts only the gRPC status code when a server-generated description is not portable. */
+internal suspend fun assertGrpcStatusCode(
+    code: GrpcStatusCode,
+    block: suspend () -> Unit,
+): GrpcStatusException {
     val failure = try {
         block()
         null
@@ -120,7 +137,6 @@ internal suspend fun assertGrpcStatus(
     }
     val exception = assertIs<GrpcStatusException>(failure, "expected gRPC status $code")
     assertEquals(code, exception.status.statusCode)
-    assertEquals(description, exception.status.description)
     return exception
 }
 

@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.client.testing
 
 import io.grpc.testing.integration.TestService
+import io.grpc.testing.integration.UnimplementedService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -40,6 +41,9 @@ internal class GrpcClientTestFixture(
 
     /** Generated upstream interoperability service used for data-plane calls. */
     internal val testService: TestService = dataClient.withService()
+
+    /** Generated upstream service which is intentionally absent from the reference server. */
+    internal val unimplementedService: UnimplementedService = dataClient.withService()
 
     private var scenarioConfigured: Boolean = false
 
