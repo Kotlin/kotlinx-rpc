@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc
@@ -12,9 +12,10 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 public actual typealias GrpcMetadata = Metadata
 
 public actual class GrpcMetadataKey<T> public actual constructor(
-    private val name: String,
+    name: String,
     private val marshaller: GrpcMarshaller<T>,
 ) {
+    private val name: String = name.lowercase()
 
     internal fun encode(value: T): ByteArray {
         val source = marshaller.encode(value)
@@ -52,7 +53,7 @@ private value class BinaryMarshaller<T>(val key: GrpcMetadataKey<T>) : Metadata.
 }
 
 public actual operator fun GrpcMetadata.get(key: String): String? {
-    return get(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER))
+    return get(key.toAsciiKey())
 }
 
 public actual operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
@@ -60,7 +61,7 @@ public actual operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T? {
 }
 
 public actual fun GrpcMetadata.getBinary(key: String): ByteArray? {
-    return get(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER))
+    return get(key.toBinaryKey())
 }
 
 public actual fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T? {
@@ -68,7 +69,7 @@ public actual fun <T> GrpcMetadata.getBinary(key: GrpcMetadataKey<T>): T? {
 }
 
 public actual fun GrpcMetadata.getAll(key: String): List<String> {
-    return getAll(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER))?.toList() ?: emptyList()
+    return getAll(key.toAsciiKey())?.toList() ?: emptyList()
 }
 
 public actual fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T> {
@@ -76,7 +77,7 @@ public actual fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T> {
 }
 
 public actual fun GrpcMetadata.getAllBinary(key: String): List<ByteArray> {
-    return getAll(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER))?.toList() ?: emptyList()
+    return getAll(key.toBinaryKey())?.toList() ?: emptyList()
 }
 
 public actual fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T> {
@@ -84,10 +85,11 @@ public actual fun <T> GrpcMetadata.getAllBinary(key: GrpcMetadataKey<T>): List<T
 }
 
 public actual operator fun GrpcMetadata.contains(key: String): Boolean {
-    val javaKey = if (key.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
-        Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER)
+    val normalizedKey = key.lowercase()
+    val javaKey = if (normalizedKey.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
+        normalizedKey.toBinaryKey()
     } else {
-        Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER)
+        normalizedKey.toAsciiKey()
     }
     return containsKey(javaKey)
 }
@@ -97,7 +99,7 @@ public actual fun GrpcMetadata.keys(): Set<String> {
 }
 
 public actual fun GrpcMetadata.append(key: String, value: String) {
-    return put(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER), value)
+    return put(key.toAsciiKey(), value)
 }
 
 public actual fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T) {
@@ -105,7 +107,7 @@ public actual fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T) {
 }
 
 public actual fun GrpcMetadata.appendBinary(key: String, value: ByteArray) {
-    return put(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER), value)
+    return put(key.toBinaryKey(), value)
 }
 
 public actual fun <T> GrpcMetadata.appendBinary(key: GrpcMetadataKey<T>, value: T) {
@@ -113,7 +115,7 @@ public actual fun <T> GrpcMetadata.appendBinary(key: GrpcMetadataKey<T>, value: 
 }
 
 public actual fun GrpcMetadata.remove(key: String, value: String): Boolean {
-    return remove(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER), value)
+    return remove(key.toAsciiKey(), value)
 }
 
 public actual fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Boolean {
@@ -121,7 +123,7 @@ public actual fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Bo
 }
 
 public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Boolean {
-    return remove(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER), value)
+    return remove(key.toBinaryKey(), value)
 }
 
 public actual fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: T): Boolean {
@@ -129,7 +131,7 @@ public actual fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: 
 }
 
 public actual fun GrpcMetadata.removeAll(key: String): List<String> {
-    return removeAll(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER))?.toList() ?: emptyList()
+    return removeAll(key.toAsciiKey())?.toList() ?: emptyList()
 }
 
 public actual fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T> {
@@ -137,7 +139,7 @@ public actual fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T> {
 }
 
 public actual fun GrpcMetadata.removeAllBinary(key: String): List<ByteArray> {
-    return removeAll(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER))?.toList() ?: emptyList()
+    return removeAll(key.toBinaryKey())?.toList() ?: emptyList()
 }
 
 public actual fun <T> GrpcMetadata.removeAllBinary(key: GrpcMetadataKey<T>): List<T> {
@@ -147,3 +149,9 @@ public actual fun <T> GrpcMetadata.removeAllBinary(key: GrpcMetadataKey<T>): Lis
 public actual fun GrpcMetadata.merge(other: GrpcMetadata) {
     this.merge(other)
 }
+
+private fun String.toAsciiKey(): Metadata.Key<String> =
+    Metadata.Key.of(lowercase(), Metadata.ASCII_STRING_MARSHALLER)
+
+private fun String.toBinaryKey(): Metadata.Key<ByteArray> =
+    Metadata.Key.of(lowercase(), Metadata.BINARY_BYTE_MARSHALLER)
