@@ -35,18 +35,22 @@ service MalformedResponseService {
   rpc StreamingInputCall(stream MalformedResponseRequest) returns (MalformedResponse);
 }
 
+// Registers behavior for a later data-plane RPC. This control request stores
+// the scenario.
 message ConfigureScenarioRequest {
-  // Data-plane RPCs associate with this scenario using ASCII metadata key
+  // Identifies the scenario. The later RPC selects it using ASCII metadata key
   // "kxrpc-test-call-id".
   string call_id = 1;
+
+  // Pauses configured lifecycle points until released through the control API.
   repeated Barrier barriers = 2;
 
-  // Response metadata sent before the first response message. Entry order and
-  // duplicate keys are significant.
+  // Added to the later RPC's initial response headers, before response messages.
+  // Entry order and duplicate keys are significant.
   repeated MetadataEntry initial_metadata = 3;
 
-  // Metadata sent with the terminal status. Entry order and duplicate keys are
-  // significant.
+  // Added to the later RPC's terminal trailers. Entry order and duplicate keys
+  // are significant.
   repeated MetadataEntry trailing_metadata = 4;
 
   // Overrides normal service completion when present.

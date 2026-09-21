@@ -135,7 +135,10 @@ internal suspend fun assertGrpcStatusCode(
     } catch (error: Throwable) {
         error
     }
-    val exception = assertIs<GrpcStatusException>(failure, "expected gRPC status $code")
+    val exception = assertIs<GrpcStatusException>(
+        failure,
+        "expected gRPC status $code, actual failure was ${failure?.let { "${it::class.simpleName}: ${it.message}" }}",
+    )
     assertEquals(code, exception.status.statusCode)
     return exception
 }

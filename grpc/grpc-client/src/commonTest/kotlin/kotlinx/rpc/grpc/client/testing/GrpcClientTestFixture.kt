@@ -45,14 +45,21 @@ internal class GrpcClientTestFixture(
     /** Generated upstream service which is intentionally absent from the reference server. */
     internal val unimplementedService: UnimplementedService = dataClient.withService()
 
+    /** Generated client for deliberately invalid response-cardinality behavior. */
+    internal val malformedResponseService: MalformedResponseService = dataClient.withService()
+
     private var scenarioConfigured: Boolean = false
 
     /** Registers this fixture's scenario before its data-plane call starts. */
-    internal suspend fun configureScenario(barriers: List<Barrier> = emptyList()) {
+    internal suspend fun configureScenario(
+        barriers: List<Barrier> = emptyList(),
+        configure: ConfigureScenarioRequest.Builder.() -> Unit = {},
+    ) {
         controlService.configureScenario(
             ConfigureScenarioRequest {
                 callId = this@GrpcClientTestFixture.callId
                 this.barriers = barriers
+                configure()
             }
         )
         scenarioConfigured = true

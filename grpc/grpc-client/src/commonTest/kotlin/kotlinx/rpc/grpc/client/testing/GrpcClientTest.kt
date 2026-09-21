@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.TestResult
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kxrpc.testing.Barrier
+import kxrpc.testing.ConfigureScenarioRequest
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -18,6 +19,7 @@ import kotlin.time.Duration.Companion.seconds
  * @param clientConfig Additional configuration for the data-plane client.
  * @param configureScenario Whether to configure server-side tracing for the data-plane call.
  * @param barriers Reference-server barriers configured before the data-plane call starts.
+ * @param scenario Additional reference-server scenario configuration.
  * @param block Test body executed with a configured [GrpcClientTestFixture].
  * @return The platform-specific coroutine test result.
  */
@@ -25,6 +27,7 @@ internal fun grpcClientTest(
     clientConfig: GrpcClientConfiguration.() -> Unit = {},
     configureScenario: Boolean = true,
     barriers: List<Barrier> = emptyList(),
+    scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
     block: suspend GrpcClientTestFixture.() -> Unit,
 ): TestResult = runTestWithCoroutinesProbes(timeout = 30.seconds) {
     require(configureScenario || barriers.isEmpty()) {
@@ -34,7 +37,7 @@ internal fun grpcClientTest(
     var testFailure: Throwable? = null
 
     try {
-        if (configureScenario) fixture.configureScenario(barriers)
+        if (configureScenario) fixture.configureScenario(barriers, scenario)
         fixture.block()
     } catch (error: Throwable) {
         testFailure = error
