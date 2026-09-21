@@ -99,8 +99,12 @@ public actual class GrpcMetadata @InternalRpcApi actual constructor() {
 
             for (entry in values) {
                 val size = entry.size.toULong()
-                val valSlice = entry.usePinned { pinned ->
-                    grpc_slice_from_copied_buffer(pinned.addressOf(0), size.convert())
+                val valSlice = if (entry.isEmpty()) {
+                    grpc_slice_from_copied_buffer(null, 0u)
+                } else {
+                    entry.usePinned { pinned ->
+                        grpc_slice_from_copied_buffer(pinned.addressOf(0), size.convert())
+                    }
                 }
                 // we create a fresh reference for each entry
                 val keySliceRef = grpc_slice_ref(keySlice)
