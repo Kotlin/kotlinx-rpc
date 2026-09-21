@@ -91,7 +91,17 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
         Self.shouldPropagateMetadataEntry(forKey: key) {
             switch value {
             case .string(let string):
-                visitor.visitString(key: key, value: string)
+                if key.hasSuffix("-bin") {
+                    let padding = String(repeating: "=", count: (4 - string.count % 4) % 4)
+                    guard let binary = Data(base64Encoded: string + padding) else {
+                        preconditionFailure("Invalid base64 value for binary metadata key \(key)")
+                    }
+                    binary.withUnsafeBytes { buffer in
+                        visitor.visitBinary(key: key, bytes: buffer.baseAddress, length: buffer.count)
+                    }
+                } else {
+                    visitor.visitString(key: key, value: string)
+                }
             case .binary(let binary):
                 binary.withUnsafeBytes { buffer in
                     visitor.visitBinary(key: key, bytes: buffer.baseAddress, length: buffer.count)
