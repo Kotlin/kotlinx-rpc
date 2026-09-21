@@ -8,7 +8,6 @@ import com.google.protobuf.ByteString
 import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import kxrpc.testing.AdversarialResponseCardinality
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
@@ -16,6 +15,7 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
+import kxrpc.testing.MalformedResponseCardinality
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
 import kotlin.test.Test
@@ -123,10 +123,10 @@ class CallScenarioRegistryTest {
     }
 
     @Test
-    fun preservesPhaseThreeScenarioConfiguration() {
+    fun preservesMetadataTerminalAndCardinalityConfiguration() {
         val registry = registry()
         val request = ConfigureScenarioRequest.newBuilder()
-            .setCallId("phase-3")
+            .setCallId("metadata-terminal-cardinality")
             .addInitialMetadata(metadata("x-test-value", "first"))
             .addInitialMetadata(metadata("x-test-value", ""))
             .addInitialMetadata(metadata("x-test-bin", byteArrayOf(0, -1, 42)))
@@ -141,16 +141,16 @@ class CallScenarioRegistryTest {
                     .setStage(TerminalStage.AFTER_RESPONSE_MESSAGES)
                     .setResponseMessageCount(2)
             )
-            .setAdversarialResponseCardinality(AdversarialResponseCardinality.DUPLICATE_RESPONSE)
+            .setMalformedResponseCardinality(MalformedResponseCardinality.DUPLICATE_RESPONSE)
             .build()
 
         registry.configure(request)
 
-        assertEquals(request, registry.configuration("phase-3"))
+        assertEquals(request, registry.configuration("metadata-terminal-cardinality"))
     }
 
     @Test
-    fun rejectsInvalidPhaseThreeConfiguration() {
+    fun rejectsInvalidMetadataAndTerminalConfiguration() {
         val registry = registry()
 
         assertFailsWith<IllegalArgumentException> {

@@ -54,7 +54,7 @@ class GrpcTestHelpersTest {
     }
 
     @Test
-    fun lifecycleBuildersCoverEveryPhaseTwoStreamingPattern() {
+    fun lifecycleBuildersCoverEveryStreamingPattern() {
         val serverStreaming = successfulServerStreamingEvents(responseCount = 3)
         val clientStreaming = successfulClientStreamingEvents(requestCount = 3)
         val halfDuplex = successfulHalfDuplexEvents(requestCount = 2, responseCount = 3)

@@ -9,14 +9,15 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import kxrpc.testing.AdversarialResponseCardinality
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
 import kxrpc.testing.CallTrace
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
+import kxrpc.testing.MalformedResponseCardinality
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.TerminalStage
 
@@ -30,8 +31,8 @@ internal class CallScenarioRegistry(
         validateMetadata(request.initialMetadataList)
         validateMetadata(request.trailingMetadataList)
         validateTerminalBehavior(request)
-        require(request.adversarialResponseCardinality != AdversarialResponseCardinality.UNRECOGNIZED) {
-            "adversarial response cardinality must be recognized"
+        require(request.malformedResponseCardinality != MalformedResponseCardinality.UNRECOGNIZED) {
+            "malformed response cardinality must be recognized"
         }
 
         val barriers = request.barriersList.map { barrier ->
@@ -51,18 +52,30 @@ internal class CallScenarioRegistry(
 
     internal fun configuration(callId: String): ConfigureScenarioRequest = scenario(callId).configuration()
 
-    internal fun recordEvent(callId: String, type: EventType): CallEvent {
+    internal fun recordEvent(
+        callId: String,
+        type: EventType,
+        metadata: List<MetadataEntry> = emptyList(),
+        status: GrpcStatus? = null,
+    ): CallEvent {
         requireKnownEvent(type)
-        return scenario(callId).recordEvent(type)
+        return scenario(callId).recordEvent(type, metadata = metadata, status = status)
     }
 
     internal fun recordRequestMessage(callId: String, payload: ByteString?): CallEvent {
         return scenario(callId).recordEvent(EventType.REQUEST_MESSAGE_RECEIVED, payload)
     }
 
-    internal fun callAccepted(callId: String): CallEvent = scenario(callId).callAccepted()
+    internal fun callAccepted(
+        callId: String,
+        metadata: List<MetadataEntry> = emptyList(),
+    ): CallEvent = scenario(callId).callAccepted(metadata)
 
-    internal fun callClosed(callId: String): CallEvent = scenario(callId).callClosed()
+    internal fun callClosed(
+        callId: String,
+        metadata: List<MetadataEntry> = emptyList(),
+        status: GrpcStatus? = null,
+    ): CallEvent = scenario(callId).callClosed(metadata, status)
 
     internal fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
         requireKnownEvent(type)
@@ -184,30 +197,41 @@ private class ScenarioState(
     private var controlWaiterCount = 0
     private var activeCallCount = 0
     private var tracedRequestPayloadBytes = 0L
+    private var tracedMetadataBytes = 0L
 
     fun configuration(): ConfigureScenarioRequest = scenarioConfiguration
 
-    fun callAccepted(): CallEvent = lock.withLock {
+    fun callAccepted(metadata: List<MetadataEntry>): CallEvent = lock.withLock {
         checkNotDiscarded()
-        val event = recordEventLocked(EventType.CALL_ACCEPTED)
+        val event = recordEventLocked(EventType.CALL_ACCEPTED, metadata = metadata)
         activeCallCount++
         event
     }
 
-    fun callClosed(): CallEvent = lock.withLock {
+    fun callClosed(metadata: List<MetadataEntry>, status: GrpcStatus?): CallEvent = lock.withLock {
         checkNotDiscarded()
         check(activeCallCount > 0) { "scenario '$callId' has no active call to close" }
-        val event = recordEventLocked(EventType.CALL_CLOSED)
+        val event = recordEventLocked(EventType.CALL_CLOSED, metadata = metadata, status = status)
         activeCallCount--
         event
     }
 
-    fun recordEvent(type: EventType, requestPayload: ByteString? = null): CallEvent = lock.withLock {
+    fun recordEvent(
+        type: EventType,
+        requestPayload: ByteString? = null,
+        metadata: List<MetadataEntry> = emptyList(),
+        status: GrpcStatus? = null,
+    ): CallEvent = lock.withLock {
         checkNotDiscarded()
-        recordEventLocked(type, requestPayload)
+        recordEventLocked(type, requestPayload, metadata, status)
     }
 
-    private fun recordEventLocked(type: EventType, requestPayload: ByteString? = null): CallEvent {
+    private fun recordEventLocked(
+        type: EventType,
+        requestPayload: ByteString? = null,
+        metadata: List<MetadataEntry> = emptyList(),
+        status: GrpcStatus? = null,
+    ): CallEvent {
         check(events.size < MAX_TRACE_EVENTS) {
             "scenario '$callId' exceeded the maximum trace size of $MAX_TRACE_EVENTS events"
         }
@@ -218,6 +242,12 @@ private class ScenarioState(
             }
             tracedRequestPayloadBytes += requestPayload.size()
         }
+        val metadataBytes = metadata.sumOf { entry -> entry.key.length.toLong() + entry.value.size() }
+        check(tracedMetadataBytes + metadataBytes <= MAX_TRACE_METADATA_BYTES) {
+            "scenario '$callId' exceeded the maximum traced metadata size of " +
+                "$MAX_TRACE_METADATA_BYTES bytes"
+        }
+        tracedMetadataBytes += metadataBytes
         val occurrence = (eventOccurrences[type.number] ?: 0) + 1
         eventOccurrences[type.number] = occurrence
 
@@ -226,6 +256,8 @@ private class ScenarioState(
             .setType(type)
             .setOccurrence(occurrence)
         requestPayload?.let(eventBuilder::setRequestPayload)
+        eventBuilder.addAllMetadata(metadata)
+        status?.let(eventBuilder::setStatus)
         val event = eventBuilder.build()
         events += event
         changed.signalAll()
@@ -342,5 +374,6 @@ private class ScenarioState(
     private companion object {
         const val MAX_TRACE_EVENTS: Int = 1_024
         const val MAX_TRACE_PAYLOAD_BYTES: Long = 64L * 1_024 * 1_024
+        const val MAX_TRACE_METADATA_BYTES: Long = 1L * 1_024 * 1_024
     }
 }

@@ -30,9 +30,9 @@ service GrpcClientControlService {
 
 // Supplies raw handlers for client-contract cases that a conforming generated
 // service cannot produce, such as invalid unary response cardinality.
-service GrpcClientAdversarialService {
-  rpc UnaryCall(AdversarialRequest) returns (AdversarialResponse);
-  rpc StreamingInputCall(stream AdversarialRequest) returns (AdversarialResponse);
+service MalformedResponseService {
+  rpc UnaryCall(MalformedResponseRequest) returns (MalformedResponse);
+  rpc StreamingInputCall(stream MalformedResponseRequest) returns (MalformedResponse);
 }
 
 message ConfigureScenarioRequest {
@@ -52,8 +52,8 @@ message ConfigureScenarioRequest {
   // Overrides normal service completion when present.
   TerminalBehavior terminal_behavior = 5;
 
-  // Applies only to GrpcClientAdversarialService raw handlers.
-  AdversarialResponseCardinality adversarial_response_cardinality = 6;
+  // Applies only to MalformedResponseService raw handlers.
+  MalformedResponseCardinality malformed_response_cardinality = 6;
 }
 
 message MetadataEntry {
@@ -70,34 +70,46 @@ message GrpcStatus {
   string description = 2;
 }
 
+// Overrides normal call termination at stage, after any CLOSE_CALL barrier.
 message TerminalBehavior {
+  // Status sent with the scenario's trailing_metadata.
   GrpcStatus status = 1;
+
+  // Response-lifecycle point at which the call closes.
   TerminalStage stage = 2;
 
-  // Required only for AFTER_RESPONSE_MESSAGES. The server closes immediately
-  // after sending this many response messages.
+  // Positive only for AFTER_RESPONSE_MESSAGES; zero for other stages.
   uint32 response_message_count = 3;
 }
 
 enum TerminalStage {
+  // Invalid for TerminalBehavior; omit the behavior for normal completion.
   TERMINAL_STAGE_UNSPECIFIED = 0;
+
+  // Close before the service starts, without headers or responses.
   BEFORE_INITIAL_METADATA = 1;
+
+  // Send initial metadata, then close before the first response.
   AFTER_INITIAL_METADATA = 2;
+
+  // Close after exactly response_message_count responses.
   AFTER_RESPONSE_MESSAGES = 3;
+
+  // Replace normal status after the service finishes its responses.
   AFTER_SERVICE_COMPLETION = 4;
 }
 
-enum AdversarialResponseCardinality {
-  ADVERSARIAL_RESPONSE_CARDINALITY_UNSPECIFIED = 0;
+enum MalformedResponseCardinality {
+  MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED = 0;
   OMIT_RESPONSE = 1;
   DUPLICATE_RESPONSE = 2;
 }
 
-message AdversarialRequest {
+message MalformedResponseRequest {
   bytes payload = 1;
 }
 
-message AdversarialResponse {
+message MalformedResponse {
   bytes payload = 1;
 }
 
