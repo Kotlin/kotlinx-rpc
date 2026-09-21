@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test.server
 
+import com.google.protobuf.ByteString
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
@@ -42,6 +43,10 @@ internal class CallScenarioRegistry(
     internal fun recordEvent(callId: String, type: EventType): CallEvent {
         requireKnownEvent(type)
         return scenario(callId).recordEvent(type)
+    }
+
+    internal fun recordRequestMessage(callId: String, payload: ByteString?): CallEvent {
+        return scenario(callId).recordEvent(EventType.REQUEST_MESSAGE_RECEIVED, payload)
     }
 
     internal fun callAccepted(callId: String): CallEvent = scenario(callId).callAccepted()
@@ -129,6 +134,7 @@ private class ScenarioState(
     private var waiterCount = 0
     private var controlWaiterCount = 0
     private var activeCallCount = 0
+    private var tracedRequestPayloadBytes = 0L
 
     fun callAccepted(): CallEvent = lock.withLock {
         checkNotDiscarded()
@@ -145,23 +151,31 @@ private class ScenarioState(
         event
     }
 
-    fun recordEvent(type: EventType): CallEvent = lock.withLock {
+    fun recordEvent(type: EventType, requestPayload: ByteString? = null): CallEvent = lock.withLock {
         checkNotDiscarded()
-        recordEventLocked(type)
+        recordEventLocked(type, requestPayload)
     }
 
-    private fun recordEventLocked(type: EventType): CallEvent {
+    private fun recordEventLocked(type: EventType, requestPayload: ByteString? = null): CallEvent {
         check(events.size < MAX_TRACE_EVENTS) {
             "scenario '$callId' exceeded the maximum trace size of $MAX_TRACE_EVENTS events"
+        }
+        if (requestPayload != null) {
+            check(tracedRequestPayloadBytes + requestPayload.size() <= MAX_TRACE_PAYLOAD_BYTES) {
+                "scenario '$callId' exceeded the maximum traced request payload size of " +
+                    "$MAX_TRACE_PAYLOAD_BYTES bytes"
+            }
+            tracedRequestPayloadBytes += requestPayload.size()
         }
         val occurrence = (eventOccurrences[type.number] ?: 0) + 1
         eventOccurrences[type.number] = occurrence
 
-        val event = CallEvent.newBuilder()
+        val eventBuilder = CallEvent.newBuilder()
             .setSequence(events.size.toLong() + 1L)
             .setType(type)
             .setOccurrence(occurrence)
-            .build()
+        requestPayload?.let(eventBuilder::setRequestPayload)
+        val event = eventBuilder.build()
         events += event
         changed.signalAll()
         return event
@@ -276,5 +290,6 @@ private class ScenarioState(
 
     private companion object {
         const val MAX_TRACE_EVENTS: Int = 1_024
+        const val MAX_TRACE_PAYLOAD_BYTES: Long = 64L * 1_024 * 1_024
     }
 }

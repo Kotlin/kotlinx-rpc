@@ -134,6 +134,13 @@ internal fun successfulClientStreamingEvents(requestCount: Int): List<ExpectedSe
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }
 
+internal fun failedClientStreamingDuringRequestsEvents(requestCount: Int): List<ExpectedServerEvent> = buildList {
+    require(requestCount >= 0) { "request count must not be negative" }
+    add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
+    addOccurrences(EventType.REQUEST_MESSAGE_RECEIVED, requestCount)
+    add(ExpectedServerEvent(EventType.CALL_CLOSED))
+}
+
 internal fun successfulPingPongEvents(exchangeCount: Int): List<ExpectedServerEvent> = buildList {
     require(exchangeCount >= 0) { "exchange count must not be negative" }
     add(ExpectedServerEvent(EventType.CALL_ACCEPTED))

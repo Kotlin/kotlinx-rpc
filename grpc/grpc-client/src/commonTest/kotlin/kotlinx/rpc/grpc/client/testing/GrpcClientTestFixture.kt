@@ -128,6 +128,19 @@ internal class GrpcClientTestFixture(
         )
     }
 
+    /** Verifies the exact ordered request payload bytes observed by the reference server. */
+    internal suspend fun assertServerRequestPayloads(expected: List<ByteArray>) {
+        val trace = serverTrace()
+        val actual = trace.events
+            .filter { it.type == EventType.REQUEST_MESSAGE_RECEIVED }
+            .map { it.requestPayload.toByteArray() }
+        assertPayloadSequence(
+            expected,
+            actual,
+            context = "call_id='$callId', server trace:\n${trace.render()}",
+        )
+    }
+
     /** Verifies the complete request-to-close lifecycle of one successful unary call. */
     internal suspend fun assertUnaryLifecycle() {
         assertServerTrace(successfulUnaryEvents())

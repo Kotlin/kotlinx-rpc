@@ -83,8 +83,11 @@ internal class SwiftGrpcClientTransport(
 
                 while (!closed) {
                     val event = call.nextEvent()
-                    emit(event)
                     closed = event is GrpcClientCallEvents.Closed
+                    if (closed) {
+                        requestSource.originalFailure?.let { throw it }
+                    }
+                    emit(event)
                 }
             } catch (cause: Throwable) {
                 if (cause is SwiftGrpcInteropException) {

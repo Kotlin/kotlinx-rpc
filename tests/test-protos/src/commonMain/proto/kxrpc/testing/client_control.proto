@@ -104,6 +104,10 @@ message CallEvent {
 
   // One-based occurrence of this event type.
   uint32 occurrence = 3;
+
+  // Exact data-plane payload bytes for request-message events which carry an
+  // official gRPC interop Payload. Empty for other event and message types.
+  bytes request_payload = 4;
 }
 
 enum EventType {

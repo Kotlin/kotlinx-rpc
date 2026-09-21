@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test.server
 
+import com.google.protobuf.ByteString
 import io.grpc.ForwardingServerCall
 import io.grpc.ForwardingServerCallListener
 import io.grpc.Metadata
@@ -11,6 +12,8 @@ import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
 import io.grpc.ServerInterceptor
 import io.grpc.Status
+import io.grpc.testing.integration.Messages.StreamingInputCallRequest
+import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
 import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
 
@@ -108,10 +111,18 @@ internal class InteropMetadataInterceptor(
             recordClosed()
         }
 
-        fun recordRequestEvent(type: EventType, barrier: BarrierType): Boolean {
+        fun recordRequestEvent(
+            type: EventType,
+            barrier: BarrierType,
+            requestPayload: ByteString? = null,
+        ): Boolean {
             if (closed) return false
             return try {
-                val event = registry.recordEvent(callId, type)
+                val event = if (type == EventType.REQUEST_MESSAGE_RECEIVED) {
+                    registry.recordRequestMessage(callId, requestPayload)
+                } else {
+                    registry.recordEvent(callId, type)
+                }
                 registry.awaitBarrierIfConfigured(callId, barrier, event.occurrence)
                 true
             } catch (error: Throwable) {
@@ -144,6 +155,7 @@ internal class InteropMetadataInterceptor(
             if (call.recordRequestEvent(
                     EventType.REQUEST_MESSAGE_RECEIVED,
                     BarrierType.DELIVER_REQUEST_MESSAGE,
+                    message.interopPayload(),
                 )
             ) {
                 super.onMessage(message)
@@ -165,4 +177,10 @@ internal class InteropMetadataInterceptor(
         val CALL_ID_KEY: Metadata.Key<String> =
             Metadata.Key.of(TEST_CALL_ID_METADATA_KEY_NAME, Metadata.ASCII_STRING_MARSHALLER)
     }
+}
+
+private fun Any.interopPayload(): ByteString? = when (this) {
+    is StreamingInputCallRequest -> payload.body
+    is StreamingOutputCallRequest -> payload.body
+    else -> null
 }

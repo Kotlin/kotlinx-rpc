@@ -169,6 +169,9 @@ class InteropTestServiceTest {
         requests.onCompleted()
         fixture.awaitEvent(callId, EventType.CLIENT_HALF_CLOSED)
         assertFalse(response.hasEvent())
+        val requestEvent = fixture.trace(callId).eventsList
+            .single { it.type == EventType.REQUEST_MESSAGE_RECEIVED }
+        assertEquals(ByteString.copyFrom(ByteArray(7)), requestEvent.requestPayload)
         fixture.release(callId, BarrierType.DELIVER_CLIENT_HALF_CLOSE)
 
         assertEquals(7, response.awaitNext().aggregatedPayloadSize)
@@ -393,10 +396,14 @@ class InteropTestServiceTest {
         }
 
         fun traceTypes(callId: String): List<EventType> {
-            return control.getTrace(GetTraceRequest.newBuilder().setCallId(callId).build())
+            return trace(callId)
                 .eventsList
                 .map { it.type }
         }
+
+        fun trace(callId: String) = control.getTrace(
+            GetTraceRequest.newBuilder().setCallId(callId).build()
+        )
 
         fun assertNoLeaks(callId: String) {
             val diagnostics = diagnostics(callId)
