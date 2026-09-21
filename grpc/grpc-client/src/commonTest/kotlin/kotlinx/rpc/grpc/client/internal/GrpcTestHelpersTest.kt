@@ -20,6 +20,7 @@ import kotlinx.rpc.grpc.client.testing.failingRequestFlow
 import kotlinx.rpc.grpc.client.testing.render
 import kotlinx.rpc.grpc.client.testing.sequencedPayloads
 import kotlinx.rpc.grpc.client.testing.successfulClientStreamingEvents
+import kotlinx.rpc.grpc.client.testing.successfulFullDuplexEvents
 import kotlinx.rpc.grpc.client.testing.successfulHalfDuplexEvents
 import kotlinx.rpc.grpc.client.testing.successfulPingPongEvents
 import kotlinx.rpc.grpc.client.testing.successfulServerStreamingEvents
@@ -57,6 +58,10 @@ class GrpcTestHelpersTest {
         val serverStreaming = successfulServerStreamingEvents(responseCount = 3)
         val clientStreaming = successfulClientStreamingEvents(requestCount = 3)
         val halfDuplex = successfulHalfDuplexEvents(requestCount = 2, responseCount = 3)
+        val fullDuplex = successfulFullDuplexEvents(
+            responsesAfterRequest = listOf(2, 0),
+            responsesAfterHalfClose = 1,
+        )
 
         assertEquals(
             listOf(1U, 2U, 3U),
@@ -73,6 +78,10 @@ class GrpcTestHelpersTest {
         assertEquals(
             listOf(EventType.CLIENT_HALF_CLOSED, EventType.INITIAL_HEADERS_SENT),
             halfDuplex.dropWhile { it.type != EventType.CLIENT_HALF_CLOSED }.take(2).map { it.type },
+        )
+        assertEquals(
+            listOf(EventType.CLIENT_HALF_CLOSED, EventType.RESPONSE_MESSAGE_SENT, EventType.CALL_CLOSED),
+            fullDuplex.takeLast(3).map { it.type },
         )
         assertEquals(successfulUnaryEvents(), successfulClientStreamingEvents(requestCount = 1))
     }

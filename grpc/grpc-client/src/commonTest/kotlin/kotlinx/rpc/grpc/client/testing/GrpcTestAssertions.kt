@@ -141,6 +141,13 @@ internal fun failedClientStreamingDuringRequestsEvents(requestCount: Int): List<
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }
 
+internal fun failedBidirectionalDuringRequestsEvents(requestCount: Int): List<ExpectedServerEvent> = buildList {
+    require(requestCount >= 0) { "request count must not be negative" }
+    add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
+    addOccurrences(EventType.REQUEST_MESSAGE_RECEIVED, requestCount)
+    add(ExpectedServerEvent(EventType.CALL_CLOSED))
+}
+
 internal fun successfulPingPongEvents(exchangeCount: Int): List<ExpectedServerEvent> = buildList {
     require(exchangeCount >= 0) { "exchange count must not be negative" }
     add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
@@ -151,6 +158,36 @@ internal fun successfulPingPongEvents(exchangeCount: Int): List<ExpectedServerEv
         add(ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence))
     }
     add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
+    add(ExpectedServerEvent(EventType.CALL_CLOSED))
+}
+
+internal fun successfulFullDuplexEvents(
+    responsesAfterRequest: List<Int>,
+    responsesAfterHalfClose: Int = 0,
+): List<ExpectedServerEvent> = buildList {
+    require(responsesAfterRequest.all { it >= 0 }) { "response count must not be negative" }
+    require(responsesAfterHalfClose >= 0) { "response count must not be negative" }
+    var responseOccurrence = 0
+    var headersSent = false
+
+    fun addResponses(count: Int) {
+        repeat(count) {
+            if (!headersSent) {
+                add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+                headersSent = true
+            }
+            responseOccurrence++
+            add(ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, responseOccurrence.toUInt()))
+        }
+    }
+
+    add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
+    responsesAfterRequest.forEachIndexed { index, responseCount ->
+        add(ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED, (index + 1).toUInt()))
+        addResponses(responseCount)
+    }
+    add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
+    addResponses(responsesAfterHalfClose)
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }
 
