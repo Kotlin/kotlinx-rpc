@@ -9,13 +9,16 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kxrpc.testing.AdversarialResponseCardinality
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
 import kxrpc.testing.CallTrace
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.MetadataEntry
 import kxrpc.testing.ScenarioDiagnostics
+import kxrpc.testing.TerminalStage
 
 internal class CallScenarioRegistry(
     private val waitTimeout: Duration = Duration.ofSeconds(10),
@@ -24,6 +27,12 @@ internal class CallScenarioRegistry(
 
     internal fun configure(request: ConfigureScenarioRequest) {
         require(request.callId.isNotBlank()) { "call_id must not be blank" }
+        validateMetadata(request.initialMetadataList)
+        validateMetadata(request.trailingMetadataList)
+        validateTerminalBehavior(request)
+        require(request.adversarialResponseCardinality != AdversarialResponseCardinality.UNRECOGNIZED) {
+            "adversarial response cardinality must be recognized"
+        }
 
         val barriers = request.barriersList.map { barrier ->
             requireKnownBarrier(barrier.type)
@@ -35,10 +44,12 @@ internal class CallScenarioRegistry(
             "scenario '${request.callId}' contains duplicate barriers"
         }
 
-        check(scenarios.putIfAbsent(request.callId, ScenarioState(request.callId, barriers)) == null) {
+        check(scenarios.putIfAbsent(request.callId, ScenarioState(request, barriers)) == null) {
             "scenario '${request.callId}' is already configured"
         }
     }
+
+    internal fun configuration(callId: String): ConfigureScenarioRequest = scenario(callId).configuration()
 
     internal fun recordEvent(callId: String, type: EventType): CallEvent {
         requireKnownEvent(type)
@@ -108,6 +119,43 @@ internal class CallScenarioRegistry(
             "event type must be specified"
         }
     }
+
+    private fun validateMetadata(entries: List<MetadataEntry>) {
+        entries.forEach { entry ->
+            require(METADATA_KEY.matches(entry.key)) {
+                "metadata key '${entry.key}' must contain only lowercase ASCII letters, digits, '-', '_', or '.'"
+            }
+        }
+    }
+
+    private fun validateTerminalBehavior(request: ConfigureScenarioRequest) {
+        if (!request.hasTerminalBehavior()) return
+
+        val terminal = request.terminalBehavior
+        require(terminal.hasStatus()) { "terminal behavior must specify a status" }
+        require(terminal.status.code in 0..MAX_GRPC_STATUS_CODE) {
+            "terminal status code must be a canonical gRPC status code"
+        }
+        require(terminal.stage != TerminalStage.TERMINAL_STAGE_UNSPECIFIED &&
+            terminal.stage != TerminalStage.UNRECOGNIZED
+        ) {
+            "terminal stage must be specified"
+        }
+        if (terminal.stage == TerminalStage.AFTER_RESPONSE_MESSAGES) {
+            require(terminal.responseMessageCount > 0) {
+                "AFTER_RESPONSE_MESSAGES requires a positive response_message_count"
+            }
+        } else {
+            require(terminal.responseMessageCount == 0) {
+                "response_message_count is valid only for AFTER_RESPONSE_MESSAGES"
+            }
+        }
+    }
+
+    private companion object {
+        val METADATA_KEY: Regex = Regex("[0-9a-z_.-]+")
+        const val MAX_GRPC_STATUS_CODE: Int = 16
+    }
 }
 
 internal class ScenarioNotFoundException(callId: String) :
@@ -122,9 +170,10 @@ internal class ScenarioWaitTimeoutException(callId: String, awaited: String) :
 private data class BarrierKey(val typeNumber: Int, val occurrence: Int)
 
 private class ScenarioState(
-    private val callId: String,
+    private val scenarioConfiguration: ConfigureScenarioRequest,
     private val configuredBarriers: Set<BarrierKey>,
 ) {
+    private val callId: String = scenarioConfiguration.callId
     private val lock = ReentrantLock()
     private val changed = lock.newCondition()
     private val events = mutableListOf<CallEvent>()
@@ -135,6 +184,8 @@ private class ScenarioState(
     private var controlWaiterCount = 0
     private var activeCallCount = 0
     private var tracedRequestPayloadBytes = 0L
+
+    fun configuration(): ConfigureScenarioRequest = scenarioConfiguration
 
     fun callAccepted(): CallEvent = lock.withLock {
         checkNotDiscarded()

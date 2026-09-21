@@ -28,11 +28,77 @@ service GrpcClientControlService {
   rpc DiscardScenario(DiscardScenarioRequest) returns (ControlAck);
 }
 
+// Supplies raw handlers for client-contract cases that a conforming generated
+// service cannot produce, such as invalid unary response cardinality.
+service GrpcClientAdversarialService {
+  rpc UnaryCall(AdversarialRequest) returns (AdversarialResponse);
+  rpc StreamingInputCall(stream AdversarialRequest) returns (AdversarialResponse);
+}
+
 message ConfigureScenarioRequest {
   // Data-plane RPCs associate with this scenario using ASCII metadata key
   // "kxrpc-test-call-id".
   string call_id = 1;
   repeated Barrier barriers = 2;
+
+  // Response metadata sent before the first response message. Entry order and
+  // duplicate keys are significant.
+  repeated MetadataEntry initial_metadata = 3;
+
+  // Metadata sent with the terminal status. Entry order and duplicate keys are
+  // significant.
+  repeated MetadataEntry trailing_metadata = 4;
+
+  // Overrides normal service completion when present.
+  TerminalBehavior terminal_behavior = 5;
+
+  // Applies only to GrpcClientAdversarialService raw handlers.
+  AdversarialResponseCardinality adversarial_response_cardinality = 6;
+}
+
+message MetadataEntry {
+  // Lowercase gRPC metadata key. A "-bin" suffix selects binary metadata;
+  // other keys require an ASCII value.
+  string key = 1;
+
+  // Exact value bytes. bytes preserves duplicate and empty ASCII/binary values.
+  bytes value = 2;
+}
+
+message GrpcStatus {
+  int32 code = 1;
+  string description = 2;
+}
+
+message TerminalBehavior {
+  GrpcStatus status = 1;
+  TerminalStage stage = 2;
+
+  // Required only for AFTER_RESPONSE_MESSAGES. The server closes immediately
+  // after sending this many response messages.
+  uint32 response_message_count = 3;
+}
+
+enum TerminalStage {
+  TERMINAL_STAGE_UNSPECIFIED = 0;
+  BEFORE_INITIAL_METADATA = 1;
+  AFTER_INITIAL_METADATA = 2;
+  AFTER_RESPONSE_MESSAGES = 3;
+  AFTER_SERVICE_COMPLETION = 4;
+}
+
+enum AdversarialResponseCardinality {
+  ADVERSARIAL_RESPONSE_CARDINALITY_UNSPECIFIED = 0;
+  OMIT_RESPONSE = 1;
+  DUPLICATE_RESPONSE = 2;
+}
+
+message AdversarialRequest {
+  bytes payload = 1;
+}
+
+message AdversarialResponse {
+  bytes payload = 1;
 }
 
 message Barrier {
@@ -108,6 +174,13 @@ message CallEvent {
   // Exact data-plane payload bytes for request-message events which carry an
   // official gRPC interop Payload. Empty for other event and message types.
   bytes request_payload = 4;
+
+  // Exact ordered metadata observed or sent at this event. Used by
+  // CALL_ACCEPTED, INITIAL_HEADERS_SENT, and CALL_CLOSED.
+  repeated MetadataEntry metadata = 5;
+
+  // Terminal status for CALL_CLOSED. Absent for non-terminal events.
+  GrpcStatus status = 6;
 }
 
 enum EventType {

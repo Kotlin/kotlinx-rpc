@@ -4,14 +4,20 @@
 
 package kotlinx.rpc.grpc.test.server
 
+import com.google.protobuf.ByteString
 import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import kxrpc.testing.AdversarialResponseCardinality
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.GrpcStatus
+import kxrpc.testing.MetadataEntry
+import kxrpc.testing.TerminalBehavior
+import kxrpc.testing.TerminalStage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -117,6 +123,75 @@ class CallScenarioRegistryTest {
     }
 
     @Test
+    fun preservesPhaseThreeScenarioConfiguration() {
+        val registry = registry()
+        val request = ConfigureScenarioRequest.newBuilder()
+            .setCallId("phase-3")
+            .addInitialMetadata(metadata("x-test-value", "first"))
+            .addInitialMetadata(metadata("x-test-value", ""))
+            .addInitialMetadata(metadata("x-test-bin", byteArrayOf(0, -1, 42)))
+            .addTrailingMetadata(metadata("x-trailer", "done"))
+            .setTerminalBehavior(
+                TerminalBehavior.newBuilder()
+                    .setStatus(
+                        GrpcStatus.newBuilder()
+                            .setCode(13)
+                            .setDescription("configured failure")
+                    )
+                    .setStage(TerminalStage.AFTER_RESPONSE_MESSAGES)
+                    .setResponseMessageCount(2)
+            )
+            .setAdversarialResponseCardinality(AdversarialResponseCardinality.DUPLICATE_RESPONSE)
+            .build()
+
+        registry.configure(request)
+
+        assertEquals(request, registry.configuration("phase-3"))
+    }
+
+    @Test
+    fun rejectsInvalidPhaseThreeConfiguration() {
+        val registry = registry()
+
+        assertFailsWith<IllegalArgumentException> {
+            registry.configure(
+                scenario("uppercase-metadata").toBuilder()
+                    .addInitialMetadata(metadata("X-Test", "value"))
+                    .build()
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            registry.configure(
+                scenario("missing-status").toBuilder()
+                    .setTerminalBehavior(
+                        TerminalBehavior.newBuilder()
+                            .setStage(TerminalStage.AFTER_SERVICE_COMPLETION)
+                    )
+                    .build()
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            registry.configure(
+                scenario("missing-response-count").toBuilder()
+                    .setTerminalBehavior(
+                        terminalBehavior(TerminalStage.AFTER_RESPONSE_MESSAGES)
+                    )
+                    .build()
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            registry.configure(
+                scenario("unexpected-response-count").toBuilder()
+                    .setTerminalBehavior(
+                        terminalBehavior(TerminalStage.AFTER_SERVICE_COMPLETION).toBuilder()
+                            .setResponseMessageCount(1)
+                    )
+                    .build()
+            )
+        }
+    }
+
+    @Test
     fun diagnosticsReportActiveCallsWaitersAndOutstandingBarriers() {
         val registry = registry()
         val responseBarrier = barrier(BarrierType.SEND_RESPONSE, 2)
@@ -175,6 +250,24 @@ class CallScenarioRegistryTest {
         return Barrier.newBuilder()
             .setType(type)
             .setOccurrence(occurrence)
+            .build()
+    }
+
+    private fun metadata(key: String, value: String): MetadataEntry {
+        return metadata(key, value.encodeToByteArray())
+    }
+
+    private fun metadata(key: String, value: ByteArray): MetadataEntry {
+        return MetadataEntry.newBuilder()
+            .setKey(key)
+            .setValue(ByteString.copyFrom(value))
+            .build()
+    }
+
+    private fun terminalBehavior(stage: TerminalStage): TerminalBehavior {
+        return TerminalBehavior.newBuilder()
+            .setStatus(GrpcStatus.newBuilder().setCode(13).setDescription("failure"))
+            .setStage(stage)
             .build()
     }
 }
