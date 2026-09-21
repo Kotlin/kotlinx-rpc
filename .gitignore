@@ -56,3 +56,4 @@ gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
 
 # Local Agentic context
 .claude/plan
+.junie/plans

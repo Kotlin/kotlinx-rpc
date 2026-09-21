@@ -9,6 +9,8 @@ package kotlinx.rpc.grpc.client.internal
 
 import cnames.structs.grpc_call
 import kotlinx.atomicfu.atomic
+import kotlinx.atomicfu.locks.ReentrantLock
+import kotlinx.atomicfu.locks.withLock
 import kotlinx.cinterop.Arena
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
@@ -73,6 +75,28 @@ import kotlin.native.ref.createCleaner
 // path that observes `state == CLOSE_REQUESTED` finalises the call. KRPC-604.
 private const val CLOSE_REQUESTED = 1 shl 30
 
+/**
+ * gRPC C-core backed [ClientCall].
+ *
+ * Batch completions run on the callback-CQ executor threads, so the `RECV_INITIAL_METADATA`,
+ * `RECV_MESSAGE` and `RECV_STATUS_ON_CLIENT` callbacks of one call may execute concurrently and
+ * in any order. All listener dispatch is therefore serialised through [callbackMutex] and
+ * routed through a header gate that enforces the [ClientCall.Listener] contract grpc-java
+ * already provides on the JVM:
+ *
+ * 1. `onHeaders` runs at most once and always before the first `onMessage`. A message whose
+ *    batch completes before the initial-metadata callback is buffered by [responseGate] and
+ *    only handed to the listener (and only then is its next `RECV_MESSAGE` submitted) after the
+ *    headers have been delivered.
+ * 2. C-core completes `RECV_INITIAL_METADATA` with an *empty* array for a trailers-only response
+ *    (e.g. an `UNAVAILABLE` failure before any header frame). Such empty headers are held
+ *    by [responseGate] until a message or an `OK` close proves a real headers phase;
+ *    on a non-OK close without messages they are dropped so the listener never observes a
+ *    spurious `onHeaders(empty)` for a trailers-only failure. Accepted trade-off: a server that
+ *    sends genuinely empty initial headers and then fails non-OK without messages is
+ *    indistinguishable at the C-core API and will not receive `onHeaders` on Native.
+ * 3. `onClose` runs exactly once and never interleaves with `onHeaders`/`onMessage`/`onReady`.
+ */
 internal class NativeClientCall<Request, Response>(
     private val cq: CompletionQueue,
     internal val raw: CPointer<grpc_call>,
@@ -176,6 +200,27 @@ internal class NativeClientCall<Request, Response>(
     private var halfClosed = false
     private var cancelled = false
 
+    // Serialises every listener callback (onHeaders/onMessage/onClose/onReady) and guards the
+    // header gate state below. Reentrant: safeUserCode → cancel → cancelInternal →
+    // markClosePending → tryToCloseCall may re-enter from inside a dispatched callback.
+    // Lock order is always callbackMutex → CompletionQueue.batchStartGuard (via post() →
+    // runBatch); the CQ never invokes callbacks while holding batchStartGuard.
+    private val callbackMutex = ReentrantLock()
+
+    // guarded by callbackMutex
+    private val responseGate = NativeClientResponseGate<Response>(
+        onHeaders = { headers ->
+            safeUserCode("Failed to call onHeaders.") {
+                listener?.onHeaders(headers)
+            }
+        },
+        onMessage = { message ->
+            safeUserCode("Failed to call onMessage.") {
+                listener?.onMessage(message)
+            }
+        },
+    )
+
     // Lock-free state machine for the call's lifetime claims. Replaces the read-then-CAS pair
     // formed by the prior `inFlight: AtomicInt` + `closed: AtomicBoolean` whose SC schedule
     // admitted a UAF window: the destroyer reading `inFlight==0` could race a runBatch that
@@ -263,6 +308,10 @@ internal class NativeClientCall<Request, Response>(
      * decrement can both reach this — only the first wins the CAS and runs the body. The
      * cleaner's fallback unref path uses the same CAS, so a successful finishClose guarantees
      * the cleaner is a no-op. KRPC-604.
+     *
+     * Listener dispatch happens under [callbackMutex] so it cannot interleave with a still-
+     * running onHeaders/onMessage callback. Before `onClose`, [responseGate] resolves delayed
+     * headers and messages or suppresses the trailers-only artifact.
      */
     private fun finishClose(info: Pair<GrpcStatus, GrpcMetadata>) {
         if (!rawGuard.released.compareAndSet(expect = false, update = true)) return
@@ -272,8 +321,11 @@ internal class NativeClientCall<Request, Response>(
         // mid-chain and the call is later cancelled via shutdownNow → markClosePending). No
         // user observer to notify in that case; resources still need to be released below.
         listener?.let { lst ->
-            safeUserCode("Failed to call onClose.") {
-                lst.onClose(info.first, info.second)
+            callbackMutex.withLock {
+                responseGate.flushBeforeClose(info.first)
+                safeUserCode("Failed to call onClose.") {
+                    lst.onClose(info.first, info.second)
+                }
             }
         }
         // Deterministic grpc_call_unref. The cleaner remains as the GC fallback; the rawGuard
@@ -298,11 +350,33 @@ internal class NativeClientCall<Request, Response>(
      * This is called as soon as the RECV_MESSAGE batch is finished (or failed).
      */
     private fun turnReady() {
-        if (ready.compareAndSet(expect = false, update = true)) {
-            safeUserCode("Failed to call onReady.") {
-                listener?.onReady()
+        callbackMutex.withLock {
+            if (ready.compareAndSet(expect = false, update = true)) {
+                safeUserCode("Failed to call onReady.") {
+                    listener?.onReady()
+                }
             }
         }
+    }
+
+    /**
+     * RECV_INITIAL_METADATA completed. Delivers non-empty [headers] (and any buffered message)
+     * immediately. Empty headers with nothing buffered are held: C-core completes this op with
+     * an empty array for a trailers-only response, so we wait for a message or an OK close to
+     * prove a real headers phase (see class KDoc).
+     */
+    private fun onInitialMetadataReceived(headers: GrpcMetadata): Unit = callbackMutex.withLock {
+        responseGate.initialMetadataReceived(headers)
+    }
+
+    /**
+     * RECV_MESSAGE completed with a payload. Dispatches [message] if headers were already
+     * delivered, releases held empty headers first if needed, or buffers the message (together
+     * with its [requestNext] continuation) while the initial-metadata callback is still pending.
+     * Inbound demand stays one-at-a-time: [requestNext] runs only once the message was exposed.
+     */
+    private fun onMessageReceived(message: Response, requestNext: () -> Unit): Unit = callbackMutex.withLock {
+        responseGate.messageReceived(message, requestNext)
     }
 
 
@@ -496,22 +570,24 @@ internal class NativeClientCall<Request, Response>(
             grpc_metadata_array_destroy(recvInitialMetadata.readValue())
             arena.clear()
         }) {
-            val headers = GrpcMetadata(recvInitialMetadata)
-            safeUserCode("Failed to call onHeaders.") {
-                listener?.onHeaders(headers)
-            }
+            // copy the metadata before `cleanup` destroys the array; the gate decides delivery.
+            onInitialMetadataReceived(GrpcMetadata(recvInitialMetadata))
         }
     }
 
     /**
      * Requests [numMessages] messages from the server.
      * This must only be called again after [numMessages] were received in the [Listener.onMessage] callback.
+     *
+     * Decoded messages go through [onMessageReceived], which guarantees `onHeaders` precedes
+     * the first `onMessage` and submits the next `RECV_MESSAGE` only after the message was
+     * exposed to the listener.
      */
     override fun request(numMessages: Int) {
         check(numMessages > 0) { internalError("numMessages must be > 0") }
         // limit numMessages to prevent potential stack overflows
         check(numMessages <= 16) { internalError("numMessages must be <= 16") }
-        val listener = checkNotNull(listener) { internalError("Not yet started") }
+        checkNotNull(listener) { internalError("Not yet started") }
         if (cancelled) {
             // no need to send message if the call got already cancelled.
             return
@@ -538,10 +614,7 @@ internal class NativeClientCall<Request, Response>(
                 val buf = recvPtr.value ?: return@runBatch
                 val msg = methodDescriptor.responseMarshaller
                     .decode(buf.toKotlin())
-                safeUserCode("Failed to call onClose.") {
-                    listener.onMessage(msg)
-                }
-                post()
+                onMessageReceived(msg, ::post)
             }
         }
 
