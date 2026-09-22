@@ -9,11 +9,16 @@ import grpc.testing.invoke
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
-import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
+import io.grpc.testing.integration.StreamingInputCallRequest
+import io.grpc.testing.integration.StreamingOutputCallRequest
+import io.grpc.testing.integration.StreamingOutputCallResponse
 import io.grpc.testing.integration.invoke
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -21,13 +26,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.toList
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.grpc.GrpcCompression
+import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
+import kotlinx.rpc.grpc.client.testing.RequestFlowCompletion
+import kotlinx.rpc.grpc.client.testing.RequestFlowProbe
+import kotlinx.rpc.grpc.client.testing.finiteRequestFlow
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
+import kotlinx.rpc.grpc.client.testing.serverBarrier
+import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.invoke
@@ -37,6 +49,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNotSame
+import kotlin.time.Duration.Companion.seconds
 
 class GrpcClientInterceptorTest {
     @Test
@@ -267,6 +280,162 @@ class GrpcClientInterceptorTest {
     }
 
     @Test
+    fun interceptorTransformsServerStreamingResponses() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                proceed(request).map { message ->
+                    if (message is StreamingOutputCallResponse) {
+                        StreamingOutputCallResponse {
+                            payload = Payload {
+                                type = PayloadType.COMPRESSABLE
+                                body = ByteString(*TRANSFORMED_CLIENT_RESPONSE)
+                            }
+                        }
+                    } else {
+                        message
+                    }
+                }
+            })
+        },
+    ) {
+        val request = StreamingOutputCallRequest {
+            responseType = PayloadType.COMPRESSABLE
+            responseParameters = listOf(
+                ResponseParameters { size = 5 },
+                ResponseParameters { size = 10 },
+            )
+        }
+        val responses = testService.streamingOutputCall(request).toList()
+        assertEquals(2, responses.size)
+        responses.forEach { response ->
+            assertContentEquals(TRANSFORMED_CLIENT_RESPONSE, response.payload.body.toByteArray())
+        }
+    }
+
+    @Test
+    fun interceptorTransformsClientStreamingRequests() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                val transformed = request.map { message ->
+                    if (message is StreamingInputCallRequest) {
+                        StreamingInputCallRequest {
+                            payload = Payload {
+                                type = PayloadType.COMPRESSABLE
+                                body = ByteString(*TRANSFORMED_CLIENT_RESPONSE)
+                            }
+                        }
+                    } else {
+                        message
+                    }
+                }
+                proceed(transformed)
+            })
+        },
+    ) {
+        val requests = listOf(
+            StreamingInputCallRequest {
+                payload = Payload { body = ByteString(1, 2, 3) }
+            },
+            StreamingInputCallRequest {
+                payload = Payload { body = ByteString(4, 5) }
+            },
+        ).asFlow()
+        val response = testService.streamingInputCall(requests)
+        assertEquals(TRANSFORMED_CLIENT_RESPONSE.size * 2, response.aggregatedPayloadSize)
+    }
+
+    @Test
+    fun interceptorTransformsBidirectionalStreamingRequestsAndResponses() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                val transformedRequests = request.map { message ->
+                    if (message is StreamingOutputCallRequest) {
+                        StreamingOutputCallRequest {
+                            responseType = PayloadType.COMPRESSABLE
+                            responseParameters = listOf(ResponseParameters { size = TRANSFORMED_SERVER_RESPONSE_SIZE })
+                        }
+                    } else {
+                        message
+                    }
+                }
+                proceed(transformedRequests).map { message ->
+                    if (message is StreamingOutputCallResponse) {
+                        StreamingOutputCallResponse {
+                            payload = Payload {
+                                type = PayloadType.COMPRESSABLE
+                                body = ByteString(*TRANSFORMED_CLIENT_RESPONSE)
+                            }
+                        }
+                    } else {
+                        message
+                    }
+                }
+            })
+        },
+    ) {
+        val requests = listOf(
+            StreamingOutputCallRequest {
+                responseParameters = listOf(ResponseParameters { size = 1 })
+            },
+            StreamingOutputCallRequest {
+                responseParameters = listOf(ResponseParameters { size = 2 })
+            },
+        ).asFlow()
+        val responses = testService.fullDuplexCall(requests).toList()
+        assertEquals(2, responses.size)
+        responses.forEach { response ->
+            assertContentEquals(TRANSFORMED_CLIENT_RESPONSE, response.payload.body.toByteArray())
+        }
+    }
+
+    @Test
+    fun interceptorMutatesCallOptionsBeforeProceed() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                callOptions.timeout = 10.seconds
+                callOptions.compression = GrpcCompression.None
+                callOptions.callCredentials += HeaderCredentials("x-custom-credential", "auth-token-123")
+                proceed(request)
+            })
+        },
+    ) {
+        assertEquals(Empty {}, testService.emptyCall(Empty {}))
+        val accepted = serverTrace().events.single { it.type == EventType.CALL_ACCEPTED }
+        assertEquals(
+            listOf(metadataEntry("x-custom-credential", "auth-token-123")),
+            accepted.metadata.filter { it.key == "x-custom-credential" },
+        )
+        assertUnaryLifecycle()
+    }
+
+    @Test
+    fun interceptorCancelDuringRequestFlowCancelsCall() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                proceed(request.map { cancel("cancelled in request flow", InterceptorFailure("request cancel")) })
+            })
+        },
+        configureScenario = false,
+    ) {
+        val failure = assertFailsWith<GrpcStatusException> { testService.emptyCall(Empty {}) }
+        assertEquals(GrpcStatusCode.CANCELLED, failure.status.statusCode)
+        assertEquals("request cancel", assertIs<InterceptorFailure>(failure.cause).message)
+    }
+
+    @Test
+    fun interceptorCancelDuringResponseFlowCancelsCall() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                proceed(request).map { cancel("cancelled in response flow", InterceptorFailure("response cancel")) }
+            })
+        },
+    ) {
+        val failure = assertFailsWith<GrpcStatusException> { testService.emptyCall(Empty {}) }
+        assertEquals(GrpcStatusCode.CANCELLED, failure.status.statusCode)
+        assertEquals("response cancel", assertIs<InterceptorFailure>(failure.cause).message)
+    }
+
+    @Test
     fun recollectingResponseFlowCreatesFreshCallScopeAndReinvokesInterceptors() {
         val callScopes = mutableListOf<Any>()
         val terminalStatuses = mutableListOf<GrpcStatusCode>()
@@ -336,6 +505,22 @@ class GrpcClientInterceptorTest {
         }
     }
 
+    @Test
+    fun requestFlowSubscribedEagerlyUponCallStart() = grpcClientTest(
+        barriers = listOf(serverBarrier(BarrierType.SEND_INITIAL_HEADERS)),
+    ) {
+        coroutineScope {
+            val requests = RequestFlowProbe(finiteRequestFlow(listOf(StreamingInputCallRequest {})))
+            val response = async { testService.streamingInputCall(requests.flow) }
+
+            requests.awaitCollectionStarted()
+            releaseServerBarrier(BarrierType.SEND_INITIAL_HEADERS)
+
+            assertEquals(0, response.await().aggregatedPayloadSize)
+            assertEquals(RequestFlowCompletion.Completed, requests.awaitCompletion())
+        }
+    }
+
     private companion object {
         const val TRANSFORMED_SERVER_RESPONSE_SIZE: Int = 19
         val TRANSFORMED_CLIENT_RESPONSE: ByteArray = byteArrayOf(2, 3, 5, 7, 11)
@@ -364,3 +549,16 @@ class GrpcClientInterceptorTest {
 }
 
 private class InterceptorFailure(message: String) : IllegalStateException(message)
+
+private class HeaderCredentials(
+    private val key: String,
+    private val value: String,
+) : GrpcCallCredentials {
+    override val requiresTransportSecurity: Boolean get() = false
+
+    override suspend fun GrpcCallCredentials.Context.getRequestMetadata(): GrpcMetadata {
+        return GrpcMetadata {
+            append(key, value)
+        }
+    }
+}

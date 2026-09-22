@@ -160,6 +160,165 @@ class GrpcClientMetadataAndStatusTest {
         }
     }
 
+    @Test
+    fun largeBinaryMetadataRoundTrip() {
+        val largeBinary = ByteArray(2 * 1024) { index -> (index % 256).toByte() }
+        val responseBinary = ByteArray(2 * 1024) { index -> ((index + 42) % 256).toByte() }
+        val trailerBinary = ByteArray(2 * 1024) { index -> ((index + 100) % 256).toByte() }
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-large-req-bin", largeBinary)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(metadataEntry("x-large-resp-bin", responseBinary))
+                trailingMetadata = listOf(metadataEntry("x-large-trailer-bin", trailerBinary))
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertContentEquals(responseBinary, headers.getAllBinary("x-large-resp-bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertContentEquals(trailerBinary, trailers.getAllBinary("x-large-trailer-bin").single())
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-large-req-bin" }
+            assertEquals(1, acceptedMetadata.size)
+            assertContentEquals(largeBinary, acceptedMetadata.single().value.toByteArray())
+        }
+    }
+
+    @Test
+    fun duplicateBinaryMetadataValues() {
+        val bin1 = byteArrayOf(1, 2, 3)
+        val bin2 = byteArrayOf(4, 5, 6, 7)
+        val bin3 = byteArrayOf(8)
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-multi-bin", bin1)
+                    requestHeaders.appendBinary("x-multi-bin", bin2)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(
+                    metadataEntry("x-resp-multi-bin", bin1),
+                    metadataEntry("x-resp-multi-bin", bin2),
+                    metadataEntry("x-resp-multi-bin", bin3),
+                )
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            val respBins = headers.getAllBinary("x-resp-multi-bin")
+            assertEquals(3, respBins.size)
+            assertContentEquals(bin1, respBins[0])
+            assertContentEquals(bin2, respBins[1])
+            assertContentEquals(bin3, respBins[2])
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-multi-bin" }
+            assertEquals(2, acceptedMetadata.size)
+            assertContentEquals(bin1, acceptedMetadata[0].value.toByteArray())
+            assertContentEquals(bin2, acceptedMetadata[1].value.toByteArray())
+        }
+    }
+
+    @Test
+    fun emptyBinaryMetadata() {
+        val emptyBin = byteArrayOf()
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-empty-bin", emptyBin)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(metadataEntry("x-empty-resp-bin", emptyBin))
+                trailingMetadata = listOf(metadataEntry("x-empty-trailer-bin", emptyBin))
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertContentEquals(emptyBin, headers.getAllBinary("x-empty-resp-bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertContentEquals(emptyBin, trailers.getAllBinary("x-empty-trailer-bin").single())
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-empty-bin" }
+            assertEquals(1, acceptedMetadata.size)
+            assertContentEquals(emptyBin, acceptedMetadata.single().value.toByteArray())
+        }
+    }
+
+    @Test
+    fun caseInsensitiveMetadataLookup() {
+        val callback = CallbackRecorder()
+        val binValue = byteArrayOf(9, 8, 7)
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.append("X-MixedCase-Req", "req-val")
+                    requestHeaders.appendBinary("X-MixedCase-Req-Bin", binValue)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(
+                    metadataEntry("x-mixedcase-resp", "resp-val"),
+                    metadataEntry("x-mixedcase-resp-bin", binValue),
+                )
+                trailingMetadata = listOf(
+                    metadataEntry("x-mixedcase-trailer", "trailer-val"),
+                )
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertEquals(listOf("resp-val"), headers.getAll("X-MIXEDCASE-RESP"))
+            assertEquals(listOf("resp-val"), headers.getAll("x-mixedcase-resp"))
+            assertEquals(listOf("resp-val"), headers.getAll("X-MixedCase-Resp"))
+            assertContentEquals(binValue, headers.getAllBinary("X-MIXEDCASE-RESP-BIN").single())
+            assertContentEquals(binValue, headers.getAllBinary("x-mixedcase-resp-bin").single())
+            assertContentEquals(binValue, headers.getAllBinary("X-MixedCase-Resp-Bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertEquals(listOf("trailer-val"), trailers.getAll("X-MIXEDCASE-TRAILER"))
+            assertEquals(listOf("trailer-val"), trailers.getAll("x-mixedcase-trailer"))
+            assertEquals(listOf("trailer-val"), trailers.getAll("X-MixedCase-Trailer"))
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+            assertEquals(
+                listOf(metadataEntry("x-mixedcase-req", "req-val")),
+                acceptedMetadata.filter { it.key == "x-mixedcase-req" },
+            )
+            val acceptedBin = acceptedMetadata.filter { it.key == "x-mixedcase-req-bin" }
+            assertEquals(1, acceptedBin.size)
+            assertContentEquals(binValue, acceptedBin.single().value.toByteArray())
+        }
+    }
+
     @Test fun cancelledStatus() = assertTerminalStatus(GrpcStatusCode.CANCELLED)
     @Test fun unknownStatus() = assertTerminalStatus(GrpcStatusCode.UNKNOWN)
     @Test fun invalidArgumentStatus() = assertTerminalStatus(GrpcStatusCode.INVALID_ARGUMENT)
