@@ -18,6 +18,8 @@ import kotlinx.rpc.grpc.cause
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.copy
+import kotlinx.rpc.grpc.copy
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
@@ -119,8 +121,8 @@ private fun <Request, Response> GrpcClient.rpcImpl(
     val clientCallScope = ClientCallScopeImpl(
         client = this@rpcImpl,
         method = descriptor,
-        requestHeaders = headers,
-        callOptions = callOptions,
+        requestHeaders = headers.copy(),
+        callOptions = callOptions.copy(),
     )
     // We must wrap the proceeded flow, because if users try to use
     // retry or retryWhen on a returned flow, it must produce a new call scope,

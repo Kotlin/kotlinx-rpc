@@ -201,7 +201,9 @@ internal class GrpcClientTestFixture(
         awaitServerEvent(EventType.CALL_CLOSED)
         val trace = serverTrace()
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
-        assertEquals(1, trace.events.count { it.type == EventType.CALL_CLOSED }, failureMessage)
+        val acceptedCallCount = trace.events.count { it.type == EventType.CALL_ACCEPTED }
+        val closedCallCount = trace.events.count { it.type == EventType.CALL_CLOSED }
+        assertEquals(acceptedCallCount, closedCallCount, failureMessage)
         assertEquals(EventType.CALL_CLOSED, trace.events.lastOrNull()?.type, failureMessage)
         serverDiagnostics().assertNoLeaks(callId, trace)
     }

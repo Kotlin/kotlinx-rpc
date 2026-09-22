@@ -8,6 +8,8 @@ import grpc.testing.Empty
 import grpc.testing.invoke
 import io.grpc.testing.integration.Payload
 import io.grpc.testing.integration.PayloadType
+import io.grpc.testing.integration.ResponseParameters
+import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.SimpleResponse
 import io.grpc.testing.integration.invoke
@@ -16,6 +18,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.toList
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
@@ -32,6 +36,7 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNotSame
 
 class GrpcClientInterceptorTest {
     @Test
@@ -259,6 +264,76 @@ class GrpcClientInterceptorTest {
         val failure = assertFailsWith<GrpcStatusException> { testService.emptyCall(Empty {}) }
         assertEquals(GrpcStatusCode.CANCELLED, failure.status.statusCode)
         assertEquals("cancel cause", assertIs<InterceptorFailure>(failure.cause).message)
+    }
+
+    @Test
+    fun recollectingResponseFlowCreatesFreshCallScopeAndReinvokesInterceptors() {
+        val callScopes = mutableListOf<Any>()
+        val terminalStatuses = mutableListOf<GrpcStatusCode>()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(interceptor { request ->
+                    callScopes += this
+                    onClose { status, _ -> terminalStatuses += status.statusCode }
+                    proceed(request)
+                })
+            },
+        ) {
+            val request = StreamingOutputCallRequest {
+                responseType = PayloadType.COMPRESSABLE
+                responseParameters = listOf(ResponseParameters { size = 3 })
+            }
+            val flow = testService.streamingOutputCall(request)
+
+            val firstRun = flow.toList()
+            assertEquals(1, firstRun.size)
+
+            val secondRun = flow.toList()
+            assertEquals(1, secondRun.size)
+            assertEquals(2, callScopes.size)
+            assertNotSame(callScopes[0], callScopes[1])
+            assertEquals(listOf(GrpcStatusCode.OK, GrpcStatusCode.OK), terminalStatuses)
+
+            val trace = serverTrace()
+            assertEquals(2, trace.events.count { it.type == EventType.CALL_ACCEPTED })
+            assertEquals(2, trace.events.count { it.type == EventType.CALL_CLOSED })
+        }
+    }
+
+    @Test
+    fun retryOperatorOnResponseFlowReinvokesInterceptorsAndRecovers() {
+        var attempts = 0
+        val callScopes = mutableListOf<Any>()
+        val terminalStatuses = mutableListOf<GrpcStatusCode>()
+        grpcClientTest(
+            clientConfig = {
+                intercept(interceptor { request ->
+                    attempts++
+                    callScopes += this
+                    if (attempts == 1) {
+                        throw InterceptorFailure("attempt 1 failure")
+                    }
+                    onClose { status, _ -> terminalStatuses += status.statusCode }
+                    proceed(request)
+                })
+            },
+        ) {
+            val request = StreamingOutputCallRequest {
+                responseType = PayloadType.COMPRESSABLE
+                responseParameters = listOf(ResponseParameters { size = 5 })
+            }
+            val responses = testService.streamingOutputCall(request)
+                .retry(1) { it is InterceptorFailure }
+                .toList()
+
+            assertEquals(1, responses.size)
+            assertEquals(2, attempts)
+            assertEquals(2, callScopes.size)
+            assertNotSame(callScopes[0], callScopes[1])
+            assertEquals(listOf(GrpcStatusCode.OK), terminalStatuses)
+            assertUnaryLifecycle()
+        }
     }
 
     private companion object {

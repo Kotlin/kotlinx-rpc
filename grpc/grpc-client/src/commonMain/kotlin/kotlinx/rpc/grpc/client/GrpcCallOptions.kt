@@ -95,3 +95,9 @@ public class GrpcCallOptions {
      */
     public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }
+
+internal fun GrpcCallOptions.copy(): GrpcCallOptions = GrpcCallOptions().also { copy ->
+    copy.timeout = timeout
+    copy.compression = compression
+    copy.callCredentials = callCredentials
+}
