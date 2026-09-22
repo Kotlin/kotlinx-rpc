@@ -30,6 +30,16 @@ internal fun grpcClientTest(
     scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
     block: suspend GrpcClientTestFixture.() -> Unit,
 ): TestResult = runTestWithCoroutinesProbes(timeout = 30.seconds) {
+    executeGrpcClientTest(clientConfig, configureScenario, barriers, scenario, block)
+}
+
+internal suspend fun executeGrpcClientTest(
+    clientConfig: GrpcClientConfiguration.() -> Unit = {},
+    configureScenario: Boolean = true,
+    barriers: List<Barrier> = emptyList(),
+    scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
+    block: suspend GrpcClientTestFixture.() -> Unit,
+) {
     require(configureScenario || barriers.isEmpty()) {
         "server barriers require a configured scenario"
     }
@@ -44,10 +54,14 @@ internal fun grpcClientTest(
     }
 
     val cleanupFailure = withContext(NonCancellable) { fixture.close(testFailure) }
-    val failure = testFailure
-    if (failure != null) {
-        cleanupFailure?.let(failure::addSuppressed)
-        throw failure
-    }
-    cleanupFailure?.let { throw it }
+    combineTestAndCleanupFailures(testFailure, cleanupFailure)?.let { throw it }
+}
+
+internal fun combineTestAndCleanupFailures(
+    testFailure: Throwable?,
+    cleanupFailure: Throwable?,
+): Throwable? {
+    if (testFailure == null) return cleanupFailure
+    cleanupFailure?.let(testFailure::addSuppressed)
+    return testFailure
 }

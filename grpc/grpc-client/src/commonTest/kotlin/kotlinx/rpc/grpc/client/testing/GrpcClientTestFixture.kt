@@ -6,7 +6,10 @@ package kotlinx.rpc.grpc.client.testing
 
 import io.grpc.testing.integration.TestService
 import io.grpc.testing.integration.UnimplementedService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
@@ -16,6 +19,7 @@ import kotlinx.rpc.withService
 import kxrpc.testing.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -48,6 +52,7 @@ internal class GrpcClientTestFixture(
     /** Generated client for deliberately invalid response-cardinality behavior. */
     internal val malformedResponseService: MalformedResponseService = dataClient.withService()
 
+    private var scenarioSetupAttempted: Boolean = false
     private var scenarioConfigured: Boolean = false
 
     /** Registers this fixture's scenario before its data-plane call starts. */
@@ -55,6 +60,7 @@ internal class GrpcClientTestFixture(
         barriers: List<Barrier> = emptyList(),
         configure: ConfigureScenarioRequest.Builder.() -> Unit = {},
     ) {
+        scenarioSetupAttempted = true
         controlService.configureScenario(
             ConfigureScenarioRequest {
                 callId = this@GrpcClientTestFixture.callId
@@ -201,37 +207,38 @@ internal class GrpcClientTestFixture(
      * @return The first cleanup failure with any additional failures suppressed.
      */
     internal suspend fun close(testFailure: Throwable?): Throwable? {
-        val cleanupFailures = mutableListOf<Throwable>()
+        val cleanup = GrpcClientTestCleanup()
 
         if (testFailure == null) {
             if (scenarioConfigured) {
-                runCleanup(cleanupFailures) { assertScenarioCompleted() }
+                cleanup.run { assertScenarioCompleted() }
             }
-            runCleanup(cleanupFailures) { dataClient.shutdown() }
+            cleanup.run { dataClient.shutdown() }
         } else {
-            runCleanup(cleanupFailures) { dataClient.shutdownNow() }
+            cleanup.run { dataClient.shutdownNow() }
             if (scenarioConfigured) {
-                runCleanup(cleanupFailures) {
+                cleanup.run {
                     println("grpcClientTest failed for call_id='$callId'; server trace:\n${serverTrace().render()}")
                 }
-                runCleanup(cleanupFailures) {
+                cleanup.run {
                     println("grpcClientTest server diagnostics for call_id='$callId': ${serverDiagnostics()}")
                 }
             }
         }
 
-        if (scenarioConfigured) {
-            runCleanup(cleanupFailures) {
+        if (scenarioSetupAttempted) {
+            cleanup.run {
                 controlService.discardScenario(DiscardScenarioRequest { callId = this@GrpcClientTestFixture.callId })
+                scenarioSetupAttempted = false
                 scenarioConfigured = false
             }
         }
 
-        runCleanup(cleanupFailures) { controlClient.shutdown() }
-        runCleanup(cleanupFailures) { dataClient.awaitTermination(5.seconds) }
-        runCleanup(cleanupFailures) { controlClient.awaitTermination(5.seconds) }
+        cleanup.run { controlClient.shutdown() }
+        cleanup.run { dataClient.awaitTermination(5.seconds) }
+        cleanup.run { controlClient.awaitTermination(5.seconds) }
 
-        return cleanupFailures.combine()
+        return cleanup.failure()
     }
 
     private suspend fun assertScenarioCompleted() {
@@ -265,15 +272,22 @@ private class CallIdInterceptor(
     }
 }
 
-private suspend fun runCleanup(
-    failures: MutableList<Throwable>,
-    block: suspend () -> Unit,
+internal class GrpcClientTestCleanup(
+    private val stepTimeout: Duration = 3.seconds,
 ) {
-    try {
-        block()
-    } catch (error: Throwable) {
-        failures += error
+    private val failures = mutableListOf<Throwable>()
+
+    internal suspend fun run(block: suspend () -> Unit) {
+        try {
+            withContext(Dispatchers.Default) {
+                withTimeout(stepTimeout) { block() }
+            }
+        } catch (error: Throwable) {
+            failures += error
+        }
     }
+
+    internal fun failure(): Throwable? = failures.combine()
 }
 
 private fun List<Throwable>.combine(): Throwable? {
