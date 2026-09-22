@@ -43,7 +43,9 @@ fun CodeGeneratorRequest.toModel(config: Config): Model {
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
-    val files = fileToGenerateList.map { protoFileMap[it]!! }
+    val files = fileToGenerateList
+        .filter { !config.ignoreFiles.contains(it) }
+        .map { protoFileMap[it]!! }
         .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
     // Build a lookup from proto fully-qualified names to Kotlin FqNames.

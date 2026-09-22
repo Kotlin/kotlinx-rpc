@@ -57,6 +57,26 @@ public const val PROTO_FILES_DIR: String = "proto"
 public const val PROTO_FILES_IMPORT_DIR: String = "import"
 
 /**
+ * Source directory for proto files in [PROTO_BUILD_SOURCE_SETS].
+ *
+ * Content will be copied into [PROTO_FILES_DIR].
+ */
+public const val PROTO_FILES_EXTRACTED_DIR: String = "protoExtracted"
+
+/**
+ * Source directory for extracted proto imported files in [PROTO_BUILD_SOURCE_SETS].
+ *
+ * Content will be copied into [PROTO_FILES_EXTRACTED_DIR].
+ */
+public const val PROTO_FILES_IMPORT_EXTRACTED_DIR: String = "importExtracted"
+
+/**
+ * Directory in [PROTO_BUILD_SOURCE_SETS] containing files that list
+ * protoc input files.
+ */
+public const val PROTOC_INPUT_FILES_DIR: String = "protocInputFiles"
+
+/**
  * [Configuration] name for the `protoc-gen-kotlin-multiplatform` protoc plugin artifact.
  *
  * MUST be a single file.
