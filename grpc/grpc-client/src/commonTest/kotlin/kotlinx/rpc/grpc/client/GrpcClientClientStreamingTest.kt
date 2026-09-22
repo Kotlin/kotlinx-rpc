@@ -144,7 +144,9 @@ class GrpcClientClientStreamingTest {
         val completion = assertIs<RequestFlowCompletion.Failed>(requests.awaitCompletion())
         assertSame(expectedFailure, completion.cause)
         assertServerRequestPayloads(listOf(request.payload.body.toByteArray()))
-        assertServerTrace(failedClientStreamingDuringRequestsEvents(requestCount = 1))
+        assertServerTraceWithEitherTerminal(
+            failedClientStreamingDuringRequestsEvents(requestCount = 1).dropLast(1)
+        )
     }
 
     private companion object {

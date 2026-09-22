@@ -126,6 +126,38 @@ internal class GrpcClientTestFixture(
         serverTrace().assertEvents(callId, expectedEvents)
     }
 
+    /** Awaits server-observed client cancellation and verifies the complete ordered trace. */
+    internal suspend fun assertServerCancelledTrace(expectedEvents: List<ExpectedServerEvent>) {
+        awaitServerEvent(EventType.CLIENT_CANCELLED)
+        serverTrace().assertEvents(callId, expectedEvents)
+    }
+
+    /** Awaits cancellation and accepts one of several explicitly documented event orderings. */
+    internal suspend fun assertServerCancelledTraceOneOf(
+        expectedAlternatives: List<List<ExpectedServerEvent>>,
+    ) {
+        awaitServerEvent(EventType.CLIENT_CANCELLED)
+        serverTrace().assertEventsOneOf(callId, expectedAlternatives)
+    }
+
+    /** Requires one server-observed cancellation and no competing server close. */
+    internal suspend fun assertServerObservedCancellation(): CallTrace {
+        awaitServerEvent(EventType.CLIENT_CANCELLED)
+        val trace = serverTrace()
+        val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
+        assertEquals(1, trace.events.count { it.type == EventType.CLIENT_CANCELLED }, failureMessage)
+        assertEquals(0, trace.events.count { it.type == EventType.CALL_CLOSED }, failureMessage)
+        assertEquals(EventType.CLIENT_CANCELLED, trace.events.lastOrNull()?.type, failureMessage)
+        return trace
+    }
+
+    /** Accepts either server close or peer cancellation after an exact lifecycle prefix. */
+    internal suspend fun assertServerTraceWithEitherTerminal(
+        expectedBeforeTerminal: List<ExpectedServerEvent>,
+    ) {
+        serverTrace().assertEventsWithEitherTerminal(callId, expectedBeforeTerminal)
+    }
+
     /** Compares response payloads with call and server-trace context on failure. */
     internal suspend fun assertResponsePayloads(
         expected: List<ByteArray>,
@@ -155,6 +187,11 @@ internal class GrpcClientTestFixture(
     /** Verifies the complete request-to-close lifecycle of one successful unary call. */
     internal suspend fun assertUnaryLifecycle() {
         assertServerTrace(successfulUnaryEvents())
+    }
+
+    /** Forcefully shuts down the data-plane client while leaving the control channel available. */
+    internal fun shutdownDataClientNow() {
+        dataClient.shutdownNow()
     }
 
     /**
@@ -198,15 +235,23 @@ internal class GrpcClientTestFixture(
     }
 
     private suspend fun assertScenarioCompleted() {
-        awaitServerEvent(EventType.CALL_CLOSED)
-        val trace = serverTrace()
+        var trace = serverTrace()
+        if (trace.events.none { it.type.isTerminalServerEvent() }) {
+            awaitServerEvent(EventType.CALL_CLOSED)
+            trace = serverTrace()
+        }
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
         val acceptedCallCount = trace.events.count { it.type == EventType.CALL_ACCEPTED }
         val closedCallCount = trace.events.count { it.type == EventType.CALL_CLOSED }
-        assertEquals(acceptedCallCount, closedCallCount, failureMessage)
-        assertEquals(EventType.CALL_CLOSED, trace.events.lastOrNull()?.type, failureMessage)
+        val cancelledCallCount = trace.events.count { it.type == EventType.CLIENT_CANCELLED }
+        assertEquals(acceptedCallCount, closedCallCount + cancelledCallCount, failureMessage)
+        assertEquals(true, trace.events.lastOrNull()?.type?.isTerminalServerEvent(), failureMessage)
         serverDiagnostics().assertNoLeaks(callId, trace)
     }
+}
+
+private fun EventType.isTerminalServerEvent(): Boolean {
+    return this == EventType.CALL_CLOSED || this == EventType.CLIENT_CANCELLED
 }
 
 private class CallIdInterceptor(

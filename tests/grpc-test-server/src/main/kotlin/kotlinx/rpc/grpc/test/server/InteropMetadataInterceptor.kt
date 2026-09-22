@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.server
 
 import com.google.protobuf.ByteString
+import io.grpc.Context
 import io.grpc.ForwardingServerCall
 import io.grpc.ForwardingServerCallListener
 import io.grpc.InternalMetadata
@@ -16,6 +17,7 @@ import io.grpc.Status
 import io.grpc.testing.integration.Messages.StreamingInputCallRequest
 import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
 import java.nio.charset.StandardCharsets.US_ASCII
+import java.util.concurrent.Executor
 import java.util.concurrent.atomic.AtomicBoolean
 import kxrpc.testing.BarrierType
 import kxrpc.testing.ConfigureScenarioRequest
@@ -50,6 +52,10 @@ internal class InteropMetadataInterceptor(
         }
 
         val scenarioCall = ScenarioServerCall(call, registry, registry.configuration(callId))
+        Context.current().addListener(
+            Context.CancellationListener { scenarioCall.clientCancelled() },
+            DIRECT_EXECUTOR,
+        )
         if (scenarioCall.closeBeforeStartIfConfigured()) {
             return object : ServerCall.Listener<ReqT>() {}
         }
@@ -320,3 +326,5 @@ private fun Any.interopPayload(): ByteString? = when (this) {
     is StreamingOutputCallRequest -> payload.body
     else -> null
 }
+
+private val DIRECT_EXECUTOR: Executor = Executor { command -> command.run() }

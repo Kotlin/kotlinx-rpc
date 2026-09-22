@@ -17,6 +17,7 @@ import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.invoke
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 /** One expected occurrence in the reference server's ordered trace. */
 internal data class ExpectedServerEvent(
@@ -65,6 +66,43 @@ internal fun CallTrace.assertEvents(
     val failureMessage = failureMessage(expectedCallId)
     assertEquals(expectedCallId, callId, failureMessage)
     assertEquals(expectedEvents, events.map { ExpectedServerEvent(it.type, it.occurrence) }, failureMessage)
+    assertEquals(events.indices.map { (it + 1).toULong() }, events.map { it.sequence }, failureMessage)
+}
+
+/** Asserts that the exact trace is one of a small set of documented orderings. */
+internal fun CallTrace.assertEventsOneOf(
+    expectedCallId: String,
+    expectedAlternatives: List<List<ExpectedServerEvent>>,
+) {
+    require(expectedAlternatives.isNotEmpty()) { "expected event alternatives must not be empty" }
+    val failureMessage = failureMessage(expectedCallId)
+    val actual = events.map { ExpectedServerEvent(it.type, it.occurrence) }
+    assertEquals(expectedCallId, callId, failureMessage)
+    assertTrue(
+        actual in expectedAlternatives,
+        "$failureMessage\nexpected one of $expectedAlternatives, actual $actual",
+    )
+    assertEquals(events.indices.map { (it + 1).toULong() }, events.map { it.sequence }, failureMessage)
+}
+
+/** Asserts an exact lifecycle prefix followed by either server close or peer cancellation. */
+internal fun CallTrace.assertEventsWithEitherTerminal(
+    expectedCallId: String,
+    expectedBeforeTerminal: List<ExpectedServerEvent>,
+) {
+    val failureMessage = failureMessage(expectedCallId)
+    assertEquals(expectedCallId, callId, failureMessage)
+    assertEquals(
+        expectedBeforeTerminal,
+        events.dropLast(1).map { ExpectedServerEvent(it.type, it.occurrence) },
+        failureMessage,
+    )
+    val terminal = events.lastOrNull()
+    assertTrue(
+        terminal?.type == EventType.CALL_CLOSED || terminal?.type == EventType.CLIENT_CANCELLED,
+        failureMessage,
+    )
+    assertEquals(1U, terminal.occurrence, failureMessage)
     assertEquals(events.indices.map { (it + 1).toULong() }, events.map { it.sequence }, failureMessage)
 }
 

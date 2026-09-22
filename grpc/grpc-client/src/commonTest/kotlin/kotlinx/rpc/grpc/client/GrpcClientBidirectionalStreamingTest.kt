@@ -288,7 +288,9 @@ class GrpcClientBidirectionalStreamingTest {
         val completion = assertIs<RequestFlowCompletion.Failed>(requests.awaitCompletion())
         assertSame(expectedFailure, completion.cause)
         assertServerRequestPayloads(listOf(request.payload.body.toByteArray()))
-        assertServerTrace(failedBidirectionalDuringRequestsEvents(requestCount = 1))
+        assertServerTraceWithEitherTerminal(
+            failedBidirectionalDuringRequestsEvents(requestCount = 1).dropLast(1)
+        )
     }
 
     private companion object {

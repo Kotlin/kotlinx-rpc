@@ -46,6 +46,7 @@ class GrpcClientTimeoutTest {
                 assertGrpcTimeoutStatus {
                     testService.emptyCall(Empty {})
                 }
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = false)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_INITIAL_HEADERS)
@@ -66,6 +67,7 @@ class GrpcClientTimeoutTest {
                 assertGrpcTimeoutStatus {
                     testService.emptyCall(Empty {})
                 }
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = null)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_RESPONSE)
@@ -97,6 +99,7 @@ class GrpcClientTimeoutTest {
                         .toList()
                 }
                 assertEquals(listOf(5), responseSizes)
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = true)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_RESPONSE, occurrence = 2U)
@@ -118,6 +121,7 @@ class GrpcClientTimeoutTest {
                 assertGrpcTimeoutStatus {
                     testService.streamingInputCall(requests)
                 }
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = null)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_RESPONSE)
@@ -150,6 +154,7 @@ class GrpcClientTimeoutTest {
                         .toList()
                 }
                 assertEquals(listOf(5), responseSizes)
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = true)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_RESPONSE, occurrence = 2U)
@@ -180,6 +185,7 @@ class GrpcClientTimeoutTest {
                     testService.streamingInputCall(hangingRequestFlow)
                 }
                 assertTrue(requestFinallyExecuted, "deadline did not cancel the blocked request producer")
+                assertServerObservedCancellation()
                 assertTerminalCallback(callbackEvents, headersExpected = false)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_INITIAL_HEADERS)

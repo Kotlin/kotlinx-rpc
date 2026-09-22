@@ -95,11 +95,11 @@ internal class NonIosGrpcClientTransport(
                 events = events,
                 requestNext = { call.request(1) },
                 onError = { e ->
+                    call.cancel("Collection of responses completed exceptionally", e)
                     sender.cancel("Collection of responses completed exceptionally", e)
                     sender.join()
                     requestCollector?.cancel("Collection of responses completed exceptionally", e)
                     requestCollector?.join()
-                    call.cancel("Collection of responses completed exceptionally", e)
                 },
             )
 
