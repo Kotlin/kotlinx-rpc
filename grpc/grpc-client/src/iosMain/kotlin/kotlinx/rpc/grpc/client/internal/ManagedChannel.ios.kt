@@ -85,6 +85,8 @@ internal class SwiftManagedChannel(
         compression: GrpcCompression,
         requestSource: KotlinGrpcRequestSource<Request>
     ): SwiftGrpcCallAdapter<Response> {
+        check(!isShutdown) { internalError("Channel is shutdown") }
+
         // Map null and infinite timeouts to -1
         val swiftTimeout = timeout
             ?.takeUnless { it.isInfinite() }
