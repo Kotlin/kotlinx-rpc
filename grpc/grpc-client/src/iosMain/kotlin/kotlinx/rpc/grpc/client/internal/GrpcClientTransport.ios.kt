@@ -18,6 +18,8 @@ import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlin.time.Duration
+import kotlin.time.TimeSource
 
 internal actual fun GrpcClientTransport(
     channel: ManagedChannel,
@@ -73,6 +75,8 @@ internal class SwiftGrpcClientTransport(
             var call: SwiftGrpcCallAdapter<Response>? = null
             var closed = false
             try {
+                val timeout = callOptions.timeout?.takeIf { it.isFinite() && it.isPositive() }
+                val callStarted = TimeSource.Monotonic.markNow()
                 call = channel.startCall(
                     method = method,
                     headers = callHeaders,
@@ -82,7 +86,7 @@ internal class SwiftGrpcClientTransport(
                 )
 
                 while (!closed) {
-                    val event = call.nextEvent()
+                    val event = call.nextEvent().normalizeDeadlineRace(timeout, callStarted.elapsedNow())
                     closed = event is GrpcClientCallEvents.Closed
                     if (closed) {
                         requestSource.originalFailure?.let { throw it }
@@ -109,3 +113,33 @@ internal class SwiftGrpcClientTransport(
         }
     }
 }
+
+/**
+ * Normalizes a grpc-swift race between an expired local deadline and the resulting HTTP/2 reset.
+ *
+ * Once the deadline expires, cancellation propagates through the call and the peer may send an
+ * `RST_STREAM(CANCEL)` before grpc-swift publishes its canonical deadline status. In that ordering,
+ * grpc-swift reports `UNAVAILABLE` even though the configured timeout caused the call to terminate.
+ * Convert only that recognizable reset after the local timeout has elapsed so genuine
+ * `UNAVAILABLE` failures and resets received before the deadline remain unchanged.
+ */
+internal fun <Response> GrpcClientCallEvents<Response>.normalizeDeadlineRace(
+    timeout: Duration?,
+    elapsed: Duration,
+): GrpcClientCallEvents<Response> {
+    if (this !is GrpcClientCallEvents.Closed ||
+        timeout == null ||
+        elapsed < timeout ||
+        status.statusCode != GrpcStatusCode.UNAVAILABLE ||
+        status.description?.contains(DEADLINE_RST_STREAM_DESCRIPTION) != true
+    ) {
+        return this
+    }
+
+    return GrpcClientCallEvents.Closed(
+        status = GrpcStatus(GrpcStatusCode.DEADLINE_EXCEEDED, "Deadline exceeded", status.cause),
+        trailers = trailers,
+    )
+}
+
+internal const val DEADLINE_RST_STREAM_DESCRIPTION: String = "RST_STREAM frame (0x8: cancel)"

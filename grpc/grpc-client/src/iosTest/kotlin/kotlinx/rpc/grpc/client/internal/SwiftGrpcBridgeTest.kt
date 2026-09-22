@@ -25,6 +25,8 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.get
@@ -32,6 +34,7 @@ import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.getAllBinary
 import kotlinx.rpc.grpc.keys
 import kotlinx.rpc.grpc.remove
+import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
@@ -45,6 +48,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class SwiftGrpcBridgeTest {
     @Test
@@ -216,6 +220,22 @@ class SwiftGrpcBridgeTest {
         val result = withTimeout(1_000.milliseconds) { reentrantResult.await() }
         assertNull(result.first)
         assertNull(result.second)
+    }
+
+    @Test
+    fun elapsedDeadlineNormalizesGrpcSwiftResetRace() {
+        val unavailable = GrpcClientCallEvents.Closed(
+            status = GrpcStatus(
+                GrpcStatusCode.UNAVAILABLE,
+                "Stream unexpectedly closed: received $DEADLINE_RST_STREAM_DESCRIPTION.",
+            ),
+            trailers = GrpcMetadata(),
+        )
+
+        val normalized = unavailable.normalizeDeadlineRace(1500.milliseconds, 2.seconds)
+        val closed = normalized as GrpcClientCallEvents.Closed
+        assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, closed.status.statusCode)
+        assertSame(unavailable, unavailable.normalizeDeadlineRace(1500.milliseconds, 1.seconds))
     }
 
     private suspend fun KotlinGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestMessageProtocol?, NSError?> {
