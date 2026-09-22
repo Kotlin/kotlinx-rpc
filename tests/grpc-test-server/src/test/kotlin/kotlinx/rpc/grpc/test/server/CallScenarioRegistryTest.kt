@@ -230,6 +230,24 @@ class CallScenarioRegistryTest {
         }
     }
 
+    @Test
+    fun clientCancellationRecordsTerminalEventAndClearsActiveCall() {
+        val registry = registry()
+        registry.configure(scenario("cancelled"))
+        registry.callAccepted("cancelled")
+
+        val cancelled = registry.clientCancelled("cancelled")
+
+        assertEquals(EventType.CLIENT_CANCELLED, cancelled.type)
+        assertEquals(0, registry.diagnostics("cancelled").activeCallCount)
+        assertEquals(
+            listOf(EventType.CALL_ACCEPTED, EventType.CLIENT_CANCELLED),
+            registry.trace("cancelled").eventsList.map { it.type },
+        )
+        assertFailsWith<IllegalStateException> { registry.clientCancelled("cancelled") }
+        assertFailsWith<IllegalStateException> { registry.callClosed("cancelled") }
+    }
+
     private fun registry(): CallScenarioRegistry = CallScenarioRegistry(Duration.ofSeconds(2))
 
     private fun scenario(callId: String, vararg barrierTypes: BarrierType): ConfigureScenarioRequest {

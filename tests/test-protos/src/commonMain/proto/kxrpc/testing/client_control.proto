@@ -207,6 +207,11 @@ enum EventType {
   INITIAL_HEADERS_SENT = 4;
   RESPONSE_MESSAGE_SENT = 5;
   CALL_CLOSED = 6;
+
+  // The server observed cancellation from the client. This includes explicit
+  // caller cancellation, an elapsed client deadline, and forced channel
+  // shutdown; the client-side result distinguishes those causes.
+  CLIENT_CANCELLED = 7;
 }
 
 message CallTrace {

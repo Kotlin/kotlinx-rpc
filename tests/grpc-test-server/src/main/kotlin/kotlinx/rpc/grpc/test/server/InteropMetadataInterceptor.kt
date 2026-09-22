@@ -85,7 +85,7 @@ internal class InteropMetadataInterceptor(
         private val callId: String = configuration.callId
         private var responseCount: Int = 0
         private var initialHeadersSent: Boolean = false
-        private val closed = AtomicBoolean()
+        private val terminated = AtomicBoolean()
 
         fun closeBeforeStartIfConfigured(): Boolean {
             if (configuration.terminalStage() != TerminalStage.BEFORE_INITIAL_METADATA) return false
@@ -94,11 +94,12 @@ internal class InteropMetadataInterceptor(
         }
 
         override fun sendHeaders(headers: Metadata) {
-            if (closed.get()) return
+            if (terminated.get()) return
             try {
                 val outgoingHeaders = headers.withConfigured(configuration.initialMetadataList)
                 val traceMetadata = outgoingHeaders.toMetadataEntries()
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_INITIAL_HEADERS, 1)
+                if (terminated.get()) return
                 super.sendHeaders(outgoingHeaders)
                 initialHeadersSent = true
                 registry.recordEvent(
@@ -115,10 +116,11 @@ internal class InteropMetadataInterceptor(
         }
 
         override fun sendMessage(message: RespT) {
-            if (closed.get()) return
+            if (terminated.get()) return
             val occurrence = responseCount + 1
             try {
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_RESPONSE, occurrence)
+                if (terminated.get()) return
                 super.sendMessage(message)
                 responseCount = occurrence
                 registry.recordEvent(callId, EventType.RESPONSE_MESSAGE_SENT)
@@ -133,14 +135,14 @@ internal class InteropMetadataInterceptor(
         }
 
         override fun close(status: Status, trailers: Metadata) {
-            if (closed.get()) return
+            if (terminated.get()) return
             try {
                 val terminalStage = configuration.terminalStage()
                 if (!initialHeadersSent &&
                     (configuration.initialMetadataCount > 0 || terminalStage == TerminalStage.AFTER_INITIAL_METADATA)
                 ) {
                     sendHeaders(Metadata())
-                    if (closed.get()) return
+                    if (terminated.get()) return
                 }
 
                 when (terminalStage) {
@@ -169,7 +171,7 @@ internal class InteropMetadataInterceptor(
             barrier: BarrierType,
             requestPayload: ByteString? = null,
         ): Boolean {
-            if (closed.get()) return false
+            if (terminated.get()) return false
             return try {
                 val event = if (type == EventType.REQUEST_MESSAGE_RECEIVED) {
                     registry.recordRequestMessage(callId, requestPayload)
@@ -188,6 +190,11 @@ internal class InteropMetadataInterceptor(
             fail(error.toGrpcStatus())
         }
 
+        fun clientCancelled() {
+            if (!terminated.compareAndSet(false, true)) return
+            runCatching { registry.clientCancelled(callId) }
+        }
+
         private fun fail(status: Status) {
             completeClose(status, Metadata(), includeConfiguredTrailers = false)
         }
@@ -204,7 +211,7 @@ internal class InteropMetadataInterceptor(
             trailers: Metadata,
             includeConfiguredTrailers: Boolean = true,
         ) {
-            if (!closed.compareAndSet(false, true)) return
+            if (terminated.get()) return
             val (outgoingStatus, outgoingTrailers) = try {
                 registry.awaitBarrierIfConfigured(callId, BarrierType.CLOSE_CALL, 1)
                 status to if (includeConfiguredTrailers) {
@@ -215,6 +222,7 @@ internal class InteropMetadataInterceptor(
             } catch (error: Throwable) {
                 error.toGrpcStatus() to Metadata()
             }
+            if (!terminated.compareAndSet(false, true)) return
             val traceMetadata = outgoingTrailers.toMetadataEntries()
             val traceStatus = outgoingStatus.toTraceStatus()
             try {
@@ -252,6 +260,11 @@ internal class InteropMetadataInterceptor(
             ) {
                 super.onHalfClose()
             }
+        }
+
+        override fun onCancel() {
+            call.clientCancelled()
+            super.onCancel()
         }
     }
 

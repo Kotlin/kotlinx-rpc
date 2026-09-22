@@ -77,6 +77,8 @@ internal class CallScenarioRegistry(
         status: GrpcStatus? = null,
     ): CallEvent = scenario(callId).callClosed(metadata, status)
 
+    internal fun clientCancelled(callId: String): CallEvent = scenario(callId).clientCancelled()
+
     internal fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
         requireKnownEvent(type)
         require(occurrence > 0) { "event occurrence must be one-based" }
@@ -212,6 +214,14 @@ private class ScenarioState(
         checkNotDiscarded()
         check(activeCallCount > 0) { "scenario '$callId' has no active call to close" }
         val event = recordEventLocked(EventType.CALL_CLOSED, metadata = metadata, status = status)
+        activeCallCount--
+        event
+    }
+
+    fun clientCancelled(): CallEvent = lock.withLock {
+        checkNotDiscarded()
+        check(activeCallCount > 0) { "scenario '$callId' has no active call to cancel" }
+        val event = recordEventLocked(EventType.CLIENT_CANCELLED)
         activeCallCount--
         event
     }

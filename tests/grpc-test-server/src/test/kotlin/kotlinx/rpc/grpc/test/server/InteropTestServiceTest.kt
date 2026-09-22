@@ -6,12 +6,16 @@ package kotlinx.rpc.grpc.test.server
 
 import com.google.protobuf.ByteString
 import grpc.testing.EmptyOuterClass.Empty
+import io.grpc.CallOptions
+import io.grpc.ClientCall
+import io.grpc.ClientInterceptors
 import io.grpc.Metadata
 import io.grpc.ServerInterceptors
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
+import io.grpc.stub.ClientCalls
 import io.grpc.stub.MetadataUtils
 import io.grpc.stub.StreamObserver
 import io.grpc.testing.integration.Messages.EchoStatus
@@ -177,6 +181,61 @@ class InteropTestServiceTest {
         assertEquals(7, response.awaitNext().aggregatedPayloadSize)
         response.awaitCompleted()
         fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun clientCancellationWhileHeadersAreBlockedIsObservedAndTerminatesTheScenario() = withFixture { fixture ->
+        val callId = "cancel-before-headers"
+        fixture.configure(callId, BarrierType.SEND_INITIAL_HEADERS)
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val call = fixture.startStreamingOutputCall(callId, streamingRequest(8), responses)
+
+        fixture.awaitEvent(callId, EventType.CLIENT_HALF_CLOSED)
+        call.cancel("cancel before headers", null)
+
+        assertEquals(Status.Code.CANCELLED, Status.fromThrowable(responses.awaitError()).code)
+        fixture.awaitEvent(callId, EventType.CLIENT_CANCELLED)
+        fixture.release(callId, BarrierType.SEND_INITIAL_HEADERS)
+        assertEquals(
+            listOf(
+                EventType.CALL_ACCEPTED,
+                EventType.REQUEST_MESSAGE_RECEIVED,
+                EventType.CLIENT_HALF_CLOSED,
+                EventType.CLIENT_CANCELLED,
+            ),
+            fixture.traceTypes(callId),
+        )
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun clientCancellationWinsWhileServerCloseIsBlocked() = withFixture { fixture ->
+        val callId = "cancel-before-close"
+        fixture.configure(callId, BarrierType.CLOSE_CALL)
+        val responses = AwaitingObserver<StreamingOutputCallResponse>()
+        val call = fixture.startStreamingOutputCall(callId, streamingRequest(13), responses)
+
+        assertEquals(13, responses.awaitNext().payload.body.size())
+        fixture.awaitEvent(callId, EventType.RESPONSE_MESSAGE_SENT)
+        call.cancel("cancel before close", null)
+
+        assertEquals(Status.Code.CANCELLED, Status.fromThrowable(responses.awaitError()).code)
+        fixture.awaitEvent(callId, EventType.CLIENT_CANCELLED)
+        fixture.release(callId, BarrierType.CLOSE_CALL)
+        assertEquals(
+            listOf(
+                EventType.CALL_ACCEPTED,
+                EventType.REQUEST_MESSAGE_RECEIVED,
+                EventType.CLIENT_HALF_CLOSED,
+                EventType.INITIAL_HEADERS_SENT,
+                EventType.RESPONSE_MESSAGE_SENT,
+                EventType.CLIENT_CANCELLED,
+            ),
+            fixture.traceTypes(callId),
+        )
         fixture.assertNoLeaks(callId)
         fixture.discard(callId)
     }
@@ -369,6 +428,26 @@ class InteropTestServiceTest {
             }
             return TestServiceGrpc.newStub(dataChannel)
                 .withInterceptors(MetadataUtils.newAttachHeadersInterceptor(metadata))
+        }
+
+        fun startStreamingOutputCall(
+            callId: String,
+            request: StreamingOutputCallRequest,
+            responseObserver: StreamObserver<StreamingOutputCallResponse>,
+        ): ClientCall<StreamingOutputCallRequest, StreamingOutputCallResponse> {
+            val metadata = Metadata().apply {
+                put(TEST_CALL_ID_METADATA_KEY, callId)
+            }
+            val channel = ClientInterceptors.intercept(
+                dataChannel,
+                MetadataUtils.newAttachHeadersInterceptor(metadata),
+            )
+            val call = channel.newCall(
+                TestServiceGrpc.getStreamingOutputCallMethod(),
+                CallOptions.DEFAULT,
+            )
+            ClientCalls.asyncServerStreamingCall(call, request, responseObserver)
+            return call
         }
 
         fun unimplementedClient(): UnimplementedServiceGrpc.UnimplementedServiceBlockingStub {
