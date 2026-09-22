@@ -55,7 +55,34 @@
                 Configures keep-alive pings to detect broken connections.
                 Disabled by default.
             </def>
+            <def title="maxInboundMessageSize">
+                The maximum size, in bytes, of an inbound message.
+                Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
+                The gRPC runtime default applies when not set.
+            </def>
+            <def title="maxInboundMetadataSize">
+                The maximum size, in bytes, of inbound metadata.
+                The gRPC runtime default applies when not set.
+            </def>
+            <def title="idleTimeout">
+                The duration without ongoing RPCs before the client enters idle mode and closes its
+                connections. A new RPC takes the client out of idle mode.
+                <code>Duration.INFINITE</code> disables automatic idle mode.
+                The gRPC runtime default applies when not set.
+            </def>
         </deflist>
+        <note>
+            Duration options (<code>idleTimeout</code> and <code>keepAlive</code>) accept
+            <code>Duration.INFINITE</code> to disable the behavior. Finite values must be under
+            <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
+            On Kotlin/Native these become gRPC channel arguments, whose values are a C
+            <code>int</code>. <code>Duration.INFINITE</code> is passed as
+            <code>Int.MAX_VALUE</code>, the largest value such an argument can hold and the one
+            gRPC treats as effectively unbounded, so a finite value must stay below it to remain
+            distinguishable. The bound is enforced on every platform so that the same
+            configuration behaves identically everywhere; out-of-range values throw
+            <code>IllegalArgumentException</code>.
+        </note>
     </chapter>
 
     <chapter title="Lifecycle" id="grpc-client-lifecycle">

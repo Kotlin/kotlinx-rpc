@@ -92,5 +92,8 @@ internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfi
 
     config.overrideAuthority?.let { overrideAuthority(it) }
     config.userAgent?.let { userAgent(it) }
+    config.maxInboundMessageSize?.let { maxInboundMessageSize(it) }
+    config.maxInboundMetadataSize?.let { maxInboundMetadataSize(it) }
+    config.idleTimeout?.let { idleTimeout(it.inWholeMilliseconds, TimeUnit.MILLISECONDS) }
     return this
 }
