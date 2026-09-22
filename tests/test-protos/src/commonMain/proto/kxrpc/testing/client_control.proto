@@ -21,6 +21,12 @@ service GrpcClientControlService {
   // Adds explicit inbound request-message demand to a manually controlled call.
   rpc GrantInboundDemand(GrantInboundDemandRequest) returns (ControlAck);
 
+  // Starts an isolated data-plane listener for connection-loss tests.
+  rpc StartDisposableEndpoint(StartDisposableEndpointRequest) returns (DisposableEndpoint);
+
+  // Abruptly terminates the isolated data-plane listener and all of its calls.
+  rpc StopDisposableEndpoint(StopDisposableEndpointRequest) returns (ControlAck);
+
   // Returns the currently recorded trace in sequence order.
   rpc GetTrace(GetTraceRequest) returns (CallTrace);
 
@@ -174,6 +180,18 @@ message GrantInboundDemandRequest {
 
   // Number of additional request messages to admit. Must be positive.
   uint32 message_count = 2;
+}
+
+message StartDisposableEndpointRequest {
+  string call_id = 1;
+}
+
+message StopDisposableEndpointRequest {
+  string call_id = 1;
+}
+
+message DisposableEndpoint {
+  uint32 port = 1;
 }
 
 message GetTraceRequest {

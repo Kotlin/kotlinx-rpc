@@ -28,16 +28,12 @@ import kotlin.time.Duration.Companion.seconds
  * @param clientConfig Additional configuration applied to the data-plane client.
  */
 internal class GrpcClientTestFixture(
-    clientConfig: GrpcClientConfiguration.() -> Unit,
+    private val clientConfig: GrpcClientConfiguration.() -> Unit,
 ) {
     /** Unique metadata identifier used to correlate this test with its server-side trace. */
     internal val callId: String = newCallId()
 
-    private val dataClient: GrpcClient = GrpcClient(GrpcClientTestServer.HOST, GrpcClientTestServer.PORT) {
-        credentials = plaintext()
-        clientConfig()
-        intercept(CallIdInterceptor(callId))
-    }
+    private val dataClient: GrpcClient = createDataClient(GrpcClientTestServer.PORT)
     private val controlClient: GrpcClient = GrpcClient(GrpcClientTestServer.HOST, GrpcClientTestServer.PORT) {
         credentials = plaintext()
     }
@@ -54,6 +50,8 @@ internal class GrpcClientTestFixture(
 
     private var scenarioSetupAttempted: Boolean = false
     private var scenarioConfigured: Boolean = false
+    private var disposableEndpointStarted: Boolean = false
+    private var disposableDataClient: GrpcClient? = null
 
     /** Registers this fixture's scenario before its data-plane call starts. */
     internal suspend fun configureScenario(
@@ -108,6 +106,27 @@ internal class GrpcClientTestFixture(
                 this.messageCount = messageCount
             }
         )
+    }
+
+    /** Starts and returns a service on an isolated listener which tests may terminate remotely. */
+    internal suspend fun startDisposableTestService(): TestService {
+        check(disposableDataClient == null) { "disposable data client is already started" }
+        val endpoint = controlService.startDisposableEndpoint(
+            StartDisposableEndpointRequest { callId = this@GrpcClientTestFixture.callId }
+        )
+        disposableEndpointStarted = true
+        val client = createDataClient(endpoint.port.toInt())
+        disposableDataClient = client
+        return client.withService()
+    }
+
+    /** Abruptly terminates the isolated listener and every data-plane call using it. */
+    internal suspend fun stopDisposableEndpoint() {
+        check(disposableEndpointStarted) { "disposable endpoint is not started" }
+        controlService.stopDisposableEndpoint(
+            StopDisposableEndpointRequest { callId = this@GrpcClientTestFixture.callId }
+        )
+        disposableEndpointStarted = false
     }
 
     /** Verifies an event is absent from the current trace, then releases its protecting barrier. */
@@ -211,6 +230,16 @@ internal class GrpcClientTestFixture(
         dataClient.shutdownNow()
     }
 
+    /** Begins graceful data-plane client shutdown. */
+    internal fun shutdownDataClient() {
+        dataClient.shutdown()
+    }
+
+    /** Waits for the data-plane client to terminate, bounded by [duration]. */
+    internal suspend fun awaitDataClientTermination(duration: Duration = 5.seconds) {
+        dataClient.awaitTermination(duration)
+    }
+
     /**
      * Discards server state and closes both clients, preserving any cleanup failure.
      *
@@ -221,12 +250,20 @@ internal class GrpcClientTestFixture(
         val cleanup = GrpcClientTestCleanup()
 
         if (testFailure == null) {
+            if (disposableEndpointStarted) {
+                cleanup.run { stopDisposableEndpoint() }
+            }
             if (scenarioConfigured) {
                 cleanup.run { assertScenarioCompleted() }
             }
             cleanup.run { dataClient.shutdown() }
+            cleanup.run { disposableDataClient?.shutdown() }
         } else {
             cleanup.run { dataClient.shutdownNow() }
+            cleanup.run { disposableDataClient?.shutdownNow() }
+            if (disposableEndpointStarted) {
+                cleanup.run { stopDisposableEndpoint() }
+            }
             if (scenarioConfigured) {
                 cleanup.run {
                     println("grpcClientTest failed for call_id='$callId'; server trace:\n${serverTrace().render()}")
@@ -247,6 +284,7 @@ internal class GrpcClientTestFixture(
 
         cleanup.run { controlClient.shutdown() }
         cleanup.run { dataClient.awaitTermination(5.seconds) }
+        cleanup.run { disposableDataClient?.awaitTermination(5.seconds) }
         cleanup.run { controlClient.awaitTermination(5.seconds) }
 
         return cleanup.failure()
@@ -265,6 +303,14 @@ internal class GrpcClientTestFixture(
         assertEquals(acceptedCallCount, closedCallCount + cancelledCallCount, failureMessage)
         assertEquals(true, trace.events.lastOrNull()?.type?.isTerminalServerEvent(), failureMessage)
         serverDiagnostics().assertNoLeaks(callId, trace)
+    }
+
+    private fun createDataClient(port: Int): GrpcClient {
+        return GrpcClient(GrpcClientTestServer.HOST, port) {
+            credentials = plaintext()
+            clientConfig()
+            intercept(CallIdInterceptor(callId))
+        }
     }
 }
 

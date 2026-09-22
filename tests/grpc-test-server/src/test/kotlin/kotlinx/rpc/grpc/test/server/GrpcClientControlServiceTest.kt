@@ -22,6 +22,8 @@ import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.ReleaseBarrierRequest
+import kxrpc.testing.StartDisposableEndpointRequest
+import kxrpc.testing.StopDisposableEndpointRequest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -42,6 +44,14 @@ class GrpcClientControlServiceTest {
             val client = GrpcClientControlServiceGrpc.newBlockingStub(channel)
             val callId = "network-call"
             client.configureScenario(ConfigureScenarioRequest.newBuilder().setCallId(callId).build())
+
+            val endpoint = client.startDisposableEndpoint(
+                StartDisposableEndpointRequest.newBuilder().setCallId(callId).build()
+            )
+            assertTrue(endpoint.port > 0)
+            client.stopDisposableEndpoint(
+                StopDisposableEndpointRequest.newBuilder().setCallId(callId).build()
+            )
 
             val recorded = registry.recordEvent(callId, EventType.CALL_ACCEPTED)
             val awaited = client.awaitEvent(

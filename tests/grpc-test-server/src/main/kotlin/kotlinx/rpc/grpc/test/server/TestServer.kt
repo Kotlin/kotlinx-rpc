@@ -12,6 +12,7 @@ public fun main() {
     val registry = CallScenarioRegistry()
     val interopService = InteropTestService(registry)
     val scenarioInterceptor = InteropMetadataInterceptor(registry)
+    val disposableEndpoints = DisposableEndpointManager(registry)
     val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 50051))
         .addService(EchoServiceImpl())
         .addService(GreeterServiceImpl())
@@ -27,7 +28,7 @@ public fun main() {
                 scenarioInterceptor,
             )
         )
-        .addService(GrpcClientControlService(registry))
+        .addService(GrpcClientControlService(registry, disposableEndpoints))
         .build()
     try {
         server.start()
@@ -36,6 +37,7 @@ public fun main() {
     } finally {
         server.shutdown()
         server.awaitTermination()
+        disposableEndpoints.close()
         interopService.close()
     }
 }
