@@ -183,7 +183,7 @@ class SwiftGrpcBridgeTest {
         source.cancel()
 
         assertNull(result.await().first)
-        assertNotNull(result.await().second)
+        assertNull(result.await().second)
     }
 
     @Test
@@ -196,7 +196,7 @@ class SwiftGrpcBridgeTest {
 
         val result = withTimeout(1_000.milliseconds) { source.pull() }
         assertNull(result.first)
-        assertNotNull(result.second)
+        assertNull(result.second)
     }
 
     @Test
@@ -215,7 +215,7 @@ class SwiftGrpcBridgeTest {
 
         val result = withTimeout(1_000.milliseconds) { reentrantResult.await() }
         assertNull(result.first)
-        assertNotNull(result.second)
+        assertNull(result.second)
     }
 
     private suspend fun KotlinGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestMessageProtocol?, NSError?> {

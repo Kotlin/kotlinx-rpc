@@ -99,7 +99,7 @@ internal class SwiftGrpcClientTransport(
                 }
                 throw cause
             } finally {
-                requestSource.cancel()
+                requestSource.cancelAndJoin()
                 if (!closed) {
                     withContext(NonCancellable) {
                         call?.cancelAndWait("Kotlin response collection stopped before the call closed")

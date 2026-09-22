@@ -40,6 +40,7 @@ internal class KotlinGrpcRequestSource<Request>(
 
     // Keeps track of the first failure that occurred
     private val failure = atomic<Throwable?>(null)
+    private val cancelled = atomic(false)
 
     init {
         scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
@@ -74,6 +75,10 @@ internal class KotlinGrpcRequestSource<Request>(
             completion(null, swiftGrpcError("grpc-swift requested more than one message concurrently"))
             return
         }
+        if (cancelled.value) {
+            complete(null, null)
+            return
+        }
 
         // Enter the body even if cancellation races with a Swift pull, so that its completion is
         // always attempted.
@@ -89,24 +94,40 @@ internal class KotlinGrpcRequestSource<Request>(
                     result.exceptionOrNull() == null -> complete(null, null)
                     else -> {
                         val cause = result.exceptionOrNull()!!
-                        if (cause !is CancellationException) setFailure(cause)
-                        complete(null, swiftGrpcError(cause.message ?: "Kotlin request flow failed"))
+                        if (cause is CancellationException) {
+                            complete(null, null)
+                        } else {
+                            setFailure(cause)
+                            complete(null, swiftGrpcError(cause.message ?: "Kotlin request flow failed"))
+                        }
                     }
                 }
             } catch (cause: Throwable) {
-                if (cause !is CancellationException) setFailure(cause)
-                complete(null, swiftGrpcError(cause.message ?: "Kotlin request source failed"))
+                if (cause is CancellationException) {
+                    complete(null, null)
+                } else {
+                    setFailure(cause)
+                    complete(null, swiftGrpcError(cause.message ?: "Kotlin request source failed"))
+                }
             }
         }
     }
 
     override fun cancel() {
+        cancelled.value = true
         val cause = CancellationException("grpc-swift call stopped consuming requests")
         // Tear down first so that invoking the completion cannot re-enter a still-active source.
         collector.cancel(cause)
         messages.cancel(cause)
         sourceJob.cancel(cause)
-        complete(null, swiftGrpcError(cause.message ?: "Kotlin request source was cancelled"))
+        // Cancellation is transport control flow, not a request failure. Completing a pending pull
+        // as EOF lets grpc-swift preserve the call's real terminal status (for example a deadline).
+        complete(null, null)
+    }
+
+    internal suspend fun cancelAndJoin() {
+        cancel()
+        sourceJob.join()
     }
 
     private fun complete(message: SwiftGrpcRequestMessageProtocol?, error: NSError?) {
