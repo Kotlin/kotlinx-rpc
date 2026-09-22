@@ -315,7 +315,7 @@ class TerminalMetadataAndCardinalityTest {
 
     private class Fixture : AutoCloseable {
         private val registry = CallScenarioRegistry()
-        private val interopService = InteropTestService()
+        private val interopService = InteropTestService(registry)
         private val scenarioInterceptor = InteropMetadataInterceptor(registry)
         private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
             .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))

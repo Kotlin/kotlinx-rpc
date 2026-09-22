@@ -13,6 +13,7 @@ import kxrpc.testing.BarrierType
 import kxrpc.testing.CallEvent
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.FlowControlBehavior
 import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.MalformedResponseCardinality
@@ -147,6 +148,56 @@ class CallScenarioRegistryTest {
         registry.configure(request)
 
         assertEquals(request, registry.configuration("metadata-terminal-cardinality"))
+    }
+
+    @Test
+    fun preservesFlowControlConfiguration() {
+        val registry = registry()
+        val request = scenario("flow-control").toBuilder()
+            .setFlowControl(
+                FlowControlBehavior.newBuilder()
+                    .setManualInboundDemand(true)
+                    .setRespectResponseReadiness(true)
+            )
+            .build()
+
+        registry.configure(request)
+
+        assertEquals(request, registry.configuration("flow-control"))
+    }
+
+    @Test
+    fun manualInboundDemandQueuesUntilTheCallHandlerAttaches() {
+        val registry = registry()
+        registry.configure(manualInboundDemandScenario("manual-demand"))
+        registry.callAccepted("manual-demand")
+
+        registry.grantInboundDemand("manual-demand", 2)
+        val grants = mutableListOf<Int>()
+        registry.registerInboundDemand("manual-demand", grants::add)
+        registry.grantInboundDemand("manual-demand", 3)
+
+        assertEquals(listOf(2, 3), grants)
+        registry.clientCancelled("manual-demand")
+        assertFailsWith<IllegalStateException> {
+            registry.grantInboundDemand("manual-demand", 1)
+        }
+    }
+
+    @Test
+    fun rejectsInvalidOrUnconfiguredInboundDemand() {
+        val registry = registry()
+        registry.configure(scenario("automatic-demand"))
+        registry.callAccepted("automatic-demand")
+        assertFailsWith<IllegalStateException> {
+            registry.grantInboundDemand("automatic-demand", 1)
+        }
+
+        registry.configure(manualInboundDemandScenario("invalid-demand"))
+        registry.callAccepted("invalid-demand")
+        assertFailsWith<IllegalArgumentException> {
+            registry.grantInboundDemand("invalid-demand", 0)
+        }
     }
 
     @Test
@@ -286,6 +337,15 @@ class CallScenarioRegistryTest {
         return TerminalBehavior.newBuilder()
             .setStatus(GrpcStatus.newBuilder().setCode(13).setDescription("failure"))
             .setStage(stage)
+            .build()
+    }
+
+    private fun manualInboundDemandScenario(callId: String): ConfigureScenarioRequest {
+        return scenario(callId).toBuilder()
+            .setFlowControl(
+                FlowControlBehavior.newBuilder()
+                    .setManualInboundDemand(true)
+            )
             .build()
     }
 }

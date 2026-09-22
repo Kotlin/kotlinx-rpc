@@ -33,15 +33,18 @@ import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kxrpc.testing.AwaitEventRequest
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.FlowControlBehavior
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
+import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
 import kotlin.test.Test
@@ -181,6 +184,101 @@ class InteropTestServiceTest {
         assertEquals(7, response.awaitNext().aggregatedPayloadSize)
         response.awaitCompleted()
         fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun streamingInputCallAdvancesOnlyWithGrantedInboundDemand() = withFixture { fixture ->
+        val callId = "manual-inbound-demand"
+        fixture.configure(
+            ConfigureScenarioRequest.newBuilder()
+                .setCallId(callId)
+                .setFlowControl(
+                    FlowControlBehavior.newBuilder()
+                        .setManualInboundDemand(true)
+                )
+                .build()
+        )
+        val response = AwaitingObserver<StreamingInputCallResponse>()
+        val requests = fixture.asyncTestClient(callId).streamingInputCall(response)
+
+        requests.onNext(streamingInputRequest(3))
+        requests.onNext(streamingInputRequest(5))
+        requests.onCompleted()
+        fixture.awaitEvent(callId, EventType.CALL_ACCEPTED)
+        assertFalse(response.hasEvent())
+
+        fixture.grantInboundDemand(callId, 1)
+        fixture.awaitEvent(callId, EventType.REQUEST_MESSAGE_RECEIVED, occurrence = 1)
+        assertEquals(
+            1,
+            fixture.trace(callId).eventsList.count { it.type == EventType.REQUEST_MESSAGE_RECEIVED },
+        )
+        assertFalse(response.hasEvent())
+
+        fixture.grantInboundDemand(callId, 1)
+        fixture.awaitEvent(callId, EventType.REQUEST_MESSAGE_RECEIVED, occurrence = 2)
+        fixture.awaitEvent(callId, EventType.CLIENT_HALF_CLOSED)
+        assertEquals(8, response.awaitNext().aggregatedPayloadSize)
+        response.awaitCompleted()
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun streamingOutputCallPausesAndResumesWithTransportReadiness() = withFixture { fixture ->
+        val callId = "response-readiness"
+        fixture.configure(
+            ConfigureScenarioRequest.newBuilder()
+                .setCallId(callId)
+                .setFlowControl(
+                    FlowControlBehavior.newBuilder()
+                        .setRespectResponseReadiness(true)
+                )
+                .build()
+        )
+        val responseCount = 128
+        val call = fixture.startManuallyRequestedStreamingOutputCall(
+            callId = callId,
+            request = streamingRequest(*IntArray(responseCount) { 64 * 1_024 }),
+        )
+
+        fixture.awaitEvent(callId, EventType.RESPONSE_DELIVERY_BLOCKED)
+        call.request(responseCount)
+        fixture.awaitEvent(callId, EventType.RESPONSE_DELIVERY_READY)
+
+        assertEquals(Status.Code.OK, call.awaitClose().code)
+        assertEquals(responseCount, call.receivedMessageCount)
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        fixture.assertNoLeaks(callId)
+        fixture.discard(callId)
+    }
+
+    @Test
+    fun cancellingReadinessBlockedOutputClearsServerFlowControl() = withFixture { fixture ->
+        val callId = "cancel-response-readiness"
+        fixture.configure(
+            ConfigureScenarioRequest.newBuilder()
+                .setCallId(callId)
+                .setFlowControl(
+                    FlowControlBehavior.newBuilder()
+                        .setRespectResponseReadiness(true)
+                )
+                .build()
+        )
+        val call = fixture.startManuallyRequestedStreamingOutputCall(
+            callId = callId,
+            request = streamingRequest(*IntArray(128) { 64 * 1_024 }),
+        )
+
+        fixture.awaitEvent(callId, EventType.RESPONSE_DELIVERY_BLOCKED)
+        call.cancel()
+
+        assertEquals(Status.Code.CANCELLED, call.awaitClose().code)
+        fixture.awaitEvent(callId, EventType.CLIENT_CANCELLED)
+        assertEquals(EventType.CLIENT_CANCELLED, fixture.trace(callId).eventsList.last().type)
         fixture.assertNoLeaks(callId)
         fixture.discard(callId)
     }
@@ -377,7 +475,7 @@ class InteropTestServiceTest {
 
     private class Fixture : AutoCloseable {
         private val registry = CallScenarioRegistry()
-        private val interopService = InteropTestService()
+        private val interopService = InteropTestService(registry)
         private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
             .addService(
                 ServerInterceptors.intercept(
@@ -397,7 +495,7 @@ class InteropTestServiceTest {
         }
 
         fun configure(callId: String, barriers: List<Pair<BarrierType, Int>>) {
-            control.configureScenario(
+            configure(
                 ConfigureScenarioRequest.newBuilder()
                     .setCallId(callId)
                     .addAllBarriers(
@@ -410,6 +508,10 @@ class InteropTestServiceTest {
                     )
                     .build()
             )
+        }
+
+        fun configure(request: ConfigureScenarioRequest) {
+            control.configureScenario(request)
         }
 
         fun testClient(callId: String? = null): TestServiceGrpc.TestServiceBlockingStub {
@@ -450,6 +552,22 @@ class InteropTestServiceTest {
             return call
         }
 
+        fun startManuallyRequestedStreamingOutputCall(
+            callId: String,
+            request: StreamingOutputCallRequest,
+        ): ManuallyRequestedResponseCall {
+            val call = dataChannel.newCall(
+                TestServiceGrpc.getStreamingOutputCallMethod(),
+                CallOptions.DEFAULT,
+            )
+            val response = ManuallyRequestedResponseCall(call)
+            val metadata = Metadata().apply { put(TEST_CALL_ID_METADATA_KEY, callId) }
+            call.start(response.listener, metadata)
+            call.sendMessage(request)
+            call.halfClose()
+            return response
+        }
+
         fun unimplementedClient(): UnimplementedServiceGrpc.UnimplementedServiceBlockingStub {
             return UnimplementedServiceGrpc.newBlockingStub(dataChannel)
         }
@@ -470,6 +588,15 @@ class InteropTestServiceTest {
                     .setCallId(callId)
                     .setBarrier(type)
                     .setOccurrence(occurrence)
+                    .build()
+            )
+        }
+
+        fun grantInboundDemand(callId: String, messageCount: Int) {
+            control.grantInboundDemand(
+                GrantInboundDemandRequest.newBuilder()
+                    .setCallId(callId)
+                    .setMessageCount(messageCount)
                     .build()
             )
         }
@@ -552,6 +679,40 @@ class InteropTestServiceTest {
 
         private fun awaitEvent(): ObserverEvent<T> {
             return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("Timed out waiting for stream event")
+        }
+    }
+
+    private class ManuallyRequestedResponseCall(
+        private val call: ClientCall<StreamingOutputCallRequest, StreamingOutputCallResponse>,
+    ) {
+        private val messageCount = AtomicInteger()
+        private val terminalStatus = LinkedBlockingQueue<Status>()
+
+        val listener: ClientCall.Listener<StreamingOutputCallResponse> =
+            object : ClientCall.Listener<StreamingOutputCallResponse>() {
+                override fun onMessage(message: StreamingOutputCallResponse) {
+                    messageCount.incrementAndGet()
+                }
+
+                override fun onClose(status: Status, trailers: Metadata) {
+                    terminalStatus.add(status)
+                }
+            }
+
+        val receivedMessageCount: Int
+            get() = messageCount.get()
+
+        fun request(messageCount: Int) {
+            call.request(messageCount)
+        }
+
+        fun cancel() {
+            call.cancel("test cancelled readiness-blocked response", null)
+        }
+
+        fun awaitClose(): Status {
+            return terminalStatus.poll(10, TimeUnit.SECONDS)
+                ?: throw AssertionError("Timed out waiting for manually requested response call to close")
         }
     }
 

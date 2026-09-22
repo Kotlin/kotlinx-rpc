@@ -14,6 +14,7 @@ import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.GetTraceRequest
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
+import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
 
@@ -42,6 +43,16 @@ internal class GrpcClientControlService(
     ) {
         respond(responseObserver) {
             registry.releaseBarrier(request.callId, request.barrier, request.occurrence)
+            ControlAck.getDefaultInstance()
+        }
+    }
+
+    override fun grantInboundDemand(
+        request: GrantInboundDemandRequest,
+        responseObserver: StreamObserver<ControlAck>,
+    ) {
+        respond(responseObserver) {
+            registry.grantInboundDemand(request.callId, request.messageCount)
             ControlAck.getDefaultInstance()
         }
     }

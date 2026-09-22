@@ -16,9 +16,11 @@ import kxrpc.testing.BarrierType
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.EventType
+import kxrpc.testing.FlowControlBehavior
 import kxrpc.testing.GetTraceRequest
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
+import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.ReleaseBarrierRequest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -80,13 +82,17 @@ class GrpcClientControlServiceTest {
                                 .setOccurrence(1)
                                 .build()
                         )
+                        .setFlowControl(
+                            FlowControlBehavior.newBuilder()
+                                .setManualInboundDemand(true)
+                        )
                         .build(),
                     observer,
                 )
             },
         )
 
-        val recorded = registry.recordEvent(callId, EventType.CALL_ACCEPTED)
+        val recorded = registry.callAccepted(callId)
         val awaited = assertSuccess(
             observer = RecordingObserver(),
             invoke = { observer ->
@@ -116,7 +122,7 @@ class GrpcClientControlServiceTest {
                 service.getScenarioDiagnostics(diagnosticsRequest(callId), observer)
             },
         )
-        assertEquals(0, diagnostics.activeCallCount)
+        assertEquals(1, diagnostics.activeCallCount)
         assertEquals(1, diagnostics.outstandingBarriersCount)
         assertEquals(0, diagnostics.controlWaiterCount)
 
@@ -134,6 +140,22 @@ class GrpcClientControlServiceTest {
             },
         )
         registry.awaitBarrier(callId, BarrierType.SEND_RESPONSE, 1)
+
+        val demandGrants = mutableListOf<Int>()
+        registry.registerInboundDemand(callId, demandGrants::add)
+        assertSuccess(
+            observer = RecordingObserver(),
+            invoke = { observer ->
+                service.grantInboundDemand(
+                    GrantInboundDemandRequest.newBuilder()
+                        .setCallId(callId)
+                        .setMessageCount(2)
+                        .build(),
+                    observer,
+                )
+            },
+        )
+        assertEquals(listOf(2), demandGrants)
 
         assertSuccess(
             observer = RecordingObserver(),

@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.test.server
 
 import com.google.protobuf.ByteString
 import io.grpc.Context
+import io.grpc.Contexts
 import io.grpc.ForwardingServerCall
 import io.grpc.ForwardingServerCallListener
 import io.grpc.InternalMetadata
@@ -29,6 +30,7 @@ import kxrpc.testing.TerminalStage
 internal const val TEST_CALL_ID_METADATA_KEY_NAME: String = "kxrpc-test-call-id"
 internal val TEST_CALL_ID_METADATA_KEY: Metadata.Key<String> =
     Metadata.Key.of(TEST_CALL_ID_METADATA_KEY_NAME, Metadata.ASCII_STRING_MARSHALLER)
+internal val TEST_CALL_ID_CONTEXT_KEY: Context.Key<String> = Context.key(TEST_CALL_ID_METADATA_KEY_NAME)
 
 internal class InteropMetadataInterceptor(
     private val registry: CallScenarioRegistry,
@@ -52,7 +54,8 @@ internal class InteropMetadataInterceptor(
         }
 
         val scenarioCall = ScenarioServerCall(call, registry, registry.configuration(callId))
-        Context.current().addListener(
+        val scenarioContext = Context.current().withValue(TEST_CALL_ID_CONTEXT_KEY, callId)
+        scenarioContext.addListener(
             Context.CancellationListener { scenarioCall.clientCancelled() },
             DIRECT_EXECUTOR,
         )
@@ -60,7 +63,7 @@ internal class InteropMetadataInterceptor(
             return object : ServerCall.Listener<ReqT>() {}
         }
         val listener = try {
-            next.startCall(scenarioCall, headers)
+            Contexts.interceptCall(scenarioContext, scenarioCall, headers, next)
         } catch (error: Throwable) {
             scenarioCall.fail(error)
             return object : ServerCall.Listener<ReqT>() {}

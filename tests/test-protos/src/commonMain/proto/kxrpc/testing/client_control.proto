@@ -18,6 +18,9 @@ service GrpcClientControlService {
   // Releases one configured server-side barrier.
   rpc ReleaseBarrier(ReleaseBarrierRequest) returns (ControlAck);
 
+  // Adds explicit inbound request-message demand to a manually controlled call.
+  rpc GrantInboundDemand(GrantInboundDemandRequest) returns (ControlAck);
+
   // Returns the currently recorded trace in sequence order.
   rpc GetTrace(GetTraceRequest) returns (CallTrace);
 
@@ -58,6 +61,19 @@ message ConfigureScenarioRequest {
 
   // Applies only to MalformedResponseService raw handlers.
   MalformedResponseCardinality malformed_response_cardinality = 6;
+
+  // Enables the flow-control behavior exercised by backpressure scenarios.
+  FlowControlBehavior flow_control = 7;
+}
+
+message FlowControlBehavior {
+  // Disables automatic inbound request-message demand. The server receives
+  // messages only after GrantInboundDemand adds positive demand.
+  bool manual_inbound_demand = 1;
+
+  // Pauses queued response delivery while grpc-java reports that the client is
+  // not ready, and records the blocked/resumed transitions below.
+  bool respect_response_readiness = 2;
 }
 
 message MetadataEntry {
@@ -153,6 +169,13 @@ message ReleaseBarrierRequest {
   uint32 occurrence = 3;
 }
 
+message GrantInboundDemandRequest {
+  string call_id = 1;
+
+  // Number of additional request messages to admit. Must be positive.
+  uint32 message_count = 2;
+}
+
 message GetTraceRequest {
   string call_id = 1;
 }
@@ -212,6 +235,14 @@ enum EventType {
   // caller cancellation, an elapsed client deadline, and forced channel
   // shutdown; the client-side result distinguishes those causes.
   CLIENT_CANCELLED = 7;
+
+  // A queued response could not be sent because grpc-java reported that the
+  // client was not ready. Recorded once for each blocked delivery interval.
+  RESPONSE_DELIVERY_BLOCKED = 8;
+
+  // grpc-java reported ready after RESPONSE_DELIVERY_BLOCKED, allowing queued
+  // response delivery to resume.
+  RESPONSE_DELIVERY_READY = 9;
 }
 
 message CallTrace {

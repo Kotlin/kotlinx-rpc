@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.test.server
 import com.google.protobuf.ByteString
 import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kxrpc.testing.Barrier
@@ -66,6 +67,13 @@ internal class CallScenarioRegistry(
         return scenario(callId).recordEvent(EventType.REQUEST_MESSAGE_RECEIVED, payload)
     }
 
+    internal fun recordFlowControlEvent(callId: String, type: EventType): CallEvent? {
+        require(type == EventType.RESPONSE_DELIVERY_BLOCKED || type == EventType.RESPONSE_DELIVERY_READY) {
+            "flow-control event type must describe response delivery readiness"
+        }
+        return scenario(callId).recordEventIfCallActive(type)
+    }
+
     internal fun callAccepted(
         callId: String,
         metadata: List<MetadataEntry> = emptyList(),
@@ -75,9 +83,36 @@ internal class CallScenarioRegistry(
         callId: String,
         metadata: List<MetadataEntry> = emptyList(),
         status: GrpcStatus? = null,
-    ): CallEvent = scenario(callId).callClosed(metadata, status)
+    ): CallEvent {
+        val transition = scenario(callId).callClosed(metadata, status)
+        transition.inboundDemandEndpoint?.close()
+        return transition.event
+    }
 
-    internal fun clientCancelled(callId: String): CallEvent = scenario(callId).clientCancelled()
+    internal fun clientCancelled(callId: String): CallEvent {
+        val transition = scenario(callId).clientCancelled()
+        transition.inboundDemandEndpoint?.close()
+        return transition.event
+    }
+
+    internal fun registerInboundDemand(callId: String, requestMessages: (Int) -> Unit) {
+        val scenario = scenario(callId)
+        val endpoint = InboundDemandEndpoint(requestMessages)
+        val pendingDemand = scenario.registerInboundDemand(endpoint)
+        try {
+            if (pendingDemand > 0) endpoint.grant(pendingDemand)
+        } catch (error: Throwable) {
+            scenario.unregisterInboundDemand(endpoint)
+            endpoint.close()
+            throw error
+        }
+    }
+
+    internal fun grantInboundDemand(callId: String, messageCount: Int) {
+        require(messageCount > 0) { "inbound demand message_count must be positive" }
+        val endpoint = scenario(callId).grantInboundDemand(messageCount)
+        endpoint?.grant(messageCount)
+    }
 
     internal fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
         requireKnownEvent(type)
@@ -109,7 +144,7 @@ internal class CallScenarioRegistry(
 
     internal fun discard(callId: String) {
         val scenario = scenarios.remove(callId) ?: throw ScenarioNotFoundException(callId)
-        scenario.discard()
+        scenario.discard()?.close()
     }
 
     internal fun activeScenarioCount(): Int = scenarios.size
@@ -184,6 +219,26 @@ internal class ScenarioWaitTimeoutException(callId: String, awaited: String) :
 
 private data class BarrierKey(val typeNumber: Int, val occurrence: Int)
 
+private data class TerminalTransition(
+    val event: CallEvent,
+    val inboundDemandEndpoint: InboundDemandEndpoint?,
+)
+
+private class InboundDemandEndpoint(
+    private val requestMessages: (Int) -> Unit,
+) {
+    private val active = AtomicBoolean(true)
+
+    fun grant(messageCount: Int) {
+        check(active.get()) { "inbound demand is no longer attached to an active call" }
+        requestMessages(messageCount)
+    }
+
+    fun close() {
+        active.set(false)
+    }
+}
+
 private class ScenarioState(
     private val scenarioConfiguration: ConfigureScenarioRequest,
     private val configuredBarriers: Set<BarrierKey>,
@@ -198,6 +253,8 @@ private class ScenarioState(
     private var waiterCount = 0
     private var controlWaiterCount = 0
     private var activeCallCount = 0
+    private var inboundDemandEndpoint: InboundDemandEndpoint? = null
+    private var pendingInboundDemand: Int = 0
     private var tracedRequestPayloadBytes = 0L
     private var tracedMetadataBytes = 0L
 
@@ -210,20 +267,54 @@ private class ScenarioState(
         event
     }
 
-    fun callClosed(metadata: List<MetadataEntry>, status: GrpcStatus?): CallEvent = lock.withLock {
+    fun callClosed(metadata: List<MetadataEntry>, status: GrpcStatus?): TerminalTransition = lock.withLock {
         checkNotDiscarded()
         check(activeCallCount > 0) { "scenario '$callId' has no active call to close" }
         val event = recordEventLocked(EventType.CALL_CLOSED, metadata = metadata, status = status)
         activeCallCount--
-        event
+        TerminalTransition(event, detachInboundDemandLocked())
     }
 
-    fun clientCancelled(): CallEvent = lock.withLock {
+    fun clientCancelled(): TerminalTransition = lock.withLock {
         checkNotDiscarded()
         check(activeCallCount > 0) { "scenario '$callId' has no active call to cancel" }
         val event = recordEventLocked(EventType.CLIENT_CANCELLED)
         activeCallCount--
-        event
+        TerminalTransition(event, detachInboundDemandLocked())
+    }
+
+    fun registerInboundDemand(endpoint: InboundDemandEndpoint): Int = lock.withLock {
+        checkNotDiscarded()
+        check(scenarioConfiguration.flowControl.manualInboundDemand) {
+            "scenario '$callId' does not enable manual inbound demand"
+        }
+        check(activeCallCount > 0) { "scenario '$callId' has no active call for inbound demand" }
+        check(inboundDemandEndpoint == null) {
+            "scenario '$callId' already has an inbound-demand handler"
+        }
+        inboundDemandEndpoint = endpoint
+        pendingInboundDemand.also { pendingInboundDemand = 0 }
+    }
+
+    fun unregisterInboundDemand(endpoint: InboundDemandEndpoint) = lock.withLock {
+        if (inboundDemandEndpoint === endpoint) {
+            inboundDemandEndpoint = null
+        }
+    }
+
+    fun grantInboundDemand(messageCount: Int): InboundDemandEndpoint? = lock.withLock {
+        checkNotDiscarded()
+        check(scenarioConfiguration.flowControl.manualInboundDemand) {
+            "scenario '$callId' does not enable manual inbound demand"
+        }
+        check(activeCallCount > 0) { "scenario '$callId' has no active call for inbound demand" }
+        inboundDemandEndpoint ?: run {
+            check(pendingInboundDemand <= Int.MAX_VALUE - messageCount) {
+                "scenario '$callId' accumulated too much pending inbound demand"
+            }
+            pendingInboundDemand += messageCount
+            null
+        }
     }
 
     fun recordEvent(
@@ -234,6 +325,11 @@ private class ScenarioState(
     ): CallEvent = lock.withLock {
         checkNotDiscarded()
         recordEventLocked(type, requestPayload, metadata, status)
+    }
+
+    fun recordEventIfCallActive(type: EventType): CallEvent? = lock.withLock {
+        checkNotDiscarded()
+        if (activeCallCount == 0) null else recordEventLocked(type)
     }
 
     private fun recordEventLocked(
@@ -335,9 +431,11 @@ private class ScenarioState(
             .build()
     }
 
-    fun discard() = lock.withLock {
+    fun discard(): InboundDemandEndpoint? = lock.withLock {
         discarded = true
+        val endpoint = detachInboundDemandLocked()
         changed.signalAll()
+        endpoint
     }
 
     fun awaitWaiterCount(count: Int, timeout: Duration) = lock.withLock {
@@ -379,6 +477,11 @@ private class ScenarioState(
 
     private fun checkNotDiscarded() {
         if (discarded) throw ScenarioDiscardedException(callId)
+    }
+
+    private fun detachInboundDemandLocked(): InboundDemandEndpoint? {
+        pendingInboundDemand = 0
+        return inboundDemandEndpoint.also { inboundDemandEndpoint = null }
     }
 
     private companion object {

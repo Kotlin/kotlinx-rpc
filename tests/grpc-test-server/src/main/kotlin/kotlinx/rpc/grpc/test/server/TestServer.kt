@@ -10,7 +10,7 @@ import java.net.InetSocketAddress
 
 public fun main() {
     val registry = CallScenarioRegistry()
-    val interopService = InteropTestService()
+    val interopService = InteropTestService(registry)
     val scenarioInterceptor = InteropMetadataInterceptor(registry)
     val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 50051))
         .addService(EchoServiceImpl())

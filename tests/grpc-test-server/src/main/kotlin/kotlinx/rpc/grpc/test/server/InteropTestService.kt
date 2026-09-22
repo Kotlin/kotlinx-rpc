@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit
 // https://github.com/grpc/grpc-java/blob/v1.81.0/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceImpl.java
 // UnimplementedCall intentionally inherits the generated base implementation so it returns UNIMPLEMENTED.
 internal class InteropTestService(
+    private val registry: CallScenarioRegistry,
     private val responseExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { command ->
         Thread(command, "grpc-client-test-response-dispatcher").apply { isDaemon = true }
     },
@@ -72,7 +73,7 @@ internal class InteropTestService(
             return
         }
 
-        ResponseDispatcher(responseObserver)
+        ResponseDispatcher(responseObserver, controlsInboundDemand = false)
             .enqueue(request.toChunks())
             .completeInput()
     }
@@ -80,6 +81,11 @@ internal class InteropTestService(
     override fun streamingInputCall(
         responseObserver: StreamObserver<StreamingInputCallResponse>,
     ): StreamObserver<StreamingInputCallRequest> {
+        FlowControlSupport.create(
+            registry = registry,
+            responseObserver = responseObserver,
+            controlsInboundDemand = true,
+        )
         return object : StreamObserver<StreamingInputCallRequest> {
             private var totalPayloadSize: Int = 0
 
@@ -105,7 +111,7 @@ internal class InteropTestService(
     override fun fullDuplexCall(
         responseObserver: StreamObserver<StreamingOutputCallResponse>,
     ): StreamObserver<StreamingOutputCallRequest> {
-        val dispatcher = ResponseDispatcher(responseObserver)
+        val dispatcher = ResponseDispatcher(responseObserver, controlsInboundDemand = true)
         return object : StreamObserver<StreamingOutputCallRequest> {
             override fun onNext(request: StreamingOutputCallRequest) {
                 if (request.hasResponseStatus()) {
@@ -135,7 +141,7 @@ internal class InteropTestService(
     override fun halfDuplexCall(
         responseObserver: StreamObserver<StreamingOutputCallResponse>,
     ): StreamObserver<StreamingOutputCallRequest> {
-        val dispatcher = ResponseDispatcher(responseObserver)
+        val dispatcher = ResponseDispatcher(responseObserver, controlsInboundDemand = true)
         val chunks = ArrayDeque<ResponseChunk>()
         return object : StreamObserver<StreamingOutputCallRequest> {
             override fun onNext(request: StreamingOutputCallRequest) {
@@ -166,8 +172,16 @@ internal class InteropTestService(
 
     private inner class ResponseDispatcher(
         private val responseObserver: StreamObserver<StreamingOutputCallResponse>,
+        controlsInboundDemand: Boolean,
     ) {
         private val chunks = ArrayDeque<ResponseChunk>()
+        private val flowControl = FlowControlSupport.create(
+            registry = registry,
+            responseObserver = responseObserver,
+            controlsInboundDemand = controlsInboundDemand,
+            resumeResponses = ::resumeResponses,
+            cancelResponses = ::cancelFromTransport,
+        )
         private var scheduled: Boolean = false
         private var cancelled: Boolean = false
         private var failure: Throwable? = null
@@ -196,6 +210,12 @@ internal class InteropTestService(
         }
 
         @Synchronized
+        private fun cancelFromTransport() {
+            chunks.clear()
+            cancelled = true
+        }
+
+        @Synchronized
         fun isCancelled(): Boolean = cancelled
 
         @Synchronized
@@ -218,7 +238,9 @@ internal class InteropTestService(
         private fun dispatchChunk() {
             if (cancelled) return
             try {
-                val chunk = chunks.removeFirst()
+                val chunk = chunks.first()
+                if (chunk !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
+                chunks.removeFirst()
                 if (chunk === COMPLETION_CHUNK) {
                     responseObserver.onCompleted()
                 } else {
@@ -236,12 +258,18 @@ internal class InteropTestService(
 
         private fun scheduleNextChunk() {
             if (scheduled || chunks.isEmpty() || responseExecutor.isShutdown) return
+            if (chunks.first() !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
             scheduled = true
             responseExecutor.schedule(
                 ::dispatch,
                 chunks.first().delayMicroseconds,
                 TimeUnit.MICROSECONDS,
             )
+        }
+
+        @Synchronized
+        private fun resumeResponses() {
+            scheduleNextChunk()
         }
 
         private fun checkNotFailed() {
