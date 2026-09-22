@@ -99,6 +99,17 @@ internal class GrpcClientTestFixture(
         )
     }
 
+    /** Grants the reference server demand for additional streaming request messages. */
+    internal suspend fun grantInboundDemand(messageCount: UInt = 1U) {
+        require(messageCount > 0U) { "inbound demand must be positive" }
+        controlService.grantInboundDemand(
+            GrantInboundDemandRequest {
+                callId = this@GrpcClientTestFixture.callId
+                this.messageCount = messageCount
+            }
+        )
+    }
+
     /** Verifies an event is absent from the current trace, then releases its protecting barrier. */
     internal suspend fun assertServerEventAbsentUntil(
         event: EventType,

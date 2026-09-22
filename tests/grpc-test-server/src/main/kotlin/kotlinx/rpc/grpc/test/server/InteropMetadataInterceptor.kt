@@ -95,6 +95,7 @@ internal class InteropMetadataInterceptor(
         private var responseCount: Int = 0
         private var initialHeadersSent: Boolean = false
         private val terminated = AtomicBoolean()
+        private val lifecycleLock = Any()
 
         fun closeBeforeStartIfConfigured(): Boolean {
             if (configuration.terminalStage() != TerminalStage.BEFORE_INITIAL_METADATA) return false
@@ -108,17 +109,18 @@ internal class InteropMetadataInterceptor(
                 val outgoingHeaders = headers.withConfigured(configuration.initialMetadataList)
                 val traceMetadata = outgoingHeaders.toMetadataEntries()
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_INITIAL_HEADERS, 1)
-                if (terminated.get()) return
-                super.sendHeaders(outgoingHeaders)
-                initialHeadersSent = true
-                registry.recordEvent(
-                    callId,
-                    EventType.INITIAL_HEADERS_SENT,
-                    metadata = traceMetadata,
-                )
-                if (configuration.terminalStage() == TerminalStage.AFTER_INITIAL_METADATA) {
-                    closeConfiguredTerminal()
+                val closeAfterHeaders = synchronized(lifecycleLock) {
+                    if (terminated.get()) return
+                    super.sendHeaders(outgoingHeaders)
+                    initialHeadersSent = true
+                    registry.recordEvent(
+                        callId,
+                        EventType.INITIAL_HEADERS_SENT,
+                        metadata = traceMetadata,
+                    )
+                    configuration.terminalStage() == TerminalStage.AFTER_INITIAL_METADATA
                 }
+                if (closeAfterHeaders) closeConfiguredTerminal()
             } catch (error: Throwable) {
                 fail(error)
             }
@@ -129,15 +131,15 @@ internal class InteropMetadataInterceptor(
             val occurrence = responseCount + 1
             try {
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_RESPONSE, occurrence)
-                if (terminated.get()) return
-                super.sendMessage(message)
-                responseCount = occurrence
-                registry.recordEvent(callId, EventType.RESPONSE_MESSAGE_SENT)
-                if (configuration.terminalStage() == TerminalStage.AFTER_RESPONSE_MESSAGES &&
-                    responseCount == configuration.terminalBehavior.responseMessageCount
-                ) {
-                    closeConfiguredTerminal()
+                val closeAfterMessage = synchronized(lifecycleLock) {
+                    if (terminated.get()) return
+                    super.sendMessage(message)
+                    responseCount = occurrence
+                    registry.recordEvent(callId, EventType.RESPONSE_MESSAGE_SENT)
+                    configuration.terminalStage() == TerminalStage.AFTER_RESPONSE_MESSAGES &&
+                        responseCount == configuration.terminalBehavior.responseMessageCount
                 }
+                if (closeAfterMessage) closeConfiguredTerminal()
             } catch (error: Throwable) {
                 fail(error)
             }
@@ -182,13 +184,16 @@ internal class InteropMetadataInterceptor(
         ): Boolean {
             if (terminated.get()) return false
             return try {
-                val event = if (type == EventType.REQUEST_MESSAGE_RECEIVED) {
-                    registry.recordRequestMessage(callId, requestPayload)
-                } else {
-                    registry.recordEvent(callId, type)
+                val event = synchronized(lifecycleLock) {
+                    if (terminated.get()) return false
+                    if (type == EventType.REQUEST_MESSAGE_RECEIVED) {
+                        registry.recordRequestMessage(callId, requestPayload)
+                    } else {
+                        registry.recordEvent(callId, type)
+                    }
                 }
                 registry.awaitBarrierIfConfigured(callId, barrier, event.occurrence)
-                true
+                !terminated.get()
             } catch (error: Throwable) {
                 fail(error)
                 false
@@ -200,8 +205,10 @@ internal class InteropMetadataInterceptor(
         }
 
         fun clientCancelled() {
-            if (!terminated.compareAndSet(false, true)) return
-            runCatching { registry.clientCancelled(callId) }
+            synchronized(lifecycleLock) {
+                if (!terminated.compareAndSet(false, true)) return
+                runCatching { registry.clientCancelled(callId) }
+            }
         }
 
         private fun fail(status: Status) {
@@ -231,13 +238,15 @@ internal class InteropMetadataInterceptor(
             } catch (error: Throwable) {
                 error.toGrpcStatus() to Metadata()
             }
-            if (!terminated.compareAndSet(false, true)) return
             val traceMetadata = outgoingTrailers.toMetadataEntries()
             val traceStatus = outgoingStatus.toTraceStatus()
-            try {
-                super.close(outgoingStatus, outgoingTrailers)
-            } finally {
-                recordClosed(traceMetadata, traceStatus)
+            synchronized(lifecycleLock) {
+                if (!terminated.compareAndSet(false, true)) return
+                try {
+                    super.close(outgoingStatus, outgoingTrailers)
+                } finally {
+                    recordClosed(traceMetadata, traceStatus)
+                }
             }
         }
 
