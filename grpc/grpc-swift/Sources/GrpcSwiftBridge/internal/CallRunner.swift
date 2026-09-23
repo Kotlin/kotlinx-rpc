@@ -8,6 +8,7 @@ internal struct CallRunner: Sendable {
     private let options: CallOptions
     private let metadata: Metadata
     private let requestSource: any SwiftGrpcRequestSource
+    private let initialRequest: (any SwiftGrpcRequestMessage)?
     private let mailbox: ResponseEventMailbox
 
     internal init(
@@ -16,6 +17,7 @@ internal struct CallRunner: Sendable {
         options: CallOptions,
         metadata: Metadata,
         requestSource: any SwiftGrpcRequestSource,
+        initialRequest: (any SwiftGrpcRequestMessage)?,
         mailbox: ResponseEventMailbox
     ) {
         self.client = client
@@ -23,6 +25,7 @@ internal struct CallRunner: Sendable {
         self.options = options
         self.metadata = metadata
         self.requestSource = requestSource
+        self.initialRequest = initialRequest
         self.mailbox = mailbox
     }
 
@@ -31,8 +34,11 @@ internal struct CallRunner: Sendable {
         // Cancelling the source also resumes any request pull still waiting on Kotlin.
         defer { self.requestSource.cancel() }
 
-        // Turn the Kotlin request source into a grpc-swift-compatible client request.
-        var request = self.requestSource.makeStreamingClientRequest()
+        // Turn the Kotlin request source into a grpc-swift-compatible client request. Kotlin picks
+        // a single-request source for the same method types.
+        var request = self.descriptor.type?.isRequestStreaming == false
+            ? self.requestSource.makeSingleClientRequest(initialRequest: self.initialRequest)
+            : self.requestSource.makeStreamingClientRequest()
         request.metadata = self.metadata
 
         do {

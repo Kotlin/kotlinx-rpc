@@ -41,6 +41,30 @@ extension SwiftGrpcRequestSource {
         }
     }
     
+    /// Sends the only request of a unary or server-streaming call.
+    ///
+    /// An `initialRequest` is sent without pulling. Otherwise, the source completes its only pull
+    /// after the request flow ended with exactly one request, so no end-of-stream pull is needed.
+    /// `nil` means that the call was cancelled first.
+    internal func makeSingleClientRequest(
+        initialRequest: (any SwiftGrpcRequestMessage)?
+    ) -> StreamingClientRequest<RawMessage> {
+        StreamingClientRequest<RawMessage> { writer in
+            defer { self.cancel() }
+            
+            var request = initialRequest
+            if request == nil {
+                request = try await self.nextRequestMessage()
+            }
+            
+            if let request {
+                try Task.checkCancellation()
+                
+                let message = try request.copyToRawMessage()
+                try await writer.write(message)
+            }
+        }
+    }
     
     private func nextRequestMessage() async throws -> SwiftGrpcRequestMessage? {
         try await awaitSwiftGrpcCompletion(onCancellation: {

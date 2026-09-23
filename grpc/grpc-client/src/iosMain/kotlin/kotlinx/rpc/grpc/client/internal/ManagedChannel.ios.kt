@@ -32,6 +32,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClient
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClientConfiguration
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.time.Duration
 
 internal class SwiftManagedChannel(
@@ -83,7 +84,7 @@ internal class SwiftManagedChannel(
         headers: GrpcMetadata,
         timeout: Duration?,
         compression: GrpcCompression,
-        requestSource: KotlinGrpcRequestSource<Request>
+        requestSource: SwiftGrpcRequestSourceProtocol,
     ): SwiftGrpcCallAdapter<Response> {
         check(!isShutdown) { internalError("Channel is shutdown") }
 
@@ -103,6 +104,8 @@ internal class SwiftManagedChannel(
                 timeoutMilliseconds = swiftTimeout,
                 compression = compression.toSwift(),
                 requestSource = requestSource,
+                // A ready request is sent without a pull.
+                initialRequest = requestSource.readyMessage,
                 error = error.ptr,
             )
             error.value?.let { throw SwiftGrpcInteropException(it) }

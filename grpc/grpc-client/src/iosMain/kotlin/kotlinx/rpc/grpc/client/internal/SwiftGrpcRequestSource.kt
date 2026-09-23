@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.getOrElse
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import platform.Foundation.NSError
 import platform.darwin.NSObject
@@ -24,7 +25,8 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourc
 
 private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestMessageProtocol>
 
-/** Adapts a Kotlin request flow to grpc-swift's single-outstanding-pull protocol.
+/** Adapts the request flow of a client-streaming or bidirectional call to grpc-swift's
+ * single-outstanding-pull protocol.
  *
  * It uses a similar mechanism to the kotlin/java bridge implementation: a collector offers one
  * request at a time through a rendezvous channel, and every Swift pull receives one of them.
@@ -176,9 +178,6 @@ internal class KotlinGrpcRequestSource<Request>(
         }
     }
 
-    private fun Throwable.toSwiftGrpcError(): NSError =
-        swiftGrpcError(message ?: "Kotlin request flow failed")
-
     private sealed interface State {
         data object Idle : State
 
@@ -192,3 +191,101 @@ internal class KotlinGrpcRequestSource<Request>(
         }
     }
 }
+
+/**
+ * Adapts the request flow of a unary or server-streaming call, which grpc-swift pulls exactly once.
+ *
+ * Collection starts immediately and completes only after the flow has ended, so the pull receives
+ * a request only if the flow emitted exactly one. The pull's completion runs once collection has
+ * finished: with the encoded request, with the flow's failure, or as EOF if the source was
+ * cancelled first.
+ */
+internal class KotlinGrpcSingleRequestSource<Request>(
+    scope: CoroutineScope,
+    requests: Flow<Request>,
+    encode: (Request) -> SwiftGrpcRequestMessageProtocol,
+) : NSObject(), SwiftGrpcRequestSourceProtocol {
+    private val message = atomic<SwiftGrpcRequestMessageProtocol?>(null)
+    private val failure = atomic<Throwable?>(null)
+    private val pulled = atomic(false)
+
+    private val job = CoroutineScope(scope.coroutineContext + SupervisorJob()).launch(
+        context = CoroutineName("grpc-swift-single-request-source"),
+        start = CoroutineStart.UNDISPATCHED,
+    ) {
+        try {
+            message.value = encode(requests.single())
+        } catch (_: CancellationException) {
+            // Cancellation, by this source or by the request flow itself, ends the requests without one.
+        } catch (cause: Throwable) {
+            failure.value = cause
+        }
+    }
+
+    init {
+        scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
+    }
+
+    internal val originalFailure: Throwable?
+        get() = failure.value
+
+    /**
+     * The encoded request if collection has already succeeded, so Swift can send it without a pull.
+     * It is set only after the flow ended with exactly one request. This is the fast-lane.
+     */
+    internal val readyMessage: SwiftGrpcRequestMessageProtocol?
+        get() = message.value
+
+    override fun nextRequestWithCompletion(completion: RequestCompletion) {
+        if (!pulled.compareAndSet(expect = false, update = true)) {
+            completion(
+                null,
+                swiftGrpcError("grpc-swift requested more than one message for a single-request call")
+            )
+            return
+        }
+
+        // Invoked exactly once, after the request is ready, has failed, or was cancelled.
+        job.invokeOnCompletion {
+            val cause = failure.value
+            if (cause != null) completion(null, cause.toSwiftGrpcError())
+            else completion(message.value, null)
+        }
+    }
+
+    override fun cancel() {
+        job.cancel(CancellationException("grpc-swift call stopped consuming requests"))
+    }
+
+    internal suspend fun cancelAndJoin() {
+        cancel()
+        job.join()
+    }
+}
+
+// Kotlin/Native doesn't let Objective-C classes implement Kotlin interfaces, so the transport
+// reaches the Kotlin-side members of both sources through these extensions.
+
+/** The exception that failed the request flow, if it failed. */
+internal val SwiftGrpcRequestSourceProtocol.originalFailure: Throwable?
+    get() = when (this) {
+        is KotlinGrpcRequestSource<*> -> originalFailure
+        is KotlinGrpcSingleRequestSource<*> -> originalFailure
+        else -> null
+    }
+
+/** The already validated request of a single-request source, if it is ready before the call starts. */
+internal val SwiftGrpcRequestSourceProtocol.readyMessage: SwiftGrpcRequestMessageProtocol?
+    get() = (this as? KotlinGrpcSingleRequestSource<*>)?.readyMessage
+
+/** Cancels request collection and waits until it has stopped. */
+internal suspend fun SwiftGrpcRequestSourceProtocol.cancelAndJoin() {
+    when (this) {
+        is KotlinGrpcRequestSource<*> -> cancelAndJoin()
+        is KotlinGrpcSingleRequestSource<*> -> cancelAndJoin()
+        else -> cancel()
+    }
+}
+
+private fun Throwable.toSwiftGrpcError(): NSError =
+    swiftGrpcError(message ?: "Kotlin request flow failed")

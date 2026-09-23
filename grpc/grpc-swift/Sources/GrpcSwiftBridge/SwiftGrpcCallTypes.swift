@@ -149,6 +149,9 @@ public protocol SwiftGrpcRequestMessage: AnyObject, Sendable {
 }
 
 /// A pull-based source backed by a Kotlin request `Flow`.
+///
+/// For unary and server-streaming calls, grpc-swift pulls exactly once, and the source completes
+/// that pull only after the flow has ended with exactly one request.
 @objc(SwiftGrpcRequestSource)
 public protocol SwiftGrpcRequestSource: AnyObject, Sendable {
     /// Asynchronously supplies the next message.

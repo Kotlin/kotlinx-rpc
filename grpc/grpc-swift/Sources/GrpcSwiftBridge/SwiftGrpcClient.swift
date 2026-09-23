@@ -113,14 +113,18 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
     ///
     /// grpc-swift pulls request messages from `requestSource`; Kotlin pulls response events from
     /// the returned call. A negative timeout means that the call has no deadline.
-    @objc(startCallWithFullMethodName:type:headers:timeoutMilliseconds:compression:requestSource:error:)
+    ///
+    /// For unary and server-streaming calls, `initialRequest` may carry the already validated
+    /// request. The call then sends it without pulling from `requestSource`.
+    @objc(startCallWithFullMethodName:type:headers:timeoutMilliseconds:compression:requestSource:initialRequest:error:)
     public func startCall(
         fullMethodName: String,
         type: SwiftGrpcMethodType,
         headers: SwiftGrpcMetadata,
         timeoutMilliseconds: Int64,
         compression: SwiftGrpcCompression,
-        requestSource: any SwiftGrpcRequestSource
+        requestSource: any SwiftGrpcRequestSource,
+        initialRequest: (any SwiftGrpcRequestMessage)?
     ) throws -> SwiftGrpcCall {
         let descriptor = try MethodDescriptor(fullMethodName: fullMethodName, type: type)
 
@@ -138,7 +142,8 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
             descriptor: descriptor,
             options: options,
             metadata: metadata,
-            requestSource: requestSource
+            requestSource: requestSource,
+            initialRequest: initialRequest
         )
     }
 
