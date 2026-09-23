@@ -17,7 +17,7 @@ internal class SwiftGrpcInteropException(
 ) : RuntimeException(error.localizedDescription)
 
 internal fun swiftGrpcError(description: String): NSError = NSError(
-    domain = "org.jetbrains.kotlinx.rpc.grpc.swift",
+    domain = "kotlinx.rpc.grpc.swift",
     code = 1,
     userInfo = mapOf("NSLocalizedDescription" to description),
 )
