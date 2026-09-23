@@ -113,6 +113,32 @@ class GrpcClientCancellationTest {
     }
 
     @Test
+    fun callerCancellationStopsBlockedUnaryRequest() {
+        val callbackEvents = mutableListOf<String>()
+        val requests = RequestFlowProbe<Nothing>(flow { awaitCancellation() })
+        grpcClientTest(
+            clientConfig = {
+                intercept(cancellationInterceptor(callbackEvents))
+                intercept(replacingRequestInterceptor(requests.flow))
+            },
+            // grpc-swift opens the HTTP/2 stream only once it has something to send, so a call
+            // cancelled before its request is ready may never reach the server.
+            configureScenario = false,
+        ) {
+            coroutineScope {
+                val call = async { testService.emptyCall(Empty {}) }
+                requests.awaitCollectionStarted()
+
+                call.cancelAndJoin()
+
+                requests.awaitCancellation()
+                assertTrue(call.isCancelled)
+                assertCancellationCallbacks(callbackEvents, headersExpected = false)
+            }
+        }
+    }
+
+    @Test
     fun callerCancellationStopsOutstandingClientStreamingRequestPull() {
         val callbackEvents = mutableListOf<String>()
         grpcClientTest(
@@ -321,6 +347,14 @@ class GrpcClientCancellationTest {
                     onClose { status, _ -> callbackEvents += "close:${status.statusCode.name}" }
                     return proceed(request)
                 }
+            }
+        }
+
+        fun replacingRequestInterceptor(requests: Flow<Nothing>): GrpcClientInterceptor {
+            return object : GrpcClientInterceptor {
+                override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+                    request: Flow<Request>,
+                ): Flow<Response> = proceed(requests)
             }
         }
 

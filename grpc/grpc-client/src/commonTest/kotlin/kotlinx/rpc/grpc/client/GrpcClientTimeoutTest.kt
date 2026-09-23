@@ -231,6 +231,34 @@ class GrpcClientTimeoutTest {
         }
     }
 
+    @Test
+    fun unaryTimesOutDuringBlockedRequestFlow() {
+        val callbackEvents = mutableListOf<String>()
+        var requestFinallyExecuted = false
+        val hangingRequestFlow: Flow<Nothing> = flow {
+            try {
+                awaitCancellation()
+            } finally {
+                requestFinallyExecuted = true
+            }
+        }
+        grpcClientTest(
+            clientConfig = {
+                intercept(timeoutInterceptor(1500.milliseconds, callbackEvents))
+                intercept(replacingRequestInterceptor(hangingRequestFlow))
+            },
+        ) {
+            // The call starts before its request is ready, so the deadline also bounds the request.
+            assertGrpcTimeoutStatus {
+                testService.emptyCall(Empty {})
+            }
+            assertTrue(requestFinallyExecuted, "deadline did not cancel the blocked request producer")
+            val trace = assertServerObservedCancellation()
+            assertEquals(0, trace.events.count { it.type == EventType.REQUEST_MESSAGE_RECEIVED })
+            assertTerminalCallback(callbackEvents, headersExpected = false)
+        }
+    }
+
     private companion object {
         suspend fun assertGrpcTimeoutStatus(block: suspend () -> Unit): GrpcStatusException {
             val failure = assertFailsWith<GrpcStatusException> { block() }
@@ -254,6 +282,13 @@ class GrpcClientTimeoutTest {
                 null -> assertTrue(callbackEvents == closeOnly || callbackEvents == headersThenClose)
             }
         }
+
+        fun replacingRequestInterceptor(requests: Flow<Nothing>): GrpcClientInterceptor =
+            object : GrpcClientInterceptor {
+                override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+                    request: Flow<Request>,
+                ): Flow<Response> = proceed(requests)
+            }
 
         fun timeoutInterceptor(
             timeout: kotlin.time.Duration,

@@ -48,6 +48,7 @@ import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.Test
@@ -397,6 +398,136 @@ class SwiftGrpcBridgeTest {
     }
 
     @Test
+    fun singleRequestSourceDeliversRequestOnlyAfterFlowCompletes() = runTest {
+        val finish = CompletableDeferred<Unit>()
+        val source = KotlinGrpcSingleRequestSource(this, flow { emit(42); finish.await() }) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+
+        val pull = source.pullRecording()
+        assertFalse(pull.result.isCompleted, "the request must not be delivered before the flow ends")
+
+        finish.complete(Unit)
+        val (message, error) = withTimeout(1_000.milliseconds) { pull.result.await() }
+        assertEquals(1L, assertNotNull(message).length())
+        assertNull(error)
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+        assertEquals(1, pull.calls.load())
+    }
+
+    @Test
+    fun singleRequestSourceIsReadyOnlyAfterNonSuspendingCollection() = runTest {
+        val encode = { value: Int -> KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) }) }
+        val finish = CompletableDeferred<Unit>()
+
+        val ready = KotlinGrpcSingleRequestSource(this, flowOf(42), encode)
+        val suspended = KotlinGrpcSingleRequestSource(this, flow { emit(42); finish.await() }, encode)
+        val failed = KotlinGrpcSingleRequestSource(this, flowOf(1, 2)) { error("encode failed") }
+
+        assertNotNull(ready.readyMessage)
+        assertNull(suspended.readyMessage)
+        assertNull(failed.readyMessage)
+        finish.complete(Unit)
+        suspended.cancelAndJoin()
+    }
+
+    @Test
+    fun singleRequestSourceRejectsSecondPull() = runTest {
+        val source = KotlinGrpcSingleRequestSource(this, flowOf(42)) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+        assertNotNull(source.pull().first)
+
+        val second = source.pull()
+        assertNull(second.first)
+        assertNotNull(second.second)
+        source.cancel()
+    }
+
+    @Test
+    fun singleRequestSourceRetainsOriginalKotlinFailure() = runTest {
+        val expected = IllegalStateException("request failed")
+        val source = KotlinGrpcSingleRequestSource<Int>(this, flow { throw expected }) {
+            error("No request should be encoded")
+        }
+
+        val (message, error) = source.pull()
+        assertNull(message)
+        assertNotNull(error)
+        assertSame(expected, source.originalFailure)
+        source.cancel()
+    }
+
+    @Test
+    fun singleRequestSourceTreatsCancellationThrownByRequestFlowAsEof() = runTest {
+        val source = KotlinGrpcSingleRequestSource<Int>(
+            scope = this,
+            requests = flow { throw CancellationException("request flow cancelled itself") },
+        ) {
+            error("No request should be encoded")
+        }
+
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { source.pull() })
+        assertNull(source.originalFailure)
+    }
+
+    @Test
+    fun cancellingSingleRequestSourceCompletesPendingPullAsEof() = runTest {
+        val source = KotlinGrpcSingleRequestSource<Int>(this, flow { awaitCancellation() }) {
+            error("No request should be encoded")
+        }
+        val pull = source.pullRecording()
+
+        source.cancel()
+
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { pull.result.await() })
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+        assertEquals(1, pull.calls.load())
+    }
+
+    @Test
+    fun parentCompletionCompletesPendingSingleRequestPullAsEof() = runTest {
+        val parent = Job()
+        val source = KotlinGrpcSingleRequestSource<Int>(
+            scope = CoroutineScope(coroutineContext + parent),
+            requests = flow { awaitCancellation() },
+        ) {
+            error("No request should be encoded")
+        }
+        val pull = source.pullRecording()
+
+        parent.cancel()
+
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { pull.result.await() })
+        assertEquals(1, pull.calls.load())
+    }
+
+    @Test
+    fun cancelRacingSingleRequestPullCompletesExactlyOnce() = runTest {
+        withContext(Dispatchers.Default) {
+            repeat(STRESS_ITERATIONS) {
+                coroutineScope {
+                    val source = KotlinGrpcSingleRequestSource<Int>(this, flow { awaitCancellation() }) {
+                        error("No request should be encoded")
+                    }
+                    val start = CompletableDeferred<Unit>()
+                    val pull = RecordingCompletion()
+
+                    joinAll(
+                        launch { start.await(); source.nextRequestWithCompletion(pull.callback) },
+                        launch { start.await(); source.cancel() },
+                        launch { start.complete(Unit) },
+                    )
+
+                    assertEquals(null to null, withTimeout(5.seconds) { pull.result.await() })
+                    withTimeout(5.seconds) { source.cancelAndJoin() }
+                    assertEquals(1, pull.calls.load())
+                }
+            }
+        }
+    }
+
+    @Test
     fun elapsedDeadlineNormalizesGrpcSwiftResetRace() {
         val unavailable = GrpcClientCallEvents.Closed(
             status = GrpcStatus(
@@ -412,13 +543,13 @@ class SwiftGrpcBridgeTest {
         assertSame(unavailable, unavailable.normalizeDeadlineRace(1500.milliseconds, 1.seconds))
     }
 
-    private suspend fun KotlinGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestMessageProtocol?, NSError?> {
+    private suspend fun SwiftGrpcRequestSourceProtocol.pull(): Pair<SwiftGrpcRequestMessageProtocol?, NSError?> {
         val result = CompletableDeferred<Pair<SwiftGrpcRequestMessageProtocol?, NSError?>>()
         nextRequestWithCompletion { message, error -> result.complete(message to error) }
         return result.await()
     }
 
-    private fun KotlinGrpcRequestSource<*>.pullRecording(): RecordingCompletion =
+    private fun SwiftGrpcRequestSourceProtocol.pullRecording(): RecordingCompletion =
         RecordingCompletion().also { nextRequestWithCompletion(it.callback) }
 
     /** Records the first result of a request pull and how often its completion was invoked. */

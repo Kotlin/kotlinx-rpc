@@ -6,6 +6,9 @@ package kotlinx.rpc.grpc.client
 
 import grpc.testing.*
 import io.grpc.testing.integration.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.yield
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatus
@@ -38,6 +41,15 @@ class GrpcClientUnaryTest {
 
         assertEquals(PayloadType.COMPRESSABLE, response.payload.type)
         assertContentEquals(ByteArray(LARGE_RESPONSE_SIZE), response.payload.body.toByteArray())
+        assertUnaryLifecycle()
+    }
+
+    @Test
+    fun unaryRequestProducedAfterCallStart() = grpcClientTest(
+        clientConfig = { intercept(suspendingRequestInterceptor()) },
+    ) {
+        // A request that isn't ready when the call starts must still be sent exactly once.
+        assertEquals(Empty {}, testService.emptyCall(Empty {}))
         assertUnaryLifecycle()
     }
 
@@ -76,5 +88,16 @@ class GrpcClientUnaryTest {
     private companion object {
         const val LARGE_REQUEST_SIZE: Int = 271_828
         const val LARGE_RESPONSE_SIZE: Int = 314_159
+
+        fun suspendingRequestInterceptor(): GrpcClientInterceptor = object : GrpcClientInterceptor {
+            override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+                request: Flow<Request>,
+            ): Flow<Response> = proceed(
+                flow {
+                    yield()
+                    request.collect { emit(it) }
+                }
+            )
+        }
     }
 }

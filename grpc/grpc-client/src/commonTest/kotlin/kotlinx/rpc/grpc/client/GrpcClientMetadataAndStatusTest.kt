@@ -8,6 +8,7 @@ import grpc.testing.Empty
 import grpc.testing.invoke
 import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
+import io.grpc.testing.integration.SimpleRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.Flow
@@ -154,6 +155,39 @@ class GrpcClientMetadataAndStatusTest {
                     ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT),
                     ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT),
                     ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence = 2U),
+                    ExpectedServerEvent(EventType.CALL_CLOSED),
+                )
+            )
+        }
+    }
+
+    @Test
+    fun unaryNonOkStatusAfterResponsePreservesMessageThenFails() {
+        val callback = CallbackRecorder()
+        grpcClientTest(
+            clientConfig = { intercept(recordingInterceptor(callback)) },
+            scenario = {
+                terminalBehavior = terminalBehavior(
+                    code = GrpcStatusCode.RESOURCE_EXHAUSTED,
+                    description = "after the response",
+                    stage = TerminalStage.AFTER_RESPONSE_MESSAGES,
+                    responseCount = 1U,
+                )
+            },
+        ) {
+            assertGrpcStatus(GrpcStatusCode.RESOURCE_EXHAUSTED, "after the response") {
+                testService.unaryCall(SimpleRequest { responseSize = 3 })
+            }
+
+            // The response stays observable to interceptors before the call fails on close.
+            assertEquals(listOf("headers", "message", "close"), callback.events)
+            assertServerTrace(
+                listOf(
+                    ExpectedServerEvent(EventType.CALL_ACCEPTED),
+                    ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED),
+                    ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED),
+                    ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT),
+                    ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT),
                     ExpectedServerEvent(EventType.CALL_CLOSED),
                 )
             )
