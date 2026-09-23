@@ -25,10 +25,6 @@ let package = Package(
             url: "https://github.com/grpc/grpc-swift-nio-transport.git",
             exact: "2.9.2"
         ),
-        .package(
-            url: "https://github.com/apple/swift-async-algorithms.git",
-            exact: "1.1.5"
-        ),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -36,12 +32,14 @@ let package = Package(
         .target(
             name: "GrpcSwiftBridge",
             dependencies: [
-                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                 .product(name: "GRPCCore", package: "grpc-swift-2"),
                 .product(name: "GRPCNIOTransportHTTP2TransportServices", package: "grpc-swift-nio-transport")
             ]
         ),
-
+        .testTarget(
+            name: "GrpcSwiftBridgeTests",
+            dependencies: ["GrpcSwiftBridge"]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

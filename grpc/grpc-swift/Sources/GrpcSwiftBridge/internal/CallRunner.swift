@@ -1,4 +1,3 @@
-import AsyncAlgorithms
 import Foundation
 import GRPCCore
 
@@ -9,7 +8,7 @@ internal struct CallRunner: Sendable {
     private let options: CallOptions
     private let metadata: Metadata
     private let requestSource: any SwiftGrpcRequestSource
-    private let eventChannel: AsyncThrowingChannel<SwiftGrpcCallEvent, Error>
+    private let mailbox: ResponseEventMailbox
 
     internal init(
         client: SwiftGrpcClient.Client,
@@ -17,14 +16,14 @@ internal struct CallRunner: Sendable {
         options: CallOptions,
         metadata: Metadata,
         requestSource: any SwiftGrpcRequestSource,
-        eventChannel: AsyncThrowingChannel<SwiftGrpcCallEvent, Error>
+        mailbox: ResponseEventMailbox
     ) {
         self.client = client
         self.descriptor = descriptor
         self.options = options
         self.metadata = metadata
         self.requestSource = requestSource
-        self.eventChannel = eventChannel
+        self.mailbox = mailbox
     }
 
     internal func run() async {
@@ -44,24 +43,26 @@ internal struct CallRunner: Sendable {
                 deserializer: RawMessageDeserializer(),
                 options: self.options
             ) { response in
+                // The handler may run in a child task that grpc-swift cancels when the deadline
+                // expires. Its cancellation only withdraws a pending event; the resulting
+                // RPCError is published below as the closed event.
                 switch response.accepted {
                 case .success(let contents):
-                    // Channel sends suspend until Kotlin requests the event.
+                    // Sends suspend until Kotlin requests the event.
                     // This preserves ordering and propagates backpressure into grpc-swift.
-                    try await self.send(
+                    try await self.mailbox.send(
                         SwiftGrpcHeadersEvent(headers: SwiftGrpcMetadata(contents.metadata))
                     )
 
                     for try await part in contents.bodyParts {
                         switch part {
                         case .message(let message):
-                            try await self.send(SwiftGrpcMessageEvent(message: message))
+                            try await self.mailbox.send(SwiftGrpcMessageEvent(message: message))
 
                         case .trailingMetadata(let trailers):
                             // Successful trailers become the single terminal event.
-                            // Finish only after it is consumed so it cannot be skipped.
-                            try await self.finish(
-                                with: SwiftGrpcClosedEvent(
+                            try await self.mailbox.send(
+                                SwiftGrpcClosedEvent(
                                     code: .ok,
                                     message: nil,
                                     trailers: trailers
@@ -76,39 +77,34 @@ internal struct CallRunner: Sendable {
 
                 case .failure(let error):
                     // Rejection is a normal gRPC result without a body, not a bridge failure.
-                    try await self.finish(with: error.closedEvent)
+                    try await self.mailbox.send(error.closedEvent)
                 }
             }
         } catch let error as RPCError {
             // A non-OK status encountered while consuming the body is also a closed event. Local
             // cancellation takes precedence because the caller explicitly abandoned the RPC.
+            // This task is only cancelled by the caller, which has already ended the mailbox.
             if Task.isCancelled {
-                self.eventChannel.fail(CancellationError())
+                self.mailbox.cancel()
             } else {
                 do {
-                    try await self.finish(with: error.closedEvent)
+                    try await self.mailbox.send(error.closedEvent)
                 } catch {
-                    self.eventChannel.fail(CancellationError())
+                    self.mailbox.cancel()
                 }
             }
         } catch is CancellationError {
-            self.eventChannel.fail(CancellationError())
+            self.mailbox.cancel()
         } catch {
-            self.eventChannel.fail(Task.isCancelled ? CancellationError() : error)
+            if Task.isCancelled {
+                self.mailbox.cancel()
+            } else {
+                self.mailbox.fail(error as NSError)
+            }
         }
-    }
 
-    private func send(_ event: SwiftGrpcCallEvent) async throws {
-        // Channel.send doesn't throw on cancellation. Check before it to guard the immediate-send
-        // path, and afterward to detect cancellation while suspended by backpressure.
-        try Task.checkCancellation()
-        await self.eventChannel.send(event)
-        try Task.checkCancellation()
-    }
-
-    private func finish(with event: SwiftGrpcClosedEvent) async throws {
-        try await self.send(event)
-        self.eventChannel.finish()
+        // Every path above publishes a terminal result; this is a no-op unless one was missed.
+        self.mailbox.fail(CallBridgeError.missingTerminalEvent as NSError)
     }
 }
 
