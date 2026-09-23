@@ -179,28 +179,17 @@ data class OneOfDeclaration(
 ) {
     private val capitalizedRawName: String = rawName.replaceFirstChar { it.uppercase() }
 
-    /** `clear<OneOf>` extension function on the builder. */
     val clearFunctionName: String = "clear$capitalizedRawName"
-
-    /** `clear<OneOf>Internal` member of the internal class. */
     val internalClearFunctionName: String = "clear${capitalizedRawName}Internal"
-
-    /** `when<OneOf>` extension function. */
     val whenFunctionName: String = "when$capitalizedRawName"
-
-    /** `_<oneOf>Case` member of the internal class returning the active case. */
     val internalCaseGetterName: String = "_${rawName}Case"
 
-    /** Members stored by reference (`string`, `bytes`, messages, groups). */
     val referenceVariants: List<FieldDeclaration> by lazy { variants.filter { it.type.isOneOfReferenceType } }
-
-    /** Members stored in the numeric slot (numbers, bool, enums). */
     val numericVariants: List<FieldDeclaration> by lazy { variants.filter { !it.type.isOneOfReferenceType } }
 
     val hasReferenceSlot: Boolean get() = referenceVariants.isNotEmpty()
     val hasNumericSlot: Boolean get() = numericVariants.isNotEmpty()
 
-    /** True if the numeric slot is a `Long`, false if it is an `Int`. */
     val numericSlotIs64Bit: Boolean by lazy { numericVariants.any { it.type.isOneOf64BitType } }
 
     val referenceSlotName: String = "_${rawName}Ref"
@@ -210,16 +199,12 @@ data class OneOfDeclaration(
         variants.associateWith { it.dec.name.uppercase() }
     }
 
-    /** True if a member is literally named `not_set`, in which case the not-set entry is suffixed. */
     private val notSetCollides: Boolean by lazy { memberEntryNames.values.any { it == NOT_SET_ENTRY_NAME } }
 
-    /** Case enum entry for a member: the proto member name upper-cased, snake case kept. */
     fun caseEntryName(variant: FieldDeclaration): String = memberEntryNames.getValue(variant)
 
-    /** Case enum entry for "no member set". */
     val notSetEntryName: String by lazy { if (notSetCollides) "${NOT_SET_ENTRY_NAME}_" else NOT_SET_ENTRY_NAME }
 
-    /** Name of the `notSet` lambda parameter of the `when<OneOf>` function. */
     val notSetParameterName: String by lazy {
         val base = "notSet"
         if (variants.any { it.rawName == base }) "${base}_" else base
@@ -257,10 +242,6 @@ data class FieldDeclaration(
     val isPartOfMapEntry = dec.containingType.options.mapEntry
 
     val number: Int = dec.number
-
-    // all fields are non-nullable (KRPC-262), including oneof members which return the proto default
-    // when they are not the active case.
-    val nullable: Boolean = false
 
     // if the field may have an `orNull` extension getter
     val hasOrNullGetter: Boolean =

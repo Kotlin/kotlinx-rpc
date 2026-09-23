@@ -132,7 +132,7 @@ class ModelToProtobufKotlinCommonGenerator(
         // as nested classes are generated as nested presence interfaces
         messages.forEach { generatePresenceInterface(it) }
 
-        // the oneof case enums are top-level classes with flattened names
+        // the oneof case enums are top-level classes
         allMessages.forEach { message ->
             message.oneOfDeclarations.forEach { oneOf -> generateOneOfCaseEnum(message, oneOf) }
         }
@@ -237,9 +237,9 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEachIndexed { i, field ->
                 val oneOf = field.containingOneOf.value
                 if (oneOf != null) {
-                    generateOneOfMemberProperty(i, field, oneOf, declaration)
+                    generateInternalOneOfOptionDeclaration(i, field, oneOf, declaration)
                 } else {
-                    generatedInternalFieldPropertyDeclaration(i, field, declaration)
+                    generateInternalFieldPropertyDeclaration(i, field, declaration)
                 }
                 generateInternalFieldClearFunction(field)
             }
@@ -260,7 +260,7 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generatedInternalFieldPropertyDeclaration(
+    private fun CodeGenerator.generateInternalFieldPropertyDeclaration(
         index: Int,
         field: FieldDeclaration,
         msg: MessageDeclaration
@@ -312,7 +312,7 @@ class ModelToProtobufKotlinCommonGenerator(
      *
      * The active case is not stored separately: it is the member whose presence bit is set.
      * The members of one oneof have consecutive presence indices, so setting a member clears all
-     * sibling bits with a single range operation, see [BitSet.setExclusive].
+     * sibling bits with a single range operation, see `BitSet.setExclusive`.
      */
     private fun CodeGenerator.generateOneOfInternalStorage(oneOf: OneOfDeclaration) {
         if (oneOf.hasReferenceSlot) {
@@ -379,7 +379,7 @@ class ModelToProtobufKotlinCommonGenerator(
      * the getter returns the proto default unless the member is the active case,
      * the setter marks the member as the active case and stores the value in its slot.
      */
-    private fun CodeGenerator.generateOneOfMemberProperty(
+    private fun CodeGenerator.generateInternalOneOfOptionDeclaration(
         index: Int,
         field: FieldDeclaration,
         oneOf: OneOfDeclaration,
@@ -720,13 +720,13 @@ class ModelToProtobufKotlinCommonGenerator(
                         if (useFinalReturn) {
                             code(
                                 presenceCheck.wrapIn { presenceCheck ->
-                                    "return ${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() == other.${field.name}${if (field.nullable) "?" else ""}.toBits()"
+                                    "return ${presenceCheck}this.${field.name}.toBits() == other.${field.name}.toBits()"
                                 }
                             )
                         } else {
                             code(
                                 presenceCheck.wrapIn { presenceCheck ->
-                                    "if (${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() != other.${field.name}${if (field.nullable) "?" else ""}.toBits()) return false"
+                                    "if (${presenceCheck}this.${field.name}.toBits() != other.${field.name}.toBits()) return false"
                                 }
                             )
                         }
@@ -736,13 +736,13 @@ class ModelToProtobufKotlinCommonGenerator(
                         if (useFinalReturn) {
                             code(
                                 presenceCheck.wrapIn { presenceCheck ->
-                                    "return ${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() == other.${field.name}${if (field.nullable) "?" else ""}.toBits()"
+                                    "return ${presenceCheck}this.${field.name}.toBits() == other.${field.name}.toBits()"
                                 }
                             )
                         } else {
                             code(
                                 presenceCheck.wrapIn { presenceCheck ->
-                                    "if (${presenceCheck}this.${field.name}${if (field.nullable) "?" else ""}.toBits() != other.${field.name}${if (field.nullable) "?" else ""}.toBits()) return false"
+                                    "if (${presenceCheck}this.${field.name}.toBits() != other.${field.name}.toBits()) return false"
                                 }
                             )
                         }
@@ -788,8 +788,7 @@ class ModelToProtobufKotlinCommonGenerator(
             declaration.actualFields.forEach { field ->
                 val suffix = when (val type = field.type) {
                     FieldType.IntegralType.BYTES -> {
-                        val nullable = if (field.nullable) "?" else ""
-                        "$nullable.%F()".scoped(FqName.TopLevelFP.protoToString)
+                        ".%F()".scoped(FqName.TopLevelFP.protoToString)
                     }
 
                     is FieldType.Message -> {
@@ -1033,17 +1032,8 @@ class ModelToProtobufKotlinCommonGenerator(
         }
         val asInternal = extendee.name.topLevelFP("asInternal")
 
-        var value = "%F().getExtensionValue(%T)"
-            .scoped(asInternal, descriptorRef)
-
-        if (!declaration.nullable) {
-            // if the field is non-nullable, e.g. a message, we fallback to the defined default value
-            val default = "%T.defaultValue.value".scoped(descriptorRef)
-            value = value
-                .merge(default) { value, default ->
-                    "$value ?: $default"
-                }
-        }
+        val value = "%F().getExtensionValue(%T) ?: %T.defaultValue.value"
+            .scoped(asInternal, descriptorRef, descriptorRef)
 
         // val MyMessage.myExtensionField: FieldType? get() =
         //  asInternal().getExtensionValue(MyProtoFileKtExtensions.myExtensionField)
@@ -2210,10 +2200,6 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun FieldDeclaration.safeDefaultValue(parent: MessageDeclaration): ScopedFormattedString {
-        if (nullable) {
-            return "null".scoped()
-        }
-
         if (!dec.hasDefaultValue()) {
             return type.defaultValue
         }
@@ -2317,8 +2303,13 @@ class ModelToProtobufKotlinCommonGenerator(
             leading = listOfNotNull(
                 nameRef.wrapIn { "Cases of the `${oneOf.dec.name}` oneof of [$it]." },
                 nameRef.wrapIn { "Retrieve the active case via the [$it.${oneOf.name}] extension property." },
-            ) + (oneOf.doc?.takeIf { !it.isEmpty() }?.let { doc -> doc.leadingDetached + doc.leading + doc.trailing }
-                ?: emptyList()),
+            ) + (oneOf.doc?.takeIf { !it.isEmpty() }?.let { doc ->
+                buildList {
+                    addAll(doc.leadingDetached)
+                    addAll(doc.leading)
+                    addAll(doc.trailing)
+                }
+            } ?: emptyList()),
             trailing = emptyList(),
         )
 
@@ -2383,15 +2374,13 @@ class ModelToProtobufKotlinCommonGenerator(
      * The function is inline, so no lambda objects are created and primitive parameters are not boxed.
      */
     private fun CodeGenerator.generateOneOfWhenFunction(declaration: MessageDeclaration, oneOf: OneOfDeclaration) {
-        val indent = " ".repeat(config.indentSize)
         val caseType = oneOf.caseTypeName.scoped()
 
         val args = oneOf.variants
             .map { variant ->
-                variant.typeFqName().wrapIn { type -> "\n$indent${variant.name}: ($type) -> R," }
+                variant.typeFqName().wrapIn { type -> "${variant.name}: ($type) -> R" }
             }
-            .plus("\n$indent${oneOf.notSetParameterName}: () -> R,\n".scoped())
-            .joinToScopedString("")
+            .plus("${oneOf.notSetParameterName}: () -> R".scoped())
 
         function(
             name = oneOf.whenFunctionName,

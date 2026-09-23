@@ -183,9 +183,9 @@
         <p>
             Every member of a <code>oneof</code> is a flat, non-nullable property of the message,
             used exactly like a singular field of the same type.
-            Setting a member makes it the active case; the other members return their proto default.
-            The oneof itself is represented by a <code>&lt;Message&gt;&lt;Oneof&gt;Case</code> enum
-            and a <code>&lt;oneof&gt;</code> extension property returning the active case:
+            Setting a member makes it the active case. All inactive members return their default values.
+            The enum case property is generated with the name of the oneof field. It hold currently active state or
+            <code>NOT_SET</code> if none.
         </p>
         <code-block lang="protobuf">
             package com.example;

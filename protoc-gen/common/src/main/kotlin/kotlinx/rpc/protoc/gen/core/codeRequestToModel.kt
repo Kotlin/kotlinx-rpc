@@ -20,7 +20,6 @@ import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
 import kotlinx.rpc.protoc.gen.core.model.fullNestedNameAsList
 import kotlinx.rpc.protoc.gen.core.model.packageName
 import kotlin.Boolean
-import kotlin.collections.plus
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -537,6 +536,7 @@ private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: 
 //// Type Conversion Extension ////
 
 private fun Descriptors.FieldDescriptor.modelType(nameTable: FqNameTable): FieldType {
+    @Suppress("WHEN_SUBJECT_CAN_BE_NULL_IN_JAVA") // can't
     val baseType = when (type) {
         Descriptors.FieldDescriptor.Type.DOUBLE -> FieldType.IntegralType.DOUBLE
         Descriptors.FieldDescriptor.Type.FLOAT -> FieldType.IntegralType.FLOAT

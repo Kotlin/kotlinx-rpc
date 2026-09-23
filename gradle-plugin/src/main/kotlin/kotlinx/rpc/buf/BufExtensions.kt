@@ -265,7 +265,7 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
         .convention(false)
 
     /**
-     * Option to generate an exhaustive, typed `when<OneOf>` dispatch function for every `oneof`.
+     * Option to generate an exhaustive, typed `when<OneOfName>` dispatch function for every `oneof`.
      *
      * Example:
      * ```proto
