@@ -12,6 +12,7 @@ import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancelAndJoin
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.testing.ExpectedServerEvent
 import kotlinx.rpc.grpc.client.testing.RequestFlowProbe
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
@@ -81,6 +83,26 @@ class GrpcClientCancellationTest {
             val responses = testService.streamingOutputCall(streamingRequest(5, 7))
                 .take(1)
                 .toList()
+
+            assertEquals(1, responses.size)
+            assertEquals(5, responses.single().payload.body.size)
+            assertServerCancelledTrace(cancelledServerStreamingEvents(responseCount = 1))
+        } finally {
+            releaseServerBarrier(BarrierType.SEND_RESPONSE, occurrence = 2U)
+        }
+    }
+
+    @Test
+    fun earlyServerStreamingCompletionOnUnconfinedCollectorCancelsTheRemoteCall() = grpcClientTest(
+        barriers = listOf(serverBarrier(BarrierType.SEND_RESPONSE, occurrence = 2U)),
+    ) {
+        try {
+            // The unconfined collector stops while running on the thread that completed its pull.
+            val responses = withContext(Dispatchers.Unconfined) {
+                testService.streamingOutputCall(streamingRequest(5, 7))
+                    .take(1)
+                    .toList()
+            }
 
             assertEquals(1, responses.size)
             assertEquals(5, responses.single().payload.body.size)

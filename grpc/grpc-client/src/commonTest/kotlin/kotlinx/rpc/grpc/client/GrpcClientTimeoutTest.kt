@@ -25,6 +25,7 @@ import kotlinx.rpc.grpc.client.testing.serverBarrier
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kxrpc.testing.BarrierType
+import kxrpc.testing.EventType
 import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -103,6 +104,43 @@ class GrpcClientTimeoutTest {
                 assertTerminalCallback(callbackEvents, headersExpected = true)
             } finally {
                 releaseServerBarrier(BarrierType.SEND_RESPONSE, occurrence = 2U)
+            }
+        }
+    }
+
+    @Test
+    fun serverStreamingTimesOutWhileCollectorIsSlow() {
+        val callbackEvents = mutableListOf<String>()
+        grpcClientTest(
+            clientConfig = {
+                intercept(timeoutInterceptor(1500.milliseconds, callbackEvents))
+            },
+            barriers = listOf(serverBarrier(BarrierType.SEND_RESPONSE, occurrence = 3U)),
+        ) {
+            try {
+                val responseSizes = mutableListOf<Int>()
+                val request = StreamingOutputCallRequest {
+                    responseType = PayloadType.COMPRESSABLE
+                    responseParameters = List(3) { ResponseParameters { size = 5 } }
+                }
+                assertGrpcTimeoutStatus {
+                    testService.streamingOutputCall(request)
+                        .onEach {
+                            responseSizes += it.payload.body.size
+                            if (responseSizes.size == 1) {
+                                // Stall the collector until the second response was sent and the
+                                // deadline expired, so the client holds an undelivered response.
+                                awaitServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence = 2U)
+                                awaitServerEvent(EventType.CLIENT_CANCELLED)
+                            }
+                        }
+                        .toList()
+                }
+                assertEquals(5, responseSizes.first())
+                assertServerObservedCancellation()
+                assertTerminalCallback(callbackEvents, headersExpected = true)
+            } finally {
+                releaseServerBarrier(BarrierType.SEND_RESPONSE, occurrence = 3U)
             }
         }
     }

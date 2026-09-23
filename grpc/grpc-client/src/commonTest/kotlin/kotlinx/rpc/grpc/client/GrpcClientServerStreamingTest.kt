@@ -10,9 +10,11 @@ import io.grpc.testing.integration.PayloadType
 import io.grpc.testing.integration.ResponseParameters
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.invoke
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatus
@@ -60,6 +62,21 @@ class GrpcClientServerStreamingTest {
             actual = responses.map { it.payload.body.toByteArray() },
         )
         assertCompressableResponses(responses.map { it.payload.type })
+        assertServerTrace(successfulServerStreamingEvents(STANDARD_INTEROP_RESPONSE_SIZES.size))
+    }
+
+    @Test
+    fun unconfinedCollectorReceivesEveryResponse() = grpcClientTest {
+        // An unconfined collector resumes on the thread completing the event pull, which may be
+        // the transport's response producer, and requests the next event from there.
+        val responses = withContext(Dispatchers.Unconfined) {
+            testService.streamingOutputCall(streamingRequest(STANDARD_INTEROP_RESPONSE_SIZES)).toList()
+        }
+
+        assertResponsePayloads(
+            expected = STANDARD_INTEROP_RESPONSE_SIZES.map(::ByteArray),
+            actual = responses.map { it.payload.body.toByteArray() },
+        )
         assertServerTrace(successfulServerStreamingEvents(STANDARD_INTEROP_RESPONSE_SIZES.size))
     }
 
