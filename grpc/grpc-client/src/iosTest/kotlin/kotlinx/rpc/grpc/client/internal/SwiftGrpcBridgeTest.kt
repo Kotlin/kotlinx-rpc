@@ -174,6 +174,151 @@ class SwiftGrpcBridgeTest {
     }
 
     @Test
+    fun requestSourcePullArrivesBeforeEmission() = runTest {
+        val emitNow = CompletableDeferred<Unit>()
+        val source = KotlinGrpcRequestSource(this, flow {
+            emitNow.await()
+            emit(42)
+        }) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+        val pull = source.pullRecording()
+
+        assertFalse(pull.result.isCompleted)
+        emitNow.complete(Unit)
+
+        val (message, error) = withTimeout(1_000.milliseconds) { pull.result.await() }
+        assertEquals(1L, assertNotNull(message).length())
+        assertNull(error)
+        assertEquals(1, pull.calls.load())
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+    }
+
+    @Test
+    fun requestSourcePreEncodesOneOfferAndWaitsUntilPulled() = runTest {
+        val advanced = CompletableDeferred<Unit>()
+        val encodeCalls = AtomicInt(0)
+        val source = KotlinGrpcRequestSource(this, flow {
+            emit(42)
+            advanced.complete(Unit)
+        }) { value ->
+            encodeCalls.incrementAndFetch()
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+
+        assertFalse(advanced.isCompleted, "the producer must remain suspended at the unclaimed offer")
+        assertEquals(1, encodeCalls.load())
+
+        val pull = source.pullRecording()
+        val (message, error) = withTimeout(1_000.milliseconds) { pull.result.await() }
+        assertEquals(1L, assertNotNull(message).length())
+        assertNull(error)
+        assertEquals(1, pull.calls.load())
+        withTimeout(1_000.milliseconds) { advanced.await() }
+        assertEquals(1, encodeCalls.load())
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+    }
+
+    @Test
+    fun requestSourceDeliversSequentialReentrantPullsInOrder() = runTest {
+        val source = KotlinGrpcRequestSource(this, flowOf(1, 2, 3)) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { repeat(value) { writeByte(value.toByte()) } })
+        }
+        val results = mutableListOf<Pair<Long?, NSError?>>()
+        val callbackCalls = mutableListOf<AtomicInt>()
+        val completed = CompletableDeferred<Unit>()
+
+        fun pullNext() {
+            val calls = AtomicInt(0)
+            callbackCalls += calls
+            source.nextRequestWithCompletion { message, error ->
+                calls.incrementAndFetch()
+                results += message?.length() to error
+                if (message == null) completed.complete(Unit) else pullNext()
+            }
+        }
+
+        pullNext()
+        withTimeout(1_000.milliseconds) { completed.await() }
+
+        assertEquals(listOf(1L, 2L, 3L, null), results.map { it.first })
+        assertTrue(results.all { it.second == null })
+        assertTrue(callbackCalls.all { it.load() == 1 })
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+    }
+
+    @Test
+    fun requestSourceRejectsConcurrentPullWithoutDisturbingWaitingPull() = runTest {
+        val emitNow = CompletableDeferred<Unit>()
+        val source = KotlinGrpcRequestSource(this, flow {
+            emitNow.await()
+            emit(42)
+            awaitCancellation()
+        }) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+        val accepted = source.pullRecording()
+        val rejected = source.pullRecording()
+
+        val (rejectedMessage, rejectedError) = rejected.result.await()
+        assertNull(rejectedMessage)
+        assertNotNull(rejectedError)
+        assertEquals(1, rejected.calls.load())
+        assertFalse(accepted.result.isCompleted)
+
+        emitNow.complete(Unit)
+        val (acceptedMessage, acceptedError) = withTimeout(1_000.milliseconds) { accepted.result.await() }
+        assertEquals(1L, assertNotNull(acceptedMessage).length())
+        assertNull(acceptedError)
+        assertEquals(1, accepted.calls.load())
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+    }
+
+    @Test
+    fun requestSourceDeliveringRejectsConcurrentPullAndCancellationCompletesAcceptedPull() = runTest {
+        val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+        val accepted = source.pullRecording()
+        val rejected = source.pullRecording()
+
+        val (rejectedMessage, rejectedError) = rejected.result.await()
+        assertNull(rejectedMessage)
+        assertNotNull(rejectedError)
+        assertEquals(1, rejected.calls.load())
+        assertFalse(accepted.result.isCompleted)
+
+        source.cancel()
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { accepted.result.await() })
+        assertEquals(1, accepted.calls.load())
+
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+        assertEquals(1, accepted.calls.load())
+        assertEquals(1, rejected.calls.load())
+    }
+
+    @Test
+    fun cancellingPreEncodedOfferedRequestWithdrawsAndJoins() = runTest {
+        val collectorStopped = CompletableDeferred<Unit>()
+        val encodeCalls = AtomicInt(0)
+        val source = KotlinGrpcRequestSource(this, flow {
+            try {
+                emit(42)
+            } finally {
+                collectorStopped.complete(Unit)
+            }
+        }) { value ->
+            encodeCalls.incrementAndFetch()
+            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+        }
+
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+
+        assertTrue(collectorStopped.isCompleted)
+        assertEquals(1, encodeCalls.load())
+    }
+
+    @Test
     fun requestSourceRetainsOriginalKotlinFailure() = runTest {
         val expected = IllegalStateException("request failed")
         val source = KotlinGrpcRequestSource<Int>(this, flow { throw expected }) {
@@ -291,8 +436,8 @@ class SwiftGrpcBridgeTest {
     @Test
     fun encodeFailureFailsSourceAndStopsCollector() = runTest {
         val expected = IllegalStateException("encode failed")
-        // The collector suspends while offering the second element until the source stops it.
-        val source = KotlinGrpcRequestSource<Int>(this, flowOf(1, 2)) { throw expected }
+        // Encoding is eager, so the source fails before its first pull.
+        val source = KotlinGrpcRequestSource<Int>(this, flowOf(1)) { throw expected }
 
         val pull = source.pullRecording()
 
@@ -391,6 +536,32 @@ class SwiftGrpcBridgeTest {
                     assertNull(message)
                     // Either transition may win, but a reported failure must be the original one.
                     if (error != null) assertSame(expected, source.originalFailure)
+                    assertEquals(1, pull.calls.load())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun pullRacingNormalCompletionCompletesExactlyOnce() = runTest {
+        withContext(Dispatchers.Default) {
+            repeat(STRESS_ITERATIONS) {
+                coroutineScope {
+                    val finish = CompletableDeferred<Unit>()
+                    val source = KotlinGrpcRequestSource<Int>(this, flow { finish.await() }) {
+                        error("No request should be encoded")
+                    }
+                    val start = CompletableDeferred<Unit>()
+                    val pull = RecordingCompletion()
+
+                    joinAll(
+                        launch { start.await(); source.nextRequestWithCompletion(pull.callback) },
+                        launch { start.await(); finish.complete(Unit) },
+                        launch { start.complete(Unit) },
+                    )
+
+                    assertEquals(null to null, withTimeout(5.seconds) { pull.result.await() })
+                    withTimeout(5.seconds) { source.cancelAndJoin() }
                     assertEquals(1, pull.calls.load())
                 }
             }
