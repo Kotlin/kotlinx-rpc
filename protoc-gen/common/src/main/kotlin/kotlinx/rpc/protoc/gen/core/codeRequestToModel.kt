@@ -101,6 +101,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.Annotations.Grpc,
         FqName.Annotations.GrpcMethod,
         FqName.Annotations.GeneratedProtoMessage,
+        FqName.Annotations.GeneratedProtoOneOfs,
 
         FqName.KotlinLibs.Flow,
         FqName.KotlinLibs.Buffer,

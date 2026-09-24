@@ -33,6 +33,7 @@ object RpcNames {
 
 object ProtoClassId {
     val protoMessageAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoMessage"))
+    val protoOneOfsAnnotation = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("GeneratedProtoOneOfs"))
     val protoDescriptor = ClassId(FqName("kotlinx.rpc.protobuf.internal"), Name.identifier("ProtoDescriptor"))
 }
 
@@ -45,6 +46,13 @@ object ProtoNames {
 
     fun presenceInterfaceName(messageName: String): String {
         return messageName + "Presence"
+    }
+
+    /** The `names` argument of the `GeneratedProtoOneOfs` annotation. */
+    val ONE_OFS_NAMES_ARGUMENT = Name.identifier("names")
+
+    fun clearFunctionName(fieldOrOneOfName: String): Name {
+        return Name.identifier("clear${fieldOrOneOfName.replaceFirstChar { it.uppercase() }}")
     }
 
     val DESCRIPTOR_NAME = Name.identifier("DESCRIPTOR")

@@ -179,8 +179,8 @@ data class OneOfDeclaration(
 ) {
     private val capitalizedRawName: String = rawName.replaceFirstChar { it.uppercase() }
 
+    /** The `clear<OneOf>` builder function, declared by the compiler plugin and implemented by the internal class. */
     val clearFunctionName: String = "clear$capitalizedRawName"
-    val internalClearFunctionName: String = "clear${capitalizedRawName}Internal"
     val whenFunctionName: String = "when$capitalizedRawName"
     val internalCaseGetterName: String = "_${rawName}Case"
 

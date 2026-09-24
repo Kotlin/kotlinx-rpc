@@ -6,6 +6,22 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:protobuf-wkt>
+final enum class com.google.protobuf.kotlin/ValueKindCase : kotlin/Enum<com.google.protobuf.kotlin/ValueKindCase> { // com.google.protobuf.kotlin/ValueKindCase|null[0]
+    enum entry BOOL_VALUE // com.google.protobuf.kotlin/ValueKindCase.BOOL_VALUE|null[0]
+    enum entry LIST_VALUE // com.google.protobuf.kotlin/ValueKindCase.LIST_VALUE|null[0]
+    enum entry NOT_SET // com.google.protobuf.kotlin/ValueKindCase.NOT_SET|null[0]
+    enum entry NULL_VALUE // com.google.protobuf.kotlin/ValueKindCase.NULL_VALUE|null[0]
+    enum entry NUMBER_VALUE // com.google.protobuf.kotlin/ValueKindCase.NUMBER_VALUE|null[0]
+    enum entry STRING_VALUE // com.google.protobuf.kotlin/ValueKindCase.STRING_VALUE|null[0]
+    enum entry STRUCT_VALUE // com.google.protobuf.kotlin/ValueKindCase.STRUCT_VALUE|null[0]
+
+    final val entries // com.google.protobuf.kotlin/ValueKindCase.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.google.protobuf.kotlin/ValueKindCase> // com.google.protobuf.kotlin/ValueKindCase.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.google.protobuf.kotlin/ValueKindCase // com.google.protobuf.kotlin/ValueKindCase.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.google.protobuf.kotlin/ValueKindCase> // com.google.protobuf.kotlin/ValueKindCase.values|values#static(){}[0]
+}
+
 abstract interface com.google.protobuf.kotlin/Any { // com.google.protobuf.kotlin/Any|null[0]
     abstract val typeUrl // com.google.protobuf.kotlin/Any.typeUrl|{}typeUrl[0]
         abstract fun <get-typeUrl>(): kotlin/String // com.google.protobuf.kotlin/Any.typeUrl.<get-typeUrl>|<get-typeUrl>(){}[0]
@@ -3297,84 +3313,64 @@ abstract interface com.google.protobuf.kotlin/UninterpretedOptionPresence { // c
 }
 
 abstract interface com.google.protobuf.kotlin/Value { // com.google.protobuf.kotlin/Value|null[0]
-    abstract val kind // com.google.protobuf.kotlin/Value.kind|{}kind[0]
-        abstract fun <get-kind>(): com.google.protobuf.kotlin/Value.Kind? // com.google.protobuf.kotlin/Value.kind.<get-kind>|<get-kind>(){}[0]
+    abstract val boolValue // com.google.protobuf.kotlin/Value.boolValue|{}boolValue[0]
+        abstract fun <get-boolValue>(): kotlin/Boolean // com.google.protobuf.kotlin/Value.boolValue.<get-boolValue>|<get-boolValue>(){}[0]
+    abstract val listValue // com.google.protobuf.kotlin/Value.listValue|{}listValue[0]
+        abstract fun <get-listValue>(): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/Value.listValue.<get-listValue>|<get-listValue>(){}[0]
+    abstract val nullValue // com.google.protobuf.kotlin/Value.nullValue|{}nullValue[0]
+        abstract fun <get-nullValue>(): com.google.protobuf.kotlin/NullValue // com.google.protobuf.kotlin/Value.nullValue.<get-nullValue>|<get-nullValue>(){}[0]
+    abstract val numberValue // com.google.protobuf.kotlin/Value.numberValue|{}numberValue[0]
+        abstract fun <get-numberValue>(): kotlin/Double // com.google.protobuf.kotlin/Value.numberValue.<get-numberValue>|<get-numberValue>(){}[0]
+    abstract val stringValue // com.google.protobuf.kotlin/Value.stringValue|{}stringValue[0]
+        abstract fun <get-stringValue>(): kotlin/String // com.google.protobuf.kotlin/Value.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
+    abstract val structValue // com.google.protobuf.kotlin/Value.structValue|{}structValue[0]
+        abstract fun <get-structValue>(): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/Value.structValue.<get-structValue>|<get-structValue>(){}[0]
 
     abstract interface Builder : com.google.protobuf.kotlin/Value { // com.google.protobuf.kotlin/Value.Builder|null[0]
-        abstract var kind // com.google.protobuf.kotlin/Value.Builder.kind|{}kind[0]
-            abstract fun <get-kind>(): com.google.protobuf.kotlin/Value.Kind? // com.google.protobuf.kotlin/Value.Builder.kind.<get-kind>|<get-kind>(){}[0]
-            abstract fun <set-kind>(com.google.protobuf.kotlin/Value.Kind?) // com.google.protobuf.kotlin/Value.Builder.kind.<set-kind>|<set-kind>(com.google.protobuf.kotlin.Value.Kind?){}[0]
-    }
+        abstract var boolValue // com.google.protobuf.kotlin/Value.Builder.boolValue|{}boolValue[0]
+            abstract fun <get-boolValue>(): kotlin/Boolean // com.google.protobuf.kotlin/Value.Builder.boolValue.<get-boolValue>|<get-boolValue>(){}[0]
+            abstract fun <set-boolValue>(kotlin/Boolean) // com.google.protobuf.kotlin/Value.Builder.boolValue.<set-boolValue>|<set-boolValue>(kotlin.Boolean){}[0]
+        abstract var listValue // com.google.protobuf.kotlin/Value.Builder.listValue|{}listValue[0]
+            abstract fun <get-listValue>(): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/Value.Builder.listValue.<get-listValue>|<get-listValue>(){}[0]
+            abstract fun <set-listValue>(com.google.protobuf.kotlin/ListValue) // com.google.protobuf.kotlin/Value.Builder.listValue.<set-listValue>|<set-listValue>(com.google.protobuf.kotlin.ListValue){}[0]
+        abstract var nullValue // com.google.protobuf.kotlin/Value.Builder.nullValue|{}nullValue[0]
+            abstract fun <get-nullValue>(): com.google.protobuf.kotlin/NullValue // com.google.protobuf.kotlin/Value.Builder.nullValue.<get-nullValue>|<get-nullValue>(){}[0]
+            abstract fun <set-nullValue>(com.google.protobuf.kotlin/NullValue) // com.google.protobuf.kotlin/Value.Builder.nullValue.<set-nullValue>|<set-nullValue>(com.google.protobuf.kotlin.NullValue){}[0]
+        abstract var numberValue // com.google.protobuf.kotlin/Value.Builder.numberValue|{}numberValue[0]
+            abstract fun <get-numberValue>(): kotlin/Double // com.google.protobuf.kotlin/Value.Builder.numberValue.<get-numberValue>|<get-numberValue>(){}[0]
+            abstract fun <set-numberValue>(kotlin/Double) // com.google.protobuf.kotlin/Value.Builder.numberValue.<set-numberValue>|<set-numberValue>(kotlin.Double){}[0]
+        abstract var stringValue // com.google.protobuf.kotlin/Value.Builder.stringValue|{}stringValue[0]
+            abstract fun <get-stringValue>(): kotlin/String // com.google.protobuf.kotlin/Value.Builder.stringValue.<get-stringValue>|<get-stringValue>(){}[0]
+            abstract fun <set-stringValue>(kotlin/String) // com.google.protobuf.kotlin/Value.Builder.stringValue.<set-stringValue>|<set-stringValue>(kotlin.String){}[0]
+        abstract var structValue // com.google.protobuf.kotlin/Value.Builder.structValue|{}structValue[0]
+            abstract fun <get-structValue>(): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/Value.Builder.structValue.<get-structValue>|<get-structValue>(){}[0]
+            abstract fun <set-structValue>(com.google.protobuf.kotlin/Struct) // com.google.protobuf.kotlin/Value.Builder.structValue.<set-structValue>|<set-structValue>(com.google.protobuf.kotlin.Struct){}[0]
 
-    sealed interface Kind { // com.google.protobuf.kotlin/Value.Kind|null[0]
-        final value class BoolValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.BoolValue|null[0]
-            constructor <init>(kotlin/Boolean) // com.google.protobuf.kotlin/Value.Kind.BoolValue.<init>|<init>(kotlin.Boolean){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.BoolValue.value|{}value[0]
-                final fun <get-value>(): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.BoolValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.BoolValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.BoolValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.BoolValue.toString|toString(){}[0]
-        }
-
-        final value class ListValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.ListValue|null[0]
-            constructor <init>(com.google.protobuf.kotlin/ListValue) // com.google.protobuf.kotlin/Value.Kind.ListValue.<init>|<init>(com.google.protobuf.kotlin.ListValue){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.ListValue.value|{}value[0]
-                final fun <get-value>(): com.google.protobuf.kotlin/ListValue // com.google.protobuf.kotlin/Value.Kind.ListValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.ListValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.ListValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.ListValue.toString|toString(){}[0]
-        }
-
-        final value class NullValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.NullValue|null[0]
-            constructor <init>(com.google.protobuf.kotlin/NullValue) // com.google.protobuf.kotlin/Value.Kind.NullValue.<init>|<init>(com.google.protobuf.kotlin.NullValue){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.NullValue.value|{}value[0]
-                final fun <get-value>(): com.google.protobuf.kotlin/NullValue // com.google.protobuf.kotlin/Value.Kind.NullValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.NullValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.NullValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.NullValue.toString|toString(){}[0]
-        }
-
-        final value class NumberValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.NumberValue|null[0]
-            constructor <init>(kotlin/Double) // com.google.protobuf.kotlin/Value.Kind.NumberValue.<init>|<init>(kotlin.Double){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.NumberValue.value|{}value[0]
-                final fun <get-value>(): kotlin/Double // com.google.protobuf.kotlin/Value.Kind.NumberValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.NumberValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.NumberValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.NumberValue.toString|toString(){}[0]
-        }
-
-        final value class StringValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.StringValue|null[0]
-            constructor <init>(kotlin/String) // com.google.protobuf.kotlin/Value.Kind.StringValue.<init>|<init>(kotlin.String){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.StringValue.value|{}value[0]
-                final fun <get-value>(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StringValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.StringValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.StringValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StringValue.toString|toString(){}[0]
-        }
-
-        final value class StructValue : com.google.protobuf.kotlin/Value.Kind { // com.google.protobuf.kotlin/Value.Kind.StructValue|null[0]
-            constructor <init>(com.google.protobuf.kotlin/Struct) // com.google.protobuf.kotlin/Value.Kind.StructValue.<init>|<init>(com.google.protobuf.kotlin.Struct){}[0]
-
-            final val value // com.google.protobuf.kotlin/Value.Kind.StructValue.value|{}value[0]
-                final fun <get-value>(): com.google.protobuf.kotlin/Struct // com.google.protobuf.kotlin/Value.Kind.StructValue.value.<get-value>|<get-value>(){}[0]
-
-            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Value.Kind.StructValue.equals|equals(kotlin.Any?){}[0]
-            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Value.Kind.StructValue.hashCode|hashCode(){}[0]
-            final fun toString(): kotlin/String // com.google.protobuf.kotlin/Value.Kind.StructValue.toString|toString(){}[0]
-        }
+        abstract fun clearBoolValue() // com.google.protobuf.kotlin/Value.Builder.clearBoolValue|clearBoolValue(){}[0]
+        abstract fun clearKind() // com.google.protobuf.kotlin/Value.Builder.clearKind|clearKind(){}[0]
+        abstract fun clearListValue() // com.google.protobuf.kotlin/Value.Builder.clearListValue|clearListValue(){}[0]
+        abstract fun clearNullValue() // com.google.protobuf.kotlin/Value.Builder.clearNullValue|clearNullValue(){}[0]
+        abstract fun clearNumberValue() // com.google.protobuf.kotlin/Value.Builder.clearNumberValue|clearNumberValue(){}[0]
+        abstract fun clearStringValue() // com.google.protobuf.kotlin/Value.Builder.clearStringValue|clearStringValue(){}[0]
+        abstract fun clearStructValue() // com.google.protobuf.kotlin/Value.Builder.clearStructValue|clearStructValue(){}[0]
     }
 
     final object Companion // com.google.protobuf.kotlin/Value.Companion|null[0]
+}
+
+abstract interface com.google.protobuf.kotlin/ValuePresence { // com.google.protobuf.kotlin/ValuePresence|null[0]
+    abstract val hasBoolValue // com.google.protobuf.kotlin/ValuePresence.hasBoolValue|{}hasBoolValue[0]
+        abstract fun <get-hasBoolValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasBoolValue.<get-hasBoolValue>|<get-hasBoolValue>(){}[0]
+    abstract val hasListValue // com.google.protobuf.kotlin/ValuePresence.hasListValue|{}hasListValue[0]
+        abstract fun <get-hasListValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasListValue.<get-hasListValue>|<get-hasListValue>(){}[0]
+    abstract val hasNullValue // com.google.protobuf.kotlin/ValuePresence.hasNullValue|{}hasNullValue[0]
+        abstract fun <get-hasNullValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasNullValue.<get-hasNullValue>|<get-hasNullValue>(){}[0]
+    abstract val hasNumberValue // com.google.protobuf.kotlin/ValuePresence.hasNumberValue|{}hasNumberValue[0]
+        abstract fun <get-hasNumberValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasNumberValue.<get-hasNumberValue>|<get-hasNumberValue>(){}[0]
+    abstract val hasStringValue // com.google.protobuf.kotlin/ValuePresence.hasStringValue|{}hasStringValue[0]
+        abstract fun <get-hasStringValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasStringValue.<get-hasStringValue>|<get-hasStringValue>(){}[0]
+    abstract val hasStructValue // com.google.protobuf.kotlin/ValuePresence.hasStructValue|{}hasStructValue[0]
+        abstract fun <get-hasStructValue>(): kotlin/Boolean // com.google.protobuf.kotlin/ValuePresence.hasStructValue.<get-hasStructValue>|<get-hasStructValue>(){}[0]
 }
 
 sealed class com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/Edition|null[0]
@@ -3595,6 +3591,8 @@ final val com.google.protobuf.kotlin/allowAliasOrNull // com.google.protobuf.kot
     final fun (com.google.protobuf.kotlin/EnumOptions).<get-allowAliasOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/allowAliasOrNull.<get-allowAliasOrNull>|<get-allowAliasOrNull>@com.google.protobuf.kotlin.EnumOptions(){}[0]
 final val com.google.protobuf.kotlin/beginOrNull // com.google.protobuf.kotlin/beginOrNull|@com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation{}beginOrNull[0]
     final fun (com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation).<get-beginOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/beginOrNull.<get-beginOrNull>|<get-beginOrNull>@com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation(){}[0]
+final val com.google.protobuf.kotlin/boolValueOrNull // com.google.protobuf.kotlin/boolValueOrNull|@com.google.protobuf.kotlin.Value{}boolValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-boolValueOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/boolValueOrNull.<get-boolValueOrNull>|<get-boolValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/ccEnableArenasOrNull // com.google.protobuf.kotlin/ccEnableArenasOrNull|@com.google.protobuf.kotlin.FileOptions{}ccEnableArenasOrNull[0]
     final fun (com.google.protobuf.kotlin/FileOptions).<get-ccEnableArenasOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/ccEnableArenasOrNull.<get-ccEnableArenasOrNull>|<get-ccEnableArenasOrNull>@com.google.protobuf.kotlin.FileOptions(){}[0]
 final val com.google.protobuf.kotlin/ccGenericServicesOrNull // com.google.protobuf.kotlin/ccGenericServicesOrNull|@com.google.protobuf.kotlin.FileOptions{}ccGenericServicesOrNull[0]
@@ -3715,12 +3713,16 @@ final val com.google.protobuf.kotlin/jsonNameOrNull // com.google.protobuf.kotli
     final fun (com.google.protobuf.kotlin/FieldDescriptorProto).<get-jsonNameOrNull>(): kotlin/String? // com.google.protobuf.kotlin/jsonNameOrNull.<get-jsonNameOrNull>|<get-jsonNameOrNull>@com.google.protobuf.kotlin.FieldDescriptorProto(){}[0]
 final val com.google.protobuf.kotlin/jstypeOrNull // com.google.protobuf.kotlin/jstypeOrNull|@com.google.protobuf.kotlin.FieldOptions{}jstypeOrNull[0]
     final fun (com.google.protobuf.kotlin/FieldOptions).<get-jstypeOrNull>(): com.google.protobuf.kotlin/FieldOptions.JSType? // com.google.protobuf.kotlin/jstypeOrNull.<get-jstypeOrNull>|<get-jstypeOrNull>@com.google.protobuf.kotlin.FieldOptions(){}[0]
+final val com.google.protobuf.kotlin/kind // com.google.protobuf.kotlin/kind|@com.google.protobuf.kotlin.Value{}kind[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-kind>(): com.google.protobuf.kotlin/ValueKindCase // com.google.protobuf.kotlin/kind.<get-kind>|<get-kind>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/labelOrNull // com.google.protobuf.kotlin/labelOrNull|@com.google.protobuf.kotlin.FieldDescriptorProto{}labelOrNull[0]
     final fun (com.google.protobuf.kotlin/FieldDescriptorProto).<get-labelOrNull>(): com.google.protobuf.kotlin/FieldDescriptorProto.Label? // com.google.protobuf.kotlin/labelOrNull.<get-labelOrNull>|<get-labelOrNull>@com.google.protobuf.kotlin.FieldDescriptorProto(){}[0]
 final val com.google.protobuf.kotlin/lazyOrNull // com.google.protobuf.kotlin/lazyOrNull|@com.google.protobuf.kotlin.FieldOptions{}lazyOrNull[0]
     final fun (com.google.protobuf.kotlin/FieldOptions).<get-lazyOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/lazyOrNull.<get-lazyOrNull>|<get-lazyOrNull>@com.google.protobuf.kotlin.FieldOptions(){}[0]
 final val com.google.protobuf.kotlin/leadingCommentsOrNull // com.google.protobuf.kotlin/leadingCommentsOrNull|@com.google.protobuf.kotlin.SourceCodeInfo.Location{}leadingCommentsOrNull[0]
     final fun (com.google.protobuf.kotlin/SourceCodeInfo.Location).<get-leadingCommentsOrNull>(): kotlin/String? // com.google.protobuf.kotlin/leadingCommentsOrNull.<get-leadingCommentsOrNull>|<get-leadingCommentsOrNull>@com.google.protobuf.kotlin.SourceCodeInfo.Location(){}[0]
+final val com.google.protobuf.kotlin/listValueOrNull // com.google.protobuf.kotlin/listValueOrNull|@com.google.protobuf.kotlin.Value{}listValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-listValueOrNull>(): com.google.protobuf.kotlin/ListValue? // com.google.protobuf.kotlin/listValueOrNull.<get-listValueOrNull>|<get-listValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/mapEntryOrNull // com.google.protobuf.kotlin/mapEntryOrNull|@com.google.protobuf.kotlin.MessageOptions{}mapEntryOrNull[0]
     final fun (com.google.protobuf.kotlin/MessageOptions).<get-mapEntryOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/mapEntryOrNull.<get-mapEntryOrNull>|<get-mapEntryOrNull>@com.google.protobuf.kotlin.MessageOptions(){}[0]
 final val com.google.protobuf.kotlin/maximumEditionOrNull // com.google.protobuf.kotlin/maximumEditionOrNull|@com.google.protobuf.kotlin.FeatureSetDefaults{}maximumEditionOrNull[0]
@@ -3751,12 +3753,16 @@ final val com.google.protobuf.kotlin/negativeIntValueOrNull // com.google.protob
     final fun (com.google.protobuf.kotlin/UninterpretedOption).<get-negativeIntValueOrNull>(): kotlin/Long? // com.google.protobuf.kotlin/negativeIntValueOrNull.<get-negativeIntValueOrNull>|<get-negativeIntValueOrNull>@com.google.protobuf.kotlin.UninterpretedOption(){}[0]
 final val com.google.protobuf.kotlin/noStandardDescriptorAccessorOrNull // com.google.protobuf.kotlin/noStandardDescriptorAccessorOrNull|@com.google.protobuf.kotlin.MessageOptions{}noStandardDescriptorAccessorOrNull[0]
     final fun (com.google.protobuf.kotlin/MessageOptions).<get-noStandardDescriptorAccessorOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/noStandardDescriptorAccessorOrNull.<get-noStandardDescriptorAccessorOrNull>|<get-noStandardDescriptorAccessorOrNull>@com.google.protobuf.kotlin.MessageOptions(){}[0]
+final val com.google.protobuf.kotlin/nullValueOrNull // com.google.protobuf.kotlin/nullValueOrNull|@com.google.protobuf.kotlin.Value{}nullValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-nullValueOrNull>(): com.google.protobuf.kotlin/NullValue? // com.google.protobuf.kotlin/nullValueOrNull.<get-nullValueOrNull>|<get-nullValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/numberOrNull // com.google.protobuf.kotlin/numberOrNull|@com.google.protobuf.kotlin.EnumValueDescriptorProto{}numberOrNull[0]
     final fun (com.google.protobuf.kotlin/EnumValueDescriptorProto).<get-numberOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/numberOrNull.<get-numberOrNull>|<get-numberOrNull>@com.google.protobuf.kotlin.EnumValueDescriptorProto(){}[0]
 final val com.google.protobuf.kotlin/numberOrNull // com.google.protobuf.kotlin/numberOrNull|@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration{}numberOrNull[0]
     final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration).<get-numberOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/numberOrNull.<get-numberOrNull>|<get-numberOrNull>@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration(){}[0]
 final val com.google.protobuf.kotlin/numberOrNull // com.google.protobuf.kotlin/numberOrNull|@com.google.protobuf.kotlin.FieldDescriptorProto{}numberOrNull[0]
     final fun (com.google.protobuf.kotlin/FieldDescriptorProto).<get-numberOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/numberOrNull.<get-numberOrNull>|<get-numberOrNull>@com.google.protobuf.kotlin.FieldDescriptorProto(){}[0]
+final val com.google.protobuf.kotlin/numberValueOrNull // com.google.protobuf.kotlin/numberValueOrNull|@com.google.protobuf.kotlin.Value{}numberValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-numberValueOrNull>(): kotlin/Double? // com.google.protobuf.kotlin/numberValueOrNull.<get-numberValueOrNull>|<get-numberValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/objcClassPrefixOrNull // com.google.protobuf.kotlin/objcClassPrefixOrNull|@com.google.protobuf.kotlin.FileOptions{}objcClassPrefixOrNull[0]
     final fun (com.google.protobuf.kotlin/FileOptions).<get-objcClassPrefixOrNull>(): kotlin/String? // com.google.protobuf.kotlin/objcClassPrefixOrNull.<get-objcClassPrefixOrNull>|<get-objcClassPrefixOrNull>@com.google.protobuf.kotlin.FileOptions(){}[0]
 final val com.google.protobuf.kotlin/oneofIndexOrNull // com.google.protobuf.kotlin/oneofIndexOrNull|@com.google.protobuf.kotlin.FieldDescriptorProto{}oneofIndexOrNull[0]
@@ -3869,6 +3875,8 @@ final val com.google.protobuf.kotlin/presence // com.google.protobuf.kotlin/pres
     final fun (com.google.protobuf.kotlin/UninterpretedOption.NamePart).<get-presence>(): com.google.protobuf.kotlin/UninterpretedOptionPresence.NamePart // com.google.protobuf.kotlin/presence.<get-presence>|<get-presence>@com.google.protobuf.kotlin.UninterpretedOption.NamePart(){}[0]
 final val com.google.protobuf.kotlin/presence // com.google.protobuf.kotlin/presence|@com.google.protobuf.kotlin.UninterpretedOption{}presence[0]
     final fun (com.google.protobuf.kotlin/UninterpretedOption).<get-presence>(): com.google.protobuf.kotlin/UninterpretedOptionPresence // com.google.protobuf.kotlin/presence.<get-presence>|<get-presence>@com.google.protobuf.kotlin.UninterpretedOption(){}[0]
+final val com.google.protobuf.kotlin/presence // com.google.protobuf.kotlin/presence|@com.google.protobuf.kotlin.Value{}presence[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-presence>(): com.google.protobuf.kotlin/ValuePresence // com.google.protobuf.kotlin/presence.<get-presence>|<get-presence>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/proto3OptionalOrNull // com.google.protobuf.kotlin/proto3OptionalOrNull|@com.google.protobuf.kotlin.FieldDescriptorProto{}proto3OptionalOrNull[0]
     final fun (com.google.protobuf.kotlin/FieldDescriptorProto).<get-proto3OptionalOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/proto3OptionalOrNull.<get-proto3OptionalOrNull>|<get-proto3OptionalOrNull>@com.google.protobuf.kotlin.FieldDescriptorProto(){}[0]
 final val com.google.protobuf.kotlin/pyGenericServicesOrNull // com.google.protobuf.kotlin/pyGenericServicesOrNull|@com.google.protobuf.kotlin.FileOptions{}pyGenericServicesOrNull[0]
@@ -3905,6 +3913,10 @@ final val com.google.protobuf.kotlin/startOrNull // com.google.protobuf.kotlin/s
     final fun (com.google.protobuf.kotlin/EnumDescriptorProto.EnumReservedRange).<get-startOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/startOrNull.<get-startOrNull>|<get-startOrNull>@com.google.protobuf.kotlin.EnumDescriptorProto.EnumReservedRange(){}[0]
 final val com.google.protobuf.kotlin/stringValueOrNull // com.google.protobuf.kotlin/stringValueOrNull|@com.google.protobuf.kotlin.UninterpretedOption{}stringValueOrNull[0]
     final fun (com.google.protobuf.kotlin/UninterpretedOption).<get-stringValueOrNull>(): kotlinx.io.bytestring/ByteString? // com.google.protobuf.kotlin/stringValueOrNull.<get-stringValueOrNull>|<get-stringValueOrNull>@com.google.protobuf.kotlin.UninterpretedOption(){}[0]
+final val com.google.protobuf.kotlin/stringValueOrNull // com.google.protobuf.kotlin/stringValueOrNull|@com.google.protobuf.kotlin.Value{}stringValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-stringValueOrNull>(): kotlin/String? // com.google.protobuf.kotlin/stringValueOrNull.<get-stringValueOrNull>|<get-stringValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
+final val com.google.protobuf.kotlin/structValueOrNull // com.google.protobuf.kotlin/structValueOrNull|@com.google.protobuf.kotlin.Value{}structValueOrNull[0]
+    final fun (com.google.protobuf.kotlin/Value).<get-structValueOrNull>(): com.google.protobuf.kotlin/Struct? // com.google.protobuf.kotlin/structValueOrNull.<get-structValueOrNull>|<get-structValueOrNull>@com.google.protobuf.kotlin.Value(){}[0]
 final val com.google.protobuf.kotlin/swiftPrefixOrNull // com.google.protobuf.kotlin/swiftPrefixOrNull|@com.google.protobuf.kotlin.FileOptions{}swiftPrefixOrNull[0]
     final fun (com.google.protobuf.kotlin/FileOptions).<get-swiftPrefixOrNull>(): kotlin/String? // com.google.protobuf.kotlin/swiftPrefixOrNull.<get-swiftPrefixOrNull>|<get-swiftPrefixOrNull>@com.google.protobuf.kotlin.FileOptions(){}[0]
 final val com.google.protobuf.kotlin/syntaxOrNull // com.google.protobuf.kotlin/syntaxOrNull|@com.google.protobuf.kotlin.FileDescriptorProto{}syntaxOrNull[0]
@@ -4064,6 +4076,7 @@ final fun <#A: kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.
 final fun <#A: kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/unpack(kotlin.reflect/KType): #A // com.google.protobuf.kotlin/unpack|unpack@com.google.protobuf.kotlin.Any(kotlin.reflect.KType){0§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/unpackOrNull(kotlin.reflect/KClass<#A>): #A? // com.google.protobuf.kotlin/unpackOrNull|unpackOrNull@com.google.protobuf.kotlin.Any(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/unpackOrNull(kotlin.reflect/KType): #A? // com.google.protobuf.kotlin/unpackOrNull|unpackOrNull@com.google.protobuf.kotlin.Any(kotlin.reflect.KType){0§<kotlin.Any>}[0]
+final inline fun <#A: kotlin/Any?> (com.google.protobuf.kotlin/Value).com.google.protobuf.kotlin/whenKind(kotlin/Function1<com.google.protobuf.kotlin/NullValue, #A>, kotlin/Function1<kotlin/Double, #A>, kotlin/Function1<kotlin/String, #A>, kotlin/Function1<kotlin/Boolean, #A>, kotlin/Function1<com.google.protobuf.kotlin/Struct, #A>, kotlin/Function1<com.google.protobuf.kotlin/ListValue, #A>, kotlin/Function0<#A>): #A // com.google.protobuf.kotlin/whenKind|whenKind@com.google.protobuf.kotlin.Value(kotlin.Function1<com.google.protobuf.kotlin.NullValue,0:0>;kotlin.Function1<kotlin.Double,0:0>;kotlin.Function1<kotlin.String,0:0>;kotlin.Function1<kotlin.Boolean,0:0>;kotlin.Function1<com.google.protobuf.kotlin.Struct,0:0>;kotlin.Function1<com.google.protobuf.kotlin.ListValue,0:0>;kotlin.Function0<0:0>){0§<kotlin.Any?>}[0]
 final inline fun <#A: reified kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/contains(): kotlin/Boolean // com.google.protobuf.kotlin/contains|contains@com.google.protobuf.kotlin.Any(){0§<kotlin.Any>}[0]
 final inline fun <#A: reified kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/unpack(): #A // com.google.protobuf.kotlin/unpack|unpack@com.google.protobuf.kotlin.Any(){0§<kotlin.Any>}[0]
 final inline fun <#A: reified kotlin/Any> (com.google.protobuf.kotlin/Any).com.google.protobuf.kotlin/unpackOrNull(): #A? // com.google.protobuf.kotlin/unpackOrNull|unpackOrNull@com.google.protobuf.kotlin.Any(){0§<kotlin.Any>}[0]

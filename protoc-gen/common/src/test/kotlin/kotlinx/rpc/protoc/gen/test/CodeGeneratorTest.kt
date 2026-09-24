@@ -120,6 +120,139 @@ class CodeGeneratorTest {
     }
 
     @Test
+    fun functionArgsFitOnOneLine() = codeGeneratorTest {
+        val (imports, generated) = generate {
+            function(
+                name = "some",
+                args = listOf(
+                    "a: %T".scoped(FqName.Implicits.Int),
+                    "b: %T = \"\"".scoped(FqName.Implicits.String),
+                ),
+                returnType = FqName.Implicits.Int.scoped(),
+            ) {
+                code("return a".scoped())
+            }
+
+            function(
+                name = "abstract",
+                modifiers = "abstract",
+                args = listOf("a: %T".scoped(FqName.Implicits.Int)),
+                returnType = FqName.Implicits.Unit.scoped(),
+            )
+        }
+
+        assertEquals(
+            """
+                fun some(a: Int, b: String = ""): Int {
+                    return a
+                }
+
+                abstract fun abstract(a: Int)
+            """.trimIndent(),
+            generated.trim(),
+        )
+
+        assertEquals(emptySet(), imports)
+    }
+
+    @Test
+    fun functionArgsWrappedByLineLength() = codeGeneratorTest { table ->
+        val receiver = fq("com.other", "SomeLongReceiverName")
+        table.register(receiver)
+
+        val (imports, generated) = generate {
+            clazz(name = "Outer") {
+                function(
+                    name = "someLongFunctionName",
+                    modifiers = "inline",
+                    typeParameters = "R".scoped(),
+                    contextReceiver = receiver.scoped(),
+                    args = listOf(
+                        "first: (%T) -> R".scoped(FqName.Implicits.Int),
+                        "second: (%T) -> R".scoped(FqName.Implicits.String),
+                    ),
+                    returnType = "R".scoped(),
+                ) {
+                    code("return first(0)".scoped())
+                }
+
+                function(
+                    name = "abstract",
+                    modifiers = "abstract",
+                    args = listOf(
+                        "firstParameter: %T".scoped(FqName.Implicits.Int),
+                        "secondParameter: %T".scoped(FqName.Implicits.String),
+                        "thirdParameter: %T".scoped(FqName.Implicits.Boolean),
+                        "fourthParameter: %T".scoped(FqName.Implicits.Long),
+                    ),
+                    returnType = FqName.Implicits.Unit.scoped(),
+                )
+            }
+        }
+
+        assertEquals(
+            """
+                class Outer {
+                    inline fun <R> SomeLongReceiverName.someLongFunctionName(
+                        first: (Int) -> R,
+                        second: (String) -> R,
+                    ): R {
+                        return first(0)
+                    }
+
+                    abstract fun abstract(
+                        firstParameter: Int,
+                        secondParameter: String,
+                        thirdParameter: Boolean,
+                        fourthParameter: Long,
+                    )
+                }
+            """.trimIndent(),
+            generated.trim(),
+        )
+
+        assertEquals(setOf("com.other.SomeLongReceiverName"), imports)
+    }
+
+    @Test
+    fun explicitApiModeSkipsMembersOfNonPublicDeclarations() = codeGeneratorTest(explicitApiModeEnabled = true) {
+        val (_, generated) = generate {
+            clazz(name = "Public") {
+                property(name = "a", type = FqName.Implicits.Int.scoped(), value = "0".scoped())
+
+                clazz(name = "Indices", modifiers = "internal", declarationType = CodeGenerator.DeclarationType.Object) {
+                    property(name = "b", modifiers = "const", type = FqName.Implicits.Int.scoped(), value = "0".scoped())
+
+                    function(name = "c", returnType = FqName.Implicits.Unit.scoped()) {
+                        code("return".scoped())
+                    }
+
+                    clazz(name = "Nested", constructorArgs = listOf("val d: %T".scoped(FqName.Implicits.Int)))
+                }
+            }
+        }
+
+        assertEquals(
+            """
+                public class Public {
+                    public val a: Int = 0
+
+                    internal object Indices {
+                        const val b: Int = 0
+
+                        fun c() {
+                            return
+                        }
+
+                        class Nested(val d: Int)
+                    }
+                }
+            """.trimIndent(),
+            generated.trim(),
+        )
+    }
+
+    @Test
     fun testProperty() = codeGeneratorTest {
         val (imports, generated) = generate {
             property(
@@ -504,12 +637,13 @@ class CodeGeneratorTest {
         packageFqName: FqName.Package = fq("com.example", "") as FqName.Package,
         platform: Platform = Platform.Common,
         generateComments: Boolean = false,
+        explicitApiModeEnabled: Boolean = false,
         body: Env.(FqNameTable) -> Unit,
     ) {
         val nameTable = FqNameTable(platform)
         val generator = CodeGenerator(
             config = Config(
-                explicitApiModeEnabled = false,
+                explicitApiModeEnabled = explicitApiModeEnabled,
                 generateComments = generateComments,
                 generateFileLevelComments = false,
                 generateOptionalFieldOrNullGetters = false,

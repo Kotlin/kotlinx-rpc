@@ -234,7 +234,6 @@
             <code>clear&lt;Oneof&gt;()</code> clears it regardless of the active case:
         </p>
         <code-block lang="Kotlin">
-            import com.example.clearPayload
             import com.example.copy
 
             val switched = event.copy { code = 5 }       // payload == EventPayloadCase.CODE, text == ""

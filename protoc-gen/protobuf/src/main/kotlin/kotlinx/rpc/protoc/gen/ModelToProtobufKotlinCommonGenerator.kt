@@ -189,11 +189,22 @@ class ModelToProtobufKotlinCommonGenerator(
             )
         }
 
+        val annotations = buildList {
+            add(FqName.Annotations.InternalRpcApi.scopedAnnotation())
+
+            // @GeneratedProtoOneOfs(names = ["payload"])
+            // read by the compiler plugin to declare `clear<OneOf>()` on the builder
+            if (declaration.isUserFacing && declaration.oneOfDeclarations.isNotEmpty()) {
+                val names = declaration.oneOfDeclarations.joinToString(", ") { "\"${it.rawName}\"" }
+                add("@%T(names = [$names])".scoped(FqName.Annotations.GeneratedProtoOneOfs))
+            }
+        }
+
         clazz(
             name = declaration.internalClassName.simpleName,
             declarationType = CodeGenerator.DeclarationType.Class,
             superTypes = superTypes,
-            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
+            annotations = annotations,
         ) {
             generatePresenceIndicesObject(declaration)
             generateBytesDefaultsObject(declaration)
@@ -354,9 +365,10 @@ class ModelToProtobufKotlinCommonGenerator(
             code(oneOf.caseTypeName.scoped().wrapIn { "else -> $it.${oneOf.notSetEntryName}" })
         }
 
+        // implements the `clear<OneOf>()` function declared on the builder by the compiler plugin
         function(
-            name = oneOf.internalClearFunctionName,
-            annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
+            name = oneOf.clearFunctionName,
+            modifiers = "override",
             returnType = "".scoped(),
         ) {
             code(
@@ -538,7 +550,7 @@ class ModelToProtobufKotlinCommonGenerator(
         ) {
             if (oneOf != null) {
                 // clearing a oneof member only has an effect if it is the active case
-                code(field.presenceIdxFieldName.wrapIn { "if (presenceMask[$it]) ${oneOf.internalClearFunctionName}()" })
+                code(field.presenceIdxFieldName.wrapIn { "if (presenceMask[$it]) ${oneOf.clearFunctionName}()" })
             } else {
                 code("${field.internalDelegateName}.clearField(this)".scoped())
             }
@@ -630,7 +642,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "equals",
             modifiers = "override",
-            args = "other: %T?".scoped(FqName.Implicits.Any),
+            args = listOf("other: %T?".scoped(FqName.Implicits.Any)),
             returnType = FqName.Implicits.Boolean.scoped(),
         ) {
             if (declaration.hasRequiredFieldsRecursively) {
@@ -775,7 +787,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         function(
             name = "asString",
-            args = "indent: %T = 0".scoped(FqName.Implicits.Int),
+            args = listOf("indent: %T = 0".scoped(FqName.Implicits.Int)),
             returnType = FqName.Implicits.String.scoped(),
         ) {
             code("val indentString = \" \".repeat(indent)".scoped())
@@ -847,7 +859,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "copy",
             contextReceiver = declaration.name.scoped(),
-            args = "body: %T.() -> %T = {}".scoped(declaration.builderClassName, FqName.Implicits.Unit),
+            args = listOf("body: %T.() -> %T = {}".scoped(declaration.builderClassName, FqName.Implicits.Unit)),
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
                 """
@@ -892,7 +904,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "copyInternal",
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-            args = "body: %T.() -> %T".scoped(declaration.internalClassName, FqName.Implicits.Unit),
+            args = listOf("body: %T.() -> %T".scoped(declaration.internalClassName, FqName.Implicits.Unit)),
             returnType = declaration.internalClassName.scoped(),
         ) {
             code("val copy = %T()".scoped(declaration.internalClassName))
@@ -1250,7 +1262,10 @@ class ModelToProtobufKotlinCommonGenerator(
             function(
                 name = "encode",
                 modifiers = "override",
-                args = "value: %T, config: %T?".scoped(declaration.name, FqName.RpcClasses.GrpcMarshallerConfig),
+                args = listOf(
+                    "value: %T".scoped(declaration.name),
+                    "config: %T?".scoped(FqName.RpcClasses.GrpcMarshallerConfig),
+                ),
                 returnType = FqName.KotlinLibs.Source.scoped(),
             ) {
                 code("val buffer = %T()".scoped(FqName.KotlinLibs.Buffer))
@@ -1269,9 +1284,9 @@ class ModelToProtobufKotlinCommonGenerator(
             function(
                 name = "decode",
                 modifiers = "override",
-                args = "source: %T, config: %T?".scoped(
-                    FqName.KotlinLibs.Source,
-                    FqName.RpcClasses.GrpcMarshallerConfig
+                args = listOf(
+                    "source: %T".scoped(FqName.KotlinLibs.Source),
+                    "config: %T?".scoped(FqName.RpcClasses.GrpcMarshallerConfig),
                 ),
                 returnType = declaration.name.scoped(),
             ) {
@@ -1332,7 +1347,7 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = "invoke",
             modifiers = "operator",
-            args = "body: %T.() -> %T".scoped(declaration.builderClassName, FqName.Implicits.Unit),
+            args = listOf("body: %T.() -> %T".scoped(declaration.builderClassName, FqName.Implicits.Unit)),
             contextReceiver = declaration.companionName.scoped(),
             returnType = declaration.name.scoped(),
             comment = Comment.leading(
@@ -1364,16 +1379,17 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) {
-        var args = "msg: %T, decoder: %T, config: %T?"
-            .scoped(declaration.internalClassName, FqName.RpcClasses.WireDecoder, FqName.RpcClasses.ProtoConfig)
+        val args = buildList {
+            add("msg: %T".scoped(declaration.internalClassName))
+            add("decoder: %T".scoped(FqName.RpcClasses.WireDecoder))
+            add("config: %T?".scoped(FqName.RpcClasses.ProtoConfig))
 
-        if (declaration.isGroup) {
-            // if the message is a group message, the decoder accepts an optional startGroup tag, which indicates
-            // that the decoding of the message must end with an END_GROUP tag of the same fieldNr.
-            // if the startGroup tag is null, we treat it like a normal message.
-            // the argument is not default null, to avoid that we forget to set it when changing the generator.
-            args = args.merge(FqName.RpcClasses.KTag.scoped()) { start, kTag ->
-                "$start, startGroup: $kTag?"
+            if (declaration.isGroup) {
+                // if the message is a group message, the decoder accepts an optional startGroup tag, which indicates
+                // that the decoding of the message must end with an END_GROUP tag of the same fieldNr.
+                // if the startGroup tag is null, we treat it like a normal message.
+                // the argument is not default null, to avoid that we forget to set it when changing the generator.
+                add("startGroup: %T?".scoped(FqName.RpcClasses.KTag))
             }
         }
 
@@ -1672,7 +1688,10 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateMessageEncoder(declaration: MessageDeclaration) = function(
         name = "encodeWith",
         annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-        args = "encoder: %T, config: %T?".scoped(FqName.RpcClasses.WireEncoder, FqName.RpcClasses.ProtoConfig),
+        args = listOf(
+            "encoder: %T".scoped(FqName.RpcClasses.WireEncoder),
+            "config: %T?".scoped(FqName.RpcClasses.ProtoConfig),
+        ),
         contextReceiver = declaration.internalClassName.scoped(),
         returnType = FqName.Implicits.Unit.scoped(),
     ) {
@@ -1821,7 +1840,7 @@ class ModelToProtobufKotlinCommonGenerator(
     private fun CodeGenerator.generateInternalEnumConstructor(enum: EnumDeclaration) {
         function(
             name = "fromNumber",
-            args = "number: %T".scoped(FqName.Implicits.Int),
+            args = listOf("number: %T".scoped(FqName.Implicits.Int)),
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             contextReceiver = enum.companionName.scoped(),
             returnType = enum.name.scoped(),
@@ -2328,8 +2347,11 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     /**
-     * Generates the oneof extensions: the `<oneOf>` case property, `Builder.clear<OneOf>()`
+     * Generates the oneof extensions: the `<oneOf>` case property
      * and, if enabled, the exhaustive `when<OneOf>` dispatch function.
+     *
+     * The `Builder.clear<OneOf>()` function is declared by the compiler plugin
+     * (see the `GeneratedProtoOneOfs` annotation on the internal class) and implemented by the internal class.
      */
     private fun CodeGenerator.generateOneOfExtensions(declaration: MessageDeclaration) {
         if (!declaration.isUserFacing) return
@@ -2350,16 +2372,6 @@ class ModelToProtobufKotlinCommonGenerator(
                     caseType.wrapIn { "The active case of the `${oneOf.dec.name}` oneof, or [$it.${oneOf.notSetEntryName}]." }
                 ),
             )
-
-            // fun Event.Builder.clearPayload()
-            function(
-                name = oneOf.clearFunctionName,
-                contextReceiver = declaration.builderClassName.scoped(),
-                returnType = "".scoped(),
-                comment = Comment.leading("Clears the `${oneOf.dec.name}` oneof regardless of its active case."),
-            ) {
-                code("this.%F().${oneOf.internalClearFunctionName}()".scoped(asInternal))
-            }
 
             if (config.generateOneOfWhenFunctions) {
                 generateOneOfWhenFunction(declaration, oneOf)

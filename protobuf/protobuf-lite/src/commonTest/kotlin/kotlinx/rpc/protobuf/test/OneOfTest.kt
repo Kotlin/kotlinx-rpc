@@ -12,9 +12,6 @@ import OneOfNumeric64
 import OneOfNumeric64NumCase
 import OneOfRefs
 import OneOfRefsRefCase
-import clearField
-import clearNum
-import clearRef
 import copy
 import field
 import fixedOrNull

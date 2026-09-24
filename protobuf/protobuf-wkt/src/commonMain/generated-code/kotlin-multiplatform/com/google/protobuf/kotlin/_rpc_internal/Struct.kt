@@ -12,6 +12,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -86,7 +87,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     public class FieldsEntryInternal: InternalMessage(fieldsWithPresence = 1) {
         @InternalRpcApi
         internal object PresenceIndices {
-            public const val value: Int = 0
+            const val value: Int = 0
         }
 
         @InternalRpcApi
@@ -183,15 +184,16 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 }
 
 @InternalRpcApi
+@GeneratedProtoOneOfs(names = ["kind"])
 public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 6) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val nullValue: Int = 0
-        public const val numberValue: Int = 1
-        public const val stringValue: Int = 2
-        public const val boolValue: Int = 3
-        public const val structValue: Int = 4
-        public const val listValue: Int = 5
+        const val nullValue: Int = 0
+        const val numberValue: Int = 1
+        const val stringValue: Int = 2
+        const val boolValue: Int = 3
+        const val structValue: Int = 4
+        const val listValue: Int = 5
     }
 
     @InternalRpcApi
@@ -217,8 +219,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         else -> ValueKindCase.NOT_SET
     }
 
-    @InternalRpcApi
-    public fun clearKindInternal() {
+    public override fun clearKind() {
         presenceMask.clearRange(PresenceIndices.nullValue, PresenceIndices.listValue)
         _kindRef = null
         _kindNum = 0L
@@ -229,7 +230,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.nullValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = value.number.toLong(); _kindRef = null }
 
     public override fun clearNullValue() {
-        if (presenceMask[PresenceIndices.nullValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.nullValue]) clearKind()
     }
 
     public override var numberValue: Double
@@ -237,7 +238,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.numberValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = value.toRawBits(); _kindRef = null }
 
     public override fun clearNumberValue() {
-        if (presenceMask[PresenceIndices.numberValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.numberValue]) clearKind()
     }
 
     public override var stringValue: String
@@ -245,7 +246,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.stringValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
 
     public override fun clearStringValue() {
-        if (presenceMask[PresenceIndices.stringValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.stringValue]) clearKind()
     }
 
     public override var boolValue: Boolean
@@ -253,7 +254,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.boolValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = if (value) 1L else 0L; _kindRef = null }
 
     public override fun clearBoolValue() {
-        if (presenceMask[PresenceIndices.boolValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.boolValue]) clearKind()
     }
 
     public override var structValue: Struct
@@ -261,7 +262,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.structValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
 
     public override fun clearStructValue() {
-        if (presenceMask[PresenceIndices.structValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.structValue]) clearKind()
     }
 
     public override var listValue: ListValue
@@ -269,7 +270,7 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         set(value) { presenceMask.setExclusive(PresenceIndices.listValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
 
     public override fun clearListValue() {
-        if (presenceMask[PresenceIndices.listValue]) clearKindInternal()
+        if (presenceMask[PresenceIndices.listValue]) clearKind()
     }
 
     private val _owner: ValueInternal = this
@@ -540,7 +541,11 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun StructInternal.Companion.decodeWith(
+    msg: StructInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -630,7 +635,11 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun ValueInternal.Companion.decodeWith(
+    msg: ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -729,7 +738,11 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun ListValueInternal.Companion.decodeWith(
+    msg: ListValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -777,7 +790,10 @@ public fun ListValue.asInternal(): ListValueInternal {
 }
 
 @InternalRpcApi
-public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+public fun StructInternal.FieldsEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -796,7 +812,11 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
 }
 
 @InternalRpcApi
-public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructInternal.FieldsEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(
+    msg: StructInternal.FieldsEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

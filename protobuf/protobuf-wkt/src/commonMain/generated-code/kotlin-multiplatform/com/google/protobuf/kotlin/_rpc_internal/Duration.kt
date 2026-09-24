@@ -140,7 +140,11 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig
 }
 
 @InternalRpcApi
-public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun DurationInternal.Companion.decodeWith(
+    msg: DurationInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

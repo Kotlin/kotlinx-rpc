@@ -16,7 +16,9 @@ import kotlinx.rpc.protobuf.internal.InternalPresenceObject
  * }
  * ```
  */
-operator fun ComplexMessage.Companion.invoke(body: ComplexMessage.Builder.() -> Unit): ComplexMessage {
+operator fun ComplexMessage.Companion.invoke(
+    body: ComplexMessage.Builder.() -> Unit,
+): ComplexMessage {
     return ComplexMessageInternal().apply(body)
 }
 
@@ -50,7 +52,9 @@ val ComplexMessage.dOrNull: Int? get() = if (this.presence.hasD) this.d else nul
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023.Builder.() -> Unit): TestAllTypesEdition2023 {
+operator fun TestAllTypesEdition2023.Companion.invoke(
+    body: TestAllTypesEdition2023.Builder.() -> Unit,
+): TestAllTypesEdition2023 {
     return TestAllTypesEdition2023Internal().apply(body)
 }
 
@@ -62,7 +66,9 @@ operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2
  * }
  * ```
  */
-fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023.Builder.() -> Unit = {}): TestAllTypesEdition2023 {
+fun TestAllTypesEdition2023.copy(
+    body: TestAllTypesEdition2023.Builder.() -> Unit = {},
+): TestAllTypesEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -242,13 +248,6 @@ val TestAllTypesEdition2023.delimitedFieldOrNull: TestAllTypesEdition2023.GroupL
 val TestAllTypesEdition2023.oneofField: TestAllTypesEdition2023OneofFieldCase get() = this.asInternal()._oneofFieldCase
 
 /**
- * Clears the `oneof_field` oneof regardless of its active case.
- */
-fun TestAllTypesEdition2023.Builder.clearOneofField() {
-    this.asInternal().clearOneofFieldInternal()
-}
-
-/**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
 inline fun <R> TestAllTypesEdition2023.whenOneofField(
@@ -285,7 +284,9 @@ inline fun <R> TestAllTypesEdition2023.whenOneofField(
  * }
  * ```
  */
-operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023.Builder.() -> Unit): ForeignMessageEdition2023 {
+operator fun ForeignMessageEdition2023.Companion.invoke(
+    body: ForeignMessageEdition2023.Builder.() -> Unit,
+): ForeignMessageEdition2023 {
     return ForeignMessageEdition2023Internal().apply(body)
 }
 
@@ -297,7 +298,9 @@ operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdit
  * }
  * ```
  */
-fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023.Builder.() -> Unit = {}): ForeignMessageEdition2023 {
+fun ForeignMessageEdition2023.copy(
+    body: ForeignMessageEdition2023.Builder.() -> Unit = {},
+): ForeignMessageEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -353,7 +356,9 @@ val GroupLikeType.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit): TestAllTypesEdition2023.NestedMessage {
+operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(
+    body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit,
+): TestAllTypesEdition2023.NestedMessage {
     return TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
 }
 
@@ -365,7 +370,9 @@ operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAl
  * }
  * ```
  */
-fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit = {}): TestAllTypesEdition2023.NestedMessage {
+fun TestAllTypesEdition2023.NestedMessage.copy(
+    body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit = {},
+): TestAllTypesEdition2023.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -392,7 +399,9 @@ val TestAllTypesEdition2023.NestedMessage.corecursiveOrNull: TestAllTypesEdition
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
+operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(
+    body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit,
+): TestAllTypesEdition2023.GroupLikeType {
     return TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
 }
 
@@ -404,7 +413,9 @@ operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAl
  * }
  * ```
  */
-fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit = {}): TestAllTypesEdition2023.GroupLikeType {
+fun TestAllTypesEdition2023.GroupLikeType.copy(
+    body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit = {},
+): TestAllTypesEdition2023.GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 

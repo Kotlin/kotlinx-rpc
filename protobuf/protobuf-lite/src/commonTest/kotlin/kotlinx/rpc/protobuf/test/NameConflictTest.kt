@@ -18,7 +18,6 @@ import name_conflicts.KeywordOneofValueCase
 import name_conflicts.NotSetOneof
 import name_conflicts.NotSetOneofChoiceCase
 import name_conflicts.choice
-import name_conflicts.clearPackage
 import name_conflicts.`package`
 import name_conflicts.value
 import name_conflicts.whenChoice

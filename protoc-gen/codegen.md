@@ -185,9 +185,14 @@ val updated = config.copy {
 Every member of a proto `oneof` becomes a flat, non-nullable property of the message, exactly like a
 singular field of the same type. When the member is not the active case, the property returns the proto
 default for its type. The oneof itself contributes a top-level `<Message><OneOf>Case` enum class, a
-`<oneOf>` extension property returning the active case, a `clear<OneOf>()` builder extension and an
+`<oneOf>` extension property returning the active case, a `clear<OneOf>()` builder function and an
 exhaustive `when<OneOf>` dispatch function. Each member has a `has<Member>` presence getter and a
 `clear<Member>()` builder function.
+
+The `clear<OneOf>()` and `clear<Member>()` functions are members of the `Builder` interface declared by the
+compiler plugin and implemented by the internal class. The internal class is annotated with
+`@GeneratedProtoOneOfs(names = [...])` so that the compiler plugin knows the oneof names
+(see [protobuf/codegen.md](../protobuf/codegen.md)).
 
 ```protobuf
 message Event {
@@ -208,8 +213,10 @@ interface Event {
 enum class EventPayloadCase { TEXT, CODE, NOT_SET }
 
 val Event.payload: EventPayloadCase
-fun Event.Builder.clearPayload()
 inline fun <R> Event.whenPayload(text: (String) -> R, code: (Int) -> R, notSet: () -> R): R
+
+// declared on Event.Builder by the compiler plugin
+fun clearPayload()
 ```
 
 ```kotlin

@@ -62,7 +62,9 @@ fun FailureSet.copy(body: FailureSet.Builder.() -> Unit = {}): FailureSet {
  * }
  * ```
  */
-operator fun ConformanceRequest.Companion.invoke(body: ConformanceRequest.Builder.() -> Unit): ConformanceRequest {
+operator fun ConformanceRequest.Companion.invoke(
+    body: ConformanceRequest.Builder.() -> Unit,
+): ConformanceRequest {
     return ConformanceRequestInternal().apply(body)
 }
 
@@ -114,13 +116,6 @@ val ConformanceRequest.jspbEncodingOptionsOrNull: JspbEncodingConfig? get() = if
 val ConformanceRequest.payload: ConformanceRequestPayloadCase get() = this.asInternal()._payloadCase
 
 /**
- * Clears the `payload` oneof regardless of its active case.
- */
-fun ConformanceRequest.Builder.clearPayload() {
-    this.asInternal().clearPayloadInternal()
-}
-
-/**
  * Exhaustive, typed dispatch on the active case of the `payload` oneof.
  */
 inline fun <R> ConformanceRequest.whenPayload(
@@ -147,7 +142,9 @@ inline fun <R> ConformanceRequest.whenPayload(
  * }
  * ```
  */
-operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponse.Builder.() -> Unit): ConformanceResponse {
+operator fun ConformanceResponse.Companion.invoke(
+    body: ConformanceResponse.Builder.() -> Unit,
+): ConformanceResponse {
     return ConformanceResponseInternal().apply(body)
 }
 
@@ -159,7 +156,9 @@ operator fun ConformanceResponse.Companion.invoke(body: ConformanceResponse.Buil
  * }
  * ```
  */
-fun ConformanceResponse.copy(body: ConformanceResponse.Builder.() -> Unit = {}): ConformanceResponse {
+fun ConformanceResponse.copy(
+    body: ConformanceResponse.Builder.() -> Unit = {},
+): ConformanceResponse {
     return this.asInternal().copyInternal(body)
 }
 
@@ -219,13 +218,6 @@ val ConformanceResponse.textPayloadOrNull: String? get() = if (this.presence.has
 val ConformanceResponse.result: ConformanceResponseResultCase get() = this.asInternal()._resultCase
 
 /**
- * Clears the `result` oneof regardless of its active case.
- */
-fun ConformanceResponse.Builder.clearResult() {
-    this.asInternal().clearResultInternal()
-}
-
-/**
  * Exhaustive, typed dispatch on the active case of the `result` oneof.
  */
 inline fun <R> ConformanceResponse.whenResult(
@@ -262,7 +254,9 @@ inline fun <R> ConformanceResponse.whenResult(
  * }
  * ```
  */
-operator fun JspbEncodingConfig.Companion.invoke(body: JspbEncodingConfig.Builder.() -> Unit): JspbEncodingConfig {
+operator fun JspbEncodingConfig.Companion.invoke(
+    body: JspbEncodingConfig.Builder.() -> Unit,
+): JspbEncodingConfig {
     return JspbEncodingConfigInternal().apply(body)
 }
 

@@ -30,7 +30,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * }
  * ```
  */
-operator fun TestAllTypesProto3.Companion.invoke(body: TestAllTypesProto3.Builder.() -> Unit): TestAllTypesProto3 {
+operator fun TestAllTypesProto3.Companion.invoke(
+    body: TestAllTypesProto3.Builder.() -> Unit,
+): TestAllTypesProto3 {
     return TestAllTypesProto3Internal().apply(body)
 }
 
@@ -202,13 +204,6 @@ val TestAllTypesProto3.optionalEmptyOrNull: Empty? get() = if (this.presence.has
 val TestAllTypesProto3.oneofField: TestAllTypesProto3OneofFieldCase get() = this.asInternal()._oneofFieldCase
 
 /**
- * Clears the `oneof_field` oneof regardless of its active case.
- */
-fun TestAllTypesProto3.Builder.clearOneofField() {
-    this.asInternal().clearOneofFieldInternal()
-}
-
-/**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
 inline fun <R> TestAllTypesProto3.whenOneofField(
@@ -247,7 +242,9 @@ inline fun <R> TestAllTypesProto3.whenOneofField(
  * }
  * ```
  */
-operator fun ForeignMessage.Companion.invoke(body: ForeignMessage.Builder.() -> Unit): ForeignMessage {
+operator fun ForeignMessage.Companion.invoke(
+    body: ForeignMessage.Builder.() -> Unit,
+): ForeignMessage {
     return ForeignMessageInternal().apply(body)
 }
 
@@ -269,7 +266,9 @@ fun ForeignMessage.copy(body: ForeignMessage.Builder.() -> Unit = {}): ForeignMe
  * val message = NullHypothesisProto3 { }
  * ```
  */
-operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Builder.() -> Unit): NullHypothesisProto3 {
+operator fun NullHypothesisProto3.Companion.invoke(
+    body: NullHypothesisProto3.Builder.() -> Unit,
+): NullHypothesisProto3 {
     return NullHypothesisProto3Internal().apply(body)
 }
 
@@ -279,7 +278,9 @@ operator fun NullHypothesisProto3.Companion.invoke(body: NullHypothesisProto3.Bu
  * val copy = original.copy()
  * ```
  */
-fun NullHypothesisProto3.copy(body: NullHypothesisProto3.Builder.() -> Unit = {}): NullHypothesisProto3 {
+fun NullHypothesisProto3.copy(
+    body: NullHypothesisProto3.Builder.() -> Unit = {},
+): NullHypothesisProto3 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -289,7 +290,9 @@ fun NullHypothesisProto3.copy(body: NullHypothesisProto3.Builder.() -> Unit = {}
  * val message = EnumOnlyProto3 { }
  * ```
  */
-operator fun EnumOnlyProto3.Companion.invoke(body: EnumOnlyProto3.Builder.() -> Unit): EnumOnlyProto3 {
+operator fun EnumOnlyProto3.Companion.invoke(
+    body: EnumOnlyProto3.Builder.() -> Unit,
+): EnumOnlyProto3 {
     return EnumOnlyProto3Internal().apply(body)
 }
 
@@ -311,7 +314,9 @@ fun EnumOnlyProto3.copy(body: EnumOnlyProto3.Builder.() -> Unit = {}): EnumOnlyP
  * }
  * ```
  */
-operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit): TestAllTypesProto3.NestedMessage {
+operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(
+    body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit,
+): TestAllTypesProto3.NestedMessage {
     return TestAllTypesProto3Internal.NestedMessageInternal().apply(body)
 }
 
@@ -323,7 +328,9 @@ operator fun TestAllTypesProto3.NestedMessage.Companion.invoke(body: TestAllType
  * }
  * ```
  */
-fun TestAllTypesProto3.NestedMessage.copy(body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit = {}): TestAllTypesProto3.NestedMessage {
+fun TestAllTypesProto3.NestedMessage.copy(
+    body: TestAllTypesProto3.NestedMessage.Builder.() -> Unit = {},
+): TestAllTypesProto3.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 

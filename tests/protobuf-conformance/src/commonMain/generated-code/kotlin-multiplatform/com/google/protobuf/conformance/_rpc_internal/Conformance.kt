@@ -13,6 +13,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -222,6 +223,7 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 }
 
 @InternalRpcApi
+@GeneratedProtoOneOfs(names = ["payload"])
 class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 5) {
     @InternalRpcApi
     internal object PresenceIndices {
@@ -252,8 +254,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         else -> ConformanceRequestPayloadCase.NOT_SET
     }
 
-    @InternalRpcApi
-    fun clearPayloadInternal() {
+    override fun clearPayload() {
         presenceMask.clearRange(PresenceIndices.protobufPayload, PresenceIndices.textPayload)
         _payloadRef = null
     }
@@ -263,7 +264,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         set(value) { presenceMask.setExclusive(PresenceIndices.protobufPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
 
     override fun clearProtobufPayload() {
-        if (presenceMask[PresenceIndices.protobufPayload]) clearPayloadInternal()
+        if (presenceMask[PresenceIndices.protobufPayload]) clearPayload()
     }
 
     override var jsonPayload: String
@@ -271,7 +272,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         set(value) { presenceMask.setExclusive(PresenceIndices.jsonPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
 
     override fun clearJsonPayload() {
-        if (presenceMask[PresenceIndices.jsonPayload]) clearPayloadInternal()
+        if (presenceMask[PresenceIndices.jsonPayload]) clearPayload()
     }
 
     override var jspbPayload: String
@@ -279,7 +280,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         set(value) { presenceMask.setExclusive(PresenceIndices.jspbPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
 
     override fun clearJspbPayload() {
-        if (presenceMask[PresenceIndices.jspbPayload]) clearPayloadInternal()
+        if (presenceMask[PresenceIndices.jspbPayload]) clearPayload()
     }
 
     override var textPayload: String
@@ -287,7 +288,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         set(value) { presenceMask.setExclusive(PresenceIndices.textPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
 
     override fun clearTextPayload() {
-        if (presenceMask[PresenceIndices.textPayload]) clearPayloadInternal()
+        if (presenceMask[PresenceIndices.textPayload]) clearPayload()
     }
 
     internal val __requestedOutputFormatDelegate: MsgFieldDelegate<WireFormat> = MsgFieldDelegate { WireFormat.UNSPECIFIED }
@@ -467,6 +468,7 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 }
 
 @InternalRpcApi
+@GeneratedProtoOneOfs(names = ["result"])
 class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 9) {
     @InternalRpcApi
     internal object PresenceIndices {
@@ -506,8 +508,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         else -> ConformanceResponseResultCase.NOT_SET
     }
 
-    @InternalRpcApi
-    fun clearResultInternal() {
+    override fun clearResult() {
         presenceMask.clearRange(PresenceIndices.parseError, PresenceIndices.textPayload)
         _resultRef = null
     }
@@ -517,7 +518,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.parseError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearParseError() {
-        if (presenceMask[PresenceIndices.parseError]) clearResultInternal()
+        if (presenceMask[PresenceIndices.parseError]) clearResult()
     }
 
     override var serializeError: String
@@ -525,7 +526,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.serializeError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearSerializeError() {
-        if (presenceMask[PresenceIndices.serializeError]) clearResultInternal()
+        if (presenceMask[PresenceIndices.serializeError]) clearResult()
     }
 
     override var timeoutError: String
@@ -533,7 +534,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.timeoutError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearTimeoutError() {
-        if (presenceMask[PresenceIndices.timeoutError]) clearResultInternal()
+        if (presenceMask[PresenceIndices.timeoutError]) clearResult()
     }
 
     override var runtimeError: String
@@ -541,7 +542,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.runtimeError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearRuntimeError() {
-        if (presenceMask[PresenceIndices.runtimeError]) clearResultInternal()
+        if (presenceMask[PresenceIndices.runtimeError]) clearResult()
     }
 
     override var protobufPayload: ByteString
@@ -549,7 +550,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.protobufPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearProtobufPayload() {
-        if (presenceMask[PresenceIndices.protobufPayload]) clearResultInternal()
+        if (presenceMask[PresenceIndices.protobufPayload]) clearResult()
     }
 
     override var jsonPayload: String
@@ -557,7 +558,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.jsonPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearJsonPayload() {
-        if (presenceMask[PresenceIndices.jsonPayload]) clearResultInternal()
+        if (presenceMask[PresenceIndices.jsonPayload]) clearResult()
     }
 
     override var skipped: String
@@ -565,7 +566,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.skipped, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearSkipped() {
-        if (presenceMask[PresenceIndices.skipped]) clearResultInternal()
+        if (presenceMask[PresenceIndices.skipped]) clearResult()
     }
 
     override var jspbPayload: String
@@ -573,7 +574,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.jspbPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearJspbPayload() {
-        if (presenceMask[PresenceIndices.jspbPayload]) clearResultInternal()
+        if (presenceMask[PresenceIndices.jspbPayload]) clearResult()
     }
 
     override var textPayload: String
@@ -581,7 +582,7 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         set(value) { presenceMask.setExclusive(PresenceIndices.textPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
 
     override fun clearTextPayload() {
-        if (presenceMask[PresenceIndices.textPayload]) clearResultInternal()
+        if (presenceMask[PresenceIndices.textPayload]) clearResult()
     }
 
     private val _owner: ConformanceResponseInternal = this
@@ -888,7 +889,11 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestStatusInternal.Companion.decodeWith(
+    msg: TestStatusInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -964,7 +969,11 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun FailureSetInternal.Companion.decodeWith(
+    msg: FailureSetInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1059,7 +1068,11 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ConformanceRequestInternal.Companion.decodeWith(
+    msg: ConformanceRequestInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1208,7 +1221,11 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoCo
 }
 
 @InternalRpcApi
-fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ConformanceResponseInternal.Companion.decodeWith(
+    msg: ConformanceResponseInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1324,7 +1341,11 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun JspbEncodingConfigInternal.Companion.decodeWith(
+    msg: JspbEncodingConfigInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

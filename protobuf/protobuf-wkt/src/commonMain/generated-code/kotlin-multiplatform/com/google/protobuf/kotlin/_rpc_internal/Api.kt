@@ -32,7 +32,7 @@ import kotlinx.rpc.protobuf.internal.tag
 public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val sourceContext: Int = 0
+        const val sourceContext: Int = 0
     }
 
     @InternalRpcApi
@@ -462,7 +462,11 @@ public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-public fun ApiInternal.Companion.decodeWith(msg: ApiInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun ApiInternal.Companion.decodeWith(
+    msg: ApiInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -611,7 +615,11 @@ public fun MethodInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-public fun MethodInternal.Companion.decodeWith(msg: MethodInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun MethodInternal.Companion.decodeWith(
+    msg: MethodInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -727,7 +735,11 @@ public fun MixinInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun MixinInternal.Companion.decodeWith(msg: MixinInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun MixinInternal.Companion.decodeWith(
+    msg: MixinInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

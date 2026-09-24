@@ -94,13 +94,6 @@ public val Value.listValueOrNull: ListValue? get() = if (this.presence.hasListVa
 public val Value.kind: ValueKindCase get() = this.asInternal()._kindCase
 
 /**
- * Clears the `kind` oneof regardless of its active case.
- */
-public fun Value.Builder.clearKind() {
-    this.asInternal().clearKindInternal()
-}
-
-/**
  * Exhaustive, typed dispatch on the active case of the `kind` oneof.
  */
 public inline fun <R> Value.whenKind(

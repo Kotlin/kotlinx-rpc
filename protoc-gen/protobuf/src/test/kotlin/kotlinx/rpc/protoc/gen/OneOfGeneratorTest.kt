@@ -17,7 +17,8 @@ import kotlin.test.assertFalse
 
 /**
  * Generator output for `oneof` declarations: flat member properties, the top-level case enum,
- * the case/clear/when extensions, the presence getters and the slot-backed internal accessors.
+ * the case/when extensions, the presence getters, the slot-backed internal accessors
+ * and the `clear<OneOf>` implementation of the builder function declared by the compiler plugin.
  */
 class OneOfGeneratorTest {
     private fun config(
@@ -93,7 +94,7 @@ class OneOfGeneratorTest {
     }
 
     @Test
-    fun `mixed oneof - ext file has case enum, case property, clear and when function`() {
+    fun `mixed oneof - ext file has case enum, case property and when function`() {
         val generated = mixedEvent().generate(config())
 
         assertContains(
@@ -110,14 +111,8 @@ class OneOfGeneratorTest {
             """.trimIndent(),
         )
         assertContains(generated.ext, "val Event.payload: EventPayloadCase get() = this.asInternal()._payloadCase")
-        assertContains(
-            generated.ext,
-            """
-            fun Event.Builder.clearPayload() {
-                this.asInternal().clearPayloadInternal()
-            }
-            """.trimIndent(),
-        )
+        // clearPayload() is declared on the builder by the compiler plugin, not as an extension
+        assertFalse(generated.ext.contains("clearPayload"))
         assertContains(
             generated.ext,
             """
@@ -159,6 +154,22 @@ class OneOfGeneratorTest {
     }
 
     @Test
+    fun `mixed oneof - internal class is annotated with the oneof names for the compiler plugin`() {
+        val generated = mixedEvent().generate(config())
+
+        assertContains(
+            generated.internal,
+            """
+            @InternalRpcApi
+            @GeneratedProtoOneOfs(names = ["payload"])
+            class EventInternal: Event.Builder, InternalMessage(fieldsWithPresence = 5) {
+            """.trimIndent(),
+        )
+        assertFalse(generated.public.contains("GeneratedProtoOneOfs"))
+        assertFalse(generated.ext.contains("GeneratedProtoOneOfs"))
+    }
+
+    @Test
     fun `mixed oneof - internal class uses a reference slot and a 64-bit numeric slot`() {
         val generated = mixedEvent().generate(config())
 
@@ -179,8 +190,7 @@ class OneOfGeneratorTest {
                     else -> EventPayloadCase.NOT_SET
                 }
 
-                @InternalRpcApi
-                fun clearPayloadInternal() {
+                override fun clearPayload() {
                     presenceMask.clearRange(PresenceIndices.text, PresenceIndices.level)
                     _payloadRef = null
                     _payloadNum = 0L
@@ -195,7 +205,7 @@ class OneOfGeneratorTest {
                     set(value) { presenceMask.setExclusive(PresenceIndices.text, PresenceIndices.text, PresenceIndices.level); _payloadRef = value; _payloadNum = 0L }
 
                 override fun clearText() {
-                    if (presenceMask[PresenceIndices.text]) clearPayloadInternal()
+                    if (presenceMask[PresenceIndices.text]) clearPayload()
                 }
             """.indented(),
         )
@@ -334,7 +344,7 @@ class OneOfGeneratorTest {
         assertContains(
             generated.internal,
             """
-                fun clearValueInternal() {
+                override fun clearValue() {
                     presenceMask.clearRange(PresenceIndices.i, PresenceIndices.b)
                     _valueNum = 0
                 }
@@ -392,7 +402,7 @@ class OneOfGeneratorTest {
         assertContains(
             generated.internal,
             """
-                fun clearValueInternal() {
+                override fun clearValue() {
                     presenceMask.clearRange(PresenceIndices.s, PresenceIndices.m)
                     _valueRef = null
                 }
@@ -406,8 +416,8 @@ class OneOfGeneratorTest {
 
         assertFalse(generated.ext.contains("whenPayload"))
         assertContains(generated.ext, "val Event.payload: EventPayloadCase")
-        assertContains(generated.ext, "fun Event.Builder.clearPayload()")
         assertContains(generated.ext, "enum class EventPayloadCase")
+        assertContains(generated.internal, "override fun clearPayload()")
     }
 
     @Test
@@ -475,8 +485,9 @@ class OneOfGeneratorTest {
 
         assertContains(generated.ext, "enum class OuterInnerKindCase")
         assertContains(generated.ext, "val Outer.Inner.kind: OuterInnerKindCase get() = this.asInternal()._kindCase")
-        assertContains(generated.ext, "fun Outer.Inner.Builder.clearKind()")
         assertContains(generated.ext, "inline fun <R> Outer.Inner.whenKind(")
+        assertContains(generated.internal, "@GeneratedProtoOneOfs(names = [\"kind\"])")
+        assertContains(generated.internal, "override fun clearKind()")
     }
 
     @Test
@@ -500,7 +511,7 @@ class OneOfGeneratorTest {
             }
             """.trimIndent(),
         )
-        assertContains(generated.ext, "notSet_: () -> R,")
+        assertContains(generated.ext, "notSet_: () -> R): R {")
         assertContains(generated.ext, "MsgChoiceCase.NOT_SET -> notSet(this.notSet)")
         assertContains(generated.ext, "MsgChoiceCase.NOT_SET_ -> notSet_()")
         assertContains(generated.internal, "else -> MsgChoiceCase.NOT_SET_")
@@ -519,7 +530,8 @@ class OneOfGeneratorTest {
 
         assertContains(generated.public, "val `for`: Int")
         assertContains(generated.ext, "val Msg.`package`: MsgPackageCase")
-        assertContains(generated.ext, "fun Msg.Builder.clearPackage()")
+        assertContains(generated.internal, "@GeneratedProtoOneOfs(names = [\"package\"])")
+        assertContains(generated.internal, "override fun clearPackage()")
         assertContains(generated.ext, "`for`: (Int) -> R,")
         assertContains(generated.ext, "MsgPackageCase.FOR -> `for`(this.`for`)")
         assertContains(generated.ext, "val hasFor: Boolean")
@@ -541,7 +553,8 @@ class OneOfGeneratorTest {
         assertContains(generated.ext, "enum class user_profilecontact_infoCase")
         assertContains(generated.ext, "EMAIL_ADDRESS,")
         assertContains(generated.ext, "val user_profile.contact_info: user_profilecontact_infoCase")
-        assertContains(generated.ext, "fun user_profile.Builder.clearContact_info()")
+        assertContains(generated.internal, "@GeneratedProtoOneOfs(names = [\"contact_info\"])")
+        assertContains(generated.internal, "override fun clearContact_info()")
         assertContains(generated.ext, "inline fun <R> user_profile.whenContact_info(")
     }
 }
