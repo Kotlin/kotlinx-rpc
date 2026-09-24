@@ -139,7 +139,15 @@ data class EnumDeclaration(
     val deprecated: Boolean,
 ) {
     val companionName: FqName.Declaration by lazy { name.nested("Companion") }
-    val unrecognisedName: FqName.Declaration by lazy { name.nested("UNRECOGNIZED") }
+
+    /**
+     * The synthetic `UNRECOGNIZED` entry, renamed with trailing underscores
+     * if a proto value or alias already occupies the name (e.g. `UNRECOGNIZED`, `UNRECOGNIZED_`).
+     */
+    val unrecognisedName: FqName.Declaration by lazy {
+        val taken = (originalEntries.map { it.name.simpleName } + aliases.map { it.name.simpleName }).toSet()
+        name.nested(UNRECOGNIZED_ENTRY_NAME.uniqueAgainst(taken))
+    }
 
     fun defaultEntry(): Entry {
         // In proto3 and editions:
@@ -163,6 +171,10 @@ data class EnumDeclaration(
         val dec: Descriptors.EnumValueDescriptor,
         val deprecated: Boolean,
     )
+
+    companion object {
+        const val UNRECOGNIZED_ENTRY_NAME = "UNRECOGNIZED"
+    }
 }
 
 data class OneOfDeclaration(
@@ -199,20 +211,33 @@ data class OneOfDeclaration(
         variants.associateWith { it.dec.name.uppercase() }
     }
 
-    private val notSetCollides: Boolean by lazy { memberEntryNames.values.any { it == NOT_SET_ENTRY_NAME } }
-
     fun caseEntryName(variant: FieldDeclaration): String = memberEntryNames.getValue(variant)
 
-    val notSetEntryName: String by lazy { if (notSetCollides) "${NOT_SET_ENTRY_NAME}_" else NOT_SET_ENTRY_NAME }
+    /**
+     * The synthetic `NOT_SET` case entry, renamed with trailing underscores
+     * if members already occupy the name (e.g. `not_set`, `not_set_`).
+     */
+    val notSetEntryName: String by lazy { NOT_SET_ENTRY_NAME.uniqueAgainst(memberEntryNames.values.toSet()) }
 
-    val notSetParameterName: String by lazy {
-        val base = "notSet"
-        if (variants.any { it.rawName == base }) "${base}_" else base
-    }
+    /** The `when<OneOf>` parameter for the [notSetEntryName] case, renamed the same way as the entry. */
+    val notSetParameterName: String by lazy { NOT_SET_PARAMETER_NAME.uniqueAgainst(variants.map { it.rawName }.toSet()) }
 
     companion object {
         const val NOT_SET_ENTRY_NAME = "NOT_SET"
+        const val NOT_SET_PARAMETER_NAME = "notSet"
     }
+}
+
+/**
+ * Returns this name if it is not in [taken], otherwise the name with the smallest number
+ * of trailing underscores appended that is not in [taken].
+ */
+internal fun String.uniqueAgainst(taken: Set<String>): String {
+    var candidate = this
+    while (candidate in taken) {
+        candidate += "_"
+    }
+    return candidate
 }
 
 data class FieldDeclaration(

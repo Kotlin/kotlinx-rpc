@@ -2439,7 +2439,6 @@ class ModelToProtobufKotlinCommonGenerator(
                 )
             }
 
-            // TODO KRPC-550: Avoid enum unrecognised name conflict
             clazz(
                 modifiers = "data",
                 name = declaration.unrecognisedName.simpleName,

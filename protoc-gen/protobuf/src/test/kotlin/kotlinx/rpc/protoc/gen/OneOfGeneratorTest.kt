@@ -518,6 +518,34 @@ class OneOfGeneratorTest {
     }
 
     @Test
+    fun `members named not_set and not_set_ do not collide with the NOT_SET entry`() {
+        val generated = protobufProto {
+            message("msg") {
+                oneOf("choice") {
+                    field("not_set")
+                    field("not_set_")
+                }
+            }
+        }.generate(config())
+
+        assertContains(
+            generated.ext,
+            """
+            enum class MsgChoiceCase {
+                NOT_SET,
+                NOT_SET_,
+                NOT_SET__,
+            }
+            """.trimIndent(),
+        )
+        assertContains(generated.ext, "notSet__: () -> R): R {")
+        assertContains(generated.ext, "MsgChoiceCase.NOT_SET -> notSet(this.notSet)")
+        assertContains(generated.ext, "MsgChoiceCase.NOT_SET_ -> notSet_(this.notSet_)")
+        assertContains(generated.ext, "MsgChoiceCase.NOT_SET__ -> notSet__()")
+        assertContains(generated.internal, "else -> MsgChoiceCase.NOT_SET__")
+    }
+
+    @Test
     fun `keyword member and oneof names are escaped`() {
         val generated = protobufProto {
             message("msg") {

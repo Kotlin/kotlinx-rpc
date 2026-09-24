@@ -70,6 +70,49 @@ class ModelToProtobufKotlinCommonGeneratorTest {
     }
 
     @Test
+    fun `enum values named UNRECOGNIZED do not collide with the generated UNRECOGNIZED entry`() {
+        val config = Config(
+            explicitApiModeEnabled = false,
+            generateComments = false,
+            generateFileLevelComments = false,
+            generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
+            indentSize = 4,
+            platform = Platform.Jvm,
+            protoNamesOutput = null,
+            camelCaseNames = true,
+        )
+        val model = protobufProto {
+            enumType(
+                "status",
+                "UNRECOGNIZED",
+                "UNRECOGNIZED_",
+            )
+        }.toGeneratorModel(config)
+
+        val files = ModelToProtobufKotlinCommonGenerator(
+            config = config,
+            generatedMetadata = GeneratedMetadata(),
+            model = model,
+        ).generateKotlinFiles()
+        val public = files[0].build()
+        val internal = files[2].build()
+
+        assertContains(
+            public,
+            """
+            sealed class Status(open val number: Int) {
+                data object UNRECOGNIZED: Status(number = 0)
+
+                data object UNRECOGNIZED_: Status(number = 1)
+
+                data class UNRECOGNIZED__(override val number: Int): Status(number)
+            """.trimIndent(),
+        )
+        assertContains(internal, "Status.UNRECOGNIZED__(number)")
+    }
+
+    @Test
     fun `disabling camel case option preserves protobuf declaration names`() {
         val config = Config(
             explicitApiModeEnabled = false,
