@@ -5,8 +5,10 @@
 package kotlinx.rpc.grpc.marshaller.internal
 
 import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -22,13 +24,23 @@ public class ConfiguredGrpcMarshallerDelegate<T: Any>(
     private val config: GrpcMarshallerConfig,
     private val delegate: GrpcMarshaller<T>
 ): GrpcMarshaller<T> {
+    override fun prepare(
+        value: T,
+        config: GrpcMarshallerConfig?,
+    ): GrpcEncodedMessage = delegate.prepare(value, config ?: this.config)
+
     override fun encode(
         value: T,
-        config: GrpcMarshallerConfig?
+        config: GrpcMarshallerConfig?,
     ): Source = delegate.encode(value, config ?: this.config)
 
     override fun decode(
+        reader: GrpcMessageReader,
+        config: GrpcMarshallerConfig?,
+    ): T = delegate.decode(reader, config ?: this.config)
+
+    override fun decode(
         source: Source,
-        config: GrpcMarshallerConfig?
+        config: GrpcMarshallerConfig?,
     ): T = delegate.decode(source, config ?: this.config)
 }

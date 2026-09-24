@@ -61,7 +61,24 @@ public interface GrpcMarshallerConfig
 
 @ExperimentalRpcApi
 public interface GrpcMarshaller<T> {
+    /**
+     * Prepares [value] for encoding and returns a message whose exact size is known.
+     *
+     * This method may run on a different thread from [GrpcEncodedMessage.writeTo].
+     */
+    public fun prepare(value: T, config: GrpcMarshallerConfig? = null): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(encodeToBuffer(value, config))
+
     public fun encode(value: T, config: GrpcMarshallerConfig? = null): Source
+
+    /**
+     * Decodes one message from [reader].
+     *
+     * The reader is valid only for the duration of this call.
+     */
+    public fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig? = null): T =
+        decode(reader.asSource(), config)
+
     public fun decode(source: Source, config: GrpcMarshallerConfig? = null): T
 }
 
