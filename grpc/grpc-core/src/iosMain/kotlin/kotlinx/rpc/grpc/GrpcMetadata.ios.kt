@@ -11,6 +11,8 @@ import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -22,12 +24,9 @@ public actual class GrpcMetadataKey<T> actual constructor(
     public val name: String = name.lowercase()
     internal val isBinary: Boolean get() = name.endsWith("-bin")
 
-    internal fun encode(value: T): ByteArray = marshaller.encode(value).readByteArray()
+    internal fun encode(value: T): ByteArray = marshaller.encodeToByteArray(value)
 
-    internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
-        buffer.write(value)
-        marshaller.decode(buffer)
-    }
+    internal fun decode(value: ByteArray): T = marshaller.decodeFromByteArray(value)
 
     internal fun validateForString() {
         validateName()

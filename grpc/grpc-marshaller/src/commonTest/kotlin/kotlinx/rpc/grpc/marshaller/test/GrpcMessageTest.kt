@@ -17,6 +17,7 @@ import kotlinx.io.writeString
 import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
@@ -154,6 +155,17 @@ class GrpcMessageTest {
     }
 
     @Test
+    fun callerHelpersUseSizeFirstApi() {
+        val value = "hello"
+
+        val bytes = SizeFirstStringMarshaller.encodeToByteArray(value)
+        assertEquals(value, SizeFirstStringMarshaller.decodeFromByteArray(bytes))
+
+        val buffer = SizeFirstStringMarshaller.encodeToBuffer(value)
+        assertEquals(value, SizeFirstStringMarshaller.decodeFromSource(buffer))
+    }
+
+    @Test
     fun emptyMessagesAreSupported() {
         val message = GrpcEncodedMessage.of(byteArrayOf())
         val writer = ByteArrayMessageWriter(ByteArray(0))
@@ -176,4 +188,18 @@ private object StringMarshaller : GrpcMarshaller<String> {
     }
 
     override fun decode(source: Source, config: GrpcMarshallerConfig?): String = source.readString()
+}
+
+private object SizeFirstStringMarshaller : GrpcMarshaller<String> {
+    override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(value.encodeToByteArray())
+
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
+        reader.readByteArray().decodeToString()
+
+    override fun encode(value: String, config: GrpcMarshallerConfig?): Source =
+        error("The legacy encode API must not be used")
+
+    override fun decode(source: Source, config: GrpcMarshallerConfig?): String =
+        error("The legacy decode API must not be used")
 }

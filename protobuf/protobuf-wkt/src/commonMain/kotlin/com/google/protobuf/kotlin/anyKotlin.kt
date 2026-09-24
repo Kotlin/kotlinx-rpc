@@ -7,7 +7,8 @@ package com.google.protobuf.kotlin
 import kotlinx.io.Buffer
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -139,10 +140,8 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.Companion.pack(
 ): Any {
     val descriptor = protoDescriptorOf(valueClass)
     val typeUrl = "$urlPrefix/${descriptor.fullName}"
-    val encoded = grpcMarshallerOf(valueClass)
-        .encode(value)
     val byteString = UnsafeByteStringOperations.wrapUnsafe(
-        encoded.readByteArray()
+        grpcMarshallerOf(valueClass).encodeToByteArray(value),
     )
 
     return Any {
@@ -207,7 +206,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kClass: KClass<T>)
             write(it)
         }
     }
-    return grpcMarshallerOf(kClass).decode(source)
+    return grpcMarshallerOf(kClass).decodeFromSource(source)
 }
 
 /**
@@ -240,7 +239,7 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpack(kType: KType): T {
             write(it)
         }
     }
-    return grpcMarshallerOf<T>(kType).decode(source)
+    return grpcMarshallerOf<T>(kType).decodeFromSource(source)
 }
 
 

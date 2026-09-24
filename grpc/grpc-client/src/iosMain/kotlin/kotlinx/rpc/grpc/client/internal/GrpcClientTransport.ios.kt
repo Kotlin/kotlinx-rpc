@@ -20,6 +20,7 @@ import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -67,7 +68,9 @@ internal class SwiftGrpcClientTransport(
             }
 
             // Turn flow into a request source that can be consumed by the Swift side using completion handlers.
-            val encode = { request: Request -> KotlinGrpcRequestMessage(method.requestMarshaller.encode(request)) }
+            val encode = { request: Request ->
+                KotlinGrpcRequestMessage(method.requestMarshaller.encodeToBuffer(request))
+            }
             val requestSource: SwiftGrpcRequestSourceProtocol = when (method.methodType) {
                 GrpcMethodType.UNARY, GrpcMethodType.SERVER_STREAMING ->
                     KotlinGrpcSingleRequestSource(scope = this, requests = requests, encode = encode)

@@ -2,11 +2,15 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+@file:OptIn(
+    kotlinx.cinterop.ExperimentalForeignApi::class,
+    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcCall
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcCallEvent
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcClosedEvent
@@ -68,7 +72,8 @@ internal class SwiftGrpcCallAdapter<Response>(
                 check(length == this.length) {
                     "grpc-swift message length changed from ${this.length} to $length during scoped access"
                 }
-                method.responseMarshaller.decode(copySwiftBytes(bytes, length))
+                val buffer = copySwiftBytes(bytes, length)
+                method.responseMarshaller.decode(BufferMessageReader(buffer, buffer.size.toInt()))
             }
         }
         return checkNotNull(result) { "grpc-swift did not provide scoped access to its message bytes" }.getOrThrow()

@@ -14,7 +14,6 @@ import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import platform.darwin.NSObject
@@ -23,11 +22,8 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessa
 
 /** Owns one encoded request until Swift has copied it into grpc-swift-owned storage. */
 internal class KotlinGrpcRequestMessage(
-    source: Source,
+    private val buffer: Buffer,
 ) : NSObject(), SwiftGrpcRequestMessageProtocol {
-    private val buffer = source as? Buffer
-        ?: error("The iOS grpc-swift transport requires a Buffer-backed gRPC marshaller")
-
     private val byteCount: Long = buffer.size
 
     override fun length(): Long = byteCount

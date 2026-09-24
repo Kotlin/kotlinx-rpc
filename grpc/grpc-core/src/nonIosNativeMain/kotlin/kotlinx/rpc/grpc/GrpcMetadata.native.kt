@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class,
@@ -22,6 +22,8 @@ import kotlinx.io.Source
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata
@@ -41,14 +43,9 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
-    internal fun encode(value: T): ByteArray {
-        val source = marshaller.encode(value)
-        return source.readByteArray()
-    }
-    internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
-        buffer.write(value)
-        marshaller.decode(buffer)
-    }
+    internal fun encode(value: T): ByteArray = marshaller.encodeToByteArray(value)
+
+    internal fun decode(value: ByteArray): T = marshaller.decodeFromByteArray(value)
 
     internal fun validateForString() {
         validateName()

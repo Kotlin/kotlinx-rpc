@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.marshaller
 
+import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -67,7 +68,11 @@ public interface GrpcMarshaller<T> {
      * This method may run on a different thread from [GrpcEncodedMessage.writeTo].
      */
     public fun prepare(value: T, config: GrpcMarshallerConfig? = null): GrpcEncodedMessage =
-        GrpcEncodedMessage.of(encodeToBuffer(value, config))
+        GrpcEncodedMessage.of(
+            encode(value, config).let { source ->
+                source as? Buffer ?: Buffer().also { source.transferTo(it) }
+            },
+        )
 
     public fun encode(value: T, config: GrpcMarshallerConfig? = null): Source
 
