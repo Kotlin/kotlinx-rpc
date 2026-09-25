@@ -87,6 +87,7 @@ sealed interface FqName {
         val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
         val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
         val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoMessage")
+        val GeneratedProtoOneOfs = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoOneOfs")
     }
 
     object RpcClasses {

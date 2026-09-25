@@ -130,7 +130,11 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtoC
 }
 
 @InternalRpcApi
-public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun SourceContextInternal.Companion.decodeWith(
+    msg: SourceContextInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

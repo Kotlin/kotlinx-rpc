@@ -17,6 +17,12 @@ open class CodeGenerator(
     private val builder: StringBuilder = StringBuilder(),
     val config: Config,
     protected val nameTable: ScopedFqNameTable,
+    /**
+     * `true` if this generator emits the body of a non-public (`internal` or `private`) declaration.
+     * Members of such declarations are not part of the public API,
+     * so they never get an explicit `public` modifier in explicit API mode.
+     */
+    private val insideNonPublicScope: Boolean = false,
 ) {
     // test only
     @Suppress("PropertyName")
@@ -102,7 +108,16 @@ open class CodeGenerator(
     }
 
     private fun withNextIndent(block: CodeGenerator.() -> Unit) {
-        CodeGenerator("$indent$ONE_INDENT", builder, config, nameTable).block()
+        CodeGenerator("$indent$ONE_INDENT", builder, config, nameTable, insideNonPublicScope).block()
+    }
+
+    private fun nested(nameTable: ScopedFqNameTable = this.nameTable, nonPublicScope: Boolean = insideNonPublicScope): CodeGenerator {
+        return CodeGenerator(
+            indent = "$indent$ONE_INDENT",
+            config = config,
+            nameTable = nameTable,
+            insideNonPublicScope = nonPublicScope,
+        )
     }
 
     fun scope(
@@ -180,6 +195,7 @@ open class CodeGenerator(
         nlAfterClosed: Boolean = true,
         paramDeclaration: ScopedFormattedString = ScopedFormattedString.empty,
         nestedNameTable: ScopedFqNameTable? = null,
+        nonPublicScope: Boolean = insideNonPublicScope,
         block: (CodeGenerator.() -> Unit)? = null,
     ) {
         if (block == null) {
@@ -190,11 +206,7 @@ open class CodeGenerator(
             return
         }
 
-        val nested = CodeGenerator(
-            indent = "$indent$ONE_INDENT",
-            config = config,
-            nameTable = nestedNameTable ?: nameTable,
-        ).apply(block)
+        val nested = nested(nameTable = nestedNameTable ?: nameTable, nonPublicScope = nonPublicScope).apply(block)
 
         if (nested.isEmpty) {
             newLine()
@@ -280,11 +292,7 @@ open class CodeGenerator(
                     addLine("$name =".scoped())
                 }
 
-                val nested = CodeGenerator(
-                    indent = "$indent$ONE_INDENT",
-                    config = config,
-                    nameTable = nameTable,
-                ).apply(valueBuilder)
+                val nested = nested().apply(valueBuilder)
 
                 if (!nested.isEmpty) {
                     newLine()
@@ -401,11 +409,7 @@ open class CodeGenerator(
             }
         }
 
-        val nested = CodeGenerator(
-            indent = "$indent$ONE_INDENT",
-            config = config,
-            nameTable = nameTable,
-        ).apply(initializer)
+        val nested = nested().apply(initializer)
 
         if (!nested.isEmpty) {
             var valueString = nested.build().trimEnd()
@@ -427,12 +431,26 @@ open class CodeGenerator(
         GETTER, DELEGATE, PLAIN;
     }
 
+    /**
+     * Generates a function declaration.
+     *
+     * The parameters in [args] are put on a single line if the whole signature fits into [MAX_LINE_LENGTH],
+     * otherwise each parameter is put on its own line with a trailing comma:
+     * ```kotlin
+     * fun short(a: Int): Int
+     *
+     * fun long(
+     *     a: Int,
+     *     b: String,
+     * ): Int
+     * ```
+     */
     fun function(
         name: String,
         comment: Comment? = null,
         modifiers: String = "",
         typeParameters: ScopedFormattedString = ScopedFormattedString.empty,
-        args: ScopedFormattedString = ScopedFormattedString.empty,
+        args: List<ScopedFormattedString> = emptyList(),
         contextReceiver: ScopedFormattedString = ScopedFormattedString.empty,
         annotations: List<ScopedFormattedString> = emptyList(),
         deprecation: DeprecationLevel? = null,
@@ -458,17 +476,48 @@ open class CodeGenerator(
             returnType.wrapIn { ": $it" }
         }
         val typeParametersString = typeParameters.wrapInIfNotBlankOr { " <$it>" }
-        scope(
-            prefix = typeParametersString.merge(
-                other = contextString,
-                another = args,
-                anotherOne = returnTypeString,
-            ) { typeParametersString, contextString, args, returnTypeString ->
-                "${modifiersString}fun$typeParametersString $contextString$name($args)$returnTypeString"
-            },
-            scopeNestedClassName = null,
-            block = block,
-        )
+
+        // fun <T> Receiver.name(
+        val signatureStart = typeParametersString.merge(contextString) { typeParametersString, contextString ->
+            "${modifiersString}fun$typeParametersString $contextString$name("
+        }
+
+        // fun <T> Receiver.name(a: Int, b: String): Int
+        val singleLineSignature = signatureStart.merge(
+            other = args.joinToScopedString(", "),
+            another = returnTypeString,
+        ) { start, args, returnTypeString ->
+            "$start$args)$returnTypeString"
+        }
+
+        // resolving here has the same effect on the name table as resolving during the actual output
+        val singleLineLength = indent.length + singleLineSignature.resolve(nameTable).length + " {".length
+        if (args.isEmpty() || singleLineLength <= MAX_LINE_LENGTH) {
+            scope(
+                prefix = singleLineSignature,
+                scopeNestedClassName = null,
+                block = block,
+            )
+            return
+        }
+
+        selectNames {
+            addLine(signatureStart)
+        }
+
+        withNextIndent {
+            for (arg in args) {
+                selectNames {
+                    addLine(arg.wrapIn { "$it," })
+                }
+            }
+        }
+
+        selectNames {
+            addLine(returnTypeString.wrapIn { ")$it" })
+        }
+
+        scopeWithSuffix(block = block)
     }
 
     enum class DeclarationType(val strValue: String) {
@@ -558,10 +607,12 @@ open class CodeGenerator(
             addLine(firstLine.scoped())
         }
 
+        val nonPublicScope = insideNonPublicScope || modifiers.hasNonPublicVisibility()
+
         val shouldPutArgsOnNewLines =
             firstLine.length + constructorArgs.sumOf {
                 it.first.value.length + (it.second?.value?.length?.plus(3) ?: 0) + 2
-            } + indent.length > 80
+            } + indent.length > MAX_LINE_LENGTH
 
         val constructorArgsTransformed = constructorArgs.map { (arg, default) ->
             val defaultString = default?.wrapIn { " = $it" } ?: ScopedFormattedString.empty
@@ -569,8 +620,7 @@ open class CodeGenerator(
                 !config.explicitApiModeEnabled -> ""
 
                 arg.value.contains("val") || arg.value.contains("var") -> when {
-                    modifiers.contains("internal") ||
-                        modifiers.contains("private") ||
+                    nonPublicScope ||
                         arg.value.contains("private ") ||
                         arg.value.contains("protected ") ||
                         arg.value.contains("internal ") ||
@@ -628,6 +678,7 @@ open class CodeGenerator(
 
         scopeWithSuffix(
             nestedNameTable = nestedNameTable,
+            nonPublicScope = nonPublicScope,
             block = block,
         )
     }
@@ -640,8 +691,12 @@ open class CodeGenerator(
         return result!!
     }
 
+    /**
+     * Prepends `public` in explicit API mode, unless the modifiers already contain a visibility modifier
+     * or the declaration is a member of a non-public declaration (and thus not a part of the public API).
+     */
     fun String.withVisibility(): String {
-        return if (config.explicitApiModeEnabled) {
+        return if (config.explicitApiModeEnabled && !insideNonPublicScope) {
             when {
                 contains("public") -> this
                 contains("protected") -> this
@@ -652,6 +707,10 @@ open class CodeGenerator(
         } else {
             this
         }
+    }
+
+    private fun String.hasNonPublicVisibility(): Boolean {
+        return contains("internal") || contains("private")
     }
 
     fun appendComments(comments: List<Comment>) {
@@ -720,6 +779,10 @@ open class CodeGenerator(
 
     @Suppress("PrivatePropertyName")
     private val ONE_INDENT = " ".repeat(config.indentSize)
+
+    companion object {
+        const val MAX_LINE_LENGTH: Int = 100
+    }
 }
 
 @CodegenDsl

@@ -14,7 +14,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * }
  * ```
  */
-public operator fun FileDescriptorSet.Companion.invoke(body: FileDescriptorSet.Builder.() -> Unit): FileDescriptorSet {
+public operator fun FileDescriptorSet.Companion.invoke(
+    body: FileDescriptorSet.Builder.() -> Unit,
+): FileDescriptorSet {
     return FileDescriptorSetInternal().apply(body).apply(FileDescriptorSetInternal::checkRequiredFields)
 }
 
@@ -26,7 +28,9 @@ public operator fun FileDescriptorSet.Companion.invoke(body: FileDescriptorSet.B
  * }
  * ```
  */
-public fun FileDescriptorSet.copy(body: FileDescriptorSet.Builder.() -> Unit = {}): FileDescriptorSet {
+public fun FileDescriptorSet.copy(
+    body: FileDescriptorSet.Builder.() -> Unit = {},
+): FileDescriptorSet {
     return this.asInternal().copyInternal(body)
 }
 
@@ -43,7 +47,9 @@ public val FileDescriptorSet.presence: FileDescriptorSetPresence get() = this.as
  * }
  * ```
  */
-public operator fun FileDescriptorProto.Companion.invoke(body: FileDescriptorProto.Builder.() -> Unit): FileDescriptorProto {
+public operator fun FileDescriptorProto.Companion.invoke(
+    body: FileDescriptorProto.Builder.() -> Unit,
+): FileDescriptorProto {
     return FileDescriptorProtoInternal().apply(body).apply(FileDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -55,7 +61,9 @@ public operator fun FileDescriptorProto.Companion.invoke(body: FileDescriptorPro
  * }
  * ```
  */
-public fun FileDescriptorProto.copy(body: FileDescriptorProto.Builder.() -> Unit = {}): FileDescriptorProto {
+public fun FileDescriptorProto.copy(
+    body: FileDescriptorProto.Builder.() -> Unit = {},
+): FileDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -102,7 +110,9 @@ public val FileDescriptorProto.editionOrNull: Edition? get() = if (this.presence
  * }
  * ```
  */
-public operator fun DescriptorProto.Companion.invoke(body: DescriptorProto.Builder.() -> Unit): DescriptorProto {
+public operator fun DescriptorProto.Companion.invoke(
+    body: DescriptorProto.Builder.() -> Unit,
+): DescriptorProto {
     return DescriptorProtoInternal().apply(body).apply(DescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -146,7 +156,9 @@ public val DescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (this.
  * }
  * ```
  */
-public operator fun ExtensionRangeOptions.Companion.invoke(body: ExtensionRangeOptions.Builder.() -> Unit): ExtensionRangeOptions {
+public operator fun ExtensionRangeOptions.Companion.invoke(
+    body: ExtensionRangeOptions.Builder.() -> Unit,
+): ExtensionRangeOptions {
     return ExtensionRangeOptionsInternal().apply(body).apply(ExtensionRangeOptionsInternal::checkRequiredFields)
 }
 
@@ -158,7 +170,9 @@ public operator fun ExtensionRangeOptions.Companion.invoke(body: ExtensionRangeO
  * }
  * ```
  */
-public fun ExtensionRangeOptions.copy(body: ExtensionRangeOptions.Builder.() -> Unit = {}): ExtensionRangeOptions {
+public fun ExtensionRangeOptions.copy(
+    body: ExtensionRangeOptions.Builder.() -> Unit = {},
+): ExtensionRangeOptions {
     return this.asInternal().copyInternal(body)
 }
 
@@ -185,7 +199,9 @@ public val ExtensionRangeOptions.verificationOrNull: ExtensionRangeOptions.Verif
  * }
  * ```
  */
-public operator fun FieldDescriptorProto.Companion.invoke(body: FieldDescriptorProto.Builder.() -> Unit): FieldDescriptorProto {
+public operator fun FieldDescriptorProto.Companion.invoke(
+    body: FieldDescriptorProto.Builder.() -> Unit,
+): FieldDescriptorProto {
     return FieldDescriptorProtoInternal().apply(body).apply(FieldDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -197,7 +213,9 @@ public operator fun FieldDescriptorProto.Companion.invoke(body: FieldDescriptorP
  * }
  * ```
  */
-public fun FieldDescriptorProto.copy(body: FieldDescriptorProto.Builder.() -> Unit = {}): FieldDescriptorProto {
+public fun FieldDescriptorProto.copy(
+    body: FieldDescriptorProto.Builder.() -> Unit = {},
+): FieldDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -269,7 +287,9 @@ public val FieldDescriptorProto.proto3OptionalOrNull: Boolean? get() = if (this.
  * }
  * ```
  */
-public operator fun OneofDescriptorProto.Companion.invoke(body: OneofDescriptorProto.Builder.() -> Unit): OneofDescriptorProto {
+public operator fun OneofDescriptorProto.Companion.invoke(
+    body: OneofDescriptorProto.Builder.() -> Unit,
+): OneofDescriptorProto {
     return OneofDescriptorProtoInternal().apply(body).apply(OneofDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -281,7 +301,9 @@ public operator fun OneofDescriptorProto.Companion.invoke(body: OneofDescriptorP
  * }
  * ```
  */
-public fun OneofDescriptorProto.copy(body: OneofDescriptorProto.Builder.() -> Unit = {}): OneofDescriptorProto {
+public fun OneofDescriptorProto.copy(
+    body: OneofDescriptorProto.Builder.() -> Unit = {},
+): OneofDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -308,7 +330,9 @@ public val OneofDescriptorProto.optionsOrNull: OneofOptions? get() = if (this.pr
  * }
  * ```
  */
-public operator fun EnumDescriptorProto.Companion.invoke(body: EnumDescriptorProto.Builder.() -> Unit): EnumDescriptorProto {
+public operator fun EnumDescriptorProto.Companion.invoke(
+    body: EnumDescriptorProto.Builder.() -> Unit,
+): EnumDescriptorProto {
     return EnumDescriptorProtoInternal().apply(body).apply(EnumDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -320,7 +344,9 @@ public operator fun EnumDescriptorProto.Companion.invoke(body: EnumDescriptorPro
  * }
  * ```
  */
-public fun EnumDescriptorProto.copy(body: EnumDescriptorProto.Builder.() -> Unit = {}): EnumDescriptorProto {
+public fun EnumDescriptorProto.copy(
+    body: EnumDescriptorProto.Builder.() -> Unit = {},
+): EnumDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -352,7 +378,9 @@ public val EnumDescriptorProto.visibilityOrNull: SymbolVisibility? get() = if (t
  * }
  * ```
  */
-public operator fun EnumValueDescriptorProto.Companion.invoke(body: EnumValueDescriptorProto.Builder.() -> Unit): EnumValueDescriptorProto {
+public operator fun EnumValueDescriptorProto.Companion.invoke(
+    body: EnumValueDescriptorProto.Builder.() -> Unit,
+): EnumValueDescriptorProto {
     return EnumValueDescriptorProtoInternal().apply(body).apply(EnumValueDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -364,7 +392,9 @@ public operator fun EnumValueDescriptorProto.Companion.invoke(body: EnumValueDes
  * }
  * ```
  */
-public fun EnumValueDescriptorProto.copy(body: EnumValueDescriptorProto.Builder.() -> Unit = {}): EnumValueDescriptorProto {
+public fun EnumValueDescriptorProto.copy(
+    body: EnumValueDescriptorProto.Builder.() -> Unit = {},
+): EnumValueDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -396,7 +426,9 @@ public val EnumValueDescriptorProto.optionsOrNull: EnumValueOptions? get() = if 
  * }
  * ```
  */
-public operator fun ServiceDescriptorProto.Companion.invoke(body: ServiceDescriptorProto.Builder.() -> Unit): ServiceDescriptorProto {
+public operator fun ServiceDescriptorProto.Companion.invoke(
+    body: ServiceDescriptorProto.Builder.() -> Unit,
+): ServiceDescriptorProto {
     return ServiceDescriptorProtoInternal().apply(body).apply(ServiceDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -408,7 +440,9 @@ public operator fun ServiceDescriptorProto.Companion.invoke(body: ServiceDescrip
  * }
  * ```
  */
-public fun ServiceDescriptorProto.copy(body: ServiceDescriptorProto.Builder.() -> Unit = {}): ServiceDescriptorProto {
+public fun ServiceDescriptorProto.copy(
+    body: ServiceDescriptorProto.Builder.() -> Unit = {},
+): ServiceDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -435,7 +469,9 @@ public val ServiceDescriptorProto.optionsOrNull: ServiceOptions? get() = if (thi
  * }
  * ```
  */
-public operator fun MethodDescriptorProto.Companion.invoke(body: MethodDescriptorProto.Builder.() -> Unit): MethodDescriptorProto {
+public operator fun MethodDescriptorProto.Companion.invoke(
+    body: MethodDescriptorProto.Builder.() -> Unit,
+): MethodDescriptorProto {
     return MethodDescriptorProtoInternal().apply(body).apply(MethodDescriptorProtoInternal::checkRequiredFields)
 }
 
@@ -447,7 +483,9 @@ public operator fun MethodDescriptorProto.Companion.invoke(body: MethodDescripto
  * }
  * ```
  */
-public fun MethodDescriptorProto.copy(body: MethodDescriptorProto.Builder.() -> Unit = {}): MethodDescriptorProto {
+public fun MethodDescriptorProto.copy(
+    body: MethodDescriptorProto.Builder.() -> Unit = {},
+): MethodDescriptorProto {
     return this.asInternal().copyInternal(body)
 }
 
@@ -494,7 +532,9 @@ public val MethodDescriptorProto.serverStreamingOrNull: Boolean? get() = if (thi
  * }
  * ```
  */
-public operator fun FileOptions.Companion.invoke(body: FileOptions.Builder.() -> Unit): FileOptions {
+public operator fun FileOptions.Companion.invoke(
+    body: FileOptions.Builder.() -> Unit,
+): FileOptions {
     return FileOptionsInternal().apply(body).apply(FileOptionsInternal::checkRequiredFields)
 }
 
@@ -623,7 +663,9 @@ public val FileOptions.featuresOrNull: FeatureSet? get() = if (this.presence.has
  * }
  * ```
  */
-public operator fun MessageOptions.Companion.invoke(body: MessageOptions.Builder.() -> Unit): MessageOptions {
+public operator fun MessageOptions.Companion.invoke(
+    body: MessageOptions.Builder.() -> Unit,
+): MessageOptions {
     return MessageOptionsInternal().apply(body).apply(MessageOptionsInternal::checkRequiredFields)
 }
 
@@ -682,7 +724,9 @@ public val MessageOptions.featuresOrNull: FeatureSet? get() = if (this.presence.
  * }
  * ```
  */
-public operator fun FieldOptions.Companion.invoke(body: FieldOptions.Builder.() -> Unit): FieldOptions {
+public operator fun FieldOptions.Companion.invoke(
+    body: FieldOptions.Builder.() -> Unit,
+): FieldOptions {
     return FieldOptionsInternal().apply(body).apply(FieldOptionsInternal::checkRequiredFields)
 }
 
@@ -766,7 +810,9 @@ public val FieldOptions.featureSupportOrNull: FieldOptions.FeatureSupport? get()
  * }
  * ```
  */
-public operator fun OneofOptions.Companion.invoke(body: OneofOptions.Builder.() -> Unit): OneofOptions {
+public operator fun OneofOptions.Companion.invoke(
+    body: OneofOptions.Builder.() -> Unit,
+): OneofOptions {
     return OneofOptionsInternal().apply(body).apply(OneofOptionsInternal::checkRequiredFields)
 }
 
@@ -800,7 +846,9 @@ public val OneofOptions.featuresOrNull: FeatureSet? get() = if (this.presence.ha
  * }
  * ```
  */
-public operator fun EnumOptions.Companion.invoke(body: EnumOptions.Builder.() -> Unit): EnumOptions {
+public operator fun EnumOptions.Companion.invoke(
+    body: EnumOptions.Builder.() -> Unit,
+): EnumOptions {
     return EnumOptionsInternal().apply(body).apply(EnumOptionsInternal::checkRequiredFields)
 }
 
@@ -849,7 +897,9 @@ public val EnumOptions.featuresOrNull: FeatureSet? get() = if (this.presence.has
  * }
  * ```
  */
-public operator fun EnumValueOptions.Companion.invoke(body: EnumValueOptions.Builder.() -> Unit): EnumValueOptions {
+public operator fun EnumValueOptions.Companion.invoke(
+    body: EnumValueOptions.Builder.() -> Unit,
+): EnumValueOptions {
     return EnumValueOptionsInternal().apply(body).apply(EnumValueOptionsInternal::checkRequiredFields)
 }
 
@@ -898,7 +948,9 @@ public val EnumValueOptions.featureSupportOrNull: FieldOptions.FeatureSupport? g
  * }
  * ```
  */
-public operator fun ServiceOptions.Companion.invoke(body: ServiceOptions.Builder.() -> Unit): ServiceOptions {
+public operator fun ServiceOptions.Companion.invoke(
+    body: ServiceOptions.Builder.() -> Unit,
+): ServiceOptions {
     return ServiceOptionsInternal().apply(body).apply(ServiceOptionsInternal::checkRequiredFields)
 }
 
@@ -937,7 +989,9 @@ public val ServiceOptions.deprecatedOrNull: Boolean? get() = if (this.presence.h
  * }
  * ```
  */
-public operator fun MethodOptions.Companion.invoke(body: MethodOptions.Builder.() -> Unit): MethodOptions {
+public operator fun MethodOptions.Companion.invoke(
+    body: MethodOptions.Builder.() -> Unit,
+): MethodOptions {
     return MethodOptionsInternal().apply(body).apply(MethodOptionsInternal::checkRequiredFields)
 }
 
@@ -981,7 +1035,9 @@ public val MethodOptions.featuresOrNull: FeatureSet? get() = if (this.presence.h
  * }
  * ```
  */
-public operator fun UninterpretedOption.Companion.invoke(body: UninterpretedOption.Builder.() -> Unit): UninterpretedOption {
+public operator fun UninterpretedOption.Companion.invoke(
+    body: UninterpretedOption.Builder.() -> Unit,
+): UninterpretedOption {
     return UninterpretedOptionInternal().apply(body).apply(UninterpretedOptionInternal::checkRequiredFields)
 }
 
@@ -993,7 +1049,9 @@ public operator fun UninterpretedOption.Companion.invoke(body: UninterpretedOpti
  * }
  * ```
  */
-public fun UninterpretedOption.copy(body: UninterpretedOption.Builder.() -> Unit = {}): UninterpretedOption {
+public fun UninterpretedOption.copy(
+    body: UninterpretedOption.Builder.() -> Unit = {},
+): UninterpretedOption {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1109,7 +1167,9 @@ public val FeatureSet.defaultSymbolVisibilityOrNull: FeatureSet.VisibilityFeatur
  * }
  * ```
  */
-public operator fun FeatureSetDefaults.Companion.invoke(body: FeatureSetDefaults.Builder.() -> Unit): FeatureSetDefaults {
+public operator fun FeatureSetDefaults.Companion.invoke(
+    body: FeatureSetDefaults.Builder.() -> Unit,
+): FeatureSetDefaults {
     return FeatureSetDefaultsInternal().apply(body)
 }
 
@@ -1121,7 +1181,9 @@ public operator fun FeatureSetDefaults.Companion.invoke(body: FeatureSetDefaults
  * }
  * ```
  */
-public fun FeatureSetDefaults.copy(body: FeatureSetDefaults.Builder.() -> Unit = {}): FeatureSetDefaults {
+public fun FeatureSetDefaults.copy(
+    body: FeatureSetDefaults.Builder.() -> Unit = {},
+): FeatureSetDefaults {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1148,7 +1210,9 @@ public val FeatureSetDefaults.maximumEditionOrNull: Edition? get() = if (this.pr
  * }
  * ```
  */
-public operator fun SourceCodeInfo.Companion.invoke(body: SourceCodeInfo.Builder.() -> Unit): SourceCodeInfo {
+public operator fun SourceCodeInfo.Companion.invoke(
+    body: SourceCodeInfo.Builder.() -> Unit,
+): SourceCodeInfo {
     return SourceCodeInfoInternal().apply(body)
 }
 
@@ -1177,7 +1241,9 @@ public val SourceCodeInfo.presence: SourceCodeInfoPresence get() = this.asIntern
  * }
  * ```
  */
-public operator fun GeneratedCodeInfo.Companion.invoke(body: GeneratedCodeInfo.Builder.() -> Unit): GeneratedCodeInfo {
+public operator fun GeneratedCodeInfo.Companion.invoke(
+    body: GeneratedCodeInfo.Builder.() -> Unit,
+): GeneratedCodeInfo {
     return GeneratedCodeInfoInternal().apply(body)
 }
 
@@ -1189,7 +1255,9 @@ public operator fun GeneratedCodeInfo.Companion.invoke(body: GeneratedCodeInfo.B
  * }
  * ```
  */
-public fun GeneratedCodeInfo.copy(body: GeneratedCodeInfo.Builder.() -> Unit = {}): GeneratedCodeInfo {
+public fun GeneratedCodeInfo.copy(
+    body: GeneratedCodeInfo.Builder.() -> Unit = {},
+): GeneratedCodeInfo {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1201,7 +1269,9 @@ public fun GeneratedCodeInfo.copy(body: GeneratedCodeInfo.Builder.() -> Unit = {
  * }
  * ```
  */
-public operator fun DescriptorProto.ExtensionRange.Companion.invoke(body: DescriptorProto.ExtensionRange.Builder.() -> Unit): DescriptorProto.ExtensionRange {
+public operator fun DescriptorProto.ExtensionRange.Companion.invoke(
+    body: DescriptorProto.ExtensionRange.Builder.() -> Unit,
+): DescriptorProto.ExtensionRange {
     return DescriptorProtoInternal.ExtensionRangeInternal().apply(body).apply(DescriptorProtoInternal.ExtensionRangeInternal::checkRequiredFields)
 }
 
@@ -1213,7 +1283,9 @@ public operator fun DescriptorProto.ExtensionRange.Companion.invoke(body: Descri
  * }
  * ```
  */
-public fun DescriptorProto.ExtensionRange.copy(body: DescriptorProto.ExtensionRange.Builder.() -> Unit = {}): DescriptorProto.ExtensionRange {
+public fun DescriptorProto.ExtensionRange.copy(
+    body: DescriptorProto.ExtensionRange.Builder.() -> Unit = {},
+): DescriptorProto.ExtensionRange {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1245,7 +1317,9 @@ public val DescriptorProto.ExtensionRange.optionsOrNull: ExtensionRangeOptions? 
  * }
  * ```
  */
-public operator fun DescriptorProto.ReservedRange.Companion.invoke(body: DescriptorProto.ReservedRange.Builder.() -> Unit): DescriptorProto.ReservedRange {
+public operator fun DescriptorProto.ReservedRange.Companion.invoke(
+    body: DescriptorProto.ReservedRange.Builder.() -> Unit,
+): DescriptorProto.ReservedRange {
     return DescriptorProtoInternal.ReservedRangeInternal().apply(body)
 }
 
@@ -1257,7 +1331,9 @@ public operator fun DescriptorProto.ReservedRange.Companion.invoke(body: Descrip
  * }
  * ```
  */
-public fun DescriptorProto.ReservedRange.copy(body: DescriptorProto.ReservedRange.Builder.() -> Unit = {}): DescriptorProto.ReservedRange {
+public fun DescriptorProto.ReservedRange.copy(
+    body: DescriptorProto.ReservedRange.Builder.() -> Unit = {},
+): DescriptorProto.ReservedRange {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1284,7 +1360,9 @@ public val DescriptorProto.ReservedRange.endOrNull: Int? get() = if (this.presen
  * }
  * ```
  */
-public operator fun ExtensionRangeOptions.Declaration.Companion.invoke(body: ExtensionRangeOptions.Declaration.Builder.() -> Unit): ExtensionRangeOptions.Declaration {
+public operator fun ExtensionRangeOptions.Declaration.Companion.invoke(
+    body: ExtensionRangeOptions.Declaration.Builder.() -> Unit,
+): ExtensionRangeOptions.Declaration {
     return ExtensionRangeOptionsInternal.DeclarationInternal().apply(body)
 }
 
@@ -1296,7 +1374,9 @@ public operator fun ExtensionRangeOptions.Declaration.Companion.invoke(body: Ext
  * }
  * ```
  */
-public fun ExtensionRangeOptions.Declaration.copy(body: ExtensionRangeOptions.Declaration.Builder.() -> Unit = {}): ExtensionRangeOptions.Declaration {
+public fun ExtensionRangeOptions.Declaration.copy(
+    body: ExtensionRangeOptions.Declaration.Builder.() -> Unit = {},
+): ExtensionRangeOptions.Declaration {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1338,7 +1418,9 @@ public val ExtensionRangeOptions.Declaration.repeatedOrNull: Boolean? get() = if
  * }
  * ```
  */
-public operator fun EnumDescriptorProto.EnumReservedRange.Companion.invoke(body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit): EnumDescriptorProto.EnumReservedRange {
+public operator fun EnumDescriptorProto.EnumReservedRange.Companion.invoke(
+    body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit,
+): EnumDescriptorProto.EnumReservedRange {
     return EnumDescriptorProtoInternal.EnumReservedRangeInternal().apply(body)
 }
 
@@ -1350,7 +1432,9 @@ public operator fun EnumDescriptorProto.EnumReservedRange.Companion.invoke(body:
  * }
  * ```
  */
-public fun EnumDescriptorProto.EnumReservedRange.copy(body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit = {}): EnumDescriptorProto.EnumReservedRange {
+public fun EnumDescriptorProto.EnumReservedRange.copy(
+    body: EnumDescriptorProto.EnumReservedRange.Builder.() -> Unit = {},
+): EnumDescriptorProto.EnumReservedRange {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1377,7 +1461,9 @@ public val EnumDescriptorProto.EnumReservedRange.endOrNull: Int? get() = if (thi
  * }
  * ```
  */
-public operator fun FieldOptions.EditionDefault.Companion.invoke(body: FieldOptions.EditionDefault.Builder.() -> Unit): FieldOptions.EditionDefault {
+public operator fun FieldOptions.EditionDefault.Companion.invoke(
+    body: FieldOptions.EditionDefault.Builder.() -> Unit,
+): FieldOptions.EditionDefault {
     return FieldOptionsInternal.EditionDefaultInternal().apply(body)
 }
 
@@ -1389,7 +1475,9 @@ public operator fun FieldOptions.EditionDefault.Companion.invoke(body: FieldOpti
  * }
  * ```
  */
-public fun FieldOptions.EditionDefault.copy(body: FieldOptions.EditionDefault.Builder.() -> Unit = {}): FieldOptions.EditionDefault {
+public fun FieldOptions.EditionDefault.copy(
+    body: FieldOptions.EditionDefault.Builder.() -> Unit = {},
+): FieldOptions.EditionDefault {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1416,7 +1504,9 @@ public val FieldOptions.EditionDefault.valueOrNull: String? get() = if (this.pre
  * }
  * ```
  */
-public operator fun FieldOptions.FeatureSupport.Companion.invoke(body: FieldOptions.FeatureSupport.Builder.() -> Unit): FieldOptions.FeatureSupport {
+public operator fun FieldOptions.FeatureSupport.Companion.invoke(
+    body: FieldOptions.FeatureSupport.Builder.() -> Unit,
+): FieldOptions.FeatureSupport {
     return FieldOptionsInternal.FeatureSupportInternal().apply(body)
 }
 
@@ -1428,7 +1518,9 @@ public operator fun FieldOptions.FeatureSupport.Companion.invoke(body: FieldOpti
  * }
  * ```
  */
-public fun FieldOptions.FeatureSupport.copy(body: FieldOptions.FeatureSupport.Builder.() -> Unit = {}): FieldOptions.FeatureSupport {
+public fun FieldOptions.FeatureSupport.copy(
+    body: FieldOptions.FeatureSupport.Builder.() -> Unit = {},
+): FieldOptions.FeatureSupport {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1465,7 +1557,9 @@ public val FieldOptions.FeatureSupport.editionRemovedOrNull: Edition? get() = if
  * }
  * ```
  */
-public operator fun UninterpretedOption.NamePart.Companion.invoke(body: UninterpretedOption.NamePart.Builder.() -> Unit): UninterpretedOption.NamePart {
+public operator fun UninterpretedOption.NamePart.Companion.invoke(
+    body: UninterpretedOption.NamePart.Builder.() -> Unit,
+): UninterpretedOption.NamePart {
     return UninterpretedOptionInternal.NamePartInternal().apply(body).apply(UninterpretedOptionInternal.NamePartInternal::checkRequiredFields)
 }
 
@@ -1477,7 +1571,9 @@ public operator fun UninterpretedOption.NamePart.Companion.invoke(body: Uninterp
  * }
  * ```
  */
-public fun UninterpretedOption.NamePart.copy(body: UninterpretedOption.NamePart.Builder.() -> Unit = {}): UninterpretedOption.NamePart {
+public fun UninterpretedOption.NamePart.copy(
+    body: UninterpretedOption.NamePart.Builder.() -> Unit = {},
+): UninterpretedOption.NamePart {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1492,7 +1588,9 @@ public val UninterpretedOption.NamePart.presence: UninterpretedOptionPresence.Na
  * val message = VisibilityFeature { }
  * ```
  */
-public operator fun FeatureSet.VisibilityFeature.Companion.invoke(body: FeatureSet.VisibilityFeature.Builder.() -> Unit): FeatureSet.VisibilityFeature {
+public operator fun FeatureSet.VisibilityFeature.Companion.invoke(
+    body: FeatureSet.VisibilityFeature.Builder.() -> Unit,
+): FeatureSet.VisibilityFeature {
     return FeatureSetInternal.VisibilityFeatureInternal().apply(body)
 }
 
@@ -1502,7 +1600,9 @@ public operator fun FeatureSet.VisibilityFeature.Companion.invoke(body: FeatureS
  * val copy = original.copy()
  * ```
  */
-public fun FeatureSet.VisibilityFeature.copy(body: FeatureSet.VisibilityFeature.Builder.() -> Unit = {}): FeatureSet.VisibilityFeature {
+public fun FeatureSet.VisibilityFeature.copy(
+    body: FeatureSet.VisibilityFeature.Builder.() -> Unit = {},
+): FeatureSet.VisibilityFeature {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1514,7 +1614,9 @@ public fun FeatureSet.VisibilityFeature.copy(body: FeatureSet.VisibilityFeature.
  * }
  * ```
  */
-public operator fun FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke(body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit): FeatureSetDefaults.FeatureSetEditionDefault {
+public operator fun FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke(
+    body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit,
+): FeatureSetDefaults.FeatureSetEditionDefault {
     return FeatureSetDefaultsInternal.FeatureSetEditionDefaultInternal().apply(body)
 }
 
@@ -1526,7 +1628,9 @@ public operator fun FeatureSetDefaults.FeatureSetEditionDefault.Companion.invoke
  * }
  * ```
  */
-public fun FeatureSetDefaults.FeatureSetEditionDefault.copy(body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit = {}): FeatureSetDefaults.FeatureSetEditionDefault {
+public fun FeatureSetDefaults.FeatureSetEditionDefault.copy(
+    body: FeatureSetDefaults.FeatureSetEditionDefault.Builder.() -> Unit = {},
+): FeatureSetDefaults.FeatureSetEditionDefault {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1558,7 +1662,9 @@ public val FeatureSetDefaults.FeatureSetEditionDefault.fixedFeaturesOrNull: Feat
  * }
  * ```
  */
-public operator fun SourceCodeInfo.Location.Companion.invoke(body: SourceCodeInfo.Location.Builder.() -> Unit): SourceCodeInfo.Location {
+public operator fun SourceCodeInfo.Location.Companion.invoke(
+    body: SourceCodeInfo.Location.Builder.() -> Unit,
+): SourceCodeInfo.Location {
     return SourceCodeInfoInternal.LocationInternal().apply(body)
 }
 
@@ -1570,7 +1676,9 @@ public operator fun SourceCodeInfo.Location.Companion.invoke(body: SourceCodeInf
  * }
  * ```
  */
-public fun SourceCodeInfo.Location.copy(body: SourceCodeInfo.Location.Builder.() -> Unit = {}): SourceCodeInfo.Location {
+public fun SourceCodeInfo.Location.copy(
+    body: SourceCodeInfo.Location.Builder.() -> Unit = {},
+): SourceCodeInfo.Location {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1597,7 +1705,9 @@ public val SourceCodeInfo.Location.trailingCommentsOrNull: String? get() = if (t
  * }
  * ```
  */
-public operator fun GeneratedCodeInfo.Annotation.Companion.invoke(body: GeneratedCodeInfo.Annotation.Builder.() -> Unit): GeneratedCodeInfo.Annotation {
+public operator fun GeneratedCodeInfo.Annotation.Companion.invoke(
+    body: GeneratedCodeInfo.Annotation.Builder.() -> Unit,
+): GeneratedCodeInfo.Annotation {
     return GeneratedCodeInfoInternal.AnnotationInternal().apply(body)
 }
 
@@ -1609,7 +1719,9 @@ public operator fun GeneratedCodeInfo.Annotation.Companion.invoke(body: Generate
  * }
  * ```
  */
-public fun GeneratedCodeInfo.Annotation.copy(body: GeneratedCodeInfo.Annotation.Builder.() -> Unit = {}): GeneratedCodeInfo.Annotation {
+public fun GeneratedCodeInfo.Annotation.copy(
+    body: GeneratedCodeInfo.Annotation.Builder.() -> Unit = {},
+): GeneratedCodeInfo.Annotation {
     return this.asInternal().copyInternal(body)
 }
 

@@ -20,7 +20,6 @@ import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class EvilNamesProto3Test {
 
@@ -104,7 +103,7 @@ class EvilNamesProto3Test {
             key = mapOf("k" to 1)
             map = mapOf(1 to "one")
             pairs = mapOf("p" to 2)
-            result = EvilNamesProto3.Result.ResultField("result")
+            resultField = "result"
         }
         assertEquals("val", msg.value)
         assertEquals(42L, msg.index)
@@ -116,7 +115,8 @@ class EvilNamesProto3Test {
         assertEquals(mapOf("k" to 1), msg.key)
         assertEquals(mapOf(1 to "one"), msg.map)
         assertEquals(mapOf("p" to 2), msg.pairs)
-        assertEquals(EvilNamesProto3.Result.ResultField("result"), msg.result)
+        assertEquals(EvilNamesProto3ResultCase.RESULT_FIELD, msg.result)
+        assertEquals("result", msg.resultField)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames
@@ -144,16 +144,22 @@ class EvilNamesProto3Test {
     @Test
     fun testOneofFields() {
         val msg1 = EvilNamesProto3 {
-            camelCase = EvilNamesProto3.CamelCase.FooBar("test")
+            fooBar = "test"
         }
-        assertTrue(msg1.camelCase is EvilNamesProto3.CamelCase.FooBar)
-        assertEquals("test", (msg1.camelCase as EvilNamesProto3.CamelCase.FooBar).value)
+        assertEquals(EvilNamesProto3CamelCaseCase.FOOBAR, msg1.camelCase)
+        assertEquals("test", msg1.fooBar)
 
         val msg2 = EvilNamesProto3 {
-            _leadingUnderscoreOneof = EvilNamesProto3._LeadingUnderscoreOneof.Option(42)
+            option = 42
         }
-        assertTrue(msg2._leadingUnderscoreOneof is EvilNamesProto3._LeadingUnderscoreOneof.Option)
-        assertEquals(42, (msg2._leadingUnderscoreOneof as EvilNamesProto3._LeadingUnderscoreOneof.Option).value)
+        assertEquals(EvilNamesProto3_LeadingUnderscoreOneofCase.OPTION, msg2._leadingUnderscoreOneof)
+        assertEquals(42, msg2.option)
+
+        val msg3 = EvilNamesProto3 {
+            resultField = "r"
+        }
+        assertEquals(EvilNamesProto3ResultCase.RESULT_FIELD, msg3.result)
+        assertEquals("r", msg3.resultField)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/kotlin/src/test/kotlin/com/google/protobuf/Proto3Test.kt#testEvilNames

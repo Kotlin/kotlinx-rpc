@@ -100,14 +100,14 @@ class ComparisonTest {
         val msg1 = Equals {
             str1 = "hello"
             bytes1 = ByteString(1, 2, 3)
-            oneof = Equals.Oneof.Option1(42)
+            option1 = 42
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
             bytes1 = ByteString(1, 2, 3)
-            oneof = Equals.Oneof.Option2(42)
+            option2 = 42
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
@@ -121,14 +121,14 @@ class ComparisonTest {
         val msg1 = Equals {
             str1 = "hello"
             bytes1 = ByteString(1, 2, 3)
-            oneof = Equals.Oneof.Option1(42)
+            option1 = 42
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 
         val msg2 = Equals {
             str1 = "hello"
             bytes1 = ByteString(1, 2, 3)
-            oneof = Equals.Oneof.Option1(42)
+            option1 = 42
             someEnum2 = Equals.SomeEnum.VALUE1
         }
 

@@ -12,7 +12,9 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalMessage
+import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.WireDecoder
@@ -85,7 +87,7 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     public class FieldsEntryInternal: InternalMessage(fieldsWithPresence = 1) {
         @InternalRpcApi
         internal object PresenceIndices {
-            public const val value: Int = 0
+            const val value: Int = 0
         }
 
         @InternalRpcApi
@@ -182,7 +184,18 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 }
 
 @InternalRpcApi
-public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 0) {
+@GeneratedProtoOneOfs(names = ["kind"])
+public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 6) {
+    @InternalRpcApi
+    internal object PresenceIndices {
+        const val nullValue: Int = 0
+        const val numberValue: Int = 1
+        const val stringValue: Int = 2
+        const val boolValue: Int = 3
+        const val structValue: Int = 4
+        const val listValue: Int = 5
+    }
+
     @InternalRpcApi
     public override val _size: Int by lazy { computeSize() }
 
@@ -192,43 +205,118 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    public override var kind: Value.Kind? = null
+    private var _kindRef: kotlin.Any? = null
+    private var _kindNum: Long = 0L
+
+    @InternalRpcApi
+    public val _kindCase: ValueKindCase get() = when {
+        presenceMask[PresenceIndices.nullValue] -> ValueKindCase.NULL_VALUE
+        presenceMask[PresenceIndices.numberValue] -> ValueKindCase.NUMBER_VALUE
+        presenceMask[PresenceIndices.stringValue] -> ValueKindCase.STRING_VALUE
+        presenceMask[PresenceIndices.boolValue] -> ValueKindCase.BOOL_VALUE
+        presenceMask[PresenceIndices.structValue] -> ValueKindCase.STRUCT_VALUE
+        presenceMask[PresenceIndices.listValue] -> ValueKindCase.LIST_VALUE
+        else -> ValueKindCase.NOT_SET
+    }
+
+    public override fun clearKind() {
+        presenceMask.clearRange(PresenceIndices.nullValue, PresenceIndices.listValue)
+        _kindRef = null
+        _kindNum = 0L
+    }
+
+    public override var nullValue: NullValue
+        get() = if (presenceMask[PresenceIndices.nullValue]) NullValue.fromNumber(_kindNum.toInt()) else NullValue.NULL_VALUE
+        set(value) { presenceMask.setExclusive(PresenceIndices.nullValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = value.number.toLong(); _kindRef = null }
+
+    public override fun clearNullValue() {
+        if (presenceMask[PresenceIndices.nullValue]) clearKind()
+    }
+
+    public override var numberValue: Double
+        get() = if (presenceMask[PresenceIndices.numberValue]) Double.fromBits(_kindNum) else 0.0
+        set(value) { presenceMask.setExclusive(PresenceIndices.numberValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = value.toRawBits(); _kindRef = null }
+
+    public override fun clearNumberValue() {
+        if (presenceMask[PresenceIndices.numberValue]) clearKind()
+    }
+
+    public override var stringValue: String
+        get() = if (presenceMask[PresenceIndices.stringValue]) (_kindRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.stringValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
+
+    public override fun clearStringValue() {
+        if (presenceMask[PresenceIndices.stringValue]) clearKind()
+    }
+
+    public override var boolValue: Boolean
+        get() = if (presenceMask[PresenceIndices.boolValue]) (_kindNum != 0L) else false
+        set(value) { presenceMask.setExclusive(PresenceIndices.boolValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindNum = if (value) 1L else 0L; _kindRef = null }
+
+    public override fun clearBoolValue() {
+        if (presenceMask[PresenceIndices.boolValue]) clearKind()
+    }
+
+    public override var structValue: Struct
+        get() = if (presenceMask[PresenceIndices.structValue]) (_kindRef as Struct) else StructInternal.DEFAULT
+        set(value) { presenceMask.setExclusive(PresenceIndices.structValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
+
+    public override fun clearStructValue() {
+        if (presenceMask[PresenceIndices.structValue]) clearKind()
+    }
+
+    public override var listValue: ListValue
+        get() = if (presenceMask[PresenceIndices.listValue]) (_kindRef as ListValue) else ListValueInternal.DEFAULT
+        set(value) { presenceMask.setExclusive(PresenceIndices.listValue, PresenceIndices.nullValue, PresenceIndices.listValue); _kindRef = value; _kindNum = 0L }
+
+    public override fun clearListValue() {
+        if (presenceMask[PresenceIndices.listValue]) clearKind()
+    }
+
+    private val _owner: ValueInternal = this
+
+    @InternalRpcApi
+    public val _presence: ValuePresence = object : ValuePresence, InternalPresenceObject {
+        public override val _message: ValueInternal get() = _owner
+
+        public override val hasNullValue: Boolean get() = presenceMask[PresenceIndices.nullValue]
+
+        public override val hasNumberValue: Boolean get() = presenceMask[PresenceIndices.numberValue]
+
+        public override val hasStringValue: Boolean get() = presenceMask[PresenceIndices.stringValue]
+
+        public override val hasBoolValue: Boolean get() = presenceMask[PresenceIndices.boolValue]
+
+        public override val hasStructValue: Boolean get() = presenceMask[PresenceIndices.structValue]
+
+        public override val hasListValue: Boolean get() = presenceMask[PresenceIndices.listValue]
+    }
 
     public override fun hashCode(): Int {
-        var result = (this.kind?.oneOfHashCode() ?: 0)
+        var result = when {
+            presenceMask[PresenceIndices.nullValue] -> 1 * 31 + this.nullValue.hashCode()
+            presenceMask[PresenceIndices.numberValue] -> 2 * 31 + this.numberValue.toBits().hashCode()
+            presenceMask[PresenceIndices.stringValue] -> 3 * 31 + this.stringValue.hashCode()
+            presenceMask[PresenceIndices.boolValue] -> 4 * 31 + this.boolValue.hashCode()
+            presenceMask[PresenceIndices.structValue] -> 5 * 31 + this.structValue.hashCode()
+            presenceMask[PresenceIndices.listValue] -> 6 * 31 + this.listValue.hashCode()
+            else -> 0
+        }
+
         return result
-    }
-
-    public fun Value.Kind.oneOfHashCode(): Int {
-        return when (this) {
-            is Value.Kind.NullValue -> hashCode() + 0
-            is Value.Kind.NumberValue -> value.toBits().hashCode() + 1
-            is Value.Kind.StringValue -> hashCode() + 2
-            is Value.Kind.BoolValue -> hashCode() + 3
-            is Value.Kind.StructValue -> hashCode() + 4
-            is Value.Kind.ListValue -> hashCode() + 5
-        }
-    }
-
-    public fun oneOfEquals(a: Value.Kind?, b: Value.Kind?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is Value.Kind.NullValue -> a == b
-            is Value.Kind.NumberValue -> a.value.toBits() == (b as Value.Kind.NumberValue).value.toBits()
-            is Value.Kind.StringValue -> a == b
-            is Value.Kind.BoolValue -> a == b
-            is Value.Kind.StructValue -> a == b
-            is Value.Kind.ListValue -> a == b
-        }
     }
 
     public override fun equals(other: kotlin.Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ValueInternal
-        return oneOfEquals(this.kind, other.kind)
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[PresenceIndices.nullValue] && this.nullValue != other.nullValue) return false
+        if (presenceMask[PresenceIndices.numberValue] && this.numberValue.toBits() != other.numberValue.toBits()) return false
+        if (presenceMask[PresenceIndices.stringValue] && this.stringValue != other.stringValue) return false
+        if (presenceMask[PresenceIndices.boolValue] && this.boolValue != other.boolValue) return false
+        if (presenceMask[PresenceIndices.structValue] && this.structValue != other.structValue) return false
+        return !presenceMask[PresenceIndices.listValue] || this.listValue == other.listValue
     }
 
     public override fun toString(): String {
@@ -240,7 +328,30 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("Value(")
-        builder.appendLine("${nextIndentString}kind=${this.kind},")
+        if (presenceMask[PresenceIndices.nullValue]) {
+            builder.appendLine("${nextIndentString}nullValue=${this.nullValue},")
+        }
+
+        if (presenceMask[PresenceIndices.numberValue]) {
+            builder.appendLine("${nextIndentString}numberValue=${this.numberValue},")
+        }
+
+        if (presenceMask[PresenceIndices.stringValue]) {
+            builder.appendLine("${nextIndentString}stringValue=${this.stringValue},")
+        }
+
+        if (presenceMask[PresenceIndices.boolValue]) {
+            builder.appendLine("${nextIndentString}boolValue=${this.boolValue},")
+        }
+
+        if (presenceMask[PresenceIndices.structValue]) {
+            builder.appendLine("${nextIndentString}structValue=${this.structValue.asInternal().asString(indent = indent + 4)},")
+        }
+
+        if (presenceMask[PresenceIndices.listValue]) {
+            builder.appendLine("${nextIndentString}listValue=${this.listValue.asInternal().asString(indent = indent + 4)},")
+        }
+
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -252,34 +363,33 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
     @InternalRpcApi
     public fun copyInternal(body: ValueInternal.() -> Unit): ValueInternal {
         val copy = ValueInternal()
-        copy.kind = this.kind?.oneOfCopy()
+        if (presenceMask[PresenceIndices.nullValue]) {
+            copy.nullValue = this.nullValue
+        }
+
+        if (presenceMask[PresenceIndices.numberValue]) {
+            copy.numberValue = this.numberValue
+        }
+
+        if (presenceMask[PresenceIndices.stringValue]) {
+            copy.stringValue = this.stringValue
+        }
+
+        if (presenceMask[PresenceIndices.boolValue]) {
+            copy.boolValue = this.boolValue
+        }
+
+        if (presenceMask[PresenceIndices.structValue]) {
+            copy.structValue = this.structValue.copy()
+        }
+
+        if (presenceMask[PresenceIndices.listValue]) {
+            copy.listValue = this.listValue.copy()
+        }
+
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    public fun Value.Kind.oneOfCopy(): Value.Kind {
-        return when (this) {
-            is Value.Kind.NullValue -> {
-                this
-            }
-            is Value.Kind.NumberValue -> {
-                this
-            }
-            is Value.Kind.StringValue -> {
-                this
-            }
-            is Value.Kind.BoolValue -> {
-                this
-            }
-            is Value.Kind.StructValue -> {
-                Value.Kind.StructValue(this.value.copy())
-            }
-            is Value.Kind.ListValue -> {
-                Value.Kind.ListValue(this.value.copy())
-            }
-        }
     }
 
     @InternalRpcApi
@@ -431,7 +541,11 @@ public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-public fun StructInternal.Companion.decodeWith(msg: StructInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun StructInternal.Companion.decodeWith(
+    msg: StructInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -487,27 +601,28 @@ public fun Struct.asInternal(): StructInternal {
 
 @InternalRpcApi
 public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.kind?.also { value ->
-        when (value) {
-            is Value.Kind.NullValue -> {
-                encoder.writeEnum(fieldNr = 1, value = value.value.number)
-            }
-            is Value.Kind.NumberValue -> {
-                encoder.writeDouble(fieldNr = 2, value = value.value)
-            }
-            is Value.Kind.StringValue -> {
-                encoder.writeString(fieldNr = 3, value = value.value)
-            }
-            is Value.Kind.BoolValue -> {
-                encoder.writeBool(fieldNr = 4, value = value.value)
-            }
-            is Value.Kind.StructValue -> {
-                encoder.writeMessage(fieldNr = 5, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
-            }
-            is Value.Kind.ListValue -> {
-                encoder.writeMessage(fieldNr = 6, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
-            }
-        }
+    if (presenceMask[ValueInternal.PresenceIndices.nullValue]) {
+        encoder.writeEnum(fieldNr = 1, value = this.nullValue.number)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.numberValue]) {
+        encoder.writeDouble(fieldNr = 2, value = this.numberValue)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.stringValue]) {
+        encoder.writeString(fieldNr = 3, value = this.stringValue)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.boolValue]) {
+        encoder.writeBool(fieldNr = 4, value = this.boolValue)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.structValue]) {
+        encoder.writeMessage(fieldNr = 5, value = this.structValue.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.listValue]) {
+        encoder.writeMessage(fieldNr = 6, value = this.listValue.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
 
     _extensions.forEach { (key, value) ->
@@ -520,35 +635,33 @@ public fun ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun ValueInternal.Companion.decodeWith(
+    msg: ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
             1 if tag.wireType == WireType.VARINT -> {
-                msg.kind = Value.Kind.NullValue(NullValue.fromNumber(decoder.readEnum()))
+                msg.nullValue = NullValue.fromNumber(decoder.readEnum())
             }
             2 if tag.wireType == WireType.FIXED64 -> {
-                msg.kind = Value.Kind.NumberValue(decoder.readDouble())
+                msg.numberValue = decoder.readDouble()
             }
             3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.kind = Value.Kind.StringValue(decoder.readString())
+                msg.stringValue = decoder.readString()
             }
             4 if tag.wireType == WireType.VARINT -> {
-                msg.kind = Value.Kind.BoolValue(decoder.readBool())
+                msg.boolValue = decoder.readBool()
             }
             5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                val field = (msg.kind as? Value.Kind.StructValue) ?: Value.Kind.StructValue(StructInternal()).also {
-                    msg.kind = it
-                }
-
-                decoder.readMessage(field.value.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
+                val target = if (msg.presenceMask[ValueInternal.PresenceIndices.structValue]) msg.structValue.asInternal() else StructInternal().also { msg.structValue = it }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
             }
             6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                val field = (msg.kind as? Value.Kind.ListValue) ?: Value.Kind.ListValue(ListValueInternal()).also {
-                    msg.kind = it
-                }
-
-                decoder.readMessage(field.value.asInternal()) { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) }
+                val target = if (msg.presenceMask[ValueInternal.PresenceIndices.listValue]) msg.listValue.asInternal() else ListValueInternal().also { msg.listValue = it }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) }
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -574,27 +687,28 @@ public fun ValueInternal.Companion.decodeWith(msg: ValueInternal, decoder: WireD
 
 private fun ValueInternal.computeSize(): Int {
     var __result = 0
-    this.kind?.also { value ->
-        __result += when (value) {
-            is Value.Kind.NullValue -> {
-                WireSize.tag(1, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
-            is Value.Kind.NumberValue -> {
-                WireSize.tag(2, WireType.FIXED64) + WireSize.double(value.value)
-            }
-            is Value.Kind.StringValue -> {
-                WireSize.string(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is Value.Kind.BoolValue -> {
-                WireSize.tag(4, WireType.VARINT) + WireSize.bool(value.value)
-            }
-            is Value.Kind.StructValue -> {
-                value.value.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is Value.Kind.ListValue -> {
-                value.value.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-        }
+    if (presenceMask[ValueInternal.PresenceIndices.nullValue]) {
+        __result += WireSize.tag(1, WireType.VARINT) + WireSize.enum(this.nullValue.number)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.numberValue]) {
+        __result += WireSize.tag(2, WireType.FIXED64) + WireSize.double(this.numberValue)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.stringValue]) {
+        __result += WireSize.string(this.stringValue).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.boolValue]) {
+        __result += WireSize.tag(4, WireType.VARINT) + WireSize.bool(this.boolValue)
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.structValue]) {
+        __result += this.structValue.asInternal()._size.let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ValueInternal.PresenceIndices.listValue]) {
+        __result += this.listValue.asInternal()._size.let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()
@@ -624,7 +738,11 @@ public fun ListValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun ListValueInternal.Companion.decodeWith(msg: ListValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun ListValueInternal.Companion.decodeWith(
+    msg: ListValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -672,7 +790,10 @@ public fun ListValue.asInternal(): ListValueInternal {
 }
 
 @InternalRpcApi
-public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+public fun StructInternal.FieldsEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -691,7 +812,11 @@ public fun StructInternal.FieldsEntryInternal.encodeWith(encoder: WireEncoder, c
 }
 
 @InternalRpcApi
-public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(msg: StructInternal.FieldsEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(
+    msg: StructInternal.FieldsEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

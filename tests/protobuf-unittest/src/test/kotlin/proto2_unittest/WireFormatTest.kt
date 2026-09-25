@@ -18,7 +18,7 @@ import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class WireFormatTest {
@@ -47,18 +47,18 @@ class WireFormatTest {
         val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val withUint32 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(42u)
+            oneofUint32 = 42u
         }
         val decoded1 = TestUtil.encodeDecode(withUint32, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofUint32>(decoded1.oneofField)
-        assertEquals(42u, (decoded1.oneofField as TestAllTypes.OneofField.OneofUint32).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, decoded1.oneofField)
+        assertEquals(42u, decoded1.oneofUint32)
 
         val withString = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofString("hello")
+            oneofString = "hello"
         }
         val decoded2 = TestUtil.encodeDecode(withString, marshaller)
-        assertIs<TestAllTypes.OneofField.OneofString>(decoded2.oneofField)
-        assertEquals("hello", (decoded2.oneofField as TestAllTypes.OneofField.OneofString).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_STRING, decoded2.oneofField)
+        assertEquals("hello", decoded2.oneofString)
     }
 
     // https://github.com/protocolbuffers/protobuf/blob/main/java/core/src/test/java/com/google/protobuf/WireFormatTest.java#testOneofOnlyLastSet
@@ -67,10 +67,10 @@ class WireFormatTest {
         val marshaller = grpcMarshallerOf<TestAllTypes>()
 
         val withUint32 = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofUint32(42u)
+            oneofUint32 = 42u
         }
         val withString = TestAllTypes {
-            oneofField = TestAllTypes.OneofField.OneofString("last")
+            oneofString = "last"
         }
 
         // Simulate conflicting oneof fields on the wire: parser must keep the last one.
@@ -79,16 +79,18 @@ class WireFormatTest {
             transferFrom(marshaller.encode(withString))
         }
         val decoded = marshaller.decode(encoded)
-        assertIs<TestAllTypes.OneofField.OneofString>(decoded.oneofField)
-        assertEquals("last", (decoded.oneofField as TestAllTypes.OneofField.OneofString).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_STRING, decoded.oneofField)
+        assertEquals("last", decoded.oneofString)
+        assertFalse(decoded.presence.hasOneofUint32)
 
         val encodedReverse = Buffer().apply {
             transferFrom(marshaller.encode(withString))
             transferFrom(marshaller.encode(withUint32))
         }
         val decodedReverse = marshaller.decode(encodedReverse)
-        assertIs<TestAllTypes.OneofField.OneofUint32>(decodedReverse.oneofField)
-        assertEquals(42u, (decodedReverse.oneofField as TestAllTypes.OneofField.OneofUint32).value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_UINT32, decodedReverse.oneofField)
+        assertEquals(42u, decodedReverse.oneofUint32)
+        assertFalse(decodedReverse.presence.hasOneofString)
     }
 
     @Test

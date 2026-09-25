@@ -13,7 +13,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * }
  * ```
  */
-public operator fun DoubleValue.Companion.invoke(body: DoubleValue.Builder.() -> Unit): DoubleValue {
+public operator fun DoubleValue.Companion.invoke(
+    body: DoubleValue.Builder.() -> Unit,
+): DoubleValue {
     return DoubleValueInternal().apply(body)
 }
 
@@ -85,7 +87,9 @@ public fun Int64Value.copy(body: Int64Value.Builder.() -> Unit = {}): Int64Value
  * }
  * ```
  */
-public operator fun UInt64Value.Companion.invoke(body: UInt64Value.Builder.() -> Unit): UInt64Value {
+public operator fun UInt64Value.Companion.invoke(
+    body: UInt64Value.Builder.() -> Unit,
+): UInt64Value {
     return UInt64ValueInternal().apply(body)
 }
 
@@ -133,7 +137,9 @@ public fun Int32Value.copy(body: Int32Value.Builder.() -> Unit = {}): Int32Value
  * }
  * ```
  */
-public operator fun UInt32Value.Companion.invoke(body: UInt32Value.Builder.() -> Unit): UInt32Value {
+public operator fun UInt32Value.Companion.invoke(
+    body: UInt32Value.Builder.() -> Unit,
+): UInt32Value {
     return UInt32ValueInternal().apply(body)
 }
 
@@ -181,7 +187,9 @@ public fun BoolValue.copy(body: BoolValue.Builder.() -> Unit = {}): BoolValue {
  * }
  * ```
  */
-public operator fun StringValue.Companion.invoke(body: StringValue.Builder.() -> Unit): StringValue {
+public operator fun StringValue.Companion.invoke(
+    body: StringValue.Builder.() -> Unit,
+): StringValue {
     return StringValueInternal().apply(body)
 }
 

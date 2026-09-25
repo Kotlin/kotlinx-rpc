@@ -116,7 +116,11 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EmptyInternal.Companion.decodeWith(
+    msg: EmptyInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

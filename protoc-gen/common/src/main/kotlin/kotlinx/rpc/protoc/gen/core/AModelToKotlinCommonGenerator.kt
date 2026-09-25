@@ -130,7 +130,7 @@ abstract class AModelToKotlinCommonGenerator(
     }
 
     protected fun FieldDeclaration.typeFqName(): ScopedFormattedString {
-        return typeFqNameNonNullable().withNullability(nullable)
+        return typeFqNameNonNullable()
     }
 
     /**
@@ -143,8 +143,6 @@ abstract class AModelToKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> type.dec.value.name.scoped()
-
-            is FieldType.OneOf -> type.dec.name.scoped()
 
             is FieldType.IntegralType -> {
                 type.fqName.scoped()
@@ -190,10 +188,6 @@ abstract class AModelToKotlinCommonGenerator(
         } else {
             this
         }
-    }
-
-    protected fun ScopedFormattedString.withNullability(nullable: Boolean): ScopedFormattedString {
-        return wrapIn { "$it${if (nullable) "?" else ""}" }
     }
 
     protected fun String.packageNameSuffixed(suffix: String): String {

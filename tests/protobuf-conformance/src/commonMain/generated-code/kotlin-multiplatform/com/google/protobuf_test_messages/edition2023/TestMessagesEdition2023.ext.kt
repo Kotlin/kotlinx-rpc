@@ -16,7 +16,9 @@ import kotlinx.rpc.protobuf.internal.InternalPresenceObject
  * }
  * ```
  */
-operator fun ComplexMessage.Companion.invoke(body: ComplexMessage.Builder.() -> Unit): ComplexMessage {
+operator fun ComplexMessage.Companion.invoke(
+    body: ComplexMessage.Builder.() -> Unit,
+): ComplexMessage {
     return ComplexMessageInternal().apply(body)
 }
 
@@ -50,7 +52,9 @@ val ComplexMessage.dOrNull: Int? get() = if (this.presence.hasD) this.d else nul
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2023.Builder.() -> Unit): TestAllTypesEdition2023 {
+operator fun TestAllTypesEdition2023.Companion.invoke(
+    body: TestAllTypesEdition2023.Builder.() -> Unit,
+): TestAllTypesEdition2023 {
     return TestAllTypesEdition2023Internal().apply(body)
 }
 
@@ -62,7 +66,9 @@ operator fun TestAllTypesEdition2023.Companion.invoke(body: TestAllTypesEdition2
  * }
  * ```
  */
-fun TestAllTypesEdition2023.copy(body: TestAllTypesEdition2023.Builder.() -> Unit = {}): TestAllTypesEdition2023 {
+fun TestAllTypesEdition2023.copy(
+    body: TestAllTypesEdition2023.Builder.() -> Unit = {},
+): TestAllTypesEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -182,6 +188,51 @@ val TestAllTypesEdition2023.optionalCordOrNull: String? get() = if (this.presenc
 val TestAllTypesEdition2023.recursiveMessageOrNull: TestAllTypesEdition2023? get() = if (this.presence.hasRecursiveMessage) this.recursiveMessage else null
 
 /**
+ * Returns the value of the `oneofUint32` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofUint32OrNull: UInt? get() = if (this.presence.hasOneofUint32) this.oneofUint32 else null
+
+/**
+ * Returns the value of the `oneofNestedMessage` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofNestedMessageOrNull: TestAllTypesEdition2023.NestedMessage? get() = if (this.presence.hasOneofNestedMessage) this.oneofNestedMessage else null
+
+/**
+ * Returns the value of the `oneofString` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofStringOrNull: String? get() = if (this.presence.hasOneofString) this.oneofString else null
+
+/**
+ * Returns the value of the `oneofBytes` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofBytesOrNull: ByteString? get() = if (this.presence.hasOneofBytes) this.oneofBytes else null
+
+/**
+ * Returns the value of the `oneofBool` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofBoolOrNull: Boolean? get() = if (this.presence.hasOneofBool) this.oneofBool else null
+
+/**
+ * Returns the value of the `oneofUint64` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofUint64OrNull: ULong? get() = if (this.presence.hasOneofUint64) this.oneofUint64 else null
+
+/**
+ * Returns the value of the `oneofFloat` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofFloatOrNull: Float? get() = if (this.presence.hasOneofFloat) this.oneofFloat else null
+
+/**
+ * Returns the value of the `oneofDouble` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofDoubleOrNull: Double? get() = if (this.presence.hasOneofDouble) this.oneofDouble else null
+
+/**
+ * Returns the value of the `oneofEnum` field if present, otherwise null.
+ */
+val TestAllTypesEdition2023.oneofEnumOrNull: TestAllTypesEdition2023.NestedEnum? get() = if (this.presence.hasOneofEnum) this.oneofEnum else null
+
+/**
  * Returns the value of the `groupliketype` field if present, otherwise null.
  */
 val TestAllTypesEdition2023.groupliketypeOrNull: TestAllTypesEdition2023.GroupLikeType? get() = if (this.presence.hasGroupliketype) this.groupliketype else null
@@ -192,6 +243,40 @@ val TestAllTypesEdition2023.groupliketypeOrNull: TestAllTypesEdition2023.GroupLi
 val TestAllTypesEdition2023.delimitedFieldOrNull: TestAllTypesEdition2023.GroupLikeType? get() = if (this.presence.hasDelimitedField) this.delimitedField else null
 
 /**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesEdition2023OneofFieldCase.NOT_SET].
+ */
+val TestAllTypesEdition2023.oneofField: TestAllTypesEdition2023OneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesEdition2023.whenOneofField(
+    oneofUint32: (UInt) -> R,
+    oneofNestedMessage: (TestAllTypesEdition2023.NestedMessage) -> R,
+    oneofString: (String) -> R,
+    oneofBytes: (ByteString) -> R,
+    oneofBool: (Boolean) -> R,
+    oneofUint64: (ULong) -> R,
+    oneofFloat: (Float) -> R,
+    oneofDouble: (Double) -> R,
+    oneofEnum: (TestAllTypesEdition2023.NestedEnum) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_UINT32 -> oneofUint32(this.oneofUint32)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_NESTED_MESSAGE -> oneofNestedMessage(this.oneofNestedMessage)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_STRING -> oneofString(this.oneofString)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_BYTES -> oneofBytes(this.oneofBytes)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_BOOL -> oneofBool(this.oneofBool)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_UINT64 -> oneofUint64(this.oneofUint64)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_FLOAT -> oneofFloat(this.oneofFloat)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_DOUBLE -> oneofDouble(this.oneofDouble)
+        TestAllTypesEdition2023OneofFieldCase.ONEOF_ENUM -> oneofEnum(this.oneofEnum)
+        TestAllTypesEdition2023OneofFieldCase.NOT_SET -> notSet()
+    }
+}
+
+/**
  * Constructs a new message.
  * ```
  * val message = ForeignMessageEdition2023 {
@@ -199,7 +284,9 @@ val TestAllTypesEdition2023.delimitedFieldOrNull: TestAllTypesEdition2023.GroupL
  * }
  * ```
  */
-operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdition2023.Builder.() -> Unit): ForeignMessageEdition2023 {
+operator fun ForeignMessageEdition2023.Companion.invoke(
+    body: ForeignMessageEdition2023.Builder.() -> Unit,
+): ForeignMessageEdition2023 {
     return ForeignMessageEdition2023Internal().apply(body)
 }
 
@@ -211,7 +298,9 @@ operator fun ForeignMessageEdition2023.Companion.invoke(body: ForeignMessageEdit
  * }
  * ```
  */
-fun ForeignMessageEdition2023.copy(body: ForeignMessageEdition2023.Builder.() -> Unit = {}): ForeignMessageEdition2023 {
+fun ForeignMessageEdition2023.copy(
+    body: ForeignMessageEdition2023.Builder.() -> Unit = {},
+): ForeignMessageEdition2023 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -267,7 +356,9 @@ val GroupLikeType.cOrNull: Int? get() = if (this.presence.hasC) this.c else null
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit): TestAllTypesEdition2023.NestedMessage {
+operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(
+    body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit,
+): TestAllTypesEdition2023.NestedMessage {
     return TestAllTypesEdition2023Internal.NestedMessageInternal().apply(body)
 }
 
@@ -279,7 +370,9 @@ operator fun TestAllTypesEdition2023.NestedMessage.Companion.invoke(body: TestAl
  * }
  * ```
  */
-fun TestAllTypesEdition2023.NestedMessage.copy(body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit = {}): TestAllTypesEdition2023.NestedMessage {
+fun TestAllTypesEdition2023.NestedMessage.copy(
+    body: TestAllTypesEdition2023.NestedMessage.Builder.() -> Unit = {},
+): TestAllTypesEdition2023.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -306,7 +399,9 @@ val TestAllTypesEdition2023.NestedMessage.corecursiveOrNull: TestAllTypesEdition
  * }
  * ```
  */
-operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit): TestAllTypesEdition2023.GroupLikeType {
+operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(
+    body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit,
+): TestAllTypesEdition2023.GroupLikeType {
     return TestAllTypesEdition2023Internal.GroupLikeTypeInternal().apply(body)
 }
 
@@ -318,7 +413,9 @@ operator fun TestAllTypesEdition2023.GroupLikeType.Companion.invoke(body: TestAl
  * }
  * ```
  */
-fun TestAllTypesEdition2023.GroupLikeType.copy(body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit = {}): TestAllTypesEdition2023.GroupLikeType {
+fun TestAllTypesEdition2023.GroupLikeType.copy(
+    body: TestAllTypesEdition2023.GroupLikeType.Builder.() -> Unit = {},
+): TestAllTypesEdition2023.GroupLikeType {
     return this.asInternal().copyInternal(body)
 }
 
@@ -394,6 +491,24 @@ interface TestAllTypesEdition2023Presence {
 
     val hasRecursiveMessage: Boolean
 
+    val hasOneofUint32: Boolean
+
+    val hasOneofNestedMessage: Boolean
+
+    val hasOneofString: Boolean
+
+    val hasOneofBytes: Boolean
+
+    val hasOneofBool: Boolean
+
+    val hasOneofUint64: Boolean
+
+    val hasOneofFloat: Boolean
+
+    val hasOneofDouble: Boolean
+
+    val hasOneofEnum: Boolean
+
     val hasGroupliketype: Boolean
 
     val hasDelimitedField: Boolean
@@ -433,6 +548,23 @@ interface ForeignMessageEdition2023Presence {
  */
 interface GroupLikeTypePresence {
     val hasC: Boolean
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesEdition2023].
+ * Retrieve the active case via the [TestAllTypesEdition2023.oneofField] extension property.
+ */
+enum class TestAllTypesEdition2023OneofFieldCase {
+    ONEOF_UINT32,
+    ONEOF_NESTED_MESSAGE,
+    ONEOF_STRING,
+    ONEOF_BYTES,
+    ONEOF_BOOL,
+    ONEOF_UINT64,
+    ONEOF_FLOAT,
+    ONEOF_DOUBLE,
+    ONEOF_ENUM,
+    NOT_SET,
 }
 
 val TestAllTypesEdition2023.extensionInt32: Int get() = asInternal().getExtensionValue(TestMessagesEdition2023KtExtensions.extensionInt32) ?: TestMessagesEdition2023KtExtensions.extensionInt32.defaultValue.value

@@ -13,7 +13,9 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
  * }
  * ```
  */
-public operator fun SourceContext.Companion.invoke(body: SourceContext.Builder.() -> Unit): SourceContext {
+public operator fun SourceContext.Companion.invoke(
+    body: SourceContext.Builder.() -> Unit,
+): SourceContext {
     return SourceContextInternal().apply(body)
 }
 

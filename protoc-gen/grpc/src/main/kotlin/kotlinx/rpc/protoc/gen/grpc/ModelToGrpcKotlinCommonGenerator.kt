@@ -81,7 +81,7 @@ class ModelToGrpcKotlinCommonGenerator(
                     name = method.name,
                     comment = method.doc,
                     modifiers = if (method.dec.isServerStreaming) "" else "suspend",
-                    args = arg,
+                    args = listOf(arg),
                     annotations = annotations,
                     deprecation = if (method.deprecated) DeprecationLevel.WARNING else null,
                     returnType = outputType.value.name.scoped().wrapInFlowIf(method.dec.isServerStreaming),

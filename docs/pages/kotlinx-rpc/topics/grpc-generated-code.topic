@@ -181,8 +181,11 @@
 
     <chapter title="Oneof fields" id="grpc-oneof-fields">
         <p>
-            Oneof fields become Kotlin sealed interfaces.
-            Each case is a data class wrapping the value:
+            Every member of a <code>oneof</code> is a flat, non-nullable property of the message,
+            used exactly like a singular field of the same type.
+            Setting a member makes it the active case. All inactive members return their default values.
+            The enum case property is generated with the name of the oneof field. It hold currently active state or
+            <code>NOT_SET</code> if none.
         </p>
         <code-block lang="protobuf">
             package com.example;
@@ -196,18 +199,53 @@
         </code-block>
         <code-block lang="Kotlin">
             import com.example.Event
+            import com.example.EventPayloadCase
             import com.example.invoke
+            import com.example.payload
+            import com.example.presence
+            import com.example.whenPayload
 
             val event = Event {
-                payload = Event.Payload.Text("hello")
+                text = "hello"
             }
 
+            event.payload                 // EventPayloadCase.TEXT
+            event.text                    // "hello"
+            event.code                    // 0, not the active case
+            event.presence.hasText        // true
+
+            // exhaustive and typed dispatch
+            val length = event.whenPayload(
+                text = { it.length },
+                code = { it },
+                notSet = { 0 },
+            )
+
+            // exhaustive `when` over the case
             when (event.payload) {
-                is Event.Payload.Text -&gt; println(event.payload.value)
-                is Event.Payload.Code -&gt; println(event.payload.value)
-                null -&gt; {}
+                EventPayloadCase.TEXT -&gt; println(event.text)
+                EventPayloadCase.CODE -&gt; println(event.code)
+                EventPayloadCase.NOT_SET -&gt; println("not set")
             }
         </code-block>
+        <p>
+            Assigning another member in a builder or in <code>copy</code> switches the case.
+            <code>clear&lt;Member&gt;()</code> clears the oneof only if that member is the active case,
+            <code>clear&lt;Oneof&gt;()</code> clears it regardless of the active case:
+        </p>
+        <code-block lang="Kotlin">
+            import com.example.copy
+
+            val switched = event.copy { code = 5 }       // payload == EventPayloadCase.CODE, text == ""
+            val cleared = event.copy { clearPayload() }  // payload == EventPayloadCase.NOT_SET
+            val same = event.copy { clearCode() }        // no-op, TEXT is still the active case
+        </code-block>
+        <p>
+            With <code>generate.optionalFieldOrNullGetters</code> enabled, every member also gets a
+            <code>&lt;member&gt;OrNull</code> getter that returns <code>null</code> unless the member is the active case.
+            The <code>when&lt;Oneof&gt;</code> functions can be disabled with
+            <code>generate.oneOfWhenFunctions = false</code>.
+        </p>
     </chapter>
 
     <chapter title="Nested messages" id="grpc-nested-messages">
