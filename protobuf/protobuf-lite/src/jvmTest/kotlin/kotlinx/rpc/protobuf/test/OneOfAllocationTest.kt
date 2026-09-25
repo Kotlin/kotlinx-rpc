@@ -60,7 +60,10 @@ class OneOfAllocationTest {
         }
 
         assertTrue(sink != 0L)
-        assertTrue(bytes < 64 * 1024, "set/read of numeric oneof members allocated $bytes bytes over $iterations iterations")
+        assertTrue(
+            actual = bytes < 64 * 1024,
+            message = "set/read of numeric oneof members allocated $bytes bytes over $iterations iterations",
+        )
     }
 
     @Test
