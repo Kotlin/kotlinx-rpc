@@ -132,7 +132,9 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
         }
     }
 
-    private fun fail() {
+    /** Marks the writer failed when an implementation rejects a scoped write. */
+    @InternalRpcApi
+    protected fun fail() {
         state = WriterState.Failed
     }
 

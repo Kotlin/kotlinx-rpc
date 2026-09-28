@@ -2,7 +2,7 @@ import GRPCCore
 import GRPCNIOTransportHTTP2TransportServices
 
 
-typealias RawMessage = GRPCNIOTransportBytes
+internal typealias RawMessage = GRPCNIOTransportBytes
 
 internal struct RawMessageSerializer: MessageSerializer<RawMessage> {
     func serialize<Bytes: GRPCContiguousBytes>(
@@ -35,7 +35,7 @@ extension SwiftGrpcRequestSource {
             while let request = try await self.nextRequestMessage() {
                 try Task.checkCancellation()
                 
-                let message = try request.copyToRawMessage()
+                let message = try request.makeRawMessage()
                 try await writer.write(message)
             }
         }
@@ -60,7 +60,7 @@ extension SwiftGrpcRequestSource {
             if let request {
                 try Task.checkCancellation()
                 
-                let message = try request.copyToRawMessage()
+                let message = try request.makeRawMessage()
                 try await writer.write(message)
             }
         }
@@ -84,8 +84,15 @@ extension SwiftGrpcRequestSource {
 }
 
 extension SwiftGrpcRequestMessage {
+
+    internal func makeRawMessage() throws -> RawMessage {
+        if let owned = self as? SwiftGrpcRequestBytes {
+            return try owned.takeRawMessage()
+        }
+        return try copyToRawMessage()
+    }
     
-    internal func copyToRawMessage() throws -> RawMessage {
+    private func copyToRawMessage() throws -> RawMessage {
         guard length >= 0 else {
             throw RawMessageBridgeError.negativeMessageLength(length)
         }
