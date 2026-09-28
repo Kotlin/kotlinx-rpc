@@ -37,19 +37,19 @@ FILE fqName:<root> fileName:/grpc.kt
           public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
       FUN name:decode visibility:public modality:OPEN returnType:<root>.Custom
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
-        VALUE_PARAMETER kind:Regular name:stream index:1 type:kotlinx.io.Source
+        VALUE_PARAMETER kind:Regular name:reader index:1 type:kotlinx.rpc.grpc.marshaller.GrpcMessageReader
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun decode (source: kotlinx.io.Source, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+          public abstract fun decode (reader: kotlinx.rpc.grpc.marshaller.GrpcMessageReader, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
-      FUN name:encode visibility:public modality:OPEN returnType:kotlinx.io.Source
+      FUN name:prepare visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:<root>.Custom.Companion
         VALUE_PARAMETER kind:Regular name:value index:1 type:<root>.Custom
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun encode (value: T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.io.Source declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+          public abstract fun prepare (value: T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (reason: kotlin.String): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
             ARG reason: CONST String type=kotlin.String value="Not yet implemented"
@@ -650,7 +650,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_0: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.String> origin=null
                             TYPE_ARG (of class) T: kotlin.String
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_0: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
@@ -662,7 +662,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.String> origin=null
                             TYPE_ARG (of class) T: kotlin.String
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_2: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
@@ -687,7 +687,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_4: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -699,7 +699,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_6: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -724,7 +724,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.String> origin=null
                             TYPE_ARG (of class) T: kotlin.String
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_8: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.String> origin=null
@@ -736,7 +736,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_10: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -761,7 +761,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_12: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_12: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -773,7 +773,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_14: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -798,7 +798,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_16: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlinx.rpc.codegen.test.Message> origin=null
                             TYPE_ARG (of class) T: kotlinx.rpc.codegen.test.Message
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_16: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> origin=null
@@ -810,7 +810,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_18: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlinx.rpc.codegen.test.Message> origin=null
                             TYPE_ARG (of class) T: kotlinx.rpc.codegen.test.Message
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_18: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlinx.rpc.codegen.test.Message> origin=null
@@ -835,7 +835,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_20: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_20: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -847,7 +847,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_22: <root>.Custom.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=<root>.Custom.Companion origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<<root>.Custom> origin=null
                             TYPE_ARG (of class) T: <root>.Custom
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_22: <root>.Custom.Companion declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=<root>.Custom.Companion origin=null
@@ -859,7 +859,7 @@ FILE fqName:<root> fileName:/grpc.kt
             VAR IR_TEMPORARY_VARIABLE name:tmp_24 type:io.grpc.ServiceDescriptor [val]
               CALL 'public final fun serviceDescriptor (name: kotlin.String, methods: kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>>, schemaDescriptor: kotlin.Any?): io.grpc.ServiceDescriptor declared in kotlinx.rpc.grpc.internal' type=io.grpc.ServiceDescriptor origin=null
                 ARG name: CONST String type=kotlin.String value="BoxService"
-                ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
+                ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR 'val tmp_23: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.BoxService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
             RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver, marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.BoxService.$rpcServiceStub.Companion'
@@ -1237,7 +1237,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_25: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_25: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -1249,7 +1249,7 @@ FILE fqName:<root> fileName:/grpc.kt
                           then: GET_VAR 'val tmp_27: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
                         BRANCH
                           if: CONST Boolean type=kotlin.Boolean value=true
-                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate> origin=null
+                          then: CONSTRUCTOR_CALL 'public constructor <init> (config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig, delegate: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<T of kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate>) declared in kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate' type=kotlinx.rpc.grpc.marshaller.internal.ConfiguredGrpcMarshallerDelegate<kotlin.Unit> origin=null
                             TYPE_ARG (of class) T: kotlin.Unit
                             ARG config: GET_VAR 'marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig? origin=null
                             ARG delegate: GET_VAR 'val tmp_27: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlinx.rpc.grpc.marshaller.GrpcMarshaller<kotlin.Unit> origin=null
@@ -1261,7 +1261,7 @@ FILE fqName:<root> fileName:/grpc.kt
             VAR IR_TEMPORARY_VARIABLE name:tmp_30 type:io.grpc.ServiceDescriptor [val]
               CALL 'public final fun serviceDescriptor (name: kotlin.String, methods: kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>>, schemaDescriptor: kotlin.Any?): io.grpc.ServiceDescriptor declared in kotlinx.rpc.grpc.internal' type=io.grpc.ServiceDescriptor origin=null
                 ARG name: CONST String type=kotlin.String value="my.proto.package.ProtoPkgService"
-                ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<V of kotlin.collections.Map> origin=GET_PROPERTY
+                ARG methods: CALL 'public abstract fun <get-values> (): kotlin.collections.Collection<V of kotlin.collections.Map> declared in kotlin.collections.Map' type=kotlin.collections.Collection<io.grpc.MethodDescriptor<*, *>> origin=GET_PROPERTY
                   ARG <this>: GET_VAR 'val tmp_29: kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> declared in <root>.ProtoPkgService.$rpcServiceStub.Companion.delegate' type=kotlin.collections.Map<kotlin.String, io.grpc.MethodDescriptor<*, *>> origin=null
                 ARG schemaDescriptor: CONST Null type=kotlin.Any? value=null
             RETURN type=kotlin.Nothing from='public final fun delegate (resolver: kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver, marshallerConfig: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate declared in <root>.ProtoPkgService.$rpcServiceStub.Companion'

@@ -10,6 +10,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.PublicImportMessage
@@ -611,8 +613,8 @@ object TestUtil {
     }
 
     fun <M> encodeDecode(msg: M, marshaller: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<M>): M {
-        val source = marshaller.encode(msg)
-        return marshaller.decode(source)
+        val source = marshaller.encodeToBuffer(msg)
+        return marshaller.decodeFromSource(source)
     }
 
     // ===========================================================================================================

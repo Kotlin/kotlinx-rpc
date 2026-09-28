@@ -108,18 +108,18 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
           public open fun toString (): kotlin.String declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
       FUN name:decode visibility:public modality:OPEN returnType:test.my_message.MyMessage
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.MARSHALLER
-        VALUE_PARAMETER kind:Regular name:source index:1 type:kotlinx.io.Source
+        VALUE_PARAMETER kind:Regular name:reader index:1 type:kotlinx.rpc.grpc.marshaller.GrpcMessageReader
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun decode (source: kotlinx.io.Source, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+          public abstract fun decode (reader: kotlinx.rpc.grpc.marshaller.GrpcMessageReader, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
-      FUN name:encode visibility:public modality:OPEN returnType:kotlinx.io.Source
+      FUN name:prepare visibility:public modality:OPEN returnType:kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.MARSHALLER
         VALUE_PARAMETER kind:Regular name:value index:1 type:test.my_message.MyMessage
         VALUE_PARAMETER kind:Regular name:config index:2 type:kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?
         overridden:
-          public abstract fun encode (value: T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.io.Source declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+          public abstract fun prepare (value: T of kotlinx.rpc.grpc.marshaller.GrpcMarshaller, config: kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?): kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage declared in kotlinx.rpc.grpc.marshaller.GrpcMarshaller
         BLOCK_BODY
           CALL 'public final fun TODO (): kotlin.Nothing declared in kotlin' type=kotlin.Nothing origin=null
     CLASS OBJECT name:PresenceIndices modality:FINAL visibility:private superTypes:[kotlin.Any]

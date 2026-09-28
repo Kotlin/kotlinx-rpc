@@ -5,10 +5,7 @@ package com.google.protobuf_test_messages.edition2023
 
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -20,14 +17,13 @@ import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.fixed32
@@ -140,27 +136,21 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ComplexMessage> {
-        override fun encode(value: ComplexMessage, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ComplexMessage, ComplexMessageInternal>() {
+        override fun asInternal(value: ComplexMessage): ComplexMessageInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ComplexMessage {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ComplexMessageInternal()
-                checkForPlatformDecodeException {
-                    ComplexMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ComplexMessageInternal {
+            return ComplexMessageInternal()
+        }
+
+        override fun encodeWith(message: ComplexMessageInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: ComplexMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            ComplexMessageInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -1327,27 +1317,21 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023.NestedMessage> {
-            override fun encode(value: TestAllTypesEdition2023.NestedMessage, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023.NestedMessage, NestedMessageInternal>() {
+            override fun asInternal(value: TestAllTypesEdition2023.NestedMessage): NestedMessageInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023.NestedMessage {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = NestedMessageInternal()
-                    checkForPlatformDecodeException {
-                        NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                    }
-                    return msg
-                }
+            override fun newInternal(): NestedMessageInternal {
+                return NestedMessageInternal()
+            }
+
+            override fun encodeWith(message: NestedMessageInternal, encoder: WireEncoder, config: ProtoConfig?) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(message: NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+                NestedMessageInternal.decodeWith(message, decoder, config)
             }
         }
 
@@ -2794,27 +2778,21 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023.GroupLikeType> {
-            override fun encode(value: TestAllTypesEdition2023.GroupLikeType, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023.GroupLikeType, GroupLikeTypeInternal>() {
+            override fun asInternal(value: TestAllTypesEdition2023.GroupLikeType): GroupLikeTypeInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023.GroupLikeType {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = GroupLikeTypeInternal()
-                    checkForPlatformDecodeException {
-                        GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtoConfig, null)
-                    }
-                    return msg
-                }
+            override fun newInternal(): GroupLikeTypeInternal {
+                return GroupLikeTypeInternal()
+            }
+
+            override fun encodeWith(message: GroupLikeTypeInternal, encoder: WireEncoder, config: ProtoConfig?) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(message: GroupLikeTypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+                GroupLikeTypeInternal.decodeWith(message, decoder, config, null)
             }
         }
 
@@ -2900,27 +2878,21 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023> {
-        override fun encode(value: TestAllTypesEdition2023, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023, TestAllTypesEdition2023Internal>() {
+        override fun asInternal(value: TestAllTypesEdition2023): TestAllTypesEdition2023Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TestAllTypesEdition2023Internal()
-                checkForPlatformDecodeException {
-                    TestAllTypesEdition2023Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): TestAllTypesEdition2023Internal {
+            return TestAllTypesEdition2023Internal()
+        }
+
+        override fun encodeWith(message: TestAllTypesEdition2023Internal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: TestAllTypesEdition2023Internal, decoder: WireDecoder, config: ProtoConfig?) {
+            TestAllTypesEdition2023Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3016,27 +2988,21 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ForeignMessageEdition2023> {
-        override fun encode(value: ForeignMessageEdition2023, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ForeignMessageEdition2023, ForeignMessageEdition2023Internal>() {
+        override fun asInternal(value: ForeignMessageEdition2023): ForeignMessageEdition2023Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ForeignMessageEdition2023 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ForeignMessageEdition2023Internal()
-                checkForPlatformDecodeException {
-                    ForeignMessageEdition2023Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ForeignMessageEdition2023Internal {
+            return ForeignMessageEdition2023Internal()
+        }
+
+        override fun encodeWith(message: ForeignMessageEdition2023Internal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: ForeignMessageEdition2023Internal, decoder: WireDecoder, config: ProtoConfig?) {
+            ForeignMessageEdition2023Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3132,27 +3098,21 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<GroupLikeType> {
-        override fun encode(value: GroupLikeType, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<GroupLikeType, GroupLikeTypeInternal>() {
+        override fun asInternal(value: GroupLikeType): GroupLikeTypeInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): GroupLikeType {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = GroupLikeTypeInternal()
-                checkForPlatformDecodeException {
-                    GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): GroupLikeTypeInternal {
+            return GroupLikeTypeInternal()
+        }
+
+        override fun encodeWith(message: GroupLikeTypeInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: GroupLikeTypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            GroupLikeTypeInternal.decodeWith(message, decoder, config)
         }
     }
 

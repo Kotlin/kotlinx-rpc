@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -142,7 +144,7 @@ class ProtoExtensionTest {
 
         // encoding works without extension registry
         val plainCodec = grpcMarshallerOf<ExtensionBase>()
-        val encoded = plainCodec.encode(message)
+        val encoded = plainCodec.encodeToBuffer(message)
 
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.int32
@@ -157,7 +159,7 @@ class ProtoExtensionTest {
         val config = ProtoConfig { extensionRegistry = registry }
         val extensionCodec = grpcMarshallerOf<ExtensionBase>(config)
 
-        val decoded = extensionCodec.decode(encoded)
+        val decoded = extensionCodec.decodeFromSource(encoded)
         assertEquals(message.int32, decoded.int32)
         assertEquals(message.enum, decoded.enum)
         assertEquals(message.msg, decoded.msg)
@@ -177,7 +179,7 @@ class ProtoExtensionTest {
         }
 
         val plainCodec = grpcMarshallerOf<ExtensionBase>()
-        val encoded = plainCodec.encode(message)
+        val encoded = plainCodec.encodeToBuffer(message)
 
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.int32
@@ -186,7 +188,7 @@ class ProtoExtensionTest {
         val config = ProtoConfig { extensionRegistry = registry }
         val extensionCodec = grpcMarshallerOf<ExtensionBase>(config)
 
-        val decoded = extensionCodec.decode(encoded)
+        val decoded = extensionCodec.decodeFromSource(encoded)
         assertEquals(message, decoded)
         assertEquals(123, decoded.subExt.int32)
     }
@@ -205,10 +207,10 @@ class ProtoExtensionTest {
             }
         }
 
-        val decodedPopulated = codec.decode(grpcMarshallerOf<ExtensionBase>().encode(populated))
+        val decodedPopulated = codec.decodeFromSource(grpcMarshallerOf<ExtensionBase>().encodeToBuffer(populated))
         assertEquals(123, decodedPopulated.msg.int32)
 
-        val decodedEmpty = codec.decode(Buffer())
+        val decodedEmpty = codec.decodeFromSource(Buffer())
         assertEquals(0, decodedEmpty.msg.int32)
         assertEquals("", decodedEmpty.msg.requiredString)
         assertByteStringContentEquals(byteArrayOf(), decodedEmpty.msg.requiredBytes)
@@ -218,8 +220,8 @@ class ProtoExtensionTest {
     fun `test extension message decode with missing extension`() {
         val message = completeMessage()
         val codec = grpcMarshallerOf<ExtensionBase>()
-        val encoded = codec.encode(message)
-        val decoded = codec.decode(encoded)
+        val encoded = codec.encodeToBuffer(message)
+        val decoded = codec.decodeFromSource(encoded)
         // equals to extension message without any extension fields set
         assertEquals(ExtensionBase { }, decoded)
     }
@@ -251,7 +253,7 @@ class ProtoExtensionTest {
             )
         }
 
-        val encoded = grpcMarshallerOf<ExtensionBase>().encode(message)
+        val encoded = grpcMarshallerOf<ExtensionBase>().encodeToBuffer(message)
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.string
             +ExtensionBase.msg
@@ -261,7 +263,8 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedMsg
             +ExtensionBase.repeatedSubExt
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
+            .decodeFromSource(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -283,14 +286,15 @@ class ProtoExtensionTest {
             }
         }
 
-        val encoded = grpcMarshallerOf<ExtensionBase>().encode(message)
+        val encoded = grpcMarshallerOf<ExtensionBase>().encodeToBuffer(message)
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.testgroup
             with(MessageScopedExtensions) {
                 +ExtensionBase.testgroup
             }
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
+            .decodeFromSource(encoded)
 
         assertEquals(message.testgroup, decoded.testgroup)
         with(MessageScopedExtensions) {
@@ -306,13 +310,14 @@ class ProtoExtensionTest {
             repeatedEnum = listOf(MyEnum.ONE, MyEnum.THREE)
         }
 
-        val encoded = grpcMarshallerOf<ExtensionBase>().encode(message)
+        val encoded = grpcMarshallerOf<ExtensionBase>().encodeToBuffer(message)
 
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
+            .decodeFromSource(encoded)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -335,7 +340,8 @@ class ProtoExtensionTest {
             +ExtensionBase.repeatedInt32
             +ExtensionBase.repeatedEnum
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(buffer)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
+            .decodeFromSource(buffer)
 
         assertEquals(listOf(1, 2, 3), decoded.repeatedInt32)
         assertEquals(listOf(MyEnum.ONE, MyEnum.THREE), decoded.repeatedEnum)
@@ -353,7 +359,7 @@ class ProtoExtensionTest {
             }
         }
 
-        val encoded = grpcMarshallerOf<ExtensionBase>().encode(message)
+        val encoded = grpcMarshallerOf<ExtensionBase>().encodeToBuffer(message)
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.conflicting
             with(MessageScopedExtensions) {
@@ -363,7 +369,8 @@ class ProtoExtensionTest {
                 }
             }
         }
-        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry }).decode(encoded)
+        val decoded = grpcMarshallerOf<ExtensionBase>(ProtoConfig { extensionRegistry = registry })
+            .decodeFromSource(encoded)
 
         assertEquals("apfelstrudel", decoded.conflicting)
         with(MessageScopedExtensions) {

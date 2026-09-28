@@ -36,6 +36,19 @@ public class BufferMessageWriter(
         val count = checkedWriteByteCount(source, byteCount)
         recordWrite(count) { buffer.write(source, byteCount) }
     }
+
+    /** Provides direct, exact-size access to the destination buffer. */
+    @InternalRpcApi
+    public fun writeDirect(writeAction: (Buffer) -> Unit) {
+        val byteCount = remaining
+        recordWrite(byteCount) {
+            val sizeBefore = buffer.size
+            writeAction(buffer)
+            check(buffer.size - sizeBefore == byteCount.toLong()) {
+                "The direct writer wrote ${buffer.size - sizeBefore} bytes, expected $byteCount"
+            }
+        }
+    }
 }
 
 /** A [GrpcMessageWriter] backed by [array]. */
@@ -57,6 +70,16 @@ public class ByteArrayMessageWriter(
     override fun write(source: Buffer, byteCount: Long) {
         val count = checkedWriteByteCount(source, byteCount)
         recordWrite(count) { source.readTo(array, written, written + count) }
+    }
+
+    /** Provides direct, exact-size access to the unwritten array range. */
+    @InternalRpcApi
+    public fun writeDirect(writeAction: (ByteArray, startIndex: Int, endIndex: Int) -> Unit) {
+        val startIndex = written
+        val byteCount = remaining
+        recordWrite(byteCount) {
+            writeAction(array, startIndex, startIndex + byteCount)
+        }
     }
 }
 
@@ -87,6 +110,13 @@ public class BufferMessageReader(
             sourceProvided = true
         }
         return buffer
+    }
+
+    /** Provides direct access to the unread buffer for the duration of [readAction]. */
+    @InternalRpcApi
+    public fun <T> readDirect(readAction: (Buffer) -> T): T {
+        val byteCount = remaining
+        return recordRead(byteCount) { readAction(buffer) }
     }
 }
 
@@ -123,6 +153,20 @@ public class ByteArrayMessageReader(
         }
         source = copied
         return copied
+    }
+
+    /** Provides direct access to the unread array range for the duration of [readAction]. */
+    @InternalRpcApi
+    public fun <T> readDirect(
+        readAction: (ByteArray, startIndex: Int, endIndex: Int) -> T,
+    ): T {
+        val startIndex = position
+        val byteCount = remaining
+        return recordRead(byteCount) {
+            readAction(array, startIndex, startIndex + byteCount).also {
+                position += byteCount
+            }
+        }
     }
 }
 

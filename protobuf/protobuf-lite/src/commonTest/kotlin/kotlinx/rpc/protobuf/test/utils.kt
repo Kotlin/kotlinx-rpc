@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlin.test.assertContentEquals
@@ -11,8 +13,8 @@ import kotlin.test.assertContentEquals
 internal fun <M> M.encodeDecode(
     marshaller: GrpcMarshaller<M>,
 ): M {
-    val source = marshaller.encode(this)
-    return marshaller.decode(source)
+    val source = marshaller.encodeToBuffer(this)
+    return marshaller.decodeFromSource(source)
 }
 
 internal fun ByteArray.asByteString(): ByteString = ByteString(*this)

@@ -12,6 +12,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -75,18 +77,18 @@ class WireFormatTest {
 
         // Simulate conflicting oneof fields on the wire: parser must keep the last one.
         val encoded = Buffer().apply {
-            transferFrom(marshaller.encode(withUint32))
-            transferFrom(marshaller.encode(withString))
+            transferFrom(marshaller.encodeToBuffer(withUint32))
+            transferFrom(marshaller.encodeToBuffer(withString))
         }
-        val decoded = marshaller.decode(encoded)
+        val decoded = marshaller.decodeFromSource(encoded)
         assertIs<TestAllTypes.OneofField.OneofString>(decoded.oneofField)
         assertEquals("last", (decoded.oneofField as TestAllTypes.OneofField.OneofString).value)
 
         val encodedReverse = Buffer().apply {
-            transferFrom(marshaller.encode(withString))
-            transferFrom(marshaller.encode(withUint32))
+            transferFrom(marshaller.encodeToBuffer(withString))
+            transferFrom(marshaller.encodeToBuffer(withUint32))
         }
-        val decodedReverse = marshaller.decode(encodedReverse)
+        val decodedReverse = marshaller.decodeFromSource(encodedReverse)
         assertIs<TestAllTypes.OneofField.OneofUint32>(decodedReverse.oneofField)
         assertEquals(42u, (decodedReverse.oneofField as TestAllTypes.OneofField.OneofUint32).value)
     }
@@ -99,8 +101,8 @@ class WireFormatTest {
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
         val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
 
-        val encoded = packedMarshaller.encode(packed)
-        val decoded = unpackedMarshaller.decode(encoded)
+        val encoded = packedMarshaller.encodeToBuffer(packed)
+        val decoded = unpackedMarshaller.decodeFromSource(encoded)
         TestUtil.assertUnpackedFieldsSet(decoded)
     }
 
@@ -110,8 +112,8 @@ class WireFormatTest {
         val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
 
-        val encoded = unpackedMarshaller.encode(unpacked)
-        val decoded = packedMarshaller.decode(encoded)
+        val encoded = unpackedMarshaller.encodeToBuffer(unpacked)
+        val decoded = packedMarshaller.decodeFromSource(encoded)
         TestUtil.assertPackedFieldsSet(decoded)
     }
 
@@ -148,8 +150,8 @@ class WireFormatTest {
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
         // Packed extension wire format should be identical to regular packed types
         // (no groups involved in packed fields).
-        val encoded = packedExtMarshaller.encode(message)
-        val decoded = packedMarshaller.decode(encoded)
+        val encoded = packedExtMarshaller.encodeToBuffer(message)
+        val decoded = packedMarshaller.decodeFromSource(encoded)
         TestUtil.assertPackedFieldsSet(decoded)
     }
 
@@ -159,10 +161,10 @@ class WireFormatTest {
         // Cross-format: encode packed types, decode as packed extensions
         val message = TestUtil.getPackedSet()
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
-        val encoded = packedMarshaller.encode(message)
+        val encoded = packedMarshaller.encodeToBuffer(message)
         val config = ProtoConfig { extensionRegistry = TestUtil.getPackedExtensionRegistry() }
         val packedExtMarshaller = grpcMarshallerOf<TestPackedExtensions>(config)
-        val decoded = packedExtMarshaller.decode(encoded)
+        val decoded = packedExtMarshaller.decodeFromSource(encoded)
         TestUtil.assertPackedExtensionsSet(decoded)
     }
 

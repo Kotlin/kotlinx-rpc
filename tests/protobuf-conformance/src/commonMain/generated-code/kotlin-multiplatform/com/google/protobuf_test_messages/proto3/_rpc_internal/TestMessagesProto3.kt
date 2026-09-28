@@ -44,11 +44,8 @@ import com.google.protobuf.kotlin.encodeWith
 import com.google.protobuf.kotlin.fromNumber
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.isNotEmpty
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -57,14 +54,13 @@ import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.fixed32
@@ -1459,27 +1455,21 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesProto3.NestedMessage> {
-            override fun encode(value: TestAllTypesProto3.NestedMessage, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesProto3.NestedMessage, NestedMessageInternal>() {
+            override fun asInternal(value: TestAllTypesProto3.NestedMessage): NestedMessageInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3.NestedMessage {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = NestedMessageInternal()
-                    checkForPlatformDecodeException {
-                        NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                    }
-                    return msg
-                }
+            override fun newInternal(): NestedMessageInternal {
+                return NestedMessageInternal()
+            }
+
+            override fun encodeWith(message: NestedMessageInternal, encoder: WireEncoder, config: ProtoConfig?) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(message: NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+                NestedMessageInternal.decodeWith(message, decoder, config)
             }
         }
 
@@ -2524,27 +2514,21 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<TestAllTypesProto3> {
-        override fun encode(value: TestAllTypesProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesProto3, TestAllTypesProto3Internal>() {
+        override fun asInternal(value: TestAllTypesProto3): TestAllTypesProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TestAllTypesProto3Internal()
-                checkForPlatformDecodeException {
-                    TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): TestAllTypesProto3Internal {
+            return TestAllTypesProto3Internal()
+        }
+
+        override fun encodeWith(message: TestAllTypesProto3Internal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+            TestAllTypesProto3Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2613,27 +2597,21 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ForeignMessage> {
-        override fun encode(value: ForeignMessage, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ForeignMessage, ForeignMessageInternal>() {
+        override fun asInternal(value: ForeignMessage): ForeignMessageInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ForeignMessage {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ForeignMessageInternal()
-                checkForPlatformDecodeException {
-                    ForeignMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ForeignMessageInternal {
+            return ForeignMessageInternal()
+        }
+
+        override fun encodeWith(message: ForeignMessageInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: ForeignMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            ForeignMessageInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2696,27 +2674,21 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<NullHypothesisProto3> {
-        override fun encode(value: NullHypothesisProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<NullHypothesisProto3, NullHypothesisProto3Internal>() {
+        override fun asInternal(value: NullHypothesisProto3): NullHypothesisProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): NullHypothesisProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = NullHypothesisProto3Internal()
-                checkForPlatformDecodeException {
-                    NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): NullHypothesisProto3Internal {
+            return NullHypothesisProto3Internal()
+        }
+
+        override fun encodeWith(message: NullHypothesisProto3Internal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+            NullHypothesisProto3Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2779,27 +2751,21 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<EnumOnlyProto3> {
-        override fun encode(value: EnumOnlyProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<EnumOnlyProto3, EnumOnlyProto3Internal>() {
+        override fun asInternal(value: EnumOnlyProto3): EnumOnlyProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): EnumOnlyProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = EnumOnlyProto3Internal()
-                checkForPlatformDecodeException {
-                    EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): EnumOnlyProto3Internal {
+            return EnumOnlyProto3Internal()
+        }
+
+        override fun encodeWith(message: EnumOnlyProto3Internal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+            EnumOnlyProto3Internal.decodeWith(message, decoder, config)
         }
     }
 

@@ -72,11 +72,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|test/my_message/MyMessage| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|test/my_message/MyMessage| {
                 R|kotlin/TODO|()
             }
 

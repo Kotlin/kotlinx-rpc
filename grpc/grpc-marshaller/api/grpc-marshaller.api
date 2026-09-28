@@ -15,22 +15,14 @@ public final class kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage$Companion {
 }
 
 public abstract interface class kotlinx/rpc/grpc/marshaller/GrpcMarshaller {
-	public abstract fun decode (Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
-	public fun decode (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
-	public static synthetic fun decode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Ljava/lang/Object;
+	public abstract fun decode (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
 	public static synthetic fun decode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Ljava/lang/Object;
-	public abstract fun encode (Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/io/Source;
-	public static synthetic fun encode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/io/Source;
-	public fun prepare (Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
+	public abstract fun prepare (Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
 	public static synthetic fun prepare$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
 }
 
 public final class kotlinx/rpc/grpc/marshaller/GrpcMarshaller$DefaultImpls {
-	public static fun decode (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
-	public static synthetic fun decode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Ljava/lang/Object;
 	public static synthetic fun decode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Ljava/lang/Object;
-	public static synthetic fun encode$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/io/Source;
-	public static fun prepare (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
 	public static synthetic fun prepare$default (Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;ILjava/lang/Object;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
 }
 
@@ -79,6 +71,14 @@ public abstract class kotlinx/rpc/grpc/marshaller/GrpcMessageWriter {
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/marshaller/HasWithGrpcMarshaller : java/lang/annotation/Annotation {
+}
+
+public abstract class kotlinx/rpc/grpc/marshaller/StreamingGrpcMarshaller : kotlinx/rpc/grpc/marshaller/GrpcMarshaller {
+	public fun <init> ()V
+	protected abstract fun decode (Lkotlinx/io/Source;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
+	public final fun decode (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Ljava/lang/Object;
+	protected abstract fun encode (Ljava/lang/Object;Lkotlinx/io/Sink;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
+	public final fun prepare (Ljava/lang/Object;Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)Lkotlinx/rpc/grpc/marshaller/GrpcEncodedMessage;
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/marshaller/WithGrpcMarshaller : java/lang/annotation/Annotation {

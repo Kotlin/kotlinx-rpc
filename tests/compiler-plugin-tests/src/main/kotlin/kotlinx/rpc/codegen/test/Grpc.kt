@@ -5,9 +5,10 @@
 package kotlinx.rpc.codegen.test
 
 import io.grpc.MethodDescriptor
-import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
@@ -77,34 +78,34 @@ object SimpleResolver : GrpcMarshallerResolver {
 }
 
 object StringMarshaller : GrpcMarshaller<String> {
-    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
-        TODO("Not yet implemented")
-    }
+    override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
+            TODO("Not yet implemented")
+        }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
-        TODO("Not yet implemented")
-    }
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String {
+            TODO("Not yet implemented")
+        }
 }
 
 object UnitMarshaller : GrpcMarshaller<String> {
-    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
-        TODO("Not yet implemented")
-    }
+    override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
+            TODO("Not yet implemented")
+        }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
-        TODO("Not yet implemented")
-    }
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String {
+            TODO("Not yet implemented")
+        }
 }
 
 @Suppress("unused")
 class Message(val a: Int, val b: String)
 
 object MessageClassMarshaller : GrpcMarshaller<Message> {
-    override fun encode(value: Message, config: GrpcMarshallerConfig?): Source {
-        TODO("Not yet implemented")
-    }
+    override fun prepare(value: Message, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
+            TODO("Not yet implemented")
+        }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Message {
-        TODO("Not yet implemented")
-    }
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Message {
+            TODO("Not yet implemented")
+        }
 }

@@ -45,7 +45,7 @@ public fun ProtoConfig(builder: ProtoConfig.Builder.() -> Unit): ProtoConfig {
  * val myMarshaller = grpcMarshallerOf<MyMessage>(config)
  *
  * // Or pass config per-operation
- * val decoded = marshaller.decode(stream, config)
+ * val decoded = marshaller.decodeFromSource(stream, config)
  * ```
  *
  * @property discardUnknownFields When `true`, unknown fields encountered during deserialization

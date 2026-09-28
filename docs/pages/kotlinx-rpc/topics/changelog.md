@@ -808,3 +808,17 @@ Release contains breaking changes, see the [migration guide](https://kotlin.gith
 * [@turansky](https://github.com/turansky) made their first contribution in [#96](https://github.com/Kotlin/kotlinx-rpc/pull/96)
 * [@vnikolova](https://github.com/vnikolova) made their first contribution in [#86](https://github.com/Kotlin/kotlinx-rpc/pull/86)
 
+## Unreleased
+> Not published
+
+**Full Changelog**: [0.11.0-grpc-189...main](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-189...main)
+
+#### Breaking Changes {id=Breaking_Changes_Unreleased}
+
+* gRPC custom marshallers now implement `prepare(value): GrpcEncodedMessage` and
+  `decode(reader: GrpcMessageReader)`. The previous `encode(value): Source` and
+  `decode(source: Source)` methods have been removed. Use `StreamingGrpcMarshaller`
+  for formats that need buffering to determine size, and the `encodeToByteArray`,
+  `encodeToBuffer`, `decodeFromByteArray`, or `decodeFromSource` helpers outside
+  a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
+

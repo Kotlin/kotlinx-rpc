@@ -13,6 +13,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlin.test.Test
@@ -48,14 +50,14 @@ class ParserTest {
         val marshaller = grpcMarshallerOf<TestAllTypes>()
         val emptyMarshaller = grpcMarshallerOf<TestEmptyMessage>()
 
-        val encoded = marshaller.encode(message)
-        val empty = emptyMarshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(message)
+        val empty = emptyMarshaller.decodeFromSource(encoded)
 
         // Re-encode the empty message (which should preserve unknown fields)
-        val reEncoded = emptyMarshaller.encode(empty)
+        val reEncoded = emptyMarshaller.encodeToBuffer(empty)
 
         // Decode as TestAllTypes again — should recover all fields
-        val recovered = marshaller.decode(reEncoded)
+        val recovered = marshaller.decodeFromSource(reEncoded)
         TestUtil.assertAllFieldsSet(recovered)
     }
 

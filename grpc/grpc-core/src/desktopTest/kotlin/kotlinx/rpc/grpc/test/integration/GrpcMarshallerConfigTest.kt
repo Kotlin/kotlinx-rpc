@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
@@ -110,7 +112,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
         // encode and decode as UnknownFieldsAll
         val marshaller = grpcMarshallerOf<UnknownFieldsAll>()
-        val decoded = marshaller.decode(marshaller.encode(message))
+        val decoded = marshaller.decodeFromSource(marshaller.encodeToBuffer(message))
         // should have preserved all fields
         assertEquals(message, decoded)
     }

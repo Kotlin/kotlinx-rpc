@@ -5,9 +5,6 @@ package com.google.protobuf.conformance
 
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -16,14 +13,13 @@ import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.string
@@ -95,27 +91,21 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<TestStatus> {
-        override fun encode(value: TestStatus, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<TestStatus, TestStatusInternal>() {
+        override fun asInternal(value: TestStatus): TestStatusInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestStatus {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TestStatusInternal()
-                checkForPlatformDecodeException {
-                    TestStatusInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): TestStatusInternal {
+            return TestStatusInternal()
+        }
+
+        override fun encodeWith(message: TestStatusInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: TestStatusInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            TestStatusInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -184,27 +174,21 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<FailureSet> {
-        override fun encode(value: FailureSet, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<FailureSet, FailureSetInternal>() {
+        override fun asInternal(value: FailureSet): FailureSetInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): FailureSet {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = FailureSetInternal()
-                checkForPlatformDecodeException {
-                    FailureSetInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): FailureSetInternal {
+            return FailureSetInternal()
+        }
+
+        override fun encodeWith(message: FailureSetInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: FailureSetInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            FailureSetInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -345,27 +329,21 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ConformanceRequest> {
-        override fun encode(value: ConformanceRequest, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ConformanceRequest, ConformanceRequestInternal>() {
+        override fun asInternal(value: ConformanceRequest): ConformanceRequestInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceRequest {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ConformanceRequestInternal()
-                checkForPlatformDecodeException {
-                    ConformanceRequestInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ConformanceRequestInternal {
+            return ConformanceRequestInternal()
+        }
+
+        override fun encodeWith(message: ConformanceRequestInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: ConformanceRequestInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            ConformanceRequestInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -454,27 +432,21 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ConformanceResponse> {
-        override fun encode(value: ConformanceResponse, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ConformanceResponse, ConformanceResponseInternal>() {
+        override fun asInternal(value: ConformanceResponse): ConformanceResponseInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ConformanceResponse {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ConformanceResponseInternal()
-                checkForPlatformDecodeException {
-                    ConformanceResponseInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ConformanceResponseInternal {
+            return ConformanceResponseInternal()
+        }
+
+        override fun encodeWith(message: ConformanceResponseInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: ConformanceResponseInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            ConformanceResponseInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -543,27 +515,21 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<JspbEncodingConfig> {
-        override fun encode(value: JspbEncodingConfig, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<JspbEncodingConfig, JspbEncodingConfigInternal>() {
+        override fun asInternal(value: JspbEncodingConfig): JspbEncodingConfigInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): JspbEncodingConfig {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = JspbEncodingConfigInternal()
-                checkForPlatformDecodeException {
-                    JspbEncodingConfigInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): JspbEncodingConfigInternal {
+            return JspbEncodingConfigInternal()
+        }
+
+        override fun encodeWith(message: JspbEncodingConfigInternal, encoder: WireEncoder, config: ProtoConfig?) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(message: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtoConfig?) {
+            JspbEncodingConfigInternal.decodeWith(message, decoder, config)
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protobuf.internal
@@ -11,10 +11,12 @@ import kotlinx.io.asOutputStream
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 
-private class WireEncoderJvm(sink: Sink) : WireEncoder {
-    private val codedOutputStream = CodedOutputStream.newInstance(sink.asOutputStream())
+private class WireEncoderJvm(
+    val codedOutputStream: CodedOutputStream,
+) : WireEncoder {
 
     override fun flush() {
         codedOutputStream.flush()
@@ -228,7 +230,22 @@ private class WireEncoderJvm(sink: Sink) : WireEncoder {
 }
 
 public actual fun WireEncoder(sink: Sink): WireEncoder {
-    return WireEncoderJvm(sink)
+    return WireEncoderJvm(CodedOutputStream.newInstance(sink.asOutputStream()))
+}
+
+/** Creates an encoder that writes into the range `[startIndex, endIndex)` of [bytes]. */
+@InternalRpcApi
+public fun WireEncoder(bytes: ByteArray, startIndex: Int, endIndex: Int): WireEncoder {
+    require(startIndex in 0..endIndex && endIndex <= bytes.size) {
+        "Invalid byte array range [$startIndex, $endIndex) for size ${bytes.size}"
+    }
+    return WireEncoderJvm(CodedOutputStream.newInstance(bytes, startIndex, endIndex - startIndex))
+}
+
+/** Verifies that this fixed-size encoder filled its complete destination range. */
+@InternalRpcApi
+public fun WireEncoder.requireComplete() {
+    (this as WireEncoderJvm).codedOutputStream.checkNoSpaceLeft()
 }
 
 public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {

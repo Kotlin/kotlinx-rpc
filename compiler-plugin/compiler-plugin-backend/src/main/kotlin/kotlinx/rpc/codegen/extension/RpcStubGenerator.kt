@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.codegen.extension
@@ -1125,7 +1125,11 @@ internal class RpcStubGenerator(
                             symbol = methodDescriptorMap.symbol,
                         ),
                         property = ctx.properties.mapValues.owner,
-                    )
+                    ).apply {
+                        type = ctx.irBuiltIns.collectionClass.typeWith(
+                            ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
+                        )
+                    }
 
                     +nullConst(ctx.anyNullable)
                 }
@@ -1290,6 +1294,7 @@ internal class RpcStubGenerator(
             callee = ctx.configuredGrpcMarshallerDelegate.constructors.single(),
             typeArguments = listOf(messageType),
         ).apply {
+            type = ctx.configuredGrpcMarshallerDelegate.typeWith(messageType)
             arguments {
                 values {
                     +irGet(marshallerConfig)

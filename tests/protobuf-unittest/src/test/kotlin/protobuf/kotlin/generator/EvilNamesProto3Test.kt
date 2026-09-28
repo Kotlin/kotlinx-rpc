@@ -16,6 +16,8 @@
 
 package protobuf.kotlin.generator
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -256,8 +258,8 @@ class EvilNamesProto3Test {
             allCAPS = listOf("X")
             allCAPSMAP = mapOf(1 to true)
         }
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(msg.hasFoo, decoded.hasFoo)
         assertEquals(msg.bar, decoded.bar)
@@ -293,8 +295,8 @@ class EvilNamesProto3Test {
             `fun` = listOf(HardKeywordsAllTypesProto3.NestedEnum.BAR)
             `if` = listOf(HardKeywordsAllTypesProto3.NestedMessage { `while` = 99 })
         }
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(42, decoded.`as`)
         assertEquals("inside", decoded.`in`)

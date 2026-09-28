@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.grpc.marshaller
 
-import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
@@ -37,7 +35,7 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  * different configuration options by defining its own [GrpcMarshallerConfig] subtype.
  *
  * Configuration can be passed to marshallers in two ways:
- * - Per-operation: directly to [GrpcMarshaller.encode] and [GrpcMarshaller.decode] methods
+ * - Per-operation: directly to [GrpcMarshaller.prepare] and [GrpcMarshaller.decode] methods
  * - As default: when retrieving a marshaller using [grpcMarshallerOf],
  *   which wraps the marshaller to use the config by default
  *
@@ -46,11 +44,11 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  * // Per-operation config
  * val marshaller = grpcMarshallerOf<MyProtoMessage>()
  * val config = ProtoConfig { discardUnknownFields = true }
- * val encoded = marshaller.encode(message, config)
+ * val encoded = marshaller.encodeToByteArray(message, config)
  *
  * // Default config
  * val marshallerWithConfig = grpcMarshallerOf<MyProtoMessage>(ProtoConfig { discardUnknownFields = true })
- * val encoded = marshallerWithConfig.encode(message) // uses the default config
+ * val encoded = marshallerWithConfig.encodeToByteArray(message) // uses the default config
  * ```
  *
  *
@@ -67,24 +65,14 @@ public interface GrpcMarshaller<T> {
      *
      * This method may run on a different thread from [GrpcEncodedMessage.writeTo].
      */
-    public fun prepare(value: T, config: GrpcMarshallerConfig? = null): GrpcEncodedMessage =
-        GrpcEncodedMessage.of(
-            encode(value, config).let { source ->
-                source as? Buffer ?: Buffer().also { source.transferTo(it) }
-            },
-        )
-
-    public fun encode(value: T, config: GrpcMarshallerConfig? = null): Source
+    public fun prepare(value: T, config: GrpcMarshallerConfig? = null): GrpcEncodedMessage
 
     /**
      * Decodes one message from [reader].
      *
      * The reader is valid only for the duration of this call.
      */
-    public fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig? = null): T =
-        decode(reader.asSource(), config)
-
-    public fun decode(source: Source, config: GrpcMarshallerConfig? = null): T
+    public fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig? = null): T
 }
 
 @InternalRpcApi

@@ -1,9 +1,13 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
+
+@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class)
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import OneOfMsg
 import OneOfWithRequired
 import Outer
@@ -14,6 +18,9 @@ import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
@@ -31,6 +38,7 @@ import test.submsg.encodeWith
 import test.submsg.invoke
 import test.submsg.presence
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -44,8 +52,8 @@ class ProtosTest {
         msg: M,
         marshaller: GrpcMarshaller<M>,
     ): M {
-        val source = marshaller.encode(msg)
-        return marshaller.decode(source)
+        val source = marshaller.encodeToBuffer(msg)
+        return marshaller.decodeFromSource(source)
     }
 
     private fun encodeToBytes(block: (WireEncoder) -> Unit): ByteArray {
@@ -74,7 +82,7 @@ class ProtosTest {
         encoder.writeFixed32(9, 1234u)
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<AllPrimitives>().decode(buffer)
+        val decoded = grpcMarshallerOf<AllPrimitives>().decodeFromSource(buffer)
         assertEquals(12, decoded.sint32)
         assertFalse(decoded.presence.hasSint64)
         assertEquals(0, decoded.sint64)
@@ -104,6 +112,29 @@ class ProtosTest {
         val decoded = encodeDecode(msg, grpcMarshallerOf<AllPrimitives>())
 
         assertEquals(msg.double, decoded.double)
+    }
+
+    @Test
+    fun sizeFirstMarshallerProducesIdenticalBytesForBufferAndByteArray() {
+        val message = AllPrimitives {
+            int32 = -123
+            uint64 = 123456789uL
+            string = "size-first"
+            bytes = byteArrayOf(1, 2, 3, 4).asByteString()
+        }
+        val expected = encodeToBytes { encoder ->
+            message.asInternal().encodeWith(encoder, null)
+        }
+        val marshaller = grpcMarshallerOf<AllPrimitives>()
+
+        val buffer = Buffer()
+        marshaller.prepare(message).writeTo(BufferMessageWriter(buffer, expected.size))
+        assertContentEquals(expected, buffer.readByteArray())
+
+        val bytes = ByteArray(expected.size)
+        marshaller.prepare(message).writeTo(ByteArrayMessageWriter(bytes))
+        assertContentEquals(expected, bytes)
+        assertEquals(message, marshaller.decode(ByteArrayMessageReader(bytes)))
     }
 
     @Test
@@ -154,7 +185,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<RepeatedWithRequired>().decode(buffer)
+            grpcMarshallerOf<RepeatedWithRequired>().decodeFromSource(buffer)
         }
     }
 
@@ -172,7 +203,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<PresenceCheck>().decode(buffer)
+            grpcMarshallerOf<PresenceCheck>().decodeFromSource(buffer)
         }
     }
 
@@ -184,7 +215,7 @@ class ProtosTest {
         encoder.writeEnum(1, 50)
         encoder.flush()
 
-        val decodedMsg = grpcMarshallerOf<UsingEnum>().decode(buffer)
+        val decodedMsg = grpcMarshallerOf<UsingEnum>().decodeFromSource(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
@@ -204,11 +235,11 @@ class ProtosTest {
         // create message without enum field set
         val msg = UsingEnum {}
 
-        val buffer = grpcMarshallerOf<UsingEnum>().encode(msg)
+        val buffer = grpcMarshallerOf<UsingEnum>().encodeToBuffer(msg)
         // buffer should be empty (default is not in wire)
         assertTrue(buffer.exhausted())
 
-        val decoded = grpcMarshallerOf<UsingEnum>().decode(buffer)
+        val decoded = grpcMarshallerOf<UsingEnum>().decodeFromSource(buffer)
         assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
@@ -269,7 +300,7 @@ class ProtosTest {
         encoder.flush()
 
 
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
         assertIs<OneOfMsg.Field.Other>(decoded.field)
         val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
         assertEquals("arg2", decodedOther.arg2)
@@ -287,7 +318,7 @@ class ProtosTest {
         encoder.writeFixed64(3, 123u)
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
         assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
     }
 
@@ -310,7 +341,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<OneOfWithRequired>().decode(buffer)
+            grpcMarshallerOf<OneOfWithRequired>().decodeFromSource(buffer)
         }
     }
 
@@ -319,7 +350,7 @@ class ProtosTest {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
         val buffer = Buffer()
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
         assertNull(decoded.field)
     }
 
@@ -344,7 +375,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<Outer>().decode(buffer)
+            grpcMarshallerOf<Outer>().decodeFromSource(buffer)
         }
     }
 
@@ -440,7 +471,7 @@ class ProtosTest {
         encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<Reference>().decode(buffer)
+        val decoded = grpcMarshallerOf<Reference>().decodeFromSource(buffer)
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)
@@ -460,7 +491,7 @@ class ProtosTest {
         assertEquals("first", decodedReference.other.arg1)
         assertEquals("second", decodedReference.other.arg2)
 
-        val emptyReference = referenceMarshaller.decode(Buffer())
+        val emptyReference = referenceMarshaller.decodeFromSource(Buffer())
         assertEquals("", emptyReference.other.arg1)
         assertEquals("", emptyReference.other.arg2)
         assertEquals("", emptyReference.other.arg3)
@@ -476,7 +507,7 @@ class ProtosTest {
         assertEquals(1, decodedRepeated.listMessage.size)
         assertEquals(7, decodedRepeated.listMessage.single().a)
 
-        val emptyRepeated = repeatedMarshaller.decode(Buffer())
+        val emptyRepeated = repeatedMarshaller.decodeFromSource(Buffer())
         assertTrue(emptyRepeated.listInt32.isEmpty())
         assertTrue(emptyRepeated.listMessage.isEmpty())
 
@@ -490,7 +521,7 @@ class ProtosTest {
         assertEquals(mapOf("one" to 1L), decodedMap.primitives)
         assertEquals(7, decodedMap.messages.getValue(1).requiredPresence)
 
-        val emptyMap = mapMarshaller.decode(Buffer())
+        val emptyMap = mapMarshaller.decodeFromSource(Buffer())
         assertTrue(emptyMap.primitives.isEmpty())
         assertTrue(emptyMap.messages.isEmpty())
     }
@@ -542,7 +573,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<TestMap>().decode(buffer)
+            grpcMarshallerOf<TestMap>().decodeFromSource(buffer)
         }
     }
 

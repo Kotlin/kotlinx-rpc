@@ -4,14 +4,11 @@
 
 package kotlinx.rpc.grpc.marshaller.kotlinx.serialization
 
-import kotlinx.io.Buffer
-import kotlinx.io.Source
-import kotlinx.io.readByteArray
-import kotlinx.io.readString
-import kotlinx.io.writeString
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.KSerializer
@@ -39,41 +36,24 @@ private class KotlinxSerializationMarshaller<T>(
     private val serializer: KSerializer<T>,
     private val serialFormat: SerialFormat,
 ) : GrpcMarshaller<T> {
-    override fun encode(value: T, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: T, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(
+            when (serialFormat) {
+                is StringFormat -> serialFormat.encodeToString(serializer, value).encodeToByteArray()
+                is BinaryFormat -> serialFormat.encodeToByteArray(serializer, value)
+                else -> unsupportedFormat()
+            },
+        )
+
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): T {
+        val bytes = reader.readByteArray()
         return when (serialFormat) {
-            is StringFormat -> {
-                val stringValue = serialFormat.encodeToString(serializer, value)
-                Buffer().apply {
-                    writeString(stringValue)
-                }
-            }
-
-            is BinaryFormat -> {
-                val bytesValue = serialFormat.encodeToByteArray(serializer, value)
-                Buffer().apply {
-                    write(bytesValue)
-                }
-            }
-
-            else -> {
-                error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
-            }
+            is StringFormat -> serialFormat.decodeFromString(serializer, bytes.decodeToString())
+            is BinaryFormat -> serialFormat.decodeFromByteArray(serializer, bytes)
+            else -> unsupportedFormat()
         }
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): T {
-        return when (serialFormat) {
-            is StringFormat -> {
-                serialFormat.decodeFromString(serializer, source.readString())
-            }
-
-            is BinaryFormat -> {
-                serialFormat.decodeFromByteArray(serializer, source.readByteArray())
-            }
-
-            else -> {
-                error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
-            }
-        }
-    }
+    private fun unsupportedFormat(): Nothing =
+        error("Only ${StringFormat::class.simpleName} and ${BinaryFormat::class.simpleName} are supported")
 }
