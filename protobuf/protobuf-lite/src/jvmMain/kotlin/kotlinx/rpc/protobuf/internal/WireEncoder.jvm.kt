@@ -13,6 +13,7 @@ import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufEncodingException
+import java.io.OutputStream
 
 private class WireEncoderJvm(
     val codedOutputStream: CodedOutputStream,
@@ -231,6 +232,12 @@ private class WireEncoderJvm(
 
 public actual fun WireEncoder(sink: Sink): WireEncoder {
     return WireEncoderJvm(CodedOutputStream.newInstance(sink.asOutputStream()))
+}
+
+/** Creates an encoder backed by a bounded message output stream. */
+@InternalRpcApi
+public fun WireEncoder(output: OutputStream, bufferSize: Int): WireEncoder {
+    return WireEncoderJvm(CodedOutputStream.newInstance(output, bufferSize))
 }
 
 /** Creates an encoder that writes into the range `[startIndex, endIndex)` of [bytes]. */

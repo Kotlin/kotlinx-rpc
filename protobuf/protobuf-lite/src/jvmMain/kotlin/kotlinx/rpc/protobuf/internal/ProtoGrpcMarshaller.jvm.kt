@@ -13,6 +13,7 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.OutputStreamMessageWriter
 
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
@@ -31,6 +32,12 @@ public actual inline fun withWireEncoder(
                     flush()
                     requireComplete()
                 }
+            }
+        }
+
+        is OutputStreamMessageWriter -> {
+            writer.writeDirect { output ->
+                WireEncoder(output, minOf(maxOf(writer.remaining, 1), 4096)).also(block).flush()
             }
         }
 
