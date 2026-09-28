@@ -2,7 +2,11 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+@file:OptIn(
+    ExperimentalForeignApi::class,
+    BetaInteropApi::class,
+    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -19,8 +23,8 @@ import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
-import kotlinx.rpc.grpc.descriptor.methodType
-import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -69,7 +73,7 @@ internal class SwiftGrpcClientTransport(
 
             // Turn flow into a request source that can be consumed by the Swift side using completion handlers.
             val encode = { request: Request ->
-                KotlinGrpcRequestMessage(method.requestMarshaller.encodeToBuffer(request))
+                encodeSwiftRequest(method.requestMarshaller, request)
             }
             val requestSource: SwiftGrpcRequestSourceProtocol = when (method.methodType) {
                 GrpcMethodType.UNARY, GrpcMethodType.SERVER_STREAMING ->
@@ -116,6 +120,23 @@ internal class SwiftGrpcClientTransport(
                 requestSource.cancelAndJoin()
             }
         }
+    }
+}
+
+/** Prepares one request and publishes it only after its exact byte count has been written. */
+internal fun <Request> encodeSwiftRequest(
+    marshaller: GrpcMarshaller<Request>,
+    request: Request,
+): SwiftGrpcRequestMessageProtocol {
+    val prepared = marshaller.prepare(request)
+    val storage = SwiftRequestMessageWriter(prepared.size)
+    try {
+        prepared.writeTo(storage)
+        storage.seal()
+        return storage.requestBytes()
+    } catch (cause: Throwable) {
+        storage.discard()
+        throw cause
     }
 }
 

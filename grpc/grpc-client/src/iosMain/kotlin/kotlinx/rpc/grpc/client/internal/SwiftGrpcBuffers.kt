@@ -14,11 +14,35 @@ import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
-import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
+import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
 import platform.darwin.NSObject
 import platform.posix.memcpy
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
+
+/** Writes an exact-size request into storage that grpc-swift takes without copying. */
+internal class SwiftRequestMessageWriter(size: Int) : NativeRegionMessageWriter(size) {
+    private val bytes = SwiftGrpcRequestBytes(count = size.convert())
+
+    override fun accessStorage(block: (kotlinx.cinterop.CPointer<ByteVar>?) -> Boolean): Boolean =
+        bytes.withWritableBytes { base, _ -> block(base?.reinterpret()) }
+
+    override fun onSeal() {
+        check(bytes.seal()) { "Swift rejected the completed request" }
+    }
+
+    override fun onDiscard() {
+        bytes.discard()
+    }
+
+    fun requestBytes(): SwiftGrpcRequestMessageProtocol = bytes
+}
+
+/** Releases an owned request only if grpc-swift has not already taken its bytes. */
+internal fun SwiftGrpcRequestMessageProtocol.discardIfOwned() {
+    (this as? SwiftGrpcRequestBytes)?.discard()
+}
 
 /** Owns one encoded request until Swift has copied it into grpc-swift-owned storage. */
 internal class KotlinGrpcRequestMessage(

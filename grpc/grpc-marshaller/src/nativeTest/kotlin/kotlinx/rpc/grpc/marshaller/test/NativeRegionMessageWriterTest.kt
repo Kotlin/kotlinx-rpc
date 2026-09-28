@@ -125,6 +125,21 @@ class NativeRegionMessageWriterTest {
     }
 
     @Test
+    fun bufferWriteCopiesMultipleSegmentsAndConsumesOnlyRequestedBytes() = withWriter(20_000) { writer ->
+        val expected = ByteArray(20_000) { it.toByte() }
+        val source = Buffer().apply {
+            write(expected)
+            write(byteArrayOf(42, 43))
+        }
+
+        writer.write(source, expected.size.toLong())
+        writer.seal()
+
+        assertContentEquals(expected, writer.snapshot())
+        assertContentEquals(byteArrayOf(42, 43), source.readByteArray())
+    }
+
+    @Test
     fun oversizedBufferWriteLeavesSourceUntouched() = withWriter(1) { writer ->
         val source = Buffer().apply { write(byteArrayOf(1, 2)) }
         assertFailsWith<IndexOutOfBoundsException> { writer.write(source) }

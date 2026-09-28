@@ -42,18 +42,25 @@ import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.getAllBinary
 import kotlinx.rpc.grpc.keys
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
+import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.grpc.remove
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -63,6 +70,82 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class SwiftGrpcBridgeTest {
+    @Test
+    fun ownedRequestStorageCoversEmptyAndLargeMessages() {
+        for (expected in listOf(byteArrayOf(), ByteArray(4 * 1024 * 1024 - 1024) { it.toByte() })) {
+            val message = encodeSwiftRequest(ByteArrayRequestMarshaller, expected)
+            val owned = message as SwiftGrpcRequestBytes
+            assertEquals(expected.size.toLong(), owned.length())
+            val actual = ByteArray(expected.size)
+            val filled = if (actual.isEmpty()) {
+                owned.fillBuffer(null, 0)
+            } else {
+                actual.usePinned { pinned -> owned.fillBuffer(pinned.addressOf(0), actual.size.toLong()) }
+            }
+            assertTrue(filled)
+            assertContentEquals(expected, actual)
+            owned.discard()
+            val fillAfterDiscard = if (actual.isEmpty()) {
+                owned.fillBuffer(null, 0)
+            } else {
+                actual.usePinned { pinned -> owned.fillBuffer(pinned.addressOf(0), actual.size.toLong()) }
+            }
+            assertFalse(fillAfterDiscard)
+        }
+    }
+
+    @Test
+    fun failedOwnedEncodingDiscardsStorageAndKeepsOriginalFailure() = runTest {
+        val expected = IllegalStateException("write failed")
+        lateinit var storage: SwiftRequestMessageWriter
+        val marshaller = object : GrpcMarshaller<Int> {
+            override fun prepare(value: Int, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+                object : GrpcEncodedMessage {
+                    override val size: Int = 1
+                    override fun writeTo(writer: GrpcMessageWriter) {
+                        storage = writer as SwiftRequestMessageWriter
+                        throw expected
+                    }
+                }
+
+            override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Int =
+                error("not used")
+        }
+        val source = KotlinGrpcRequestSource(this, flowOf(1)) { encodeSwiftRequest(marshaller, it) }
+
+        assertNotNull(source.pull().second)
+        assertSame(expected, source.originalFailure)
+        assertFailsWith<IllegalStateException> { storage.seal() }
+        memScoped {
+            assertFalse((storage.requestBytes() as SwiftGrpcRequestBytes).fillBuffer(allocArray<ByteVar>(1), 1))
+        }
+        source.cancelAndJoin()
+    }
+
+    @Test
+    fun offeredOwnedRequestIsDiscardedOnCancellation() = runTest {
+        lateinit var owned: SwiftGrpcRequestBytes
+        val source = KotlinGrpcRequestSource(this, flowOf(byteArrayOf(7))) {
+            (encodeSwiftRequest(ByteArrayRequestMarshaller, it) as SwiftGrpcRequestBytes).also { bytes ->
+                owned = bytes
+            }
+        }
+
+        source.cancelAndJoin()
+        memScoped { assertFalse(owned.fillBuffer(allocArray<ByteVar>(1), 1)) }
+    }
+
+    @Test
+    fun unclaimedSingleOwnedRequestIsDiscardedOnCancellation() = runTest {
+        val source = KotlinGrpcSingleRequestSource(this, flowOf(byteArrayOf(9))) {
+            encodeSwiftRequest(ByteArrayRequestMarshaller, it)
+        }
+        val owned = source.readyMessage as SwiftGrpcRequestBytes
+
+        source.cancelAndJoin()
+        memScoped { assertFalse(owned.fillBuffer(allocArray<ByteVar>(1), 1)) }
+    }
+
     @Test
     fun swiftUserAgentIncludesKotlinxRpcRuntimeToken() {
         val runtimeToken = "kotlinx-rpc-swift/$KOTLINX_RPC_VERSION"
@@ -736,4 +819,12 @@ class SwiftGrpcBridgeTest {
     private companion object {
         const val STRESS_ITERATIONS = 1_000
     }
+}
+
+private object ByteArrayRequestMarshaller : GrpcMarshaller<ByteArray> {
+    override fun prepare(value: ByteArray, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(value)
+
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): ByteArray =
+        error("not used")
 }

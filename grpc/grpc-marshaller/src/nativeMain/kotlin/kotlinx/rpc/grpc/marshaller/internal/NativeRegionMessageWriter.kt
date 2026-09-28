@@ -12,7 +12,8 @@ package kotlinx.rpc.grpc.marshaller.internal
 
 import kotlinx.cinterop.*
 import kotlinx.io.Buffer
-import kotlinx.io.readByteArray
+import kotlinx.io.UnsafeIoApi
+import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
@@ -75,13 +76,30 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         }
     }
 
+    @OptIn(UnsafeIoApi::class, UnsafeNumber::class)
     override fun write(source: Buffer, byteCount: Long): Unit = runOrMarkFailed {
         requireWritable(allowEmptyComplete = true)
         val count = checkedWriteByteCount(source, byteCount)
         if (count == 0) return@runOrMarkFailed
-        // Peek first: a rejected storage scope must not consume any of the source.
-        val bytes = source.peek().readByteArray(count)
-        write(bytes)
+        // Shared segment views preserve the source if the storage rejects the write, without
+        // allocating and copying the entire message into an intermediate ByteArray.
+        val view = Buffer()
+        source.copyTo(view, endIndex = byteCount)
+        UnsafeGrpcMessageWriterOperations.writeToTail(this, count) { pointer, start, _ ->
+            var copied = 0
+            while (view.size > 0L) {
+                UnsafeBufferOperations.readFromHead(view) { bytes, from, to ->
+                    val chunk = to - from
+                    bytes.usePinned { pinned ->
+                        memcpy(pointer + start + copied, pinned.addressOf(from), chunk.convert())
+                    }
+                    copied += chunk
+                    chunk
+                }
+            }
+            check(copied == count) { "The source view contained $copied bytes instead of $count" }
+            copied
+        }
         source.skip(byteCount)
     }
 

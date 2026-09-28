@@ -64,8 +64,13 @@ internal class KotlinGrpcRequestSource<Request>(
             try {
                 requests.collect { request ->
                     val message = encode(request)
-                    val completion = awaitPull()
-                    deliver(completion, message)
+                    var delivered = false
+                    try {
+                        val completion = awaitPull()
+                        delivered = deliver(completion, message)
+                    } finally {
+                        if (!delivered) message.discardIfOwned()
+                    }
                 }
                 finish()
             } catch (cause: Throwable) {
@@ -173,7 +178,7 @@ internal class KotlinGrpcRequestSource<Request>(
         state.compareAndSet(offered, State.Idle)
     }
 
-    private fun deliver(completion: RequestCompletion, message: SwiftGrpcRequestMessageProtocol) {
+    private fun deliver(completion: RequestCompletion, message: SwiftGrpcRequestMessageProtocol): Boolean {
         val current = state.value
         // If termination claimed the pull in the meantime, the message is dropped.
         if (
@@ -182,7 +187,9 @@ internal class KotlinGrpcRequestSource<Request>(
             state.compareAndSet(current, State.Idle)
         ) {
             completion(message, null)
+            return true
         }
+        return false
     }
 
     private fun finish() {
@@ -277,6 +284,11 @@ internal class KotlinGrpcSingleRequestSource<Request>(
     }
 
     init {
+        // Cancellation can arrive while synchronous encoding is still finishing. In that case
+        // cancel() may observe no message, so release it when the cancelled job completes.
+        job.invokeOnCompletion {
+            if (job.isCancelled) message.value?.discardIfOwned()
+        }
         scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
     }
 
@@ -309,6 +321,7 @@ internal class KotlinGrpcSingleRequestSource<Request>(
 
     override fun cancel() {
         job.cancel(CancellationException("grpc-swift call stopped consuming requests"))
+        message.value?.discardIfOwned()
     }
 
     internal suspend fun cancelAndJoin() {
