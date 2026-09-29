@@ -5,6 +5,7 @@
 @file:OptIn(
     kotlinx.cinterop.ExperimentalForeignApi::class,
     kotlinx.cinterop.UnsafeNumber::class,
+    kotlinx.io.UnsafeIoApi::class,
     kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
     kotlinx.rpc.internal.utils.InternalRpcApi::class,
 )
@@ -14,6 +15,7 @@ package kotlinx.rpc.grpc.marshaller.internal
 import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
@@ -30,8 +32,15 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
 
     /** Invalidates this reader and every pointer obtained through it. Repeated calls are safe. */
     public final override fun close() {
-        scopedAccess.close()
+        try {
+            scopedAccess.close()
+        } finally {
+            onClose()
+        }
     }
+
+    /** Clears any borrowed storage reference when the reader closes. */
+    protected open fun onClose() {}
 
     override fun readByte(): Byte {
         scopedAccess.ensureOpen()
@@ -68,7 +77,20 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         scopedAccess.ensureOpen()
         source?.let { return it }
         val copied = Buffer()
-        copied.write(readByteArray())
+        readFromHead { pointer, start, end ->
+            var position = start
+            while (position < end) {
+                UnsafeBufferOperations.writeToTail(copied, 1) { destination, from, to ->
+                    val count = minOf(end - position, to - from)
+                    destination.usePinned { pinned ->
+                        memcpy(pinned.addressOf(from), pointer + position, count.convert())
+                    }
+                    position += count
+                    count
+                }
+            }
+            end - start
+        }
         source = copied
         return copied
     }

@@ -55,6 +55,13 @@ kotlin {
                 implementation(libs.atomicfu)
             }
         }
+
+        iosTest {
+            dependencies {
+                implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
+                implementation(libs.serialization.json)
+            }
+        }
     }
 }
 

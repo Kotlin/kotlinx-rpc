@@ -16,6 +16,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
 import platform.posix.memcpy
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 
@@ -35,6 +36,26 @@ internal class SwiftRequestMessageWriter(size: Int) : NativeRegionMessageWriter(
     }
 
     fun requestBytes(): SwiftGrpcRequestBytes = bytes
+}
+
+/** Borrows one response message while the enclosing Swift unsafe-bytes scope is open. */
+internal class SwiftResponseMessageReader(bytes: COpaquePointer?, size: Int) : NativeRegionMessageReader(size) {
+    private var base = bytes?.reinterpret<ByteVar>()
+    private var closed: Boolean = false
+
+    init {
+        require(size == 0 || base != null) { "grpc-swift returned a null pointer for a non-empty message" }
+    }
+
+    override fun accessStorage(block: (kotlinx.cinterop.CPointer<ByteVar>?) -> Boolean): Boolean {
+        check(!closed) { "The Swift response reader is closed" }
+        return block(base)
+    }
+
+    override fun onClose() {
+        closed = true
+        base = null
+    }
 }
 
 /** Copies scoped Swift bytes directly into kotlinx-io buffer segments. */

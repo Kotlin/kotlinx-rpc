@@ -100,6 +100,17 @@ class NativeRegionMessageReaderTest {
     }
 
     @Test
+    fun sourceCopiesMultipleBufferSegments() {
+        val bytes = ByteArray(20_000) { it.toByte() }
+        withReader(bytes) { reader ->
+            val source = reader.asSource()
+            reader.overwrite(0, 42)
+            assertContentEquals(bytes, source.readByteArray())
+            assertEquals(1, reader.scopeCount)
+        }
+    }
+
+    @Test
     fun readToChecksRangesAndCopiesOnlyRequestedBytes() = withReader(byteArrayOf(1, 2, 3)) { reader ->
         val target = byteArrayOf(9, 9, 9, 9)
         assertFailsWith<IndexOutOfBoundsException> { reader.readTo(target, -1, 2) }
