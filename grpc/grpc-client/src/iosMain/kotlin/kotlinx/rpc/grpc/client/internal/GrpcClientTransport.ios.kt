@@ -24,7 +24,7 @@ import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -127,7 +127,7 @@ internal class SwiftGrpcClientTransport(
 internal fun <Request> encodeSwiftRequest(
     marshaller: GrpcMarshaller<Request>,
     request: Request,
-): SwiftGrpcRequestMessageProtocol {
+): SwiftGrpcRequestBytes {
     val prepared = marshaller.prepare(request)
     val storage = SwiftRequestMessageWriter(prepared.size)
     try {

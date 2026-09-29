@@ -52,7 +52,6 @@ import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcMetadata
-import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.concurrent.atomics.AtomicInt
@@ -73,24 +72,11 @@ class SwiftGrpcBridgeTest {
     @Test
     fun ownedRequestStorageCoversEmptyAndLargeMessages() {
         for (expected in listOf(byteArrayOf(), ByteArray(4 * 1024 * 1024 - 1024) { it.toByte() })) {
-            val message = encodeSwiftRequest(ByteArrayRequestMarshaller, expected)
-            val owned = message as SwiftGrpcRequestBytes
+            val owned = testRequest(expected)
             assertEquals(expected.size.toLong(), owned.length())
-            val actual = ByteArray(expected.size)
-            val filled = if (actual.isEmpty()) {
-                owned.fillBuffer(null, 0)
-            } else {
-                actual.usePinned { pinned -> owned.fillBuffer(pinned.addressOf(0), actual.size.toLong()) }
-            }
-            assertTrue(filled)
-            assertContentEquals(expected, actual)
+            assertFalse(owned.isDiscarded())
             owned.discard()
-            val fillAfterDiscard = if (actual.isEmpty()) {
-                owned.fillBuffer(null, 0)
-            } else {
-                actual.usePinned { pinned -> owned.fillBuffer(pinned.addressOf(0), actual.size.toLong()) }
-            }
-            assertFalse(fillAfterDiscard)
+            assertTrue(owned.isDiscarded())
         }
     }
 
@@ -116,9 +102,7 @@ class SwiftGrpcBridgeTest {
         assertNotNull(source.pull().second)
         assertSame(expected, source.originalFailure)
         assertFailsWith<IllegalStateException> { storage.seal() }
-        memScoped {
-            assertFalse((storage.requestBytes() as SwiftGrpcRequestBytes).fillBuffer(allocArray<ByteVar>(1), 1))
-        }
+        assertTrue(storage.requestBytes().isDiscarded())
         source.cancelAndJoin()
     }
 
@@ -126,13 +110,13 @@ class SwiftGrpcBridgeTest {
     fun offeredOwnedRequestIsDiscardedOnCancellation() = runTest {
         lateinit var owned: SwiftGrpcRequestBytes
         val source = KotlinGrpcRequestSource(this, flowOf(byteArrayOf(7))) {
-            (encodeSwiftRequest(ByteArrayRequestMarshaller, it) as SwiftGrpcRequestBytes).also { bytes ->
+            encodeSwiftRequest(ByteArrayRequestMarshaller, it).also { bytes ->
                 owned = bytes
             }
         }
 
         source.cancelAndJoin()
-        memScoped { assertFalse(owned.fillBuffer(allocArray<ByteVar>(1), 1)) }
+        assertTrue(owned.isDiscarded())
     }
 
     @Test
@@ -140,10 +124,10 @@ class SwiftGrpcBridgeTest {
         val source = KotlinGrpcSingleRequestSource(this, flowOf(byteArrayOf(9))) {
             encodeSwiftRequest(ByteArrayRequestMarshaller, it)
         }
-        val owned = source.readyMessage as SwiftGrpcRequestBytes
+        val owned = assertNotNull(source.readyMessage)
 
         source.cancelAndJoin()
-        memScoped { assertFalse(owned.fillBuffer(allocArray<ByteVar>(1), 1)) }
+        assertTrue(owned.isDiscarded())
     }
 
     @Test
@@ -222,16 +206,6 @@ class SwiftGrpcBridgeTest {
     }
 
     @Test
-    fun requestMessageCopiesIntoBorrowedSwiftStorage() = memScoped {
-        val expected = ByteArray(20_000) { it.toByte() }
-        val message = KotlinGrpcRequestMessage(Buffer().apply { write(expected) })
-        val destination = allocArray<ByteVar>(expected.size)
-
-        assertTrue(message.fillBuffer(destination, expected.size.toLong()))
-        assertContentEquals(expected, ByteArray(expected.size) { destination[it] })
-    }
-
-    @Test
     fun scopedSwiftBytesCopyAcrossMultipleBufferSegments() = memScoped {
         val expected = ByteArray(20_000) { (it * 31).toByte() }
         val source = allocArray<ByteVar>(expected.size)
@@ -243,7 +217,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourcePullsOneMessageAndThenSignalsEof() = runTest {
         val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
 
         val first = source.pull()
@@ -263,7 +237,7 @@ class SwiftGrpcBridgeTest {
             emitNow.await()
             emit(42)
         }) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
         val pull = source.pullRecording()
 
@@ -286,7 +260,7 @@ class SwiftGrpcBridgeTest {
             advanced.complete(Unit)
         }) { value ->
             encodeCalls.incrementAndFetch()
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
 
         assertFalse(advanced.isCompleted, "the producer must remain suspended at the unclaimed offer")
@@ -305,7 +279,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourceDeliversSequentialReentrantPullsInOrder() = runTest {
         val source = KotlinGrpcRequestSource(this, flowOf(1, 2, 3)) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { repeat(value) { writeByte(value.toByte()) } })
+            testRequest(ByteArray(value) { value.toByte() })
         }
         val results = mutableListOf<Pair<Long?, NSError?>>()
         val callbackCalls = mutableListOf<AtomicInt>()
@@ -338,7 +312,7 @@ class SwiftGrpcBridgeTest {
             emit(42)
             awaitCancellation()
         }) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
         val accepted = source.pullRecording()
         val rejected = source.pullRecording()
@@ -360,7 +334,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourceDeliveringRejectsConcurrentPullAndCancellationCompletesAcceptedPull() = runTest {
         val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
         val accepted = source.pullRecording()
         val rejected = source.pullRecording()
@@ -392,7 +366,7 @@ class SwiftGrpcBridgeTest {
             }
         }) { value ->
             encodeCalls.incrementAndFetch()
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
 
         withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
@@ -420,7 +394,7 @@ class SwiftGrpcBridgeTest {
         val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
             error("No request should be encoded")
         }
-        val result = CompletableDeferred<Pair<SwiftGrpcRequestMessageProtocol?, NSError?>>()
+        val result = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
         source.nextRequestWithCompletion { message, error -> result.complete(message to error) }
 
         // Immediate cancellation without intermediate suspend call.
@@ -448,7 +422,7 @@ class SwiftGrpcBridgeTest {
         val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
             error("No request should be encoded")
         }
-        val reentrantResult = CompletableDeferred<Pair<SwiftGrpcRequestMessageProtocol?, NSError?>>()
+        val reentrantResult = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
         source.nextRequestWithCompletion { _, _ ->
             source.nextRequestWithCompletion { message, error ->
                 reentrantResult.complete(message to error)
@@ -465,7 +439,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun terminationAfterEofDoesNotCompleteAgain() = runTest {
         val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
         assertNotNull(source.pull().first)
 
@@ -655,7 +629,7 @@ class SwiftGrpcBridgeTest {
     fun singleRequestSourceDeliversRequestOnlyAfterFlowCompletes() = runTest {
         val finish = CompletableDeferred<Unit>()
         val source = KotlinGrpcSingleRequestSource(this, flow { emit(42); finish.await() }) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
 
         val pull = source.pullRecording()
@@ -671,7 +645,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun singleRequestSourceIsReadyOnlyAfterNonSuspendingCollection() = runTest {
-        val encode = { value: Int -> KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) }) }
+        val encode = { value: Int -> testRequest(value) }
         val finish = CompletableDeferred<Unit>()
 
         val ready = KotlinGrpcSingleRequestSource(this, flowOf(42), encode)
@@ -688,7 +662,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun singleRequestSourceRejectsSecondPull() = runTest {
         val source = KotlinGrpcSingleRequestSource(this, flowOf(42)) { value ->
-            KotlinGrpcRequestMessage(Buffer().apply { writeByte(value.toByte()) })
+            testRequest(value)
         }
         assertNotNull(source.pull().first)
 
@@ -797,8 +771,8 @@ class SwiftGrpcBridgeTest {
         assertSame(unavailable, unavailable.normalizeDeadlineRace(1500.milliseconds, 1.seconds))
     }
 
-    private suspend fun SwiftGrpcRequestSourceProtocol.pull(): Pair<SwiftGrpcRequestMessageProtocol?, NSError?> {
-        val result = CompletableDeferred<Pair<SwiftGrpcRequestMessageProtocol?, NSError?>>()
+    private suspend fun SwiftGrpcRequestSourceProtocol.pull(): Pair<SwiftGrpcRequestBytes?, NSError?> {
+        val result = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
         nextRequestWithCompletion { message, error -> result.complete(message to error) }
         return result.await()
     }
@@ -809,12 +783,17 @@ class SwiftGrpcBridgeTest {
     /** Records the first result of a request pull and how often its completion was invoked. */
     private class RecordingCompletion {
         val calls = AtomicInt(0)
-        val result = CompletableDeferred<Pair<SwiftGrpcRequestMessageProtocol?, NSError?>>()
-        val callback: (SwiftGrpcRequestMessageProtocol?, NSError?) -> Unit = { message, error ->
+        val result = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
+        val callback: (SwiftGrpcRequestBytes?, NSError?) -> Unit = { message, error ->
             calls.incrementAndFetch()
             result.complete(message to error)
         }
     }
+
+    private fun testRequest(value: Int): SwiftGrpcRequestBytes = testRequest(byteArrayOf(value.toByte()))
+
+    private fun testRequest(bytes: ByteArray): SwiftGrpcRequestBytes =
+        encodeSwiftRequest(ByteArrayRequestMarshaller, bytes)
 
     private companion object {
         const val STRESS_ITERATIONS = 1_000

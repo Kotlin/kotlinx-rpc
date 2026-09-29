@@ -29,7 +29,7 @@ public final class SwiftGrpcCall: NSObject, @unchecked Sendable {
         options: CallOptions,
         metadata: Metadata,
         requestSource: any SwiftGrpcRequestSource,
-        initialRequest: (any SwiftGrpcRequestMessage)?
+        initialRequest: SwiftGrpcRequestBytes?
     ) {
         let mailbox = ResponseEventMailbox()
         let callRunner = CallRunner(

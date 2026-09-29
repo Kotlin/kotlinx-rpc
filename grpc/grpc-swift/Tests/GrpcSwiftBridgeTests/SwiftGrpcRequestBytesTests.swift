@@ -16,12 +16,13 @@ final class SwiftGrpcRequestBytesTests: XCTestCase {
             return true
         })
         XCTAssertTrue(storage.seal())
+        XCTAssertFalse(storage.isDiscarded)
         XCTAssertFalse(storage.seal())
 
-        let message = try storage.makeRawMessage()
+        let message = try storage.takeRawMessage()
         XCTAssertEqual(message.withUnsafeBytes { Array($0) }, [1, 2, 3])
         XCTAssertEqual(message.withUnsafeBytes { $0.baseAddress }, UnsafeRawPointer(writtenAddress))
-        XCTAssertThrowsError(try storage.makeRawMessage())
+        XCTAssertThrowsError(try storage.takeRawMessage())
         XCTAssertFalse(storage.withWritableBytes { _, _ in true })
     }
 
@@ -32,7 +33,7 @@ final class SwiftGrpcRequestBytesTests: XCTestCase {
             return false
         })
         XCTAssertFalse(storage.seal())
-        XCTAssertThrowsError(try storage.makeRawMessage())
+        XCTAssertThrowsError(try storage.takeRawMessage())
         XCTAssertFalse(storage.withWritableBytes { _, _ in true })
     }
 
@@ -40,28 +41,32 @@ final class SwiftGrpcRequestBytesTests: XCTestCase {
         let writable = SwiftGrpcRequestBytes(count: 1)
         writable.discard()
         writable.discard()
+        XCTAssertTrue(writable.isDiscarded)
         XCTAssertFalse(writable.seal())
-        XCTAssertThrowsError(try writable.makeRawMessage())
+        XCTAssertThrowsError(try writable.takeRawMessage())
 
         let writing = SwiftGrpcRequestBytes(count: 1)
         XCTAssertFalse(writing.withWritableBytes { _, _ in
             writing.discard()
             return true
         })
+        XCTAssertTrue(writing.isDiscarded)
         XCTAssertFalse(writing.seal())
-        XCTAssertThrowsError(try writing.makeRawMessage())
+        XCTAssertThrowsError(try writing.takeRawMessage())
 
         let sealed = SwiftGrpcRequestBytes(count: 1)
         XCTAssertTrue(sealed.seal())
         sealed.discard()
-        XCTAssertThrowsError(try sealed.makeRawMessage())
+        XCTAssertTrue(sealed.isDiscarded)
+        XCTAssertThrowsError(try sealed.takeRawMessage())
 
         let taken = SwiftGrpcRequestBytes(count: 0)
         XCTAssertTrue(taken.seal())
-        let message = try taken.makeRawMessage()
+        let message = try taken.takeRawMessage()
         taken.discard()
+        XCTAssertTrue(taken.isDiscarded)
         XCTAssertEqual(message.count, 0)
-        XCTAssertThrowsError(try taken.makeRawMessage())
+        XCTAssertThrowsError(try taken.takeRawMessage())
     }
 
     func testNestedWriteFailsWithoutDisturbingOuterWrite() throws {
@@ -73,7 +78,7 @@ final class SwiftGrpcRequestBytesTests: XCTestCase {
             return true
         })
         XCTAssertTrue(storage.seal())
-        XCTAssertEqual(try storage.makeRawMessage().withUnsafeBytes { Array($0) }, [7])
+        XCTAssertEqual(try storage.takeRawMessage().withUnsafeBytes { Array($0) }, [7])
     }
 
     func testZeroLengthUsesNoPointer() throws {
@@ -84,35 +89,29 @@ final class SwiftGrpcRequestBytesTests: XCTestCase {
             return true
         })
         XCTAssertTrue(storage.seal())
-        XCTAssertEqual(try storage.makeRawMessage().count, 0)
+        XCTAssertEqual(try storage.takeRawMessage().count, 0)
     }
 
-    func testOtherRequestMessagesStillUseCopyPath() throws {
-        let request = CopyingRequestMessage(bytes: [4, 5, 6])
-        let message = try request.makeRawMessage()
-        XCTAssertEqual(message.withUnsafeBytes { Array($0) }, [4, 5, 6])
-        XCTAssertEqual(request.fillCount, 1)
-    }
-}
-
-private final class CopyingRequestMessage: SwiftGrpcRequestMessage, @unchecked Sendable {
-    let bytes: [UInt8]
-    var fillCount = 0
-
-    init(bytes: [UInt8]) {
-        self.bytes = bytes
-    }
-
-    var length: Int { bytes.count }
-
-    func fillBuffer(_ buffer: UnsafeMutableRawPointer?, capacity: Int) -> Bool {
-        guard capacity == bytes.count else { return false }
-        fillCount += 1
-        bytes.withUnsafeBytes { source in
-            if capacity > 0 {
-                buffer!.copyMemory(from: source.baseAddress!, byteCount: capacity)
+    func testLargeMessageRetainsWrittenBytes() throws {
+        let count = 4 * 1024 * 1024 - 1024
+        let storage = SwiftGrpcRequestBytes(count: count)
+        XCTAssertTrue(storage.withWritableBytes { pointer, capacity in
+            XCTAssertEqual(capacity, count)
+            let bytes = pointer!.assumingMemoryBound(to: UInt8.self)
+            for index in 0..<count {
+                bytes[index] = UInt8(truncatingIfNeeded: index)
             }
-        }
-        return true
+            return true
+        })
+        XCTAssertTrue(storage.seal())
+
+        let message = try storage.takeRawMessage()
+        XCTAssertEqual(message.count, count)
+        XCTAssertTrue(message.withUnsafeBytes { buffer in
+            buffer.enumerated().allSatisfy { index, byte in
+                byte == UInt8(truncatingIfNeeded: index)
+            }
+        })
     }
+
 }

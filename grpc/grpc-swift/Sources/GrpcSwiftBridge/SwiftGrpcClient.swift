@@ -124,7 +124,7 @@ public final class SwiftGrpcClient: NSObject, @unchecked Sendable {
         timeoutMilliseconds: Int64,
         compression: SwiftGrpcCompression,
         requestSource: any SwiftGrpcRequestSource,
-        initialRequest: (any SwiftGrpcRequestMessage)?
+        initialRequest: SwiftGrpcRequestBytes?
     ) throws -> SwiftGrpcCall {
         let descriptor = try MethodDescriptor(fullMethodName: fullMethodName, type: type)
 

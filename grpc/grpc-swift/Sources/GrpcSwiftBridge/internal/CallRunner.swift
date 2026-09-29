@@ -8,7 +8,7 @@ internal struct CallRunner: Sendable {
     private let options: CallOptions
     private let metadata: Metadata
     private let requestSource: any SwiftGrpcRequestSource
-    private let initialRequest: (any SwiftGrpcRequestMessage)?
+    private let initialRequest: SwiftGrpcRequestBytes?
     private let mailbox: ResponseEventMailbox
 
     internal init(
@@ -17,7 +17,7 @@ internal struct CallRunner: Sendable {
         options: CallOptions,
         metadata: Metadata,
         requestSource: any SwiftGrpcRequestSource,
-        initialRequest: (any SwiftGrpcRequestMessage)?,
+        initialRequest: SwiftGrpcRequestBytes?,
         mailbox: ResponseEventMailbox
     ) {
         self.client = client

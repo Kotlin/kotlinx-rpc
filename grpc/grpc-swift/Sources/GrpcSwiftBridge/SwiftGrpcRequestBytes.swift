@@ -3,7 +3,7 @@ import Foundation
 /// Fixed-size request bytes owned by Swift until the transport takes them.
 /// Access is single-owner: callers must not use this object concurrently.
 @objc(SwiftGrpcRequestBytes)
-public final class SwiftGrpcRequestBytes: NSObject, SwiftGrpcRequestMessage, @unchecked Sendable {
+public final class SwiftGrpcRequestBytes: NSObject, @unchecked Sendable {
     private enum State {
         case writable(RawMessage)
         case writing
@@ -19,6 +19,12 @@ public final class SwiftGrpcRequestBytes: NSObject, SwiftGrpcRequestMessage, @un
     private var state: State
 
     @objc public let length: Int
+
+    /// Whether the request storage was released without being sent.
+    @objc public var isDiscarded: Bool {
+        if case .discarded = state { return true }
+        return false
+    }
 
     @objc public init(count: Int) {
         precondition(count >= 0, "Request length must be nonnegative")
@@ -52,19 +58,6 @@ public final class SwiftGrpcRequestBytes: NSObject, SwiftGrpcRequestMessage, @un
     /// Releases storage that will not be sent. Calling this more than once is safe.
     @objc public func discard() {
         state = .discarded
-    }
-
-    /// Temporary protocol conformance while other request messages use the copy path.
-    @objc(fillBuffer:capacity:)
-    public func fillBuffer(_ buffer: UnsafeMutableRawPointer?, capacity: Int) -> Bool {
-        guard capacity == length, capacity == 0 || buffer != nil else { return false }
-        guard case .sealed(let bytes) = state else { return false }
-        if length > 0 {
-            bytes.withUnsafeBytes { source in
-                buffer!.copyMemory(from: source.baseAddress!, byteCount: length)
-            }
-        }
-        return true
     }
 
     /// Transfers the sealed value to grpc-swift exactly once.

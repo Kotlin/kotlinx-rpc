@@ -136,18 +136,6 @@ public final class SwiftGrpcMetadata: NSObject, @unchecked Sendable {
     }
 }
 
-/// A serialized request message supplied by Kotlin.
-@objc(SwiftGrpcRequestMessage)
-public protocol SwiftGrpcRequestMessage: AnyObject, Sendable {
-    /// The exact number of serialized protobuf bytes.
-    @objc var length: Int { get }
-
-    /// Fills grpc-swift-owned storage. The pointer must not be retained after this method returns.
-    /// The return value indicates whether exactly `length` bytes were written successfully.
-    @objc(fillBuffer:capacity:)
-    func fillBuffer(_ buffer: UnsafeMutableRawPointer?, capacity: Int) -> Bool
-}
-
 /// A pull-based source backed by a Kotlin request `Flow`.
 ///
 /// For unary and server-streaming calls, grpc-swift pulls exactly once, and the source completes
@@ -161,7 +149,7 @@ public protocol SwiftGrpcRequestSource: AnyObject, Sendable {
     /// once.
     @objc(nextRequestWithCompletion:)
     func nextRequest(
-        _ completion: @escaping @Sendable (SwiftGrpcRequestMessage?, NSError?) -> Void
+        _ completion: @escaping @Sendable (SwiftGrpcRequestBytes?, NSError?) -> Void
     )
 
     /// Cancels request-flow collection and completes an outstanding request pull.

@@ -21,11 +21,6 @@ internal struct RawMessageDeserializer: MessageDeserializer<RawMessage> {
 }
 
 
-private enum RawMessageBridgeError: Error {
-    case negativeMessageLength(Int)
-    case messageFillFailed(expectedLength: Int)
-}
-
 extension SwiftGrpcRequestSource {
     
     internal func makeStreamingClientRequest() -> StreamingClientRequest<RawMessage> {
@@ -35,7 +30,7 @@ extension SwiftGrpcRequestSource {
             while let request = try await self.nextRequestMessage() {
                 try Task.checkCancellation()
                 
-                let message = try request.makeRawMessage()
+                let message = try request.takeRawMessage()
                 try await writer.write(message)
             }
         }
@@ -47,7 +42,7 @@ extension SwiftGrpcRequestSource {
     /// after the request flow ended with exactly one request, so no end-of-stream pull is needed.
     /// `nil` means that the call was cancelled first.
     internal func makeSingleClientRequest(
-        initialRequest: (any SwiftGrpcRequestMessage)?
+        initialRequest: SwiftGrpcRequestBytes?
     ) -> StreamingClientRequest<RawMessage> {
         StreamingClientRequest<RawMessage> { writer in
             defer { self.cancel() }
@@ -60,13 +55,13 @@ extension SwiftGrpcRequestSource {
             if let request {
                 try Task.checkCancellation()
                 
-                let message = try request.makeRawMessage()
+                let message = try request.takeRawMessage()
                 try await writer.write(message)
             }
         }
     }
     
-    private func nextRequestMessage() async throws -> SwiftGrpcRequestMessage? {
+    private func nextRequestMessage() async throws -> SwiftGrpcRequestBytes? {
         try await awaitSwiftGrpcCompletion(onCancellation: {
             // This also completes an outstanding Kotlin callback, allowing
             // the checked continuation to resume.
@@ -79,35 +74,6 @@ extension SwiftGrpcRequestSource {
                 )
             }
         }
-    }
-    
-}
-
-extension SwiftGrpcRequestMessage {
-
-    internal func makeRawMessage() throws -> RawMessage {
-        if let owned = self as? SwiftGrpcRequestBytes {
-            return try owned.takeRawMessage()
-        }
-        return try copyToRawMessage()
-    }
-    
-    private func copyToRawMessage() throws -> RawMessage {
-        guard length >= 0 else {
-            throw RawMessageBridgeError.negativeMessageLength(length)
-        }
-        
-        var result = RawMessage(repeating: 0, count: length)
-        
-        let didFill = result.withUnsafeMutableBytes { buffer in
-            fillBuffer(buffer.baseAddress, capacity: buffer.count)
-        }
-        
-        guard didFill else {
-            throw RawMessageBridgeError.messageFillFailed(expectedLength: length)
-        }
-        
-        return result
     }
     
 }

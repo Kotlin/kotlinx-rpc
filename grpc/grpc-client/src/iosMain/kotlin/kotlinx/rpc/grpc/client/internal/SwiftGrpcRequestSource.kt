@@ -20,11 +20,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import platform.darwin.NSObject
-import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
 import kotlin.coroutines.resume
 
-private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestMessageProtocol>
+private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
 
 /**
  * Adapts the request Flow of a client-streaming or bidirectional call to grpc-swift's
@@ -47,7 +47,7 @@ private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestMessag
 internal class KotlinGrpcRequestSource<Request>(
     scope: CoroutineScope,
     requests: Flow<Request>,
-    private val encode: (Request) -> SwiftGrpcRequestMessageProtocol,
+    private val encode: (Request) -> SwiftGrpcRequestBytes,
 ) : NSObject(), SwiftGrpcRequestSourceProtocol {
     private val sourceJob = SupervisorJob()
     private val sourceScope = CoroutineScope(scope.coroutineContext + sourceJob)
@@ -69,7 +69,7 @@ internal class KotlinGrpcRequestSource<Request>(
                         val completion = awaitPull()
                         delivered = deliver(completion, message)
                     } finally {
-                        if (!delivered) message.discardIfOwned()
+                        if (!delivered) message.discard()
                     }
                 }
                 finish()
@@ -178,7 +178,7 @@ internal class KotlinGrpcRequestSource<Request>(
         state.compareAndSet(offered, State.Idle)
     }
 
-    private fun deliver(completion: RequestCompletion, message: SwiftGrpcRequestMessageProtocol): Boolean {
+    private fun deliver(completion: RequestCompletion, message: SwiftGrpcRequestBytes): Boolean {
         val current = state.value
         // If termination claimed the pull in the meantime, the message is dropped.
         if (
@@ -264,9 +264,9 @@ internal class KotlinGrpcRequestSource<Request>(
 internal class KotlinGrpcSingleRequestSource<Request>(
     scope: CoroutineScope,
     requests: Flow<Request>,
-    encode: (Request) -> SwiftGrpcRequestMessageProtocol,
+    encode: (Request) -> SwiftGrpcRequestBytes,
 ) : NSObject(), SwiftGrpcRequestSourceProtocol {
-    private val message = atomic<SwiftGrpcRequestMessageProtocol?>(null)
+    private val message = atomic<SwiftGrpcRequestBytes?>(null)
     private val failure = atomic<Throwable?>(null)
     private val pulled = atomic(false)
 
@@ -287,7 +287,7 @@ internal class KotlinGrpcSingleRequestSource<Request>(
         // Cancellation can arrive while synchronous encoding is still finishing. In that case
         // cancel() may observe no message, so release it when the cancelled job completes.
         job.invokeOnCompletion {
-            if (job.isCancelled) message.value?.discardIfOwned()
+            if (job.isCancelled) message.value?.discard()
         }
         scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
     }
@@ -299,7 +299,7 @@ internal class KotlinGrpcSingleRequestSource<Request>(
      * The encoded request if collection has already succeeded, so Swift can send it without a pull.
      * It is set only after the flow ended with exactly one request. This is the fast-lane.
      */
-    internal val readyMessage: SwiftGrpcRequestMessageProtocol?
+    internal val readyMessage: SwiftGrpcRequestBytes?
         get() = message.value
 
     override fun nextRequestWithCompletion(completion: RequestCompletion) {
@@ -321,7 +321,7 @@ internal class KotlinGrpcSingleRequestSource<Request>(
 
     override fun cancel() {
         job.cancel(CancellationException("grpc-swift call stopped consuming requests"))
-        message.value?.discardIfOwned()
+        message.value?.discard()
     }
 
     internal suspend fun cancelAndJoin() {
@@ -342,7 +342,7 @@ internal val SwiftGrpcRequestSourceProtocol.originalFailure: Throwable?
     }
 
 /** The already validated request of a single-request source, if it is ready before the call starts. */
-internal val SwiftGrpcRequestSourceProtocol.readyMessage: SwiftGrpcRequestMessageProtocol?
+internal val SwiftGrpcRequestSourceProtocol.readyMessage: SwiftGrpcRequestBytes?
     get() = (this as? KotlinGrpcSingleRequestSource<*>)?.readyMessage
 
 /** Cancels request collection and waits until it has stopped. */

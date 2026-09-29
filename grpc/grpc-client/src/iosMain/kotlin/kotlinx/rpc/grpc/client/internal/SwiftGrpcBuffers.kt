@@ -16,9 +16,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.io.Buffer
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
-import platform.darwin.NSObject
 import platform.posix.memcpy
-import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestMessageProtocol
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 
 /** Writes an exact-size request into storage that grpc-swift takes without copying. */
@@ -36,39 +34,7 @@ internal class SwiftRequestMessageWriter(size: Int) : NativeRegionMessageWriter(
         bytes.discard()
     }
 
-    fun requestBytes(): SwiftGrpcRequestMessageProtocol = bytes
-}
-
-/** Releases an owned request only if grpc-swift has not already taken its bytes. */
-internal fun SwiftGrpcRequestMessageProtocol.discardIfOwned() {
-    (this as? SwiftGrpcRequestBytes)?.discard()
-}
-
-/** Owns one encoded request until Swift has copied it into grpc-swift-owned storage. */
-internal class KotlinGrpcRequestMessage(
-    private val buffer: Buffer,
-) : NSObject(), SwiftGrpcRequestMessageProtocol {
-    private val byteCount: Long = buffer.size
-
-    override fun length(): Long = byteCount
-
-    override fun fillBuffer(buffer: COpaquePointer?, capacity: Long): Boolean {
-        if (capacity != byteCount || (byteCount > 0 && buffer == null)) return false
-
-        val destination = buffer?.reinterpret<ByteVar>()
-        var offset = 0L
-        while (this.buffer.size > 0L) {
-            UnsafeBufferOperations.readFromHead(this.buffer) { bytes, start, endExclusive ->
-                val count = endExclusive - start
-                bytes.usePinned { pinned ->
-                    memcpy(destination!! + offset, pinned.addressOf(start), count.convert())
-                }
-                offset += count
-                count
-            }
-        }
-        return offset == byteCount
-    }
+    fun requestBytes(): SwiftGrpcRequestBytes = bytes
 }
 
 /** Copies scoped Swift bytes directly into kotlinx-io buffer segments. */
