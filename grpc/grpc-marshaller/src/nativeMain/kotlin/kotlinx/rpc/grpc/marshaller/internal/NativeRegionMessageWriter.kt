@@ -22,6 +22,7 @@ import platform.posix.memcpy
 @InternalRpcApi
 public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(size) {
     private var state: State = if (size == 0) State.Complete else State.Open
+    private val scopedAccess = ScopedNativeRegionAccess()
 
     /** Invokes [block] with the storage base address; null is allowed only for an empty message. */
     public abstract fun accessStorage(block: (base: CPointer<ByteVar>?) -> Boolean): Boolean
@@ -34,11 +35,12 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
 
     /** Seals the storage after exactly [size] bytes have been written. */
     public fun seal() {
-        if (state == State.Writing) markFailed()
+        if (scopedAccess.isAccessing) markFailed()
         check(state == State.Complete) { "The writer is not complete" }
         try {
             onSeal()
             state = State.Sealed
+            scopedAccess.invalidate()
         } catch (cause: Throwable) {
             markFailed()
             throw cause
@@ -47,12 +49,13 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
 
     /** Releases storage. Repeated calls are safe, including after the consumer has taken it. */
     public fun discard() {
-        if (state == State.Writing) {
+        if (scopedAccess.isAccessing) {
             markFailed()
             error("The writer cannot be discarded during a write scope")
         }
         if (state == State.Discarded) return
         state = State.Discarded
+        scopedAccess.invalidate()
         onDiscard()
     }
 
@@ -104,7 +107,8 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     }
 
     private fun requireWritable(allowEmptyComplete: Boolean = false) {
-        if (state == State.Open || (allowEmptyComplete && state == State.Complete && size == 0)) return
+        if (state == State.Open) return
+        if (allowEmptyComplete && state == State.Complete && size == 0) return
         error("The writer cannot accept more bytes")
     }
 
@@ -121,28 +125,13 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         }
 
         val start = written
-        var count = -1
-        var invoked = false
-        var failure: Throwable? = null
-        state = State.Writing
-        val accepted = accessStorage { pointer ->
-            try {
-                check(!invoked) { "The storage invoked the write action more than once" }
-                invoked = true
-                val base = checkNotNull(pointer) { "Non-empty storage has no base address" }
-                count = writeAction(base, start, size)
+        val count = scopedAccess.access(::accessStorage) { pointer ->
+            val base = checkNotNull(pointer) { "Non-empty storage has no base address" }
+            writeAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
                     "The write reported $count bytes with only $remaining bytes remaining"
                 }
-                state == State.Writing
-            } catch (cause: Throwable) {
-                failure = cause
-                false
             }
-        }
-        failure?.let { throw it }
-        if (!accepted || !invoked || state != State.Writing) {
-            error("The storage rejected the write")
         }
         recordWrite(count) {}
         state = if (remaining == 0) State.Complete else State.Open
@@ -153,6 +142,7 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     private fun markFailed() {
         if (state == State.Discarded || state == State.Sealed || state == State.Failed) return
         state = State.Failed
+        scopedAccess.invalidate()
         fail()
     }
 
@@ -163,7 +153,7 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         throw cause
     }
 
-    private enum class State { Open, Writing, Complete, Sealed, Failed, Discarded }
+    private enum class State { Open, Complete, Sealed, Failed, Discarded }
 }
 
 /** Unsafe access to the unwritten tail of a [NativeRegionMessageWriter]. */
