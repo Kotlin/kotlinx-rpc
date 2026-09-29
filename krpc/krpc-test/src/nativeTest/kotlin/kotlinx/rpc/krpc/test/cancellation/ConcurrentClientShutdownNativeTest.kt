@@ -19,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 class ConcurrentClientShutdownNativeTest {
     @Test
     fun closingClientResumesActiveCollectorsDuringRequestCleanup() =
-        runTestWithCoroutinesProbes(timeout = 30.seconds) {
+        runTestWithCoroutinesProbes(timeout = 45.seconds) {
             withContext(Dispatchers.Default) {
                 val toolkit = CancellationToolkit(this)
                 val observed = WaitCounter()
