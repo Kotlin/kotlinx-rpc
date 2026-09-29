@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class, kotlinx.io.UnsafeIoApi::class)
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -10,11 +10,8 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
-import kotlinx.io.Buffer
-import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
 import platform.posix.memcpy
@@ -56,28 +53,6 @@ internal class SwiftResponseMessageReader(bytes: COpaquePointer?, size: Int) : N
         closed = true
         base = null
     }
-}
-
-/** Copies scoped Swift bytes directly into kotlinx-io buffer segments. */
-internal fun copySwiftBytes(bytes: COpaquePointer?, length: Long): Buffer {
-    require(length >= 0) { "A grpc-swift message cannot have a negative length" }
-    require(length == 0L || bytes != null) { "grpc-swift returned a null pointer for a non-empty message" }
-
-    val result = Buffer()
-    val source = bytes?.reinterpret<ByteVar>()
-    var offset = 0L
-    while (offset < length) {
-        val remaining = (length - offset).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-        UnsafeBufferOperations.writeToTail(result, 1) { destination, start, endExclusive ->
-            val count = minOf(remaining, endExclusive - start)
-            destination.usePinned { pinned ->
-                memcpy(pinned.addressOf(start), source!! + offset, count.convert())
-            }
-            offset += count
-            count
-        }
-    }
-    return result
 }
 
 /** Copies scoped Swift bytes directly into the ByteArray representation used by metadata. */

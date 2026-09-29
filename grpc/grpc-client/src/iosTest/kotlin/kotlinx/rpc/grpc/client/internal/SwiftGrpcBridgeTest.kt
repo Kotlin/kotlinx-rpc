@@ -10,12 +10,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
-import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.get
-import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.set
 import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -31,8 +26,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import kotlinx.io.Buffer
-import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
@@ -203,15 +196,6 @@ class SwiftGrpcBridgeTest {
         assertEquals("application/grpc", result["content-type"])
         assertEquals("gzip", result["grpc-encoding"])
         assertEquals("value", result["custom-header"])
-    }
-
-    @Test
-    fun scopedSwiftBytesCopyAcrossMultipleBufferSegments() = memScoped {
-        val expected = ByteArray(20_000) { (it * 31).toByte() }
-        val source = allocArray<ByteVar>(expected.size)
-        for (index in expected.indices) source[index] = expected[index]
-
-        assertContentEquals(expected, copySwiftBytes(source, expected.size.toLong()).readByteArray())
     }
 
     @Test
