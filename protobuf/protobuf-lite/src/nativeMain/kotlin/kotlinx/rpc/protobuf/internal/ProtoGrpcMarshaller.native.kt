@@ -12,6 +12,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
 
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
@@ -43,6 +44,8 @@ public actual inline fun <R> withWireDecoder(
     is BufferMessageReader -> reader.readDirect { buffer ->
         WireDecoder(buffer).use(block)
     }
+
+    is NativeRegionMessageReader -> directDecode(reader) { block(it) }
 
     else -> WireDecoder(reader.asSource()).use(block)
 }
