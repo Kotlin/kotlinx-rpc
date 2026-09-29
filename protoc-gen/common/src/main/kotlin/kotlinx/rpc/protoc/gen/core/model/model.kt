@@ -36,7 +36,8 @@ data class FileDeclaration(
 data class MessageDeclaration(
     val name: FqName,
     val presenceMaskSize: Int,
-    val actualFields: List<FieldDeclaration>, // excludes oneOf fields, but includes oneOf itself
+    // all singular/repeated/map fields in declaration order, including the members of every oneof
+    val actualFields: List<FieldDeclaration>,
     val oneOfDeclarations: List<OneOfDeclaration>,
     val enumDeclarations: List<EnumDeclaration>,
     val nestedDeclarations: List<MessageDeclaration>,
@@ -59,7 +60,6 @@ data class MessageDeclaration(
     val requiredFields by lazy { actualFields.filter { it.dec.isRequired } }
 
     val messageFields by lazy { actualFields.filter { it.type is FieldType.Message } }
-    val oneOfFields by lazy { actualFields.filter { it.type is FieldType.OneOf } }
     val listFields by lazy { actualFields.filter { it.type is FieldType.List } }
     val mapFields by lazy { actualFields.filter { it.type is FieldType.Map } }
 
@@ -73,7 +73,6 @@ data class MessageDeclaration(
                 || messageFields.any { it.type.hasRequiredFields }
                 || listFields.any { (it.type as FieldType.List).value.hasRequiredFields }
                 || mapFields.any { (it.type as FieldType.Map).entry.value.hasRequiredFields }
-                || oneOfFields.flatMap { (it.type as FieldType.OneOf).dec.variants }.any { it.type.hasRequiredFields }
         }
     }
 
@@ -140,7 +139,15 @@ data class EnumDeclaration(
     val deprecated: Boolean,
 ) {
     val companionName: FqName.Declaration by lazy { name.nested("Companion") }
-    val unrecognisedName: FqName.Declaration by lazy { name.nested("UNRECOGNIZED") }
+
+    /**
+     * The synthetic `UNRECOGNIZED` entry, renamed with trailing underscores
+     * if a proto value or alias already occupies the name (e.g. `UNRECOGNIZED`, `UNRECOGNIZED_`).
+     */
+    val unrecognisedName: FqName.Declaration by lazy {
+        val taken = (originalEntries.map { it.name.simpleName } + aliases.map { it.name.simpleName }).toSet()
+        name.nested(UNRECOGNIZED_ENTRY_NAME.uniqueAgainst(taken))
+    }
 
     fun defaultEntry(): Entry {
         // In proto3 and editions:
@@ -164,14 +171,74 @@ data class EnumDeclaration(
         val dec: Descriptors.EnumValueDescriptor,
         val deprecated: Boolean,
     )
+
+    companion object {
+        const val UNRECOGNIZED_ENTRY_NAME = "UNRECOGNIZED"
+    }
 }
 
 data class OneOfDeclaration(
-    val name: FqName,
+    /** The Kotlin-safe name of the case extension property (escaped with backticks if it's a Kotlin keyword). */
+    val name: String,
+    /** The raw lower camel-cased (or proto) name. Used for derived names like `clear<OneOf>` and `when<OneOf>`. */
+    val rawName: String,
+    /** The top-level `<Message><OneOf>Case` enum class, nested message names flattened. */
+    val caseTypeName: FqName.Declaration,
     val variants: List<FieldDeclaration>,
     val dec: Descriptors.OneofDescriptor,
     val doc: Comment?,
-)
+    val containingType: Lazy<MessageDeclaration>,
+) {
+    private val capitalizedRawName: String = rawName.replaceFirstChar { it.uppercase() }
+
+    /** The `clear<OneOf>` builder function, declared by the compiler plugin and implemented by the internal class. */
+    val clearFunctionName: String = "clear$capitalizedRawName"
+    val whenFunctionName: String = "when$capitalizedRawName"
+    val internalCaseGetterName: String = "_${rawName}Case"
+
+    val referenceVariants: List<FieldDeclaration> by lazy { variants.filter { it.type.isOneOfReferenceType } }
+    val numericVariants: List<FieldDeclaration> by lazy { variants.filter { !it.type.isOneOfReferenceType } }
+
+    val hasReferenceSlot: Boolean get() = referenceVariants.isNotEmpty()
+    val hasNumericSlot: Boolean get() = numericVariants.isNotEmpty()
+
+    val numericSlotIs64Bit: Boolean by lazy { numericVariants.any { it.type.isOneOf64BitType } }
+
+    val referenceSlotName: String = "_${rawName}Ref"
+    val numericSlotName: String = "_${rawName}Num"
+
+    private val memberEntryNames: Map<FieldDeclaration, String> by lazy {
+        variants.associateWith { it.dec.name.uppercase() }
+    }
+
+    fun caseEntryName(variant: FieldDeclaration): String = memberEntryNames.getValue(variant)
+
+    /**
+     * The synthetic `NOT_SET` case entry, renamed with trailing underscores
+     * if members already occupy the name (e.g. `not_set`, `not_set_`).
+     */
+    val notSetEntryName: String by lazy { NOT_SET_ENTRY_NAME.uniqueAgainst(memberEntryNames.values.toSet()) }
+
+    /** The `when<OneOf>` parameter for the [notSetEntryName] case, renamed the same way as the entry. */
+    val notSetParameterName: String by lazy { NOT_SET_PARAMETER_NAME.uniqueAgainst(variants.map { it.rawName }.toSet()) }
+
+    companion object {
+        const val NOT_SET_ENTRY_NAME = "NOT_SET"
+        const val NOT_SET_PARAMETER_NAME = "notSet"
+    }
+}
+
+/**
+ * Returns this name if it is not in [taken], otherwise the name with the smallest number
+ * of trailing underscores appended that is not in [taken].
+ */
+internal fun String.uniqueAgainst(taken: Set<String>): String {
+    var candidate = this
+    while (candidate in taken) {
+        candidate += "_"
+    }
+    return candidate
+}
 
 data class FieldDeclaration(
     /** The Kotlin-safe name (escaped with backticks if it's a Kotlin keyword). Used in generated code. */
@@ -190,6 +257,8 @@ data class FieldDeclaration(
     // fully-qualified symbol of the generated internal extension descriptor property
     // (null for non-extension fields)
     val extensionDescriptorName: FqName.Declaration? = null,
+    // the oneof this field is a member of (null for regular fields and synthetic proto3 optional oneofs)
+    val containingOneOf: Lazy<OneOfDeclaration?> = lazyOf(null),
 ) {
     val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
@@ -199,17 +268,11 @@ data class FieldDeclaration(
 
     val number: Int = dec.number
 
-    // all normal fields are non-nullable (KRPC-262)
-    // only oneof fields are nullable.
-    val nullable: Boolean = type is FieldType.OneOf
-
     // if the field may have an `orNull` extension getter
     val hasOrNullGetter: Boolean =
-        !nullable              // nullable fields don't need a nullable getter
-            && dec.hasPresence()
+        dec.hasPresence()
             && !dec.isRequired
             && !dec.isRepeated    // repeated fields cannot be nullable (just empty)
-            && !isPartOfOneof     // upper conditions would match oneof inner fields
             && !isPartOfMapEntry  // map entry fields cannot be null
 
     val presenceGetterName = "has${rawName.replaceFirstChar { it.uppercase() }}"

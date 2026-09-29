@@ -13,6 +13,15 @@ import name_conflicts.LowercaseKeywordEnum
 import name_conflicts.KeywordFields
 import name_conflicts.KeywordFieldsWithPresence
 import name_conflicts.KeywordOneof
+import name_conflicts.KeywordOneofPackageCase
+import name_conflicts.KeywordOneofValueCase
+import name_conflicts.NotSetOneof
+import name_conflicts.NotSetOneofChoiceCase
+import name_conflicts.choice
+import name_conflicts.`package`
+import name_conflicts.value
+import name_conflicts.whenChoice
+import name_conflicts.whenValue
 import name_conflicts.NestedWithKeywords
 import name_conflicts.copy
 import name_conflicts.invoke
@@ -286,33 +295,79 @@ class NameConflictTest {
     @Test
     fun keywordOneofFor() {
         val msg = KeywordOneof {
-            value = KeywordOneof.Value.For(42)
+            `for` = 42
         }
-        assertEquals(42, (msg.value as KeywordOneof.Value.For).value)
+        assertEquals(KeywordOneofValueCase.FOR, msg.value)
+        assertEquals(42, msg.`for`)
+        assertTrue(msg.presence.hasFor)
     }
 
     @Test
     fun keywordOneofWhen() {
         val msg = KeywordOneof {
-            value = KeywordOneof.Value.When("hello")
+            `when` = "hello"
         }
-        assertEquals("hello", (msg.value as KeywordOneof.Value.When).value)
+        assertEquals(KeywordOneofValueCase.WHEN, msg.value)
+        assertEquals("hello", msg.`when`)
     }
 
     @Test
     fun keywordOneofIf() {
         val msg = KeywordOneof {
-            value = KeywordOneof.Value.If(true)
+            `if` = true
         }
-        assertEquals(true, (msg.value as KeywordOneof.Value.If).value)
+        assertEquals(KeywordOneofValueCase.IF, msg.value)
+        assertEquals(true, msg.`if`)
+    }
+
+    @Test
+    fun keywordOneofWhenFunction() {
+        val msg = KeywordOneof { `when` = "hello" }
+        val result = msg.whenValue(
+            `for` = { it.toString() },
+            `when` = { it },
+            `if` = { it.toString() },
+            notSet = { "" },
+        )
+        assertEquals("hello", result)
+    }
+
+    @Test
+    fun keywordOneofName() {
+        val msg = KeywordOneof { `while` = 7 }
+        assertEquals(KeywordOneofPackageCase.WHILE, msg.`package`)
+        assertEquals(7, msg.`while`)
+
+        val cleared = msg.copy { clearPackage() }
+        assertEquals(KeywordOneofPackageCase.NOT_SET, cleared.`package`)
+        assertEquals(0, cleared.`while`)
     }
 
     @Test
     fun keywordOneofEncodeDecode() {
-        val msg = KeywordOneof { value = KeywordOneof.Value.For(99) }
+        val msg = KeywordOneof { `for` = 99 }
         val decoded = msg.encodeDecode(grpcMarshallerOf<KeywordOneof>())
 
-        assertEquals(99, (decoded.value as KeywordOneof.Value.For).value)
+        assertEquals(KeywordOneofValueCase.FOR, decoded.value)
+        assertEquals(99, decoded.`for`)
+    }
+
+    @Test
+    fun notSetMemberDoesNotCollideWithNotSetCase() {
+        val msg = NotSetOneof { notSet = 5 }
+        assertEquals(NotSetOneofChoiceCase.NOT_SET, msg.choice)
+        assertEquals(5, msg.notSet)
+
+        val empty = NotSetOneof { }
+        assertEquals(NotSetOneofChoiceCase.NOT_SET_, empty.choice)
+
+        val result = msg.whenChoice(
+            notSet = { it * 2 },
+            other = { it.length },
+            notSet_ = { -1 },
+        )
+        assertEquals(10, result)
+        assertEquals(-1, empty.whenChoice(notSet = { it }, other = { it.length }, notSet_ = { -1 }))
     }
 
     // --- Nested with keywords ---

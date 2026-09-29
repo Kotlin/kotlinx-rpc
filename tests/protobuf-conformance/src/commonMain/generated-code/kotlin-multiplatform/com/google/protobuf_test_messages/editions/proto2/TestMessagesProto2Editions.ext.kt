@@ -16,7 +16,9 @@ import kotlinx.rpc.protobuf.internal.InternalPresenceObject
  * }
  * ```
  */
-operator fun TestAllTypesProto2.Companion.invoke(body: TestAllTypesProto2.Builder.() -> Unit): TestAllTypesProto2 {
+operator fun TestAllTypesProto2.Companion.invoke(
+    body: TestAllTypesProto2.Builder.() -> Unit,
+): TestAllTypesProto2 {
     return TestAllTypesProto2Internal().apply(body)
 }
 
@@ -146,6 +148,51 @@ val TestAllTypesProto2.optionalCordOrNull: String? get() = if (this.presence.has
  * Returns the value of the `recursiveMessage` field if present, otherwise null.
  */
 val TestAllTypesProto2.recursiveMessageOrNull: TestAllTypesProto2? get() = if (this.presence.hasRecursiveMessage) this.recursiveMessage else null
+
+/**
+ * Returns the value of the `oneofUint32` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofUint32OrNull: UInt? get() = if (this.presence.hasOneofUint32) this.oneofUint32 else null
+
+/**
+ * Returns the value of the `oneofNestedMessage` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofNestedMessageOrNull: TestAllTypesProto2.NestedMessage? get() = if (this.presence.hasOneofNestedMessage) this.oneofNestedMessage else null
+
+/**
+ * Returns the value of the `oneofString` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofStringOrNull: String? get() = if (this.presence.hasOneofString) this.oneofString else null
+
+/**
+ * Returns the value of the `oneofBytes` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofBytesOrNull: ByteString? get() = if (this.presence.hasOneofBytes) this.oneofBytes else null
+
+/**
+ * Returns the value of the `oneofBool` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofBoolOrNull: Boolean? get() = if (this.presence.hasOneofBool) this.oneofBool else null
+
+/**
+ * Returns the value of the `oneofUint64` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofUint64OrNull: ULong? get() = if (this.presence.hasOneofUint64) this.oneofUint64 else null
+
+/**
+ * Returns the value of the `oneofFloat` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofFloatOrNull: Float? get() = if (this.presence.hasOneofFloat) this.oneofFloat else null
+
+/**
+ * Returns the value of the `oneofDouble` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofDoubleOrNull: Double? get() = if (this.presence.hasOneofDouble) this.oneofDouble else null
+
+/**
+ * Returns the value of the `oneofEnum` field if present, otherwise null.
+ */
+val TestAllTypesProto2.oneofEnumOrNull: TestAllTypesProto2.NestedEnum? get() = if (this.presence.hasOneofEnum) this.oneofEnum else null
 
 /**
  * Returns the value of the `data` field if present, otherwise null.
@@ -328,6 +375,40 @@ val TestAllTypesProto2.fieldName18__OrNull: Int? get() = if (this.presence.hasFi
 val TestAllTypesProto2.messageSetCorrectOrNull: TestAllTypesProto2.MessageSetCorrect? get() = if (this.presence.hasMessageSetCorrect) this.messageSetCorrect else null
 
 /**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesProto2OneofFieldCase.NOT_SET].
+ */
+val TestAllTypesProto2.oneofField: TestAllTypesProto2OneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesProto2.whenOneofField(
+    oneofUint32: (UInt) -> R,
+    oneofNestedMessage: (TestAllTypesProto2.NestedMessage) -> R,
+    oneofString: (String) -> R,
+    oneofBytes: (ByteString) -> R,
+    oneofBool: (Boolean) -> R,
+    oneofUint64: (ULong) -> R,
+    oneofFloat: (Float) -> R,
+    oneofDouble: (Double) -> R,
+    oneofEnum: (TestAllTypesProto2.NestedEnum) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesProto2OneofFieldCase.ONEOF_UINT32 -> oneofUint32(this.oneofUint32)
+        TestAllTypesProto2OneofFieldCase.ONEOF_NESTED_MESSAGE -> oneofNestedMessage(this.oneofNestedMessage)
+        TestAllTypesProto2OneofFieldCase.ONEOF_STRING -> oneofString(this.oneofString)
+        TestAllTypesProto2OneofFieldCase.ONEOF_BYTES -> oneofBytes(this.oneofBytes)
+        TestAllTypesProto2OneofFieldCase.ONEOF_BOOL -> oneofBool(this.oneofBool)
+        TestAllTypesProto2OneofFieldCase.ONEOF_UINT64 -> oneofUint64(this.oneofUint64)
+        TestAllTypesProto2OneofFieldCase.ONEOF_FLOAT -> oneofFloat(this.oneofFloat)
+        TestAllTypesProto2OneofFieldCase.ONEOF_DOUBLE -> oneofDouble(this.oneofDouble)
+        TestAllTypesProto2OneofFieldCase.ONEOF_ENUM -> oneofEnum(this.oneofEnum)
+        TestAllTypesProto2OneofFieldCase.NOT_SET -> notSet()
+    }
+}
+
+/**
  * Constructs a new message.
  * ```
  * val message = ForeignMessageProto2 {
@@ -335,7 +416,9 @@ val TestAllTypesProto2.messageSetCorrectOrNull: TestAllTypesProto2.MessageSetCor
  * }
  * ```
  */
-operator fun ForeignMessageProto2.Companion.invoke(body: ForeignMessageProto2.Builder.() -> Unit): ForeignMessageProto2 {
+operator fun ForeignMessageProto2.Companion.invoke(
+    body: ForeignMessageProto2.Builder.() -> Unit,
+): ForeignMessageProto2 {
     return ForeignMessageProto2Internal().apply(body)
 }
 
@@ -347,7 +430,9 @@ operator fun ForeignMessageProto2.Companion.invoke(body: ForeignMessageProto2.Bu
  * }
  * ```
  */
-fun ForeignMessageProto2.copy(body: ForeignMessageProto2.Builder.() -> Unit = {}): ForeignMessageProto2 {
+fun ForeignMessageProto2.copy(
+    body: ForeignMessageProto2.Builder.() -> Unit = {},
+): ForeignMessageProto2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -408,7 +493,9 @@ val GroupField.groupUint32OrNull: UInt? get() = if (this.presence.hasGroupUint32
  * }
  * ```
  */
-operator fun UnknownToTestAllTypes.Companion.invoke(body: UnknownToTestAllTypes.Builder.() -> Unit): UnknownToTestAllTypes {
+operator fun UnknownToTestAllTypes.Companion.invoke(
+    body: UnknownToTestAllTypes.Builder.() -> Unit,
+): UnknownToTestAllTypes {
     return UnknownToTestAllTypesInternal().apply(body)
 }
 
@@ -420,7 +507,9 @@ operator fun UnknownToTestAllTypes.Companion.invoke(body: UnknownToTestAllTypes.
  * }
  * ```
  */
-fun UnknownToTestAllTypes.copy(body: UnknownToTestAllTypes.Builder.() -> Unit = {}): UnknownToTestAllTypes {
+fun UnknownToTestAllTypes.copy(
+    body: UnknownToTestAllTypes.Builder.() -> Unit = {},
+): UnknownToTestAllTypes {
     return this.asInternal().copyInternal(body)
 }
 
@@ -460,7 +549,9 @@ val UnknownToTestAllTypes.optionalBoolOrNull: Boolean? get() = if (this.presence
  * val message = NullHypothesisProto2 { }
  * ```
  */
-operator fun NullHypothesisProto2.Companion.invoke(body: NullHypothesisProto2.Builder.() -> Unit): NullHypothesisProto2 {
+operator fun NullHypothesisProto2.Companion.invoke(
+    body: NullHypothesisProto2.Builder.() -> Unit,
+): NullHypothesisProto2 {
     return NullHypothesisProto2Internal().apply(body)
 }
 
@@ -470,7 +561,9 @@ operator fun NullHypothesisProto2.Companion.invoke(body: NullHypothesisProto2.Bu
  * val copy = original.copy()
  * ```
  */
-fun NullHypothesisProto2.copy(body: NullHypothesisProto2.Builder.() -> Unit = {}): NullHypothesisProto2 {
+fun NullHypothesisProto2.copy(
+    body: NullHypothesisProto2.Builder.() -> Unit = {},
+): NullHypothesisProto2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -480,7 +573,9 @@ fun NullHypothesisProto2.copy(body: NullHypothesisProto2.Builder.() -> Unit = {}
  * val message = EnumOnlyProto2 { }
  * ```
  */
-operator fun EnumOnlyProto2.Companion.invoke(body: EnumOnlyProto2.Builder.() -> Unit): EnumOnlyProto2 {
+operator fun EnumOnlyProto2.Companion.invoke(
+    body: EnumOnlyProto2.Builder.() -> Unit,
+): EnumOnlyProto2 {
     return EnumOnlyProto2Internal().apply(body)
 }
 
@@ -502,7 +597,9 @@ fun EnumOnlyProto2.copy(body: EnumOnlyProto2.Builder.() -> Unit = {}): EnumOnlyP
  * }
  * ```
  */
-operator fun OneStringProto2.Companion.invoke(body: OneStringProto2.Builder.() -> Unit): OneStringProto2 {
+operator fun OneStringProto2.Companion.invoke(
+    body: OneStringProto2.Builder.() -> Unit,
+): OneStringProto2 {
     return OneStringProto2Internal().apply(body)
 }
 
@@ -536,7 +633,9 @@ val OneStringProto2.dataOrNull: String? get() = if (this.presence.hasData) this.
  * }
  * ```
  */
-operator fun ProtoWithKeywords.Companion.invoke(body: ProtoWithKeywords.Builder.() -> Unit): ProtoWithKeywords {
+operator fun ProtoWithKeywords.Companion.invoke(
+    body: ProtoWithKeywords.Builder.() -> Unit,
+): ProtoWithKeywords {
     return ProtoWithKeywordsInternal().apply(body)
 }
 
@@ -575,7 +674,9 @@ val ProtoWithKeywords.conceptOrNull: String? get() = if (this.presence.hasConcep
  * }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.Companion.invoke(body: TestAllRequiredTypesProto2.Builder.() -> Unit): TestAllRequiredTypesProto2 {
+operator fun TestAllRequiredTypesProto2.Companion.invoke(
+    body: TestAllRequiredTypesProto2.Builder.() -> Unit,
+): TestAllRequiredTypesProto2 {
     return TestAllRequiredTypesProto2Internal().apply(body).apply(TestAllRequiredTypesProto2Internal::checkRequiredFields)
 }
 
@@ -587,7 +688,9 @@ operator fun TestAllRequiredTypesProto2.Companion.invoke(body: TestAllRequiredTy
  * }
  * ```
  */
-fun TestAllRequiredTypesProto2.copy(body: TestAllRequiredTypesProto2.Builder.() -> Unit = {}): TestAllRequiredTypesProto2 {
+fun TestAllRequiredTypesProto2.copy(
+    body: TestAllRequiredTypesProto2.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -605,11 +708,13 @@ val TestAllRequiredTypesProto2.optionalRecursiveMessageOrNull: TestAllRequiredTy
  * Constructs a new message.
  * ```
  * val message = TestLargeOneof {
- *    largeOneof = ...
+ *    a1 = ...
  * }
  * ```
  */
-operator fun TestLargeOneof.Companion.invoke(body: TestLargeOneof.Builder.() -> Unit): TestLargeOneof {
+operator fun TestLargeOneof.Companion.invoke(
+    body: TestLargeOneof.Builder.() -> Unit,
+): TestLargeOneof {
     return TestLargeOneofInternal().apply(body)
 }
 
@@ -617,12 +722,68 @@ operator fun TestLargeOneof.Companion.invoke(body: TestLargeOneof.Builder.() -> 
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
- *    largeOneof = ...
+ *    a1 = ...
  * }
  * ```
  */
 fun TestLargeOneof.copy(body: TestLargeOneof.Builder.() -> Unit = {}): TestLargeOneof {
     return this.asInternal().copyInternal(body)
+}
+
+/**
+ * Returns the field-presence view for this [TestLargeOneof] instance.
+ */
+val TestLargeOneof.presence: TestLargeOneofPresence get() = this.asInternal()._presence
+
+/**
+ * Returns the value of the `a1` field if present, otherwise null.
+ */
+val TestLargeOneof.a1OrNull: TestLargeOneof.A1? get() = if (this.presence.hasA1) this.a1 else null
+
+/**
+ * Returns the value of the `a2` field if present, otherwise null.
+ */
+val TestLargeOneof.a2OrNull: TestLargeOneof.A2? get() = if (this.presence.hasA2) this.a2 else null
+
+/**
+ * Returns the value of the `a3` field if present, otherwise null.
+ */
+val TestLargeOneof.a3OrNull: TestLargeOneof.A3? get() = if (this.presence.hasA3) this.a3 else null
+
+/**
+ * Returns the value of the `a4` field if present, otherwise null.
+ */
+val TestLargeOneof.a4OrNull: TestLargeOneof.A4? get() = if (this.presence.hasA4) this.a4 else null
+
+/**
+ * Returns the value of the `a5` field if present, otherwise null.
+ */
+val TestLargeOneof.a5OrNull: TestLargeOneof.A5? get() = if (this.presence.hasA5) this.a5 else null
+
+/**
+ * The active case of the `large_oneof` oneof, or [TestLargeOneofLargeOneofCase.NOT_SET].
+ */
+val TestLargeOneof.largeOneof: TestLargeOneofLargeOneofCase get() = this.asInternal()._largeOneofCase
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `large_oneof` oneof.
+ */
+inline fun <R> TestLargeOneof.whenLargeOneof(
+    a1: (TestLargeOneof.A1) -> R,
+    a2: (TestLargeOneof.A2) -> R,
+    a3: (TestLargeOneof.A3) -> R,
+    a4: (TestLargeOneof.A4) -> R,
+    a5: (TestLargeOneof.A5) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.largeOneof) {
+        TestLargeOneofLargeOneofCase.A1 -> a1(this.a1)
+        TestLargeOneofLargeOneofCase.A2 -> a2(this.a2)
+        TestLargeOneofLargeOneofCase.A3 -> a3(this.a3)
+        TestLargeOneofLargeOneofCase.A4 -> a4(this.a4)
+        TestLargeOneofLargeOneofCase.A5 -> a5(this.a5)
+        TestLargeOneofLargeOneofCase.NOT_SET -> notSet()
+    }
 }
 
 /**
@@ -633,7 +794,9 @@ fun TestLargeOneof.copy(body: TestLargeOneof.Builder.() -> Unit = {}): TestLarge
  * }
  * ```
  */
-operator fun TestAllTypesProto2.NestedMessage.Companion.invoke(body: TestAllTypesProto2.NestedMessage.Builder.() -> Unit): TestAllTypesProto2.NestedMessage {
+operator fun TestAllTypesProto2.NestedMessage.Companion.invoke(
+    body: TestAllTypesProto2.NestedMessage.Builder.() -> Unit,
+): TestAllTypesProto2.NestedMessage {
     return TestAllTypesProto2Internal.NestedMessageInternal().apply(body)
 }
 
@@ -645,7 +808,9 @@ operator fun TestAllTypesProto2.NestedMessage.Companion.invoke(body: TestAllType
  * }
  * ```
  */
-fun TestAllTypesProto2.NestedMessage.copy(body: TestAllTypesProto2.NestedMessage.Builder.() -> Unit = {}): TestAllTypesProto2.NestedMessage {
+fun TestAllTypesProto2.NestedMessage.copy(
+    body: TestAllTypesProto2.NestedMessage.Builder.() -> Unit = {},
+): TestAllTypesProto2.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -672,7 +837,9 @@ val TestAllTypesProto2.NestedMessage.corecursiveOrNull: TestAllTypesProto2? get(
  * }
  * ```
  */
-operator fun TestAllTypesProto2.Data.Companion.invoke(body: TestAllTypesProto2.Data.Builder.() -> Unit): TestAllTypesProto2.Data {
+operator fun TestAllTypesProto2.Data.Companion.invoke(
+    body: TestAllTypesProto2.Data.Builder.() -> Unit,
+): TestAllTypesProto2.Data {
     return TestAllTypesProto2Internal.DataInternal().apply(body)
 }
 
@@ -684,7 +851,9 @@ operator fun TestAllTypesProto2.Data.Companion.invoke(body: TestAllTypesProto2.D
  * }
  * ```
  */
-fun TestAllTypesProto2.Data.copy(body: TestAllTypesProto2.Data.Builder.() -> Unit = {}): TestAllTypesProto2.Data {
+fun TestAllTypesProto2.Data.copy(
+    body: TestAllTypesProto2.Data.Builder.() -> Unit = {},
+): TestAllTypesProto2.Data {
     return this.asInternal().copyInternal(body)
 }
 
@@ -711,7 +880,9 @@ val TestAllTypesProto2.Data.groupUint32OrNull: UInt? get() = if (this.presence.h
  * }
  * ```
  */
-operator fun TestAllTypesProto2.MultiWordGroupField.Companion.invoke(body: TestAllTypesProto2.MultiWordGroupField.Builder.() -> Unit): TestAllTypesProto2.MultiWordGroupField {
+operator fun TestAllTypesProto2.MultiWordGroupField.Companion.invoke(
+    body: TestAllTypesProto2.MultiWordGroupField.Builder.() -> Unit,
+): TestAllTypesProto2.MultiWordGroupField {
     return TestAllTypesProto2Internal.MultiWordGroupFieldInternal().apply(body)
 }
 
@@ -723,7 +894,9 @@ operator fun TestAllTypesProto2.MultiWordGroupField.Companion.invoke(body: TestA
  * }
  * ```
  */
-fun TestAllTypesProto2.MultiWordGroupField.copy(body: TestAllTypesProto2.MultiWordGroupField.Builder.() -> Unit = {}): TestAllTypesProto2.MultiWordGroupField {
+fun TestAllTypesProto2.MultiWordGroupField.copy(
+    body: TestAllTypesProto2.MultiWordGroupField.Builder.() -> Unit = {},
+): TestAllTypesProto2.MultiWordGroupField {
     return this.asInternal().copyInternal(body)
 }
 
@@ -748,7 +921,9 @@ val TestAllTypesProto2.MultiWordGroupField.groupUint32OrNull: UInt? get() = if (
  * val message = MessageSetCorrect { }
  * ```
  */
-operator fun TestAllTypesProto2.MessageSetCorrect.Companion.invoke(body: TestAllTypesProto2.MessageSetCorrect.Builder.() -> Unit): TestAllTypesProto2.MessageSetCorrect {
+operator fun TestAllTypesProto2.MessageSetCorrect.Companion.invoke(
+    body: TestAllTypesProto2.MessageSetCorrect.Builder.() -> Unit,
+): TestAllTypesProto2.MessageSetCorrect {
     return TestAllTypesProto2Internal.MessageSetCorrectInternal().apply(body)
 }
 
@@ -758,7 +933,9 @@ operator fun TestAllTypesProto2.MessageSetCorrect.Companion.invoke(body: TestAll
  * val copy = original.copy()
  * ```
  */
-fun TestAllTypesProto2.MessageSetCorrect.copy(body: TestAllTypesProto2.MessageSetCorrect.Builder.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrect {
+fun TestAllTypesProto2.MessageSetCorrect.copy(
+    body: TestAllTypesProto2.MessageSetCorrect.Builder.() -> Unit = {},
+): TestAllTypesProto2.MessageSetCorrect {
     return this.asInternal().copyInternal(body)
 }
 
@@ -775,7 +952,9 @@ val TestAllTypesProto2.MessageSetCorrect.presence: TestAllTypesProto2Presence.Me
  * }
  * ```
  */
-operator fun TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: TestAllTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit): TestAllTypesProto2.MessageSetCorrectExtension1 {
+operator fun TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(
+    body: TestAllTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit,
+): TestAllTypesProto2.MessageSetCorrectExtension1 {
     return TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body)
 }
 
@@ -787,7 +966,9 @@ operator fun TestAllTypesProto2.MessageSetCorrectExtension1.Companion.invoke(bod
  * }
  * ```
  */
-fun TestAllTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrectExtension1 {
+fun TestAllTypesProto2.MessageSetCorrectExtension1.copy(
+    body: TestAllTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit = {},
+): TestAllTypesProto2.MessageSetCorrectExtension1 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -809,7 +990,9 @@ val TestAllTypesProto2.MessageSetCorrectExtension1.strOrNull: String? get() = if
  * }
  * ```
  */
-operator fun TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: TestAllTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit): TestAllTypesProto2.MessageSetCorrectExtension2 {
+operator fun TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(
+    body: TestAllTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit,
+): TestAllTypesProto2.MessageSetCorrectExtension2 {
     return TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body)
 }
 
@@ -821,7 +1004,9 @@ operator fun TestAllTypesProto2.MessageSetCorrectExtension2.Companion.invoke(bod
  * }
  * ```
  */
-fun TestAllTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit = {}): TestAllTypesProto2.MessageSetCorrectExtension2 {
+fun TestAllTypesProto2.MessageSetCorrectExtension2.copy(
+    body: TestAllTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit = {},
+): TestAllTypesProto2.MessageSetCorrectExtension2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -844,11 +1029,13 @@ val TestAllTypesProto2.MessageSetCorrectExtension2.subMsgOrNull: TestAllTypesPro
  * Constructs a new message.
  * ```
  * val message = ExtensionWithOneof {
- *    oneofField = ...
+ *    a = ...
  * }
  * ```
  */
-operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit): TestAllTypesProto2.ExtensionWithOneof {
+operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(
+    body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit,
+): TestAllTypesProto2.ExtensionWithOneof {
     return TestAllTypesProto2Internal.ExtensionWithOneofInternal().apply(body)
 }
 
@@ -856,12 +1043,49 @@ operator fun TestAllTypesProto2.ExtensionWithOneof.Companion.invoke(body: TestAl
  * Copies the original message, including unknown fields.
  * ```
  * val copy = original.copy {
- *    oneofField = ...
+ *    a = ...
  * }
  * ```
  */
-fun TestAllTypesProto2.ExtensionWithOneof.copy(body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit = {}): TestAllTypesProto2.ExtensionWithOneof {
+fun TestAllTypesProto2.ExtensionWithOneof.copy(
+    body: TestAllTypesProto2.ExtensionWithOneof.Builder.() -> Unit = {},
+): TestAllTypesProto2.ExtensionWithOneof {
     return this.asInternal().copyInternal(body)
+}
+
+/**
+ * Returns the field-presence view for this [TestAllTypesProto2.ExtensionWithOneof] instance.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.presence: TestAllTypesProto2Presence.ExtensionWithOneof get() = this.asInternal()._presence
+
+/**
+ * Returns the value of the `a` field if present, otherwise null.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.aOrNull: Int? get() = if (this.presence.hasA) this.a else null
+
+/**
+ * Returns the value of the `b` field if present, otherwise null.
+ */
+val TestAllTypesProto2.ExtensionWithOneof.bOrNull: Int? get() = if (this.presence.hasB) this.b else null
+
+/**
+ * The active case of the `oneof_field` oneof, or [TestAllTypesProto2ExtensionWithOneofOneofFieldCase.NOT_SET].
+ */
+val TestAllTypesProto2.ExtensionWithOneof.oneofField: TestAllTypesProto2ExtensionWithOneofOneofFieldCase get() = this.asInternal()._oneofFieldCase
+
+/**
+ * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
+ */
+inline fun <R> TestAllTypesProto2.ExtensionWithOneof.whenOneofField(
+    a: (Int) -> R,
+    b: (Int) -> R,
+    notSet: () -> R,
+): R {
+    return when (this.oneofField) {
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.A -> a(this.a)
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.B -> b(this.b)
+        TestAllTypesProto2ExtensionWithOneofOneofFieldCase.NOT_SET -> notSet()
+    }
 }
 
 /**
@@ -872,7 +1096,9 @@ fun TestAllTypesProto2.ExtensionWithOneof.copy(body: TestAllTypesProto2.Extensio
  * }
  * ```
  */
-operator fun UnknownToTestAllTypes.OptionalGroup.Companion.invoke(body: UnknownToTestAllTypes.OptionalGroup.Builder.() -> Unit): UnknownToTestAllTypes.OptionalGroup {
+operator fun UnknownToTestAllTypes.OptionalGroup.Companion.invoke(
+    body: UnknownToTestAllTypes.OptionalGroup.Builder.() -> Unit,
+): UnknownToTestAllTypes.OptionalGroup {
     return UnknownToTestAllTypesInternal.OptionalGroupInternal().apply(body)
 }
 
@@ -884,7 +1110,9 @@ operator fun UnknownToTestAllTypes.OptionalGroup.Companion.invoke(body: UnknownT
  * }
  * ```
  */
-fun UnknownToTestAllTypes.OptionalGroup.copy(body: UnknownToTestAllTypes.OptionalGroup.Builder.() -> Unit = {}): UnknownToTestAllTypes.OptionalGroup {
+fun UnknownToTestAllTypes.OptionalGroup.copy(
+    body: UnknownToTestAllTypes.OptionalGroup.Builder.() -> Unit = {},
+): UnknownToTestAllTypes.OptionalGroup {
     return this.asInternal().copyInternal(body)
 }
 
@@ -906,7 +1134,9 @@ val UnknownToTestAllTypes.OptionalGroup.aOrNull: Int? get() = if (this.presence.
  * }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(body: TestAllRequiredTypesProto2.NestedMessage.Builder.() -> Unit): TestAllRequiredTypesProto2.NestedMessage {
+operator fun TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(
+    body: TestAllRequiredTypesProto2.NestedMessage.Builder.() -> Unit,
+): TestAllRequiredTypesProto2.NestedMessage {
     return TestAllRequiredTypesProto2Internal.NestedMessageInternal().apply(body).apply(TestAllRequiredTypesProto2Internal.NestedMessageInternal::checkRequiredFields)
 }
 
@@ -918,7 +1148,9 @@ operator fun TestAllRequiredTypesProto2.NestedMessage.Companion.invoke(body: Tes
  * }
  * ```
  */
-fun TestAllRequiredTypesProto2.NestedMessage.copy(body: TestAllRequiredTypesProto2.NestedMessage.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.NestedMessage {
+fun TestAllRequiredTypesProto2.NestedMessage.copy(
+    body: TestAllRequiredTypesProto2.NestedMessage.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2.NestedMessage {
     return this.asInternal().copyInternal(body)
 }
 
@@ -940,7 +1172,9 @@ val TestAllRequiredTypesProto2.NestedMessage.optionalCorecursiveOrNull: TestAllR
  * }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.Data.Companion.invoke(body: TestAllRequiredTypesProto2.Data.Builder.() -> Unit): TestAllRequiredTypesProto2.Data {
+operator fun TestAllRequiredTypesProto2.Data.Companion.invoke(
+    body: TestAllRequiredTypesProto2.Data.Builder.() -> Unit,
+): TestAllRequiredTypesProto2.Data {
     return TestAllRequiredTypesProto2Internal.DataInternal().apply(body).apply(TestAllRequiredTypesProto2Internal.DataInternal::checkRequiredFields)
 }
 
@@ -952,7 +1186,9 @@ operator fun TestAllRequiredTypesProto2.Data.Companion.invoke(body: TestAllRequi
  * }
  * ```
  */
-fun TestAllRequiredTypesProto2.Data.copy(body: TestAllRequiredTypesProto2.Data.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.Data {
+fun TestAllRequiredTypesProto2.Data.copy(
+    body: TestAllRequiredTypesProto2.Data.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2.Data {
     return this.asInternal().copyInternal(body)
 }
 
@@ -967,7 +1203,9 @@ val TestAllRequiredTypesProto2.Data.presence: TestAllRequiredTypesProto2Presence
  * val message = MessageSetCorrect { }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrect {
+operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(
+    body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit,
+): TestAllRequiredTypesProto2.MessageSetCorrect {
     return TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal().apply(body)
 }
 
@@ -977,7 +1215,9 @@ operator fun TestAllRequiredTypesProto2.MessageSetCorrect.Companion.invoke(body:
  * val copy = original.copy()
  * ```
  */
-fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrect {
+fun TestAllRequiredTypesProto2.MessageSetCorrect.copy(
+    body: TestAllRequiredTypesProto2.MessageSetCorrect.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2.MessageSetCorrect {
     return this.asInternal().copyInternal(body)
 }
 
@@ -994,7 +1234,9 @@ val TestAllRequiredTypesProto2.MessageSetCorrect.presence: TestAllRequiredTypesP
  * }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.invoke(body: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
+operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.invoke(
+    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit,
+): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
     return TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal().apply(body).apply(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal::checkRequiredFields)
 }
 
@@ -1006,7 +1248,9 @@ operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Companion.in
  * }
  * ```
  */
-fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(body: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
+fun TestAllRequiredTypesProto2.MessageSetCorrectExtension1.copy(
+    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension1.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2.MessageSetCorrectExtension1 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1023,7 +1267,9 @@ val TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence: TestAllRequ
  * }
  * ```
  */
-operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.invoke(body: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
+operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.invoke(
+    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit,
+): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
     return TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal().apply(body).apply(TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal::checkRequiredFields)
 }
 
@@ -1035,7 +1281,9 @@ operator fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Companion.in
  * }
  * ```
  */
-fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(body: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit = {}): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
+fun TestAllRequiredTypesProto2.MessageSetCorrectExtension2.copy(
+    body: TestAllRequiredTypesProto2.MessageSetCorrectExtension2.Builder.() -> Unit = {},
+): TestAllRequiredTypesProto2.MessageSetCorrectExtension2 {
     return this.asInternal().copyInternal(body)
 }
 
@@ -1050,7 +1298,9 @@ val TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence: TestAllRequ
  * val message = A1 { }
  * ```
  */
-operator fun TestLargeOneof.A1.Companion.invoke(body: TestLargeOneof.A1.Builder.() -> Unit): TestLargeOneof.A1 {
+operator fun TestLargeOneof.A1.Companion.invoke(
+    body: TestLargeOneof.A1.Builder.() -> Unit,
+): TestLargeOneof.A1 {
     return TestLargeOneofInternal.A1Internal().apply(body)
 }
 
@@ -1070,7 +1320,9 @@ fun TestLargeOneof.A1.copy(body: TestLargeOneof.A1.Builder.() -> Unit = {}): Tes
  * val message = A2 { }
  * ```
  */
-operator fun TestLargeOneof.A2.Companion.invoke(body: TestLargeOneof.A2.Builder.() -> Unit): TestLargeOneof.A2 {
+operator fun TestLargeOneof.A2.Companion.invoke(
+    body: TestLargeOneof.A2.Builder.() -> Unit,
+): TestLargeOneof.A2 {
     return TestLargeOneofInternal.A2Internal().apply(body)
 }
 
@@ -1090,7 +1342,9 @@ fun TestLargeOneof.A2.copy(body: TestLargeOneof.A2.Builder.() -> Unit = {}): Tes
  * val message = A3 { }
  * ```
  */
-operator fun TestLargeOneof.A3.Companion.invoke(body: TestLargeOneof.A3.Builder.() -> Unit): TestLargeOneof.A3 {
+operator fun TestLargeOneof.A3.Companion.invoke(
+    body: TestLargeOneof.A3.Builder.() -> Unit,
+): TestLargeOneof.A3 {
     return TestLargeOneofInternal.A3Internal().apply(body)
 }
 
@@ -1110,7 +1364,9 @@ fun TestLargeOneof.A3.copy(body: TestLargeOneof.A3.Builder.() -> Unit = {}): Tes
  * val message = A4 { }
  * ```
  */
-operator fun TestLargeOneof.A4.Companion.invoke(body: TestLargeOneof.A4.Builder.() -> Unit): TestLargeOneof.A4 {
+operator fun TestLargeOneof.A4.Companion.invoke(
+    body: TestLargeOneof.A4.Builder.() -> Unit,
+): TestLargeOneof.A4 {
     return TestLargeOneofInternal.A4Internal().apply(body)
 }
 
@@ -1130,7 +1386,9 @@ fun TestLargeOneof.A4.copy(body: TestLargeOneof.A4.Builder.() -> Unit = {}): Tes
  * val message = A5 { }
  * ```
  */
-operator fun TestLargeOneof.A5.Companion.invoke(body: TestLargeOneof.A5.Builder.() -> Unit): TestLargeOneof.A5 {
+operator fun TestLargeOneof.A5.Companion.invoke(
+    body: TestLargeOneof.A5.Builder.() -> Unit,
+): TestLargeOneof.A5 {
     return TestLargeOneofInternal.A5Internal().apply(body)
 }
 
@@ -1192,6 +1450,24 @@ interface TestAllTypesProto2Presence {
     val hasOptionalCord: Boolean
 
     val hasRecursiveMessage: Boolean
+
+    val hasOneofUint32: Boolean
+
+    val hasOneofNestedMessage: Boolean
+
+    val hasOneofString: Boolean
+
+    val hasOneofBytes: Boolean
+
+    val hasOneofBool: Boolean
+
+    val hasOneofUint64: Boolean
+
+    val hasOneofFloat: Boolean
+
+    val hasOneofDouble: Boolean
+
+    val hasOneofEnum: Boolean
 
     val hasData: Boolean
 
@@ -1313,6 +1589,16 @@ interface TestAllTypesProto2Presence {
         val hasI: Boolean
 
         val hasSubMsg: Boolean
+    }
+
+    /**
+     * Interface providing field-presence information for [TestAllTypesProto2.ExtensionWithOneof] messages.
+     * Retrieve it via the [TestAllTypesProto2.ExtensionWithOneof.presence] extension property.
+     */
+    interface ExtensionWithOneof {
+        val hasA: Boolean
+
+        val hasB: Boolean
     }
 }
 
@@ -1498,6 +1784,62 @@ interface TestAllRequiredTypesProto2Presence {
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
     }
+}
+
+/**
+ * Interface providing field-presence information for [TestLargeOneof] messages.
+ * Retrieve it via the [TestLargeOneof.presence] extension property.
+ */
+interface TestLargeOneofPresence {
+    val hasA1: Boolean
+
+    val hasA2: Boolean
+
+    val hasA3: Boolean
+
+    val hasA4: Boolean
+
+    val hasA5: Boolean
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesProto2].
+ * Retrieve the active case via the [TestAllTypesProto2.oneofField] extension property.
+ */
+enum class TestAllTypesProto2OneofFieldCase {
+    ONEOF_UINT32,
+    ONEOF_NESTED_MESSAGE,
+    ONEOF_STRING,
+    ONEOF_BYTES,
+    ONEOF_BOOL,
+    ONEOF_UINT64,
+    ONEOF_FLOAT,
+    ONEOF_DOUBLE,
+    ONEOF_ENUM,
+    NOT_SET,
+}
+
+/**
+ * Cases of the `large_oneof` oneof of [TestLargeOneof].
+ * Retrieve the active case via the [TestLargeOneof.largeOneof] extension property.
+ */
+enum class TestLargeOneofLargeOneofCase {
+    A1,
+    A2,
+    A3,
+    A4,
+    A5,
+    NOT_SET,
+}
+
+/**
+ * Cases of the `oneof_field` oneof of [TestAllTypesProto2.ExtensionWithOneof].
+ * Retrieve the active case via the [TestAllTypesProto2.ExtensionWithOneof.oneofField] extension property.
+ */
+enum class TestAllTypesProto2ExtensionWithOneofOneofFieldCase {
+    A,
+    B,
+    NOT_SET,
 }
 
 val TestAllTypesProto2.extensionInt32: Int get() = asInternal().getExtensionValue(TestMessagesProto2EditionsKtExtensions.extensionInt32) ?: TestMessagesProto2EditionsKtExtensions.extensionInt32.defaultValue.value

@@ -182,7 +182,17 @@ val updated = config.copy {
 
 ### OneOf
 
-Proto `oneof` fields generate a sealed interface. Each case is a data class wrapping the value:
+Every member of a proto `oneof` becomes a flat, non-nullable property of the message, exactly like a
+singular field of the same type. When the member is not the active case, the property returns the proto
+default for its type. The oneof itself contributes a top-level `<Message><OneOf>Case` enum class, a
+`<oneOf>` extension property returning the active case, a `clear<OneOf>()` builder function and an
+exhaustive `when<OneOf>` dispatch function. Each member has a `has<Member>` presence getter and a
+`clear<Member>()` builder function.
+
+The `clear<OneOf>()` and `clear<Member>()` functions are members of the `Builder` interface declared by the
+compiler plugin and implemented by the internal class. The internal class is annotated with
+`@GeneratedProtoOneOfs(names = [...])` so that the compiler plugin knows the oneof names
+(see [protobuf/codegen.md](../protobuf/codegen.md)).
 
 ```protobuf
 message Event {
@@ -194,16 +204,53 @@ message Event {
 ```
 
 ```kotlin
-val event = Event {
-    payload = Event.Payload.Text("hello")
+@GeneratedProtoMessage
+interface Event {
+    val text: String
+    val code: Int
 }
 
-when (event.payload) {
-    is Event.Payload.Text -> println(event.payload.value)
-    is Event.Payload.Code -> println(event.payload.value)
-    null -> {}
-}
+enum class EventPayloadCase { TEXT, CODE, NOT_SET }
+
+val Event.payload: EventPayloadCase
+inline fun <R> Event.whenPayload(text: (String) -> R, code: (Int) -> R, notSet: () -> R): R
+
+// declared on Event.Builder by the compiler plugin
+fun clearPayload()
 ```
+
+```kotlin
+val event = Event {
+    text = "hello"
+    code = 5       // switches the case: text is "" again, hasText is false
+}
+
+event.presence.hasCode                          // true
+event.code                                      // 5
+event.text                                      // ""
+
+val length = event.whenPayload(                 // exhaustive and type-linked
+    text = { it.length },
+    code = { it },
+    notSet = { 0 },
+)
+
+when (event.payload) {                          // exhaustive, not type-linked
+    EventPayloadCase.TEXT -> println(event.text)
+    EventPayloadCase.CODE -> println(event.code)
+    EventPayloadCase.NOT_SET -> {}
+}
+
+val cleared = event.copy { clearPayload() }    // payload == EventPayloadCase.NOT_SET
+```
+
+Internally the active case is not stored separately: the members of one oneof have consecutive presence bits,
+and the active member is the one whose bit is set. Values live in at most two typed slots per oneof
+(`Any?` for strings, bytes and messages; `Int` or `Long` for numbers, bools and enums), so setting, decoding
+or reading a oneof member allocates nothing. Floats and doubles are stored as raw bits, enums as their number.
+
+With `generateOptionalFieldOrNullGetters=true`, every member also gets a `<member>OrNull` getter.
+Set `generateOneOfWhenFunctions=false` to omit the `when<OneOf>` functions.
 
 ### Nested Messages
 
@@ -331,3 +378,5 @@ Both plugins accept the same options (passed via `--<plugin>_opt=key=value`):
 | `platform`                         | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
 | `debugOutput`                      | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
 | `camelCaseNames`                   | `true`  | Generate Kotlin declaration and member names in camel case                                      |
+| `generateOptionalFieldOrNullGetters` | `false` | Emit `<field>OrNull` getters for fields with presence, including oneof members                |
+| `generateOneOfWhenFunctions`       | `true`  | Emit the exhaustive `when<OneOf>` dispatch function for every oneof                             |

@@ -3,7 +3,6 @@
 
 package com.google.protobuf.kotlin
 
-import kotlin.jvm.JvmInline
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
@@ -36,50 +35,34 @@ public interface Struct {
 @GeneratedProtoMessage
 public interface Value {
     /**
-     * The kind of value.
+     * Represents a null value.
      */
-    public val kind: Kind?
+    public val nullValue: NullValue
 
     /**
-     * The kind of value.
+     * Represents a double value.
      */
-    public sealed interface Kind {
-        /**
-         * Represents a null value.
-         */
-        @JvmInline
-        public value class NullValue(public val value: com.google.protobuf.kotlin.NullValue): Kind
+    public val numberValue: Double
 
-        /**
-         * Represents a double value.
-         */
-        @JvmInline
-        public value class NumberValue(public val value: Double): Kind
+    /**
+     * Represents a string value.
+     */
+    public val stringValue: String
 
-        /**
-         * Represents a string value.
-         */
-        @JvmInline
-        public value class StringValue(public val value: String): Kind
+    /**
+     * Represents a boolean value.
+     */
+    public val boolValue: Boolean
 
-        /**
-         * Represents a boolean value.
-         */
-        @JvmInline
-        public value class BoolValue(public val value: Boolean): Kind
+    /**
+     * Represents a structured value.
+     */
+    public val structValue: Struct
 
-        /**
-         * Represents a structured value.
-         */
-        @JvmInline
-        public value class StructValue(public val value: Struct): Kind
-
-        /**
-         * Represents a repeated `Value`.
-         */
-        @JvmInline
-        public value class ListValue(public val value: com.google.protobuf.kotlin.ListValue): Kind
-    }
+    /**
+     * Represents a repeated `Value`.
+     */
+    public val listValue: ListValue
 }
 
 /**

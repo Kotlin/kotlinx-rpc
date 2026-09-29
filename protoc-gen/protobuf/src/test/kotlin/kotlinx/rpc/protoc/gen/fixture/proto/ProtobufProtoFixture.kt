@@ -57,24 +57,38 @@ internal class MessageProtoFixture(name: String) {
     private val builder = DescriptorProto.newBuilder().setName(name)
     private var nextFieldNumber = 1
 
-    fun field(name: String) {
-        builder.addField(scalarField(name, oneOfIndex = null))
+    fun field(name: String, type: FieldDescriptorProto.Type = FieldDescriptorProto.Type.TYPE_STRING) {
+        builder.addField(scalarField(name, type, oneOfIndex = null))
+    }
+
+    /**
+     * A field of a message or enum type declared in the same file, e.g. `messageField("inner", "Inner")`.
+     */
+    fun typedField(name: String, type: FieldDescriptorProto.Type, typeName: String) {
+        builder.addField(typedField(name, type, typeName, oneOfIndex = null))
+    }
+
+    fun nested(name: String, setup: MessageProtoFixture.() -> Unit) {
+        builder.addNestedType(MessageProtoFixture(name).apply(setup).build())
     }
 
     fun oneOf(name: String, setup: OneOfProtoFixture.() -> Unit) {
         val oneOfIndex = builder.oneofDeclCount
         builder.addOneofDecl(OneofDescriptorProto.newBuilder().setName(name))
-        OneOfProtoFixture { fieldName ->
-            builder.addField(scalarField(fieldName, oneOfIndex))
-        }.apply(setup)
+        OneOfProtoFixture(
+            addField = { fieldName, type -> builder.addField(scalarField(fieldName, type, oneOfIndex)) },
+            addTypedField = { fieldName, type, typeName ->
+                builder.addField(typedField(fieldName, type, typeName, oneOfIndex))
+            },
+        ).apply(setup)
     }
 
-    private fun scalarField(name: String, oneOfIndex: Int?): FieldDescriptorProto {
+    private fun scalarField(name: String, type: FieldDescriptorProto.Type, oneOfIndex: Int?): FieldDescriptorProto {
         return FieldDescriptorProto.newBuilder()
             .setName(name)
             .setNumber(nextFieldNumber++)
             .setLabel(FieldDescriptorProto.Label.LABEL_OPTIONAL)
-            .setType(FieldDescriptorProto.Type.TYPE_STRING)
+            .setType(type)
             .apply {
                 if (oneOfIndex != null) {
                     setOneofIndex(oneOfIndex)
@@ -83,11 +97,33 @@ internal class MessageProtoFixture(name: String) {
             .build()
     }
 
+    private fun typedField(
+        name: String,
+        type: FieldDescriptorProto.Type,
+        typeName: String,
+        oneOfIndex: Int?,
+    ): FieldDescriptorProto {
+        return scalarField(name, type, oneOfIndex).toBuilder()
+            .setTypeName(".$typeName")
+            .build()
+    }
+
     fun build(): DescriptorProto = builder.build()
 }
 
-internal class OneOfProtoFixture(private val addField: (String) -> Unit) {
-    fun field(name: String) {
-        addField(name)
+internal class OneOfProtoFixture(
+    private val addField: (String, FieldDescriptorProto.Type) -> Unit,
+    private val addTypedField: (String, FieldDescriptorProto.Type, String) -> Unit,
+) {
+    fun field(name: String, type: FieldDescriptorProto.Type = FieldDescriptorProto.Type.TYPE_STRING) {
+        addField(name, type)
+    }
+
+    fun messageField(name: String, messageName: String) {
+        addTypedField(name, FieldDescriptorProto.Type.TYPE_MESSAGE, messageName)
+    }
+
+    fun enumField(name: String, enumName: String) {
+        addTypedField(name, FieldDescriptorProto.Type.TYPE_ENUM, enumName)
     }
 }

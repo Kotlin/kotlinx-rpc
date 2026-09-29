@@ -34,6 +34,7 @@ class Config(
     val generateComments: Boolean,
     val generateFileLevelComments: Boolean,
     val generateOptionalFieldOrNullGetters: Boolean,
+    val generateOneOfWhenFunctions: Boolean,
     val indentSize: Int,
     val platform: Platform,
     val protoNamesOutput: String?,
@@ -49,6 +50,7 @@ abstract class ProtocGenPlugin {
         private const val GENERATE_COMMENTS_OPTION = "generateComments"
         private const val GENERATE_FILE_LEVEL_COMMENTS_OPTION = "generateFileLevelComments"
         private const val GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS = "generateOptionalFieldOrNullGetters"
+        private const val GENERATE_ONE_OF_WHEN_FUNCTIONS = "generateOneOfWhenFunctions"
         private const val INDENT_SIZE_OPTION = "indentSize"
         private const val PLATFORM_OPTION = "platform"
         private const val CAMEL_CASE_NAMES = "camelCaseNames"
@@ -93,6 +95,7 @@ abstract class ProtocGenPlugin {
         val generateComments = parameters[GENERATE_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
         val generateFileLevelComments = parameters[GENERATE_FILE_LEVEL_COMMENTS_OPTION]?.toBooleanStrictOrNull() ?: true
         val generateOptionalFieldOrNullGetters = parameters[GENERATE_OPTIONAL_FIELD_OR_NULL_GETTERS]?.toBooleanStrictOrNull() ?: false
+        val generateOneOfWhenFunctions = parameters[GENERATE_ONE_OF_WHEN_FUNCTIONS]?.toBooleanStrictOrNull() ?: true
 
         val indentSize = parameters[INDENT_SIZE_OPTION]?.toIntOrNull() ?: 4
 
@@ -109,6 +112,7 @@ abstract class ProtocGenPlugin {
             generateComments = generateComments,
             generateFileLevelComments = generateFileLevelComments,
             generateOptionalFieldOrNullGetters = generateOptionalFieldOrNullGetters,
+            generateOneOfWhenFunctions = generateOneOfWhenFunctions,
             indentSize = indentSize,
             platform = Platform.fromString(platform),
             protoNamesOutput = protoNamesOutput,

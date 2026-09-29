@@ -6,6 +6,8 @@ package kotlinx.rpc.protobuf.test
 
 import Equals
 import OneOfMsg
+import OneOfMsgFieldCase
+import field
 import bytes2OrNull
 import copy
 import invoke
@@ -111,16 +113,20 @@ class CopyTest {
 
     @Test
     fun `copy oneof - preserve active case and allow mutation in lambda`() {
-        val o1 = OneOfMsg.Companion { field = OneOfMsg.Field.Sint(7) }
+        val o1 = OneOfMsg.Companion { sint = 7 }
         val c1 = o1.copy()
         assertEquals(o1.field, c1.field)
+        assertEquals(7, c1.sint)
 
         // mutate with copy-lambda (switch case)
-        val c2 = o1.copy { field = OneOfMsg.Field.Other(Other.Companion { arg1 = "x" }) }
+        val c2 = o1.copy { other = Other.Companion { arg1 = "x" } }
         // original unaffected
-        assertEquals(OneOfMsg.Field.Sint(7), o1.field)
+        assertEquals(OneOfMsgFieldCase.SINT, o1.field)
+        assertEquals(7, o1.sint)
         // new case set
-        assertTrue(c2.field is OneOfMsg.Field.Other)
+        assertEquals(OneOfMsgFieldCase.OTHER, c2.field)
+        assertEquals("x", c2.other.arg1)
+        assertEquals(0, c2.sint)
     }
 
     @Test
@@ -307,13 +313,13 @@ class CopyTest {
     fun `copy with bytes in oneof - mutating must not affect copy`() {
         val userBytes = byteArrayOf(1, 2, 3)
         val original = OneOfMsg {
-            field = OneOfMsg.Field.Bytes(userBytes.asByteString())
+            bytes = userBytes.asByteString()
         }
         val copy = original.copy()
         userBytes[0] = 99
 
-        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (original.field as OneOfMsg.Field.Bytes).value)
-        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (copy.field as OneOfMsg.Field.Bytes).value)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), original.bytes)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), copy.bytes)
     }
 
     @Test

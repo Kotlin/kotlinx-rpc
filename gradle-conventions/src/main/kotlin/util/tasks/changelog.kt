@@ -44,7 +44,7 @@ abstract class UpdateDocsChangelog : DefaultTask() {
         }
 
         var currentRelease = ""
-        val fullChangelogLines = mutableListOf<String>()
+        val fullChangelogLines = mutableMapOf<String, String>()
         val lines = inputPath.readLines().flatMap { line ->
             val updated = line
                 .replace(PULL_REGEX) {
@@ -81,7 +81,7 @@ abstract class UpdateDocsChangelog : DefaultTask() {
                 }
 
                 updated.startsWith("**Full Changelog**:") -> {
-                    fullChangelogLines.add(updated)
+                    fullChangelogLines[currentRelease] = updated
                     emptyList()
                 }
 
@@ -92,16 +92,23 @@ abstract class UpdateDocsChangelog : DefaultTask() {
         val result = mutableListOf<String>()
 
         var i = 0
-        var fci = 0
         while (i < lines.size) {
             val line = lines[i]
             result.add(line)
 
             if (line.startsWith("## ")) {
-                result.add(lines[i + 1])
-                result.add("")
-                result.add(fullChangelogLines[fci++])
-                i++
+                val release = line.drop(3).replace(".", "_")
+
+                // unreleased sections have neither a publication date nor a full changelog link
+                if (lines.getOrNull(i + 1)?.startsWith("> ") == true) {
+                    result.add(lines[i + 1])
+                    i++
+                }
+
+                fullChangelogLines[release]?.let {
+                    result.add("")
+                    result.add(it)
+                }
             }
 
             i++

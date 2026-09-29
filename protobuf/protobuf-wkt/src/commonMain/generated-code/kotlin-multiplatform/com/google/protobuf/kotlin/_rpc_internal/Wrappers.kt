@@ -852,7 +852,11 @@ public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-public fun DoubleValueInternal.Companion.decodeWith(msg: DoubleValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun DoubleValueInternal.Companion.decodeWith(
+    msg: DoubleValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -912,7 +916,11 @@ public fun FloatValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 }
 
 @InternalRpcApi
-public fun FloatValueInternal.Companion.decodeWith(msg: FloatValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun FloatValueInternal.Companion.decodeWith(
+    msg: FloatValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -972,7 +980,11 @@ public fun Int64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 }
 
 @InternalRpcApi
-public fun Int64ValueInternal.Companion.decodeWith(msg: Int64ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun Int64ValueInternal.Companion.decodeWith(
+    msg: Int64ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1032,7 +1044,11 @@ public fun UInt64ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-public fun UInt64ValueInternal.Companion.decodeWith(msg: UInt64ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun UInt64ValueInternal.Companion.decodeWith(
+    msg: UInt64ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1092,7 +1108,11 @@ public fun Int32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 }
 
 @InternalRpcApi
-public fun Int32ValueInternal.Companion.decodeWith(msg: Int32ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun Int32ValueInternal.Companion.decodeWith(
+    msg: Int32ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1152,7 +1172,11 @@ public fun UInt32ValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-public fun UInt32ValueInternal.Companion.decodeWith(msg: UInt32ValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun UInt32ValueInternal.Companion.decodeWith(
+    msg: UInt32ValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1212,7 +1236,11 @@ public fun BoolValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun BoolValueInternal.Companion.decodeWith(msg: BoolValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun BoolValueInternal.Companion.decodeWith(
+    msg: BoolValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1272,7 +1300,11 @@ public fun StringValueInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-public fun StringValueInternal.Companion.decodeWith(msg: StringValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun StringValueInternal.Companion.decodeWith(
+    msg: StringValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1332,7 +1364,11 @@ public fun BytesValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConf
 }
 
 @InternalRpcApi
-public fun BytesValueInternal.Companion.decodeWith(msg: BytesValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun BytesValueInternal.Companion.decodeWith(
+    msg: BytesValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

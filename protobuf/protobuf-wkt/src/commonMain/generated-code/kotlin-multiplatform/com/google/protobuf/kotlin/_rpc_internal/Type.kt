@@ -32,7 +32,7 @@ import kotlinx.rpc.protobuf.internal.tag
 public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val sourceContext: Int = 0
+        const val sourceContext: Int = 0
     }
 
     @InternalRpcApi
@@ -327,7 +327,7 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val sourceContext: Int = 0
+        const val sourceContext: Int = 0
     }
 
     @InternalRpcApi
@@ -574,7 +574,7 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
 public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val value: Int = 0
+        const val value: Int = 0
     }
 
     @InternalRpcApi
@@ -738,7 +738,11 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun TypeInternal.Companion.decodeWith(
+    msg: TypeInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -887,7 +891,11 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun FieldInternal.Companion.decodeWith(
+    msg: FieldInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1037,7 +1045,11 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EnumInternal.Companion.decodeWith(
+    msg: EnumInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1149,7 +1161,11 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EnumValueInternal.Companion.decodeWith(
+    msg: EnumValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1230,7 +1246,11 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun OptionInternal.Companion.decodeWith(
+    msg: OptionInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

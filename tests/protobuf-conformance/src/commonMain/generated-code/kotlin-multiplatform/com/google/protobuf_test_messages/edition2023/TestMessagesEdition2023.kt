@@ -3,7 +3,6 @@
 
 package com.google.protobuf_test_messages.edition2023
 
-import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -124,6 +123,15 @@ interface TestAllTypesEdition2023 {
     val mapStringForeignMessage: Map<String, ForeignMessageEdition2023>
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnumEdition2023>
+    val oneofUint32: UInt
+    val oneofNestedMessage: NestedMessage
+    val oneofString: String
+    val oneofBytes: ByteString
+    val oneofBool: Boolean
+    val oneofUint64: ULong
+    val oneofFloat: Float
+    val oneofDouble: Double
+    val oneofEnum: NestedEnum
     val groupliketype: GroupLikeType
     val delimitedField: GroupLikeType
 
@@ -131,36 +139,6 @@ interface TestAllTypesEdition2023 {
      * recursive
      */
     val mapRecursive: Map<Int, TestAllTypesEdition2023>
-    val oneofField: OneofField?
-
-    sealed interface OneofField {
-        @JvmInline
-        value class OneofUint32(val value: UInt): OneofField
-
-        @JvmInline
-        value class OneofNestedMessage(val value: NestedMessage): OneofField
-
-        @JvmInline
-        value class OneofString(val value: String): OneofField
-
-        @JvmInline
-        value class OneofBytes(val value: ByteString): OneofField
-
-        @JvmInline
-        value class OneofBool(val value: Boolean): OneofField
-
-        @JvmInline
-        value class OneofUint64(val value: ULong): OneofField
-
-        @JvmInline
-        value class OneofFloat(val value: Float): OneofField
-
-        @JvmInline
-        value class OneofDouble(val value: Double): OneofField
-
-        @JvmInline
-        value class OneofEnum(val value: NestedEnum): OneofField
-    }
 
     @GeneratedProtoMessage
     interface NestedMessage {

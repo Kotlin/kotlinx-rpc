@@ -3,7 +3,6 @@
 
 package com.google.protobuf_test_messages.proto2
 
-import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -130,6 +129,15 @@ interface TestAllTypesProto2 {
     val mapStringForeignMessage: Map<String, ForeignMessageProto2>
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnumProto2>
+    val oneofUint32: UInt
+    val oneofNestedMessage: NestedMessage
+    val oneofString: String
+    val oneofBytes: ByteString
+    val oneofBool: Boolean
+    val oneofUint64: ULong
+    val oneofFloat: Float
+    val oneofDouble: Double
+    val oneofEnum: NestedEnum
     val data: Data
     val multiwordgroupfield: MultiWordGroupField
 
@@ -175,36 +183,6 @@ interface TestAllTypesProto2 {
     val fieldName17__: Int
     val fieldName18__: Int
     val messageSetCorrect: MessageSetCorrect
-    val oneofField: OneofField?
-
-    sealed interface OneofField {
-        @JvmInline
-        value class OneofUint32(val value: UInt): OneofField
-
-        @JvmInline
-        value class OneofNestedMessage(val value: NestedMessage): OneofField
-
-        @JvmInline
-        value class OneofString(val value: String): OneofField
-
-        @JvmInline
-        value class OneofBytes(val value: ByteString): OneofField
-
-        @JvmInline
-        value class OneofBool(val value: Boolean): OneofField
-
-        @JvmInline
-        value class OneofUint64(val value: ULong): OneofField
-
-        @JvmInline
-        value class OneofFloat(val value: Float): OneofField
-
-        @JvmInline
-        value class OneofDouble(val value: Double): OneofField
-
-        @JvmInline
-        value class OneofEnum(val value: NestedEnum): OneofField
-    }
 
     @GeneratedProtoMessage
     interface NestedMessage {
@@ -246,15 +224,8 @@ interface TestAllTypesProto2 {
 
     @GeneratedProtoMessage
     interface ExtensionWithOneof {
-        val oneofField: OneofField?
-
-        sealed interface OneofField {
-            @JvmInline
-            value class A(val value: Int): OneofField
-
-            @JvmInline
-            value class B(val value: Int): OneofField
-        }
+        val a: Int
+        val b: Int
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -436,24 +407,11 @@ interface TestAllRequiredTypesProto2 {
 
 @GeneratedProtoMessage
 interface TestLargeOneof {
-    val largeOneof: LargeOneof?
-
-    sealed interface LargeOneof {
-        @JvmInline
-        value class A1(val value: TestLargeOneof.A1): LargeOneof
-
-        @JvmInline
-        value class A2(val value: TestLargeOneof.A2): LargeOneof
-
-        @JvmInline
-        value class A3(val value: TestLargeOneof.A3): LargeOneof
-
-        @JvmInline
-        value class A4(val value: TestLargeOneof.A4): LargeOneof
-
-        @JvmInline
-        value class A5(val value: TestLargeOneof.A5): LargeOneof
-    }
+    val a1: A1
+    val a2: A2
+    val a3: A3
+    val a4: A4
+    val a5: A5
 
     @GeneratedProtoMessage
     interface A1

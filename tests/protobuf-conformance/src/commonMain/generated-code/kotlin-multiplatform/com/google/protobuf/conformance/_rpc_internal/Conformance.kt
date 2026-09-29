@@ -6,12 +6,14 @@ package com.google.protobuf.conformance
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
@@ -26,6 +28,7 @@ import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
 import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.int32
+import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
 import kotlinx.rpc.protobuf.internal.tag
 
@@ -220,10 +223,15 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
 }
 
 @InternalRpcApi
-class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 1) {
+@GeneratedProtoOneOfs(names = ["payload"])
+class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fieldsWithPresence = 5) {
     @InternalRpcApi
     internal object PresenceIndices {
-        const val jspbEncodingOptions: Int = 0
+        const val protobufPayload: Int = 0
+        const val jsonPayload: Int = 1
+        const val jspbPayload: Int = 2
+        const val textPayload: Int = 3
+        const val jspbEncodingOptions: Int = 4
     }
 
     @InternalRpcApi
@@ -234,6 +242,54 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    private var _payloadRef: Any? = null
+
+    @InternalRpcApi
+    val _payloadCase: ConformanceRequestPayloadCase get() = when {
+        presenceMask[PresenceIndices.protobufPayload] -> ConformanceRequestPayloadCase.PROTOBUF_PAYLOAD
+        presenceMask[PresenceIndices.jsonPayload] -> ConformanceRequestPayloadCase.JSON_PAYLOAD
+        presenceMask[PresenceIndices.jspbPayload] -> ConformanceRequestPayloadCase.JSPB_PAYLOAD
+        presenceMask[PresenceIndices.textPayload] -> ConformanceRequestPayloadCase.TEXT_PAYLOAD
+        else -> ConformanceRequestPayloadCase.NOT_SET
+    }
+
+    override fun clearPayload() {
+        presenceMask.clearRange(PresenceIndices.protobufPayload, PresenceIndices.textPayload)
+        _payloadRef = null
+    }
+
+    override var protobufPayload: ByteString
+        get() = if (presenceMask[PresenceIndices.protobufPayload]) (_payloadRef as ByteString) else ByteString()
+        set(value) { presenceMask.setExclusive(PresenceIndices.protobufPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
+
+    override fun clearProtobufPayload() {
+        if (presenceMask[PresenceIndices.protobufPayload]) clearPayload()
+    }
+
+    override var jsonPayload: String
+        get() = if (presenceMask[PresenceIndices.jsonPayload]) (_payloadRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.jsonPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
+
+    override fun clearJsonPayload() {
+        if (presenceMask[PresenceIndices.jsonPayload]) clearPayload()
+    }
+
+    override var jspbPayload: String
+        get() = if (presenceMask[PresenceIndices.jspbPayload]) (_payloadRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.jspbPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
+
+    override fun clearJspbPayload() {
+        if (presenceMask[PresenceIndices.jspbPayload]) clearPayload()
+    }
+
+    override var textPayload: String
+        get() = if (presenceMask[PresenceIndices.textPayload]) (_payloadRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.textPayload, PresenceIndices.protobufPayload, PresenceIndices.textPayload); _payloadRef = value }
+
+    override fun clearTextPayload() {
+        if (presenceMask[PresenceIndices.textPayload]) clearPayload()
+    }
 
     internal val __requestedOutputFormatDelegate: MsgFieldDelegate<WireFormat> = MsgFieldDelegate { WireFormat.UNSPECIFIED }
     override var requestedOutputFormat: WireFormat by __requestedOutputFormatDelegate
@@ -249,7 +305,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     internal val __printUnknownFieldsDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
     override var printUnknownFields: Boolean by __printUnknownFieldsDelegate
-    override var payload: ConformanceRequest.Payload? = null
 
     private val _owner: ConformanceRequestInternal = this
 
@@ -257,28 +312,32 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     val _presence: ConformanceRequestPresence = object : ConformanceRequestPresence, InternalPresenceObject {
         override val _message: ConformanceRequestInternal get() = _owner
 
+        override val hasProtobufPayload: Boolean get() = presenceMask[PresenceIndices.protobufPayload]
+
+        override val hasJsonPayload: Boolean get() = presenceMask[PresenceIndices.jsonPayload]
+
+        override val hasJspbPayload: Boolean get() = presenceMask[PresenceIndices.jspbPayload]
+
+        override val hasTextPayload: Boolean get() = presenceMask[PresenceIndices.textPayload]
+
         override val hasJspbEncodingOptions: Boolean get() = presenceMask[PresenceIndices.jspbEncodingOptions]
     }
 
     override fun hashCode(): Int {
-        var result = this.requestedOutputFormat.hashCode()
+        var result = when {
+            presenceMask[PresenceIndices.protobufPayload] -> 1 * 31 + this.protobufPayload.hashCode()
+            presenceMask[PresenceIndices.jsonPayload] -> 2 * 31 + this.jsonPayload.hashCode()
+            presenceMask[PresenceIndices.jspbPayload] -> 7 * 31 + this.jspbPayload.hashCode()
+            presenceMask[PresenceIndices.textPayload] -> 8 * 31 + this.textPayload.hashCode()
+            else -> 0
+        }
+
+        result = 31 * result + this.requestedOutputFormat.hashCode()
         result = 31 * result + this.messageType.hashCode()
         result = 31 * result + this.testCategory.hashCode()
         result = 31 * result + if (presenceMask[PresenceIndices.jspbEncodingOptions]) this.jspbEncodingOptions.hashCode() else 0
         result = 31 * result + this.printUnknownFields.hashCode()
-        result = 31 * result + (this.payload?.oneOfHashCode() ?: 0)
         return result
-    }
-
-    fun ConformanceRequest.Payload.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is ConformanceRequest.Payload.ProtobufPayload -> 0
-            is ConformanceRequest.Payload.JsonPayload -> 1
-            is ConformanceRequest.Payload.JspbPayload -> 2
-            is ConformanceRequest.Payload.TextPayload -> 3
-        }
-
-        return hashCode() + offset
     }
 
     override fun equals(other: Any?): Boolean {
@@ -286,12 +345,15 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         if (other == null || this::class != other::class) return false
         other as ConformanceRequestInternal
         if (presenceMask != other.presenceMask) return false
+        if (presenceMask[PresenceIndices.protobufPayload] && this.protobufPayload != other.protobufPayload) return false
+        if (presenceMask[PresenceIndices.jsonPayload] && this.jsonPayload != other.jsonPayload) return false
+        if (presenceMask[PresenceIndices.jspbPayload] && this.jspbPayload != other.jspbPayload) return false
+        if (presenceMask[PresenceIndices.textPayload] && this.textPayload != other.textPayload) return false
         if (this.requestedOutputFormat != other.requestedOutputFormat) return false
         if (this.messageType != other.messageType) return false
         if (this.testCategory != other.testCategory) return false
         if (presenceMask[PresenceIndices.jspbEncodingOptions] && this.jspbEncodingOptions != other.jspbEncodingOptions) return false
-        if (this.printUnknownFields != other.printUnknownFields) return false
-        return this.payload == other.payload
+        return this.printUnknownFields == other.printUnknownFields
     }
 
     override fun toString(): String {
@@ -303,6 +365,22 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("ConformanceRequest(")
+        if (presenceMask[PresenceIndices.protobufPayload]) {
+            builder.appendLine("${nextIndentString}protobufPayload=${this.protobufPayload.protoToString()},")
+        }
+
+        if (presenceMask[PresenceIndices.jsonPayload]) {
+            builder.appendLine("${nextIndentString}jsonPayload=${this.jsonPayload},")
+        }
+
+        if (presenceMask[PresenceIndices.jspbPayload]) {
+            builder.appendLine("${nextIndentString}jspbPayload=${this.jspbPayload},")
+        }
+
+        if (presenceMask[PresenceIndices.textPayload]) {
+            builder.appendLine("${nextIndentString}textPayload=${this.textPayload},")
+        }
+
         builder.appendLine("${nextIndentString}requestedOutputFormat=${this.requestedOutputFormat},")
         builder.appendLine("${nextIndentString}messageType=${this.messageType},")
         builder.appendLine("${nextIndentString}testCategory=${this.testCategory},")
@@ -313,7 +391,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         }
 
         builder.appendLine("${nextIndentString}printUnknownFields=${this.printUnknownFields},")
-        builder.appendLine("${nextIndentString}payload=${this.payload},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -325,6 +402,22 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
     @InternalRpcApi
     fun copyInternal(body: ConformanceRequestInternal.() -> Unit): ConformanceRequestInternal {
         val copy = ConformanceRequestInternal()
+        if (presenceMask[PresenceIndices.protobufPayload]) {
+            copy.protobufPayload = this.protobufPayload
+        }
+
+        if (presenceMask[PresenceIndices.jsonPayload]) {
+            copy.jsonPayload = this.jsonPayload
+        }
+
+        if (presenceMask[PresenceIndices.jspbPayload]) {
+            copy.jspbPayload = this.jspbPayload
+        }
+
+        if (presenceMask[PresenceIndices.textPayload]) {
+            copy.textPayload = this.textPayload
+        }
+
         copy.requestedOutputFormat = this.requestedOutputFormat
         copy.messageType = this.messageType
         copy.testCategory = this.testCategory
@@ -333,15 +426,9 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
         }
 
         copy.printUnknownFields = this.printUnknownFields
-        copy.payload = this.payload?.oneOfCopy()
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    fun ConformanceRequest.Payload.oneOfCopy(): ConformanceRequest.Payload {
-        return this
     }
 
     @InternalRpcApi
@@ -381,7 +468,21 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 }
 
 @InternalRpcApi
-class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 0) {
+@GeneratedProtoOneOfs(names = ["result"])
+class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(fieldsWithPresence = 9) {
+    @InternalRpcApi
+    internal object PresenceIndices {
+        const val parseError: Int = 0
+        const val serializeError: Int = 1
+        const val timeoutError: Int = 2
+        const val runtimeError: Int = 3
+        const val protobufPayload: Int = 4
+        const val jsonPayload: Int = 5
+        const val skipped: Int = 6
+        const val jspbPayload: Int = 7
+        const val textPayload: Int = 8
+    }
+
     @InternalRpcApi
     override val _size: Int by lazy { computeSize() }
 
@@ -391,34 +492,155 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
 
-    override var result: ConformanceResponse.Result? = null
+    private var _resultRef: Any? = null
 
-    override fun hashCode(): Int {
-        var result = (this.result?.oneOfHashCode() ?: 0)
-        return result
+    @InternalRpcApi
+    val _resultCase: ConformanceResponseResultCase get() = when {
+        presenceMask[PresenceIndices.parseError] -> ConformanceResponseResultCase.PARSE_ERROR
+        presenceMask[PresenceIndices.serializeError] -> ConformanceResponseResultCase.SERIALIZE_ERROR
+        presenceMask[PresenceIndices.timeoutError] -> ConformanceResponseResultCase.TIMEOUT_ERROR
+        presenceMask[PresenceIndices.runtimeError] -> ConformanceResponseResultCase.RUNTIME_ERROR
+        presenceMask[PresenceIndices.protobufPayload] -> ConformanceResponseResultCase.PROTOBUF_PAYLOAD
+        presenceMask[PresenceIndices.jsonPayload] -> ConformanceResponseResultCase.JSON_PAYLOAD
+        presenceMask[PresenceIndices.skipped] -> ConformanceResponseResultCase.SKIPPED
+        presenceMask[PresenceIndices.jspbPayload] -> ConformanceResponseResultCase.JSPB_PAYLOAD
+        presenceMask[PresenceIndices.textPayload] -> ConformanceResponseResultCase.TEXT_PAYLOAD
+        else -> ConformanceResponseResultCase.NOT_SET
     }
 
-    fun ConformanceResponse.Result.oneOfHashCode(): Int {
-        val offset = when (this) {
-            is ConformanceResponse.Result.ParseError -> 0
-            is ConformanceResponse.Result.SerializeError -> 1
-            is ConformanceResponse.Result.TimeoutError -> 2
-            is ConformanceResponse.Result.RuntimeError -> 3
-            is ConformanceResponse.Result.ProtobufPayload -> 4
-            is ConformanceResponse.Result.JsonPayload -> 5
-            is ConformanceResponse.Result.Skipped -> 6
-            is ConformanceResponse.Result.JspbPayload -> 7
-            is ConformanceResponse.Result.TextPayload -> 8
+    override fun clearResult() {
+        presenceMask.clearRange(PresenceIndices.parseError, PresenceIndices.textPayload)
+        _resultRef = null
+    }
+
+    override var parseError: String
+        get() = if (presenceMask[PresenceIndices.parseError]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.parseError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearParseError() {
+        if (presenceMask[PresenceIndices.parseError]) clearResult()
+    }
+
+    override var serializeError: String
+        get() = if (presenceMask[PresenceIndices.serializeError]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.serializeError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearSerializeError() {
+        if (presenceMask[PresenceIndices.serializeError]) clearResult()
+    }
+
+    override var timeoutError: String
+        get() = if (presenceMask[PresenceIndices.timeoutError]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.timeoutError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearTimeoutError() {
+        if (presenceMask[PresenceIndices.timeoutError]) clearResult()
+    }
+
+    override var runtimeError: String
+        get() = if (presenceMask[PresenceIndices.runtimeError]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.runtimeError, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearRuntimeError() {
+        if (presenceMask[PresenceIndices.runtimeError]) clearResult()
+    }
+
+    override var protobufPayload: ByteString
+        get() = if (presenceMask[PresenceIndices.protobufPayload]) (_resultRef as ByteString) else ByteString()
+        set(value) { presenceMask.setExclusive(PresenceIndices.protobufPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearProtobufPayload() {
+        if (presenceMask[PresenceIndices.protobufPayload]) clearResult()
+    }
+
+    override var jsonPayload: String
+        get() = if (presenceMask[PresenceIndices.jsonPayload]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.jsonPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearJsonPayload() {
+        if (presenceMask[PresenceIndices.jsonPayload]) clearResult()
+    }
+
+    override var skipped: String
+        get() = if (presenceMask[PresenceIndices.skipped]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.skipped, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearSkipped() {
+        if (presenceMask[PresenceIndices.skipped]) clearResult()
+    }
+
+    override var jspbPayload: String
+        get() = if (presenceMask[PresenceIndices.jspbPayload]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.jspbPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearJspbPayload() {
+        if (presenceMask[PresenceIndices.jspbPayload]) clearResult()
+    }
+
+    override var textPayload: String
+        get() = if (presenceMask[PresenceIndices.textPayload]) (_resultRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.textPayload, PresenceIndices.parseError, PresenceIndices.textPayload); _resultRef = value }
+
+    override fun clearTextPayload() {
+        if (presenceMask[PresenceIndices.textPayload]) clearResult()
+    }
+
+    private val _owner: ConformanceResponseInternal = this
+
+    @InternalRpcApi
+    val _presence: ConformanceResponsePresence = object : ConformanceResponsePresence, InternalPresenceObject {
+        override val _message: ConformanceResponseInternal get() = _owner
+
+        override val hasParseError: Boolean get() = presenceMask[PresenceIndices.parseError]
+
+        override val hasSerializeError: Boolean get() = presenceMask[PresenceIndices.serializeError]
+
+        override val hasTimeoutError: Boolean get() = presenceMask[PresenceIndices.timeoutError]
+
+        override val hasRuntimeError: Boolean get() = presenceMask[PresenceIndices.runtimeError]
+
+        override val hasProtobufPayload: Boolean get() = presenceMask[PresenceIndices.protobufPayload]
+
+        override val hasJsonPayload: Boolean get() = presenceMask[PresenceIndices.jsonPayload]
+
+        override val hasSkipped: Boolean get() = presenceMask[PresenceIndices.skipped]
+
+        override val hasJspbPayload: Boolean get() = presenceMask[PresenceIndices.jspbPayload]
+
+        override val hasTextPayload: Boolean get() = presenceMask[PresenceIndices.textPayload]
+    }
+
+    override fun hashCode(): Int {
+        var result = when {
+            presenceMask[PresenceIndices.parseError] -> 1 * 31 + this.parseError.hashCode()
+            presenceMask[PresenceIndices.serializeError] -> 6 * 31 + this.serializeError.hashCode()
+            presenceMask[PresenceIndices.timeoutError] -> 9 * 31 + this.timeoutError.hashCode()
+            presenceMask[PresenceIndices.runtimeError] -> 2 * 31 + this.runtimeError.hashCode()
+            presenceMask[PresenceIndices.protobufPayload] -> 3 * 31 + this.protobufPayload.hashCode()
+            presenceMask[PresenceIndices.jsonPayload] -> 4 * 31 + this.jsonPayload.hashCode()
+            presenceMask[PresenceIndices.skipped] -> 5 * 31 + this.skipped.hashCode()
+            presenceMask[PresenceIndices.jspbPayload] -> 7 * 31 + this.jspbPayload.hashCode()
+            presenceMask[PresenceIndices.textPayload] -> 8 * 31 + this.textPayload.hashCode()
+            else -> 0
         }
 
-        return hashCode() + offset
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as ConformanceResponseInternal
-        return this.result == other.result
+        if (presenceMask != other.presenceMask) return false
+        if (presenceMask[PresenceIndices.parseError] && this.parseError != other.parseError) return false
+        if (presenceMask[PresenceIndices.serializeError] && this.serializeError != other.serializeError) return false
+        if (presenceMask[PresenceIndices.timeoutError] && this.timeoutError != other.timeoutError) return false
+        if (presenceMask[PresenceIndices.runtimeError] && this.runtimeError != other.runtimeError) return false
+        if (presenceMask[PresenceIndices.protobufPayload] && this.protobufPayload != other.protobufPayload) return false
+        if (presenceMask[PresenceIndices.jsonPayload] && this.jsonPayload != other.jsonPayload) return false
+        if (presenceMask[PresenceIndices.skipped] && this.skipped != other.skipped) return false
+        if (presenceMask[PresenceIndices.jspbPayload] && this.jspbPayload != other.jspbPayload) return false
+        return !presenceMask[PresenceIndices.textPayload] || this.textPayload == other.textPayload
     }
 
     override fun toString(): String {
@@ -430,7 +652,42 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
         val nextIndentString = " ".repeat(indent + 4)
         val builder = StringBuilder()
         builder.appendLine("ConformanceResponse(")
-        builder.appendLine("${nextIndentString}result=${this.result},")
+        if (presenceMask[PresenceIndices.parseError]) {
+            builder.appendLine("${nextIndentString}parseError=${this.parseError},")
+        }
+
+        if (presenceMask[PresenceIndices.serializeError]) {
+            builder.appendLine("${nextIndentString}serializeError=${this.serializeError},")
+        }
+
+        if (presenceMask[PresenceIndices.timeoutError]) {
+            builder.appendLine("${nextIndentString}timeoutError=${this.timeoutError},")
+        }
+
+        if (presenceMask[PresenceIndices.runtimeError]) {
+            builder.appendLine("${nextIndentString}runtimeError=${this.runtimeError},")
+        }
+
+        if (presenceMask[PresenceIndices.protobufPayload]) {
+            builder.appendLine("${nextIndentString}protobufPayload=${this.protobufPayload.protoToString()},")
+        }
+
+        if (presenceMask[PresenceIndices.jsonPayload]) {
+            builder.appendLine("${nextIndentString}jsonPayload=${this.jsonPayload},")
+        }
+
+        if (presenceMask[PresenceIndices.skipped]) {
+            builder.appendLine("${nextIndentString}skipped=${this.skipped},")
+        }
+
+        if (presenceMask[PresenceIndices.jspbPayload]) {
+            builder.appendLine("${nextIndentString}jspbPayload=${this.jspbPayload},")
+        }
+
+        if (presenceMask[PresenceIndices.textPayload]) {
+            builder.appendLine("${nextIndentString}textPayload=${this.textPayload},")
+        }
+
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -442,15 +699,45 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
     @InternalRpcApi
     fun copyInternal(body: ConformanceResponseInternal.() -> Unit): ConformanceResponseInternal {
         val copy = ConformanceResponseInternal()
-        copy.result = this.result?.oneOfCopy()
+        if (presenceMask[PresenceIndices.parseError]) {
+            copy.parseError = this.parseError
+        }
+
+        if (presenceMask[PresenceIndices.serializeError]) {
+            copy.serializeError = this.serializeError
+        }
+
+        if (presenceMask[PresenceIndices.timeoutError]) {
+            copy.timeoutError = this.timeoutError
+        }
+
+        if (presenceMask[PresenceIndices.runtimeError]) {
+            copy.runtimeError = this.runtimeError
+        }
+
+        if (presenceMask[PresenceIndices.protobufPayload]) {
+            copy.protobufPayload = this.protobufPayload
+        }
+
+        if (presenceMask[PresenceIndices.jsonPayload]) {
+            copy.jsonPayload = this.jsonPayload
+        }
+
+        if (presenceMask[PresenceIndices.skipped]) {
+            copy.skipped = this.skipped
+        }
+
+        if (presenceMask[PresenceIndices.jspbPayload]) {
+            copy.jspbPayload = this.jspbPayload
+        }
+
+        if (presenceMask[PresenceIndices.textPayload]) {
+            copy.textPayload = this.textPayload
+        }
+
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    fun ConformanceResponse.Result.oneOfCopy(): ConformanceResponse.Result {
-        return this
     }
 
     @InternalRpcApi
@@ -602,7 +889,11 @@ fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-fun TestStatusInternal.Companion.decodeWith(msg: TestStatusInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestStatusInternal.Companion.decodeWith(
+    msg: TestStatusInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -678,7 +969,11 @@ fun FailureSetInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-fun FailureSetInternal.Companion.decodeWith(msg: FailureSetInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun FailureSetInternal.Companion.decodeWith(
+    msg: FailureSetInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -727,6 +1022,22 @@ fun FailureSet.asInternal(): FailureSetInternal {
 
 @InternalRpcApi
 fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.protobufPayload]) {
+        encoder.writeBytes(fieldNr = 1, value = this.protobufPayload)
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jsonPayload]) {
+        encoder.writeString(fieldNr = 2, value = this.jsonPayload)
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jspbPayload]) {
+        encoder.writeString(fieldNr = 7, value = this.jspbPayload)
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.textPayload]) {
+        encoder.writeString(fieldNr = 8, value = this.textPayload)
+    }
+
     if (this.requestedOutputFormat != WireFormat.UNSPECIFIED) {
         encoder.writeEnum(fieldNr = 3, value = this.requestedOutputFormat.number)
     }
@@ -747,23 +1058,6 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeBool(fieldNr = 9, value = this.printUnknownFields)
     }
 
-    this.payload?.also { value ->
-        when (value) {
-            is ConformanceRequest.Payload.ProtobufPayload -> {
-                encoder.writeBytes(fieldNr = 1, value = value.value)
-            }
-            is ConformanceRequest.Payload.JsonPayload -> {
-                encoder.writeString(fieldNr = 2, value = value.value)
-            }
-            is ConformanceRequest.Payload.JspbPayload -> {
-                encoder.writeString(fieldNr = 7, value = value.value)
-            }
-            is ConformanceRequest.Payload.TextPayload -> {
-                encoder.writeString(fieldNr = 8, value = value.value)
-            }
-        }
-    }
-
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
@@ -774,10 +1068,26 @@ fun ConformanceRequestInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ConformanceRequestInternal.Companion.decodeWith(
+    msg: ConformanceRequestInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
+            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.protobufPayload = decoder.readBytes()
+            }
+            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.jsonPayload = decoder.readString()
+            }
+            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.jspbPayload = decoder.readString()
+            }
+            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.textPayload = decoder.readString()
+            }
             3 if tag.wireType == WireType.VARINT -> {
                 msg.requestedOutputFormat = WireFormat.fromNumber(decoder.readEnum())
             }
@@ -793,18 +1103,6 @@ fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInter
             }
             9 if tag.wireType == WireType.VARINT -> {
                 msg.printUnknownFields = decoder.readBool()
-            }
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.payload = ConformanceRequest.Payload.ProtobufPayload(decoder.readBytes())
-            }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.payload = ConformanceRequest.Payload.JsonPayload(decoder.readString())
-            }
-            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.payload = ConformanceRequest.Payload.JspbPayload(decoder.readString())
-            }
-            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.payload = ConformanceRequest.Payload.TextPayload(decoder.readString())
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -830,6 +1128,22 @@ fun ConformanceRequestInternal.Companion.decodeWith(msg: ConformanceRequestInter
 
 private fun ConformanceRequestInternal.computeSize(): Int {
     var __result = 0
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.protobufPayload]) {
+        __result += WireSize.bytes(this.protobufPayload).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jsonPayload]) {
+        __result += WireSize.string(this.jsonPayload).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.jspbPayload]) {
+        __result += WireSize.string(this.jspbPayload).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceRequestInternal.PresenceIndices.textPayload]) {
+        __result += WireSize.string(this.textPayload).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
     if (this.requestedOutputFormat != WireFormat.UNSPECIFIED) {
         __result += WireSize.tag(3, WireType.VARINT) + WireSize.enum(this.requestedOutputFormat.number)
     }
@@ -850,23 +1164,6 @@ private fun ConformanceRequestInternal.computeSize(): Int {
         __result += WireSize.tag(9, WireType.VARINT) + WireSize.bool(this.printUnknownFields)
     }
 
-    this.payload?.also { value ->
-        __result += when (value) {
-            is ConformanceRequest.Payload.ProtobufPayload -> {
-                WireSize.bytes(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceRequest.Payload.JsonPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceRequest.Payload.JspbPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceRequest.Payload.TextPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-        }
-    }
-
     __result += _unknownFields.size.toInt()
     return __result
 }
@@ -878,36 +1175,40 @@ fun ConformanceRequest.asInternal(): ConformanceRequestInternal {
 
 @InternalRpcApi
 fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
-    this.result?.also { value ->
-        when (value) {
-            is ConformanceResponse.Result.ParseError -> {
-                encoder.writeString(fieldNr = 1, value = value.value)
-            }
-            is ConformanceResponse.Result.SerializeError -> {
-                encoder.writeString(fieldNr = 6, value = value.value)
-            }
-            is ConformanceResponse.Result.TimeoutError -> {
-                encoder.writeString(fieldNr = 9, value = value.value)
-            }
-            is ConformanceResponse.Result.RuntimeError -> {
-                encoder.writeString(fieldNr = 2, value = value.value)
-            }
-            is ConformanceResponse.Result.ProtobufPayload -> {
-                encoder.writeBytes(fieldNr = 3, value = value.value)
-            }
-            is ConformanceResponse.Result.JsonPayload -> {
-                encoder.writeString(fieldNr = 4, value = value.value)
-            }
-            is ConformanceResponse.Result.Skipped -> {
-                encoder.writeString(fieldNr = 5, value = value.value)
-            }
-            is ConformanceResponse.Result.JspbPayload -> {
-                encoder.writeString(fieldNr = 7, value = value.value)
-            }
-            is ConformanceResponse.Result.TextPayload -> {
-                encoder.writeString(fieldNr = 8, value = value.value)
-            }
-        }
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.parseError]) {
+        encoder.writeString(fieldNr = 1, value = this.parseError)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.serializeError]) {
+        encoder.writeString(fieldNr = 6, value = this.serializeError)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.timeoutError]) {
+        encoder.writeString(fieldNr = 9, value = this.timeoutError)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.runtimeError]) {
+        encoder.writeString(fieldNr = 2, value = this.runtimeError)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.protobufPayload]) {
+        encoder.writeBytes(fieldNr = 3, value = this.protobufPayload)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.jsonPayload]) {
+        encoder.writeString(fieldNr = 4, value = this.jsonPayload)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.skipped]) {
+        encoder.writeString(fieldNr = 5, value = this.skipped)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.jspbPayload]) {
+        encoder.writeString(fieldNr = 7, value = this.jspbPayload)
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.textPayload]) {
+        encoder.writeString(fieldNr = 8, value = this.textPayload)
     }
 
     _extensions.forEach { (key, value) ->
@@ -920,36 +1221,40 @@ fun ConformanceResponseInternal.encodeWith(encoder: WireEncoder, config: ProtoCo
 }
 
 @InternalRpcApi
-fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ConformanceResponseInternal.Companion.decodeWith(
+    msg: ConformanceResponseInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
             1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.ParseError(decoder.readString())
+                msg.parseError = decoder.readString()
             }
             6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.SerializeError(decoder.readString())
+                msg.serializeError = decoder.readString()
             }
             9 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.TimeoutError(decoder.readString())
+                msg.timeoutError = decoder.readString()
             }
             2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.RuntimeError(decoder.readString())
+                msg.runtimeError = decoder.readString()
             }
             3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.ProtobufPayload(decoder.readBytes())
+                msg.protobufPayload = decoder.readBytes()
             }
             4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.JsonPayload(decoder.readString())
+                msg.jsonPayload = decoder.readString()
             }
             5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.Skipped(decoder.readString())
+                msg.skipped = decoder.readString()
             }
             7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.JspbPayload(decoder.readString())
+                msg.jspbPayload = decoder.readString()
             }
             8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.result = ConformanceResponse.Result.TextPayload(decoder.readString())
+                msg.textPayload = decoder.readString()
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -975,36 +1280,40 @@ fun ConformanceResponseInternal.Companion.decodeWith(msg: ConformanceResponseInt
 
 private fun ConformanceResponseInternal.computeSize(): Int {
     var __result = 0
-    this.result?.also { value ->
-        __result += when (value) {
-            is ConformanceResponse.Result.ParseError -> {
-                WireSize.string(value.value).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.SerializeError -> {
-                WireSize.string(value.value).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.TimeoutError -> {
-                WireSize.string(value.value).let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.RuntimeError -> {
-                WireSize.string(value.value).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.ProtobufPayload -> {
-                WireSize.bytes(value.value).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.JsonPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.Skipped -> {
-                WireSize.string(value.value).let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.JspbPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is ConformanceResponse.Result.TextPayload -> {
-                WireSize.string(value.value).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-        }
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.parseError]) {
+        __result += WireSize.string(this.parseError).let { WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.serializeError]) {
+        __result += WireSize.string(this.serializeError).let { WireSize.tag(6, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.timeoutError]) {
+        __result += WireSize.string(this.timeoutError).let { WireSize.tag(9, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.runtimeError]) {
+        __result += WireSize.string(this.runtimeError).let { WireSize.tag(2, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.protobufPayload]) {
+        __result += WireSize.bytes(this.protobufPayload).let { WireSize.tag(3, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.jsonPayload]) {
+        __result += WireSize.string(this.jsonPayload).let { WireSize.tag(4, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.skipped]) {
+        __result += WireSize.string(this.skipped).let { WireSize.tag(5, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.jspbPayload]) {
+        __result += WireSize.string(this.jspbPayload).let { WireSize.tag(7, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[ConformanceResponseInternal.PresenceIndices.textPayload]) {
+        __result += WireSize.string(this.textPayload).let { WireSize.tag(8, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
 
     __result += _unknownFields.size.toInt()
@@ -1032,7 +1341,11 @@ fun JspbEncodingConfigInternal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun JspbEncodingConfigInternal.Companion.decodeWith(msg: JspbEncodingConfigInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun JspbEncodingConfigInternal.Companion.decodeWith(
+    msg: JspbEncodingConfigInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
