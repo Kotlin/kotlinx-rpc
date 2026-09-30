@@ -31,12 +31,14 @@ internal sealed class GrpcClientCallEvents<out Response> {
 }
 
 /**
- * Represents a gRPC client transport that can execute gRPC calls.
+ * Represents a gRPC client backend that can execute gRPC calls.
  *
  * It is the common boundary of different implementations (grpc-java and grpc-swift API).
  * Failure or cancellation of the event collection will cancel the active underlying RPC.
+ *
+ * The returned events follow the rules defined in [GrpcClientCallEvents].
  */
-internal interface GrpcClientTransport {
+internal interface GrpcClientBackend {
     fun <Request, Response> execute(
         method: GrpcMethodDescriptor<Request, Response>,
         requests: Flow<Request>,
@@ -45,7 +47,7 @@ internal interface GrpcClientTransport {
     ): Flow<GrpcClientCallEvents<Response>>
 }
 
-internal expect fun GrpcClientTransport(
+internal expect fun GrpcClientBackend(
     channel: ManagedChannel,
     callCredentials: GrpcCallCredentials,
-): GrpcClientTransport
+): GrpcClientBackend

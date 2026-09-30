@@ -30,10 +30,10 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.Ready
 
-internal class NonIosGrpcClientTransport(
+internal class NonIosGrpcClientBackend(
     private val channel: ManagedChannel,
     private val callCredentials: GrpcCallCredentials,
-) : GrpcClientTransport {
+) : GrpcClientBackend {
     override fun <Request, Response> execute(
         method: GrpcMethodDescriptor<Request, Response>,
         requests: Flow<Request>,
@@ -156,7 +156,7 @@ internal suspend fun <Response> FlowCollector<GrpcClientCallEvents<Response>>.em
     }
 }
 
-internal actual fun GrpcClientTransport(
+internal actual fun GrpcClientBackend(
     channel: ManagedChannel,
     callCredentials: GrpcCallCredentials,
-): GrpcClientTransport = NonIosGrpcClientTransport(channel, callCredentials)
+): GrpcClientBackend = NonIosGrpcClientBackend(channel, callCredentials)

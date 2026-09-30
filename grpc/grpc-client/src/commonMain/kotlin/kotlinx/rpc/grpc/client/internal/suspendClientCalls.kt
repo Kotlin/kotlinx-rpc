@@ -177,7 +177,7 @@ private class ClientCallScopeImpl<Request, Response>(
             GrpcMethodType.UNKNOWN,
             -> request
         }
-        val events = client.transport.execute(
+        val events = client.backend.execute(
             method,
             validatedRequest,
             requestHeaders,

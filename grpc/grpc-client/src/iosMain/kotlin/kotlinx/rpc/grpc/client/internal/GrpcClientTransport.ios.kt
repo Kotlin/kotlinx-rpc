@@ -29,18 +29,18 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourc
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
-internal actual fun GrpcClientTransport(
+internal actual fun GrpcClientBackend(
     channel: ManagedChannel,
     callCredentials: GrpcCallCredentials,
-): GrpcClientTransport {
+): GrpcClientBackend {
     check(channel is SwiftManagedChannel)
-    return SwiftGrpcClientTransport(channel, callCredentials)
+    return SwiftGrpcClientBackend(channel, callCredentials)
 }
 
-internal class SwiftGrpcClientTransport(
+internal class SwiftGrpcClientBackend(
     private val channel: SwiftManagedChannel,
     private val clientCallCredentials: GrpcCallCredentials,
-) : GrpcClientTransport {
+) : GrpcClientBackend {
     override fun <Request, Response> execute(
         method: GrpcMethodDescriptor<Request, Response>,
         requests: Flow<Request>,

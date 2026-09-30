@@ -106,7 +106,7 @@ class SwiftResponseMessageReaderTest {
             val failure = assertFailsWith<IllegalStateException> {
                 withContext(Dispatchers.Default) {
                     withTimeout(10.seconds) {
-                        client.transport.execute(
+                        client.backend.execute(
                             method = method,
                             requests = flowOf(SimpleRequest { responseSize = 1 }),
                             headers = GrpcMetadata(),
