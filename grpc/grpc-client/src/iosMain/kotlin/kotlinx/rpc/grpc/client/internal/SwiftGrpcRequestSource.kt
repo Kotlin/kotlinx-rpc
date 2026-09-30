@@ -7,22 +7,20 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import platform.darwin.NSObject
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.swift.SwiftGrpcRequestSourceProtocol
-import kotlin.coroutines.resume
 
 private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
 
@@ -30,95 +28,63 @@ private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
  * Adapts the request Flow of a client-streaming or bidirectional call to grpc-swift's
  * single-outstanding-pull protocol.
  *
- * The source owns one persistent collector and pre-encodes at most one request. Its atomic
- * rendezvous has five states:
+ * One persistent collector pre-encodes a request and then receives the next Swift pull from
+ * [pulls]. grpc-swift writes requests sequentially, so at most one pull is outstanding.
+ * If more pulls arrive, one of them waits in [pulls] and the rest are rejected.
  *
- * - [State.Idle]: neither an emission nor a pull is waiting.
- * - [State.WaitingPull]: Swift pulled before the Flow emitted.
- * - [State.Offered]: the collector holds one encoded request in its stack and is suspended until
- *   Swift pulls; only its continuation is stored in the state.
- * - [State.Delivering]: a pull claimed the encoded request while the collector delivers it.
- * - [State.Terminated]: request EOF, failure, or transport cancellation won. It is final and keeps
- *   the failure available to late pulls.
+ * Each pull completion is owned by exactly one party, which invokes it exactly once:
+ * - the caller of [nextRequestWithCompletion], if [pulls] did not accept it,
+ * - the collector, once it has received it,
+ * - or [pulls] itself, which completes undelivered pulls as terminated when it is cancelled.
  *
- * State transitions commit before callbacks or continuations run, so those external actions may
- * re-enter this source. At most one pull callback or collector continuation is retained.
+ * The first of request EOF, failure, or transport cancellation sets [termination] and cancels
+ * [pulls]. Termination is final and keeps the failure available to late pulls.
  */
 internal class KotlinGrpcRequestSource<Request>(
     scope: CoroutineScope,
     requests: Flow<Request>,
-    private val encode: (Request) -> SwiftGrpcRequestBytes,
+    encode: (Request) -> SwiftGrpcRequestBytes,
 ) : NSObject(), SwiftGrpcRequestSourceProtocol {
-    private val sourceJob = SupervisorJob()
-    private val sourceScope = CoroutineScope(scope.coroutineContext + sourceJob)
-    private val state = atomic<State>(State.Idle)
+    // Set before pulls is cancelled, so every pull that observes cancellation also observes it.
+    private val termination = atomic<Termination?>(null)
 
-    init {
-        scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
+    private val pulls = Channel<RequestCompletion>(capacity = 1, onUndeliveredElement = ::completeTerminated)
 
-        // Pre-encode one request, then suspend until exactly one Swift pull claims it.
-        sourceScope.launch(
-            context = CoroutineName("grpc-swift-request-source"),
-            start = CoroutineStart.UNDISPATCHED,
-        ) {
-            try {
-                requests.collect { request ->
-                    val message = encode(request)
-                    var delivered = false
-                    try {
-                        val completion = awaitPull()
-                        delivered = deliver(completion, message)
-                    } finally {
-                        if (!delivered) message.discard()
-                    }
+    private val collector = CoroutineScope(scope.coroutineContext + SupervisorJob()).launch(
+        context = CoroutineName("grpc-swift-request-source"),
+        start = CoroutineStart.UNDISPATCHED,
+    ) {
+        try {
+            requests.collect { request ->
+                val message = encode(request)
+                val completion = try {
+                    pulls.receive()
+                } catch (cause: Throwable) {
+                    message.discard()
+                    throw cause
                 }
-                finish()
-            } catch (cause: Throwable) {
-                // Cancellation is caused either by termination of this source, or by the request
-                // flow itself, which is treated as the end of the flow.
-                if (cause is CancellationException) finish() else fail(cause)
+                completion(message, null)
             }
+            terminate(null)
+        } catch (cause: Throwable) {
+            // Cancellation is caused either by termination of this source, or by the request
+            // flow itself, which is treated as the end of the flow.
+            terminate(cause.takeUnless { it is CancellationException })
         }
     }
 
+    init {
+        scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
+    }
+
     internal val originalFailure: Throwable?
-        get() = (state.value as? State.Terminated)?.failure
+        get() = termination.value?.failure
 
     override fun nextRequestWithCompletion(completion: RequestCompletion) {
-        val waitingPull = State.WaitingPull(completion)
-        var offered: State.Offered? = null
-        var terminalFailure: Throwable? = null
-        var terminated = false
-        var rejected = false
-
-        while (true) {
-            when (val current = state.value) {
-                is State.Terminated -> {
-                    terminalFailure = current.failure
-                    terminated = true
-                    break
-                }
-
-                is State.WaitingPull, is State.Delivering -> {
-                    rejected = true
-                    break
-                }
-
-                is State.Offered -> if (state.compareAndSet(current, State.Delivering(completion))) {
-                    offered = current
-                    break
-                }
-
-                State.Idle -> if (state.compareAndSet(current, waitingPull)) {
-                    return
-                }
-            }
-        }
-
+        val result = pulls.trySend(completion)
         when {
-            offered != null -> offered.continuation.resume(completion)
-            terminated -> completion(null, terminalFailure?.toSwiftGrpcError())
-            rejected -> completion(
+            result.isClosed -> completeTerminated(completion)
+            result.isFailure -> completion(
                 null,
                 swiftGrpcError("grpc-swift requested more than one message concurrently"),
             )
@@ -126,131 +92,28 @@ internal class KotlinGrpcRequestSource<Request>(
     }
 
     override fun cancel() {
-        terminate(
-            terminal = State.Terminated.Completed,
-            stop = { sourceJob.cancel(CancellationException("grpc-swift call stopped consuming requests")) },
-            // Cancellation is transport control flow, not a request failure. Completing a pending pull
-            // as EOF lets grpc-swift preserve the call's real terminal status (for example a deadline).
-            notify = { completion -> completion(null, null) },
-        )
+        // Cancellation is transport control flow, not a request failure. Completing a pending pull
+        // as EOF lets grpc-swift preserve the call's real terminal status (for example a deadline).
+        terminate(null)
+        collector.cancel(CancellationException("grpc-swift call stopped consuming requests"))
     }
 
     internal suspend fun cancelAndJoin() {
         cancel()
-        sourceJob.join()
+        collector.join()
     }
 
-    private suspend fun awaitPull(): RequestCompletion = suspendCancellableCoroutine { continuation ->
-        val offered = State.Offered(continuation)
-        continuation.invokeOnCancellation { withdraw(offered) }
-        var waitingCompletion: RequestCompletion? = null
-        var terminated = false
-
-        while (continuation.isActive) {
-            when (val current = state.value) {
-                State.Idle -> if (state.compareAndSet(current, offered)) {
-                    // Cancellation may have run its handler immediately before publication.
-                    if (!continuation.isActive) withdraw(offered)
-                    return@suspendCancellableCoroutine
-                }
-
-                is State.WaitingPull -> if (state.compareAndSet(current, State.Delivering(current.completion))) {
-                    waitingCompletion = current.completion
-                    break
-                }
-
-                is State.Terminated -> {
-                    terminated = true
-                    break
-                }
-
-                is State.Offered, is State.Delivering -> error(
-                    "The request collector made a second offer before the first was delivered"
-                )
-            }
-        }
-
-        if (waitingCompletion != null) continuation.resume(waitingCompletion)
-        else if (terminated || !continuation.isActive) continuation.cancel()
+    private fun terminate(failure: Throwable?) {
+        // Pulls re-entering from a completion observe the cancelled channel and complete at once.
+        if (termination.compareAndSet(null, Termination(failure))) pulls.cancel()
     }
 
-    private fun withdraw(offered: State.Offered) {
-        state.compareAndSet(offered, State.Idle)
+    private fun completeTerminated(completion: RequestCompletion) {
+        completion(null, termination.value?.failure?.toSwiftGrpcError())
     }
 
-    private fun deliver(completion: RequestCompletion, message: SwiftGrpcRequestBytes): Boolean {
-        val current = state.value
-        // If termination claimed the pull in the meantime, the message is dropped.
-        if (
-            current is State.Delivering &&
-            current.completion === completion &&
-            state.compareAndSet(current, State.Idle)
-        ) {
-            completion(message, null)
-            return true
-        }
-        return false
-    }
-
-    private fun finish() {
-        terminate(
-            terminal = State.Terminated.Completed,
-            // The collector has finished, so the job completes without allocating a cancellation.
-            stop = { sourceJob.complete() },
-            notify = { completion -> completion(null, null) },
-        )
-    }
-
-    private fun fail(cause: Throwable) {
-        terminate(
-            terminal = State.Terminated(cause),
-            stop = { sourceJob.cancel() },
-            notify = { completion -> completion(null, cause.toSwiftGrpcError()) },
-        )
-    }
-
-    private inline fun terminate(
-        terminal: State.Terminated,
-        stop: () -> Unit,
-        notify: (RequestCompletion) -> Unit,
-    ) {
-        lateinit var claimed: State
-        while (true) {
-            val current = state.value
-            if (current is State.Terminated) return
-            if (state.compareAndSet(current, terminal)) {
-                claimed = current
-                break
-            }
-        }
-
-        // Tear down first so that invoking the completion cannot re-enter a still-active source.
-        stop()
-        when (val current = claimed) {
-            is State.WaitingPull -> notify(current.completion)
-            is State.Offered -> current.continuation.cancel()
-            is State.Delivering -> notify(current.completion)
-            State.Idle -> Unit
-            is State.Terminated -> error("A terminal state cannot win termination twice")
-        }
-    }
-
-    private sealed interface State {
-        data object Idle : State
-
-        class WaitingPull(val completion: RequestCompletion) : State
-
-        class Offered(val continuation: CancellableContinuation<RequestCompletion>) : State
-
-        class Delivering(val completion: RequestCompletion) : State
-
-        /** The final state. A `null` [failure] means the request flow ended or was cancelled. */
-        class Terminated(val failure: Throwable?) : State {
-            companion object {
-                val Completed = Terminated(null)
-            }
-        }
-    }
+    /** A `null` [failure] means the request flow ended or was cancelled. */
+    private class Termination(val failure: Throwable?)
 }
 
 /**

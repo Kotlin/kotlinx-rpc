@@ -316,26 +316,25 @@ class SwiftGrpcBridgeTest {
     }
 
     @Test
-    fun requestSourceDeliveringRejectsConcurrentPullAndCancellationCompletesAcceptedPull() = runTest {
+    fun cancellationCompletesDeliveringAndQueuedPullsAsEof() = runTest {
+        lateinit var owned: SwiftGrpcRequestBytes
         val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
-            testRequest(value)
+            testRequest(value).also { owned = it }
         }
-        val accepted = source.pullRecording()
-        val rejected = source.pullRecording()
-
-        val (rejectedMessage, rejectedError) = rejected.result.await()
-        assertNull(rejectedMessage)
-        assertNotNull(rejectedError)
-        assertEquals(1, rejected.calls.load())
-        assertFalse(accepted.result.isCompleted)
+        // The collector receives the first pull, but has not resumed yet. The second one waits.
+        val delivering = source.pullRecording()
+        val queued = source.pullRecording()
+        assertFalse(delivering.result.isCompleted)
+        assertFalse(queued.result.isCompleted)
 
         source.cancel()
-        assertEquals(null to null, withTimeout(1_000.milliseconds) { accepted.result.await() })
-        assertEquals(1, accepted.calls.load())
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { delivering.result.await() })
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { queued.result.await() })
 
         withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
-        assertEquals(1, accepted.calls.load())
-        assertEquals(1, rejected.calls.load())
+        assertTrue(owned.isDiscarded())
+        assertEquals(1, delivering.calls.load())
+        assertEquals(1, queued.calls.load())
     }
 
     @Test
