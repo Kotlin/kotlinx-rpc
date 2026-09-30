@@ -697,6 +697,26 @@ class SwiftGrpcBridgeTest {
     }
 
     @Test
+    fun cancellingSingleRequestSourceWhileEncodingCompletesPullAsEofAndDiscardsRequest() = runTest {
+        val emitNow = CompletableDeferred<Unit>()
+        lateinit var source: KotlinGrpcSingleRequestSource<Int>
+        lateinit var owned: SwiftGrpcRequestBytes
+        source = KotlinGrpcSingleRequestSource(this, flow { emitNow.await(); emit(42) }) { value ->
+            source.cancel()
+            testRequest(value).also { owned = it }
+        }
+        val pull = source.pullRecording()
+
+        emitNow.complete(Unit)
+
+        assertEquals(null to null, withTimeout(1_000.milliseconds) { pull.result.await() })
+        withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
+        assertTrue(owned.isDiscarded())
+        assertNull(source.readyMessage)
+        assertEquals(1, pull.calls.load())
+    }
+
+    @Test
     fun parentCompletionCompletesPendingSingleRequestPullAsEof() = runTest {
         val parent = Job()
         val source = KotlinGrpcSingleRequestSource<Int>(

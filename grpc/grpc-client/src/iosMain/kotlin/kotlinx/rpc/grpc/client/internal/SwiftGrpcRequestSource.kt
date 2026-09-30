@@ -129,8 +129,8 @@ internal class KotlinGrpcSingleRequestSource<Request>(
     requests: Flow<Request>,
     encode: (Request) -> SwiftGrpcRequestBytes,
 ) : NSObject(), SwiftGrpcRequestSourceProtocol {
-    private val message = atomic<SwiftGrpcRequestBytes?>(null)
-    private val failure = atomic<Throwable?>(null)
+    // Set once, by whichever of collection or cancellation comes first. `null` while collecting.
+    private val outcome = atomic<Outcome?>(null)
     private val pulled = atomic(false)
 
     private val job = CoroutineScope(scope.coroutineContext + SupervisorJob()).launch(
@@ -138,32 +138,29 @@ internal class KotlinGrpcSingleRequestSource<Request>(
         start = CoroutineStart.UNDISPATCHED,
     ) {
         try {
-            message.value = encode(requests.single())
+            val message = encode(requests.single())
+            // Cancellation won while the request was being encoded.
+            if (!outcome.compareAndSet(null, Outcome.Ready(message))) message.discard()
         } catch (_: CancellationException) {
             // Cancellation, by this source or by the request flow itself, ends the requests without one.
         } catch (cause: Throwable) {
-            failure.value = cause
+            outcome.compareAndSet(null, Outcome.Failed(cause))
         }
     }
 
     init {
-        // Cancellation can arrive while synchronous encoding is still finishing. In that case
-        // cancel() may observe no message, so release it when the cancelled job completes.
-        job.invokeOnCompletion {
-            if (job.isCancelled) message.value?.discard()
-        }
         scope.coroutineContext[Job]?.invokeOnCompletion { cancel() }
     }
 
     internal val originalFailure: Throwable?
-        get() = failure.value
+        get() = (outcome.value as? Outcome.Failed)?.cause
 
     /**
      * The encoded request if collection has already succeeded, so Swift can send it without a pull.
      * It is set only after the flow ended with exactly one request. This is the fast-lane.
      */
     internal val readyMessage: SwiftGrpcRequestBytes?
-        get() = message.value
+        get() = (outcome.value as? Outcome.Ready)?.message
 
     override fun nextRequestWithCompletion(completion: RequestCompletion) {
         if (!pulled.compareAndSet(expect = false, update = true)) {
@@ -176,20 +173,31 @@ internal class KotlinGrpcSingleRequestSource<Request>(
 
         // Invoked exactly once, after the request is ready, has failed, or was cancelled.
         job.invokeOnCompletion {
-            val cause = failure.value
-            if (cause != null) completion(null, cause.toSwiftGrpcError())
-            else completion(message.value, null)
+            when (val current = outcome.value) {
+                is Outcome.Ready -> completion(current.message, null)
+                is Outcome.Failed -> completion(null, current.cause.toSwiftGrpcError())
+                Outcome.Cancelled, null -> completion(null, null)
+            }
         }
     }
 
     override fun cancel() {
         job.cancel(CancellationException("grpc-swift call stopped consuming requests"))
-        message.value?.discard()
+        // Swift may already have taken a ready request; discarding it afterwards is harmless.
+        if (!outcome.compareAndSet(null, Outcome.Cancelled)) readyMessage?.discard()
     }
 
     internal suspend fun cancelAndJoin() {
         cancel()
         job.join()
+    }
+
+    private sealed interface Outcome {
+        class Ready(val message: SwiftGrpcRequestBytes) : Outcome
+
+        class Failed(val cause: Throwable) : Outcome
+
+        data object Cancelled : Outcome
     }
 }
 
