@@ -23,14 +23,9 @@ internal class ScopedNativeRegionAccess {
         if (state == State.Accessing) state = State.Closed
         error(
             if (wasAccessing) {
-                "A native region reader/writer operation was called inside an active storage block. " +
-                    "Do not nest reader/writer operations inside accessStorage, readFromHead or writeToTail; " +
-                    "use the supplied pointer and return the consumed/written byte count. " +
-                    "The nested access has invalidated the region."
+                "Nested native reader/writer access is not allowed; the region has been invalidated."
             } else {
-                "The native region is closed. A reader is valid only during GrpcMarshaller.decode " +
-                    "and a writer only during GrpcEncodedMessage.writeTo. Do not reuse the region " +
-                    "after closing it or after a nested access has invalidated it."
+                "The native region is closed; do not reuse its reader or writer."
             },
         )
     }
@@ -39,9 +34,7 @@ internal class ScopedNativeRegionAccess {
         if (state == State.Accessing) {
             state = State.Closed
             error(
-                "The native region was closed inside an active storage block. " +
-                    "Call close() only after accessStorage returns, so storage is not released " +
-                    "while the read action is using its pointer.",
+                "Cannot close a native region while its storage block is running.",
             )
         }
         state = State.Closed
@@ -64,9 +57,7 @@ internal class ScopedNativeRegionAccess {
             val accepted = accessStorage { pointer ->
                 try {
                     check(!invoked) {
-                        "NativeRegionMessageReader/Writer.accessStorage invoked its block more than once. " +
-                            "The implementation must invoke the block exactly once and return its Boolean result; " +
-                            "retrying the block can read or write the same message bytes twice."
+                        "Native accessStorage invoked its block more than once; exactly one invocation is required."
                     }
                     invoked = true
                     result = Result.success(action(pointer))
@@ -78,11 +69,7 @@ internal class ScopedNativeRegionAccess {
             }
             failure?.let { throw it }
             check(accepted && invoked && state == State.Accessing) {
-                "NativeRegionMessageReader/Writer.accessStorage did not complete the access " +
-                    "(accepted=$accepted, blockInvoked=$invoked, state=$state). " +
-                    "Ensure backing storage is available, invoke the block exactly once " +
-                    "and return its Boolean result. " +
-                    "Do not close the region or call another reader/writer operation inside the block."
+                "Native accessStorage failed (accepted=$accepted, blockInvoked=$invoked, state=$state)."
             }
             return checkNotNull(result).getOrThrow()
         } finally {

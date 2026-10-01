@@ -46,9 +46,7 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         scopedAccess.ensureOpen()
         if (remaining == 0) {
             throw IndexOutOfBoundsException(
-                "GrpcMessageReader.readByte attempted to read beyond a message of size $size. " +
-                    "Check the lengths and read order in GrpcMarshaller.decode. " +
-                    "After calling asSource(), read from the returned Source instead of the reader.",
+                "GrpcMessageReader.readByte cannot read beyond a message of size $size: no bytes remain.",
             )
         }
         var byte: Byte = 0
@@ -63,17 +61,14 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         scopedAccess.ensureOpen()
         if (startIndex !in 0..endIndex || endIndex > bytes.size) {
             throw IndexOutOfBoundsException(
-                "GrpcMessageReader.readTo received range [$startIndex, $endIndex) for a destination array " +
-                    "of size ${bytes.size}. Check the indices passed by GrpcMarshaller.decode: " +
-                    "0 <= startIndex <= endIndex <= bytes.size is required.",
+                "GrpcMessageReader.readTo received range [$startIndex, $endIndex) " +
+                    "outside a destination array of size ${bytes.size}.",
             )
         }
         val count = endIndex - startIndex
         if (count > remaining) {
             throw IndexOutOfBoundsException(
-                "GrpcMessageReader.readTo attempted to read $count bytes with only $remaining bytes remaining " +
-                    "in a message of size $size. Check the lengths and read order in GrpcMarshaller.decode. " +
-                    "After calling asSource(), read from the returned Source instead of the reader.",
+                "GrpcMessageReader.readTo requested $count bytes, but only $remaining of $size bytes remain.",
             )
         }
         if (count == 0) return
@@ -116,15 +111,12 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         val start = size - remaining
         val count = scopedAccess.access(::accessStorage) { pointer ->
             val base = checkNotNull(pointer) {
-                "NativeRegionMessageReader.accessStorage supplied a null pointer for a message of size $size. " +
-                    "The implementation must provide a valid base address for every non-empty message " +
-                    "for the duration of the storage block."
+                "NativeRegionMessageReader.accessStorage supplied a null pointer for a non-empty message (size=$size)."
             }
             readAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
-                    "UnsafeGrpcMessageReaderOperations.readFromHead action returned byteCount=$count " +
-                        "for unread range [$start, $size). Return the number of bytes actually consumed, " +
-                        "between 0 and $remaining; do not call another reader operation inside the action."
+                    "readFromHead action returned byteCount=$count for unread range [$start, $size); " +
+                        "expected a count between 0 and $remaining."
                 }
             }
         }

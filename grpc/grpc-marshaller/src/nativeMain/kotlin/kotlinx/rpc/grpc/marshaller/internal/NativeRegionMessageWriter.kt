@@ -37,9 +37,7 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     public fun seal() {
         if (scopedAccess.isAccessing) markFailed()
         check(state == State.Complete) {
-            "NativeRegionMessageWriter.seal requires a complete writer, but its state is $state " +
-                "($written of $size declared bytes written). GrpcEncodedMessage.writeTo must write exactly " +
-                "GrpcEncodedMessage.size bytes before sealing; a failed, sealed or discarded writer cannot be sealed."
+            "Cannot seal NativeRegionMessageWriter in state $state: wrote $written of $size declared bytes."
         }
         try {
             onSeal()
@@ -56,9 +54,7 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         if (scopedAccess.isAccessing) {
             markFailed()
             error(
-                "NativeRegionMessageWriter.discard was called inside a storage block. " +
-                    "Discard the writer only after accessStorage returns, so storage is not released " +
-                    "while the write action is using its pointer.",
+                "Cannot discard NativeRegionMessageWriter while its storage block is running.",
             )
         }
         if (state == State.Discarded) return
@@ -118,10 +114,7 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         if (state == State.Open) return
         if (allowEmptyComplete && state == State.Complete && size == 0) return
         error(
-            "NativeRegionMessageWriter cannot accept a write in state $state " +
-                "($written of $size declared bytes already written). GrpcEncodedMessage.writeTo must write " +
-                "exactly GrpcEncodedMessage.size bytes and must not reuse a writer after a failed write, " +
-                "seal() or discard().",
+            "Cannot write to NativeRegionMessageWriter in state $state: wrote $written of $size declared bytes.",
         )
     }
 
@@ -133,25 +126,20 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         requireWritable()
         if (minimumCapacity !in 0..remaining) {
             throw IndexOutOfBoundsException(
-                "UnsafeGrpcMessageWriterOperations.writeToTail received minimumCapacity=$minimumCapacity " +
-                    "with $remaining bytes remaining ($written of $size declared bytes already written). " +
-                    "Request a capacity between 0 and $remaining. Ensure GrpcEncodedMessage.size matches " +
-                    "the total number of bytes written by writeTo.",
+                "writeToTail received minimumCapacity=$minimumCapacity, but only $remaining of $size bytes remain; " +
+                    "expected a capacity between 0 and $remaining.",
             )
         }
 
         val start = written
         val count = scopedAccess.access(::accessStorage) { pointer ->
             val base = checkNotNull(pointer) {
-                "NativeRegionMessageWriter.accessStorage supplied a null pointer for a message of size $size. " +
-                    "The implementation must provide a valid base address for every non-empty message " +
-                    "for the duration of the storage block."
+                "NativeRegionMessageWriter.accessStorage supplied a null pointer for a non-empty message (size=$size)."
             }
             writeAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
-                    "UnsafeGrpcMessageWriterOperations.writeToTail action returned byteCount=$count " +
-                        "for unwritten range [$start, $size). Return the number of bytes actually written, " +
-                        "between 0 and $remaining; do not call another writer operation inside the action."
+                    "writeToTail action returned byteCount=$count for unwritten range [$start, $size); " +
+                        "expected a count between 0 and $remaining."
                 }
             }
         }
