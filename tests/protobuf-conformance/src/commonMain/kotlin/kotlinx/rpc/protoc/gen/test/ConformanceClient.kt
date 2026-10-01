@@ -6,6 +6,8 @@
 
 package kotlinx.rpc.protoc.gen.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.conformance.ConformanceRequest
 import com.google.protobuf.conformance.ConformanceRequestInternal
 import com.google.protobuf.conformance.ConformanceRequestPayloadCase
@@ -151,7 +153,7 @@ internal class ConformanceClient {
                 try {
                     val binary = request.protobufPayload
 
-                    testMessage = marshaller.decode(binary.toByteArray().buffered(), config) as InternalMessage
+                    testMessage = marshaller.decodeFromSource(binary.toByteArray().buffered(), config) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
                         parseError = e.message ?: "ProtobufException with unknown message of type ${e::class.simpleName}"
@@ -176,7 +178,7 @@ internal class ConformanceClient {
             UNSPECIFIED -> error("Unspecified output format.")
 
             PROTOBUF -> {
-                val messageString = marshaller.encode(testMessage).readByteArray().asByteString()
+                val messageString = marshaller.encodeToBuffer(testMessage).readByteArray().asByteString()
 
                 ConformanceResponse {
                     protobufPayload = messageString
@@ -216,14 +218,14 @@ internal class ConformanceClient {
         dumpConfig.dumpConformanceInputFile?.let { writeFile(it, serializedInput) }
 
         val request: ConformanceRequest = ConformanceRequestInternal.MARSHALLER
-            .decode(serializedInput.buffered())
+            .decodeFromSource(serializedInput.buffered())
 
         // The conformance runner will request a list of failures as the first request.
         // This will be known by message_type == "conformance.FailureSet", a conformance
         // test should return a serialized FailureSet in protobuf_payload.
         val response = if (request.messageType == "conformance.FailureSet") {
             ConformanceResponse {
-                protobufPayload = FailureSetInternal.MARSHALLER.encode(
+                protobufPayload = FailureSetInternal.MARSHALLER.encodeToBuffer(
                     FailureSet {}
                 ).readByteArray().asByteString()
             }
@@ -232,7 +234,7 @@ internal class ConformanceClient {
         }
 
         val serializedOutput = ConformanceResponseInternal.MARSHALLER
-            .encode(response).readByteArray()
+            .encodeToBuffer(response).readByteArray()
 
         dumpConfig.dumpConformanceOutputFile?.let { writeFile(it, serializedOutput) }
 

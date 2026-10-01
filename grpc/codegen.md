@@ -51,6 +51,9 @@ For each request/response type, marshaller is resolved in order:
 3. **Resolver fallback** -- call `resolver.resolveOrNull(typeOf<T>())`, throw `IllegalArgumentException` if null
 
 When `marshallerConfig` is non-null, the marshaller is wrapped in `ConfiguredGrpcMarshallerDelegate(config, marshaller)`.
+The delegate forwards `prepare(value)` and `decode(reader)` while applying the configured default.
+Callers outside a gRPC runtime use the `encodeToByteArray`/`encodeToBuffer` and
+`decodeFromByteArray`/`decodeFromSource` helpers.
 
 ### `@Grpc.Method` Annotation Parameters
 

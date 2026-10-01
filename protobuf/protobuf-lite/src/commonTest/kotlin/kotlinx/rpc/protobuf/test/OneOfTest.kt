@@ -19,6 +19,8 @@ import invoke
 import kotlinx.io.Buffer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import num
@@ -38,7 +40,7 @@ import kotlin.test.assertTrue
 
 class OneOfTest {
     private fun <M> encodeDecode(msg: M, marshaller: GrpcMarshaller<M>): M {
-        return marshaller.decode(marshaller.encode(msg))
+        return marshaller.decodeFromSource(marshaller.encodeToBuffer(msg))
     }
 
     @Test
@@ -79,9 +81,9 @@ class OneOfTest {
         assertTrue(msg.presence.hasSint)
 
         // the zero is written to the wire and survives the round trip
-        val encoded = grpcMarshallerOf<OneOfMsg>().encode(msg)
+        val encoded = grpcMarshallerOf<OneOfMsg>().encodeToBuffer(msg)
         assertFalse(encoded.exhausted())
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(encoded)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(encoded)
         assertEquals(OneOfMsgFieldCase.SINT, decoded.field)
         assertEquals(0, decoded.sint)
 
@@ -269,7 +271,7 @@ class OneOfTest {
         val encoder = WireEncoder(buffer)
         encoder.writeEnum(8, 1234)
         encoder.flush()
-        val fromWire = grpcMarshallerOf<OneOfNumeric32>().decode(buffer)
+        val fromWire = grpcMarshallerOf<OneOfNumeric32>().decodeFromSource(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(1234), fromWire.enum)
         val reEncoded = encodeDecode(fromWire, grpcMarshallerOf<OneOfNumeric32>())
         assertEquals(1234, reEncoded.enum.number)

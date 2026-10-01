@@ -13,7 +13,7 @@ import PlainNumericInternal
 import decodeWith
 import invoke
 import kotlinx.io.Buffer
-import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import java.lang.management.ManagementFactory
@@ -71,8 +71,8 @@ class OneOfAllocationTest {
         if (threadBean == null) return
 
         // both messages have the same wire shape: field 1, varint 123456
-        val oneOfBytes = grpcMarshallerOf<OneOfNumeric32>().encode(OneOfNumeric32 { i32 = 123_456 }).readByteArray()
-        val plainBytes = grpcMarshallerOf<PlainNumeric>().encode(PlainNumeric { i32 = 123_456 }).readByteArray()
+        val oneOfBytes = grpcMarshallerOf<OneOfNumeric32>().encodeToByteArray(OneOfNumeric32 { i32 = 123_456 })
+        val plainBytes = grpcMarshallerOf<PlainNumeric>().encodeToByteArray(PlainNumeric { i32 = 123_456 })
         assertTrue(oneOfBytes.contentEquals(plainBytes))
 
         val iterations = 200_000

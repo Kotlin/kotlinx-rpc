@@ -25,6 +25,15 @@ default `true`) controls the `when<Oneof>` functions.
 
 Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html#grpc-oneof-fields
 
+#### Custom gRPC marshallers {id=Custom_gRPC_marshallers_Unreleased}
+
+gRPC custom marshallers now implement `prepare(value): GrpcEncodedMessage` and
+`decode(reader: GrpcMessageReader)`. The previous `encode(value): Source` and
+`decode(source: Source)` methods have been removed. Use `StreamingGrpcMarshaller`
+for formats that need buffering to determine size, and the `encodeToByteArray`,
+`encodeToBuffer`, `decodeFromByteArray`, or `decodeFromSource` helpers outside
+a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
+
 ## 0.11.0-grpc-190
 > Published 17 Sep 2026
 

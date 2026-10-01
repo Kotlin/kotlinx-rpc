@@ -74,8 +74,8 @@ public annotation class HasWithGrpcMarshaller
  * Example:
  * ```kotlin
  * val chatMarshaller = grpcMarshallerOf<ChatEntry>()
- * val encoded = chatMarshaller.encode(chatEntry)
- * val decoded = chatMarshaller.decode(buffer)
+ * val encoded = chatMarshaller.encodeToByteArray(chatEntry)
+ * val decoded = chatMarshaller.decodeFromByteArray(encoded)
  * ```
  *
  * @param T The message type for which to retrieve the marshaller. Must be annotated with [WithGrpcMarshaller].
@@ -105,8 +105,8 @@ public inline fun <@HasWithGrpcMarshaller reified T : Any> grpcMarshallerOf(
  * Example:
  * ```kotlin
  * val chatMarshaller = grpcMarshallerOf<ChatEntry>(typeOf<ChatEntry>())
- * val encoded = chatMarshaller.encode(chatEntry)
- * val decoded = chatMarshaller.decode(buffer)
+ * val encoded = chatMarshaller.encodeToByteArray(chatEntry)
+ * val decoded = chatMarshaller.decodeFromByteArray(encoded)
  * ```
  *
  * @param T The message type for which to retrieve the marshaller. Must be annotated with [WithGrpcMarshaller].
@@ -142,8 +142,8 @@ public fun <@HasWithGrpcMarshaller T : Any> grpcMarshallerOf(
  * Example:
  * ```kotlin
  * val chatMarshaller = grpcMarshallerOf(ChatEntry::class)
- * val encoded = chatMarshaller.encode(chatEntry)
- * val decoded = chatMarshaller.decode(buffer)
+ * val encoded = chatMarshaller.encodeToByteArray(chatEntry)
+ * val decoded = chatMarshaller.decodeFromByteArray(encoded)
  * ```
  *
  * @param T The message type for which to retrieve the marshaller.

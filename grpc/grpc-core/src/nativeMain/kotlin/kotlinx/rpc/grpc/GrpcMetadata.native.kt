@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, ExperimentalEncodingApi::class,
@@ -17,11 +17,12 @@ import kotlinx.cinterop.convert
 import kotlinx.cinterop.get
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
-import kotlinx.io.Buffer
-import kotlinx.io.Source
-import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.grpc_metadata
@@ -41,14 +42,9 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
 
-    internal fun encode(value: T): ByteArray {
-        val source = marshaller.encode(value)
-        return source.readByteArray()
-    }
-    internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
-        buffer.write(value)
-        marshaller.decode(buffer)
-    }
+    internal fun encode(value: T): ByteArray = marshaller.encodeToByteArray(value)
+
+    internal fun decode(value: ByteArray): T = marshaller.decodeFromByteArray(value)
 
     internal fun validateForString() {
         validateName()
@@ -314,23 +310,19 @@ private fun <T> GrpcMetadataKey<T>.validateName() {
 }
 
 private val AsciiMarshaller = object : GrpcMarshaller<String> {
-    override fun encode(value: String, config: GrpcMarshallerConfig?): Source = Buffer().apply {
-        write(value.toAsciiBytes())
-    }
+    override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(value.toAsciiBytes())
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): String = source.use { buffer ->
-        buffer.readByteArray().toAsciiString()
-    }
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
+        reader.readByteArray().toAsciiString()
 }
 
 private val BinaryMarshaller = object : GrpcMarshaller<ByteArray> {
-    override fun encode(value: ByteArray, config: GrpcMarshallerConfig?): Source = Buffer().apply {
-        write(value)
-    }
+    override fun prepare(value: ByteArray, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+        GrpcEncodedMessage.of(value)
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): ByteArray = source.readByteArray()
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): ByteArray = reader.readByteArray()
 }
 
 private fun String.toAsciiKey() = GrpcMetadataKey(this, AsciiMarshaller)
 private fun String.toBinaryKey() = GrpcMetadataKey(this, BinaryMarshaller)
-

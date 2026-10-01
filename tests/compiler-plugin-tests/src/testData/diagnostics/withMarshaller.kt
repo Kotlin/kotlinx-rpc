@@ -9,10 +9,11 @@
 @file:OptIn(kotlinx.rpc.internal.utils.ExperimentalRpcApi::class)
 
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.io.Source
 
 @WithGrpcMarshaller(TestMarshaller::class)
 open class Test
@@ -24,11 +25,11 @@ class Test1
 class Test2 : Test()
 
 object TestMarshaller : GrpcMarshaller<Test> {
-    override fun encode(value: Test, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: Test, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test {
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Test {
         error("Not implemented")
     }
 }
@@ -37,11 +38,11 @@ object TestMarshaller : GrpcMarshaller<Test> {
 class Test3
 
 class TestMarshaller3 : GrpcMarshaller<Test3> {
-    override fun encode(value: Test3, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: Test3, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test3 {
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Test3 {
         error("Not implemented")
     }
 }
@@ -54,11 +55,11 @@ object TestMarshaller4 : ATestMarshaller4(), Whatever
 interface Whatever
 
 abstract class ATestMarshaller4 : GrpcMarshaller<Test4> {
-    override fun encode(value: Test4, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: Test4, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test4 {
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Test4 {
         error("Not implemented")
     }
 }
@@ -75,11 +76,11 @@ interface CustomMarshaller4<D> : CustomMarshaller3<D>, CustomMarshaller1<D>
 class Test8
 
 object TestMarshaller8 : CustomMarshaller4<Test8> {
-    override fun encode(value: Test8, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: Test8, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test8 {
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Test8 {
         error("Not implemented")
     }
 }
@@ -88,11 +89,11 @@ object TestMarshaller8 : CustomMarshaller4<Test8> {
 class Test9
 
 object TestMarshaller9 : CustomMarshaller4<Test8> {
-    override fun encode(value: Test8, config: GrpcMarshallerConfig?): Source {
+    override fun prepare(value: Test8, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         error("Not implemented")
     }
 
-    override fun decode(source: Source, config: GrpcMarshallerConfig?): Test8 {
+    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Test8 {
         error("Not implemented")
     }
 }
