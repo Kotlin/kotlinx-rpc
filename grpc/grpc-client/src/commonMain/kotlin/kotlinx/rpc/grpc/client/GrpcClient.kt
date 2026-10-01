@@ -26,8 +26,10 @@ import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 private typealias RequestClient = Any
@@ -272,6 +274,42 @@ public class GrpcClientConfiguration internal constructor() {
     public var userAgent: String? = null
 
     /**
+     * The maximum size, in bytes, of an inbound message accepted by this client.
+     *
+     * If `null` (the default), the gRPC runtime's default limit is used. Values must be non-negative.
+     */
+    public var maxInboundMessageSize: Int? = null
+        set(value) {
+            require(value == null || value >= 0) { "maxInboundMessageSize must be >= 0" }
+            field = value
+        }
+
+    /**
+     * The maximum size, in bytes, of inbound metadata accepted by this client.
+     *
+     * If `null` (the default), the gRPC runtime's default limit is used. Values must be positive.
+     */
+    public var maxInboundMetadataSize: Int? = null
+        set(value) {
+            require(value == null || value > 0) { "maxInboundMetadataSize must be > 0" }
+            field = value
+        }
+
+    /**
+     * The duration without ongoing RPCs before this client enters idle mode and closes its connections.
+     * A new RPC takes the client out of idle mode.
+     *
+     * If `null` (the default), the gRPC runtime's default timeout is used. [Duration.INFINITE] disables
+     * automatic idle mode. Finite values must be at least one second and less than `Int.MAX_VALUE`
+     * milliseconds.
+     */
+    public var idleTimeout: Duration? = null
+        set(value) {
+            value.validateConnectionDuration("idleTimeout", 1.seconds)
+            field = value
+        }
+
+    /**
      * Adds one or more client-side interceptors to the current gRPC client configuration.
      * Interceptors enable extended customization of gRPC calls
      * by observing or altering the behaviors of requests and responses.
@@ -347,6 +385,9 @@ public class GrpcClientConfiguration internal constructor() {
      * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
      *   RPCs on the connection.
      *
+     * Both durations must be positive and, unless [Duration.INFINITE] (which disables
+     * keep-alive pings), less than `Int.MAX_VALUE` milliseconds.
+     *
      * @see KeepAlive
      */
     public fun keepAlive(configure: KeepAlive.() -> Unit) {
@@ -378,8 +419,15 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public class KeepAlive internal constructor() {
         public var time: Duration = Duration.INFINITE
+            set(value) {
+                value.validateConnectionDuration("keepalive time", 1.milliseconds)
+                field = value
+            }
         public var timeout: Duration = 20.seconds
+            set(value) {
+                value.validateConnectionDuration("keepalive timeout", 1.milliseconds)
+                field = value
+            }
         public var withoutCalls: Boolean = false
     }
 }
-

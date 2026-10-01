@@ -12,12 +12,6 @@ import cnames.structs.grpc_channel_credentials
 import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.MemScope
-import kotlinx.cinterop.UnsafeNumber
-import kotlinx.cinterop.alloc
-import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.convert
-import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.coroutines.CompletableDeferred
@@ -32,15 +26,22 @@ import kotlinx.rpc.grpc.client.createRaw
 import kotlinx.rpc.grpc.client.rawDeadline
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIMEOUT_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
+import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
 import kotlinx.rpc.grpc.internal.toGrpcSlice
+import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_PROPAGATE_DEFAULTS
-import kotlinx.rpc.grpc.internal.cinterop.grpc_arg
-import kotlinx.rpc.grpc.internal.cinterop.grpc_arg_type
-import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_args
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create_call
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_credentials_release
@@ -66,6 +67,9 @@ internal class NativeManagedChannel(
     val overrideAuthority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
     val userAgent: String?,
+    val maxInboundMessageSize: Int?,
+    val maxInboundMetadataSize: Int?,
+    val idleTimeout: Duration?,
     // this is not a composite channel credentials
     clientCredentials: GrpcClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
@@ -104,17 +108,42 @@ internal class NativeManagedChannel(
             ))
         }
 
+        maxInboundMessageSize?.let {
+            args.add(GrpcArg.Integer(
+                key = GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
+                value = it,
+            ))
+        }
+
+        maxInboundMetadataSize?.let {
+            args.add(GrpcArg.Integer(
+                key = GRPC_ARG_MAX_METADATA_SIZE,
+                value = it,
+            ))
+            args.add(GrpcArg.Integer(
+                key = GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE,
+                value = it,
+            ))
+        }
+
+        idleTimeout?.let {
+            args.add(GrpcArg.Integer(
+                key = GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS,
+                value = it.toChannelArgMilliseconds(),
+            ))
+        }
+
         keepAlive?.let {
             args.add(GrpcArg.Integer(
-                    key = "grpc.keepalive_time_ms",
-                    value = it.time.inWholeMilliseconds.convert()
+                key = GRPC_ARG_KEEPALIVE_TIME_MS,
+                value = it.time.toChannelArgMilliseconds(),
             ))
             args.add(GrpcArg.Integer(
-                key = "grpc.keepalive_timeout_ms",
-                value = it.timeout.inWholeMilliseconds.convert()
+                key = GRPC_ARG_KEEPALIVE_TIMEOUT_MS,
+                value = it.timeout.toChannelArgMilliseconds(),
             ))
             args.add(GrpcArg.Integer(
-                key = "grpc.keepalive_permit_without_calls",
+                key = GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS,
                 value = if (it.withoutCalls) 1 else 0
             ))
         }
@@ -234,35 +263,4 @@ internal class NativeManagedChannel(
         )
     }
 
-}
-
-internal sealed class GrpcArg(val key: String) {
-    internal class Str(key: String, val value: String) : GrpcArg(key)
-    internal class Integer(key: String, val value: Int) : GrpcArg(key)
-
-    internal val rawType: grpc_arg_type
-        get() = when (this) {
-            is Str -> grpc_arg_type.GRPC_ARG_STRING
-            is Integer -> grpc_arg_type.GRPC_ARG_INTEGER
-        }
-}
-
-@OptIn(UnsafeNumber::class)
-private fun List<GrpcArg>.toRaw(memScope: MemScope): grpc_channel_args {
-    with(memScope) {
-        val arr = allocArray<grpc_arg>(size) {
-            val arg = get(it)
-            type = arg.rawType
-            key = arg.key.cstr.ptr
-            when (arg) {
-                is GrpcArg.Str -> value.string = arg.value.cstr.ptr
-                is GrpcArg.Integer -> value.integer = arg.value.convert()
-            }
-        }
-
-        return alloc<grpc_channel_args> {
-            num_args = size.convert()
-            args = arr
-        }
-    }
 }

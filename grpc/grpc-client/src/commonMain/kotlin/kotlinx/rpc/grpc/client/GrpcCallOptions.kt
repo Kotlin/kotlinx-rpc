@@ -28,6 +28,18 @@ public class GrpcCallOptions {
     public var timeout: Duration? = null
 
     /**
+     * Whether the call should wait for a connection to become available instead of failing immediately.
+     *
+     * If `null` (the default), the channel's default behavior applies, which a service config delivered
+     * by the name resolver may override per method. If `true`, the call waits for the connection.
+     * If `false`, the call fails immediately when no connection is available, even if a service config
+     * enables waiting for this method.
+     *
+     * A deadline should generally be configured with [timeout] to prevent the call from waiting indefinitely.
+     */
+    public var waitForReady: Boolean? = null
+
+    /**
      * The compression algorithm to use for encoding outgoing messages in this call.
      *
      * When set to a value other than [GrpcCompression.None], the client will compress request messages

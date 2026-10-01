@@ -14,16 +14,31 @@ import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIMEOUT_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_IDLE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
+import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
+import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_add_http2_port
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_cancel_all_calls
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_create
@@ -53,6 +68,12 @@ internal class NativeServer(
     private val credentials: GrpcServerCredentials,
     services: List<GrpcServerServiceDefinition>,
     val fallbackRegistry: GrpcHandlerRegistry,
+    maxInboundMessageSize: Int?,
+    maxInboundMetadataSize: Int?,
+    keepAlive: GrpcServerConfiguration.KeepAlive?,
+    maxConnectionIdle: Duration?,
+    maxConnectionAge: Duration?,
+    maxConnectionAgeGrace: Duration?,
 ) : PlatformServer {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -61,8 +82,19 @@ internal class NativeServer(
 
     private val cq = CompletionQueue()
 
-    val raw: CPointer<grpc_server> = grpc_server_create(null, null)
-        ?: error("Failed to create server")
+    val raw: CPointer<grpc_server> = memScoped {
+        val args = buildServerChannelArgs(
+            maxInboundMessageSize = maxInboundMessageSize,
+            maxInboundMetadataSize = maxInboundMetadataSize,
+            keepAliveTime = keepAlive?.time,
+            keepAliveTimeout = keepAlive?.timeout,
+            maxConnectionIdle = maxConnectionIdle,
+            maxConnectionAge = maxConnectionAge,
+            maxConnectionAgeGrace = maxConnectionAgeGrace,
+        )
+        val rawArgs = args.takeIf { it.isNotEmpty() }?.toRaw(this)
+        grpc_server_create(rawArgs?.ptr, null)
+    } ?: error("Failed to create server")
 
     // Lock-free state machine guarding the application-owned grpc_server handle against both
     // double-free (between [dispose] and the GC cleaner below) and use-after-free (between
@@ -346,6 +378,34 @@ internal class NativeServer(
         )
     }
 
+}
+
+/**
+ * Maps the server configuration options to C-core channel args.
+ * Exposed for tests to verify the mapping without constructing a native server.
+ */
+@InternalRpcApi
+public fun buildServerChannelArgs(
+    maxInboundMessageSize: Int?,
+    maxInboundMetadataSize: Int?,
+    keepAliveTime: Duration?,
+    keepAliveTimeout: Duration?,
+    maxConnectionIdle: Duration?,
+    maxConnectionAge: Duration?,
+    maxConnectionAgeGrace: Duration?,
+): List<GrpcArg> = buildList {
+    maxInboundMessageSize?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH, it)) }
+    maxInboundMetadataSize?.let {
+        add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, it))
+        add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, it))
+    }
+    keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
+    keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
+    maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }
+    maxConnectionAge?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, it.toChannelArgMilliseconds())) }
+    maxConnectionAgeGrace?.let {
+        add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS, it.toChannelArgMilliseconds()))
+    }
 }
 
 /**

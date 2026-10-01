@@ -40,14 +40,32 @@ public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
 	public final fun getCredentials ()Lio/grpc/ServerCredentials;
 	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
+	public final fun getMaxConnectionAge-FghU774 ()Lkotlin/time/Duration;
+	public final fun getMaxConnectionAgeGrace-FghU774 ()Lkotlin/time/Duration;
+	public final fun getMaxConnectionIdle-FghU774 ()Lkotlin/time/Duration;
+	public final fun getMaxInboundMessageSize ()Ljava/lang/Integer;
+	public final fun getMaxInboundMetadataSize ()Ljava/lang/Integer;
 	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
 	public final fun intercept ([Lkotlinx/rpc/grpc/server/GrpcServerInterceptor;)V
+	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
 	public final fun services (Lkotlin/jvm/functions/Function1;)V
 	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
 	public final fun setFallbackHandlerRegistry (Lio/grpc/HandlerRegistry;)V
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
+	public final fun setMaxConnectionAge-BwNAW2A (Lkotlin/time/Duration;)V
+	public final fun setMaxConnectionAgeGrace-BwNAW2A (Lkotlin/time/Duration;)V
+	public final fun setMaxConnectionIdle-BwNAW2A (Lkotlin/time/Duration;)V
+	public final fun setMaxInboundMessageSize (Ljava/lang/Integer;)V
+	public final fun setMaxInboundMetadataSize (Ljava/lang/Integer;)V
 	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
 	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
+}
+
+public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration$KeepAlive {
+	public final fun getTime-UwyO8pc ()J
+	public final fun getTimeout-UwyO8pc ()J
+	public final fun setTime-LRDsOJo (J)V
+	public final fun setTimeout-LRDsOJo (J)V
 }
 
 public abstract interface class kotlinx/rpc/grpc/server/GrpcServerInterceptor {

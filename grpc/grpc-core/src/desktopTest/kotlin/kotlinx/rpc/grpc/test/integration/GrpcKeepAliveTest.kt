@@ -14,28 +14,26 @@ import kotlin.test.assertFailsWith
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Tests that the client can configure the compression of requests.
- *
- * This test is hard to realize on native, as the gRPC-Core doesn't expose internal headers like
- * `grpc-encoding` to the user application. This means we cannot verify that the client or sever
- * actually sent those headers on native. Instead, we capture the grpc trace output (written to stderr)
- * and verify that the client and server actually used the compression algorithm.
- */
 class GrpcKeepAliveTest : GrpcTestBase() {
     override fun RpcServer.registerServices() {
-        return registerService<EchoService> { EchoServiceImpl() }
+        registerService<EchoService> { EchoServiceImpl() }
     }
 
     @Test
-    fun `test keepalive set - should propagate settings to core libraries`() = testKeepAlive(
+    fun `client keepalive propagates to the runtime`() = testKeepAlive(
         time = 15.seconds,
         timeout = 5.seconds,
         withoutCalls = true,
     )
 
     @Test
-    fun `test keepalive negative time - should fail`() {
+    fun `server keepalive propagates to the runtime`() = testServerKeepAlive(
+        time = 15.seconds,
+        timeout = 5.seconds,
+    )
+
+    @Test
+    fun `client rejects negative keepalive time`() {
         val error = assertFailsWith<IllegalArgumentException> {
             runGrpcTest(
                 clientConfiguration = {
@@ -43,15 +41,13 @@ class GrpcKeepAliveTest : GrpcTestBase() {
                         this.time = (-1).seconds
                     }
                 }
-            ) {
-                // not reached
-            }
+            ) {}
         }
-        assertContains(error.message!!, "keepalive time must be positive")
+        assertContains(error.message!!, "keepalive time must be at least 1ms")
     }
 
     @Test
-    fun `test keepalive negative timeout - should fail`() {
+    fun `client rejects negative keepalive timeout`() {
         val error = assertFailsWith<IllegalArgumentException> {
             runGrpcTest(
                 clientConfiguration = {
@@ -59,11 +55,37 @@ class GrpcKeepAliveTest : GrpcTestBase() {
                         this.timeout = (-1).seconds
                     }
                 }
-            ) {
-                // not reached
-            }
+            ) {}
         }
-        assertContains(error.message!!, "keepalive timeout must be positive")
+        assertContains(error.message!!, "keepalive timeout must be at least 1ms")
+    }
+
+    @Test
+    fun `server rejects negative keepalive time`() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            runGrpcTest(
+                serverConfiguration = {
+                    keepAlive {
+                        this.time = (-1).seconds
+                    }
+                }
+            ) {}
+        }
+        assertContains(error.message!!, "keepalive time must be at least 1ms")
+    }
+
+    @Test
+    fun `server rejects negative keepalive timeout`() {
+        val error = assertFailsWith<IllegalArgumentException> {
+            runGrpcTest(
+                serverConfiguration = {
+                    keepAlive {
+                        this.timeout = (-1).seconds
+                    }
+                }
+            ) {}
+        }
+        assertContains(error.message!!, "keepalive timeout must be at least 1ms")
     }
 }
 
@@ -71,4 +93,9 @@ expect fun GrpcTestBase.testKeepAlive(
     time: Duration,
     timeout: Duration,
     withoutCalls: Boolean,
+)
+
+expect fun GrpcTestBase.testServerKeepAlive(
+    time: Duration,
+    timeout: Duration,
 )
