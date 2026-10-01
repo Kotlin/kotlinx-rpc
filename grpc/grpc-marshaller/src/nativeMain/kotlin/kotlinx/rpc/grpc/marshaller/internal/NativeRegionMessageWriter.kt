@@ -36,7 +36,11 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     /** Seals the storage after exactly [size] bytes have been written. */
     public fun seal() {
         if (scopedAccess.isAccessing) markFailed()
-        check(state == State.Complete) { "The writer is not complete" }
+        check(state == State.Complete) {
+            "NativeRegionMessageWriter.seal requires a complete writer, but its state is $state " +
+                "($written of $size declared bytes written). GrpcEncodedMessage.writeTo must write exactly " +
+                "GrpcEncodedMessage.size bytes before sealing; a failed, sealed or discarded writer cannot be sealed."
+        }
         try {
             onSeal()
             state = State.Sealed
@@ -51,7 +55,11 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     public fun discard() {
         if (scopedAccess.isAccessing) {
             markFailed()
-            error("The writer cannot be discarded during a write scope")
+            error(
+                "NativeRegionMessageWriter.discard was called inside a storage block. " +
+                    "Discard the writer only after accessStorage returns, so storage is not released " +
+                    "while the write action is using its pointer.",
+            )
         }
         if (state == State.Discarded) return
         state = State.Discarded
@@ -109,7 +117,12 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
     private fun requireWritable(allowEmptyComplete: Boolean = false) {
         if (state == State.Open) return
         if (allowEmptyComplete && state == State.Complete && size == 0) return
-        error("The writer cannot accept more bytes")
+        error(
+            "NativeRegionMessageWriter cannot accept a write in state $state " +
+                "($written of $size declared bytes already written). GrpcEncodedMessage.writeTo must write " +
+                "exactly GrpcEncodedMessage.size bytes and must not reuse a writer after a failed write, " +
+                "seal() or discard().",
+        )
     }
 
     @PublishedApi
@@ -120,16 +133,25 @@ public abstract class NativeRegionMessageWriter(size: Int) : GrpcMessageWriter(s
         requireWritable()
         if (minimumCapacity !in 0..remaining) {
             throw IndexOutOfBoundsException(
-                "Cannot reserve $minimumCapacity bytes with only $remaining bytes remaining",
+                "UnsafeGrpcMessageWriterOperations.writeToTail received minimumCapacity=$minimumCapacity " +
+                    "with $remaining bytes remaining ($written of $size declared bytes already written). " +
+                    "Request a capacity between 0 and $remaining. Ensure GrpcEncodedMessage.size matches " +
+                    "the total number of bytes written by writeTo.",
             )
         }
 
         val start = written
         val count = scopedAccess.access(::accessStorage) { pointer ->
-            val base = checkNotNull(pointer) { "Non-empty storage has no base address" }
+            val base = checkNotNull(pointer) {
+                "NativeRegionMessageWriter.accessStorage supplied a null pointer for a message of size $size. " +
+                    "The implementation must provide a valid base address for every non-empty message " +
+                    "for the duration of the storage block."
+            }
             writeAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
-                    "The write reported $count bytes with only $remaining bytes remaining"
+                    "UnsafeGrpcMessageWriterOperations.writeToTail action returned byteCount=$count " +
+                        "for unwritten range [$start, $size). Return the number of bytes actually written, " +
+                        "between 0 and $remaining; do not call another writer operation inside the action."
                 }
             }
         }
