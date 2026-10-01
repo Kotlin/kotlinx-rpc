@@ -25,6 +25,26 @@ default `true`) controls the `when<Oneof>` functions.
 
 Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-generated-code.html#grpc-oneof-fields
 
+#### Custom gRPC marshallers {id=Custom_gRPC_marshallers_Unreleased}
+
+gRPC custom marshallers now implement `prepare(value): GrpcEncodedMessage` and
+`decode(reader: GrpcMessageReader)`. The previous `encode(value): Source` and
+`decode(source: Source)` methods have been removed. Use `StreamingGrpcMarshaller`
+for formats that need buffering to determine size, and the `encodeToByteArray`,
+`encodeToBuffer`, `decodeFromByteArray`, or `decodeFromSource` helpers outside
+a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
+
+#### gRPC client on iOS {id=gRPC_client_on_iOS_Unreleased}
+
+The gRPC client on iOS now uses grpc-swift-2 with Network.framework instead of gRPC Core.
+It requires iOS 18 or newer, Swift tools 6.3 or newer, and Xcode linkage setup in the consuming app.
+
+Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html#grpc-ios-xcode
+
+#### gRPC server on iOS {id=gRPC_server_on_iOS_Unreleased}
+
+`kotlinx-rpc-grpc-server` no longer publishes iOS targets. The server did not work on iOS at runtime.
+
 ## 0.11.0-grpc-190
 > Published 17 Sep 2026
 
@@ -880,18 +900,4 @@ Release contains breaking changes, see the [migration guide](https://kotlin.gith
 * [@zhelenskiy](https://github.com/zhelenskiy) made their first contribution in [#87](https://github.com/Kotlin/kotlinx-rpc/pull/87)
 * [@turansky](https://github.com/turansky) made their first contribution in [#96](https://github.com/Kotlin/kotlinx-rpc/pull/96)
 * [@vnikolova](https://github.com/vnikolova) made their first contribution in [#86](https://github.com/Kotlin/kotlinx-rpc/pull/86)
-
-## Unreleased
-> Not published
-
-**Full Changelog**: [0.11.0-grpc-189...main](https://github.com/Kotlin/kotlinx-rpc/compare/0.11.0-grpc-189...main)
-
-#### Breaking Changes {id=Breaking_Changes_Unreleased}
-
-* gRPC custom marshallers now implement `prepare(value): GrpcEncodedMessage` and
-  `decode(reader: GrpcMessageReader)`. The previous `encode(value): Source` and
-  `decode(source: Source)` methods have been removed. Use `StreamingGrpcMarshaller`
-  for formats that need buffering to determine size, and the `encodeToByteArray`,
-  `encodeToBuffer`, `decodeFromByteArray`, or `decodeFromSource` helpers outside
-  a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
 
