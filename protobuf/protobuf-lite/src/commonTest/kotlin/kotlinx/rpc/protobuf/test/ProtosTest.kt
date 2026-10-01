@@ -2,6 +2,8 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class)
+
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
@@ -19,6 +21,9 @@ import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
@@ -38,6 +43,7 @@ import test.submsg.encodeWith
 import test.submsg.invoke
 import test.submsg.presence
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -109,6 +115,29 @@ class ProtosTest {
         val decoded = encodeDecode(msg, grpcMarshallerOf<AllPrimitives>())
 
         assertEquals(msg.double, decoded.double)
+    }
+
+    @Test
+    fun sizeFirstMarshallerProducesIdenticalBytesForBufferAndByteArray() {
+        val message = AllPrimitives {
+            int32 = -123
+            uint64 = 123456789uL
+            string = "size-first"
+            bytes = byteArrayOf(1, 2, 3, 4).asByteString()
+        }
+        val expected = encodeToBytes { encoder ->
+            message.asInternal().encodeWith(encoder, null)
+        }
+        val marshaller = grpcMarshallerOf<AllPrimitives>()
+
+        val buffer = Buffer()
+        marshaller.prepare(message).writeTo(BufferMessageWriter(buffer, expected.size))
+        assertContentEquals(expected, buffer.readByteArray())
+
+        val bytes = ByteArray(expected.size)
+        marshaller.prepare(message).writeTo(ByteArrayMessageWriter(bytes))
+        assertContentEquals(expected, bytes)
+        assertEquals(message, marshaller.decode(ByteArrayMessageReader(bytes)))
     }
 
     @Test

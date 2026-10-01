@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protobuf.internal
@@ -11,14 +11,16 @@ import kotlinx.io.asInputStream
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 
-internal class WireDecoderJvm(source: Source) : WireDecoder {
+internal class WireDecoderJvm(
+    internal val codedInputStream: CodedInputStream,
+) : WireDecoder {
+    internal constructor(source: Source) : this(CodedInputStream.newInstance(source.asInputStream()))
+
     override var recursionDepth: Int = 0
     override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
-
-    // there is no way to omit coping here
-    internal val codedInputStream: CodedInputStream = CodedInputStream.newInstance(source.asInputStream())
 
     override fun readTag(): KTag? {
         if (codedInputStream.isAtEnd) return null
@@ -164,4 +166,13 @@ public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
 
 public actual fun WireDecoder(source: Source): WireDecoder {
     return WireDecoderJvm(source)
+}
+
+/** Creates a decoder that reads from the range `[startIndex, endIndex)` of [bytes]. */
+@InternalRpcApi
+public fun WireDecoder(bytes: ByteArray, startIndex: Int, endIndex: Int): WireDecoder {
+    require(startIndex in 0..endIndex && endIndex <= bytes.size) {
+        "Invalid byte array range [$startIndex, $endIndex) for size ${bytes.size}"
+    }
+    return WireDecoderJvm(CodedInputStream.newInstance(bytes, startIndex, endIndex - startIndex))
 }

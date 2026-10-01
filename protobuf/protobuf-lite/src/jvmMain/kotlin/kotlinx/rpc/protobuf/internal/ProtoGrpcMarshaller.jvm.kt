@@ -11,6 +11,9 @@ import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.OutputStreamMessageWriter
 
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
@@ -20,6 +23,21 @@ public actual inline fun withWireEncoder(
         is BufferMessageWriter -> {
             writer.writeDirect { buffer ->
                 WireEncoder(buffer).also(block).flush()
+            }
+        }
+
+        is ByteArrayMessageWriter -> {
+            writer.writeDirect { bytes, startIndex, endIndex ->
+                WireEncoder(bytes, startIndex, endIndex).also(block).apply {
+                    flush()
+                    requireComplete()
+                }
+            }
+        }
+
+        is OutputStreamMessageWriter -> {
+            writer.writeDirect { output ->
+                WireEncoder(output, minOf(maxOf(writer.remaining, 1), 4096)).also(block).flush()
             }
         }
 
@@ -37,6 +55,10 @@ public actual inline fun <R> withWireDecoder(
 ): R = when (reader) {
     is BufferMessageReader -> reader.readDirect { buffer ->
         WireDecoder(buffer).use(block)
+    }
+
+    is ByteArrayMessageReader -> reader.readDirect { bytes, startIndex, endIndex ->
+        WireDecoder(bytes, startIndex, endIndex).use(block)
     }
 
     else -> WireDecoder(reader.asSource()).use(block)
