@@ -44,7 +44,7 @@ import kotlinx.io.unsafe.UnsafeBufferOperations
  *  [ZeroCopyInputSource].
  */
 @OptIn(ExperimentalForeignApi::class, InternalIoApi::class, UnsafeIoApi::class)
-internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
+internal class ZeroCopyInputSource(private val inner: Buffer) : DecoderInput {
 
     // number of bytes read since construction
     private var byteCount = 0L
@@ -63,7 +63,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      *
      * @return false if the buffer is exhausted, otherwise true
      */
-    fun next(outData: CPointer<CPointerVar<ByteVar>>, outSize: CPointer<IntVar>): Boolean {
+    override fun next(outData: CPointer<CPointerVar<ByteVar>>, outSize: CPointer<IntVar>): Boolean {
         check(!closed) { "ZeroCopyInputSource has already been closed." }
         if (latestReadSegementArray != null) {
             // if there is some unreleased segment array, we must release it first.
@@ -109,7 +109,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * @throws IllegalStateException if [count] is greater than size of the last read segment (retrieved from [next]).
      *
      */
-    fun backUp(count: Int) {
+    override fun backUp(count: Int) {
         check(!closed) { "ZeroCopyInputSource has already been closed." }
         check(latestReadSegementArray != null) { "next() must be immediately before backUp()" }
         val readBytes = releaseLatestReadSegment(count)
@@ -121,7 +121,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * Skip [count] bytes of the buffer.
      * @return `false` iff the buffer is exhausted before skipping completed, `true` otherwise
      */
-    fun skip(count: Int): Boolean {
+    override fun skip(count: Int): Boolean {
         check(!closed) { "ZeroCopyInputSource has already been closed." }
         if (latestReadSegementArray != null) {
             releaseLatestReadSegment()
@@ -139,7 +139,7 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : AutoCloseable {
      * The number of bytes read since the object got created.
      * If [backUp] is called, it will decrement the number of read bytes by the given amount.
      */
-    fun byteCount(): Long {
+    override fun byteCount(): Long {
         return byteCount
     }
 
