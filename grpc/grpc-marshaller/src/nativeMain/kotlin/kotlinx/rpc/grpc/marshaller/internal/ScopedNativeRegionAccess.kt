@@ -23,9 +23,11 @@ internal class ScopedNativeRegionAccess {
         if (state == State.Accessing) state = State.Closed
         error(
             if (wasAccessing) {
-                "Nested native reader/writer access is not allowed; the region has been invalidated."
+                "Nested native reader/writer access is not allowed; the region has been invalidated. " +
+                    "Use the supplied pointer instead of calling another reader/writer operation."
             } else {
-                "The native region is closed; do not reuse its reader or writer."
+                "The native region is closed. Readers are valid only during GrpcMarshaller.decode; " +
+                    "writers only during GrpcEncodedMessage.writeTo."
             },
         )
     }
@@ -34,7 +36,8 @@ internal class ScopedNativeRegionAccess {
         if (state == State.Accessing) {
             state = State.Closed
             error(
-                "Cannot close a native region while its storage block is running.",
+                "Cannot close a native region while its storage block is running. " +
+                    "Release storage only after accessStorage returns.",
             )
         }
         state = State.Closed
@@ -69,7 +72,8 @@ internal class ScopedNativeRegionAccess {
             }
             failure?.let { throw it }
             check(accepted && invoked && state == State.Accessing) {
-                "Native accessStorage failed (accepted=$accepted, blockInvoked=$invoked, state=$state)."
+                "Native accessStorage failed (accepted=$accepted, blockInvoked=$invoked, state=$state). " +
+                    "Invoke the block once and return its result without closing the region."
             }
             return checkNotNull(result).getOrThrow()
         } finally {

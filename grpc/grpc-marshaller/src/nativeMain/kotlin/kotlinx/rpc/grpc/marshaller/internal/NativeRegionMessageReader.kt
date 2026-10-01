@@ -46,7 +46,8 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         scopedAccess.ensureOpen()
         if (remaining == 0) {
             throw IndexOutOfBoundsException(
-                "GrpcMessageReader.readByte cannot read beyond a message of size $size: no bytes remain.",
+                "GrpcMessageReader.readByte cannot read beyond a message of size $size: no bytes remain. " +
+                    "After asSource(), read from the returned Source instead.",
             )
         }
         var byte: Byte = 0
@@ -62,13 +63,15 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         if (startIndex !in 0..endIndex || endIndex > bytes.size) {
             throw IndexOutOfBoundsException(
                 "GrpcMessageReader.readTo received range [$startIndex, $endIndex) " +
-                    "outside a destination array of size ${bytes.size}.",
+                    "outside a destination array of size ${bytes.size}. " +
+                    "Expected 0 <= startIndex <= endIndex <= bytes.size.",
             )
         }
         val count = endIndex - startIndex
         if (count > remaining) {
             throw IndexOutOfBoundsException(
-                "GrpcMessageReader.readTo requested $count bytes, but only $remaining of $size bytes remain.",
+                "GrpcMessageReader.readTo requested $count bytes, but only $remaining of $size bytes remain. " +
+                    "Check the lengths used by GrpcMarshaller.decode; after asSource(), use the returned Source.",
             )
         }
         if (count == 0) return
@@ -111,12 +114,13 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
         val start = size - remaining
         val count = scopedAccess.access(::accessStorage) { pointer ->
             val base = checkNotNull(pointer) {
-                "NativeRegionMessageReader.accessStorage supplied a null pointer for a non-empty message (size=$size)."
+                "NativeRegionMessageReader.accessStorage supplied a null pointer for a non-empty message " +
+                    "(size=$size). A non-null base address is required while the storage block runs."
             }
             readAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
                     "readFromHead action returned byteCount=$count for unread range [$start, $size); " +
-                        "expected a count between 0 and $remaining."
+                        "Return the number of bytes actually consumed, between 0 and $remaining."
                 }
             }
         }
