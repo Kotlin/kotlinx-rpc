@@ -21,10 +21,14 @@ import kotlin.coroutines.suspendCoroutine
 /**
  * Bridges the Kotlin side with the Swift gRPC call object.
  *
- * The Swift gRPC call object is obtained from stating the call on the Swift gRPC client.
+ * The Swift gRPC call object is obtained by starting a call on the Swift gRPC client.
  * It provides a [nextEvent] method that pulls the next [SwiftGrpcCallEvent] by calling the
  * completion handler once an event is available.
- * This is handled
+ * Only one event pull may be outstanding. Cancellation of the Kotlin pull cancels the Swift call;
+ * [cancelAndWait] waits for its task to finish before the caller releases request-flow resources.
+ * Response messages are decoded synchronously inside Swift's unsafe-bytes callback, so borrowed
+ * pointers never escape that callback. A non-OK gRPC status arrives as [GrpcClientCallEvents.Closed],
+ * while an infrastructure failure is reported as [SwiftGrpcInteropException].
  */
 internal class SwiftGrpcCallAdapter<Response>(
     private val call: SwiftGrpcCall,

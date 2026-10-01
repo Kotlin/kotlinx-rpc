@@ -145,6 +145,9 @@
                     Additional source sets such as <code>jvmMain</code>, <code>nativeMain</code>, or
                     <code>androidMain</code> can also own <path>.proto</path> files.
                 </p>
+                <p>
+                    For an iOS client, also complete <a href="grpc-configuration.topic" anchor="grpc-ios-xcode"/>.
+                </p>
             </tab>
             <tab id="grpc-android-setup" title="Android">
                 <p>
@@ -188,6 +191,75 @@
                 <img alt="Latest dev version"
                      src="https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fredirector.kotlinlang.org%2Fmaven%2Fkxrpc-grpc%2Forg%2Fjetbrains%2Fkotlinx%2Fkotlinx-rpc-core%2Fmaven-metadata.xml&amp;query=%2F%2Fmetadata%2Fversioning%2Flatest&amp;label=Latest%20dev%20version&amp;color=forest-green&amp;cacheSeconds=60"/>
             </a>
+        </p>
+    </chapter>
+    <chapter title="iOS and Xcode integration" id="grpc-ios-xcode">
+        <p>
+            The iOS gRPC client requires Kotlin 2.4.20 or newer and Xcode with Swift 6.3 or newer.
+            It supports the <code>iosArm64</code>, <code>iosSimulatorArm64</code>, and <code>iosX64</code> targets.
+        </p>
+        <procedure title="Configure the iOS app" id="grpc-ios-xcode-setup">
+            <step>
+                In Xcode, set the app target's <control>Minimum Deployments</control>
+                (<code>IPHONEOS_DEPLOYMENT_TARGET</code>) to iOS 18.0 or higher.
+            </step>
+            <step>
+                Build the Kotlin framework as a static framework (<code>isStatic = true</code>) to avoid the
+                <a href="https://kotlinlang.org/docs/multiplatform/multiplatform-spm-import.html#known-limitations-with-dynamic-kotlin-native-frameworks">known SwiftPM import issues with dynamic frameworks</a>.
+            </step>
+            <step>
+                <p>Integrate the SwiftPM linkage package into the Xcode project once:</p>
+                <tabs group="grpc-ios-setup">
+                    <tab id="grpc-ios-preflight" title="IDE">
+                        <p>
+                            With the <a href="https://kotlinlang.org/docs/multiplatform/quickstart.html">Kotlin Multiplatform IDE plugin</a>
+                            installed, sync the Gradle project and open
+                            <control>Project Environment Preflight Checks</control>.
+                            Use the SwiftPM integration setup action for your iOS app.
+                        </p>
+                    </tab>
+                    <tab id="grpc-ios-cli" title="Command line">
+                        <p>Run from the Gradle project root:</p>
+                        <code-block lang="Shell">
+                            XCODEPROJ_PATH='/absolute/path/iosApp/iosApp.xcodeproj' \
+                                ./gradlew :shared:integrateLinkagePackage
+                        </code-block>
+                        <p>
+                            Replace <code>:shared</code> with the module that produces the Kotlin framework,
+                            and supply the path to your <path>.xcodeproj</path> bundle.
+                            The task adds a <path>KotlinMultiplatformLinkedPackage</path> directory next to the
+                            Xcode project and links it into the app target.
+                        </p>
+                        <tip>
+                            <p>
+                                If the app target has no build phase that runs
+                                <code>embedAndSignAppleFrameworkForXcode</code>, for example because the app was not
+                                created with the Kotlin Multiplatform wizard, add it in the same run:
+                            </p>
+                            <code-block lang="Shell">
+                                XCODEPROJ_PATH='/absolute/path/iosApp/iosApp.xcodeproj' \
+                                GRADLE_PROJECT_PATH=':shared' \
+                                    ./gradlew :shared:integrateEmbedAndSign :shared:integrateLinkagePackage
+                            </code-block>
+                        </tip>
+                    </tab>
+                </tabs>
+            </step>
+            <step>
+                Commit the <path>KotlinMultiplatformLinkedPackage</path> directory, the changed Xcode project,
+                and the SwiftPM <path>Package.resolved</path> lock files.
+            </step>
+        </procedure>
+        <p>
+            If an Xcode build stops after you change dependencies, resolve the updated package dependencies in
+            Xcode and build again.
+        </p>
+        <p>
+            For more details, see Kotlin's
+            <a href="https://kotlinlang.org/docs/multiplatform/multiplatform-spm-import.html#run-the-swiftpm-integration-task">SwiftPM integration instructions</a>.
+            For an existing CocoaPods integration, follow the
+            <a href="https://kotlinlang.org/docs/multiplatform/multiplatform-cocoapods-spm-migration.html">CocoaPods-to-SwiftPM migration guide</a>
+            first.
         </p>
     </chapter>
     <chapter title="Protobuf runtime artifacts" id="grpc-protobuf-artifacts">

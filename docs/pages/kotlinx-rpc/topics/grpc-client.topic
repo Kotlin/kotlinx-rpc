@@ -51,6 +51,31 @@
                 Adds client-side interceptors.
                 Interceptors are executed in the order they are added.
             </def>
+            <def title="userAgent">
+                <p>
+                    Sets an application user-agent prefix. The header has the form
+                    <code>&lt;userAgent&gt; &lt;backend-user-agent&gt;</code>, with the backend portion formatted as follows:
+                </p>
+                <list>
+                    <li>
+                        JVM and Android (gRPC Java): <code>grpc-java-&lt;transport&gt;/&lt;grpc-java-version&gt;</code>,
+                        where the transport is, for example, <code>netty</code> or <code>okhttp</code>.
+                    </li>
+                    <li>
+                        Non-iOS Native (gRPC Core):
+                        <code>grpc-c/&lt;grpc-core-version&gt; (&lt;platform&gt;; &lt;transport&gt;)</code>,
+                        where the platform is, for example, <code>osx</code> or <code>linux</code>,
+                        and the HTTP/2 transport is <code>chttp2</code>.
+                    </li>
+                    <li>
+                        iOS (grpc-swift): <code>kotlinx-rpc-swift/&lt;kotlinx-rpc-version&gt;</code>.
+                    </li>
+                </list>
+                <p>
+                    If unset, only the backend's user-agent is sent.
+                    Set this property instead of adding <code>user-agent</code> to call metadata.
+                </p>
+            </def>
             <def title="keepAlive { ... }">
                 Configures keep-alive pings to detect broken connections.
                 Disabled by default.

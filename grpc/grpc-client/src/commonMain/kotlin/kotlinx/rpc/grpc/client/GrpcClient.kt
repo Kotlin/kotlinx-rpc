@@ -34,7 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 private typealias RequestClient = Any
 
 /**
- * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
+ * A gRPC client supporting unary and streaming service calls.
  */
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
@@ -48,19 +48,33 @@ public class GrpcClient internal constructor(
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
     // Holds the backend used for making gRPC calls in an asynchronous manner.
-    // It is the common boundary of different implementations (grpc-java and grpc-swift API).
+    // It is the common boundary of the gRPC Java, gRPC Core, and grpc-swift implementations.
     internal val backend = GrpcClientBackend(channel, callCredentials)
 
+    /**
+     * Stops accepting new calls and lets calls already in progress finish.
+     * Use [awaitTermination] to wait for channel resources to be released.
+     */
     public fun shutdown() {
         delegates.clear()
         channel.shutdown()
     }
 
+    /**
+     * Stops accepting new calls and cancels calls already in progress.
+     * Use [awaitTermination] to wait for channel resources to be released.
+     */
     public fun shutdownNow() {
         delegates.clear()
         channel.shutdownNow()
     }
 
+    /**
+     * Waits for the channel to terminate or for [duration] to elapse.
+     * Call [shutdown] or [shutdownNow] to initiate termination.
+     *
+     * @param duration Maximum time to wait; [Duration.INFINITE] waits without a timeout.
+     */
     public suspend fun awaitTermination(duration: Duration = Duration.INFINITE) {
         channel.awaitTermination(duration)
     }
@@ -258,14 +272,16 @@ public class GrpcClientConfiguration internal constructor() {
     /**
      * A custom application `User-Agent` for this channel.
      *
-     * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
-     * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
-     * JVM, `grpc-c/<version>` on non-iOS native, or `kotlinx-rpc-swift/<version>` on iOS).
+     * The value is used as a **prefix**: the runtime appends its own user-agent after a single space,
+     * so the `User-Agent` on the wire is `"<userAgent> <backend-user-agent>"`. Backend formats are:
+     * - JVM/Android: `grpc-java-<transport>/<grpc-java-version>`, e.g. `netty` or `okhttp`.
+     * - Non-iOS Native: `grpc-c/<grpc-core-version> (<platform>; <transport>)`, e.g. `osx; chttp2`.
+     * - iOS: `kotlinx-rpc-swift/<kotlinx-rpc-version>`.
      *
      * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
      *  header, and any value added to the metadata is overwritten by the gRPC runtime.
      *
-     * If `null` (the default), only the runtime's own token is sent.
+     * If `null` (the default), only the runtime's own user-agent is sent.
      *
      * ```
      * GrpcClient("example.com", 443) {

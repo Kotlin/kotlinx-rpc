@@ -131,7 +131,7 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
  * If no trust manager is configured, the system's default trust store is used:
  *
  * ```kotlin
- * val credentials = TlsClientCredentials { }  // Uses system CA certificates
+ * val credentials = GrpcTlsClientCredentials()  // Uses system CA certificates
  * ```
  *
  * **Note**: The server certificate's Common Name (CN) or Subject Alternative Name (SAN)
@@ -166,7 +166,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * ## Example
      *
      * ```kotlin
-     * TlsClientCredentials {
+     * GrpcTlsClientCredentials {
      *     trustManager("""
      *         -----BEGIN CERTIFICATE-----
      *         MIIDXTCCAkWgAwIBAgIJAKl...
@@ -190,7 +190,7 @@ public interface GrpcTlsClientCredentialsBuilder {
      * ## Example
      *
      * ```kotlin
-     * TlsClientCredentials {
+     * GrpcTlsClientCredentials {
      *     trustManager(caCertPem)
      *     keyManager(
      *         certChainPem = """

@@ -33,7 +33,8 @@ internal sealed class GrpcClientCallEvents<out Response> {
 /**
  * Represents a gRPC client backend that can execute gRPC calls.
  *
- * It is the common boundary of different implementations (grpc-java and grpc-swift API).
+ * It is the common boundary of gRPC Java on JVM/Android, gRPC Core on non-iOS Native targets,
+ * and grpc-swift-2 on iOS. The backend is selected by the source-set implementation.
  * Failure or cancellation of the event collection will cancel the active underlying RPC.
  *
  * The returned events follow the rules defined in [GrpcClientCallEvents].

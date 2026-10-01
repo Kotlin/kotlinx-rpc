@@ -75,6 +75,7 @@ The most important modules have brief READMEs in their directories, read when yo
 
 ### gRPC transport (experimental KMP)
 - `:grpc:grpc-{core,client,server,ktor-server,marshaller,marshaller-kotlinx-serialization}`
+- `:grpc:grpc-swift` -- SwiftPM bridge for the iOS grpc-swift-2 client backend; see `grpc/grpc-swift/README.md`
 
 ### Protobuf (mainly used with gRPC)
 - `:protobuf:protobuf-{api,wkt,core}`
@@ -119,6 +120,11 @@ Custom protocol.
 
 ### gRPC protocol
 HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`. Uses `@Grpc` annotation.
+Client backends are selected automatically: gRPC Java on JVM/Android, grpc-swift-2 with Network.framework
+on iOS, and gRPC Core on other supported Native targets. Native servers use gRPC Core.
+The Swift backend requires iOS 18+, Swift tools 6.3+, and Xcode linkage setup in the consuming app
+(`integrateLinkagePackage`, plus `integrateEmbedAndSign` if its Kotlin framework build phase is missing).
+iOS custom TLS trust roots and mutual TLS are currently unsupported.
 
 ## Compiler Plugin
 

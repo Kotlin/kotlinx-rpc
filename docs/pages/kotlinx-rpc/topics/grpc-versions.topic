@@ -11,7 +11,7 @@
 
     <p>
         The <code>kotlinx.rpc</code> gRPC integration depends on several external libraries
-        for protocol buffer serialization, gRPC transport, and code generation.
+        for protocol buffer serialization, gRPC backends, and code generation.
         This page lists the versions bundled with each <code>kotlinx.rpc</code> release
         and notes compatibility constraints.
     </p>
@@ -37,6 +37,16 @@
                 <td><a href="https://github.com/protocolbuffers/protobuf">Protobuf Java</a></td>
                 <td>4.34.0</td>
                 <td>Protobuf runtime and utilities (<code>protobuf-java</code>, <code>protobuf-kotlin</code>)</td>
+            </tr>
+            <tr>
+                <td><a href="https://github.com/grpc/grpc-swift-2">grpc-swift-2</a></td>
+                <td>2.4.3</td>
+                <td>iOS client backend, provided transitively by the Swift bridge</td>
+            </tr>
+            <tr>
+                <td><a href="https://github.com/grpc/grpc-swift-nio-transport">grpc-swift-nio-transport</a></td>
+                <td>2.9.2</td>
+                <td>iOS HTTP/2 transport using SwiftNIO Transport Services and Apple's <code>Network.framework</code></td>
             </tr>
             <tr>
                 <td><a href="https://buf.build">Buf CLI</a></td>
