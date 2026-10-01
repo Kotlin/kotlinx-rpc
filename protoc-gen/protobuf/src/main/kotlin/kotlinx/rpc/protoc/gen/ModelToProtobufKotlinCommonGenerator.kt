@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("detekt.all")
@@ -1257,63 +1257,68 @@ class ModelToProtobufKotlinCommonGenerator(
             name = declaration.marshallerObjectName.simpleName,
             annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
             declarationType = CodeGenerator.DeclarationType.Object,
-            superTypes = listOf("%T<%T>".scoped(FqName.RpcClasses.GrpcMarshaller, declaration.name)),
+            superTypes = listOf(
+                "%T<%T, %T>()".scoped(
+                    FqName.RpcClasses.ProtoGrpcMarshaller,
+                    declaration.name,
+                    declaration.internalClassName,
+                ),
+            ),
         ) {
             function(
-                name = "encode",
+                name = "asInternal",
                 modifiers = "override",
-                args = listOf(
-                    "value: %T".scoped(declaration.name),
-                    "config: %T?".scoped(FqName.RpcClasses.GrpcMarshallerConfig),
-                ),
-                returnType = FqName.KotlinLibs.Source.scoped(),
+                args = listOf("value: %T".scoped(declaration.name)),
+                returnType = declaration.internalClassName.scoped(),
             ) {
-                code("val buffer = %T()".scoped(FqName.KotlinLibs.Buffer))
-                code("val encoder = %T(buffer)".scoped(FqName.RpcClasses.WireEncoder))
-                code("val internalMsg = value.%F()".scoped(declaration.name.topLevelFP("asInternal")))
-                scope(FqName.TopLevelFP.checkForPlatformEncodeException.scoped(), nlAfterClosed = false) {
-                    code(
-                        "internalMsg.%F(encoder, config as? %T)"
-                            .scoped(declaration.name.topLevelFP("encodeWith"), FqName.RpcClasses.ProtoConfig)
-                    )
-                }
-                code("encoder.flush()".scoped())
-                code("return buffer".scoped())
+                code("return value.%F()".scoped(declaration.name.topLevelFP("asInternal")))
             }
 
             function(
-                name = "decode",
+                name = "newInternal",
+                modifiers = "override",
+                returnType = declaration.internalClassName.scoped(),
+            ) {
+                code("return %T()".scoped(declaration.internalClassName))
+            }
+
+            function(
+                name = "encodeWith",
                 modifiers = "override",
                 args = listOf(
-                    "source: %T".scoped(FqName.KotlinLibs.Source),
-                    "config: %T?".scoped(FqName.RpcClasses.GrpcMarshallerConfig),
+                    "message: %T".scoped(declaration.internalClassName),
+                    "encoder: %T".scoped(FqName.RpcClasses.WireEncoder),
+                    "config: %T?".scoped(FqName.RpcClasses.ProtoConfig),
                 ),
-                returnType = declaration.name.scoped(),
+                returnType = FqName.Implicits.Unit.scoped(),
             ) {
-                scope("%T(source).use".scoped(FqName.RpcClasses.WireDecoder)) {
-                    code(
-                        "(config as? %T)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }"
-                            .scoped(FqName.RpcClasses.ProtoConfig)
+                code("message.%F(encoder, config)".scoped(declaration.name.topLevelFP("encodeWith")))
+            }
+
+            function(
+                name = "decodeWith",
+                modifiers = "override",
+                args = listOf(
+                    "message: %T".scoped(declaration.internalClassName),
+                    "decoder: %T".scoped(FqName.RpcClasses.WireDecoder),
+                    "config: %T?".scoped(FqName.RpcClasses.ProtoConfig),
+                ),
+                returnType = FqName.Implicits.Unit.scoped(),
+            ) {
+                // if the message declaration is a group, we must pass null as the
+                // startGroup tag to indicate that this message is decoded as standalone (like a normal message)
+                val groupExtraArg = if (declaration.isGroup) ", null" else ""
+                code(
+                    "%T.%F(message, decoder, config$groupExtraArg)".scoped(
+                        declaration.internalClassName,
+                        declaration.name.topLevelFP("decodeWith"),
                     )
-                    code("val msg = %T()".scoped(declaration.internalClassName))
-                    scope(FqName.TopLevelFP.checkForPlatformDecodeException.scoped(), nlAfterClosed = false) {
-                        // if the message declaration is a group, we must pass null as the
-                        // startGroup tag to indicate that this message is decoded as standalone (like a normal message)
-                        val groupExtraArg = if (declaration.isGroup) ", null" else ""
-                        code(
-                            "%T.%F(msg, it, config as? %T$groupExtraArg)".scoped(
-                                declaration.internalClassName,
-                                declaration.name.topLevelFP("decodeWith"),
-                                FqName.RpcClasses.ProtoConfig,
-                            )
-                        )
-                    }
-                    if (declaration.hasRequiredFieldsRecursively) {
-                        code("msg.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
-                    }
-                    code("return msg".scoped())
+                )
+                if (declaration.hasRequiredFieldsRecursively) {
+                    code("message.%F()".scoped(declaration.name.topLevelFP("checkRequiredFields")))
                 }
             }
+
         }
     }
 

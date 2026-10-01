@@ -8,11 +8,12 @@
 
 import io.grpc.MethodDescriptor
 import kotlinx.coroutines.flow.Flow
-import kotlinx.io.Source
 import kotlinx.rpc.codegen.test.grpcDelegate
 import kotlinx.rpc.codegen.test.checkMethod
 import kotlinx.rpc.codegen.test.Message
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.WithGrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -20,11 +21,11 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 @WithGrpcMarshaller(Custom.Companion::class)
 class Custom(val content: String) {
     companion object : GrpcMarshaller<Custom> {
-        override fun encode(value: Custom, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: Custom, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO("Not yet implemented")
         }
 
-        override fun decode(stream: Source, config: GrpcMarshallerConfig?): Custom {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): Custom {
             TODO("Not yet implemented")
         }
     }

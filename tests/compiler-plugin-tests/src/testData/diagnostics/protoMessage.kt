@@ -7,12 +7,13 @@
 // MODULE: main
 @file:OptIn(InternalRpcApi::class, ExperimentalRpcApi::class)
 
-import kotlinx.io.Source
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 
 // valid, because there is a corresponding builder interface and internal class with DESCRIPTOR and MARSHALLER objects
@@ -24,11 +25,11 @@ class MyMessage1Internal : MyMessage1.Builder {
     }
 
     object MARSHALLER: GrpcMarshaller<MyMessage1> {
-        override fun encode(value: MyMessage1, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage1, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage1 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage1 {
             TODO()
         }
     }
@@ -43,11 +44,11 @@ class MyMessage9Internal : MyMessage9 {
     }
 
     object MARSHALLER: GrpcMarshaller<MyMessage9> {
-        override fun encode(value: MyMessage9, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage9, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage9 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage9 {
             TODO()
         }
     }
@@ -61,11 +62,11 @@ class MyMessage2Internal : MyMessage2.<!UNRESOLVED_REFERENCE!>Builder<!> {
         override val fullName: String = "fullName"
     }
     object MARSHALLER: GrpcMarshaller<MyMessage2> {
-        override fun encode(value: MyMessage2, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage2, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage2 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage2 {
             TODO()
         }
     }
@@ -80,11 +81,11 @@ interface MyMessage3
 interface MyMessage4
 class MyMessage4Internal : MyMessage4.Builder {
     object MARSHALLER: GrpcMarshaller<MyMessage4> {
-        override fun encode(value: MyMessage4, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage4, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage4 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage4 {
             TODO()
         }
     }
@@ -99,11 +100,11 @@ class MyMessage5Internal: MyMessage5 {
     }
 
     object MARSHALLER: GrpcMarshaller<MyMessage5> {
-        override fun encode(value: MyMessage5, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage5, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage5 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage5 {
             TODO()
         }
     }
@@ -116,11 +117,11 @@ class MyMessage6Internal: MyMessage6.Builder {
     object DESCRIPTOR {}
 
     object MARSHALLER: GrpcMarshaller<MyMessage6> {
-        override fun encode(value: MyMessage6, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage6, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage6 {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage6 {
             TODO()
         }
     }

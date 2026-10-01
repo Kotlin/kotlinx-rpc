@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
@@ -30,7 +31,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as RepeatedInternal
         val declaredSize = internalMessage._size
 
-        val bytes = RepeatedInternal.MARSHALLER.encode(msg).readByteArray()
+        val bytes = RepeatedInternal.MARSHALLER.encodeToBuffer(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(
@@ -50,7 +51,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as RepeatedInternal
         val declaredSize = internalMessage._size
 
-        val bytes = RepeatedInternal.MARSHALLER.encode(msg).readByteArray()
+        val bytes = RepeatedInternal.MARSHALLER.encodeToBuffer(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(
@@ -70,7 +71,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = msg as TestMapInternal
         val declaredSize = internalMessage._size
 
-        val bytes = TestMapInternal.MARSHALLER.encode(msg).readByteArray()
+        val bytes = TestMapInternal.MARSHALLER.encodeToBuffer(msg).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(
@@ -210,7 +211,7 @@ class ProtobufSizeCalculationTest {
         val internalMessage = message.asInternal()
         val declaredSize = internalMessage._size
 
-        val bytes = ExtensionBaseInternal.MARSHALLER.encode(message).readByteArray()
+        val bytes = ExtensionBaseInternal.MARSHALLER.encodeToBuffer(message).readByteArray()
         val actualSize = bytes.size
 
         assertEquals(

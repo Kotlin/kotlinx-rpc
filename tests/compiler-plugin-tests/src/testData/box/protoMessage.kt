@@ -18,8 +18,9 @@ import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
-import kotlinx.io.Source
 
 // `text` and `code` are the members of the `oneof payload`
 @GeneratedProtoMessage
@@ -65,11 +66,11 @@ class MyMessageInternal : MyMessage.Builder {
     }
 
     object MARSHALLER: GrpcMarshaller<MyMessage> {
-        override fun encode(value: MyMessage, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: MyMessage, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage {
             TODO()
         }
     }

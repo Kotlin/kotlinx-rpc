@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.descriptor
@@ -8,6 +8,8 @@ import kotlinx.io.asInputStream
 import kotlinx.io.asSource
 import kotlinx.io.buffered
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.InputStream
 
@@ -35,12 +37,12 @@ private fun <T> GrpcMarshaller<T>.toMarshaller(): io.grpc.MethodDescriptor.Marsh
     return object : io.grpc.MethodDescriptor.Marshaller<T> {
         override fun stream(value: T): InputStream {
             // wraps the source in a stream
-            return encode(value).asInputStream()
+            return encodeToBuffer(value).asInputStream()
         }
 
         override fun parse(stream: InputStream): T {
             // wraps the stream in a buffered source
-            return decode(stream.asSource().buffered())
+            return decodeFromSource(stream.asSource().buffered())
         }
     }
 }
