@@ -5,11 +5,8 @@ package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.isNotEmpty
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -17,13 +14,12 @@ import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.protoToString
 import kotlinx.rpc.protobuf.internal.string
@@ -89,27 +85,29 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     }
 
     @InternalRpcApi
-    public object MARSHALLER: GrpcMarshaller<Any> {
-        public override fun encode(value: Any, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    public object MARSHALLER: ProtoGrpcMarshaller<Any, AnyInternal>() {
+        public override fun asInternal(value: Any): AnyInternal {
+            return value.asInternal()
         }
 
-        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Any {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = AnyInternal()
-                checkForPlatformDecodeException {
-                    AnyInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        public override fun newInternal(): AnyInternal {
+            return AnyInternal()
+        }
+
+        public override fun encodeWith(
+            message: AnyInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        public override fun decodeWith(
+            message: AnyInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            AnyInternal.decodeWith(message, decoder, config)
         }
     }
 
