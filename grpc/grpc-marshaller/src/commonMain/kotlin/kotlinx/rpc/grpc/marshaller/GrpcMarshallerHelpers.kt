@@ -32,7 +32,10 @@ public fun <T> GrpcMarshaller<T>.encodeToBuffer(
     val writer = BufferMessageWriter(buffer, message.size)
     message.writeTo(writer)
     check(writer.isComplete) {
-        "Marshaller $this wrote ${writer.written} bytes, but declared ${writer.size} bytes"
+        "GrpcEncodedMessage.writeTo for marshaller $this wrote ${writer.written} bytes, " +
+            "but declared ${writer.size} bytes (writer failed: ${writer.isFailed}). " +
+            "Ensure the message returned by GrpcMarshaller.prepare declares the exact number of bytes " +
+            "written by writeTo, and do not catch and ignore write failures."
     }
     return buffer
 }
@@ -56,7 +59,8 @@ public fun <T> GrpcMarshaller<T>.decodeFromSource(
 ): T {
     val buffer = source as? Buffer ?: Buffer().also { source.transferTo(it) }
     require(buffer.size <= Int.MAX_VALUE) {
-        "A gRPC message cannot be larger than Int.MAX_VALUE bytes: ${buffer.size}"
+        "GrpcMarshaller.decodeFromSource received ${buffer.size} bytes, exceeding the maximum gRPC message size " +
+            "of ${Int.MAX_VALUE} bytes. Pass a Source containing a single message within this limit."
     }
     return decode(BufferMessageReader(buffer, buffer.size.toInt()), config)
 }

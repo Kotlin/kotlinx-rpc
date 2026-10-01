@@ -45,7 +45,9 @@ public class BufferMessageWriter(
             val sizeBefore = buffer.size
             writeAction(buffer)
             check(buffer.size - sizeBefore == byteCount.toLong()) {
-                "The direct writer wrote ${buffer.size - sizeBefore} bytes, expected $byteCount"
+                "BufferMessageWriter.writeDirect wrote ${buffer.size - sizeBefore} bytes, " +
+                    "but expected exactly $byteCount bytes ($size declared bytes in total). " +
+                    "Check the encoder used by GrpcEncodedMessage.writeTo and its size calculation."
             }
         }
     }
@@ -173,7 +175,9 @@ public class ByteArrayMessageReader(
 private fun checkedReadRangeSize(bytes: ByteArray, startIndex: Int, endIndex: Int): Int {
     if (startIndex !in 0..endIndex || endIndex > bytes.size) {
         throw IndexOutOfBoundsException(
-            "Invalid byte array range [$startIndex, $endIndex) for size ${bytes.size}",
+            "GrpcMessageReader.readTo received an invalid destination array range [$startIndex, $endIndex) " +
+                "for an array of size ${bytes.size}. Check the indices passed by GrpcMarshaller.decode: " +
+                "0 <= startIndex <= endIndex <= bytes.size; endIndex is exclusive.",
         )
     }
     return endIndex - startIndex

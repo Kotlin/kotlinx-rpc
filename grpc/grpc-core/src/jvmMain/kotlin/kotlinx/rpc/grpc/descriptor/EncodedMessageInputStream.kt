@@ -68,10 +68,17 @@ internal class EncodedMessageInputStream(
         try {
             message.writeTo(writer)
             check(writer.remaining == 0) {
-                "Encoding of $message failed as only ${writer.written} of ${message.size} bytes were written"
+                "GrpcEncodedMessage.writeTo for $message wrote only ${writer.written} of ${message.size} bytes. " +
+                    "Ensure the message returned by GrpcMarshaller.prepare declares the exact number of bytes " +
+                    "written by writeTo."
             }
         } catch (cause: Throwable) {
-            throw IllegalStateException("Failed to encode a message with $marshallerName", cause)
+            throw IllegalStateException(
+                "Failed to encode a message with marshaller $marshallerName using GrpcEncodedMessage $message " +
+                    "(declared size: ${message.size} bytes, written: ${writer.written} bytes). " +
+                    "Check GrpcMarshaller.prepare and GrpcEncodedMessage.writeTo; see the cause for details.",
+                cause,
+            )
         }
     }
 }

@@ -61,7 +61,11 @@ private class ProtoEncodedMessage(
     private var used: Boolean = false
 
     override fun writeTo(writer: GrpcMessageWriter) {
-        check(!used) { "A GrpcEncodedMessage can only be written once" }
+        check(!used) {
+            "GrpcEncodedMessage.writeTo was called more than once on the same protobuf message. " +
+                "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call; " +
+                "do not cache or reuse encoded messages."
+        }
         used = true
         require(writer.remaining == size) {
             "The writer has ${writer.remaining} bytes remaining, but the protobuf message size is $size"

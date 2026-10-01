@@ -33,7 +33,10 @@ public class OutputStreamMessageWriter(
             val countingOutput = CountingOutputStream(output, byteCount)
             writeAction(countingOutput)
             check(countingOutput.written == byteCount) {
-                "The direct writer wrote ${countingOutput.written} bytes, expected $byteCount"
+                "OutputStreamMessageWriter.writeDirect wrote ${countingOutput.written} bytes, " +
+                    "but expected exactly $byteCount bytes ($size declared bytes in total). " +
+                    "Check the encoder used by GrpcEncodedMessage.writeTo and its size calculation; " +
+                    "the callback must write exactly writer.remaining bytes and flush any buffered output."
             }
         }
     }
@@ -47,16 +50,27 @@ private class CountingOutputStream(
         private set
 
     override fun write(value: Int) {
-        check(written < size) { "The direct writer exceeded its size of $size bytes" }
+        check(written < size) {
+            "OutputStreamMessageWriter.writeDirect attempted to write 1 more byte after writing all $size " +
+                "expected bytes. Check the encoder used by GrpcEncodedMessage.writeTo and its size calculation."
+        }
         output.write(value)
         written++
     }
 
     override fun write(bytes: ByteArray, offset: Int, length: Int) {
         if (offset < 0 || length < 0 || offset > bytes.size - length) {
-            throw IndexOutOfBoundsException("Invalid byte array range")
+            throw IndexOutOfBoundsException(
+                "OutputStreamMessageWriter.writeDirect received offset=$offset and length=$length " +
+                    "for an array of size ${bytes.size}. Check the encoder's OutputStream.write arguments: " +
+                    "offset and length must be non-negative, and length must not exceed bytes.size - offset.",
+            )
         }
-        check(length <= size - written) { "The direct writer exceeded its size of $size bytes" }
+        check(length <= size - written) {
+            "OutputStreamMessageWriter.writeDirect attempted to write $length bytes with only ${size - written} " +
+                "bytes remaining ($written of $size expected bytes already written). " +
+                "Check the encoder used by GrpcEncodedMessage.writeTo and its size calculation."
+        }
         output.write(bytes, offset, length)
         written += length
     }

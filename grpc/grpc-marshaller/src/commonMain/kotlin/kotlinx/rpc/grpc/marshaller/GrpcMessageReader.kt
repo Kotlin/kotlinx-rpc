@@ -53,7 +53,9 @@ public abstract class GrpcMessageReader @InternalRpcApi constructor(
     protected fun <T> recordRead(byteCount: Int, readAction: () -> T): T {
         if (byteCount !in 0..remaining) {
             throw IndexOutOfBoundsException(
-                "Cannot read $byteCount bytes with only $remaining bytes remaining",
+                "GrpcMarshaller.decode attempted to read $byteCount bytes with only $remaining bytes remaining " +
+                    "in a message of size $size. Check the lengths and read order in your decoder. " +
+                    "After calling GrpcMessageReader.asSource(), read from the returned Source instead of the reader.",
             )
         }
         val result = readAction()

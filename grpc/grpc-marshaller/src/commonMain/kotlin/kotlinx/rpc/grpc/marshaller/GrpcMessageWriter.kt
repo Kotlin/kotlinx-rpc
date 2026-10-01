@@ -24,7 +24,10 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
     private var writtenCount: Int = 0
 
     init {
-        require(size >= 0) { "size must be non-negative: $size" }
+        require(size >= 0) {
+            "Cannot encode a gRPC message with size $size: GrpcEncodedMessage.size must be non-negative. " +
+                "Check the message returned by GrpcMarshaller.prepare."
+        }
         state = if (size == 0) WriterState.Complete else WriterState.Open
     }
 
@@ -68,19 +71,33 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
     @InternalRpcApi
     protected fun recordWrite(byteCount: Int, writeAction: () -> Unit) {
         if (byteCount == 0) {
-            check(state != WriterState.Failed) { "The writer has failed" }
+            check(state != WriterState.Failed) {
+                "GrpcEncodedMessage.writeTo attempted to use a writer after a previous write failed. " +
+                    "Do not catch and ignore write failures."
+            }
             writeActionOrFail(writeAction)
             return
         }
 
         if (state != WriterState.Open) {
+            val wasFailed = state == WriterState.Failed
             fail()
-            error("The writer cannot accept more bytes")
+            error(
+                if (wasFailed) {
+                    "GrpcEncodedMessage.writeTo attempted to use a writer after a previous write failed. " +
+                        "Do not catch and ignore write failures."
+                } else {
+                    "GrpcEncodedMessage.writeTo attempted to write $byteCount more bytes after writing all $size " +
+                        "declared bytes. Ensure GrpcEncodedMessage.size matches the total number of bytes written."
+                },
+            )
         }
         if (byteCount !in 0..remaining) {
             fail()
             throw IndexOutOfBoundsException(
-                "Cannot write $byteCount bytes with only $remaining bytes remaining",
+                "GrpcEncodedMessage.writeTo attempted to write $byteCount bytes with only $remaining bytes remaining " +
+                    "($written of $size declared bytes already written). " +
+                    "Ensure GrpcEncodedMessage.size matches the total number of bytes written.",
             )
         }
 
@@ -97,7 +114,8 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
         if (startIndex !in 0..endIndex || endIndex > bytes.size) {
             fail()
             throw IndexOutOfBoundsException(
-                "Invalid byte array range [$startIndex, $endIndex) for size ${bytes.size}",
+                "GrpcMessageWriter.write received an invalid byte array range [$startIndex, $endIndex) " +
+                    "for an array of size ${bytes.size}.",
             )
         }
 
@@ -105,7 +123,9 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
         if (byteCount > remaining) {
             fail()
             throw IndexOutOfBoundsException(
-                "Cannot write $byteCount bytes with only $remaining bytes remaining",
+                "GrpcEncodedMessage.writeTo attempted to write $byteCount bytes with only $remaining bytes remaining " +
+                    "($written of $size declared bytes already written). " +
+                    "Ensure GrpcEncodedMessage.size matches the total number of bytes written.",
             )
         }
         return byteCount
@@ -117,7 +137,11 @@ public abstract class GrpcMessageWriter @InternalRpcApi constructor(
         if (byteCount < 0L || byteCount > Int.MAX_VALUE || byteCount > source.size || byteCount > remaining.toLong()) {
             fail()
             throw IndexOutOfBoundsException(
-                "Cannot write $byteCount bytes from a Buffer of size ${source.size} with $remaining bytes remaining",
+                "GrpcMessageWriter.write received byteCount=$byteCount for a source Buffer of size ${source.size}, " +
+                    "with $remaining bytes remaining ($written of $size declared bytes already written). " +
+                    "Check the byteCount passed by GrpcEncodedMessage.writeTo: it must be non-negative, " +
+                    "no larger than the source Buffer or writer.remaining, and fit in an Int. " +
+                    "Ensure GrpcEncodedMessage.size matches the total number of bytes written.",
             )
         }
         return byteCount.toInt()

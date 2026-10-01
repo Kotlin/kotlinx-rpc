@@ -12,7 +12,11 @@ internal abstract class SingleUseGrpcEncodedMessage : GrpcEncodedMessage {
     private var used: Boolean = false
 
     final override fun writeTo(writer: GrpcMessageWriter) {
-        check(!used) { "A GrpcEncodedMessage can only be written once" }
+        check(!used) {
+            "GrpcEncodedMessage.writeTo was called more than once on the same message. " +
+                "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call; " +
+                "do not cache or reuse encoded messages."
+        }
         used = true
         writeOnce(writer)
     }
@@ -36,12 +40,19 @@ internal class BufferEncodedMessage(
     override val size: Int = buffer.size.toMessageSize()
 
     override fun writeOnce(writer: GrpcMessageWriter) {
-        check(buffer.size == size.toLong()) { "The owned Buffer was modified after the message was created" }
+        check(buffer.size == size.toLong()) {
+            "The Buffer passed to GrpcEncodedMessage.of changed size from $size to ${buffer.size} bytes " +
+                "before writeTo. GrpcEncodedMessage.of takes ownership of the Buffer; " +
+                "do not read from, write to, or clear it after creating the message."
+        }
         writer.write(buffer, size.toLong())
     }
 }
 
 private fun Long.toMessageSize(): Int {
-    require(this <= Int.MAX_VALUE) { "A gRPC message cannot be larger than Int.MAX_VALUE bytes: $this" }
+    require(this <= Int.MAX_VALUE) {
+        "GrpcEncodedMessage.of received a Buffer of size $this bytes, exceeding the maximum gRPC message size " +
+            "of ${Int.MAX_VALUE} bytes. Reduce the encoded message size."
+    }
     return toInt()
 }
