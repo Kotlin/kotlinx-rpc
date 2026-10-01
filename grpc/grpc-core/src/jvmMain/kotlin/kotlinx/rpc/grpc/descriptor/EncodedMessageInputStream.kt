@@ -2,8 +2,6 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class)
-
 package kotlinx.rpc.grpc.descriptor
 
 import io.grpc.Drainable
@@ -34,7 +32,7 @@ internal class EncodedMessageInputStream(
     override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
         if (drained) {
             if (offset < 0 || length < 0 || offset > bytes.size - length) {
-                throw IndexOutOfBoundsException("Invalid byte array range")
+                throw IndexOutOfBoundsException("Marshaller $marshallerName read an invalid byte array range")
             }
             return if (length == 0) 0 else -1
         }
@@ -70,7 +68,7 @@ internal class EncodedMessageInputStream(
         try {
             message.writeTo(writer)
             check(writer.remaining == 0) {
-                "The marshaller wrote ${writer.written} of ${message.size} bytes"
+                "Encoding of $message failed as only ${writer.written} of ${message.size} bytes were written"
             }
         } catch (cause: Throwable) {
             throw IllegalStateException("Failed to encode a message with $marshallerName", cause)
