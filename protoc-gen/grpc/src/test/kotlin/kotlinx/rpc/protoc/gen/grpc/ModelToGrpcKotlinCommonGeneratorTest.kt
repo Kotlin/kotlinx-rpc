@@ -20,10 +20,12 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = grpcProto {
             message("request_message")
@@ -62,10 +64,12 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = false,
+            ignoreFiles = emptyList(),
         )
         val model = grpcProto {
             message("request_message")
@@ -103,10 +107,12 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = grpcProto {
             message("request__message_2")
@@ -145,10 +151,12 @@ class ModelToGrpcKotlinCommonGeneratorTest {
             generateComments = false,
             generateFileLevelComments = false,
             generateOptionalFieldOrNullGetters = false,
+            generateOneOfWhenFunctions = true,
             indentSize = 4,
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = grpcProto {
             message("request_message")

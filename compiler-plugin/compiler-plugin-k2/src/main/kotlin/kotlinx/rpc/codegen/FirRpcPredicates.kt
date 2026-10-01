@@ -28,4 +28,8 @@ object FirRpcPredicates {
     internal val generatedProtoMessage = DeclarationPredicate.create {
         annotated(ProtoClassId.protoMessageAnnotation.asSingleFqName())
     }
+
+    internal val generatedProtoOneOfs = DeclarationPredicate.create {
+        annotated(ProtoClassId.protoOneOfsAnnotation.asSingleFqName())
+    }
 }

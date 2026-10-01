@@ -10,21 +10,22 @@ buildCache {
     }
 }
 
+// TestKit builds use fresh Gradle caches on CI, so redirect public repositories to avoid upstream rate limits.
 pluginManagement {
     repositories {
         repositories {
-            mavenCentral()
+            maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
             maven("<build-repo>")
-            google()
-            gradlePluginPortal()
+            maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
+            maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
         }
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        mavenCentral()
+        maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
         maven("<build-repo>")
-        google()
+        maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
     }
 }

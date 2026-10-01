@@ -18,11 +18,13 @@ import name_shadowing.List
 import name_shadowing.Map
 import name_shadowing.MixedNesting
 import name_shadowing.MixedOneof
+import name_shadowing.MixedOneofContentCase
 import name_shadowing.MixedWktAndLocal
 import name_shadowing.MyClass1
 import name_shadowing.MyClass2
 import name_shadowing.RecursiveWithShadowing
 import name_shadowing.ShadowedOneof
+import name_shadowing.ShadowedOneofValueCase
 import name_shadowing.String
 import name_shadowing.StringValue
 import name_shadowing.Struct
@@ -30,9 +32,14 @@ import name_shadowing.Timestamp
 import name_shadowing.Value
 import name_shadowing.WktNesting
 import name_shadowing.WktOneof
+import name_shadowing.WktOneofContentCase
+import name_shadowing.content
 import name_shadowing.copy
 import name_shadowing.invoke
+import name_shadowing.value
+import name_shadowing.whenValue
 import com.google.protobuf.kotlin.invoke
+import com.google.protobuf.kotlin.kind
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -213,48 +220,57 @@ class NameShadowingTest {
     @Test
     fun testShadowedOneof() {
         val msgWithString = ShadowedOneof {
-            value = ShadowedOneof.Value.String(String {
+            string = String {
                 value = "oneof string"
                 nestedInt = Int { value = 1 }
-            })
+            }
         }
 
         val msgWithInt = ShadowedOneof {
-            value = ShadowedOneof.Value.Int(Int {
+            int = Int {
                 value = 123
                 nestedString = String { value = "int str" }
-            })
+            }
         }
 
         val msgWithList = ShadowedOneof {
-            value = ShadowedOneof.Value.List(List {
+            list = List {
                 items = listOf("a", "b")
                 nestedMap = Map { entries = mapOf("k" to "v") }
-            })
+            }
         }
 
         val msgWithMap = ShadowedOneof {
-            value = ShadowedOneof.Value.Map(Map {
+            map = Map {
                 entries = mapOf("k" to "v")
                 nestedList = List { items = listOf("e") }
-            })
+            }
         }
 
-        val stringValue = msgWithString.value as ShadowedOneof.Value.String
-        assertEquals("oneof string", stringValue.value.value)
-        assertEquals(1, stringValue.value.nestedInt.value)
+        assertEquals(ShadowedOneofValueCase.STRING, msgWithString.value)
+        assertEquals("oneof string", msgWithString.string.value)
+        assertEquals(1, msgWithString.string.nestedInt.value)
 
-        val intValue = msgWithInt.value as ShadowedOneof.Value.Int
-        assertEquals(123, intValue.value.value)
-        assertEquals("int str", intValue.value.nestedString.value)
+        assertEquals(ShadowedOneofValueCase.INT, msgWithInt.value)
+        assertEquals(123, msgWithInt.int.value)
+        assertEquals("int str", msgWithInt.int.nestedString.value)
 
-        val listValue = msgWithList.value as ShadowedOneof.Value.List
-        assertEquals(listOf("a", "b"), listValue.value.items)
-        assertEquals(mapOf("k" to "v"), listValue.value.nestedMap.entries)
+        assertEquals(ShadowedOneofValueCase.LIST, msgWithList.value)
+        assertEquals(listOf("a", "b"), msgWithList.list.items)
+        assertEquals(mapOf("k" to "v"), msgWithList.list.nestedMap.entries)
 
-        val mapValue = msgWithMap.value as ShadowedOneof.Value.Map
-        assertEquals(mapOf("k" to "v"), mapValue.value.entries)
-        assertEquals(listOf("e"), mapValue.value.nestedList.items)
+        assertEquals(ShadowedOneofValueCase.MAP, msgWithMap.value)
+        assertEquals(mapOf("k" to "v"), msgWithMap.map.entries)
+        assertEquals(listOf("e"), msgWithMap.map.nestedList.items)
+
+        val dispatched = msgWithInt.whenValue(
+            string = { it.value },
+            int = { it.value.toString() },
+            list = { it.items.joinToString() },
+            map = { it.entries.toString() },
+            notSet = { "" },
+        )
+        assertEquals("123", dispatched)
     }
 
     @Test
@@ -701,61 +717,61 @@ class NameShadowingTest {
     @Test
     fun testWktOneof() {
         val msgWithTs = WktOneof {
-            content = WktOneof.Content.Timestamp(Timestamp {
+            timestamp = Timestamp {
                 seconds = 123L
                 label = "oneof ts"
-            })
+            }
         }
 
         val msgWithDuration = WktOneof {
-            content = WktOneof.Content.Duration(Duration {
+            duration = Duration {
                 millis = 500L
-            })
+            }
         }
 
         val msgWithAny = WktOneof {
-            content = WktOneof.Content.Any(Any {
+            any = Any {
                 typeUrl = "oneof.any"
-            })
+            }
         }
 
         val msgWithEmpty = WktOneof {
-            content = WktOneof.Content.Empty(Empty {
+            empty = Empty {
                 placeholder = "oneof empty"
-            })
+            }
         }
 
         val msgWithValue = WktOneof {
-            content = WktOneof.Content.Value(Value {
+            value = Value {
                 data = "oneof value"
-            })
+            }
         }
 
         val msgWithStruct = WktOneof {
-            content = WktOneof.Content.Struct(Struct {
+            struct = Struct {
                 fields = mapOf("s" to Value { data = "struct val" })
                 empty = Empty { placeholder = "" }
-            })
+            }
         }
 
-        val tsContent = msgWithTs.content as WktOneof.Content.Timestamp
-        assertEquals(123L, tsContent.value.seconds)
-        assertEquals("oneof ts", tsContent.value.label)
+        assertEquals(WktOneofContentCase.TIMESTAMP, msgWithTs.content)
+        assertEquals(123L, msgWithTs.timestamp.seconds)
+        assertEquals("oneof ts", msgWithTs.timestamp.label)
 
-        val durContent = msgWithDuration.content as WktOneof.Content.Duration
-        assertEquals(500L, durContent.value.millis)
+        assertEquals(WktOneofContentCase.DURATION, msgWithDuration.content)
+        assertEquals(500L, msgWithDuration.duration.millis)
 
-        val anyContent = msgWithAny.content as WktOneof.Content.Any
-        assertEquals("oneof.any", anyContent.value.typeUrl)
+        assertEquals(WktOneofContentCase.ANY, msgWithAny.content)
+        assertEquals("oneof.any", msgWithAny.any.typeUrl)
 
-        val emptyContent = msgWithEmpty.content as WktOneof.Content.Empty
-        assertEquals("oneof empty", emptyContent.value.placeholder)
+        assertEquals(WktOneofContentCase.EMPTY, msgWithEmpty.content)
+        assertEquals("oneof empty", msgWithEmpty.empty.placeholder)
 
-        val valueContent = msgWithValue.content as WktOneof.Content.Value
-        assertEquals("oneof value", valueContent.value.data)
+        assertEquals(WktOneofContentCase.VALUE, msgWithValue.content)
+        assertEquals("oneof value", msgWithValue.value.data)
 
-        val structContent = msgWithStruct.content as WktOneof.Content.Struct
-        assertEquals("struct val", structContent.value.fields["s"]?.data)
+        assertEquals(WktOneofContentCase.STRUCT, msgWithStruct.content)
+        assertEquals("struct val", msgWithStruct.struct.fields["s"]?.data)
     }
 
     @Test
@@ -828,7 +844,7 @@ class NameShadowingTest {
         val wktAny = com.google.protobuf.kotlin.Any { typeUrl = "type.googleapis.com/wkt" }
         val wktEmpty = com.google.protobuf.kotlin.Empty {}
         val wktValue = com.google.protobuf.kotlin.Value {
-            kind = com.google.protobuf.kotlin.Value.Kind.StringValue("wkt string")
+            stringValue = "wkt string"
         }
         val wktStruct = com.google.protobuf.kotlin.Struct {
             fields = mapOf("wkt_key" to wktValue)
@@ -879,8 +895,8 @@ class NameShadowingTest {
         assertEquals(listOf("f1", "f2"), msg.wktFieldMask.paths)
 
         // Verify WKT Value kind
-        val kind = msg.wktValue.kind as com.google.protobuf.kotlin.Value.Kind.StringValue
-        assertEquals("wkt string", kind.value)
+        assertEquals(com.google.protobuf.kotlin.ValueKindCase.STRING_VALUE, msg.wktValue.kind)
+        assertEquals("wkt string", msg.wktValue.stringValue)
     }
 
     @Test
@@ -981,62 +997,62 @@ class NameShadowingTest {
     @Test
     fun testMixedOneof() {
         val msgLocalTs = MixedOneof {
-            content = MixedOneof.Content.LocalTs(Timestamp {
+            localTs = Timestamp {
                 seconds = 1L; label = "oneof local"
-            })
+            }
         }
 
         val msgWktTs = MixedOneof {
-            content = MixedOneof.Content.WktTs(com.google.protobuf.kotlin.Timestamp {
+            wktTs = com.google.protobuf.kotlin.Timestamp {
                 seconds = 2L; nanos = 999
-            })
+            }
         }
 
         val msgLocalDur = MixedOneof {
-            content = MixedOneof.Content.LocalDur(Duration {
+            localDur = Duration {
                 millis = 100L
-            })
+            }
         }
 
         val msgWktDur = MixedOneof {
-            content = MixedOneof.Content.WktDur(com.google.protobuf.kotlin.Duration {
+            wktDur = com.google.protobuf.kotlin.Duration {
                 seconds = 30L; nanos = 0
-            })
+            }
         }
 
         val msgLocalAny = MixedOneof {
-            content = MixedOneof.Content.LocalAny(Any {
+            localAny = Any {
                 typeUrl = "local.oneof"
-            })
+            }
         }
 
         val msgWktAny = MixedOneof {
-            content = MixedOneof.Content.WktAny(com.google.protobuf.kotlin.Any {
+            wktAny = com.google.protobuf.kotlin.Any {
                 typeUrl = "type.googleapis.com/oneof"
-            })
+            }
         }
 
         // Verify local variants
-        val localTs = msgLocalTs.content as MixedOneof.Content.LocalTs
-        assertEquals(1L, localTs.value.seconds)
-        assertEquals("oneof local", localTs.value.label)
+        assertEquals(MixedOneofContentCase.LOCAL_TS, msgLocalTs.content)
+        assertEquals(1L, msgLocalTs.localTs.seconds)
+        assertEquals("oneof local", msgLocalTs.localTs.label)
 
-        val localDur = msgLocalDur.content as MixedOneof.Content.LocalDur
-        assertEquals(100L, localDur.value.millis)
+        assertEquals(MixedOneofContentCase.LOCAL_DUR, msgLocalDur.content)
+        assertEquals(100L, msgLocalDur.localDur.millis)
 
-        val localAny = msgLocalAny.content as MixedOneof.Content.LocalAny
-        assertEquals("local.oneof", localAny.value.typeUrl)
+        assertEquals(MixedOneofContentCase.LOCAL_ANY, msgLocalAny.content)
+        assertEquals("local.oneof", msgLocalAny.localAny.typeUrl)
 
         // Verify WKT variants
-        val wktTs = msgWktTs.content as MixedOneof.Content.WktTs
-        assertEquals(2L, wktTs.value.seconds)
-        assertEquals(999, wktTs.value.nanos)
+        assertEquals(MixedOneofContentCase.WKT_TS, msgWktTs.content)
+        assertEquals(2L, msgWktTs.wktTs.seconds)
+        assertEquals(999, msgWktTs.wktTs.nanos)
 
-        val wktDur = msgWktDur.content as MixedOneof.Content.WktDur
-        assertEquals(30L, wktDur.value.seconds)
+        assertEquals(MixedOneofContentCase.WKT_DUR, msgWktDur.content)
+        assertEquals(30L, msgWktDur.wktDur.seconds)
 
-        val wktAny = msgWktAny.content as MixedOneof.Content.WktAny
-        assertEquals("type.googleapis.com/oneof", wktAny.value.typeUrl)
+        assertEquals(MixedOneofContentCase.WKT_ANY, msgWktAny.content)
+        assertEquals("type.googleapis.com/oneof", msgWktAny.wktAny.typeUrl)
     }
 
     @Test

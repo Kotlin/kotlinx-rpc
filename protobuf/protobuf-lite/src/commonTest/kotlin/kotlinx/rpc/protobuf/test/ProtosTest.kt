@@ -9,11 +9,14 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import OneOfMsg
+import OneOfMsgFieldCase
 import OneOfWithRequired
 import Outer
 import asInternal
 import encodeWith
+import field
 import invoke
+import presence
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -24,7 +27,9 @@ import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
+import test.groups.WithGroupsOneOfWithGroupCase
 import test.groups.invoke
+import test.groups.oneOfWithGroup
 import test.nested.NestedOuter
 import test.nested.NotInside
 import test.nested.invoke
@@ -42,8 +47,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProtosTest {
@@ -247,27 +250,29 @@ class ProtosTest {
     fun testOneOf() {
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Sint(23)
+                sint = 23
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(OneOfMsg.Field.Sint(23), decoded.field)
+            assertEquals(OneOfMsgFieldCase.SINT, decoded.field)
+            assertEquals(23, decoded.sint)
         }
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Fixed(21u)
+                fixed = 21u
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(OneOfMsg.Field.Fixed(21u), decoded.field)
+            assertEquals(OneOfMsgFieldCase.FIXED, decoded.field)
+            assertEquals(21u, decoded.fixed)
         }
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Other(Other { arg2 = "test" })
+                other = Other { arg2 = "test" }
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertIs<OneOfMsg.Field.Other>(decoded.field)
-            val decodedOtherField = (decoded.field as OneOfMsg.Field.Other).value
+            assertEquals(OneOfMsgFieldCase.OTHER, decoded.field)
+            val decodedOtherField = decoded.other
             assertFalse(decodedOtherField.presence.hasArg1)
             assertEquals("", decodedOtherField.arg1)
             assertEquals("test", decodedOtherField.arg2)
@@ -277,20 +282,21 @@ class ProtosTest {
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Enum(MyEnum.ONE_SECOND)
+                enum = MyEnum.ONE_SECOND
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(MyEnum.ONE, (decoded.field as OneOfMsg.Field.Enum).value)
+            assertEquals(OneOfMsgFieldCase.ENUM, decoded.field)
+            assertEquals(MyEnum.ONE, decoded.enum)
         }
     }
 
     @Test
     fun testOneOfMsgMerging() {
         val part1 = OneOfMsg {
-            field = OneOfMsg.Field.Other(Other { arg2 = "arg2" })
+            other = Other { arg2 = "arg2" }
         }
         val part2 = OneOfMsg {
-            field = OneOfMsg.Field.Other(Other { arg1 = "arg1" })
+            other = Other { arg1 = "arg1" }
         }
 
         val buffer = Buffer()
@@ -301,8 +307,8 @@ class ProtosTest {
 
 
         val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
-        assertIs<OneOfMsg.Field.Other>(decoded.field)
-        val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
+        assertEquals(OneOfMsgFieldCase.OTHER, decoded.field)
+        val decodedOther = decoded.other
         assertEquals("arg2", decodedOther.arg2)
         assertEquals("arg1", decodedOther.arg1)
         assertEquals("", decodedOther.arg3)
@@ -319,14 +325,17 @@ class ProtosTest {
         encoder.flush()
 
         val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
-        assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
+        assertEquals(OneOfMsgFieldCase.FIXED, decoded.field)
+        assertEquals(123u, decoded.fixed)
+        assertFalse(decoded.presence.hasSint)
+        assertEquals(0, decoded.sint)
     }
 
     @Test
     fun testOneOfRequiredSubField() {
         assertFailsWith<ProtobufException> {
             OneOfWithRequired {
-                field = OneOfWithRequired.Field.Msg(PresenceCheck { })
+                msg = PresenceCheck { }
             }
         }
     }
@@ -346,12 +355,13 @@ class ProtosTest {
     }
 
     @Test
-    fun testOneOfNull() {
-        // write two values on the oneOf field.
-        // the second value must be the one stored during decoding.
+    fun testOneOfNotSet() {
+        // an empty message has no active case
         val buffer = Buffer()
         val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
-        assertNull(decoded.field)
+        assertEquals(OneOfMsgFieldCase.NOT_SET, decoded.field)
+        assertFalse(decoded.presence.hasSint)
+        assertFalse(decoded.presence.hasOther)
     }
 
     @Test
@@ -590,9 +600,9 @@ class ProtosTest {
                     value = "Second Item"
                 }
             )
-            oneOfWithGroup = WithGroups.OneOfWithGroup.Testgroup(WithGroups.TestGroup {
+            testgroup = WithGroups.TestGroup {
                 value = 42u
-            })
+            }
         }
 
         val decoded = encodeDecode(msg, grpcMarshallerOf<WithGroups>())
@@ -600,11 +610,8 @@ class ProtosTest {
         for ((i, group) in msg.secondgroup.withIndex()) {
             assertEquals(group.value, decoded.secondgroup[i].value)
         }
-        assertTrue(decoded.oneOfWithGroup is WithGroups.OneOfWithGroup.Testgroup)
-        assertEquals(
-            (msg.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value,
-            (decoded.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value
-        )
+        assertEquals(WithGroupsOneOfWithGroupCase.TESTGROUP, decoded.oneOfWithGroup)
+        assertEquals(msg.testgroup.value, decoded.testgroup.value)
     }
 
     @Test

@@ -42,7 +42,7 @@ class UnknownFieldsTest {
                 int32 = 7
             }
             enumMissing = MyEnum.ONE
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
+            oneofString = "oneof value"
         }
 
         val encoded = grpcMarshallerOf<UnknownFieldsAll>().encodeToBuffer(all)
@@ -61,7 +61,7 @@ class UnknownFieldsTest {
         assertFalse(roundTrippedDiscarded.presence.hasAllPrimitivesMissing)
         assertFalse(roundTrippedDiscarded.presence.hasEnumMissing)
         assertEquals(MyEnum.ZERO, roundTrippedDiscarded.enumMissing)
-        assertEquals(null, roundTrippedDiscarded.testOneof)
+        assertEquals(UnknownFieldsAllTestOneofCase.NOT_SET, roundTrippedDiscarded.testOneof)
     }
 
     @Test
@@ -277,7 +277,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof int`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofInt(999)
+            oneofInt = 999
         }
 
         val subset = send(all)
@@ -292,7 +292,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof string`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
+            oneofString = "oneof value"
         }
 
         val subset = send(all)
@@ -307,10 +307,10 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof message`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofMessage(AllPrimitives {
+            oneofMessage = AllPrimitives {
                 int32 = 777
                 string = "oneof msg"
-            })
+            }
         }
 
         val subset = send(all)
@@ -325,7 +325,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof enum`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofEnum(MyEnum.THREE)
+            oneofEnum = MyEnum.THREE
         }
 
         val subset = send(all)
@@ -351,7 +351,7 @@ class UnknownFieldsTest {
             repeatedIntMissing = listOf(1, 2, 3)
             repeatedStringMissing = listOf("a", "b")
             mapStringIntMissing = mapOf("key" to 100)
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof")
+            oneofString = "oneof"
         }
 
         val subset = send(all)

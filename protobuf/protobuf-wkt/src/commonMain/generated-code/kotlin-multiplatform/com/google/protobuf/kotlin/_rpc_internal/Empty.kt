@@ -73,11 +73,19 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
             return EmptyInternal()
         }
 
-        public override fun encodeWith(message: EmptyInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: EmptyInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: EmptyInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: EmptyInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             EmptyInternal.decodeWith(message, decoder, config)
         }
     }
@@ -106,7 +114,11 @@ public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun EmptyInternal.Companion.decodeWith(msg: EmptyInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EmptyInternal.Companion.decodeWith(
+    msg: EmptyInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

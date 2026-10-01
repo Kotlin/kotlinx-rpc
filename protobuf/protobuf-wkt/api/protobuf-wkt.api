@@ -3149,9 +3149,18 @@ public final class com/google/protobuf/kotlin/Struct_extKt {
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ListValue;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ListValue;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Struct;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Struct;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/Value;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/Value;
+	public static final fun getBoolValueOrNull (Lcom/google/protobuf/kotlin/Value;)Ljava/lang/Boolean;
+	public static final fun getKind (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final fun getListValueOrNull (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/ListValue;
+	public static final fun getNullValueOrNull (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/NullValue;
+	public static final fun getNumberValueOrNull (Lcom/google/protobuf/kotlin/Value;)Ljava/lang/Double;
+	public static final fun getPresence (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/ValuePresence;
+	public static final fun getStringValueOrNull (Lcom/google/protobuf/kotlin/Value;)Ljava/lang/String;
+	public static final fun getStructValueOrNull (Lcom/google/protobuf/kotlin/Value;)Lcom/google/protobuf/kotlin/Struct;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/ListValue$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ListValue;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Struct$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Struct;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/Value$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/Value;
+	public static final fun whenKind (Lcom/google/protobuf/kotlin/Value;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 }
 
 public abstract class com/google/protobuf/kotlin/SymbolVisibility {
@@ -3422,102 +3431,59 @@ public abstract interface class com/google/protobuf/kotlin/UninterpretedOptionPr
 
 public abstract interface class com/google/protobuf/kotlin/Value {
 	public static final field Companion Lcom/google/protobuf/kotlin/Value$Companion;
-	public abstract fun getKind ()Lcom/google/protobuf/kotlin/Value$Kind;
+	public abstract fun getBoolValue ()Z
+	public abstract fun getListValue ()Lcom/google/protobuf/kotlin/ListValue;
+	public abstract fun getNullValue ()Lcom/google/protobuf/kotlin/NullValue;
+	public abstract fun getNumberValue ()D
+	public abstract fun getStringValue ()Ljava/lang/String;
+	public abstract fun getStructValue ()Lcom/google/protobuf/kotlin/Struct;
 }
 
 public abstract interface class com/google/protobuf/kotlin/Value$Builder : com/google/protobuf/kotlin/Value {
-	public abstract fun getKind ()Lcom/google/protobuf/kotlin/Value$Kind;
-	public abstract fun setKind (Lcom/google/protobuf/kotlin/Value$Kind;)V
+	public abstract fun clearBoolValue ()V
+	public abstract fun clearKind ()V
+	public abstract fun clearListValue ()V
+	public abstract fun clearNullValue ()V
+	public abstract fun clearNumberValue ()V
+	public abstract fun clearStringValue ()V
+	public abstract fun clearStructValue ()V
+	public abstract fun getBoolValue ()Z
+	public abstract fun getListValue ()Lcom/google/protobuf/kotlin/ListValue;
+	public abstract fun getNullValue ()Lcom/google/protobuf/kotlin/NullValue;
+	public abstract fun getNumberValue ()D
+	public abstract fun getStringValue ()Ljava/lang/String;
+	public abstract fun getStructValue ()Lcom/google/protobuf/kotlin/Struct;
+	public abstract fun setBoolValue (Z)V
+	public abstract fun setListValue (Lcom/google/protobuf/kotlin/ListValue;)V
+	public abstract fun setNullValue (Lcom/google/protobuf/kotlin/NullValue;)V
+	public abstract fun setNumberValue (D)V
+	public abstract fun setStringValue (Ljava/lang/String;)V
+	public abstract fun setStructValue (Lcom/google/protobuf/kotlin/Struct;)V
 }
 
 public final class com/google/protobuf/kotlin/Value$Companion {
 }
 
-public abstract interface class com/google/protobuf/kotlin/Value$Kind {
+public final class com/google/protobuf/kotlin/ValueKindCase : java/lang/Enum {
+	public static final field BOOL_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field LIST_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field NOT_SET Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field NULL_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field NUMBER_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field STRING_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static final field STRUCT_VALUE Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/google/protobuf/kotlin/ValueKindCase;
+	public static fun values ()[Lcom/google/protobuf/kotlin/ValueKindCase;
 }
 
-public final class com/google/protobuf/kotlin/Value$Kind$BoolValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (Z)Lcom/google/protobuf/kotlin/Value$Kind$BoolValue;
-	public static fun constructor-impl (Z)Z
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (ZLjava/lang/Object;)Z
-	public static final fun equals-impl0 (ZZ)Z
-	public final fun getValue ()Z
-	public fun hashCode ()I
-	public static fun hashCode-impl (Z)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Z)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Z
-}
-
-public final class com/google/protobuf/kotlin/Value$Kind$ListValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (Lcom/google/protobuf/kotlin/ListValue;)Lcom/google/protobuf/kotlin/Value$Kind$ListValue;
-	public static fun constructor-impl (Lcom/google/protobuf/kotlin/ListValue;)Lcom/google/protobuf/kotlin/ListValue;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Lcom/google/protobuf/kotlin/ListValue;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Lcom/google/protobuf/kotlin/ListValue;Lcom/google/protobuf/kotlin/ListValue;)Z
-	public final fun getValue ()Lcom/google/protobuf/kotlin/ListValue;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Lcom/google/protobuf/kotlin/ListValue;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Lcom/google/protobuf/kotlin/ListValue;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Lcom/google/protobuf/kotlin/ListValue;
-}
-
-public final class com/google/protobuf/kotlin/Value$Kind$NullValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (Lcom/google/protobuf/kotlin/NullValue;)Lcom/google/protobuf/kotlin/Value$Kind$NullValue;
-	public static fun constructor-impl (Lcom/google/protobuf/kotlin/NullValue;)Lcom/google/protobuf/kotlin/NullValue;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Lcom/google/protobuf/kotlin/NullValue;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Lcom/google/protobuf/kotlin/NullValue;Lcom/google/protobuf/kotlin/NullValue;)Z
-	public final fun getValue ()Lcom/google/protobuf/kotlin/NullValue;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Lcom/google/protobuf/kotlin/NullValue;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Lcom/google/protobuf/kotlin/NullValue;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Lcom/google/protobuf/kotlin/NullValue;
-}
-
-public final class com/google/protobuf/kotlin/Value$Kind$NumberValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (D)Lcom/google/protobuf/kotlin/Value$Kind$NumberValue;
-	public static fun constructor-impl (D)D
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (DLjava/lang/Object;)Z
-	public static final fun equals-impl0 (DD)Z
-	public final fun getValue ()D
-	public fun hashCode ()I
-	public static fun hashCode-impl (D)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (D)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()D
-}
-
-public final class com/google/protobuf/kotlin/Value$Kind$StringValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (Ljava/lang/String;)Lcom/google/protobuf/kotlin/Value$Kind$StringValue;
-	public static fun constructor-impl (Ljava/lang/String;)Ljava/lang/String;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Ljava/lang/String;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Ljava/lang/String;Ljava/lang/String;)Z
-	public final fun getValue ()Ljava/lang/String;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Ljava/lang/String;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Ljava/lang/String;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Ljava/lang/String;
-}
-
-public final class com/google/protobuf/kotlin/Value$Kind$StructValue : com/google/protobuf/kotlin/Value$Kind {
-	public static final synthetic fun box-impl (Lcom/google/protobuf/kotlin/Struct;)Lcom/google/protobuf/kotlin/Value$Kind$StructValue;
-	public static fun constructor-impl (Lcom/google/protobuf/kotlin/Struct;)Lcom/google/protobuf/kotlin/Struct;
-	public fun equals (Ljava/lang/Object;)Z
-	public static fun equals-impl (Lcom/google/protobuf/kotlin/Struct;Ljava/lang/Object;)Z
-	public static final fun equals-impl0 (Lcom/google/protobuf/kotlin/Struct;Lcom/google/protobuf/kotlin/Struct;)Z
-	public final fun getValue ()Lcom/google/protobuf/kotlin/Struct;
-	public fun hashCode ()I
-	public static fun hashCode-impl (Lcom/google/protobuf/kotlin/Struct;)I
-	public fun toString ()Ljava/lang/String;
-	public static fun toString-impl (Lcom/google/protobuf/kotlin/Struct;)Ljava/lang/String;
-	public final synthetic fun unbox-impl ()Lcom/google/protobuf/kotlin/Struct;
+public abstract interface class com/google/protobuf/kotlin/ValuePresence {
+	public abstract fun getHasBoolValue ()Z
+	public abstract fun getHasListValue ()Z
+	public abstract fun getHasNullValue ()Z
+	public abstract fun getHasNumberValue ()Z
+	public abstract fun getHasStringValue ()Z
+	public abstract fun getHasStructValue ()Z
 }
 
 public final class com/google/protobuf/kotlin/Wrappers_extKt {

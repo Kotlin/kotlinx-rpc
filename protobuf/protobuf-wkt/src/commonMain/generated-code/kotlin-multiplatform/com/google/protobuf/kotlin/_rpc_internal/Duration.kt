@@ -90,11 +90,19 @@ public class DurationInternal: Duration.Builder, InternalMessage(fieldsWithPrese
             return DurationInternal()
         }
 
-        public override fun encodeWith(message: DurationInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: DurationInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: DurationInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: DurationInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             DurationInternal.decodeWith(message, decoder, config)
         }
     }
@@ -130,7 +138,11 @@ public fun DurationInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig
 }
 
 @InternalRpcApi
-public fun DurationInternal.Companion.decodeWith(msg: DurationInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun DurationInternal.Companion.decodeWith(
+    msg: DurationInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

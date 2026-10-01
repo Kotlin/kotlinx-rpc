@@ -28,7 +28,7 @@ import kotlinx.rpc.protobuf.internal.tag
 public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val sourceContext: Int = 0
+        const val sourceContext: Int = 0
     }
 
     @InternalRpcApi
@@ -150,11 +150,19 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
             return TypeInternal()
         }
 
-        public override fun encodeWith(message: TypeInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: TypeInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: TypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: TypeInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             TypeInternal.decodeWith(message, decoder, config)
         }
     }
@@ -287,11 +295,19 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
             return FieldInternal()
         }
 
-        public override fun encodeWith(message: FieldInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: FieldInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: FieldInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: FieldInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             FieldInternal.decodeWith(message, decoder, config)
         }
     }
@@ -311,7 +327,7 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val sourceContext: Int = 0
+        const val sourceContext: Int = 0
     }
 
     @InternalRpcApi
@@ -427,11 +443,19 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
             return EnumInternal()
         }
 
-        public override fun encodeWith(message: EnumInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: EnumInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: EnumInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: EnumInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             EnumInternal.decodeWith(message, decoder, config)
         }
     }
@@ -522,11 +546,19 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
             return EnumValueInternal()
         }
 
-        public override fun encodeWith(message: EnumValueInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: EnumValueInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: EnumValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: EnumValueInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             EnumValueInternal.decodeWith(message, decoder, config)
         }
     }
@@ -546,7 +578,7 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
 public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     internal object PresenceIndices {
-        public const val value: Int = 0
+        const val value: Int = 0
     }
 
     @InternalRpcApi
@@ -638,11 +670,19 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
             return OptionInternal()
         }
 
-        public override fun encodeWith(message: OptionInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: OptionInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: OptionInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: OptionInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             OptionInternal.decodeWith(message, decoder, config)
         }
     }
@@ -704,7 +744,11 @@ public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-public fun TypeInternal.Companion.decodeWith(msg: TypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun TypeInternal.Companion.decodeWith(
+    msg: TypeInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -853,7 +897,11 @@ public fun FieldInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) 
 }
 
 @InternalRpcApi
-public fun FieldInternal.Companion.decodeWith(msg: FieldInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun FieldInternal.Companion.decodeWith(
+    msg: FieldInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1003,7 +1051,11 @@ public fun EnumInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
 }
 
 @InternalRpcApi
-public fun EnumInternal.Companion.decodeWith(msg: EnumInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EnumInternal.Companion.decodeWith(
+    msg: EnumInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1115,7 +1167,11 @@ public fun EnumValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun EnumValueInternal.Companion.decodeWith(msg: EnumValueInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun EnumValueInternal.Companion.decodeWith(
+    msg: EnumValueInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -1196,7 +1252,11 @@ public fun OptionInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-public fun OptionInternal.Companion.decodeWith(msg: OptionInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun OptionInternal.Companion.decodeWith(
+    msg: OptionInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

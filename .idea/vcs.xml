@@ -13,7 +13,11 @@
         </IssueNavigationLink>
         <IssueNavigationLink>
           <option name="issueRegexp" value="KRPC-(\d+)" />
-          <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KRPC-$1" />
+          <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KXRPC-$1" />
+        </IssueNavigationLink>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="KXRPC-(\d+)" />
+          <option name="linkRegexp" value="https://youtrack.jetbrains.com/issue/KXRPC-$1" />
         </IssueNavigationLink>
       </list>
     </option>

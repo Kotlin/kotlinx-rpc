@@ -84,11 +84,19 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
             return FieldMaskInternal()
         }
 
-        public override fun encodeWith(message: FieldMaskInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: FieldMaskInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: FieldMaskInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: FieldMaskInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             FieldMaskInternal.decodeWith(message, decoder, config)
         }
     }
@@ -122,7 +130,11 @@ public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun FieldMaskInternal.Companion.decodeWith(msg: FieldMaskInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun FieldMaskInternal.Companion.decodeWith(
+    msg: FieldMaskInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

@@ -263,6 +263,32 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
      */
     public val optionalFieldOrNullGetters: Property<Boolean> = project.objects.property<Boolean>()
         .convention(false)
+
+    /**
+     * Option to generate an exhaustive, typed `when<OneOfName>` dispatch function for every `oneof`.
+     *
+     * Example:
+     * ```proto
+     * message Event {
+     *     oneof payload {
+     *         string text = 1;
+     *         int32 code = 2;
+     *     }
+     * }
+     * ```
+     * ```kotlin
+     * val event: Event = ...
+     * val length = event.whenPayload(
+     *     text = { it.length },
+     *     code = { it },
+     *     notSet = { 0 },
+     * )
+     * ```
+     *
+     * Default value: `true`.
+     */
+    public val oneOfWhenFunctions: Property<Boolean> = project.objects.property<Boolean>()
+        .convention(true)
 }
 
 /**

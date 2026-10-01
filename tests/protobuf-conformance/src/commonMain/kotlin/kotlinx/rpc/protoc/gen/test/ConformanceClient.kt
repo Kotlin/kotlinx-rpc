@@ -10,13 +10,17 @@ import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.conformance.ConformanceRequest
 import com.google.protobuf.conformance.ConformanceRequestInternal
+import com.google.protobuf.conformance.ConformanceRequestPayloadCase
 import com.google.protobuf.conformance.ConformanceResponse
 import com.google.protobuf.conformance.ConformanceResponseInternal
+import com.google.protobuf.conformance.ConformanceResponseResultCase
 import com.google.protobuf.conformance.FailureSet
 import com.google.protobuf.conformance.FailureSetInternal
 import com.google.protobuf.conformance.TestCategory
 import com.google.protobuf.conformance.WireFormat.*
 import com.google.protobuf.conformance.invoke
+import com.google.protobuf.conformance.payload
+import com.google.protobuf.conformance.result
 import com.google.protobuf_test_messages.edition2023.TestAllTypesEdition2023Internal
 import com.google.protobuf_test_messages.edition2023.TestMessagesEdition2023KtExtensions
 import com.google.protobuf_test_messages.editions.proto2.TestMessagesProto2EditionsKtExtensions
@@ -141,29 +145,27 @@ internal class ConformanceClient {
 
         marshaller = marshallerOf(messageType)
             ?: return ConformanceResponse {
-                result = ConformanceResponse.Result.Skipped("Unsupported message type: $messageType")
+                skipped = "Unsupported message type: $messageType"
             }
 
         when (request.payload) {
-            is ConformanceRequest.Payload.ProtobufPayload -> {
+            ConformanceRequestPayloadCase.PROTOBUF_PAYLOAD -> {
                 try {
-                    val binary = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
+                    val binary = request.protobufPayload
 
                     testMessage = marshaller.decodeFromSource(binary.toByteArray().buffered(), config) as InternalMessage
                 } catch (e: ProtobufException) {
                     return ConformanceResponse {
-                        result = ConformanceResponse.Result.ParseError(
-                            e.message ?: "ProtobufException with unknown message of type ${e::class.simpleName}"
-                        )
+                        parseError = e.message ?: "ProtobufException with unknown message of type ${e::class.simpleName}"
                     }
                 }
             }
 
-            is ConformanceRequest.Payload.JsonPayload -> {
+            ConformanceRequestPayloadCase.JSON_PAYLOAD -> {
                 error("JSON payloads are not supported by the conformance client.")
             }
 
-            is ConformanceRequest.Payload.TextPayload -> {
+            ConformanceRequestPayloadCase.TEXT_PAYLOAD -> {
                 error("TEXT_FORMAT payloads are not supported by the conformance client.")
             }
 
@@ -179,7 +181,7 @@ internal class ConformanceClient {
                 val messageString = marshaller.encodeToBuffer(testMessage).readByteArray().asByteString()
 
                 ConformanceResponse {
-                    result = ConformanceResponse.Result.ProtobufPayload(messageString)
+                    protobufPayload = messageString
                 }
             }
 
@@ -223,11 +225,9 @@ internal class ConformanceClient {
         // test should return a serialized FailureSet in protobuf_payload.
         val response = if (request.messageType == "conformance.FailureSet") {
             ConformanceResponse {
-                result = ConformanceResponse.Result.ProtobufPayload(
-                    FailureSetInternal.MARSHALLER.encodeToBuffer(
-                        FailureSet {}
-                    ).readByteArray().asByteString()
-                )
+                protobufPayload = FailureSetInternal.MARSHALLER.encodeToBuffer(
+                    FailureSet {}
+                ).readByteArray().asByteString()
             }
         } else {
             test(request)
@@ -248,12 +248,12 @@ internal class ConformanceClient {
         return doTest {
             if (`is ProtobufInput_UnknownOrdering_ProtobufOutput`(it)) {
                 return@doTest ConformanceResponse {
-                    result = ConformanceResponse.Result.ProtobufPayload(ByteArray(0).asByteString())
+                    protobufPayload = ByteArray(0).asByteString()
                 }
             }
 
             ConformanceResponse {
-                result = ConformanceResponse.Result.RuntimeError("Mock test")
+                runtimeError = "Mock test"
             }
         }
     }
@@ -279,11 +279,11 @@ internal class ConformanceClient {
             return false
         }
 
-        if (request.payload !is ConformanceRequest.Payload.ProtobufPayload) {
+        if (request.payload != ConformanceRequestPayloadCase.PROTOBUF_PAYLOAD) {
             return false
         }
 
-        val payload = (request.payload as ConformanceRequest.Payload.ProtobufPayload).value
+        val payload = request.protobufPayload
 
         if (payload.size != ProtobufInput_UnknownOrdering_ProtobufOutput_Payload.size) {
             return false
@@ -307,9 +307,9 @@ internal class ConformanceClient {
                 doTest(request)
             }
 
-            if (request.payload is ConformanceRequest.Payload.ProtobufPayload) {
+            if (request.payload == ConformanceRequestPayloadCase.PROTOBUF_PAYLOAD) {
                 dumpConfig.dumpPayloadInputFile?.let {
-                    writeFile(it, (request.payload as ConformanceRequest.Payload.ProtobufPayload).value.toByteArray())
+                    writeFile(it, request.protobufPayload.toByteArray())
                 }
             }
 
@@ -320,18 +320,18 @@ internal class ConformanceClient {
 
                     if (`is ProtobufInput_UnknownOrdering_ProtobufOutput`(request)) {
                         ConformanceResponse {
-                            result = ConformanceResponse.Result.ProtobufPayload(message.encodeToByteArray().asByteString())
+                            protobufPayload = message.encodeToByteArray().asByteString()
                         }
                     } else {
                         ConformanceResponse {
-                            result = ConformanceResponse.Result.RuntimeError(message)
+                            runtimeError = message
                         }
                     }
                 }
             ).apply {
-                if (result is ConformanceResponse.Result.ProtobufPayload) {
+                if (result == ConformanceResponseResultCase.PROTOBUF_PAYLOAD) {
                     dumpConfig.dumpPayloadOutputFile?.let {
-                        writeFile(it, (result as ConformanceResponse.Result.ProtobufPayload).value.toByteArray())
+                        writeFile(it, protobufPayload.toByteArray())
                     }
                 }
             }

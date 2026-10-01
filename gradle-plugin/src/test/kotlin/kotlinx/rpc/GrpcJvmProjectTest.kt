@@ -365,6 +365,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -376,6 +377,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -389,7 +391,6 @@ inputs:
 
         runGradle(processCommonTestProtoFiles)
         runGradle(processCommonTestProtoFilesImports)
-        runGradle(generateBufGenYamlCommonTest)
 
         assertWorkspaceProtoFilesCopied(
             testSourceSet,
@@ -448,6 +449,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -459,6 +461,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -504,6 +507,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -515,6 +519,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -700,6 +705,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -727,6 +733,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=true
       - explicitApiModeEnabled=false
@@ -754,6 +761,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=false
       - explicitApiModeEnabled=false
@@ -765,6 +773,7 @@ plugins:
       - generateComments=true
       - generateFileLevelComments=true
       - generateOptionalFieldOrNullGetters=false
+      - generateOneOfWhenFunctions=true
       - indentSize=4
       - camelCaseNames=false
       - explicitApiModeEnabled=false

@@ -84,11 +84,19 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
             return SourceContextInternal()
         }
 
-        public override fun encodeWith(message: SourceContextInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: SourceContextInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: SourceContextInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: SourceContextInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             SourceContextInternal.decodeWith(message, decoder, config)
         }
     }
@@ -120,7 +128,11 @@ public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtoC
 }
 
 @InternalRpcApi
-public fun SourceContextInternal.Companion.decodeWith(msg: SourceContextInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun SourceContextInternal.Companion.decodeWith(
+    msg: SourceContextInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

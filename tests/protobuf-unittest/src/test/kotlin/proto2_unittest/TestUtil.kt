@@ -129,7 +129,7 @@ object TestUtil {
         defaultCord = "425"
 
         // Oneof field (last one wins)
-        oneofField = TestAllTypes.OneofField.OneofBytes(toBytes("604").asByteString())
+        oneofBytes = toBytes("604").asByteString()
     }
 
     /**
@@ -318,9 +318,8 @@ object TestUtil {
         assertEquals("425", message.defaultCord)
 
         // Oneof
-        val oneofField = message.oneofField
-        assertTrue(oneofField is TestAllTypes.OneofField.OneofBytes)
-        assertByteArrayEquals(toBytes("604"), oneofField.value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_BYTES, message.oneofField)
+        assertByteArrayEquals(toBytes("604"), message.oneofBytes)
     }
 
     /**
@@ -475,7 +474,7 @@ object TestUtil {
         assertEquals("123", message.defaultCord)
 
         // Oneof not set
-        assertNull(message.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.NOT_SET, message.oneofField)
     }
 
     /**

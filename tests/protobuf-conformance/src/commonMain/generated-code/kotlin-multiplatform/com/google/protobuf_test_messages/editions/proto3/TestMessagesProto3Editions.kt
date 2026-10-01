@@ -20,7 +20,6 @@ import com.google.protobuf.kotlin.Timestamp
 import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
-import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -147,6 +146,16 @@ interface TestAllTypesProto3 {
     val mapStringForeignMessage: Map<String, ForeignMessage>
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnum>
+    val oneofUint32: UInt
+    val oneofNestedMessage: NestedMessage
+    val oneofString: String
+    val oneofBytes: ByteString
+    val oneofBool: Boolean
+    val oneofUint64: ULong
+    val oneofFloat: Float
+    val oneofDouble: Double
+    val oneofEnum: NestedEnum
+    val oneofNullValue: NullValue
 
     /**
      * Well-known types
@@ -208,39 +217,6 @@ interface TestAllTypesProto3 {
     val fieldName16: Int
     val fieldName17__: Int
     val fieldName18__: Int
-    val oneofField: OneofField?
-
-    sealed interface OneofField {
-        @JvmInline
-        value class OneofUint32(val value: UInt): OneofField
-
-        @JvmInline
-        value class OneofNestedMessage(val value: NestedMessage): OneofField
-
-        @JvmInline
-        value class OneofString(val value: String): OneofField
-
-        @JvmInline
-        value class OneofBytes(val value: ByteString): OneofField
-
-        @JvmInline
-        value class OneofBool(val value: Boolean): OneofField
-
-        @JvmInline
-        value class OneofUint64(val value: ULong): OneofField
-
-        @JvmInline
-        value class OneofFloat(val value: Float): OneofField
-
-        @JvmInline
-        value class OneofDouble(val value: Double): OneofField
-
-        @JvmInline
-        value class OneofEnum(val value: NestedEnum): OneofField
-
-        @JvmInline
-        value class OneofNullValue(val value: NullValue): OneofField
-    }
 
     @GeneratedProtoMessage
     interface NestedMessage {

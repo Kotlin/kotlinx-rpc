@@ -90,11 +90,19 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
             return TimestampInternal()
         }
 
-        public override fun encodeWith(message: TimestampInternal, encoder: WireEncoder, config: ProtoConfig?) {
+        public override fun encodeWith(
+            message: TimestampInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
             message.encodeWith(encoder, config)
         }
 
-        public override fun decodeWith(message: TimestampInternal, decoder: WireDecoder, config: ProtoConfig?) {
+        public override fun decodeWith(
+            message: TimestampInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
             TimestampInternal.decodeWith(message, decoder, config)
         }
     }
@@ -130,7 +138,11 @@ public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun TimestampInternal.Companion.decodeWith(
+    msg: TimestampInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

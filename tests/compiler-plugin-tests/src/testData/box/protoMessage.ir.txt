@@ -2,6 +2,8 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
   annotations:
     OptIn(markerClass = [InternalRpcApi::class, ExperimentalRpcApi::class] type=kotlin.Array<out kotlin.reflect.KClass<out kotlin.Annotation>> varargElementType=kotlin.reflect.KClass<out kotlin.Annotation>)
   CLASS CLASS name:MyMessageInternal modality:FINAL visibility:public superTypes:[test.my_message.MyMessage.Builder]
+    annotations:
+      GeneratedProtoOneOfs(names = ["payload"] type=kotlin.Array<kotlin.String> varargElementType=kotlin.String)
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessageInternal
     PROPERTY name:field visibility:public modality:OPEN [var]
       overridden:
@@ -53,6 +55,56 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
           SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:optionalField type:kotlin.Int visibility:private' type=kotlin.Unit origin=null
             receiver: GET_VAR '<this>: test.my_message.MyMessageInternal declared in test.my_message.MyMessageInternal.<set-optionalField>' type=test.my_message.MyMessageInternal origin=null
             value: GET_VAR '<set-?>: kotlin.Int declared in test.my_message.MyMessageInternal.<set-optionalField>' type=kotlin.Int origin=null
+    PROPERTY name:text visibility:public modality:OPEN [var]
+      overridden:
+        public abstract text: kotlin.String declared in test.my_message.MyMessage.Builder
+      FIELD PROPERTY_BACKING_FIELD name:text type:kotlin.String visibility:private
+        EXPRESSION_BODY
+          CONST String type=kotlin.String value=""
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-text> visibility:public modality:OPEN returnType:kotlin.String
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+        correspondingProperty: PROPERTY name:text visibility:public modality:OPEN [var]
+        overridden:
+          public abstract fun <get-text> (): kotlin.String declared in test.my_message.MyMessage.Builder
+        BLOCK_BODY
+          RETURN type=kotlin.Nothing from='public open fun <get-text> (): kotlin.String declared in test.my_message.MyMessageInternal'
+            GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:text type:kotlin.String visibility:private' type=kotlin.String origin=null
+              receiver: GET_VAR '<this>: test.my_message.MyMessageInternal declared in test.my_message.MyMessageInternal.<get-text>' type=test.my_message.MyMessageInternal origin=null
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<set-text> visibility:public modality:OPEN returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+        VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.String
+        correspondingProperty: PROPERTY name:text visibility:public modality:OPEN [var]
+        overridden:
+          public abstract fun <set-text> (<set-?>: kotlin.String): kotlin.Unit declared in test.my_message.MyMessage.Builder
+        BLOCK_BODY
+          SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:text type:kotlin.String visibility:private' type=kotlin.Unit origin=null
+            receiver: GET_VAR '<this>: test.my_message.MyMessageInternal declared in test.my_message.MyMessageInternal.<set-text>' type=test.my_message.MyMessageInternal origin=null
+            value: GET_VAR '<set-?>: kotlin.String declared in test.my_message.MyMessageInternal.<set-text>' type=kotlin.String origin=null
+    PROPERTY name:code visibility:public modality:OPEN [var]
+      overridden:
+        public abstract code: kotlin.Int declared in test.my_message.MyMessage.Builder
+      FIELD PROPERTY_BACKING_FIELD name:code type:kotlin.Int visibility:private
+        EXPRESSION_BODY
+          CONST Int type=kotlin.Int value=0
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-code> visibility:public modality:OPEN returnType:kotlin.Int
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+        correspondingProperty: PROPERTY name:code visibility:public modality:OPEN [var]
+        overridden:
+          public abstract fun <get-code> (): kotlin.Int declared in test.my_message.MyMessage.Builder
+        BLOCK_BODY
+          RETURN type=kotlin.Nothing from='public open fun <get-code> (): kotlin.Int declared in test.my_message.MyMessageInternal'
+            GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:code type:kotlin.Int visibility:private' type=kotlin.Int origin=null
+              receiver: GET_VAR '<this>: test.my_message.MyMessageInternal declared in test.my_message.MyMessageInternal.<get-code>' type=test.my_message.MyMessageInternal origin=null
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<set-code> visibility:public modality:OPEN returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+        VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.Int
+        correspondingProperty: PROPERTY name:code visibility:public modality:OPEN [var]
+        overridden:
+          public abstract fun <set-code> (<set-?>: kotlin.Int): kotlin.Unit declared in test.my_message.MyMessage.Builder
+        BLOCK_BODY
+          SET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:code type:kotlin.Int visibility:private' type=kotlin.Unit origin=null
+            receiver: GET_VAR '<this>: test.my_message.MyMessageInternal declared in test.my_message.MyMessageInternal.<set-code>' type=test.my_message.MyMessageInternal origin=null
+            value: GET_VAR '<set-?>: kotlin.Int declared in test.my_message.MyMessageInternal.<set-code>' type=kotlin.Int origin=null
     CLASS OBJECT name:DESCRIPTOR modality:FINAL visibility:public superTypes:[kotlinx.rpc.protobuf.internal.ProtoDescriptor<test.my_message.MyMessage>]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessageInternal.DESCRIPTOR
       PROPERTY name:fullName visibility:public modality:OPEN [val]
@@ -141,6 +193,17 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
           public open fun toString (): kotlin.String declared in kotlin.Any
+      PROPERTY name:code visibility:public modality:FINAL [const,val]
+        FIELD PROPERTY_BACKING_FIELD name:code type:kotlin.Int visibility:public [final]
+          EXPRESSION_BODY
+            CONST Int type=kotlin.Int value=2
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-code> visibility:public modality:FINAL returnType:kotlin.Int
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.PresenceIndices
+          correspondingProperty: PROPERTY name:code visibility:public modality:FINAL [const,val]
+          BLOCK_BODY
+            RETURN type=kotlin.Nothing from='public final fun <get-code> (): kotlin.Int declared in test.my_message.MyMessageInternal.PresenceIndices'
+              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:code type:kotlin.Int visibility:public [final]' type=kotlin.Int origin=null
+                receiver: GET_VAR '<this>: test.my_message.MyMessageInternal.PresenceIndices declared in test.my_message.MyMessageInternal.PresenceIndices.<get-code>' type=test.my_message.MyMessageInternal.PresenceIndices origin=null
       PROPERTY name:optionalField visibility:public modality:FINAL [const,val]
         FIELD PROPERTY_BACKING_FIELD name:optionalField type:kotlin.Int visibility:public [final]
           EXPRESSION_BODY
@@ -152,6 +215,17 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
             RETURN type=kotlin.Nothing from='public final fun <get-optionalField> (): kotlin.Int declared in test.my_message.MyMessageInternal.PresenceIndices'
               GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:optionalField type:kotlin.Int visibility:public [final]' type=kotlin.Int origin=null
                 receiver: GET_VAR '<this>: test.my_message.MyMessageInternal.PresenceIndices declared in test.my_message.MyMessageInternal.PresenceIndices.<get-optionalField>' type=test.my_message.MyMessageInternal.PresenceIndices origin=null
+      PROPERTY name:text visibility:public modality:FINAL [const,val]
+        FIELD PROPERTY_BACKING_FIELD name:text type:kotlin.Int visibility:public [final]
+          EXPRESSION_BODY
+            CONST Int type=kotlin.Int value=1
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-text> visibility:public modality:FINAL returnType:kotlin.Int
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal.PresenceIndices
+          correspondingProperty: PROPERTY name:text visibility:public modality:FINAL [const,val]
+          BLOCK_BODY
+            RETURN type=kotlin.Nothing from='public final fun <get-text> (): kotlin.Int declared in test.my_message.MyMessageInternal.PresenceIndices'
+              GET_FIELD 'FIELD PROPERTY_BACKING_FIELD name:text type:kotlin.Int visibility:public [final]' type=kotlin.Int origin=null
+                receiver: GET_VAR '<this>: test.my_message.MyMessageInternal.PresenceIndices declared in test.my_message.MyMessageInternal.PresenceIndices.<get-text>' type=test.my_message.MyMessageInternal.PresenceIndices origin=null
     CONSTRUCTOR visibility:public returnType:test.my_message.MyMessageInternal [primary]
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
@@ -169,10 +243,25 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in test.my_message.MyMessage.Builder
+    FUN name:clearCode visibility:public modality:OPEN returnType:kotlin.Unit
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+      overridden:
+        public abstract fun clearCode (): kotlin.Unit declared in test.my_message.MyMessage.Builder
+      BLOCK_BODY
     FUN name:clearOptionalField visibility:public modality:OPEN returnType:kotlin.Unit
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
       overridden:
         public abstract fun clearOptionalField (): kotlin.Unit declared in test.my_message.MyMessage.Builder
+      BLOCK_BODY
+    FUN name:clearPayload visibility:public modality:OPEN returnType:kotlin.Unit
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+      overridden:
+        public abstract fun clearPayload (): kotlin.Unit declared in test.my_message.MyMessage.Builder
+      BLOCK_BODY
+    FUN name:clearText visibility:public modality:OPEN returnType:kotlin.Unit
+      VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessageInternal
+      overridden:
+        public abstract fun clearText (): kotlin.Unit declared in test.my_message.MyMessage.Builder
       BLOCK_BODY
   CLASS INTERFACE name:MyMessage modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     annotations:
@@ -196,8 +285,26 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
         overridden:
           public open fun toString (): kotlin.String declared in test.my_message.MyMessage
+      FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderFunctionKey] name:clearCode visibility:public modality:ABSTRACT returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
       FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderFunctionKey] name:clearOptionalField visibility:public modality:ABSTRACT returnType:kotlin.Unit
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+      FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderFunctionKey] name:clearPayload visibility:public modality:ABSTRACT returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+      FUN GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderFunctionKey] name:clearText visibility:public modality:ABSTRACT returnType:kotlin.Unit
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+      PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:code visibility:public modality:ABSTRACT [var]
+        overridden:
+          public abstract code: kotlin.Int declared in test.my_message.MyMessage
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-code> visibility:public modality:ABSTRACT returnType:kotlin.Int
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+          correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:code visibility:public modality:ABSTRACT [var]
+          overridden:
+            public abstract fun <get-code> (): kotlin.Int declared in test.my_message.MyMessage
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<set-code> visibility:public modality:ABSTRACT returnType:kotlin.Unit
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+          VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.Int
+          correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:code visibility:public modality:ABSTRACT [var]
       PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:field visibility:public modality:ABSTRACT [var]
         overridden:
           public abstract field: kotlin.Int declared in test.my_message.MyMessage
@@ -222,6 +329,18 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
           VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
           VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.Int
           correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:optionalField visibility:public modality:ABSTRACT [var]
+      PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:text visibility:public modality:ABSTRACT [var]
+        overridden:
+          public abstract text: kotlin.String declared in test.my_message.MyMessage
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<get-text> visibility:public modality:ABSTRACT returnType:kotlin.String
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+          correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:text visibility:public modality:ABSTRACT [var]
+          overridden:
+            public abstract fun <get-text> (): kotlin.String declared in test.my_message.MyMessage
+        FUN DEFAULT_PROPERTY_ACCESSOR name:<set-text> visibility:public modality:ABSTRACT returnType:kotlin.Unit
+          VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage.Builder
+          VALUE_PARAMETER kind:Regular name:<set-?> index:1 type:kotlin.String
+          correspondingProperty: PROPERTY GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageBuilderPropertyKey] name:text visibility:public modality:ABSTRACT [var]
     CLASS GENERATED[kotlinx.rpc.codegen.FirGeneratedProtoMessageCompanionObject] OBJECT name:Companion modality:FINAL visibility:public [companion] superTypes:[kotlin.Any]
       thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessage.Companion
       CONSTRUCTOR visibility:private returnType:test.my_message.MyMessage.Companion [primary]
@@ -254,6 +373,10 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in kotlin.Any
+    PROPERTY name:code visibility:public modality:ABSTRACT [val]
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-code> visibility:public modality:ABSTRACT returnType:kotlin.Int
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage
+        correspondingProperty: PROPERTY name:code visibility:public modality:ABSTRACT [val]
     PROPERTY name:field visibility:public modality:ABSTRACT [val]
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-field> visibility:public modality:ABSTRACT returnType:kotlin.Int
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage
@@ -262,6 +385,10 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-optionalField> visibility:public modality:ABSTRACT returnType:kotlin.Int
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage
         correspondingProperty: PROPERTY name:optionalField visibility:public modality:ABSTRACT [val]
+    PROPERTY name:text visibility:public modality:ABSTRACT [val]
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-text> visibility:public modality:ABSTRACT returnType:kotlin.String
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessage
+        correspondingProperty: PROPERTY name:text visibility:public modality:ABSTRACT [val]
   CLASS INTERFACE name:MyMessagePresence modality:ABSTRACT visibility:public superTypes:[kotlin.Any]
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:test.my_message.MyMessagePresence
     FUN FAKE_OVERRIDE name:equals visibility:public modality:OPEN returnType:kotlin.Boolean [fake_override,operator]
@@ -277,11 +404,25 @@ FILE fqName:test.my_message fileName:/module_main_protoMessage.kt
       VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:kotlin.Any
       overridden:
         public open fun toString (): kotlin.String declared in kotlin.Any
+    PROPERTY name:hasCode visibility:public modality:ABSTRACT [val]
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-hasCode> visibility:public modality:ABSTRACT returnType:kotlin.Boolean
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessagePresence
+        correspondingProperty: PROPERTY name:hasCode visibility:public modality:ABSTRACT [val]
     PROPERTY name:hasOptionalField visibility:public modality:ABSTRACT [val]
       FUN DEFAULT_PROPERTY_ACCESSOR name:<get-hasOptionalField> visibility:public modality:ABSTRACT returnType:kotlin.Boolean
         VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessagePresence
         correspondingProperty: PROPERTY name:hasOptionalField visibility:public modality:ABSTRACT [val]
+    PROPERTY name:hasText visibility:public modality:ABSTRACT [val]
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-hasText> visibility:public modality:ABSTRACT returnType:kotlin.Boolean
+        VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:test.my_message.MyMessagePresence
+        correspondingProperty: PROPERTY name:hasText visibility:public modality:ABSTRACT [val]
   FUN name:box visibility:public modality:FINAL returnType:kotlin.String
     BLOCK_BODY
+      VAR name:builder type:test.my_message.MyMessage.Builder [val]
+        CONSTRUCTOR_CALL 'public constructor <init> () declared in test.my_message.MyMessageInternal' type=test.my_message.MyMessageInternal origin=null
+      CALL 'public abstract fun clearOptionalField (): kotlin.Unit declared in test.my_message.MyMessage.Builder' type=kotlin.Unit origin=null
+        ARG <this>: GET_VAR 'val builder: test.my_message.MyMessage.Builder declared in test.my_message.box' type=test.my_message.MyMessage.Builder origin=null
+      CALL 'public abstract fun clearPayload (): kotlin.Unit declared in test.my_message.MyMessage.Builder' type=kotlin.Unit origin=null
+        ARG <this>: GET_VAR 'val builder: test.my_message.MyMessage.Builder declared in test.my_message.box' type=test.my_message.MyMessage.Builder origin=null
       RETURN type=kotlin.Nothing from='public final fun box (): kotlin.String declared in test.my_message'
         CONST String type=kotlin.String value="OK"

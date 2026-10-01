@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "google/type/money.proto";
+
+message Some {
+  google.type.Money balance = 1;
+}
