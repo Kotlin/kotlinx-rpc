@@ -82,6 +82,7 @@ class ModelToProtobufKotlinCommonGeneratorTest {
             platform = Platform.Jvm,
             protoNamesOutput = null,
             camelCaseNames = true,
+            ignoreFiles = emptyList(),
         )
         val model = protobufProto {
             enumType(

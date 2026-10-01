@@ -35,6 +35,7 @@ class OneOfGeneratorTest {
         platform = Platform.Jvm,
         protoNamesOutput = null,
         camelCaseNames = camelCaseNames,
+        ignoreFiles = emptyList(),
     )
 
     private class Generated(val public: String, val ext: String, val internal: String)
