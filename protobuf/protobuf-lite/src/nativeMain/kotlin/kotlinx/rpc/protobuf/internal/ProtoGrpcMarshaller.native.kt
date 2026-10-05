@@ -6,6 +6,8 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.cinterop.ByteVar
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.plus
 import kotlinx.io.Buffer
@@ -16,6 +18,9 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
+import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
+import kotlinx.rpc.protobuf.ProtobufEncodingException
+import kotlin.experimental.ExperimentalNativeApi
 
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
@@ -37,6 +42,43 @@ public actual inline fun withWireEncoder(
             WireEncoder(buffer).also(block).flush()
             writer.write(buffer)
         }
+    }
+}
+
+/**
+ * Encodes directly into the [writer]'s native buffer, which must be filled exactly.
+ */
+@PublishedApi
+internal fun encodeDirect(writer: NativeBufferMessageWriter, block: (WireEncoder) -> Unit) {
+    val expected = writer.remaining
+    if (expected == 0) {
+        encodeInto(null, 0, block)
+        return
+    }
+    UnsafeGrpcMessageWriterOperations.writeToTail(writer, expected) { pointer, start, end ->
+        // Checked inside the write so that a short encoding fails the writer.
+        encodeInto(pointer + start, end - start, block).also { count ->
+            check(count == expected) { "Protobuf encoded $count bytes instead of $expected" }
+        }
+    }
+}
+
+@OptIn(ExperimentalNativeApi::class)
+private fun encodeInto(base: CPointer<ByteVar>?, capacity: Int, block: (WireEncoder) -> Unit): Int {
+    val output = NativeBufferOutput(base, capacity)
+    val handle = EncoderHandle(output)
+    try {
+        val encoder = WireEncoderNative(handle)
+        block(encoder)
+        encoder.flush()
+        return output.byteCount
+    } catch (cause: ProtobufEncodingException) {
+        // A full output fails the next write, which hides that the declared size was too small,
+        // so we check specifically for that before rethrowing the reported exception.
+        output.checkWithinCapacity(cause)
+        throw cause
+    } finally {
+        handle.close()
     }
 }
 

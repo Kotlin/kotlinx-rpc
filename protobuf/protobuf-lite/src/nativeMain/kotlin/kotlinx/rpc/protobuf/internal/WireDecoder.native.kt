@@ -15,12 +15,14 @@ import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
-import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
-import kotlin.native.Platform
 
 @OptIn(ExperimentalForeignApi::class)
 internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder {
+    init {
+        requireLittleEndian()
+    }
+
     override var recursionDepth: Int = 0
     override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
 
@@ -313,17 +315,11 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
     }
 }
 
-@OptIn(ExperimentalNativeApi::class)
-private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
-    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-}
-
 /**
  * This constructor takes a [Source] (which must be a [Buffer]) because
  * the implementation ([WireDecoderNative]) depends on [Buffer]'s internal structure.
  */
 public actual fun WireDecoder(source: Source): WireDecoder {
-    ensureLittleEndian
     return WireDecoderNative(ZeroCopyInputSource(source as Buffer))
 }
 

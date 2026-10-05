@@ -2,21 +2,18 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.asStableRef
-import kotlinx.cinterop.convert
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.plus
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.usePinned
@@ -24,8 +21,6 @@ import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
-import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_delete
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_flush
@@ -62,25 +57,22 @@ import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32_no_tag
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64_no_tag
-import platform.posix.memcpy
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.Platform
+import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
 
-private interface EncoderOutput {
-    fun write(buf: CPointer<ByteVar>?, size: Int): Boolean
-}
-
-// The StableRef points to the output, so the buffered encoder's cleaner can collect
-// its handle. The direct encoder closes the handle before the storage scope ends.
-private class EncoderHandle(output: EncoderOutput) {
+// The StableRef points to the output, not the encoder, so a cleaner can close
+// the handle once the encoder is unreachable.
+internal class EncoderHandle(output: EncoderOutput) {
     private val context = StableRef.create(output)
     private var open = true
 
     val raw: CPointer<pw_encoder_t> = pw_encoder_new(context.asCPointer(), staticCFunction { ctx, buf, size ->
-        if (ctx == null || size < 0) return@staticCFunction false
-        if (size > 0 && buf == null) return@staticCFunction false
-        ctx.asStableRef<EncoderOutput>().get().write(buf?.reinterpret(), size)
+        when {
+            size == 0 -> true
+            ctx == null || buf == null || size < 0 -> false
+            else -> ctx.asStableRef<EncoderOutput>().get().write(buf.reinterpret(), size)
+        }
     }) ?: run {
         context.dispose()
         error("Failed to create proto wire encoder")
@@ -99,41 +91,21 @@ private class EncoderHandle(output: EncoderOutput) {
     }
 }
 
-private class BufferOutput(private val sink: Sink) : EncoderOutput {
-    override fun write(buf: CPointer<ByteVar>?, size: Int): Boolean {
-        if (size > 0) sink.writeFully(checkNotNull(buf), 0L, size)
-        return true
-    }
-}
-
-@OptIn(kotlinx.cinterop.UnsafeNumber::class)
-private class DirectOutput(private val base: CPointer<ByteVar>?, private val capacity: Int) : EncoderOutput {
-    var byteCount: Int = 0
-        private set
-
-    override fun write(buf: CPointer<ByteVar>?, size: Int): Boolean {
-        // Subtraction avoids overflowing when the shim reports a large chunk.
-        if (size > capacity - byteCount) return false
-        if (size > 0) memcpy(checkNotNull(base) + byteCount, checkNotNull(buf), size.convert())
-        byteCount += size
-        return true
-    }
-}
-
-internal class WireEncoderNative private constructor(
+/**
+ * Encodes into the [handle], which is closed either by the [cleaner] or by the encoder's creator.
+ */
+internal class WireEncoderNative(
     private val handle: EncoderHandle,
-    bufferBacked: Boolean = false,
+    @Suppress("unused") private val cleaner: Cleaner? = null,
 ) : WireEncoder {
-    constructor(sink: Sink) : this(EncoderHandle(BufferOutput(sink)), bufferBacked = true)
-
-    @OptIn(ExperimentalNativeApi::class)
-    @Suppress("unused")
-    private val cleaner = if (bufferBacked) createCleaner(handle) { it.close() } else null
+    init {
+        requireLittleEndian()
+    }
 
     internal val raw: CPointer<pw_encoder_t>
         get() = handle.requireOpen()
 
-    override fun flush() {
+    override fun flush() = checked {
         pw_encoder_flush(raw)
     }
 
@@ -280,7 +252,7 @@ internal class WireEncoderNative private constructor(
     }
 
     override fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int) {
-        raw
+        handle.requireOpen()
         require(offset >= 0 && offset + length <= bytes.size) { "Invalid offset or length" }
         if (length == 0) return
         bytes.usePinned { pinned ->
@@ -289,55 +261,15 @@ internal class WireEncoderNative private constructor(
     }
 
     override fun writeRawBytes(buffer: kotlinx.io.Buffer) {
-        raw
+        handle.requireOpen()
         super.writeRawBytes(buffer)
     }
-
-    companion object {
-        fun encodeDirect(writer: NativeBufferMessageWriter, block: (WireEncoder) -> Unit) {
-            val expected = writer.remaining
-            if (expected == 0) {
-                check(encodeInto(null, 0, block) == 0) { "Protobuf encoding exceeded the declared size" }
-                return
-            }
-            UnsafeGrpcMessageWriterOperations.writeToTail(writer, expected) { pointer, start, end ->
-                // Checked inside the write so that a short encoding fails the writer.
-                encodeInto(pointer + start, end - start, block).also { count ->
-                    check(count == expected) { "Protobuf encoded $count bytes instead of $expected" }
-                }
-            }
-        }
-
-        private fun encodeInto(base: CPointer<ByteVar>?, capacity: Int, block: (WireEncoder) -> Unit): Int {
-            val output = DirectOutput(base, capacity)
-            val handle = EncoderHandle(output)
-            try {
-                block(WireEncoderNative(handle))
-                check(pw_encoder_flush(handle.requireOpen())) {
-                    "Failed to encode protobuf message into native storage"
-                }
-                return output.byteCount
-            } finally {
-                // CodedOutputStream may still hold patch bytes until Trim or destruction.
-                handle.close()
-            }
-        }
-    }
-}
-
-@PublishedApi
-internal fun encodeDirect(writer: NativeBufferMessageWriter, block: (WireEncoder) -> Unit) {
-    WireEncoderNative.encodeDirect(writer, block)
 }
 
 @OptIn(ExperimentalNativeApi::class)
-private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
-    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-}
-
 public actual fun WireEncoder(sink: Sink): WireEncoder {
-    ensureLittleEndian
-    return WireEncoderNative(sink)
+    val handle = EncoderHandle(BufferOutput(sink))
+    return WireEncoderNative(handle, createCleaner(handle) { it.close() })
 }
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
