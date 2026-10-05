@@ -13,6 +13,7 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
 import kotlin.math.min
@@ -24,7 +25,7 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
     }
 
     override var recursionDepth: Int = 0
-    override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
+    override var recursionLimit: Int = ProtoConfig.DEFAULT_RECURSION_LIMIT
 
     // Keeps the input alive while the C++ decoder can access it.
     private val zeroCopyInput = StableRef.create(input)

@@ -6,7 +6,6 @@ package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * A bounded view of one received gRPC message, supplied by a gRPC runtime.

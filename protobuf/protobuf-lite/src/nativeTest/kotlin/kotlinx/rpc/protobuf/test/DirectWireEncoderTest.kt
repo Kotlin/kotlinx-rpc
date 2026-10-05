@@ -3,9 +3,9 @@
  */
 
 @file:OptIn(
-    kotlinx.cinterop.ExperimentalForeignApi::class,
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+    ExperimentalForeignApi::class,
+    ExperimentalRpcApi::class,
+    InternalRpcApi::class,
 )
 
 package kotlinx.rpc.protobuf.test
@@ -22,6 +22,8 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.withWireEncoder
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import test.groups.WithGroups
 import test.groups.invoke
 import test.nested.NestedOuter

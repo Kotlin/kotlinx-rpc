@@ -3,9 +3,9 @@
  */
 
 @file:OptIn(
-    kotlinx.cinterop.ExperimentalForeignApi::class,
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+    ExperimentalForeignApi::class,
+    ExperimentalRpcApi::class,
+    InternalRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.marshaller.test
@@ -15,6 +15,8 @@ import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

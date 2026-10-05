@@ -3,9 +3,9 @@
  */
 
 @file:OptIn(
-    kotlinx.cinterop.ExperimentalForeignApi::class,
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+    ExperimentalForeignApi::class,
+    ExperimentalRpcApi::class,
+    InternalRpcApi::class,
 )
 
 package kotlinx.rpc.protobuf.test
@@ -24,6 +24,8 @@ import kotlinx.rpc.protobuf.internal.NativeBufferZeroCopyInput
 import kotlinx.rpc.protobuf.internal.withWireDecoder
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import test.groups.WithGroups
 import test.groups.invoke
 import test.nested.NestedOuter

@@ -4,7 +4,7 @@
 
 @file:OptIn(
     ExperimentalForeignApi::class,
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
+    ExperimentalRpcApi::class,
     InternalRpcApi::class,
 )
 
@@ -14,6 +14,7 @@ import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
 

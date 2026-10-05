@@ -20,7 +20,6 @@ public abstract class AbstractGrpcMessageReader(
     public override val remaining: Int
         get() = size - consumed
 
-    /** Reads exactly [byteCount] bytes into a new array. */
     public override fun readByteArray(byteCount: Int): ByteArray {
         val result = ByteArray(byteCount)
         readTo(result)

@@ -13,7 +13,6 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @ExperimentalRpcApi
 public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
-    /** The exact number of bytes expected by this writer. */
     public override val size: Int,
 ) : GrpcMessageWriter {
     private var state: WriterState

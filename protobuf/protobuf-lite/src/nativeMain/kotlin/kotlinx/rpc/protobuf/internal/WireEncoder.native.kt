@@ -17,6 +17,7 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.usePinned
+import kotlinx.io.Buffer
 import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
@@ -260,7 +261,7 @@ internal class WireEncoderNative(
         }
     }
 
-    override fun writeRawBytes(buffer: kotlinx.io.Buffer) {
+    override fun writeRawBytes(buffer: Buffer) {
         handle.requireOpen()
         super.writeRawBytes(buffer)
     }

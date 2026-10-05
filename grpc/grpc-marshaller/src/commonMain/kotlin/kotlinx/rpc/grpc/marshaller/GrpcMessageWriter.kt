@@ -5,9 +5,7 @@
 package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Buffer
-import kotlinx.io.readByteArray
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
  * An exact-size destination supplied by a gRPC runtime.

@@ -5,8 +5,8 @@
 @file:OptIn(
     ExperimentalForeignApi::class,
     UnsafeNumber::class,
-    kotlinx.io.UnsafeIoApi::class,
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
+    UnsafeIoApi::class,
+    ExperimentalRpcApi::class,
     InternalRpcApi::class,
 )
 
@@ -15,7 +15,9 @@ package kotlinx.rpc.grpc.marshaller.internal
 import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.Source
+import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
+import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
 

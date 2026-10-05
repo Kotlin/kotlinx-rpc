@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class, ExperimentalForeignApi::class)
+@file:OptIn(InternalRpcApi::class, ExperimentalForeignApi::class)
 
 package kotlinx.rpc.protobuf.internal
 
@@ -19,6 +19,7 @@ import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlin.experimental.ExperimentalNativeApi
 
