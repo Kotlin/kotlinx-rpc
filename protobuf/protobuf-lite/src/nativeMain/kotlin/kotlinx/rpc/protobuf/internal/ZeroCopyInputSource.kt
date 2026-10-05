@@ -55,6 +55,9 @@ internal class ZeroCopyInputSource(private val inner: Buffer) : DecoderInput {
     private var latestReadSegementArray: Pinned<ByteArray>? = null
     private var closed = false
 
+    // includes the segment that was handed out by next() but not yet released
+    override val availableSize: Long get() = inner.size
+
     /**
      * Get access to a segment of continuous bytes in the underlying [Buffer].
      * The returned memory gets invalid with a call to `next(), backUp(), skip()` or `close()`.

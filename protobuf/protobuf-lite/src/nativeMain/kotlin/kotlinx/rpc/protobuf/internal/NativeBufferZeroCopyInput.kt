@@ -14,23 +14,27 @@ import kotlinx.cinterop.plus
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.value
 
-/** A protobuf input over a borrowed native buffer. Valid only within its reader's buffer scope. */
-internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, private val size: Int) : DecoderInput {
+/**
+ * A protobuf input over a borrowed native buffer. Valid only within its reader's buffer scope.
+ */
+internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, private val length: Int) : DecoderInput {
     init {
-        require(size >= 0)
-        require(size == 0 || base != null)
+        require(length >= 0)
+        require(length == 0 || base != null)
     }
 
     var position: Int = 0
         private set
     private var lastChunkSize: Int = 0
 
-    override fun next(outData: CPointer<CPointerVar<ByteVar>>, outSize: CPointer<IntVar>): Boolean {
-        if (position == size) return false
-        val count = size - position
-        outData.pointed.value = checkNotNull(base) + position
-        outSize.pointed.value = count
-        position = size
+    override val availableSize: Long get() = length.toLong()
+
+    override fun next(data: CPointer<CPointerVar<ByteVar>>, size: CPointer<IntVar>): Boolean {
+        if (position == length) return false
+        val count = length - position
+        data.pointed.value = checkNotNull(base) + position
+        size.pointed.value = count
+        position = length
         lastChunkSize = count
         return true
     }
@@ -44,7 +48,7 @@ internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, p
 
     override fun skip(count: Int): Boolean {
         lastChunkSize = 0
-        if (count < 0 || count > size - position) return false
+        if (count < 0 || count > length - position) return false
         position += count
         return true
     }

@@ -34,7 +34,7 @@ public abstract class NativeBufferMessageReader(size: Int) : AbstractGrpcMessage
         closed = true
     }
 
-    private fun checkOpen() {
+    public fun checkOpen() {
         check(!closed) { "The native buffer is closed. Readers are valid only during GrpcMarshaller.decode." }
     }
 

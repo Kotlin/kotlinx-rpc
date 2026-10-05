@@ -2,7 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+@file:OptIn(ExperimentalForeignApi::class)
 
 package kotlinx.rpc.protobuf.internal
 
@@ -13,75 +13,22 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
-import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
 import kotlin.native.Platform
-import kotlin.native.ref.createCleaner
 
 @OptIn(ExperimentalForeignApi::class)
-internal interface DecoderInput : AutoCloseable {
-    fun next(data: CPointer<CPointerVar<ByteVar>>, size: CPointer<IntVar>): Boolean
-    fun backUp(count: Int)
-    fun skip(count: Int): Boolean
-    fun byteCount(): Long
-}
-
-private interface DecoderTarget {
-    val input: DecoderInput
-    val availableSize: Long
-    fun closeNative(raw: CPointer<pw_decoder_t>)
-    fun registerCleaner(raw: CPointer<pw_decoder_t>): Any?
-
-    fun close(raw: CPointer<pw_decoder_t>) {
-        try {
-            // The CodedInputStream destructor may call backUp on the input.
-            closeNative(raw)
-        } finally {
-            input.close()
-        }
-    }
-}
-
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
-private class BufferSourceTarget(private val source: Buffer) : DecoderTarget {
-    override val input: DecoderInput = ZeroCopyInputSource(source)
-    override val availableSize: Long get() = source.size
-    override fun closeNative(raw: CPointer<pw_decoder_t>) {
-        pw_decoder_close(raw)
-    }
-    override fun registerCleaner(raw: CPointer<pw_decoder_t>): Any = createCleaner(raw) { pw_decoder_delete(it) }
-}
-
-@OptIn(ExperimentalForeignApi::class)
-private class NativeBufferTarget(base: CPointer<ByteVar>?, size: Int) : DecoderTarget {
-    private val bufferInput = NativeBufferZeroCopyInput(base, size)
-    override val input: DecoderInput = bufferInput
-    override val availableSize: Long = size.toLong()
-    val position: Int get() = bufferInput.position
-    override fun closeNative(raw: CPointer<pw_decoder_t>) {
-        pw_decoder_delete(raw)
-    }
-    override fun registerCleaner(raw: CPointer<pw_decoder_t>): Any? = null
-}
-
-@OptIn(ExperimentalForeignApi::class)
-internal class WireDecoderNative private constructor(
-    private val target: DecoderTarget,
-) : WireDecoder {
-    constructor(source: Buffer) : this(BufferSourceTarget(source))
-
+internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder {
     override var recursionDepth: Int = 0
     override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
 
-    // Keeps the callback target alive while the C++ decoder can access it.
-    private val zeroCopyInput = StableRef.create(target.input)
+    // Keeps the input alive while the C++ decoder can access it.
+    private val zeroCopyInput = StableRef.create(input)
     private var open = true
 
-    // Bridge the CodedInputStream to either the Buffer or the scoped native buffer.
+    // Bridges the CodedInputStream to the input.
     private val rawPointer: CPointer<pw_decoder_t> = run {
         val zeroCopyCInput = cValue<pw_zero_copy_input> {
             ctx = zeroCopyInput.asCPointer()
@@ -102,13 +49,9 @@ internal class WireDecoderNative private constructor(
             ?: error("Failed to create proto wire decoder")
     }
 
-    // Retaining the cleaner ties the Buffer decoder's native allocation to its lifetime.
-    @Suppress("UnusedPrivateProperty")
-    private val rawCleaner = target.registerCleaner(rawPointer)
-
     internal val raw: CPointer<pw_decoder_t>
         get() {
-            check(open) { "The direct decoder has left its storage scope" }
+            check(open) { "The WireDecoder is closed" }
             return rawPointer
         }
 
@@ -116,9 +59,13 @@ internal class WireDecoderNative private constructor(
         if (!open) return
         open = false
         try {
-            target.close(rawPointer)
+            pw_decoder_delete(rawPointer)
         } finally {
-            zeroCopyInput.dispose()
+            try {
+                input.close()
+            } finally {
+                zeroCopyInput.dispose()
+            }
         }
     }
 
@@ -237,7 +184,7 @@ internal class WireDecoderNative private constructor(
         if (length < 0) throw ProtobufDecodingException.negativeSize()
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
-        if (target.availableSize < length) throw ProtobufDecodingException.truncatedMessage()
+        if (input.availableSize < length) throw ProtobufDecodingException.truncatedMessage()
         if (length == 0) return ByteString() // actually an empty array (no error)
         val bytes = ByteArray(length)
         bytes.usePinned {
@@ -299,7 +246,7 @@ internal class WireDecoderNative private constructor(
     )
 
     private fun <T : Any> readPackedVarInternal(read: () -> T) = readPackedVarInternal(
-        size = { target.availableSize },
+        size = { input.availableSize },
         readFn = read
     )
 
@@ -321,7 +268,7 @@ internal class WireDecoderNative private constructor(
         // fetch the size of the packed repeated field
         var byteLen = readInt32()
         if (byteLen < 0) throw ProtobufDecodingException.negativeSize()
-        if (target.availableSize < byteLen) throw ProtobufDecodingException.truncatedMessage()
+        if (input.availableSize < byteLen) throw ProtobufDecodingException.truncatedMessage()
         if (byteLen % sizeBytes != 0) throw ProtobufDecodingException.truncatedMessage()
         if (byteLen == 0) return emptyList()  // actually an empty list (no error)
 
@@ -364,33 +311,7 @@ internal class WireDecoderNative private constructor(
     private fun Boolean.checkError() {
         if (!this) throw ProtobufDecodingException.genericParsingError()
     }
-
-    companion object {
-        fun <R> decodeDirect(reader: NativeBufferMessageReader, block: (WireDecoder) -> R): R {
-            var result: Result<R>? = null
-            if (reader.remaining == 0) {
-                // The reader exposes no pointer for an empty message, but still enforces its lifetime.
-                UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ -> 0 }
-                val target = NativeBufferTarget(null, 0)
-                WireDecoderNative(target).use { result = runCatching { block(it) } }
-            } else {
-                UnsafeGrpcMessageReaderOperations.readFromHead(reader) { base, start, end ->
-                    val size = end - start
-                    val target = NativeBufferTarget(base + start, size)
-                    WireDecoderNative(target).use { decoder ->
-                        result = runCatching { block(decoder) }
-                    }
-                    target.position
-                }
-            }
-            return checkNotNull(result).getOrThrow()
-        }
-    }
 }
-
-@PublishedApi
-internal fun <R> directDecode(reader: NativeBufferMessageReader, block: (WireDecoder) -> R): R =
-    WireDecoderNative.decodeDirect(reader, block)
 
 @OptIn(ExperimentalNativeApi::class)
 private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
@@ -403,7 +324,7 @@ private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
  */
 public actual fun WireDecoder(source: Source): WireDecoder {
     ensureLittleEndian
-    return WireDecoderNative(source as Buffer)
+    return WireDecoderNative(ZeroCopyInputSource(source as Buffer))
 }
 
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
