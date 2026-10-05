@@ -3,11 +3,11 @@
  */
 
 @file:OptIn(
-    kotlinx.cinterop.ExperimentalForeignApi::class,
-    kotlinx.cinterop.UnsafeNumber::class,
+    ExperimentalForeignApi::class,
+    UnsafeNumber::class,
     kotlinx.io.UnsafeIoApi::class,
     kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
+    InternalRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.marshaller.internal
@@ -16,34 +16,30 @@ import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.unsafe.UnsafeBufferOperations
-import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
 
-/** A reader over native storage whose pointer is valid only inside [accessStorage]. */
+/** A reader over a native buffer whose pointer is valid only inside [accessBuffer]. */
 @InternalRpcApi
-public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(size), AutoCloseable {
-    private val scopedAccess = ScopedNativeRegionAccess()
+public abstract class NativeBufferMessageReader(size: Int) : AbstractGrpcMessageReader(size), AutoCloseable {
+    private var closed: Boolean = false
     // Cached copied buffer after first call to [asSource]
     private var source: Buffer? = null
 
-    /** Invokes [block] with the storage base address; null is allowed only for an empty message. */
-    public abstract fun accessStorage(block: (base: CPointer<ByteVar>?) -> Boolean): Boolean
+    /** Invokes [block] once with the buffer base address; null is allowed only for an empty message. */
+    public abstract fun accessBuffer(block: NativePointerCallback<Unit>)
 
     /** Invalidates this reader and every pointer obtained through it. Repeated calls are safe. */
     public final override fun close() {
-        try {
-            scopedAccess.close()
-        } finally {
-            onClose()
-        }
+        closed = true
     }
 
-    /** Clears any borrowed storage reference when the reader closes. */
-    protected open fun onClose() {}
+    private fun checkOpen() {
+        check(!closed) { "The native buffer is closed. Readers are valid only during GrpcMarshaller.decode." }
+    }
 
     override fun readByte(): Byte {
-        scopedAccess.ensureOpen()
+        checkOpen()
         if (remaining == 0) {
             throw IndexOutOfBoundsException(
                 "GrpcMessageReader.readByte cannot read beyond a message of size $size: no bytes remain. " +
@@ -59,7 +55,7 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
     }
 
     override fun readTo(bytes: ByteArray, startIndex: Int, endIndex: Int) {
-        scopedAccess.ensureOpen()
+        checkOpen()
         if (startIndex !in 0..endIndex || endIndex > bytes.size) {
             throw IndexOutOfBoundsException(
                 "GrpcMessageReader.readTo received range [$startIndex, $endIndex) " +
@@ -84,7 +80,7 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
     }
 
     override fun asSource(): Source {
-        scopedAccess.ensureOpen()
+        checkOpen()
         source?.let { return it }
         val copied = Buffer()
         readFromHead { pointer, start, end ->
@@ -109,13 +105,13 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
     internal fun readFromHead(
         readAction: (pointer: CPointer<ByteVar>, startIndex: Int, endIndexExclusive: Int) -> Int,
     ): Int {
-        scopedAccess.ensureOpen()
+        checkOpen()
         if (remaining == 0) return 0
         val start = size - remaining
-        val count = scopedAccess.access(::accessStorage) { pointer ->
+        val count = GuardedNativeBufferAccess.access(::accessBuffer) { pointer ->
             val base = checkNotNull(pointer) {
-                "NativeRegionMessageReader.accessStorage supplied a null pointer for a non-empty message " +
-                    "(size=$size). A non-null base address is required while the storage block runs."
+                "NativeBufferMessageReader.accessBuffer supplied a null pointer for a non-empty message " +
+                    "(size=$size). A non-null base address is required while the buffer block runs."
             }
             readAction(base, start, size).also { count ->
                 check(count in 0..remaining) {
@@ -129,15 +125,15 @@ public abstract class NativeRegionMessageReader(size: Int) : GrpcMessageReader(s
     }
 }
 
-/** Unsafe access to the unread head of a [NativeRegionMessageReader]. */
+/** Unsafe access to the unread head of a [NativeBufferMessageReader]. */
 @InternalRpcApi
 public object UnsafeGrpcMessageReaderOperations {
     /**
-     * Calls [readAction] with the storage base and unread range. The returned byte count is committed.
+     * Calls [readAction] with the buffer base and unread range. The returned byte count is committed.
      * The pointer must not escape the action, and the action must not call another reader operation.
      */
     public inline fun readFromHead(
-        reader: NativeRegionMessageReader,
+        reader: NativeBufferMessageReader,
         crossinline readAction: (pointer: CPointer<ByteVar>, startIndex: Int, endIndexExclusive: Int) -> Int,
     ): Int = reader.readFromHead { pointer, start, end -> readAction(pointer, start, end) }
 }

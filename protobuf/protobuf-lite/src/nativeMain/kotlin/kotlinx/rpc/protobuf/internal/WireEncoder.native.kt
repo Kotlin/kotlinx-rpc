@@ -24,7 +24,7 @@ import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_delete
@@ -294,20 +294,17 @@ internal class WireEncoderNative private constructor(
     }
 
     companion object {
-        fun encodeDirect(writer: NativeRegionMessageWriter, block: (WireEncoder) -> Unit) {
-            try {
-                val expected = writer.remaining
-                if (expected == 0) {
-                    check(encodeInto(null, 0, block) == 0) { "Protobuf encoding exceeded the declared size" }
-                    return
+        fun encodeDirect(writer: NativeBufferMessageWriter, block: (WireEncoder) -> Unit) {
+            val expected = writer.remaining
+            if (expected == 0) {
+                check(encodeInto(null, 0, block) == 0) { "Protobuf encoding exceeded the declared size" }
+                return
+            }
+            UnsafeGrpcMessageWriterOperations.writeToTail(writer, expected) { pointer, start, end ->
+                // Checked inside the write so that a short encoding fails the writer.
+                encodeInto(pointer + start, end - start, block).also { count ->
+                    check(count == expected) { "Protobuf encoded $count bytes instead of $expected" }
                 }
-                val count = UnsafeGrpcMessageWriterOperations.writeToTail(writer, expected) { pointer, start, end ->
-                    encodeInto(pointer + start, end - start, block)
-                }
-                check(count == expected) { "Protobuf encoded $count bytes instead of $expected" }
-            } catch (cause: Throwable) {
-                writer.discard()
-                throw cause
             }
         }
 
@@ -329,7 +326,7 @@ internal class WireEncoderNative private constructor(
 }
 
 @PublishedApi
-internal fun encodeDirect(writer: NativeRegionMessageWriter, block: (WireEncoder) -> Unit) {
+internal fun encodeDirect(writer: NativeBufferMessageWriter, block: (WireEncoder) -> Unit) {
     WireEncoderNative.encodeDirect(writer, block)
 }
 

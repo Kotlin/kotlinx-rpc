@@ -14,8 +14,8 @@ import kotlinx.cinterop.plus
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.value
 
-/** A protobuf input over a borrowed contiguous region. Valid only within its reader's storage scope. */
-internal class NativeRegionZeroCopyInput(private val base: CPointer<ByteVar>?, private val size: Int) : DecoderInput {
+/** A protobuf input over a borrowed native buffer. Valid only within its reader's buffer scope. */
+internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, private val size: Int) : DecoderInput {
     init {
         require(size >= 0)
         require(size == 0 || base != null)

@@ -30,7 +30,7 @@ For each `.proto` file, the **protobuf plugin** produces three Kotlin files:
 | `_rpc_internal/<ProtoFile>.kt` | `<proto_package>` | Internal implementation classes, marshallers, descriptors, encode/decode |
 
 Each generated `MARSHALLER` is an object extending `ProtoGrpcMarshaller`. It prepares an
-exact-size encoded message and decodes through a bounded `GrpcMessageReader`.
+exact-size encoded message and decodes through a bounded `AbstractGrpcMessageReader`.
 
 The **gRPC plugin** produces one file per `.proto` file:
 

@@ -12,7 +12,7 @@ package kotlinx.rpc.grpc.marshaller.test
 
 import kotlinx.cinterop.*
 import kotlinx.io.readByteArray
-import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -22,7 +22,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
-class NativeRegionMessageReaderTest {
+class NativeBufferMessageReaderTest {
     @Test
     fun commitsOnlyReportedBytesAndChecksBounds() = withReader(byteArrayOf(1, 2, 3, 4)) { reader ->
         var calls = 0
@@ -54,24 +54,13 @@ class NativeRegionMessageReaderTest {
     }
 
     @Test
-    fun nestedReadInvalidatesReaderEvenIfCaught() = withReader(byteArrayOf(1)) { reader ->
-        assertFailsWith<IllegalStateException> {
-            UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ ->
-                assertFailsWith<IllegalStateException> { reader.readByte() }
-                1
-            }
-        }
-        assertFalse(reader.scopeOpen)
-        assertFailsWith<IllegalStateException> { reader.readByte() }
-    }
-
-    @Test
-    fun actionExceptionIsRethrownOutsideStorageScope() = withReader(byteArrayOf(1)) { reader ->
+    fun actionExceptionIsRethrownOutsideBufferScope() = withReader(byteArrayOf(1)) { reader ->
         val failure = IllegalArgumentException("decode failed")
         val caught = assertFailsWith<IllegalArgumentException> {
             UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ -> throw failure }
         }
         assertTrue(caught === failure)
+        assertFalse(reader.thrownThroughBuffer)
         assertFalse(reader.scopeOpen)
         assertEquals(1, reader.remaining)
     }
@@ -123,28 +112,14 @@ class NativeRegionMessageReaderTest {
     }
 
     @Test
-    fun emptyMessageNeedsNoPointerScope() = withReader(byteArrayOf()) { reader ->
+    fun emptyMessageNeedsNoBufferScope() = withReader(byteArrayOf()) { reader ->
         assertContentEquals(byteArrayOf(), reader.readByteArray())
         assertEquals(0, UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ ->
-            error("An empty region must not expose a pointer")
+            error("An empty buffer must not expose a pointer")
         })
         assertContentEquals(byteArrayOf(), reader.asSource().readByteArray())
         assertEquals(0, reader.scopeCount)
         assertFailsWith<IndexOutOfBoundsException> { reader.readByte() }
-    }
-
-    @Test
-    fun storageCannotInvokeActionTwice() = withReader(byteArrayOf(1)) { reader ->
-        reader.invokeTwice = true
-        var calls = 0
-        assertFailsWith<IllegalStateException> {
-            UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ ->
-                calls++
-                1
-            }
-        }
-        assertEquals(1, calls)
-        assertEquals(1, reader.remaining)
     }
 
     private inline fun withReader(bytes: ByteArray, action: (HeapReader) -> Unit) {
@@ -158,24 +133,24 @@ class NativeRegionMessageReaderTest {
     }
 }
 
-private class HeapReader(bytes: ByteArray) : NativeRegionMessageReader(bytes.size) {
+private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.size) {
     private val storage: CPointer<ByteVar> = nativeHeap.allocArray(maxOf(size, 1))
     var scopeCount: Int = 0
     var scopeOpen: Boolean = false
-    var invokeTwice: Boolean = false
+    var thrownThroughBuffer: Boolean = false
 
     init {
         for (index in bytes.indices) storage[index] = bytes[index]
     }
 
-    override fun accessStorage(block: (base: CPointer<ByteVar>?) -> Boolean): Boolean {
+    override fun accessBuffer(block: (base: CPointer<ByteVar>?) -> Unit) {
         scopeCount++
         scopeOpen = true
         try {
-            val pointer = if (size == 0) null else storage
-            val accepted = block(pointer)
-            if (invokeTwice) block(pointer)
-            return accepted
+            block(if (size == 0) null else storage)
+        } catch (cause: Throwable) {
+            thrownThroughBuffer = true
+            throw cause
         } finally {
             scopeOpen = false
         }

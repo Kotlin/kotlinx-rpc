@@ -13,7 +13,7 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
-import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
@@ -57,11 +57,11 @@ private class BufferSourceTarget(private val source: Buffer) : DecoderTarget {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private class NativeRegionTarget(base: CPointer<ByteVar>?, size: Int) : DecoderTarget {
-    private val regionInput = NativeRegionZeroCopyInput(base, size)
-    override val input: DecoderInput = regionInput
+private class NativeBufferTarget(base: CPointer<ByteVar>?, size: Int) : DecoderTarget {
+    private val bufferInput = NativeBufferZeroCopyInput(base, size)
+    override val input: DecoderInput = bufferInput
     override val availableSize: Long = size.toLong()
-    val position: Int get() = regionInput.position
+    val position: Int get() = bufferInput.position
     override fun closeNative(raw: CPointer<pw_decoder_t>) {
         pw_decoder_delete(raw)
     }
@@ -81,7 +81,7 @@ internal class WireDecoderNative private constructor(
     private val zeroCopyInput = StableRef.create(target.input)
     private var open = true
 
-    // Bridge the CodedInputStream to either the Buffer or the scoped native region.
+    // Bridge the CodedInputStream to either the Buffer or the scoped native buffer.
     private val rawPointer: CPointer<pw_decoder_t> = run {
         val zeroCopyCInput = cValue<pw_zero_copy_input> {
             ctx = zeroCopyInput.asCPointer()
@@ -366,17 +366,17 @@ internal class WireDecoderNative private constructor(
     }
 
     companion object {
-        fun <R> decodeDirect(reader: NativeRegionMessageReader, block: (WireDecoder) -> R): R {
+        fun <R> decodeDirect(reader: NativeBufferMessageReader, block: (WireDecoder) -> R): R {
             var result: Result<R>? = null
             if (reader.remaining == 0) {
                 // The reader exposes no pointer for an empty message, but still enforces its lifetime.
                 UnsafeGrpcMessageReaderOperations.readFromHead(reader) { _, _, _ -> 0 }
-                val target = NativeRegionTarget(null, 0)
+                val target = NativeBufferTarget(null, 0)
                 WireDecoderNative(target).use { result = runCatching { block(it) } }
             } else {
                 UnsafeGrpcMessageReaderOperations.readFromHead(reader) { base, start, end ->
                     val size = end - start
-                    val target = NativeRegionTarget(base + start, size)
+                    val target = NativeBufferTarget(base + start, size)
                     WireDecoderNative(target).use { decoder ->
                         result = runCatching { block(decoder) }
                     }
@@ -389,7 +389,7 @@ internal class WireDecoderNative private constructor(
 }
 
 @PublishedApi
-internal fun <R> directDecode(reader: NativeRegionMessageReader, block: (WireDecoder) -> R): R =
+internal fun <R> directDecode(reader: NativeBufferMessageReader, block: (WireDecoder) -> R): R =
     WireDecoderNative.decodeDirect(reader, block)
 
 @OptIn(ExperimentalNativeApi::class)

@@ -2,7 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
 
 package kotlinx.rpc.grpc.marshaller.internal
 
@@ -18,7 +18,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 public class BufferMessageWriter(
     public val buffer: Buffer,
     size: Int,
-) : GrpcMessageWriter(size) {
+) : AbstractGrpcMessageWriter(size) {
     init {
         require(buffer.size == 0L) { "The destination Buffer must be empty" }
     }
@@ -57,7 +57,7 @@ public class BufferMessageWriter(
 @InternalRpcApi
 public class ByteArrayMessageWriter(
     public val array: ByteArray,
-) : GrpcMessageWriter(array.size) {
+) : AbstractGrpcMessageWriter(array.size) {
     override fun writeByte(byte: Byte) {
         recordWrite(1) { array[written] = byte }
     }
@@ -90,7 +90,7 @@ public class ByteArrayMessageWriter(
 public class BufferMessageReader(
     public val buffer: Buffer,
     size: Int,
-) : GrpcMessageReader(size) {
+) : AbstractGrpcMessageReader(size) {
     private var sourceProvided: Boolean = false
 
     init {
@@ -126,7 +126,7 @@ public class BufferMessageReader(
 @InternalRpcApi
 public class ByteArrayMessageReader(
     public val array: ByteArray,
-) : GrpcMessageReader(array.size) {
+) : AbstractGrpcMessageReader(array.size) {
     private var position: Int = 0
     private var source: Buffer? = null
 

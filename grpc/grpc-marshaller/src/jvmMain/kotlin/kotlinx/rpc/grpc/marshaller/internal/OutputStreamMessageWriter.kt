@@ -2,11 +2,10 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(kotlinx.rpc.internal.utils.InternalRpcApi::class)
+@file:OptIn(InternalRpcApi::class)
 
 package kotlinx.rpc.grpc.marshaller.internal
 
-import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.io.OutputStream
 
@@ -15,7 +14,7 @@ import java.io.OutputStream
 public class OutputStreamMessageWriter(
     private val output: OutputStream,
     size: Int,
-) : GrpcMessageWriter(size) {
+) : AbstractGrpcMessageWriter(size) {
     override fun writeByte(byte: Byte) {
         recordWrite(1) { output.write(byte.toInt() and 0xff) }
     }

@@ -17,10 +17,10 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
-import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.NativeRegionZeroCopyInput
+import kotlinx.rpc.protobuf.internal.NativeBufferZeroCopyInput
 import kotlinx.rpc.protobuf.internal.withWireDecoder
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
@@ -252,7 +252,7 @@ class DirectWireDecoderTest {
         val base = allocArray<ByteVar>(4)
         val data = alloc<CPointerVar<ByteVar>>()
         val size = alloc<IntVar>()
-        val input = NativeRegionZeroCopyInput(base, 4)
+        val input = NativeBufferZeroCopyInput(base, 4)
         assertTrue(input.next(data.ptr, size.ptr))
         assertEquals(base, data.value)
         assertEquals(4, size.value)
@@ -264,7 +264,7 @@ class DirectWireDecoderTest {
         assertEquals(2, size.value)
         assertFalse(input.skip(1))
         assertEquals(4L, input.byteCount())
-        assertFailsWith<IllegalArgumentException> { NativeRegionZeroCopyInput(null, 1) }
+        assertFailsWith<IllegalArgumentException> { NativeBufferZeroCopyInput(null, 1) }
         Unit
     }
 
@@ -274,13 +274,14 @@ class DirectWireDecoderTest {
     }
 }
 
-private class HeapReader(bytes: ByteArray) : NativeRegionMessageReader(bytes.size) {
+private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.size) {
     private val storage = nativeHeap.allocArray<ByteVar>(maxOf(size, 1))
 
     init { for (index in bytes.indices) storage[index] = bytes[index] }
 
-    override fun accessStorage(block: (CPointer<ByteVar>?) -> Boolean): Boolean =
+    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
         block(if (size == 0) null else storage)
+    }
 
     fun overwrite() { for (index in 0 until size) storage[index] = 0 }
     fun release() { nativeHeap.free(storage) }

@@ -19,7 +19,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
-import kotlinx.rpc.grpc.marshaller.internal.NativeRegionMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.withWireEncoder
 import test.groups.WithGroups
@@ -42,11 +42,11 @@ class DirectWireEncoderTest {
         val direct = HeapMessageWriter(expected.size)
         try {
             marshaller.prepare(message).writeTo(direct)
-            direct.seal()
+            assertEquals(0, direct.remaining)
             assertContentEquals(expected, direct.snapshot())
             assertEquals(if (expected.isEmpty()) 0 else 1, direct.scopes)
         } finally {
-            direct.discard()
+            direct.release()
         }
     }
 
@@ -157,9 +157,9 @@ class DirectWireEncoderTest {
         val writer = HeapMessageWriter(2)
         try {
             assertFails { withWireEncoder(writer) { it.writeBytes(1, ByteArray(1024)) } }
-            assertFailsWith<IllegalStateException> { writer.seal() }
+            assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 
@@ -168,9 +168,9 @@ class DirectWireEncoderTest {
         val writer = HeapMessageWriter(8)
         try {
             assertFailsWith<IllegalStateException> { withWireEncoder(writer) { it.writeBool(1, true) } }
-            assertFailsWith<IllegalStateException> { writer.seal() }
+            assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 
@@ -180,22 +180,20 @@ class DirectWireEncoderTest {
         try {
             assertFailsWith<IllegalStateException> { withWireEncoder(writer) { it.writeBool(1, true) } }
             assertFailsWith<IllegalStateException> { writer.write(ByteArray(6)) }
-            assertFailsWith<IllegalStateException> { writer.seal() }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 
     @Test
-    fun failedEmptyEncodingCannotBeSealed() {
+    fun failedEmptyEncodingPropagatesFailure() {
         val writer = HeapMessageWriter(0)
         try {
             assertFailsWith<IllegalArgumentException> {
                 withWireEncoder(writer) { throw IllegalArgumentException("encode failed") }
             }
-            assertFailsWith<IllegalStateException> { writer.seal() }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 
@@ -208,13 +206,13 @@ class DirectWireEncoderTest {
                 escaped = encoder
                 encoder.writeBool(1, true)
             }
-            writer.seal()
+            assertEquals(0, writer.remaining)
             assertFailsWith<IllegalStateException> { escaped!!.writeBool(2, true) }
             assertFailsWith<IllegalStateException> { escaped!!.flush() }
             assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(byteArrayOf(), 0, 0) }
             assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(Buffer()) }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 
@@ -232,14 +230,14 @@ class DirectWireEncoderTest {
             }
             assertEquals(failure, caught)
             assertFailsWith<IllegalStateException> { escaped!!.writeBool(1, true) }
-            assertFailsWith<IllegalStateException> { writer.seal() }
+            assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
-            writer.discard()
+            writer.release()
         }
     }
 }
 
-private class HeapMessageWriter(size: Int) : NativeRegionMessageWriter(size) {
+private class HeapMessageWriter(size: Int) : NativeBufferMessageWriter(size) {
     private val allocation = nativeHeap.allocArray<ByteVar>(size + 2)
     private var released = false
     var scopes = 0
@@ -250,14 +248,12 @@ private class HeapMessageWriter(size: Int) : NativeRegionMessageWriter(size) {
         allocation[size + 1] = 0x5a.toByte()
     }
 
-    override fun accessStorage(block: (CPointer<ByteVar>?) -> Boolean): Boolean {
+    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
         scopes++
-        return block(allocation + 1)
+        block(allocation + 1)
     }
 
-    override fun onSeal() = Unit
-
-    override fun onDiscard() {
+    fun release() {
         if (!released) {
             assertGuardsIntact()
             released = true
