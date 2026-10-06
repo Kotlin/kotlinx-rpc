@@ -16,6 +16,7 @@ public fun main() {
         .addService(EchoServiceImpl())
         .addService(GreeterServiceImpl())
         .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
+        .addService(ServerInterceptors.intercept(MalformedResponseTestService(registry), scenarioInterceptor))
         .addService(GrpcClientControlService(registry))
         .build()
     try {

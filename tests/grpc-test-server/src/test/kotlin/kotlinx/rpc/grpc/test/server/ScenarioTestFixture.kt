@@ -35,7 +35,7 @@ import kxrpc.testing.ScenarioDiagnostics
 import kotlin.test.assertEquals
 
 /**
- * A test server on an ephemeral port with the scenario-aware interop service and the control service,
+ * A test server on an ephemeral port with the scenario-aware interop, malformed-response, and control services,
  * wired like the real test server, plus a control client and a [dataChannel] for data-plane calls.
  */
 internal class ScenarioTestFixture : AutoCloseable {
@@ -44,6 +44,7 @@ internal class ScenarioTestFixture : AutoCloseable {
     private val scenarioInterceptor = InteropMetadataInterceptor(registry)
     private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
         .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
+        .addService(ServerInterceptors.intercept(MalformedResponseTestService(registry), scenarioInterceptor))
         .addService(GrpcClientControlService(registry))
         .build()
         .start()
@@ -172,6 +173,14 @@ internal class AwaitingObserver<T : Any> : StreamObserver<T> {
     }
 
     fun hasEvent(): Boolean = events.isNotEmpty()
+
+    /** Awaits events up to and including the terminal completion or error. */
+    fun awaitUntilTerminal(): List<ObserverEvent<T>> = buildList {
+        do {
+            val event = awaitEvent()
+            add(event)
+        } while (event is ObserverEvent.Value)
+    }
 
     private fun awaitEvent(): ObserverEvent<T> {
         return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("Timed out waiting for stream event")
