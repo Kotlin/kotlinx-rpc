@@ -15,11 +15,29 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
-/** Forwards loopback TCP connections until [close] resets every accepted connection. */
+/**
+ * Forwards loopback TCP connections to [target] until [close] resets every accepted connection.
+ *
+ * Simulates a lost connection for [DisposableEndpointManager]. Shutting down the gRPC server itself would end its
+ * connections through HTTP/2, for example with `GOAWAY` or stream resets, which a client can handle as an orderly
+ * shutdown. The proxy sits below HTTP/2 and closes both sockets with a TCP `RST` instead, so the client sees the
+ * connection disappear without any further frames, as with a network failure. The endpoint closes the proxy before
+ * its server, so no shutdown frames reach the client first.
+ *
+ * Forwarding copies raw bytes and knows nothing about gRPC. Each client connection gets its own connection to
+ * [target], served by one thread per direction.
+ *
+ * @param target Address of the gRPC server to forward to. The proxy listens on the same host.
+ */
 internal class ResettingTcpProxy(
     target: InetSocketAddress,
 ) : AutoCloseable {
     private val stopped = AtomicBoolean()
+
+    /**
+     * Connections that are still open. Whoever removes a connection from this set ends it: a forwarding thread
+     * closes it normally, [close] resets it. This way every connection ends exactly once.
+     */
     private val connections = ConcurrentHashMap.newKeySet<Connection>()
     private val listener = ServerSocket().apply {
         reuseAddress = true
@@ -35,6 +53,12 @@ internal class ResettingTcpProxy(
         acceptExecutor.execute { acceptConnections(target) }
     }
 
+    /**
+     * Accepts client connections until [close] stops the listener, which makes [ServerSocket.accept] throw.
+     *
+     * [stopped] is checked again after each step, so that a connection accepted while the proxy is closing is reset
+     * instead of forwarded.
+     */
     private fun acceptConnections(target: InetSocketAddress) {
         while (!stopped.get()) {
             val client = try {
@@ -73,6 +97,12 @@ internal class ResettingTcpProxy(
         }
     }
 
+    /**
+     * Copies bytes from [source] to [destination] until either side ends, then closes the whole connection.
+     *
+     * An end of stream in one direction closes both directions, since TCP half-close is not forwarded. gRPC does
+     * not rely on it, as HTTP/2 signals the end of a stream in frames.
+     */
     private fun forward(connection: Connection, source: Socket, destination: Socket) {
         try {
             source.getInputStream().copyTo(destination.getOutputStream())
@@ -102,6 +132,12 @@ internal class ResettingTcpProxy(
         }
     }
 
+    /**
+     * The client socket accepted by the proxy and the server socket opened for it.
+     *
+     * [close] ends both sockets normally with a TCP `FIN`; [reset] aborts both with a TCP `RST`. Only the first call
+     * of either has an effect.
+     */
     private class Connection(
         private val client: Socket,
         private val server: Socket,
@@ -128,6 +164,7 @@ internal class ResettingTcpProxy(
     }
 }
 
+/** Creates numbered daemon threads, so that proxy threads never keep the server process alive. */
 private fun daemonThreadFactory(prefix: String): (Runnable) -> Thread {
     val nextId = AtomicInteger()
     return { task ->
@@ -135,6 +172,10 @@ private fun daemonThreadFactory(prefix: String): (Runnable) -> Thread {
     }
 }
 
+/**
+ * Makes the next [Socket.close] send a TCP `RST` and discard unsent data, instead of a `FIN` after flushing.
+ * A linger timeout of zero selects this abortive close.
+ */
 private fun Socket.enableResetOnClose() {
     try {
         setSoLinger(true, 0)

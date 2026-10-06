@@ -175,11 +175,31 @@ internal class InteropTestService(
         return ResponseChunk(delayMicroseconds = intervalUs.toLong(), payloadSize = size)
     }
 
+    /**
+     * Sends the responses of one streaming call in order, each after its requested interval.
+     *
+     * The service handlers [enqueue] response chunks as requests arrive and call [completeInput] once no more will
+     * follow. The chunks are sent one at a time from the shared [responseExecutor]: a chunk is scheduled only after
+     * the previous one was sent, so each interval counts from the previous response and the order is preserved.
+     *
+     * With response readiness enabled in the scenario, [flowControl] can hold a response back. Nothing is scheduled
+     * while it does, and [resumeResponses] restarts delivery once the client is ready again. Completion is never held
+     * back, as it adds no response message.
+     *
+     * The handlers call in on grpc-java's call executor, while delivery runs on [responseExecutor], so all state is
+     * guarded by this dispatcher's monitor.
+     *
+     * @param responseObserver The observer the responses are sent to.
+     * @param controlsInboundDemand Whether the call streams requests, so that manual inbound demand applies to it.
+     */
     private inner class ResponseDispatcher(
         private val responseObserver: StreamObserver<StreamingOutputCallResponse>,
         controlsInboundDemand: Boolean,
     ) {
+        /** Chunks not sent yet, ending with [COMPLETION_CHUNK] once [completeInput] was called. */
         private val chunks = ArrayDeque<ResponseChunk>()
+
+        /** `null` unless the scenario configures flow control that applies to this call. */
         private val flowControl = FlowControlSupport.create(
             registry = registry,
             responseObserver = responseObserver,
@@ -187,10 +207,16 @@ internal class InteropTestService(
             resumeResponses = ::resumeResponses,
             cancelResponses = ::cancelFromTransport,
         )
+        /** Whether a delivery is pending on [responseExecutor]. At most one is, which keeps responses in order. */
         private var scheduled: Boolean = false
+
+        /** Set when the call was cancelled by the service or the client. Nothing is sent afterwards. */
         private var cancelled: Boolean = false
+
+        /** The error that ended delivery, after which no more chunks are accepted. */
         private var failure: Throwable? = null
 
+        /** Queues more responses and starts delivery if none is pending. */
         @Synchronized
         fun enqueue(moreChunks: Collection<ResponseChunk>): ResponseDispatcher {
             checkNotFailed()
@@ -199,6 +225,7 @@ internal class InteropTestService(
             return this
         }
 
+        /** Marks the end of the responses, so the call completes after every queued response was sent. */
         @Synchronized
         fun completeInput(): ResponseDispatcher {
             checkNotFailed()
@@ -207,6 +234,7 @@ internal class InteropTestService(
             return this
         }
 
+        /** Drops the queued responses because the service ends the call itself, for example with an error status. */
         @Synchronized
         fun cancel() {
             check(!cancelled) { "Dispatcher already cancelled" }
@@ -214,6 +242,10 @@ internal class InteropTestService(
             cancelled = true
         }
 
+        /**
+         * Drops the queued responses after the client cancelled. Called by [flowControl]'s cancel handler; unlike
+         * [cancel], it tolerates an earlier cancellation.
+         */
         @Synchronized
         private fun cancelFromTransport() {
             chunks.clear()
@@ -223,11 +255,13 @@ internal class InteropTestService(
         @Synchronized
         fun isCancelled(): Boolean = cancelled
 
+        /** Fails the call right away, without waiting for queued responses. */
         @Synchronized
         fun onError(error: Throwable) {
             responseObserver.onError(error)
         }
 
+        /** Runs on [responseExecutor]: sends the next chunk, then schedules the one after it. */
         private fun dispatch() {
             try {
                 dispatchChunk()
@@ -239,11 +273,18 @@ internal class InteropTestService(
             }
         }
 
+        /**
+         * Sends the first queued chunk, or completes the call for [COMPLETION_CHUNK].
+         *
+         * A `CANCELLED` failure means the client is gone, so the remaining responses are dropped. Any other failure
+         * is reported to the client.
+         */
         @Synchronized
         private fun dispatchChunk() {
             if (cancelled) return
             try {
                 val chunk = chunks.first()
+                // Readiness is checked again, as it may have changed during the chunk's interval.
                 if (chunk !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
                 chunks.removeFirst()
                 if (chunk === COMPLETION_CHUNK) {
@@ -261,6 +302,11 @@ internal class InteropTestService(
             }
         }
 
+        /**
+         * Schedules delivery of the first queued chunk after its interval. Does nothing while a delivery is pending,
+         * the queue is empty, the service is closed, or [flowControl] holds responses back.
+         * Must be called holding this dispatcher's monitor.
+         */
         private fun scheduleNextChunk() {
             if (scheduled || chunks.isEmpty() || responseExecutor.isShutdown) return
             if (chunks.first() !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
@@ -272,6 +318,7 @@ internal class InteropTestService(
             )
         }
 
+        /** Called by [flowControl] once the client is ready again after delivery was held back. */
         @Synchronized
         private fun resumeResponses() {
             scheduleNextChunk()
@@ -282,6 +329,12 @@ internal class InteropTestService(
         }
     }
 
+    /**
+     * One response of a streaming call, built from the request's `ResponseParameters`.
+     *
+     * @property delayMicroseconds Interval to wait before sending this response.
+     * @property payloadSize Size of the zero-filled response payload in bytes.
+     */
     private data class ResponseChunk(
         val delayMicroseconds: Long,
         val payloadSize: Int,
@@ -299,6 +352,10 @@ internal class InteropTestService(
     }
 
     private companion object {
+        /**
+         * Queue marker for the end of a call's responses, sent as `onCompleted` instead of a message.
+         * Compared by identity, since a requested response with zero interval and size is equal to it.
+         */
         val COMPLETION_CHUNK: ResponseChunk = ResponseChunk(delayMicroseconds = 0, payloadSize = 0)
     }
 }

@@ -29,7 +29,7 @@ internal class DisposableEndpointManager(
             .addService(
                 ServerInterceptors.intercept(
                     service,
-                    InteropMetadataInterceptor(registry),
+                    ScenarioInterceptor(registry),
                 )
             )
             .build()
@@ -68,22 +68,37 @@ internal class DisposableEndpointManager(
         endpoints.keys.toList().forEach(::stopIfPresent)
     }
 
+    /**
+     * One running disposable endpoint: a dedicated gRPC server that clients reach only through [proxy].
+     *
+     * Clients connect to the proxy's port, never to the server's own port. Data-plane calls still use the shared
+     * registry, so their scenarios behave as on the main server.
+     *
+     * @param proxy Forwards client connections to [server] and resets them when the endpoint stops.
+     * @param server The gRPC server serving [service] on an ephemeral loopback port.
+     * @param service The endpoint's own `TestService`, whose response executor must be shut down with it.
+     */
     private class DisposableEndpoint(
         private val proxy: ResettingTcpProxy,
         private val server: Server,
         private val service: InteropTestService,
     ) {
+        /**
+         * Resets all client connections first, then stops the server and the service's response executor.
+         *
+         * The order matters: closing the proxy first means the client sees its connections reset at the TCP level
+         * and never receives the server's HTTP/2 shutdown frames. The server and service are stopped even if
+         * closing the proxy fails.
+         */
         fun close() {
             try {
                 proxy.close()
             } finally {
-                try {
+                service.use {
                     server.shutdownNow()
                     check(server.awaitTermination(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                         "disposable gRPC endpoint did not terminate"
                     }
-                } finally {
-                    service.close()
                 }
             }
         }

@@ -41,7 +41,7 @@ import kotlin.test.assertEquals
 internal class ScenarioTestFixture : AutoCloseable {
     private val registry = CallScenarioRegistry()
     private val interopService = InteropTestService(registry)
-    private val scenarioInterceptor = InteropMetadataInterceptor(registry)
+    private val scenarioInterceptor = ScenarioInterceptor(registry)
     private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
         .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
         .addService(ServerInterceptors.intercept(MalformedResponseTestService(registry), scenarioInterceptor))
