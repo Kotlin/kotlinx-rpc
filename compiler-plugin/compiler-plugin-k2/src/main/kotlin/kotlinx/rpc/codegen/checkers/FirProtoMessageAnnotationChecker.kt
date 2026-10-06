@@ -22,7 +22,9 @@ import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.parentDeclarationSequence
+import org.jetbrains.kotlin.fir.resolve.getSuperTypes
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 
@@ -115,8 +117,16 @@ object FirProtoMessageAnnotationChecker {
             .find {
                 it.name == name
                     && it.classKind == ClassKind.OBJECT
-                    && it.resolvedSuperTypeRefs.any { superType ->
-                        superType.doesMatchesClassId(session, requiredSuperType)
+                    // the required supertype is not necessarily a direct one:
+                    // generated MARSHALLER objects extend the abstract ProtoGrpcMarshaller,
+                    // which implements GrpcMarshaller, so supertypes are looked up recursively
+                    && it.getSuperTypes(
+                        session,
+                        recursive = true,
+                        lookupInterfaces = true,
+                        substituteSuperTypes = true,
+                    ).any { superType ->
+                        superType.classId == requiredSuperType
                     }
             }
     }

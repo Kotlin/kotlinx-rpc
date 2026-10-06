@@ -44,8 +44,13 @@
     "macos-aarch64": "llvm-21-aarch64-macos-essentials-97",
     "macos-x86_64": "llvm-21-x86_64-macos-essentials-83"
   },
+  "2.4.20": {
+    "linux-x86_64": "llvm-21-x86_64-linux-essentials-116",
+    "macos-aarch64": "llvm-21-aarch64-macos-essentials-97",
+    "macos-x86_64": "llvm-21-x86_64-macos-essentials-83"
+  },
   "_metadata": {
-    "generated_at": "2026-06-10T12:39:47Z",
+    "generated_at": "2026-10-01T15:45:25Z",
     "source": "https://raw.githubusercontent.com/JetBrains/kotlin/v<kotlin-version>/kotlin-native/gradle.properties",
     "supported_hosts": [
       "linux-x86_64",
