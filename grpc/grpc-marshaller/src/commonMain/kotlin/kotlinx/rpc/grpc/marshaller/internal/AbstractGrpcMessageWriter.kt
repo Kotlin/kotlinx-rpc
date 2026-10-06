@@ -9,7 +9,6 @@ import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
-
 @InternalRpcApi
 public abstract class AbstractGrpcMessageWriter(
     public override val size: Int,
@@ -118,7 +117,8 @@ public abstract class AbstractGrpcMessageWriter(
 
     /** Validates a buffer write and marks the writer failed when it is invalid. */
     protected fun checkedWriteByteCount(source: Buffer, byteCount: Long): Int {
-        if (byteCount < 0L || byteCount > Int.MAX_VALUE || byteCount > source.size || byteCount > remaining.toLong()) {
+        // `remaining` is an Int, so the upper bound also guarantees the count fits in an Int.
+        if (byteCount !in 0L..minOf(source.size, remaining.toLong())) {
             fail()
             throw IndexOutOfBoundsException(
                 "GrpcMessageWriter.write received byteCount=$byteCount for a source Buffer of size ${source.size}, " +
