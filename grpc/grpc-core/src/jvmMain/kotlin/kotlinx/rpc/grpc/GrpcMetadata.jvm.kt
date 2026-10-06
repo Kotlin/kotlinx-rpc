@@ -1,13 +1,13 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc
 
 import io.grpc.Metadata
-import kotlinx.io.Buffer
-import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.decodeFromByteArray
+import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 
 public actual typealias GrpcMetadata = Metadata
 
@@ -16,14 +16,9 @@ public actual class GrpcMetadataKey<T> public actual constructor(
     private val marshaller: GrpcMarshaller<T>,
 ) {
 
-    internal fun encode(value: T): ByteArray {
-        val source = marshaller.encode(value)
-        return source.readByteArray()
-    }
-    internal fun decode(value: ByteArray): T = Buffer().let { buffer ->
-        buffer.write(value)
-        marshaller.decode(buffer)
-    }
+    internal fun encode(value: T): ByteArray = marshaller.encodeToByteArray(value)
+
+    internal fun decode(value: ByteArray): T = marshaller.decodeFromByteArray(value)
 
     internal fun toAsciiKey(): Metadata.Key<T> = Metadata.Key.of(name, AsciiMarshaller(this))
     internal fun toBinaryKey(): Metadata.Key<T> = Metadata.Key.of(name, BinaryMarshaller(this))

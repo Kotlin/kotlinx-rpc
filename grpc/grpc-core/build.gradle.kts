@@ -78,6 +78,7 @@ kotlin {
             dependsOn(desktopTest)
 
             dependencies {
+                implementation(libs.grpc.core)
                 implementation(libs.grpc.netty)
             }
         }

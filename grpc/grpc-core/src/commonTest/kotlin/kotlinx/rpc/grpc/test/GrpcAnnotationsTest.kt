@@ -4,9 +4,10 @@
 
 package kotlinx.rpc.grpc.test
 
-import kotlinx.io.Source
 import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
@@ -56,13 +57,12 @@ class GrpcAnnotationsTest {
 
 private val unitMarshaller = GrpcMarshallerResolver {
     object : GrpcMarshaller<Unit> {
-        override fun encode(value: Unit, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: Unit, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
             TODO("Not yet implemented")
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?) {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?) {
             TODO("Not yet implemented")
         }
     }
 }
-

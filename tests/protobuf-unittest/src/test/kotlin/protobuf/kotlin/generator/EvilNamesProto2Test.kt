@@ -16,6 +16,8 @@
 
 package protobuf.kotlin.generator
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -281,8 +283,8 @@ class EvilNamesProto2Test {
             allCAPSMAP = mapOf(1 to true)
             extension = listOf("e1")
         }
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(msg.hasFoo, decoded.hasFoo)
         assertEquals(msg.bar, decoded.bar)
@@ -313,8 +315,8 @@ class EvilNamesProto2Test {
             `fun` = listOf(HardKeywordsAllTypesProto2.NestedEnum.BAR)
             `if` = listOf(HardKeywordsAllTypesProto2.NestedMessage { `while` = 99 })
         }
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(42, decoded.`as`)
         assertEquals(HardKeywordsAllTypesProto2.NestedEnum.FOO, decoded.`break`)
@@ -346,8 +348,8 @@ class EvilNamesProto2Test {
     fun testEmptyEvilNamesMessageRoundTrip() {
         val marshaller = grpcMarshallerOf<EvilNamesProto2>()
         val msg = EvilNamesProto2 {}
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
         assertNull(decoded.hasFooOrNull)
         assertNull(decoded.intOrNull)
         assertNull(decoded.longOrNull)

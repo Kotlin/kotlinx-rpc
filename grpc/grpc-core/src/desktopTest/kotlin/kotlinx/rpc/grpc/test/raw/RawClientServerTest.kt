@@ -20,6 +20,8 @@ import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
@@ -154,11 +156,17 @@ class RawClientServerTest {
         private const val SERVICE_NAME = "TestService"
 
         private val simpleMarshaller = object : GrpcMarshaller<String> {
-            override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
+            override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+                GrpcEncodedMessage.of(encodeBuffer(value, config))
+
+            private fun encodeBuffer(value: String, config: GrpcMarshallerConfig?): Buffer {
                 return Buffer().apply { writeString(value) }
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
+            override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
+                decodeSource(reader.asSource(), config)
+
+            private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): String {
                 return source.readString()
             }
         }

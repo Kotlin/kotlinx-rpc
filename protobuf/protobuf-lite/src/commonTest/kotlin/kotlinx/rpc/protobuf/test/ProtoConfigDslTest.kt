@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
@@ -79,10 +81,10 @@ class ProtoConfigDslTest {
             intMissing = 456
         }
 
-        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(all)
+        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encodeToBuffer(all)
         val discardMarshaller = grpcMarshallerOf<UnknownFieldsSubset>(ProtoConfig { discardUnknownFields = true })
 
-        val subsetDiscarded = discardMarshaller.decode(encoded)
+        val subsetDiscarded = discardMarshaller.decodeFromSource(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)
         assertEquals(all.field1, subsetDiscarded.field1)
     }

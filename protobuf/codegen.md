@@ -76,4 +76,5 @@ Validation checks (all must pass or `PROTO_MESSAGE_IS_GENERATED_ONLY` is reporte
 4. Builder extends the message interface
 5. Internal class extends the Builder interface
 6. Internal class has `DESCRIPTOR` object extending `ProtoDescriptor`
-7. Internal class has `MARSHALLER` object extending `GrpcMarshaller`
+7. Internal class has `MARSHALLER` object extending `ProtoGrpcMarshaller`, which implements
+   the size-first `GrpcMarshaller` contract through `prepare(value)` and `decode(reader)`

@@ -217,13 +217,11 @@
             </p>
             <code-block lang="Kotlin">
                 val stringMarshaller = object : GrpcMarshaller&lt;String&gt; {
-                    override fun encode(value: String, config: GrpcMarshallerConfig?): Source {
-                        return Buffer().apply { writeString(value) }
-                    }
+                    override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+                        GrpcEncodedMessage.of(value.encodeToByteArray())
 
-                    override fun decode(source: Source, config: GrpcMarshallerConfig?): String {
-                        return source.readString()
-                    }
+                    override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
+                        reader.readByteArray().decodeToString()
                 }
 
                 val resolver = GrpcMarshallerResolver { kType -&gt;
@@ -245,13 +243,11 @@
                 @WithGrpcMarshaller(MyMessage.Marshaller::class)
                 class MyMessage(val value: String) {
                     object Marshaller : GrpcMarshaller&lt;MyMessage&gt; {
-                        override fun encode(value: MyMessage, config: GrpcMarshallerConfig?): Source {
-                            return Buffer().apply { writeString(value.value) }
-                        }
+                        override fun prepare(value: MyMessage, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+                            GrpcEncodedMessage.of(value.value.encodeToByteArray())
 
-                        override fun decode(source: Source, config: GrpcMarshallerConfig?): MyMessage {
-                            return MyMessage(source.readString())
-                        }
+                        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): MyMessage =
+                            MyMessage(reader.readByteArray().decodeToString())
                     }
                 }
             </code-block>

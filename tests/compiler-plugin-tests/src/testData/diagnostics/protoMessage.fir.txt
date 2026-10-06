@@ -28,11 +28,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage1|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage1|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage1| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage1| {
                 R|kotlin/TODO|()
             }
 
@@ -67,11 +67,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage9|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage9|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage9| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage9| {
                 R|kotlin/TODO|()
             }
 
@@ -104,11 +104,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage2|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage2|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage2| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage2| {
                 R|kotlin/TODO|()
             }
 
@@ -141,11 +141,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage4|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage4|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage4| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage4| {
                 R|kotlin/TODO|()
             }
 
@@ -180,11 +180,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage5|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage5|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage5| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage5| {
                 R|kotlin/TODO|()
             }
 
@@ -216,11 +216,11 @@ FILE: module_main_protoMessage.kt
                 super<R|kotlin/Any|>()
             }
 
-            public open override fun encode(value: R|MyMessage6|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/io/Source| {
+            public open override fun prepare(value: R|MyMessage6|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
                 R|kotlin/TODO|()
             }
 
-            public open override fun decode(source: R|kotlinx/io/Source|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage6| {
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|MyMessage6| {
                 R|kotlin/TODO|()
             }
 

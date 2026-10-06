@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
@@ -39,6 +39,8 @@ import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toKotlin
 import kotlinx.rpc.grpc.internal.toRaw
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_OP_RECV_CLOSE_ON_SERVER
@@ -391,8 +393,10 @@ internal class NativeServerCall<Request, Response>(
                 }
             } else {
                 try {
-                    val msg = methodDescriptor.requestMarshaller
-                        .decode(buf.toKotlin())
+                    val buffer = buf.toKotlin()
+                    val msg = methodDescriptor.requestMarshaller.decode(
+                        BufferMessageReader(buffer, buffer.size.toInt()),
+                    )
                     // Mark that we have received at least one request message
                     receivedFirstMessage = true
                     callbackMutex.withLock {
@@ -436,8 +440,8 @@ internal class NativeServerCall<Request, Response>(
 
         val arena = Arena()
         tryRun {
-            val source = methodDescriptor.responseMarshaller.encode(message)
-            val byteBuffer = source.toGrpcByteBuffer()
+            val buffer = methodDescriptor.responseMarshaller.encodeToBuffer(message)
+            val byteBuffer = buffer.toGrpcByteBuffer()
             ready.value = false
 
             val op = arena.alloc<grpc_op> {

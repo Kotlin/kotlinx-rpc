@@ -18,6 +18,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.invoke
@@ -307,8 +309,8 @@ class GeneratedMessageTest {
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
         val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
 
-        val encoded = packedMarshaller.encode(packed)
-        val unpacked = unpackedMarshaller.decode(encoded)
+        val encoded = packedMarshaller.encodeToBuffer(packed)
+        val unpacked = unpackedMarshaller.decodeFromSource(encoded)
         TestUtil.assertUnpackedFieldsSet(unpacked)
     }
 
@@ -320,8 +322,8 @@ class GeneratedMessageTest {
         val unpackedMarshaller = grpcMarshallerOf<TestUnpackedTypes>()
         val packedMarshaller = grpcMarshallerOf<TestPackedTypes>()
 
-        val encoded = unpackedMarshaller.encode(unpacked)
-        val packed = packedMarshaller.decode(encoded)
+        val encoded = unpackedMarshaller.encodeToBuffer(unpacked)
+        val packed = packedMarshaller.decodeFromSource(encoded)
         TestUtil.assertPackedFieldsSet(packed)
     }
 
