@@ -34,6 +34,7 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
 import kotlinx.rpc.grpc.internal.GrpcArg
+import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.internalError
@@ -108,30 +109,19 @@ internal class NativeManagedChannel(
             ))
         }
 
-        maxInboundMessageSize?.let {
-            args.add(GrpcArg.Integer(
-                key = GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
-                value = it,
-            ))
-        }
+        args.add(GrpcArg.Integer(
+            key = GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
+            value = maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE,
+        ))
 
-        maxInboundMetadataSize?.let {
-            args.add(GrpcArg.Integer(
-                key = GRPC_ARG_MAX_METADATA_SIZE,
-                value = it,
-            ))
-            args.add(GrpcArg.Integer(
-                key = GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE,
-                value = it,
-            ))
-        }
+        val metadataSize = maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE
+        args.add(GrpcArg.Integer(key = GRPC_ARG_MAX_METADATA_SIZE, value = metadataSize))
+        args.add(GrpcArg.Integer(key = GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, value = metadataSize))
 
-        idleTimeout?.let {
-            args.add(GrpcArg.Integer(
-                key = GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS,
-                value = it.toChannelArgMilliseconds(),
-            ))
-        }
+        args.add(GrpcArg.Integer(
+            key = GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS,
+            value = (idleTimeout ?: GrpcConfigurationDefaults.CLIENT_IDLE_TIMEOUT).toChannelArgMilliseconds(),
+        ))
 
         keepAlive?.let {
             args.add(GrpcArg.Integer(

@@ -53,22 +53,27 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures keep-alive pings to detect broken connections.
-                Disabled by default.
+                Pings are disabled by default (<code>time = Duration.INFINITE</code>),
+                with a 20-second response timeout and <code>withoutCalls = false</code>.
+            </def>
+            <def title="userAgent">
+                An application User-Agent prefix, followed by the gRPC runtime's own token.
+                Defaults to <code>null</code>, which sends only the runtime token.
             </def>
             <def title="maxInboundMessageSize">
                 The maximum size, in bytes, of an inbound message.
                 Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
-                The gRPC runtime default applies when not set.
+                Defaults to 4 MiB (4,194,304 bytes).
             </def>
             <def title="maxInboundMetadataSize">
                 The maximum size, in bytes, of inbound metadata.
-                The gRPC runtime default applies when not set.
+                Defaults to 8 KiB (8,192 bytes).
             </def>
             <def title="idleTimeout">
                 The duration without ongoing RPCs before the client enters idle mode and closes its
                 connections. A new RPC takes the client out of idle mode.
                 <code>Duration.INFINITE</code> disables automatic idle mode.
-                The gRPC runtime default applies when not set.
+                Defaults to 30 minutes.
             </def>
         </deflist>
         <note>
@@ -83,6 +88,20 @@
             configuration behaves identically everywhere; out-of-range values throw
             <code>IllegalArgumentException</code>.
         </note>
+    </chapter>
+
+    <chapter title="Call options" id="grpc-client-call-options">
+        <p>
+            The per-call <code>GrpcCallOptions.waitForReady</code> option defaults to <code>null</code>.
+            This uses the channel's default behavior: calls fail when the channel
+            is in transient failure, unless a service configuration delivered by the name resolver
+            enables waiting for that method. Set <code>true</code> to wait for a connection, or
+            <code>false</code> to override a service configuration that enables waiting.
+        </p>
+        <p>
+            <code>GrpcCallOptions.timeout</code> defaults to <code>null</code> (no deadline).
+            Set a timeout when enabling wait-for-ready to bound how long the call may wait.
+        </p>
     </chapter>
 
     <chapter title="Lifecycle" id="grpc-client-lifecycle">

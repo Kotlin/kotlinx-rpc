@@ -27,6 +27,11 @@ class GrpcIdleTimeoutTest : GrpcTestBase() {
     }
 
     @Test
+    fun `idle timeout defaults to thirty minutes`() {
+        testIdleTimeout(null)
+    }
+
+    @Test
     fun `idle timeout rejects values below one second`() {
         assertFailsWith<IllegalArgumentException> {
             GrpcClient("localhost", 1) { idleTimeout = 999.milliseconds }
@@ -50,4 +55,4 @@ class GrpcIdleTimeoutTest : GrpcTestBase() {
     }
 }
 
-internal expect fun GrpcTestBase.testIdleTimeout(timeout: Duration)
+internal expect fun GrpcTestBase.testIdleTimeout(timeout: Duration?)

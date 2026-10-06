@@ -9,7 +9,6 @@ import kotlinx.rpc.grpc.server.internal.buildServerChannelArgs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -59,7 +58,7 @@ class ServerChannelArgsTest {
     }
 
     @Test
-    fun `unset options produce no args`() {
+    fun `unset options apply shared size limits without connection limits`() {
         val args = buildServerChannelArgs(
             maxInboundMessageSize = null,
             maxInboundMetadataSize = null,
@@ -68,9 +67,13 @@ class ServerChannelArgsTest {
             maxConnectionIdle = null,
             maxConnectionAge = null,
             maxConnectionAgeGrace = null,
-        )
+        ).toMap()
 
-        assertTrue(args.isEmpty())
+        assertEquals(mapOf(
+            "grpc.max_receive_message_length" to 4 * 1024 * 1024,
+            "grpc.max_metadata_size" to 8 * 1024,
+            "grpc.absolute_max_metadata_size" to 8 * 1024,
+        ), args)
     }
 
     @Test

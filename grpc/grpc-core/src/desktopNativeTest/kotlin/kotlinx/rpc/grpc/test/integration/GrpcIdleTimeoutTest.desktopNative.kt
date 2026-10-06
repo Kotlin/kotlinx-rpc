@@ -13,10 +13,13 @@ import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
-internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration) = runTest {
+internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) = runTest {
     val logs = captureGrpcLogs(nativeTracers = listOf("pick_first")) {
-        runGrpcTest(clientConfiguration = { idleTimeout = timeout }) {
+        runGrpcTest(clientConfiguration = {
+            if (timeout != null) idleTimeout = timeout
+        }) {
             it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
         }
     }
@@ -24,5 +27,5 @@ internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration) = runTest {
     val timeoutMs = Regex("""grpc\.client_idle_timeout_ms=(\d+)""")
         .find(logs)?.groupValues?.get(1)?.toInt()
         ?: error("Could not find grpc.client_idle_timeout_ms in logs")
-    assertEquals(timeout, timeoutMs.milliseconds)
+    assertEquals(timeout ?: 30.minutes, timeoutMs.milliseconds)
 }

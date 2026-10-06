@@ -26,6 +26,31 @@ class GrpcMessageSizeTest : GrpcTestBase() {
     }
 
     @Test
+    fun `client defaults to a four MiB inbound message limit`() {
+        val error = assertFailsWith<GrpcStatusException> {
+            runGrpcTest(
+                serverConfiguration = { maxInboundMessageSize = 8 * 1024 * 1024 },
+            ) {
+                // The serialized response includes overhead in addition to this four MiB string.
+                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
+            }
+        }
+        assertEquals(GrpcStatusCode.RESOURCE_EXHAUSTED, error.getStatus().statusCode)
+    }
+
+    @Test
+    fun `server defaults to a four MiB inbound message limit`() {
+        val error = assertFailsWith<GrpcStatusException> {
+            runGrpcTest(
+                clientConfiguration = { maxInboundMessageSize = 8 * 1024 * 1024 },
+            ) {
+                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
+            }
+        }
+        assertEquals(GrpcStatusCode.RESOURCE_EXHAUSTED, error.getStatus().statusCode)
+    }
+
+    @Test
     fun `client rejects inbound messages larger than configured maximum`() {
         val error = assertFailsWith<GrpcStatusException> {
             runGrpcTest(clientConfiguration = { maxInboundMessageSize = 128 }) {

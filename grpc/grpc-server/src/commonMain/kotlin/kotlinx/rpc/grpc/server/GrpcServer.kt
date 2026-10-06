@@ -184,7 +184,8 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of an inbound message accepted by this server.
      *
-     * If `null` (the default), the gRPC runtime's default limit is used. Values must be non-negative.
+     * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
+     * Values must be non-negative.
      */
     public var maxInboundMessageSize: Int? = null
         set(value) {
@@ -195,7 +196,8 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of inbound metadata accepted by this server.
      *
-     * If `null` (the default), the gRPC runtime's default limit is used. Values must be positive.
+     * If `null` (the default), the limit is 8 KiB (8,192 bytes).
+     * Values must be positive.
      */
     public var maxInboundMetadataSize: Int? = null
         set(value) {
@@ -275,8 +277,8 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * Configures server-side keepalive pings.
      *
-     * Calling this function enables keepalive with a two-hour interval and a 20-second timeout
-     * unless overridden in [configure].
+     * By default, keepalive uses a two-hour interval and a 20-second timeout.
+     * Calling this function overrides these settings as specified in [configure].
      * Both durations must be positive and, unless [Duration.INFINITE] (which disables
      * keepalive pings), less than `Int.MAX_VALUE` milliseconds.
      *
@@ -290,8 +292,8 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * Server-side keepalive settings.
      *
-     * @property time The time without read activity before a keepalive ping is sent.
-     * @property timeout The time to wait for read activity after sending a keepalive ping.
+     * @property time The time without read activity before a keepalive ping is sent. Defaults to two hours.
+     * @property timeout The time to wait for read activity after sending a keepalive ping. Defaults to 20 seconds.
      */
     public class KeepAlive internal constructor() {
         public var time: Duration = 2.hours

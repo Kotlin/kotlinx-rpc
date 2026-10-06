@@ -276,7 +276,8 @@ public class GrpcClientConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of an inbound message accepted by this client.
      *
-     * If `null` (the default), the gRPC runtime's default limit is used. Values must be non-negative.
+     * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
+     * Values must be non-negative.
      */
     public var maxInboundMessageSize: Int? = null
         set(value) {
@@ -287,7 +288,8 @@ public class GrpcClientConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of inbound metadata accepted by this client.
      *
-     * If `null` (the default), the gRPC runtime's default limit is used. Values must be positive.
+     * If `null` (the default), the limit is 8 KiB (8,192 bytes).
+     * Values must be positive.
      */
     public var maxInboundMetadataSize: Int? = null
         set(value) {
@@ -299,9 +301,9 @@ public class GrpcClientConfiguration internal constructor() {
      * The duration without ongoing RPCs before this client enters idle mode and closes its connections.
      * A new RPC takes the client out of idle mode.
      *
-     * If `null` (the default), the gRPC runtime's default timeout is used. [Duration.INFINITE] disables
-     * automatic idle mode. Finite values must be at least one second and less than `Int.MAX_VALUE`
-     * milliseconds.
+     * If `null` (the default), the timeout is 30 minutes.
+     * [Duration.INFINITE] disables automatic idle mode.
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
      */
     public var idleTimeout: Duration? = null
         set(value) {

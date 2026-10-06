@@ -33,6 +33,37 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
     private companion object {
         const val METADATA_SIZE_LIMIT = 2048
         const val OVERSIZED_HEADER_LENGTH = 4096
+        const val ABOVE_DEFAULT_HEADER_LENGTH = 12 * 1024
+    }
+
+    @Test
+    fun `client defaults to an eight KiB inbound metadata limit`() {
+        val error = assertFailsWith<GrpcStatusException> {
+            runGrpcTest(
+                serverInterceptors = serverInterceptor {
+                    responseHeaders.append("large-metadata", "x".repeat(ABOVE_DEFAULT_HEADER_LENGTH))
+                    proceed(it)
+                },
+            ) {
+                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+            }
+        }
+        assertMetadataSizeStatus(error)
+    }
+
+    @Test
+    fun `server defaults to an eight KiB inbound metadata limit`() {
+        val error = assertFailsWith<GrpcStatusException> {
+            runGrpcTest(
+                clientInterceptors = clientInterceptor {
+                    requestHeaders.append("large-metadata", "x".repeat(ABOVE_DEFAULT_HEADER_LENGTH))
+                    proceed(it)
+                },
+            ) {
+                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+            }
+        }
+        assertMetadataSizeStatus(error)
     }
 
     @Test

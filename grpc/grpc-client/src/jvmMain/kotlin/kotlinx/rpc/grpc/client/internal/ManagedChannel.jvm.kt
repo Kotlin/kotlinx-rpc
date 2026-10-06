@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.toJvm
+import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -92,8 +93,11 @@ internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfi
 
     config.overrideAuthority?.let { overrideAuthority(it) }
     config.userAgent?.let { userAgent(it) }
-    config.maxInboundMessageSize?.let { maxInboundMessageSize(it) }
-    config.maxInboundMetadataSize?.let { maxInboundMetadataSize(it) }
-    config.idleTimeout?.let { idleTimeout(it.inWholeMilliseconds, TimeUnit.MILLISECONDS) }
+    maxInboundMessageSize(config.maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE)
+    maxInboundMetadataSize(config.maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE)
+    idleTimeout(
+        (config.idleTimeout ?: GrpcConfigurationDefaults.CLIENT_IDLE_TIMEOUT).inWholeMilliseconds,
+        TimeUnit.MILLISECONDS,
+    )
     return this
 }

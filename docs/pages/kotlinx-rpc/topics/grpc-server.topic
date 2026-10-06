@@ -58,28 +58,27 @@
             <def title="maxInboundMessageSize">
                 The maximum size, in bytes, of an inbound message.
                 Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
-                The gRPC runtime default applies when not set.
+                Defaults to 4 MiB (4,194,304 bytes).
             </def>
             <def title="maxInboundMetadataSize">
                 The maximum size, in bytes, of inbound metadata.
-                The gRPC runtime default applies when not set.
+                Defaults to 8 KiB (8,192 bytes).
             </def>
             <def title="keepAlive { ... }">
                 Configures server-side keep-alive pings to detect broken connections.
-                Disabled by default. When enabled, uses a two-hour interval and a 20-second timeout
-                unless overridden.
+                Defaults to a two-hour interval and a 20-second timeout.
             </def>
             <def title="maxConnectionIdle">
                 The maximum time a connection may have no active RPCs before it is gracefully closed.
-                Disabled by default.
+                Defaults to <code>null</code> (no limit).
             </def>
             <def title="maxConnectionAge">
                 The maximum time a connection may exist before it is gracefully closed.
-                Disabled by default.
+                Defaults to <code>null</code> (no limit).
             </def>
             <def title="maxConnectionAgeGrace">
                 The grace period for active RPCs after <code>maxConnectionAge</code> is reached.
-                Without it, active RPCs may finish without a deadline.
+                Defaults to <code>null</code> (no grace deadline).
             </def>
         </deflist>
         <note>

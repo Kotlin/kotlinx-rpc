@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.server.internal
 
 import io.grpc.Grpc
+import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
@@ -31,8 +32,8 @@ public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
 }
 
 internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
-    config.maxInboundMessageSize?.let { maxInboundMessageSize(it) }
-    config.maxInboundMetadataSize?.let { maxInboundMetadataSize(it) }
+    maxInboundMessageSize(config.maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE)
+    maxInboundMetadataSize(config.maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE)
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)

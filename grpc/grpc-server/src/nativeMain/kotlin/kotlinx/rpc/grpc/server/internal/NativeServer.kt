@@ -30,6 +30,7 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_IDLE_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
 import kotlinx.rpc.grpc.internal.GrpcArg
+import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
@@ -394,11 +395,13 @@ public fun buildServerChannelArgs(
     maxConnectionAge: Duration?,
     maxConnectionAgeGrace: Duration?,
 ): List<GrpcArg> = buildList {
-    maxInboundMessageSize?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH, it)) }
-    maxInboundMetadataSize?.let {
-        add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, it))
-        add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, it))
-    }
+    add(GrpcArg.Integer(
+        GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
+        maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE,
+    ))
+    val metadataSize = maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE
+    add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, metadataSize))
+    add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, metadataSize))
     keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
     keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
     maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }

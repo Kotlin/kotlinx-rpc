@@ -12,9 +12,12 @@ import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 
-internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration) {
-    runGrpcTest(clientConfiguration = { idleTimeout = timeout }) {
+internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) {
+    runGrpcTest(clientConfiguration = {
+        if (timeout != null) idleTimeout = timeout
+    }) {
         it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
 
         val idleTimeout = it.getField<ManagedChannel>("channel")
@@ -22,6 +25,6 @@ internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration) {
             .getField<Long>("delegate", "idleTimeoutMillis")
             .milliseconds
 
-        assertEquals(timeout, idleTimeout)
+        assertEquals(timeout ?: 30.minutes, idleTimeout)
     }
 }
