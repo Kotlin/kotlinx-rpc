@@ -2,11 +2,7 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(
-    ExperimentalForeignApi::class,
-    ExperimentalRpcApi::class,
-    InternalRpcApi::class,
-)
+@file:OptIn(ExperimentalForeignApi::class)
 
 package kotlinx.rpc.grpc.marshaller.internal
 
@@ -14,7 +10,6 @@ import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import platform.posix.memcpy
 

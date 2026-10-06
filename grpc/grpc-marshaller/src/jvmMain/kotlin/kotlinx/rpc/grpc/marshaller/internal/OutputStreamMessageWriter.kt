@@ -2,8 +2,6 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(InternalRpcApi::class)
-
 package kotlinx.rpc.grpc.marshaller.internal
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -25,7 +23,6 @@ public class OutputStreamMessageWriter(
     }
 
     /** Allows a buffered encoder to write directly to the output stream. */
-    @InternalRpcApi
     public fun writeDirect(writeAction: (OutputStream) -> Unit) {
         val byteCount = remaining
         recordWrite(byteCount) {

@@ -2,8 +2,11 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
-    InternalNativeRpcApi::class)
+@file:OptIn(
+    ExperimentalForeignApi::class,
+    ExperimentalNativeApi::class,
+    InternalNativeRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.server
 
@@ -18,7 +21,6 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_ssl_client_certificate_request_ty
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_credentials_options_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_server_credentials_create
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
 
