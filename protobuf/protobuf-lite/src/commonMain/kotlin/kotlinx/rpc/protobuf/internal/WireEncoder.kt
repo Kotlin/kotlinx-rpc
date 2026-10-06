@@ -22,7 +22,6 @@ import kotlinx.rpc.protobuf.ProtobufEncodingException
  * [flush] must be called to ensure that all data is written to the [Sink].
  */
 @InternalRpcApi
-@OptIn(ExperimentalUnsignedTypes::class)
 public interface WireEncoder {
     public fun flush()
     public fun writeTag(tag: KTag)

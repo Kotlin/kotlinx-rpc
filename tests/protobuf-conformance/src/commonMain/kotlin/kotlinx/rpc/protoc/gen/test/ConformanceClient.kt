@@ -2,8 +2,6 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(InternalRpcApi::class, ExperimentalRpcApi::class)
-
 package kotlinx.rpc.protoc.gen.test
 
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
@@ -29,8 +27,6 @@ import kotlinx.io.Buffer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import kotlinx.rpc.protobuf.internal.InternalMessage

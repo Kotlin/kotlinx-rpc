@@ -40,6 +40,31 @@ abstract interface kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage { // kotlinx.r
 
 abstract interface kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig // kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig|null[0]
 
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcMessageReader { // kotlinx.rpc.grpc.marshaller/GrpcMessageReader|null[0]
+    abstract val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining|{}remaining[0]
+        abstract fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining.<get-remaining>|<get-remaining>(){}[0]
+    abstract val size // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size|{}size[0]
+        abstract fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size.<get-size>|<get-size>(){}[0]
+
+    abstract fun asSource(): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.asSource|asSource(){}[0]
+    abstract fun readByte(): kotlin/Byte // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByte|readByte(){}[0]
+    abstract fun readByteArray(kotlin/Int = ...): kotlin/ByteArray // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByteArray|readByteArray(kotlin.Int){}[0]
+    abstract fun readTo(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readTo|readTo(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcMessageWriter { // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter|null[0]
+    abstract val size // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size|{}size[0]
+        abstract fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size.<get-size>|<get-size>(){}[0]
+    abstract val written // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written|{}written[0]
+        abstract fun <get-written>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written.<get-written>|<get-written>(){}[0]
+    open val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining|{}remaining[0]
+        open fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining.<get-remaining>|<get-remaining>(){}[0]
+
+    abstract fun write(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+    abstract fun write(kotlinx.io/Buffer, kotlin/Long = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlinx.io.Buffer;kotlin.Long){}[0]
+    abstract fun writeByte(kotlin/Byte) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.writeByte|writeByte(kotlin.Byte){}[0]
+}
+
 abstract class <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller : kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> { // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller|null[0]
     constructor <init>() // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.<init>|<init>(){}[0]
 
@@ -47,31 +72,6 @@ abstract class <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/StreamingGrpcMarsha
     abstract fun encode(#A, kotlinx.io/Sink, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?) // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.encode|encode(1:0;kotlinx.io.Sink;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
     final fun decode(kotlinx.rpc.grpc.marshaller/GrpcMessageReader, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?): #A // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.decode|decode(kotlinx.rpc.grpc.marshaller.GrpcMessageReader;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
     final fun prepare(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?): kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.prepare|prepare(1:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
-}
-
-abstract class kotlinx.rpc.grpc.marshaller/GrpcMessageReader { // kotlinx.rpc.grpc.marshaller/GrpcMessageReader|null[0]
-    final val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining|{}remaining[0]
-        final fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining.<get-remaining>|<get-remaining>(){}[0]
-    final val size // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size|{}size[0]
-        final fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size.<get-size>|<get-size>(){}[0]
-
-    abstract fun asSource(): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.asSource|asSource(){}[0]
-    abstract fun readByte(): kotlin/Byte // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByte|readByte(){}[0]
-    abstract fun readTo(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readTo|readTo(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
-    final fun readByteArray(kotlin/Int = ...): kotlin/ByteArray // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByteArray|readByteArray(kotlin.Int){}[0]
-}
-
-abstract class kotlinx.rpc.grpc.marshaller/GrpcMessageWriter { // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter|null[0]
-    final val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining|{}remaining[0]
-        final fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining.<get-remaining>|<get-remaining>(){}[0]
-    final val size // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size|{}size[0]
-        final fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size.<get-size>|<get-size>(){}[0]
-    final val written // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written|{}written[0]
-        final fun <get-written>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written.<get-written>|<get-written>(){}[0]
-
-    abstract fun write(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
-    abstract fun writeByte(kotlin/Byte) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.writeByte|writeByte(kotlin.Byte){}[0]
-    open fun write(kotlinx.io/Buffer, kotlin/Long = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlinx.io.Buffer;kotlin.Long){}[0]
 }
 
 final object kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver : kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver|null[0]

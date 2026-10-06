@@ -2,11 +2,6 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(
-    kotlinx.rpc.internal.utils.ExperimentalRpcApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
-)
-
 package kotlinx.rpc.grpc.marshaller.test
 
 import kotlinx.io.Buffer

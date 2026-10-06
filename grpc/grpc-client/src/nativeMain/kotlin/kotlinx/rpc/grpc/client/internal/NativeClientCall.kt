@@ -2,8 +2,11 @@
  * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
-    InternalNativeRpcApi::class)
+@file:OptIn(
+    ExperimentalForeignApi::class,
+    ExperimentalNativeApi::class,
+    InternalNativeRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -28,7 +31,6 @@ import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
