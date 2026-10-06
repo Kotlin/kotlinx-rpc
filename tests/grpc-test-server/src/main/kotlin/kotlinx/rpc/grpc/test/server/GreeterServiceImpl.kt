@@ -1,20 +1,24 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.test.server
 
-import kotlinx.coroutines.delay
-import kotlinx.rpc.grpc.test.GreeterService
-import kotlinx.rpc.grpc.test.HelloReply
-import kotlinx.rpc.grpc.test.HelloRequest
-import kotlinx.rpc.grpc.test.invoke
+import io.grpc.stub.StreamObserver
+import kotlinx.rpc.grpc.test.GreeterServiceGrpc
+import kotlinx.rpc.grpc.test.HelloworldGrpc.HelloReply
+import kotlinx.rpc.grpc.test.HelloworldGrpc.HelloRequest
 
-internal class GreeterServiceImpl : GreeterService {
-    override suspend fun sayHello(message: HelloRequest): HelloReply {
-        delay(message.timeout?.toLong() ?: 0)
-        return HelloReply {
-            this.message = "Hello ${message.name}"
+internal class GreeterServiceImpl : GreeterServiceGrpc.GreeterServiceImplBase() {
+    override fun sayHello(request: HelloRequest, responseObserver: StreamObserver<HelloReply>) {
+        if (request.hasTimeout() && request.timeout != 0) {
+            Thread.sleep(Integer.toUnsignedLong(request.timeout))
         }
+        responseObserver.onNext(
+            HelloReply.newBuilder()
+                .setMessage("Hello ${request.name}")
+                .build()
+        )
+        responseObserver.onCompleted()
     }
 }
