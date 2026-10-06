@@ -48,26 +48,37 @@ public abstract interface class kotlinx/rpc/grpc/marshaller/GrpcMarshallerResolv
 	public abstract fun resolveOrNull (Lkotlin/reflect/KType;)Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;
 }
 
-public abstract class kotlinx/rpc/grpc/marshaller/GrpcMessageReader {
+public abstract interface class kotlinx/rpc/grpc/marshaller/GrpcMessageReader {
 	public abstract fun asSource ()Lkotlinx/io/Source;
-	public final fun getRemaining ()I
-	public final fun getSize ()I
+	public abstract fun getRemaining ()I
+	public abstract fun getSize ()I
 	public abstract fun readByte ()B
-	public final fun readByteArray (I)[B
+	public abstract fun readByteArray (I)[B
 	public static synthetic fun readByteArray$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;IILjava/lang/Object;)[B
 	public abstract fun readTo ([BII)V
 	public static synthetic fun readTo$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;[BIIILjava/lang/Object;)V
 }
 
-public abstract class kotlinx/rpc/grpc/marshaller/GrpcMessageWriter {
-	public final fun getRemaining ()I
-	public final fun getSize ()I
-	public final fun getWritten ()I
-	public fun write (Lkotlinx/io/Buffer;J)V
+public final class kotlinx/rpc/grpc/marshaller/GrpcMessageReader$DefaultImpls {
+	public static synthetic fun readByteArray$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;IILjava/lang/Object;)[B
+	public static synthetic fun readTo$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageReader;[BIIILjava/lang/Object;)V
+}
+
+public abstract interface class kotlinx/rpc/grpc/marshaller/GrpcMessageWriter {
+	public fun getRemaining ()I
+	public abstract fun getSize ()I
+	public abstract fun getWritten ()I
+	public abstract fun write (Lkotlinx/io/Buffer;J)V
 	public abstract fun write ([BII)V
 	public static synthetic fun write$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageWriter;Lkotlinx/io/Buffer;JILjava/lang/Object;)V
 	public static synthetic fun write$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageWriter;[BIIILjava/lang/Object;)V
 	public abstract fun writeByte (B)V
+}
+
+public final class kotlinx/rpc/grpc/marshaller/GrpcMessageWriter$DefaultImpls {
+	public static fun getRemaining (Lkotlinx/rpc/grpc/marshaller/GrpcMessageWriter;)I
+	public static synthetic fun write$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageWriter;Lkotlinx/io/Buffer;JILjava/lang/Object;)V
+	public static synthetic fun write$default (Lkotlinx/rpc/grpc/marshaller/GrpcMessageWriter;[BIIILjava/lang/Object;)V
 }
 
 public abstract interface annotation class kotlinx/rpc/grpc/marshaller/HasWithGrpcMarshaller : java/lang/annotation/Annotation {
