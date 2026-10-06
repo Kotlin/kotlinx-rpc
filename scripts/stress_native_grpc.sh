@@ -20,9 +20,10 @@
 #
 # A subset of grpc-core native tests (RawClient*, GrpcCoreClient*) need the
 # grpc-test-server JVM fixture running on localhost:50051. The Gradle
-# `<target>Test` task starts it via `withBackgroundTask` (see
-# grpc-core/build.gradle.kts); when running the kexe directly we have to
-# launch+await+kill it ourselves -- this script does so.
+# `<target>Test` task starts it via `withGrpcClientTestServer` (see
+# gradle-conventions/src/main/kotlin/util/grpc/grpcClientTestServer.kt); when
+# running the kexe directly we have to launch+await+kill it ourselves -- this
+# script does so.
 #
 # In TeamCity, the build config invokes those Gradle tasks before this script.
 # TC sets TEAMCITY_VERSION automatically, which switches the script into TC mode
@@ -137,7 +138,7 @@ echo "TC mode:     $IN_TC" >&2
 echo >&2
 
 # ---- start grpc-test-server fixture ---------------------------------------
-# Mirrors the Gradle `withBackgroundTask` wiring in grpc-core/build.gradle.kts.
+# Mirrors the Gradle `withGrpcClientTestServer` wiring used by grpc-core tests.
 # RawClient*/GrpcCoreClient* tests dial localhost:50051 and would fail without it.
 TEST_SERVER_LOG="$BATCH_DIR/test-server.log"
 TEST_SERVER_PID=""
