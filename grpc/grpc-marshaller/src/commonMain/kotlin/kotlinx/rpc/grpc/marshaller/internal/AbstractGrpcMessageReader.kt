@@ -27,7 +27,6 @@ public abstract class AbstractGrpcMessageReader(
     }
 
     /** Records a read performed by an implementation after checking the reader bounds. */
-    @InternalRpcApi
     protected fun <T> recordRead(byteCount: Int, readAction: () -> T): T {
         if (byteCount !in 0..remaining) {
             throw IndexOutOfBoundsException(

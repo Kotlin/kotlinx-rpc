@@ -7,12 +7,11 @@ package kotlinx.rpc.grpc.marshaller.internal
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
-import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 
-@ExperimentalRpcApi
-public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
+@InternalRpcApi
+public abstract class AbstractGrpcMessageWriter(
     public override val size: Int,
 ) : GrpcMessageWriter {
     private var state: WriterState
@@ -56,7 +55,6 @@ public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
     /**
      * Records a write performed by an implementation and transitions the writer to failed if it throws.
      */
-    @InternalRpcApi
     protected fun recordWrite(byteCount: Int, writeAction: () -> Unit) {
         if (byteCount == 0) {
             check(state != WriterState.Failed) {
@@ -97,7 +95,6 @@ public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
     }
 
     /** Validates an array range and marks the writer failed when it is invalid. */
-    @InternalRpcApi
     protected fun checkedWriteRangeSize(bytes: ByteArray, startIndex: Int, endIndex: Int): Int {
         if (startIndex !in 0..endIndex || endIndex > bytes.size) {
             fail()
@@ -120,7 +117,6 @@ public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
     }
 
     /** Validates a buffer write and marks the writer failed when it is invalid. */
-    @InternalRpcApi
     protected fun checkedWriteByteCount(source: Buffer, byteCount: Long): Int {
         if (byteCount < 0L || byteCount > Int.MAX_VALUE || byteCount > source.size || byteCount > remaining.toLong()) {
             fail()
@@ -145,7 +141,6 @@ public abstract class AbstractGrpcMessageWriter @InternalRpcApi constructor(
     }
 
     /** Marks the writer failed when an implementation rejects a scoped write. */
-    @InternalRpcApi
     protected fun fail() {
         state = WriterState.Failed
     }
