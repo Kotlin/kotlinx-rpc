@@ -11,16 +11,20 @@ import kxrpc.testing.CallTrace
 import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.ControlAck
 import kxrpc.testing.DiscardScenarioRequest
+import kxrpc.testing.DisposableEndpoint
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
 import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
+import kxrpc.testing.StartDisposableEndpointRequest
+import kxrpc.testing.StopDisposableEndpointRequest
 
 /** Control plane through which client tests configure, drive, and inspect scenarios in [registry]. */
 internal class GrpcClientControlService(
     private val registry: CallScenarioRegistry,
+    private val disposableEndpoints: DisposableEndpointManager = DisposableEndpointManager(registry),
 ) : GrpcClientControlServiceGrpc.GrpcClientControlServiceImplBase() {
     override fun configureScenario(
         request: ConfigureScenarioRequest,
@@ -58,6 +62,27 @@ internal class GrpcClientControlService(
         }
     }
 
+    override fun startDisposableEndpoint(
+        request: StartDisposableEndpointRequest,
+        responseObserver: StreamObserver<DisposableEndpoint>,
+    ) {
+        respond(responseObserver) {
+            DisposableEndpoint.newBuilder()
+                .setPort(disposableEndpoints.start(request.callId))
+                .build()
+        }
+    }
+
+    override fun stopDisposableEndpoint(
+        request: StopDisposableEndpointRequest,
+        responseObserver: StreamObserver<ControlAck>,
+    ) {
+        respond(responseObserver) {
+            disposableEndpoints.stop(request.callId)
+            ControlAck.getDefaultInstance()
+        }
+    }
+
     override fun getTrace(request: GetTraceRequest, responseObserver: StreamObserver<CallTrace>) {
         respond(responseObserver) {
             registry.trace(request.callId)
@@ -78,6 +103,7 @@ internal class GrpcClientControlService(
         responseObserver: StreamObserver<ControlAck>,
     ) {
         respond(responseObserver) {
+            disposableEndpoints.stopIfPresent(request.callId)
             registry.discard(request.callId)
             ControlAck.getDefaultInstance()
         }
