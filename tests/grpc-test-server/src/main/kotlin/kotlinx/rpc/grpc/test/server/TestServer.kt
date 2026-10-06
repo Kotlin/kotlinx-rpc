@@ -4,13 +4,19 @@
 
 package kotlinx.rpc.grpc.test.server
 
+import io.grpc.ServerInterceptors
 import io.grpc.netty.NettyServerBuilder
 import java.net.InetSocketAddress
 
 public fun main() {
+    val registry = CallScenarioRegistry()
+    val interopService = InteropTestService(registry)
+    val scenarioInterceptor = InteropMetadataInterceptor(registry)
     val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 50051))
         .addService(EchoServiceImpl())
         .addService(GreeterServiceImpl())
+        .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
+        .addService(GrpcClientControlService(registry))
         .build()
     try {
         server.start()
@@ -19,5 +25,6 @@ public fun main() {
     } finally {
         server.shutdown()
         server.awaitTermination()
+        interopService.close()
     }
 }
