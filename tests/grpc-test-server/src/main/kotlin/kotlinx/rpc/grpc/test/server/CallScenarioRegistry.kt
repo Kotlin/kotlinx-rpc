@@ -26,7 +26,7 @@ import kxrpc.testing.TerminalStage
  * Server-side state of the scenarios configured through [GrpcClientControlService].
  *
  * A test configures a scenario under a `call_id`, then starts a data-plane call carrying that id in
- * the `kxrpc-test-call-id` metadata. [InteropMetadataInterceptor] reports the call's lifecycle here,
+ * the `kxrpc-test-call-id` metadata. [ScenarioInterceptor] reports the call's lifecycle here,
  * which records it as an ordered trace and blocks it at configured barriers until the test releases
  * them. All blocking operations give up after [waitTimeout] so a broken test cannot hang the server.
  */
@@ -114,8 +114,7 @@ internal class CallScenarioRegistry(
 
     fun grantInboundDemand(callId: String, messageCount: Int) {
         require(messageCount > 0) { "inbound demand message_count must be positive" }
-        val endpoint = scenario(callId).grantInboundDemand(messageCount)
-        endpoint?.grant(messageCount)
+        scenario(callId).grantInboundDemand(messageCount)
     }
 
     fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
@@ -218,15 +217,38 @@ internal class ScenarioDiscardedException(callId: String) :
 internal class ScenarioWaitTimeoutException(callId: String, awaited: String) :
     IllegalStateException("timed out waiting for $awaited in scenario '$callId'")
 
+/**
+ * Identifies one barrier of a scenario: the [occurrence]-th time a data-plane call reaches a [type] point.
+ *
+ * For example, `(SEND_RESPONSE, 2)` blocks the second response message, while `(CLOSE_CALL, 1)` blocks the close.
+ * The [occurrence] is one-based and already validated by [CallScenarioRegistry].
+ */
 private data class BarrierKey(val type: BarrierType, val occurrence: Int) {
     override fun toString(): String = "barrier $type occurrence $occurrence"
 }
 
+/**
+ * Result of a call ending, either by closing or by client cancellation.
+ *
+ * @property event The recorded [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED] event.
+ * @property inboundDemandEndpoint The demand endpoint detached from the ended call, if one was registered.
+ * The caller closes it, so later grants fail instead of reaching a call that has already ended.
+ */
 private data class TerminalTransition(
     val event: CallEvent,
     val inboundDemandEndpoint: InboundDemandEndpoint?,
 )
 
+/**
+ * Handle through which control-plane grants reach the inbound demand of one data-plane call.
+ *
+ * Used only by scenarios with manual inbound demand. [FlowControlSupport] registers the endpoint with grpc-java's
+ * `request(n)`. [CallScenarioRegistry] calls [grant] after leaving the scenario lock, so it never calls into
+ * grpc-java while holding it. Once the call ends or the scenario is discarded, the endpoint is closed and
+ * [grant] fails.
+ *
+ * @param requestMessages Requests the given number of additional inbound messages from grpc-java.
+ */
 private class InboundDemandEndpoint(
     private val requestMessages: (Int) -> Unit,
 ) {
@@ -242,6 +264,19 @@ private class InboundDemandEndpoint(
     }
 }
 
+/**
+ * Mutable state of one configured scenario, shared by its data-plane calls and the control plane.
+ *
+ * All state is guarded by [lock]. Every change signals [changed], so blocked threads re-check their condition:
+ * data-plane threads waiting at barriers, control-plane threads waiting for events, and tests waiting for a
+ * waiter count. Functions ending in `Locked` expect the caller to hold [lock] already.
+ *
+ * After [discard], further operations on the scenario fail with [ScenarioDiscardedException], and threads already
+ * blocked in it wake up and fail the same way.
+ *
+ * @param scenarioConfiguration The validated request that configured this scenario.
+ * @param configuredBarriers The barriers from [scenarioConfiguration], deduplicated and validated.
+ */
 private class ScenarioState(
     private val scenarioConfiguration: ConfigureScenarioRequest,
     private val configuredBarriers: Set<BarrierKey>,
@@ -249,15 +284,33 @@ private class ScenarioState(
     private val callId: String = scenarioConfiguration.callId
     private val lock = ReentrantLock()
     private val changed = lock.newCondition()
+
+    /** The trace in recording order; an event's sequence is its one-based index here. */
     private val events = mutableListOf<CallEvent>()
+
+    /** Number of events recorded per type, used to assign each event its one-based occurrence. */
     private val eventOccurrences = mutableMapOf<EventType, Int>()
+
+    /** Barriers released by the control plane. A release is never undone, so later arrivals pass through. */
     private val releasedBarriers = mutableSetOf<BarrierKey>()
     private var discarded = false
+
+    /** Threads currently blocked in [await], whether waiting at a barrier or for an event. */
     private var waiterCount = 0
+
+    /** The subset of [waiterCount] blocked in control-plane [awaitEvent] calls, reported in [diagnostics]. */
     private var controlWaiterCount = 0
+
+    /** Data-plane calls accepted but not yet closed or cancelled. */
     private var activeCallCount = 0
+
+    /** Demand endpoint of the active call, if it uses manual inbound demand and has registered one. */
     private var inboundDemandEndpoint: InboundDemandEndpoint? = null
+
+    /** Demand granted before [inboundDemandEndpoint] was registered, forwarded to it once it registers. */
     private var pendingInboundDemand: Int = 0
+
+    /** Running totals checked against the trace size limits in the companion object. */
     private var tracedRequestPayloadBytes = 0L
     private var tracedMetadataBytes = 0L
 
@@ -305,13 +358,13 @@ private class ScenarioState(
         }
     }
 
-    fun grantInboundDemand(messageCount: Int): InboundDemandEndpoint? = lock.withLock {
+    fun grantInboundDemand(messageCount: Int) = lock.withLock {
         checkNotDiscarded()
         check(scenarioConfiguration.flowControl.manualInboundDemand) {
             "scenario '$callId' does not enable manual inbound demand"
         }
         check(activeCallCount > 0) { "scenario '$callId' has no active call for inbound demand" }
-        inboundDemandEndpoint ?: run {
+        inboundDemandEndpoint?.grant(messageCount) ?: run {
             check(pendingInboundDemand <= Int.MAX_VALUE - messageCount) {
                 "scenario '$callId' accumulated too much pending inbound demand"
             }
@@ -330,6 +383,9 @@ private class ScenarioState(
         recordEventLocked(type, requestPayload, metadata, status)
     }
 
+    /**
+     * Records [type] unless no call is active, returning `null` so [FlowControlSupport] treats the call as terminated.
+     */
     fun recordEventIfCallActive(type: EventType): CallEvent? = lock.withLock {
         checkNotDiscarded()
         if (activeCallCount == 0) null else recordEventLocked(type)
@@ -357,6 +413,8 @@ private class ScenarioState(
                 "$MAX_TRACE_METADATA_BYTES bytes"
         }
         tracedMetadataBytes += metadataBytes
+
+        // Increase event occurrence
         val occurrence = (eventOccurrences[type] ?: 0) + 1
         eventOccurrences[type] = occurrence
 
@@ -450,6 +508,16 @@ private class ScenarioState(
         }
     }
 
+    /**
+     * Blocks until [result] returns a non-null value, then returns that value.
+     * The caller must hold [lock]; it is released while waiting on [changed].
+     *
+     * Fails with [ScenarioWaitTimeoutException] after [timeout], or with [ScenarioDiscardedException] if the
+     * scenario is discarded. While waiting, the thread is counted in [waiterCount] and, for [controlWaiter]
+     * calls, in [controlWaiterCount].
+     *
+     * @param awaited Describes the awaited condition in the timeout message.
+     */
     private fun <T : Any> await(
         timeout: Duration,
         awaited: String,

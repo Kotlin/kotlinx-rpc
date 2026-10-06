@@ -246,7 +246,7 @@ sequenceDiagram
 |----------------------------------|-------------------------------------------------------------------------------|
 | `TestServer.kt`                  | Entry point; wires the services on port 50051.                                |
 | `CallScenarioRegistry.kt`        | Scenario state: configuration, trace, barriers, inbound demand, diagnostics.   |
-| `InteropMetadataInterceptor.kt`  | Applies a scenario to calls carrying `kxrpc-test-call-id` and records their lifecycle. |
+| `ScenarioInterceptor.kt`         | Applies a scenario to calls carrying `kxrpc-test-call-id` and records their lifecycle. |
 | `InteropTestService.kt`          | The interop `TestService`; paces streaming responses.                         |
 | `FlowControlSupport.kt`          | Manual inbound demand and readiness-aware response delivery.                  |
 | `MalformedResponseTestService.kt`| Raw handlers that send zero or two responses.                                 |

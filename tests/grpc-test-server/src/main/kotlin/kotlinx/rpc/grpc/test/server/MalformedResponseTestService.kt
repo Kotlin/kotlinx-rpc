@@ -19,6 +19,8 @@ import kxrpc.testing.MalformedResponseServiceGrpc
 /**
  * Raw grpc-java handlers for response cardinalities forbidden by generated service adapters.
  *
+ * This allows the client to test the behavior when the server returns a invalid number of response messages.
+ *
  * The methods are re-bound as streaming on the server side so that a call declared as unary or
  * client-streaming in the proto can complete with zero or two response messages, as configured by
  * the scenario's `malformed_response_cardinality`.
