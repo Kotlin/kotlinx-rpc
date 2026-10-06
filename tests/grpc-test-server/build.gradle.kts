@@ -19,6 +19,12 @@ dependencies {
     implementation(libs.grpc.protobuf)
     implementation(libs.grpc.stub)
     implementation(libs.protobuf.java)
+
+    testImplementation(libs.kotlin.test.junit5)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 // The reference server is plain grpc-java, so the shared test protos are compiled with the
@@ -48,6 +54,7 @@ sourceSets.main {
         srcDir(project(":tests:test-protos").layout.projectDirectory.dir("src/commonMain/proto"))
         include("echo_grpc.proto")
         include("helloworld_grpc.proto")
+        include("kxrpc/testing/client_control.proto")
         include("grpc/testing/*.proto")
 
         includeDefaultProtobufPlugin = false
