@@ -22,7 +22,7 @@ Set the Gradle property to auto-update `.fir.txt` / `.fir.ir.txt` golden files:
 | `protobuf-unittest`                 | Protobuf generation and correctness with Google's tests                               |
 | `test-utils`                        | Shared KMP test utilities (`runTestWithCoroutinesProbes`, `WaitCounter`)              |
 | `test-protos`                       | Shared `.proto` definitions for gRPC tests                                            |
-| `grpc-test-server`                  | Standalone gRPC test server executable for gRPC tests                                 |
+| `grpc-test-server`                  | grpc-java reference server for the gRPC client tests ([README](grpc-test-server/README.md)) |
 
 ## Compiler Plugin Tests
 
