@@ -55,8 +55,8 @@
                 Configures keep-alive pings to detect broken connections.
                 Pings are disabled by default (<code>time = Duration.INFINITE</code>),
                 with a 20-second response timeout and <code>withoutCalls = false</code>.
-                Finite intervals must be at least 10 seconds, and finite response timeouts
-                must be at least 10 milliseconds.
+                Set <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response indefinitely.
+                Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
             </def>
             <def title="userAgent">
                 An application User-Agent prefix, followed by the gRPC runtime's own token.
@@ -79,16 +79,7 @@
             </def>
         </deflist>
         <note>
-            Duration options (<code>idleTimeout</code> and <code>keepAlive</code>) accept
-            <code>Duration.INFINITE</code> to disable the behavior. Finite values must be under
-            <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
-            On Kotlin/Native these become gRPC channel arguments, whose values are a C
-            <code>int</code>. <code>Duration.INFINITE</code> is passed as
-            <code>Int.MAX_VALUE</code>, the largest value such an argument can hold and the one
-            gRPC treats as effectively unbounded, so a finite value must stay below it to remain
-            distinguishable. The bound is enforced on every platform so that the same
-            configuration behaves identically everywhere; out-of-range values throw
-            <code>IllegalArgumentException</code>.
+            Finite durations must be less than <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
         </note>
     </chapter>
 

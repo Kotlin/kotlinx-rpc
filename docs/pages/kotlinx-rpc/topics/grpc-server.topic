@@ -67,20 +67,22 @@
             <def title="keepAlive { ... }">
                 Configures server-side keep-alive pings to detect broken connections.
                 Defaults to a two-hour interval and a 20-second timeout.
-                Finite intervals must be at least 10 seconds, and finite response timeouts
-                must be at least 10 milliseconds.
+                Set <code>time</code> to <code>Duration.INFINITE</code> to disable pings, or
+                <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response indefinitely.
+                Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
             </def>
             <def title="maxConnectionIdle">
                 The maximum time a connection may have no active RPCs before it is gracefully closed.
-                Defaults to <code>null</code> (no limit).
+                Defaults to <code>null</code> (no limit); <code>Duration.INFINITE</code> has the same effect.
             </def>
             <def title="maxConnectionAge">
                 The maximum time a connection may exist before it is gracefully closed.
-                Defaults to <code>null</code> (no limit).
+                Defaults to <code>null</code> (no limit); <code>Duration.INFINITE</code> has the same effect.
             </def>
             <def title="maxConnectionAgeGrace">
                 The grace period for active RPCs after <code>maxConnectionAge</code> is reached.
-                Defaults to <code>null</code> (no grace deadline).
+                Defaults to <code>null</code>, letting active RPCs run to completion;
+                <code>Duration.INFINITE</code> has the same effect.
             </def>
         </deflist>
         <note>
@@ -89,15 +91,7 @@
             provider that supports them. The bundled Netty provider does.
         </note>
         <note>
-            Duration options accept <code>Duration.INFINITE</code> to disable the behavior.
-            Finite values must be under <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
-            On Kotlin/Native these become gRPC channel arguments, whose values are a C
-            <code>int</code>. <code>Duration.INFINITE</code> is passed as
-            <code>Int.MAX_VALUE</code>, the largest value such an argument can hold and the one
-            gRPC treats as effectively unbounded, so a finite value must stay below it to remain
-            distinguishable. The bound is enforced on every platform so that the same
-            configuration behaves identically everywhere; out-of-range values throw
-            <code>IllegalArgumentException</code>.
+            Finite durations must be less than <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
         </note>
     </chapter>
 
