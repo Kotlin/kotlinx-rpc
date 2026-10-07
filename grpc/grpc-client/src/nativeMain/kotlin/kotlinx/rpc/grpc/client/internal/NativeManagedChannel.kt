@@ -44,7 +44,6 @@ import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
 import kotlinx.rpc.grpc.internal.toGrpcSlice
 import kotlinx.rpc.grpc.internal.toRaw
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.GRPC_PROPAGATE_DEFAULTS
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create_call
