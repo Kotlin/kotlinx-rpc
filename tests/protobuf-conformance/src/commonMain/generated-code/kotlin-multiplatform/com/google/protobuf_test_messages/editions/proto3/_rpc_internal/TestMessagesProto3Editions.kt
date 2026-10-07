@@ -44,27 +44,24 @@ import com.google.protobuf.kotlin.encodeWith
 import com.google.protobuf.kotlin.fromNumber
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.isNotEmpty
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.fixed32
@@ -97,28 +94,39 @@ import kotlinx.rpc.protobuf.internal.uInt32
 import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
-class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 19) {
+@GeneratedProtoOneOfs(names = ["oneofField"])
+class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fieldsWithPresence = 29) {
     @InternalRpcApi
     internal object PresenceIndices {
         const val optionalNestedMessage: Int = 0
         const val optionalForeignMessage: Int = 1
         const val recursiveMessage: Int = 2
-        const val optionalBoolWrapper: Int = 3
-        const val optionalInt32Wrapper: Int = 4
-        const val optionalInt64Wrapper: Int = 5
-        const val optionalUint32Wrapper: Int = 6
-        const val optionalUint64Wrapper: Int = 7
-        const val optionalFloatWrapper: Int = 8
-        const val optionalDoubleWrapper: Int = 9
-        const val optionalStringWrapper: Int = 10
-        const val optionalBytesWrapper: Int = 11
-        const val optionalDuration: Int = 12
-        const val optionalTimestamp: Int = 13
-        const val optionalFieldMask: Int = 14
-        const val optionalStruct: Int = 15
-        const val optionalAny: Int = 16
-        const val optionalValue: Int = 17
-        const val optionalEmpty: Int = 18
+        const val oneofUint32: Int = 3
+        const val oneofNestedMessage: Int = 4
+        const val oneofString: Int = 5
+        const val oneofBytes: Int = 6
+        const val oneofBool: Int = 7
+        const val oneofUint64: Int = 8
+        const val oneofFloat: Int = 9
+        const val oneofDouble: Int = 10
+        const val oneofEnum: Int = 11
+        const val oneofNullValue: Int = 12
+        const val optionalBoolWrapper: Int = 13
+        const val optionalInt32Wrapper: Int = 14
+        const val optionalInt64Wrapper: Int = 15
+        const val optionalUint32Wrapper: Int = 16
+        const val optionalUint64Wrapper: Int = 17
+        const val optionalFloatWrapper: Int = 18
+        const val optionalDoubleWrapper: Int = 19
+        const val optionalStringWrapper: Int = 20
+        const val optionalBytesWrapper: Int = 21
+        const val optionalDuration: Int = 22
+        const val optionalTimestamp: Int = 23
+        const val optionalFieldMask: Int = 24
+        const val optionalStruct: Int = 25
+        const val optionalAny: Int = 26
+        const val optionalValue: Int = 27
+        const val optionalEmpty: Int = 28
     }
 
     @InternalRpcApi
@@ -129,6 +137,30 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    private var _oneofFieldRef: Any? = null
+    private var _oneofFieldNum: Long = 0L
+
+    @InternalRpcApi
+    val _oneofFieldCase: TestAllTypesProto3OneofFieldCase get() = when {
+        presenceMask[PresenceIndices.oneofUint32] -> TestAllTypesProto3OneofFieldCase.ONEOF_UINT32
+        presenceMask[PresenceIndices.oneofNestedMessage] -> TestAllTypesProto3OneofFieldCase.ONEOF_NESTED_MESSAGE
+        presenceMask[PresenceIndices.oneofString] -> TestAllTypesProto3OneofFieldCase.ONEOF_STRING
+        presenceMask[PresenceIndices.oneofBytes] -> TestAllTypesProto3OneofFieldCase.ONEOF_BYTES
+        presenceMask[PresenceIndices.oneofBool] -> TestAllTypesProto3OneofFieldCase.ONEOF_BOOL
+        presenceMask[PresenceIndices.oneofUint64] -> TestAllTypesProto3OneofFieldCase.ONEOF_UINT64
+        presenceMask[PresenceIndices.oneofFloat] -> TestAllTypesProto3OneofFieldCase.ONEOF_FLOAT
+        presenceMask[PresenceIndices.oneofDouble] -> TestAllTypesProto3OneofFieldCase.ONEOF_DOUBLE
+        presenceMask[PresenceIndices.oneofEnum] -> TestAllTypesProto3OneofFieldCase.ONEOF_ENUM
+        presenceMask[PresenceIndices.oneofNullValue] -> TestAllTypesProto3OneofFieldCase.ONEOF_NULL_VALUE
+        else -> TestAllTypesProto3OneofFieldCase.NOT_SET
+    }
+
+    override fun clearOneofField() {
+        presenceMask.clearRange(PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue)
+        _oneofFieldRef = null
+        _oneofFieldNum = 0L
+    }
 
     internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var optionalInt32: Int by __optionalInt32Delegate
@@ -324,6 +356,86 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var mapStringNestedEnum: Map<String, TestAllTypesProto3.NestedEnum> by __mapStringNestedEnumDelegate
     internal val __mapStringForeignEnumDelegate: MsgFieldDelegate<Map<String, ForeignEnum>> = MsgFieldDelegate { emptyMap() }
     override var mapStringForeignEnum: Map<String, ForeignEnum> by __mapStringForeignEnumDelegate
+    override var oneofUint32: UInt
+        get() = if (presenceMask[PresenceIndices.oneofUint32]) _oneofFieldNum.toUInt() else 0u
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint32, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint32() {
+        if (presenceMask[PresenceIndices.oneofUint32]) clearOneofField()
+    }
+
+    override var oneofNestedMessage: TestAllTypesProto3.NestedMessage
+        get() = if (presenceMask[PresenceIndices.oneofNestedMessage]) (_oneofFieldRef as TestAllTypesProto3.NestedMessage) else NestedMessageInternal.DEFAULT
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofNestedMessage, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofNestedMessage() {
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) clearOneofField()
+    }
+
+    override var oneofString: String
+        get() = if (presenceMask[PresenceIndices.oneofString]) (_oneofFieldRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofString, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofString() {
+        if (presenceMask[PresenceIndices.oneofString]) clearOneofField()
+    }
+
+    override var oneofBytes: ByteString
+        get() = if (presenceMask[PresenceIndices.oneofBytes]) (_oneofFieldRef as ByteString) else ByteString()
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBytes, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofBytes() {
+        if (presenceMask[PresenceIndices.oneofBytes]) clearOneofField()
+    }
+
+    override var oneofBool: Boolean
+        get() = if (presenceMask[PresenceIndices.oneofBool]) (_oneofFieldNum != 0L) else false
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBool, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = if (value) 1L else 0L; _oneofFieldRef = null }
+
+    override fun clearOneofBool() {
+        if (presenceMask[PresenceIndices.oneofBool]) clearOneofField()
+    }
+
+    override var oneofUint64: ULong
+        get() = if (presenceMask[PresenceIndices.oneofUint64]) _oneofFieldNum.toULong() else 0uL
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint64, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint64() {
+        if (presenceMask[PresenceIndices.oneofUint64]) clearOneofField()
+    }
+
+    override var oneofFloat: Float
+        get() = if (presenceMask[PresenceIndices.oneofFloat]) Float.fromBits(_oneofFieldNum.toInt()) else 0.0f
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofFloat, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toRawBits().toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofFloat() {
+        if (presenceMask[PresenceIndices.oneofFloat]) clearOneofField()
+    }
+
+    override var oneofDouble: Double
+        get() = if (presenceMask[PresenceIndices.oneofDouble]) Double.fromBits(_oneofFieldNum) else 0.0
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofDouble, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.toRawBits(); _oneofFieldRef = null }
+
+    override fun clearOneofDouble() {
+        if (presenceMask[PresenceIndices.oneofDouble]) clearOneofField()
+    }
+
+    override var oneofEnum: TestAllTypesProto3.NestedEnum
+        get() = if (presenceMask[PresenceIndices.oneofEnum]) TestAllTypesProto3.NestedEnum.fromNumber(_oneofFieldNum.toInt()) else TestAllTypesProto3.NestedEnum.FOO
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofEnum, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.number.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofEnum() {
+        if (presenceMask[PresenceIndices.oneofEnum]) clearOneofField()
+    }
+
+    override var oneofNullValue: NullValue
+        get() = if (presenceMask[PresenceIndices.oneofNullValue]) NullValue.fromNumber(_oneofFieldNum.toInt()) else NullValue.NULL_VALUE
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofNullValue, PresenceIndices.oneofUint32, PresenceIndices.oneofNullValue); _oneofFieldNum = value.number.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofNullValue() {
+        if (presenceMask[PresenceIndices.oneofNullValue]) clearOneofField()
+    }
+
     internal val __optionalBoolWrapperDelegate: MsgFieldDelegate<BoolValue> = MsgFieldDelegate(PresenceIndices.optionalBoolWrapper) { BoolValueInternal.DEFAULT }
     override var optionalBoolWrapper: BoolValue by __optionalBoolWrapperDelegate
     override fun clearOptionalBoolWrapper() {
@@ -460,39 +572,38 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     override var fieldname1: Int by __fieldname1Delegate
     internal val __fieldName2Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName2: Int by __fieldName2Delegate
-    internal val __FieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var FieldName3: Int by __FieldName3Delegate
-    internal val __field_Name4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name4_: Int by __field_Name4_Delegate
+    internal val ___fieldName3Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var _fieldName3: Int by ___fieldName3Delegate
+    internal val __fieldName4_Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName4_: Int by __fieldName4_Delegate
     internal val __field0name5Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var field0name5: Int by __field0name5Delegate
-    internal val __field_0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_0Name6: Int by __field_0Name6Delegate
+    internal val __field0Name6Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var field0Name6: Int by __field0Name6Delegate
     internal val __fieldName7Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName7: Int by __fieldName7Delegate
-    internal val __FieldName8Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var FieldName8: Int by __FieldName8Delegate
-    internal val __field_Name9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name9: Int by __field_Name9Delegate
-    internal val __Field_Name10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var Field_Name10: Int by __Field_Name10Delegate
-    internal val __FIELD_NAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var FIELD_NAME11: Int by __FIELD_NAME11Delegate
-    internal val __FIELDName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var FIELDName12: Int by __FIELDName12Delegate
-    internal val ___FieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var _FieldName13: Int by ___FieldName13Delegate
-    internal val ____FieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var __FieldName14: Int by ____FieldName14Delegate
-    internal val __field_Name15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field_Name15: Int by __field_Name15Delegate
-    internal val __field__Name16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var field__Name16: Int by __field__Name16Delegate
+    internal val __fieldName8Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName8: Int by __fieldName8Delegate
+    internal val __fieldName9Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName9: Int by __fieldName9Delegate
+    internal val __fieldName10Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName10: Int by __fieldName10Delegate
+    internal val __fieldNAME11Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldNAME11: Int by __fieldNAME11Delegate
+    internal val __fieldName12Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName12: Int by __fieldName12Delegate
+    internal val ____fieldName13Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var __fieldName13: Int by ____fieldName13Delegate
+    internal val ____fieldName14Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var __fieldName14: Int by ____fieldName14Delegate
+    internal val __fieldName15Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName15: Int by __fieldName15Delegate
+    internal val __fieldName16Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName16: Int by __fieldName16Delegate
     internal val __fieldName17__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     override var fieldName17__: Int by __fieldName17__Delegate
-    internal val __FieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
-    override var FieldName18__: Int by __FieldName18__Delegate
-    override var oneofField: TestAllTypesProto3.OneofField? = null
+    internal val __fieldName18__Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
+    override var fieldName18__: Int by __fieldName18__Delegate
 
     private val _owner: TestAllTypesProto3Internal = this
 
@@ -505,6 +616,26 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         override val hasOptionalForeignMessage: Boolean get() = presenceMask[PresenceIndices.optionalForeignMessage]
 
         override val hasRecursiveMessage: Boolean get() = presenceMask[PresenceIndices.recursiveMessage]
+
+        override val hasOneofUint32: Boolean get() = presenceMask[PresenceIndices.oneofUint32]
+
+        override val hasOneofNestedMessage: Boolean get() = presenceMask[PresenceIndices.oneofNestedMessage]
+
+        override val hasOneofString: Boolean get() = presenceMask[PresenceIndices.oneofString]
+
+        override val hasOneofBytes: Boolean get() = presenceMask[PresenceIndices.oneofBytes]
+
+        override val hasOneofBool: Boolean get() = presenceMask[PresenceIndices.oneofBool]
+
+        override val hasOneofUint64: Boolean get() = presenceMask[PresenceIndices.oneofUint64]
+
+        override val hasOneofFloat: Boolean get() = presenceMask[PresenceIndices.oneofFloat]
+
+        override val hasOneofDouble: Boolean get() = presenceMask[PresenceIndices.oneofDouble]
+
+        override val hasOneofEnum: Boolean get() = presenceMask[PresenceIndices.oneofEnum]
+
+        override val hasOneofNullValue: Boolean get() = presenceMask[PresenceIndices.oneofNullValue]
 
         override val hasOptionalBoolWrapper: Boolean get() = presenceMask[PresenceIndices.optionalBoolWrapper]
 
@@ -631,6 +762,20 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.mapStringForeignMessage.hashCode()
         result = 31 * result + this.mapStringNestedEnum.hashCode()
         result = 31 * result + this.mapStringForeignEnum.hashCode()
+        result = 31 * result + when {
+            presenceMask[PresenceIndices.oneofUint32] -> 111 * 31 + this.oneofUint32.hashCode()
+            presenceMask[PresenceIndices.oneofNestedMessage] -> 112 * 31 + this.oneofNestedMessage.hashCode()
+            presenceMask[PresenceIndices.oneofString] -> 113 * 31 + this.oneofString.hashCode()
+            presenceMask[PresenceIndices.oneofBytes] -> 114 * 31 + this.oneofBytes.hashCode()
+            presenceMask[PresenceIndices.oneofBool] -> 115 * 31 + this.oneofBool.hashCode()
+            presenceMask[PresenceIndices.oneofUint64] -> 116 * 31 + this.oneofUint64.hashCode()
+            presenceMask[PresenceIndices.oneofFloat] -> 117 * 31 + this.oneofFloat.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofDouble] -> 118 * 31 + this.oneofDouble.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofEnum] -> 119 * 31 + this.oneofEnum.hashCode()
+            presenceMask[PresenceIndices.oneofNullValue] -> 120 * 31 + this.oneofNullValue.hashCode()
+            else -> 0
+        }
+
         result = 31 * result + if (presenceMask[PresenceIndices.optionalBoolWrapper]) this.optionalBoolWrapper.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.optionalInt32Wrapper]) this.optionalInt32Wrapper.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.optionalInt64Wrapper]) this.optionalInt64Wrapper.hashCode() else 0
@@ -667,57 +812,23 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         result = 31 * result + this.repeatedEmpty.hashCode()
         result = 31 * result + this.fieldname1.hashCode()
         result = 31 * result + this.fieldName2.hashCode()
-        result = 31 * result + this.FieldName3.hashCode()
-        result = 31 * result + this.field_Name4_.hashCode()
+        result = 31 * result + this._fieldName3.hashCode()
+        result = 31 * result + this.fieldName4_.hashCode()
         result = 31 * result + this.field0name5.hashCode()
-        result = 31 * result + this.field_0Name6.hashCode()
+        result = 31 * result + this.field0Name6.hashCode()
         result = 31 * result + this.fieldName7.hashCode()
-        result = 31 * result + this.FieldName8.hashCode()
-        result = 31 * result + this.field_Name9.hashCode()
-        result = 31 * result + this.Field_Name10.hashCode()
-        result = 31 * result + this.FIELD_NAME11.hashCode()
-        result = 31 * result + this.FIELDName12.hashCode()
-        result = 31 * result + this._FieldName13.hashCode()
-        result = 31 * result + this.__FieldName14.hashCode()
-        result = 31 * result + this.field_Name15.hashCode()
-        result = 31 * result + this.field__Name16.hashCode()
+        result = 31 * result + this.fieldName8.hashCode()
+        result = 31 * result + this.fieldName9.hashCode()
+        result = 31 * result + this.fieldName10.hashCode()
+        result = 31 * result + this.fieldNAME11.hashCode()
+        result = 31 * result + this.fieldName12.hashCode()
+        result = 31 * result + this.__fieldName13.hashCode()
+        result = 31 * result + this.__fieldName14.hashCode()
+        result = 31 * result + this.fieldName15.hashCode()
+        result = 31 * result + this.fieldName16.hashCode()
         result = 31 * result + this.fieldName17__.hashCode()
-        result = 31 * result + this.FieldName18__.hashCode()
-        result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
+        result = 31 * result + this.fieldName18__.hashCode()
         return result
-    }
-
-    fun TestAllTypesProto3.OneofField.oneOfHashCode(): Int {
-        return when (this) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> hashCode() + 0
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> hashCode() + 1
-            is TestAllTypesProto3.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesProto3.OneofField.OneofBytes -> hashCode() + 3
-            is TestAllTypesProto3.OneofField.OneofBool -> hashCode() + 4
-            is TestAllTypesProto3.OneofField.OneofUint64 -> hashCode() + 5
-            is TestAllTypesProto3.OneofField.OneofFloat -> value.toBits().hashCode() + 6
-            is TestAllTypesProto3.OneofField.OneofDouble -> value.toBits().hashCode() + 7
-            is TestAllTypesProto3.OneofField.OneofEnum -> hashCode() + 8
-            is TestAllTypesProto3.OneofField.OneofNullValue -> hashCode() + 9
-        }
-    }
-
-    fun oneOfEquals(a: TestAllTypesProto3.OneofField?, b: TestAllTypesProto3.OneofField?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> a == b
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> a == b
-            is TestAllTypesProto3.OneofField.OneofString -> a == b
-            is TestAllTypesProto3.OneofField.OneofBytes -> a == b
-            is TestAllTypesProto3.OneofField.OneofBool -> a == b
-            is TestAllTypesProto3.OneofField.OneofUint64 -> a == b
-            is TestAllTypesProto3.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofFloat).value.toBits()
-            is TestAllTypesProto3.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesProto3.OneofField.OneofDouble).value.toBits()
-            is TestAllTypesProto3.OneofField.OneofEnum -> a == b
-            is TestAllTypesProto3.OneofField.OneofNullValue -> a == b
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -816,6 +927,16 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (this.mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
+        if (presenceMask[PresenceIndices.oneofUint32] && this.oneofUint32 != other.oneofUint32) return false
+        if (presenceMask[PresenceIndices.oneofNestedMessage] && this.oneofNestedMessage != other.oneofNestedMessage) return false
+        if (presenceMask[PresenceIndices.oneofString] && this.oneofString != other.oneofString) return false
+        if (presenceMask[PresenceIndices.oneofBytes] && this.oneofBytes != other.oneofBytes) return false
+        if (presenceMask[PresenceIndices.oneofBool] && this.oneofBool != other.oneofBool) return false
+        if (presenceMask[PresenceIndices.oneofUint64] && this.oneofUint64 != other.oneofUint64) return false
+        if (presenceMask[PresenceIndices.oneofFloat] && this.oneofFloat.toBits() != other.oneofFloat.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofDouble] && this.oneofDouble.toBits() != other.oneofDouble.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofEnum] && this.oneofEnum != other.oneofEnum) return false
+        if (presenceMask[PresenceIndices.oneofNullValue] && this.oneofNullValue != other.oneofNullValue) return false
         if (presenceMask[PresenceIndices.optionalBoolWrapper] && this.optionalBoolWrapper != other.optionalBoolWrapper) return false
         if (presenceMask[PresenceIndices.optionalInt32Wrapper] && this.optionalInt32Wrapper != other.optionalInt32Wrapper) return false
         if (presenceMask[PresenceIndices.optionalInt64Wrapper] && this.optionalInt64Wrapper != other.optionalInt64Wrapper) return false
@@ -852,23 +973,22 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         if (this.repeatedEmpty != other.repeatedEmpty) return false
         if (this.fieldname1 != other.fieldname1) return false
         if (this.fieldName2 != other.fieldName2) return false
-        if (this.FieldName3 != other.FieldName3) return false
-        if (this.field_Name4_ != other.field_Name4_) return false
+        if (this._fieldName3 != other._fieldName3) return false
+        if (this.fieldName4_ != other.fieldName4_) return false
         if (this.field0name5 != other.field0name5) return false
-        if (this.field_0Name6 != other.field_0Name6) return false
+        if (this.field0Name6 != other.field0Name6) return false
         if (this.fieldName7 != other.fieldName7) return false
-        if (this.FieldName8 != other.FieldName8) return false
-        if (this.field_Name9 != other.field_Name9) return false
-        if (this.Field_Name10 != other.Field_Name10) return false
-        if (this.FIELD_NAME11 != other.FIELD_NAME11) return false
-        if (this.FIELDName12 != other.FIELDName12) return false
-        if (this._FieldName13 != other._FieldName13) return false
-        if (this.__FieldName14 != other.__FieldName14) return false
-        if (this.field_Name15 != other.field_Name15) return false
-        if (this.field__Name16 != other.field__Name16) return false
+        if (this.fieldName8 != other.fieldName8) return false
+        if (this.fieldName9 != other.fieldName9) return false
+        if (this.fieldName10 != other.fieldName10) return false
+        if (this.fieldNAME11 != other.fieldNAME11) return false
+        if (this.fieldName12 != other.fieldName12) return false
+        if (this.__fieldName13 != other.__fieldName13) return false
+        if (this.__fieldName14 != other.__fieldName14) return false
+        if (this.fieldName15 != other.fieldName15) return false
+        if (this.fieldName16 != other.fieldName16) return false
         if (this.fieldName17__ != other.fieldName17__) return false
-        if (this.FieldName18__ != other.FieldName18__) return false
-        return oneOfEquals(this.oneofField, other.oneofField)
+        return this.fieldName18__ == other.fieldName18__
     }
 
     override fun toString(): String {
@@ -986,6 +1106,46 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}mapStringForeignMessage=${this.mapStringForeignMessage},")
         builder.appendLine("${nextIndentString}mapStringNestedEnum=${this.mapStringNestedEnum},")
         builder.appendLine("${nextIndentString}mapStringForeignEnum=${this.mapStringForeignEnum},")
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            builder.appendLine("${nextIndentString}oneofUint32=${this.oneofUint32},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            builder.appendLine("${nextIndentString}oneofNestedMessage=${this.oneofNestedMessage.asInternal().asString(indent = indent + 4)},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            builder.appendLine("${nextIndentString}oneofString=${this.oneofString},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            builder.appendLine("${nextIndentString}oneofBytes=${this.oneofBytes.protoToString()},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            builder.appendLine("${nextIndentString}oneofBool=${this.oneofBool},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            builder.appendLine("${nextIndentString}oneofUint64=${this.oneofUint64},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            builder.appendLine("${nextIndentString}oneofFloat=${this.oneofFloat},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            builder.appendLine("${nextIndentString}oneofDouble=${this.oneofDouble},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            builder.appendLine("${nextIndentString}oneofEnum=${this.oneofEnum},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofNullValue]) {
+            builder.appendLine("${nextIndentString}oneofNullValue=${this.oneofNullValue},")
+        }
+
         if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             builder.appendLine("${nextIndentString}optionalBoolWrapper=${this.optionalBoolWrapper.asInternal().asString(indent = indent + 4)},")
         } else {
@@ -1102,23 +1262,22 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         builder.appendLine("${nextIndentString}repeatedEmpty=${this.repeatedEmpty},")
         builder.appendLine("${nextIndentString}fieldname1=${this.fieldname1},")
         builder.appendLine("${nextIndentString}fieldName2=${this.fieldName2},")
-        builder.appendLine("${nextIndentString}FieldName3=${this.FieldName3},")
-        builder.appendLine("${nextIndentString}field_Name4_=${this.field_Name4_},")
+        builder.appendLine("${nextIndentString}_fieldName3=${this._fieldName3},")
+        builder.appendLine("${nextIndentString}fieldName4_=${this.fieldName4_},")
         builder.appendLine("${nextIndentString}field0name5=${this.field0name5},")
-        builder.appendLine("${nextIndentString}field_0Name6=${this.field_0Name6},")
+        builder.appendLine("${nextIndentString}field0Name6=${this.field0Name6},")
         builder.appendLine("${nextIndentString}fieldName7=${this.fieldName7},")
-        builder.appendLine("${nextIndentString}FieldName8=${this.FieldName8},")
-        builder.appendLine("${nextIndentString}field_Name9=${this.field_Name9},")
-        builder.appendLine("${nextIndentString}Field_Name10=${this.Field_Name10},")
-        builder.appendLine("${nextIndentString}FIELD_NAME11=${this.FIELD_NAME11},")
-        builder.appendLine("${nextIndentString}FIELDName12=${this.FIELDName12},")
-        builder.appendLine("${nextIndentString}_FieldName13=${this._FieldName13},")
-        builder.appendLine("${nextIndentString}__FieldName14=${this.__FieldName14},")
-        builder.appendLine("${nextIndentString}field_Name15=${this.field_Name15},")
-        builder.appendLine("${nextIndentString}field__Name16=${this.field__Name16},")
+        builder.appendLine("${nextIndentString}fieldName8=${this.fieldName8},")
+        builder.appendLine("${nextIndentString}fieldName9=${this.fieldName9},")
+        builder.appendLine("${nextIndentString}fieldName10=${this.fieldName10},")
+        builder.appendLine("${nextIndentString}fieldNAME11=${this.fieldNAME11},")
+        builder.appendLine("${nextIndentString}fieldName12=${this.fieldName12},")
+        builder.appendLine("${nextIndentString}__fieldName13=${this.__fieldName13},")
+        builder.appendLine("${nextIndentString}__fieldName14=${this.__fieldName14},")
+        builder.appendLine("${nextIndentString}fieldName15=${this.fieldName15},")
+        builder.appendLine("${nextIndentString}fieldName16=${this.fieldName16},")
         builder.appendLine("${nextIndentString}fieldName17__=${this.fieldName17__},")
-        builder.appendLine("${nextIndentString}FieldName18__=${this.FieldName18__},")
-        builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
+        builder.appendLine("${nextIndentString}fieldName18__=${this.fieldName18__},")
         builder.append("${indentString})")
         return builder.toString()
     }
@@ -1230,6 +1389,46 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
         copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            copy.oneofUint32 = this.oneofUint32
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            copy.oneofNestedMessage = this.oneofNestedMessage.copy()
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            copy.oneofString = this.oneofString
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            copy.oneofBytes = this.oneofBytes
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            copy.oneofBool = this.oneofBool
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            copy.oneofUint64 = this.oneofUint64
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            copy.oneofFloat = this.oneofFloat
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            copy.oneofDouble = this.oneofDouble
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            copy.oneofEnum = this.oneofEnum
+        }
+
+        if (presenceMask[PresenceIndices.oneofNullValue]) {
+            copy.oneofNullValue = this.oneofNullValue
+        }
+
         if (presenceMask[PresenceIndices.optionalBoolWrapper]) {
             copy.optionalBoolWrapper = this.optionalBoolWrapper.copy()
         }
@@ -1314,62 +1513,25 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         copy.repeatedEmpty = this.repeatedEmpty.map { it.copy() }
         copy.fieldname1 = this.fieldname1
         copy.fieldName2 = this.fieldName2
-        copy.FieldName3 = this.FieldName3
-        copy.field_Name4_ = this.field_Name4_
+        copy._fieldName3 = this._fieldName3
+        copy.fieldName4_ = this.fieldName4_
         copy.field0name5 = this.field0name5
-        copy.field_0Name6 = this.field_0Name6
+        copy.field0Name6 = this.field0Name6
         copy.fieldName7 = this.fieldName7
-        copy.FieldName8 = this.FieldName8
-        copy.field_Name9 = this.field_Name9
-        copy.Field_Name10 = this.Field_Name10
-        copy.FIELD_NAME11 = this.FIELD_NAME11
-        copy.FIELDName12 = this.FIELDName12
-        copy._FieldName13 = this._FieldName13
-        copy.__FieldName14 = this.__FieldName14
-        copy.field_Name15 = this.field_Name15
-        copy.field__Name16 = this.field__Name16
+        copy.fieldName8 = this.fieldName8
+        copy.fieldName9 = this.fieldName9
+        copy.fieldName10 = this.fieldName10
+        copy.fieldNAME11 = this.fieldNAME11
+        copy.fieldName12 = this.fieldName12
+        copy.__fieldName13 = this.__fieldName13
+        copy.__fieldName14 = this.__fieldName14
+        copy.fieldName15 = this.fieldName15
+        copy.fieldName16 = this.fieldName16
         copy.fieldName17__ = this.fieldName17__
-        copy.FieldName18__ = this.FieldName18__
-        copy.oneofField = this.oneofField?.oneOfCopy()
+        copy.fieldName18__ = this.fieldName18__
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    fun TestAllTypesProto3.OneofField.oneOfCopy(): TestAllTypesProto3.OneofField {
-        return when (this) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                TestAllTypesProto3.OneofField.OneofNestedMessage(this.value.copy())
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                this
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                this
-            }
-        }
     }
 
     @InternalRpcApi
@@ -1459,27 +1621,31 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesProto3.NestedMessage> {
-            override fun encode(value: TestAllTypesProto3.NestedMessage, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesProto3.NestedMessage, NestedMessageInternal>() {
+            override fun asInternal(
+                value: TestAllTypesProto3.NestedMessage,
+            ): NestedMessageInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3.NestedMessage {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = NestedMessageInternal()
-                    checkForPlatformDecodeException {
-                        NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                    }
-                    return msg
-                }
+            override fun newInternal(): NestedMessageInternal {
+                return NestedMessageInternal()
+            }
+
+            override fun encodeWith(
+                message: NestedMessageInternal,
+                encoder: WireEncoder,
+                config: ProtoConfig?,
+            ) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(
+                message: NestedMessageInternal,
+                decoder: WireDecoder,
+                config: ProtoConfig?,
+            ) {
+                NestedMessageInternal.decodeWith(message, decoder, config)
             }
         }
 
@@ -2524,27 +2690,29 @@ class TestAllTypesProto3Internal: TestAllTypesProto3.Builder, InternalMessage(fi
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<TestAllTypesProto3> {
-        override fun encode(value: TestAllTypesProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesProto3, TestAllTypesProto3Internal>() {
+        override fun asInternal(value: TestAllTypesProto3): TestAllTypesProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TestAllTypesProto3Internal()
-                checkForPlatformDecodeException {
-                    TestAllTypesProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): TestAllTypesProto3Internal {
+            return TestAllTypesProto3Internal()
+        }
+
+        override fun encodeWith(
+            message: TestAllTypesProto3Internal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: TestAllTypesProto3Internal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            TestAllTypesProto3Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2613,27 +2781,29 @@ class ForeignMessageInternal: ForeignMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ForeignMessage> {
-        override fun encode(value: ForeignMessage, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ForeignMessage, ForeignMessageInternal>() {
+        override fun asInternal(value: ForeignMessage): ForeignMessageInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ForeignMessage {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ForeignMessageInternal()
-                checkForPlatformDecodeException {
-                    ForeignMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ForeignMessageInternal {
+            return ForeignMessageInternal()
+        }
+
+        override fun encodeWith(
+            message: ForeignMessageInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: ForeignMessageInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            ForeignMessageInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2696,27 +2866,29 @@ class NullHypothesisProto3Internal: NullHypothesisProto3.Builder, InternalMessag
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<NullHypothesisProto3> {
-        override fun encode(value: NullHypothesisProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<NullHypothesisProto3, NullHypothesisProto3Internal>() {
+        override fun asInternal(value: NullHypothesisProto3): NullHypothesisProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): NullHypothesisProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = NullHypothesisProto3Internal()
-                checkForPlatformDecodeException {
-                    NullHypothesisProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): NullHypothesisProto3Internal {
+            return NullHypothesisProto3Internal()
+        }
+
+        override fun encodeWith(
+            message: NullHypothesisProto3Internal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: NullHypothesisProto3Internal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            NullHypothesisProto3Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -2779,27 +2951,29 @@ class EnumOnlyProto3Internal: EnumOnlyProto3.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<EnumOnlyProto3> {
-        override fun encode(value: EnumOnlyProto3, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<EnumOnlyProto3, EnumOnlyProto3Internal>() {
+        override fun asInternal(value: EnumOnlyProto3): EnumOnlyProto3Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): EnumOnlyProto3 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = EnumOnlyProto3Internal()
-                checkForPlatformDecodeException {
-                    EnumOnlyProto3Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): EnumOnlyProto3Internal {
+            return EnumOnlyProto3Internal()
+        }
+
+        override fun encodeWith(
+            message: EnumOnlyProto3Internal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: EnumOnlyProto3Internal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            EnumOnlyProto3Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3372,6 +3546,46 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         }
     }
 
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint32]) {
+        encoder.writeUInt32(fieldNr = 111, value = this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) {
+        encoder.writeMessage(fieldNr = 112, value = this.oneofNestedMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofString]) {
+        encoder.writeString(fieldNr = 113, value = this.oneofString)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBytes]) {
+        encoder.writeBytes(fieldNr = 114, value = this.oneofBytes)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBool]) {
+        encoder.writeBool(fieldNr = 115, value = this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint64]) {
+        encoder.writeUInt64(fieldNr = 116, value = this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofFloat]) {
+        encoder.writeFloat(fieldNr = 117, value = this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofDouble]) {
+        encoder.writeDouble(fieldNr = 118, value = this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofEnum]) {
+        encoder.writeEnum(fieldNr = 119, value = this.oneofEnum.number)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNullValue]) {
+        encoder.writeEnum(fieldNr = 120, value = this.oneofNullValue.number)
+    }
+
     if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
         encoder.writeMessage(fieldNr = 201, value = this.optionalBoolWrapper.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
@@ -3550,103 +3764,68 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
         encoder.writeInt32(fieldNr = 402, value = this.fieldName2)
     }
 
-    if (this.FieldName3 != 0) {
-        encoder.writeInt32(fieldNr = 403, value = this.FieldName3)
+    if (this._fieldName3 != 0) {
+        encoder.writeInt32(fieldNr = 403, value = this._fieldName3)
     }
 
-    if (this.field_Name4_ != 0) {
-        encoder.writeInt32(fieldNr = 404, value = this.field_Name4_)
+    if (this.fieldName4_ != 0) {
+        encoder.writeInt32(fieldNr = 404, value = this.fieldName4_)
     }
 
     if (this.field0name5 != 0) {
         encoder.writeInt32(fieldNr = 405, value = this.field0name5)
     }
 
-    if (this.field_0Name6 != 0) {
-        encoder.writeInt32(fieldNr = 406, value = this.field_0Name6)
+    if (this.field0Name6 != 0) {
+        encoder.writeInt32(fieldNr = 406, value = this.field0Name6)
     }
 
     if (this.fieldName7 != 0) {
         encoder.writeInt32(fieldNr = 407, value = this.fieldName7)
     }
 
-    if (this.FieldName8 != 0) {
-        encoder.writeInt32(fieldNr = 408, value = this.FieldName8)
+    if (this.fieldName8 != 0) {
+        encoder.writeInt32(fieldNr = 408, value = this.fieldName8)
     }
 
-    if (this.field_Name9 != 0) {
-        encoder.writeInt32(fieldNr = 409, value = this.field_Name9)
+    if (this.fieldName9 != 0) {
+        encoder.writeInt32(fieldNr = 409, value = this.fieldName9)
     }
 
-    if (this.Field_Name10 != 0) {
-        encoder.writeInt32(fieldNr = 410, value = this.Field_Name10)
+    if (this.fieldName10 != 0) {
+        encoder.writeInt32(fieldNr = 410, value = this.fieldName10)
     }
 
-    if (this.FIELD_NAME11 != 0) {
-        encoder.writeInt32(fieldNr = 411, value = this.FIELD_NAME11)
+    if (this.fieldNAME11 != 0) {
+        encoder.writeInt32(fieldNr = 411, value = this.fieldNAME11)
     }
 
-    if (this.FIELDName12 != 0) {
-        encoder.writeInt32(fieldNr = 412, value = this.FIELDName12)
+    if (this.fieldName12 != 0) {
+        encoder.writeInt32(fieldNr = 412, value = this.fieldName12)
     }
 
-    if (this._FieldName13 != 0) {
-        encoder.writeInt32(fieldNr = 413, value = this._FieldName13)
+    if (this.__fieldName13 != 0) {
+        encoder.writeInt32(fieldNr = 413, value = this.__fieldName13)
     }
 
-    if (this.__FieldName14 != 0) {
-        encoder.writeInt32(fieldNr = 414, value = this.__FieldName14)
+    if (this.__fieldName14 != 0) {
+        encoder.writeInt32(fieldNr = 414, value = this.__fieldName14)
     }
 
-    if (this.field_Name15 != 0) {
-        encoder.writeInt32(fieldNr = 415, value = this.field_Name15)
+    if (this.fieldName15 != 0) {
+        encoder.writeInt32(fieldNr = 415, value = this.fieldName15)
     }
 
-    if (this.field__Name16 != 0) {
-        encoder.writeInt32(fieldNr = 416, value = this.field__Name16)
+    if (this.fieldName16 != 0) {
+        encoder.writeInt32(fieldNr = 416, value = this.fieldName16)
     }
 
     if (this.fieldName17__ != 0) {
         encoder.writeInt32(fieldNr = 417, value = this.fieldName17__)
     }
 
-    if (this.FieldName18__ != 0) {
-        encoder.writeInt32(fieldNr = 418, value = this.FieldName18__)
-    }
-
-    this.oneofField?.also { value ->
-        when (value) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                encoder.writeUInt32(fieldNr = 111, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                encoder.writeString(fieldNr = 113, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                encoder.writeBytes(fieldNr = 114, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                encoder.writeBool(fieldNr = 115, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                encoder.writeUInt64(fieldNr = 116, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                encoder.writeFloat(fieldNr = 117, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                encoder.writeDouble(fieldNr = 118, value = value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                encoder.writeEnum(fieldNr = 119, value = value.value.number)
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                encoder.writeEnum(fieldNr = 120, value = value.value.number)
-            }
-        }
+    if (this.fieldName18__ != 0) {
+        encoder.writeInt32(fieldNr = 418, value = this.fieldName18__)
     }
 
     _extensions.forEach { (key, value) ->
@@ -3659,7 +3838,11 @@ fun TestAllTypesProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -4287,6 +4470,37 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                     target[key] = value
                 }
             }
+            111 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint32 = decoder.readUInt32()
+            }
+            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = if (msg.presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) msg.oneofNestedMessage.asInternal() else TestAllTypesProto3Internal.NestedMessageInternal().also { msg.oneofNestedMessage = it }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
+            }
+            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofString = decoder.readString()
+            }
+            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofBytes = decoder.readBytes()
+            }
+            115 if tag.wireType == WireType.VARINT -> {
+                msg.oneofBool = decoder.readBool()
+            }
+            116 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint64 = decoder.readUInt64()
+            }
+            117 if tag.wireType == WireType.FIXED32 -> {
+                msg.oneofFloat = decoder.readFloat()
+            }
+            118 if tag.wireType == WireType.FIXED64 -> {
+                msg.oneofDouble = decoder.readDouble()
+            }
+            119 if tag.wireType == WireType.VARINT -> {
+                msg.oneofEnum = TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum())
+            }
+            120 if tag.wireType == WireType.VARINT -> {
+                msg.oneofNullValue = NullValue.fromNumber(decoder.readEnum())
+            }
             201 if tag.wireType == WireType.LENGTH_DELIMITED -> {
                 val target = msg.__optionalBoolWrapperDelegate.getOrCreate(msg) { BoolValueInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> BoolValueInternal.decodeWith(msg, decoder, config) }
@@ -4463,86 +4677,52 @@ fun TestAllTypesProto3Internal.Companion.decodeWith(msg: TestAllTypesProto3Inter
                 msg.fieldName2 = decoder.readInt32()
             }
             403 if tag.wireType == WireType.VARINT -> {
-                msg.FieldName3 = decoder.readInt32()
+                msg._fieldName3 = decoder.readInt32()
             }
             404 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name4_ = decoder.readInt32()
+                msg.fieldName4_ = decoder.readInt32()
             }
             405 if tag.wireType == WireType.VARINT -> {
                 msg.field0name5 = decoder.readInt32()
             }
             406 if tag.wireType == WireType.VARINT -> {
-                msg.field_0Name6 = decoder.readInt32()
+                msg.field0Name6 = decoder.readInt32()
             }
             407 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName7 = decoder.readInt32()
             }
             408 if tag.wireType == WireType.VARINT -> {
-                msg.FieldName8 = decoder.readInt32()
+                msg.fieldName8 = decoder.readInt32()
             }
             409 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name9 = decoder.readInt32()
+                msg.fieldName9 = decoder.readInt32()
             }
             410 if tag.wireType == WireType.VARINT -> {
-                msg.Field_Name10 = decoder.readInt32()
+                msg.fieldName10 = decoder.readInt32()
             }
             411 if tag.wireType == WireType.VARINT -> {
-                msg.FIELD_NAME11 = decoder.readInt32()
+                msg.fieldNAME11 = decoder.readInt32()
             }
             412 if tag.wireType == WireType.VARINT -> {
-                msg.FIELDName12 = decoder.readInt32()
+                msg.fieldName12 = decoder.readInt32()
             }
             413 if tag.wireType == WireType.VARINT -> {
-                msg._FieldName13 = decoder.readInt32()
+                msg.__fieldName13 = decoder.readInt32()
             }
             414 if tag.wireType == WireType.VARINT -> {
-                msg.__FieldName14 = decoder.readInt32()
+                msg.__fieldName14 = decoder.readInt32()
             }
             415 if tag.wireType == WireType.VARINT -> {
-                msg.field_Name15 = decoder.readInt32()
+                msg.fieldName15 = decoder.readInt32()
             }
             416 if tag.wireType == WireType.VARINT -> {
-                msg.field__Name16 = decoder.readInt32()
+                msg.fieldName16 = decoder.readInt32()
             }
             417 if tag.wireType == WireType.VARINT -> {
                 msg.fieldName17__ = decoder.readInt32()
             }
             418 if tag.wireType == WireType.VARINT -> {
-                msg.FieldName18__ = decoder.readInt32()
-            }
-            111 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofUint32(decoder.readUInt32())
-            }
-            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                val field = (msg.oneofField as? TestAllTypesProto3.OneofField.OneofNestedMessage) ?: TestAllTypesProto3.OneofField.OneofNestedMessage(TestAllTypesProto3Internal.NestedMessageInternal()).also {
-                    msg.oneofField = it
-                }
-
-                decoder.readMessage(field.value.asInternal()) { msg, decoder -> TestAllTypesProto3Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
-            }
-            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofString(decoder.readString())
-            }
-            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofBytes(decoder.readBytes())
-            }
-            115 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofBool(decoder.readBool())
-            }
-            116 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofUint64(decoder.readUInt64())
-            }
-            117 if tag.wireType == WireType.FIXED32 -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofFloat(decoder.readFloat())
-            }
-            118 if tag.wireType == WireType.FIXED64 -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofDouble(decoder.readDouble())
-            }
-            119 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofEnum(TestAllTypesProto3.NestedEnum.fromNumber(decoder.readEnum()))
-            }
-            120 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesProto3.OneofField.OneofNullValue(NullValue.fromNumber(decoder.readEnum()))
+                msg.fieldName18__ = decoder.readInt32()
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -5046,6 +5226,46 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         }
     }
 
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint32]) {
+        __result += WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNestedMessage]) {
+        __result += this.oneofNestedMessage.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofString]) {
+        __result += WireSize.string(this.oneofString).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBytes]) {
+        __result += WireSize.bytes(this.oneofBytes).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofBool]) {
+        __result += WireSize.tag(115, WireType.VARINT) + WireSize.bool(this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofUint64]) {
+        __result += WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofFloat]) {
+        __result += WireSize.tag(117, WireType.FIXED32) + WireSize.float(this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofDouble]) {
+        __result += WireSize.tag(118, WireType.FIXED64) + WireSize.double(this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofEnum]) {
+        __result += WireSize.tag(119, WireType.VARINT) + WireSize.enum(this.oneofEnum.number)
+    }
+
+    if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.oneofNullValue]) {
+        __result += WireSize.tag(120, WireType.VARINT) + WireSize.enum(this.oneofNullValue.number)
+    }
+
     if (presenceMask[TestAllTypesProto3Internal.PresenceIndices.optionalBoolWrapper]) {
         __result += this.optionalBoolWrapper.asInternal()._size.let { WireSize.tag(201, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
     }
@@ -5190,103 +5410,68 @@ private fun TestAllTypesProto3Internal.computeSize(): Int {
         __result += WireSize.tag(402, WireType.VARINT) + WireSize.int32(this.fieldName2)
     }
 
-    if (this.FieldName3 != 0) {
-        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this.FieldName3)
+    if (this._fieldName3 != 0) {
+        __result += WireSize.tag(403, WireType.VARINT) + WireSize.int32(this._fieldName3)
     }
 
-    if (this.field_Name4_ != 0) {
-        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.field_Name4_)
+    if (this.fieldName4_ != 0) {
+        __result += WireSize.tag(404, WireType.VARINT) + WireSize.int32(this.fieldName4_)
     }
 
     if (this.field0name5 != 0) {
         __result += WireSize.tag(405, WireType.VARINT) + WireSize.int32(this.field0name5)
     }
 
-    if (this.field_0Name6 != 0) {
-        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field_0Name6)
+    if (this.field0Name6 != 0) {
+        __result += WireSize.tag(406, WireType.VARINT) + WireSize.int32(this.field0Name6)
     }
 
     if (this.fieldName7 != 0) {
         __result += WireSize.tag(407, WireType.VARINT) + WireSize.int32(this.fieldName7)
     }
 
-    if (this.FieldName8 != 0) {
-        __result += WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.FieldName8)
+    if (this.fieldName8 != 0) {
+        __result += WireSize.tag(408, WireType.VARINT) + WireSize.int32(this.fieldName8)
     }
 
-    if (this.field_Name9 != 0) {
-        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.field_Name9)
+    if (this.fieldName9 != 0) {
+        __result += WireSize.tag(409, WireType.VARINT) + WireSize.int32(this.fieldName9)
     }
 
-    if (this.Field_Name10 != 0) {
-        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.Field_Name10)
+    if (this.fieldName10 != 0) {
+        __result += WireSize.tag(410, WireType.VARINT) + WireSize.int32(this.fieldName10)
     }
 
-    if (this.FIELD_NAME11 != 0) {
-        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.FIELD_NAME11)
+    if (this.fieldNAME11 != 0) {
+        __result += WireSize.tag(411, WireType.VARINT) + WireSize.int32(this.fieldNAME11)
     }
 
-    if (this.FIELDName12 != 0) {
-        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.FIELDName12)
+    if (this.fieldName12 != 0) {
+        __result += WireSize.tag(412, WireType.VARINT) + WireSize.int32(this.fieldName12)
     }
 
-    if (this._FieldName13 != 0) {
-        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this._FieldName13)
+    if (this.__fieldName13 != 0) {
+        __result += WireSize.tag(413, WireType.VARINT) + WireSize.int32(this.__fieldName13)
     }
 
-    if (this.__FieldName14 != 0) {
-        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__FieldName14)
+    if (this.__fieldName14 != 0) {
+        __result += WireSize.tag(414, WireType.VARINT) + WireSize.int32(this.__fieldName14)
     }
 
-    if (this.field_Name15 != 0) {
-        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.field_Name15)
+    if (this.fieldName15 != 0) {
+        __result += WireSize.tag(415, WireType.VARINT) + WireSize.int32(this.fieldName15)
     }
 
-    if (this.field__Name16 != 0) {
-        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.field__Name16)
+    if (this.fieldName16 != 0) {
+        __result += WireSize.tag(416, WireType.VARINT) + WireSize.int32(this.fieldName16)
     }
 
     if (this.fieldName17__ != 0) {
         __result += WireSize.tag(417, WireType.VARINT) + WireSize.int32(this.fieldName17__)
     }
 
-    if (this.FieldName18__ != 0) {
-        __result += WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.FieldName18__)
-    }
-
-    this.oneofField?.also { value ->
-        __result += when (value) {
-            is TestAllTypesProto3.OneofField.OneofUint32 -> {
-                WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofNestedMessage -> {
-                value.value.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofString -> {
-                WireSize.string(value.value).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofBytes -> {
-                WireSize.bytes(value.value).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesProto3.OneofField.OneofBool -> {
-                WireSize.tag(115, WireType.VARINT) + WireSize.bool(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofUint64 -> {
-                WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofFloat -> {
-                WireSize.tag(117, WireType.FIXED32) + WireSize.float(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofDouble -> {
-                WireSize.tag(118, WireType.FIXED64) + WireSize.double(value.value)
-            }
-            is TestAllTypesProto3.OneofField.OneofEnum -> {
-                WireSize.tag(119, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
-            is TestAllTypesProto3.OneofField.OneofNullValue -> {
-                WireSize.tag(120, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
-        }
+    if (this.fieldName18__ != 0) {
+        __result += WireSize.tag(418, WireType.VARINT) + WireSize.int32(this.fieldName18__)
     }
 
     __result += _unknownFields.size.toInt()
@@ -5314,7 +5499,11 @@ fun ForeignMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?
 }
 
 @InternalRpcApi
-fun ForeignMessageInternal.Companion.decodeWith(msg: ForeignMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ForeignMessageInternal.Companion.decodeWith(
+    msg: ForeignMessageInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5371,7 +5560,11 @@ fun NullHypothesisProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoC
 }
 
 @InternalRpcApi
-fun NullHypothesisProto3Internal.Companion.decodeWith(msg: NullHypothesisProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+fun NullHypothesisProto3Internal.Companion.decodeWith(
+    msg: NullHypothesisProto3Internal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5421,7 +5614,11 @@ fun EnumOnlyProto3Internal.encodeWith(encoder: WireEncoder, config: ProtoConfig?
 }
 
 @InternalRpcApi
-fun EnumOnlyProto3Internal.Companion.decodeWith(msg: EnumOnlyProto3Internal, decoder: WireDecoder, config: ProtoConfig?) {
+fun EnumOnlyProto3Internal.Companion.decodeWith(
+    msg: EnumOnlyProto3Internal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5459,7 +5656,10 @@ fun EnumOnlyProto3.asInternal(): EnumOnlyProto3Internal {
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.a != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.a)
     }
@@ -5478,7 +5678,11 @@ fun TestAllTypesProto3Internal.NestedMessageInternal.encodeWith(encoder: WireEnc
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.NestedMessageInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.NestedMessageInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5531,7 +5735,10 @@ fun TestAllTypesProto3.NestedMessage.asInternal(): TestAllTypesProto3Internal.Ne
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -5550,7 +5757,11 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32Int32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapInt32Int32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5602,7 +5813,10 @@ fun TestAllTypesProto3Internal.MapInt32Int32EntryInternal.asInternal(): TestAllT
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0L) {
         encoder.writeInt64(fieldNr = 1, value = this.key)
     }
@@ -5621,7 +5835,11 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt64Int64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapInt64Int64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5673,7 +5891,10 @@ fun TestAllTypesProto3Internal.MapInt64Int64EntryInternal.asInternal(): TestAllT
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0u) {
         encoder.writeUInt32(fieldNr = 1, value = this.key)
     }
@@ -5692,7 +5913,11 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint32Uint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapUint32Uint32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5744,7 +5969,10 @@ fun TestAllTypesProto3Internal.MapUint32Uint32EntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0uL) {
         encoder.writeUInt64(fieldNr = 1, value = this.key)
     }
@@ -5763,7 +5991,11 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapUint64Uint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapUint64Uint64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5815,7 +6047,10 @@ fun TestAllTypesProto3Internal.MapUint64Uint64EntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0) {
         encoder.writeSInt32(fieldNr = 1, value = this.key)
     }
@@ -5834,7 +6069,11 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint32Sint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapSint32Sint32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5886,7 +6125,10 @@ fun TestAllTypesProto3Internal.MapSint32Sint32EntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0L) {
         encoder.writeSInt64(fieldNr = 1, value = this.key)
     }
@@ -5905,7 +6147,11 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSint64Sint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapSint64Sint64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5957,7 +6203,10 @@ fun TestAllTypesProto3Internal.MapSint64Sint64EntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0u) {
         encoder.writeFixed32(fieldNr = 1, value = this.key)
     }
@@ -5976,7 +6225,11 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6028,7 +6281,10 @@ fun TestAllTypesProto3Internal.MapFixed32Fixed32EntryInternal.asInternal(): Test
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0uL) {
         encoder.writeFixed64(fieldNr = 1, value = this.key)
     }
@@ -6047,7 +6303,11 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6099,7 +6359,10 @@ fun TestAllTypesProto3Internal.MapFixed64Fixed64EntryInternal.asInternal(): Test
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0) {
         encoder.writeSFixed32(fieldNr = 1, value = this.key)
     }
@@ -6118,7 +6381,11 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6170,7 +6437,10 @@ fun TestAllTypesProto3Internal.MapSfixed32Sfixed32EntryInternal.asInternal(): Te
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0L) {
         encoder.writeSFixed64(fieldNr = 1, value = this.key)
     }
@@ -6189,7 +6459,11 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6241,7 +6515,10 @@ fun TestAllTypesProto3Internal.MapSfixed64Sfixed64EntryInternal.asInternal(): Te
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6260,7 +6537,11 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32FloatEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapInt32FloatEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6312,7 +6593,10 @@ fun TestAllTypesProto3Internal.MapInt32FloatEntryInternal.asInternal(): TestAllT
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key != 0) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6331,7 +6615,11 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: W
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapInt32DoubleEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapInt32DoubleEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6383,7 +6671,10 @@ fun TestAllTypesProto3Internal.MapInt32DoubleEntryInternal.asInternal(): TestAll
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key) {
         encoder.writeBool(fieldNr = 1, value = this.key)
     }
@@ -6402,7 +6693,11 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.encodeWith(encoder: Wire
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapBoolBoolEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapBoolBoolEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6454,7 +6749,10 @@ fun TestAllTypesProto3Internal.MapBoolBoolEntryInternal.asInternal(): TestAllTyp
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6473,7 +6771,11 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.encodeWith(encoder: 
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringStringEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringStringEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringStringEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6525,7 +6827,10 @@ fun TestAllTypesProto3Internal.MapStringStringEntryInternal.asInternal(): TestAl
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6544,7 +6849,11 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.encodeWith(encoder: W
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringBytesEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringBytesEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6596,7 +6905,10 @@ fun TestAllTypesProto3Internal.MapStringBytesEntryInternal.asInternal(): TestAll
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6615,7 +6927,11 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.encodeWith(en
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6668,7 +6984,10 @@ fun TestAllTypesProto3Internal.MapStringNestedMessageEntryInternal.asInternal():
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6687,7 +7006,11 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.encodeWith(e
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6740,7 +7063,10 @@ fun TestAllTypesProto3Internal.MapStringForeignMessageEntryInternal.asInternal()
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6759,7 +7085,11 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6811,7 +7141,10 @@ fun TestAllTypesProto3Internal.MapStringNestedEnumEntryInternal.asInternal(): Te
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (this.key.isNotEmpty()) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6830,7 +7163,11 @@ fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesProto3Internal.MapStringForeignEnumEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6921,7 +7258,9 @@ fun TestAllTypesProto3.NestedEnum.Companion.fromNumber(number: Int): TestAllType
 }
 
 @InternalRpcApi
-fun TestAllTypesProto3.AliasedEnum.Companion.fromNumber(number: Int): TestAllTypesProto3.AliasedEnum {
+fun TestAllTypesProto3.AliasedEnum.Companion.fromNumber(
+    number: Int,
+): TestAllTypesProto3.AliasedEnum {
     return when (number) {
         0 -> {
             TestAllTypesProto3.AliasedEnum.ALIAS_FOO

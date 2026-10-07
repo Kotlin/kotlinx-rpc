@@ -31,7 +31,7 @@ actual fun GrpcTestBase.testKeepAlive(
                 }
             }
         ) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         }
     }
 

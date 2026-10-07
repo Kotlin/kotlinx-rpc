@@ -29,12 +29,11 @@ configureKotlinCompatibility("2.2.0")
 kotlin {
     explicitApi()
 
-    // marker-abi-jvm
-    abiValidation {
-        enabled = enableAbiValidation
-        configureAbiFilters()
+    if (enableAbiValidation) {
+        abiValidation {
+            configureAbiFilters()
+        }
     }
-    // /marker-abi-jvm
 }
 
 configureJvm(isKmp = false)

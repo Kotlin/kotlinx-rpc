@@ -1,9 +1,12 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalRpcApi::class,
-    InternalNativeRpcApi::class)
+@file:OptIn(
+    ExperimentalForeignApi::class,
+    ExperimentalNativeApi::class,
+    InternalNativeRpcApi::class,
+)
 
 package kotlinx.rpc.grpc.client.internal
 
@@ -28,7 +31,6 @@ import kotlinx.coroutines.CompletableJob
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.BatchResult
@@ -39,6 +41,8 @@ import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toByteArray
 import kotlinx.rpc.grpc.internal.toGrpcByteBuffer
 import kotlinx.rpc.grpc.internal.toKotlin
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
@@ -354,6 +358,11 @@ internal class NativeClientCall<Request, Response>(
                             // if the batch doesn't succeed, this is reflected in the recv status op batch.
                             onSuccess()
                         }
+                    } catch (e: Throwable) {
+                        cancelInternal(
+                            grpc_status_code.GRPC_STATUS_INTERNAL,
+                            "Batch callback failed: ${e.message}"
+                        )
                     } finally {
                         // ignore failure, as it is reflected in the client status op
                         cleanup()
@@ -539,8 +548,10 @@ internal class NativeClientCall<Request, Response>(
             }) {
                 // if the call was successful, but no message was received, we reached the end-of-stream.
                 val buf = recvPtr.value ?: return@runBatch
-                val msg = methodDescriptor.responseMarshaller
-                    .decode(buf.toKotlin())
+                val buffer = buf.toKotlin()
+                val msg = methodDescriptor.responseMarshaller.decode(
+                    BufferMessageReader(buffer, buffer.size.toInt()),
+                )
                 safeUserCode("Failed to call onClose.") {
                     listener.onMessage(msg)
                 }
@@ -610,8 +621,8 @@ internal class NativeClientCall<Request, Response>(
         ready.value = false
 
         val arena = Arena()
-        val source = methodDescriptor.requestMarshaller.encode(message)
-        val byteBuffer = source.toGrpcByteBuffer()
+        val buffer = methodDescriptor.requestMarshaller.encodeToBuffer(message)
+        val byteBuffer = buffer.toGrpcByteBuffer()
 
         val op = arena.alloc<grpc_op> {
             op = GRPC_OP_SEND_MESSAGE

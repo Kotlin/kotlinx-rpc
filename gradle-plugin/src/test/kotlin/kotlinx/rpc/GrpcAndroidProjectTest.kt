@@ -329,6 +329,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -346,6 +347,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         cleanProtoBuildDir()
@@ -359,6 +361,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         SSetsAndroid.Default.debug.sourceDir()
@@ -374,6 +377,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         val firstRunTestDebug = runForSet(SSetsAndroid.Default.testDebug)
@@ -385,6 +389,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunTestDebug.assertOutcomes(
@@ -394,6 +399,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -410,6 +416,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         firstRunAndroidTestDebug.assertOutcomes(
@@ -419,6 +426,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.SUCCESS,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.SUCCESS,
+            bufLock = TaskOutcome.SUCCESS,
         )
 
         // didn't run
@@ -439,6 +447,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run
@@ -456,6 +465,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.UP_TO_DATE,
             protoFilesImports = TaskOutcome.NO_SOURCE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         secondRunTestDebug.assertOutcomes(
@@ -465,6 +475,7 @@ class GrpcAndroidProjectTest : GrpcBaseTest() {
             bufGenYaml = TaskOutcome.UP_TO_DATE,
             protoFiles = TaskOutcome.SUCCESS,
             protoFilesImports = TaskOutcome.UP_TO_DATE,
+            bufLock = TaskOutcome.UP_TO_DATE,
         )
 
         // didn't run

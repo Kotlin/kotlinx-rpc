@@ -5,9 +5,6 @@ package com.google.protobuf.kotlin
 
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
@@ -15,12 +12,11 @@ import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.tag
@@ -85,27 +81,29 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
     }
 
     @InternalRpcApi
-    public object MARSHALLER: GrpcMarshaller<Timestamp> {
-        public override fun encode(value: Timestamp, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    public object MARSHALLER: ProtoGrpcMarshaller<Timestamp, TimestampInternal>() {
+        public override fun asInternal(value: Timestamp): TimestampInternal {
+            return value.asInternal()
         }
 
-        public override fun decode(source: Source, config: GrpcMarshallerConfig?): Timestamp {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TimestampInternal()
-                checkForPlatformDecodeException {
-                    TimestampInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        public override fun newInternal(): TimestampInternal {
+            return TimestampInternal()
+        }
+
+        public override fun encodeWith(
+            message: TimestampInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        public override fun decodeWith(
+            message: TimestampInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            TimestampInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -140,7 +138,11 @@ public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtoConfi
 }
 
 @InternalRpcApi
-public fun TimestampInternal.Companion.decodeWith(msg: TimestampInternal, decoder: WireDecoder, config: ProtoConfig?) {
+public fun TimestampInternal.Companion.decodeWith(
+    msg: TimestampInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {

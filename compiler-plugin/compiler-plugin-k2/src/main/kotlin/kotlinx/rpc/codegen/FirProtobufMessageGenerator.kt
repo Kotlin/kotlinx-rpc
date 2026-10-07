@@ -4,13 +4,13 @@
 
 package kotlinx.rpc.codegen
 
+import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
-import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
-import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.fir.plugin.createMemberFunction
 import org.jetbrains.kotlin.fir.plugin.createMemberProperty
 import org.jetbrains.kotlin.fir.plugin.createNestedClass
 import org.jetbrains.kotlin.fir.resolve.defaultType
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
@@ -39,13 +40,14 @@ class FirProtobufMessageGenerator(
 
     private class GeneratedNames(
         val propertyNames: Map<Name, FirPropertySymbol> = emptyMap(),
-        val functionNames: Map<Name, FirPropertySymbol> = emptyMap(),
+        /** Builder function name to the source element the generated function is attributed to. */
+        val functionNames: Map<Name, KtSourceElement?> = emptyMap(),
     )
 
     private val messageCallablesCache: FirCache<FirClassSymbol<*>, GeneratedNames, Nothing?> =
         session.firCachesFactory.createCache { messageClassSymbol: FirClassSymbol<*>, _ ->
             val propertyNames = mutableMapOf<Name, FirPropertySymbol>()
-            val functionNames = mutableMapOf<Name, FirPropertySymbol>()
+            val functionNames = mutableMapOf<Name, KtSourceElement?>()
             val presenceGetterNames = messageClassSymbol.presenceGetterNames(session)
             vsApi {
                 messageClassSymbol.forAllCallablesVS(session) { callable ->
@@ -56,16 +58,27 @@ class FirProtobufMessageGenerator(
                         // for those fields we generate a matching `clear<Field>` function on the builder.
                         val capitalized = callable.name.asString().replaceFirstChar { char -> char.uppercase() }
                         if (Name.identifier("has$capitalized") in presenceGetterNames) {
-                            functionNames[Name.identifier("clear$capitalized")] = callable
+                            functionNames[ProtoNames.clearFunctionName(callable.name.asString())] = callable.source
                         }
                     }
                 }
             }
+
+            // Each oneof gets a `clear<OneOf>` function on the builder that clears it regardless of the active case.
+            // The function is attributed to the generated `<oneOf>` case extension property of the message.
+            for (oneOfName in messageClassSymbol.oneOfNames(session)) {
+                val caseProperty = messageClassSymbol.oneOfCaseProperty(session, oneOfName)
+                functionNames[ProtoNames.clearFunctionName(oneOfName)] = (caseProperty ?: messageClassSymbol).source
+            }
+
             GeneratedNames(propertyNames, functionNames)
         }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
         register(FirRpcPredicates.generatedProtoMessage)
+        // registered so that the annotation is resolved in the COMPILER_REQUIRED_ANNOTATIONS phase,
+        // see [oneOfNames]
+        register(FirRpcPredicates.generatedProtoOneOfs)
     }
 
     override fun getNestedClassifiersNames(
@@ -113,7 +126,7 @@ class FirProtobufMessageGenerator(
                     modality = Modality.ABSTRACT
                     superType { owner.defaultType() }
                     vsApi {
-                        sourceVS = owner.source?.fakeElement(pluginGeneratedElementKindVS())
+                        sourceVS = owner.source?.fakeElementVS(pluginGeneratedElementKindVS())
                     }
                 }.symbol
             }
@@ -167,7 +180,7 @@ class FirProtobufMessageGenerator(
                     isOverride = true
                 }
                 vsApi {
-                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
+                    sourceVS = property.source?.fakeElementVS(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )
@@ -182,8 +195,11 @@ class FirProtobufMessageGenerator(
         val messageClassSymbol = context.owner.generatedProtoMessageBuilderKey?.message
             ?: return super.generateFunctions(callableId, context)
 
-        val property = messageCallablesCache.getValue(messageClassSymbol)
-            .functionNames[callableId.callableName] ?: return super.generateFunctions(callableId, context)
+        val functionNames = messageCallablesCache.getValue(messageClassSymbol).functionNames
+        if (callableId.callableName !in functionNames) {
+            return super.generateFunctions(callableId, context)
+        }
+        val source = functionNames[callableId.callableName]
 
         return listOf(
             createMemberFunction(
@@ -195,7 +211,7 @@ class FirProtobufMessageGenerator(
                 visibility = Visibilities.Public
                 modality = Modality.ABSTRACT
                 vsApi {
-                    sourceVS = property.source?.fakeElement(pluginGeneratedElementKindVS())
+                    sourceVS = source?.fakeElementVS(pluginGeneratedElementKindVS())
                 }
             }.symbol
         )
@@ -224,4 +240,41 @@ private fun FirClassSymbol<*>.presenceGetterNames(session: FirSession): Set<Name
             .filterIsInstance<FirPropertySymbol>()
             .mapTo(mutableSetOf()) { it.name }
     }
+}
+
+/**
+ * Returns the names of the `oneof` declarations of this message, e.g. `payload`,
+ * as listed by the `@GeneratedProtoOneOfs` annotation on the internal message class.
+ *
+ * Only the annotations of the internal class are read, never its member scope (see [presenceGetterNames]):
+ * the annotation is a compiler-required one (registered via [FirRpcPredicates.generatedProtoOneOfs]),
+ * so it is resolved in the `COMPILER_REQUIRED_ANNOTATIONS` phase, before the supertypes of the internal class
+ * (and thus the builder) are resolved. The argument is read as a raw literal, without evaluation.
+ */
+private fun FirClassSymbol<*>.oneOfNames(session: FirSession): List<String> {
+    val internalClass = vsApi {
+        session.getRegularClassSymbolByClassIdVS(classId.internalMessageClassId())
+    } ?: return emptyList()
+
+    val annotation = internalClass.rpcAnnotation(
+        session = session,
+        predicate = FirRpcPredicates.generatedProtoOneOfs,
+        classId = ProtoClassId.protoOneOfsAnnotation,
+    ) ?: return emptyList()
+
+    return annotation.stringArrayArgument(ProtoNames.ONE_OFS_NAMES_ARGUMENT)
+}
+
+/**
+ * Returns the generated top-level `val <Message>.<oneOf>: <Message><OneOf>Case` extension property
+ * of this message for the oneof [oneOfName], or `null` if it is not found.
+ *
+ * Only the receiver type of the candidates is resolved, which does not touch the builder or the internal class.
+ */
+private fun FirClassSymbol<*>.oneOfCaseProperty(session: FirSession, oneOfName: String): FirPropertySymbol? {
+    return session.symbolProvider
+        .getTopLevelPropertySymbols(classId.packageFqName, Name.identifier(oneOfName))
+        .firstOrNull { property ->
+            property.resolvedReceiverTypeRef?.doesMatchesClassId(session, classId) == true
+        }
 }

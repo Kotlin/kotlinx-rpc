@@ -10,6 +10,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import com.google.protobuf.test.ImportEnum
 import com.google.protobuf.test.ImportMessage
 import com.google.protobuf.test.PublicImportMessage
@@ -127,7 +129,7 @@ object TestUtil {
         defaultCord = "425"
 
         // Oneof field (last one wins)
-        oneofField = TestAllTypes.OneofField.OneofBytes(toBytes("604").asByteString())
+        oneofBytes = toBytes("604").asByteString()
     }
 
     /**
@@ -316,9 +318,8 @@ object TestUtil {
         assertEquals("425", message.defaultCord)
 
         // Oneof
-        val oneofField = message.oneofField
-        assertTrue(oneofField is TestAllTypes.OneofField.OneofBytes)
-        assertByteArrayEquals(toBytes("604"), oneofField.value)
+        assertEquals(TestAllTypesOneofFieldCase.ONEOF_BYTES, message.oneofField)
+        assertByteArrayEquals(toBytes("604"), message.oneofBytes)
     }
 
     /**
@@ -473,7 +474,7 @@ object TestUtil {
         assertEquals("123", message.defaultCord)
 
         // Oneof not set
-        assertNull(message.oneofField)
+        assertEquals(TestAllTypesOneofFieldCase.NOT_SET, message.oneofField)
     }
 
     /**
@@ -611,8 +612,8 @@ object TestUtil {
     }
 
     fun <M> encodeDecode(msg: M, marshaller: kotlinx.rpc.grpc.marshaller.GrpcMarshaller<M>): M {
-        val source = marshaller.encode(msg)
-        return marshaller.decode(source)
+        val source = marshaller.encodeToBuffer(msg)
+        return marshaller.decodeFromSource(source)
     }
 
     // ===========================================================================================================
@@ -642,7 +643,7 @@ object TestUtil {
         optionalStringExtension = "115"
         optionalBytesExtension = toBytes("116").asByteString()
 
-        optionalgroupExtension = OptionalGroupExtension { a = 117 }
+        optionalgroupExtension = OptionalgroupExtension { a = 117 }
         optionalNestedMessageExtension = TestAllTypes.NestedMessage { bb = 118 }
         optionalForeignMessageExtension = ForeignMessage { c = 119 }
         optionalImportMessageExtension = ImportMessage { d = 120 }
@@ -674,8 +675,8 @@ object TestUtil {
         repeatedBytesExtension = listOf(toBytes("216").asByteString(), toBytes("316").asByteString())
 
         repeatedgroupExtension = listOf(
-            RepeatedGroupExtension { a = 217 },
-            RepeatedGroupExtension { a = 317 },
+            RepeatedgroupExtension { a = 217 },
+            RepeatedgroupExtension { a = 317 },
         )
         repeatedNestedMessageExtension = listOf(
             TestAllTypes.NestedMessage { bb = 218 },

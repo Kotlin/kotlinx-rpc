@@ -178,6 +178,12 @@ tasks.register("test_tasks") {
 
         assertTasks(
             "all", allTasks,
+            "bufLockAndroidTestDebug",
+            "bufLockDebug",
+            "bufLockRelease",
+            "bufLockTestDebug",
+            "bufLockTestRelease",
+
             "bufGenerateAndroidTestDebug",
             "bufGenerateTestDebug",
             "bufGenerateTestRelease",
@@ -213,6 +219,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet debug",
             allTasks.matchingSourceSet("debug"),
+            "bufLockDebug",
             "bufGenerateDebug",
             "bufLintDebug",
         )
@@ -220,6 +227,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet testDebug",
             allTasks.matchingSourceSet("testDebug"),
+            "bufLockTestDebug",
             "bufGenerateTestDebug",
             "bufLintTestDebug",
         )
@@ -227,6 +235,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet androidTestDebug",
             allTasks.matchingSourceSet("androidTestDebug"),
+            "bufLockAndroidTestDebug",
             "bufGenerateAndroidTestDebug",
             "bufLintAndroidTestDebug",
         )

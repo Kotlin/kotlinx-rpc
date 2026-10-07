@@ -14,9 +14,8 @@
 #   4. symbol-overlap       -> analyze each target; NON-DESTRUCTIVELY merge newly-overlapping
 #                              gRPC Abseil archives into grpc/overlap-archive-excludes.txt,
 #                              then rebuild the gRPC shim and re-check
-#   5. fixture tests        -> :tests:test (opt-in enforcement + KLIB metadata, both shims)
-#   6. publish both shims   -> publishAllPublicationsToNativeDepsBuildRepoRepository (LOCAL only)
-#   7. consumer compiles    -> :protobuf:protobuf-lite + :grpc:grpc-core for the host KN target
+#   5. publish both shims   -> publishAllPublicationsToNativeDepsBuildRepoRepository (LOCAL only)
+#   6. consumer compiles    -> :protobuf:protobuf-lite + :grpc:grpc-core for the host KN target
 #
 # Nothing is published to any remote repository.
 #
@@ -173,12 +172,12 @@ ensure_host_objcopy() {
 
 # ----------------------------------------------------------------------------- steps
 build_protobuf_shim() {
-  section "1/7  protobuf shim :assemble"
+  section "1/6  protobuf shim :assemble"
   run_gradle "$SHIMS" ":kotlinx-rpc-protobuf-shim:assemble"
 }
 
 build_and_mirror_prebuilt() {
-  section "2/7  gRPC C prebuilt -> local build/repo -> native-deps/build/repo"
+  section "2/6  gRPC C prebuilt -> local build/repo -> native-deps/build/repo"
   if [ "$SKIP_PREBUILT" -eq 1 ]; then
     info "--skip-prebuilt set; not rebuilding. Verifying mirror is present..."
   else
@@ -201,7 +200,7 @@ build_and_mirror_prebuilt() {
 }
 
 build_grpc_shim() {
-  section "3/7  gRPC shim :assemble"
+  section "3/6  gRPC shim :assemble"
   run_gradle "$SHIMS" ":kotlinx-rpc-grpc-core-shim:assemble"
 }
 
@@ -235,7 +234,7 @@ add_exclude() { # scope archive
 analyze_overlaps() {
   local we_label="off"
   if [ "$WRITE_EXCLUDES" -eq 1 ]; then we_label="on"; fi
-  section "4/7  symbol-overlap analysis, write-excludes=$we_label"
+  section "4/6  symbol-overlap analysis, write-excludes=$we_label"
   command -v llvm-nm >/dev/null 2>&1 || command -v nm >/dev/null 2>&1 || die "llvm-nm/nm not found; needed by the overlap analyzer"
   local before after pair kotlin bazel arch changed=0 total=0
   before="$(cksum "$EXCLUDES_FILE" 2>/dev/null | awk '{print $1}')"
@@ -276,13 +275,8 @@ analyze_overlaps() {
   fi
 }
 
-run_fixture_tests() {
-  section "5/7  fixture tests :tests:test"
-  run_gradle "$SHIMS" ":tests:test"
-}
-
 publish_shims_local() {
-  section "6/7  publish both shims + annotation to LOCAL native-deps/build/repo"
+  section "5/6  publish both shims + annotation to LOCAL native-deps/build/repo"
   run_gradle "$SHIMS" \
     ":kotlinx-rpc-grpc-core-shim:publishAllPublicationsToNativeDepsBuildRepoRepository" \
     ":kotlinx-rpc-protobuf-shim:publishAllPublicationsToNativeDepsBuildRepoRepository" \
@@ -290,7 +284,7 @@ publish_shims_local() {
 }
 
 consumer_compiles() {
-  section "7/7  main-project consumer compiles: $HOST_KOTLIN"
+  section "6/6  main-project consumer compiles: $HOST_KOTLIN"
   run_gradle "$REPO_ROOT" \
     ":protobuf:protobuf-lite:compileKotlin${HOST_KOTLIN_CAP}" \
     ":grpc:grpc-core:compileKotlin${HOST_KOTLIN_CAP}"
@@ -309,7 +303,6 @@ main() {
     build_and_mirror_prebuilt
     build_grpc_shim
     analyze_overlaps
-    run_fixture_tests
     publish_shims_local
     consumer_compiles
   fi

@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.rpc.buf.BufDepsExtension
 import kotlinx.rpc.buf.tasks.BufGenerateTask
 import kotlinx.rpc.rpcExtension
 import kotlinx.rpc.util.extendsFromLazy
@@ -129,6 +130,12 @@ internal open class DefaultProtoSourceSet(
         }
     }
 
+    override val bsrDeps: BufDepsExtension = project.objects.newInstance(BufDepsExtension::class.java)
+
+    override fun bsrDeps(configure: Action<BufDepsExtension>) {
+        configure.execute(bsrDeps)
+    }
+
     val tasksConfigured: Property<Boolean> = project.objects.property<Boolean>()
         .convention(false)
 
@@ -204,7 +211,10 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
         protoImportConfigurationNew.extendsFrom(protoSourceSet.protoImportConfigurationNew)
+        protoImportConfigurationNew.extendsFrom(protoSourceSet.protoConfiguration)
         protoImportConfigurationLegacyList.addAll(protoSourceSet.protoImportConfigurationLegacyList)
+
+        bsrDeps.modules.addAll(protoSourceSet.bsrDeps.modules)
     }
 
     override fun importsFrom(rawProtoSourceSet: Provider<ProtoSourceSet>) {
@@ -217,7 +227,13 @@ internal open class DefaultProtoSourceSet(
             legacyList = protoImportConfigurationLegacyList,
             provider = protoSourceSet.map { it.protoImportConfigurationNew },
         )
+        protoImportConfigurationNew.extendsFromLazy(
+            legacyList = protoImportConfigurationLegacyList,
+            provider = protoSourceSet.map { it.protoConfiguration },
+        )
         protoImportConfigurationLegacyList.addAll(protoSourceSet.flatMap { it.protoImportConfigurationLegacyList })
+
+        bsrDeps.modules.addAll(protoSourceSet.flatMap { it.bsrDeps.modules })
     }
 
     override fun importsAllFrom(rawProtoSourceSets: Provider<List<ProtoSourceSet>>) {
@@ -230,7 +246,14 @@ internal open class DefaultProtoSourceSet(
             protoSourceSets.map { list -> list.map { it.protoImportConfigurationNew } },
         )
         protoImportConfigurationLegacyList.addAll(
+            protoSourceSets.map { list -> list.map { it.protoConfiguration } },
+        )
+        protoImportConfigurationLegacyList.addAll(
             protoSourceSets.map { list -> list.flatMap { it.protoImportConfigurationLegacyList.get() } },
+        )
+
+        bsrDeps.modules.addAll(
+            protoSourceSets.map { list -> list.flatMap { it.bsrDeps.modules.get() } }
         )
     }
 
@@ -253,6 +276,8 @@ internal open class DefaultProtoSourceSet(
         imports.addAll(protoSourceSet.imports.checkSelfImport())
 
         plugins.addAll(protoSourceSet.plugins)
+
+        bsrDeps.modules.addAll(protoSourceSet.bsrDeps.modules)
 
         // Wire Gradle configuration inheritance for proto dependency configurations
         protoConfiguration.extendsFrom(protoSourceSet.protoConfiguration)

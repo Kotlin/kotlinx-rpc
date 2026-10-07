@@ -30,7 +30,6 @@ public abstract class kotlinx/rpc/krpc/KrpcConfigBuilder {
 	public final fun buildConnector ()Lkotlinx/rpc/krpc/KrpcConfig$Connector;
 	public final fun connector (Lkotlin/jvm/functions/Function1;)V
 	public final fun getWaitForServices ()Z
-	protected final fun rpcSerialFormat ()Lkotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder;
 	public final fun serialization (Lkotlin/jvm/functions/Function1;)V
 	public final fun setWaitForServices (Z)V
 }

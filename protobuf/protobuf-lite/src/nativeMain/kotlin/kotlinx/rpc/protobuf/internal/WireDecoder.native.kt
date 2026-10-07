@@ -2,6 +2,8 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:OptIn(ExperimentalForeignApi::class)
+
 package kotlinx.rpc.protobuf.internal
 
 import kotlinx.cinterop.*
@@ -11,59 +13,63 @@ import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
+import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.cinterop.*
-import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
-import kotlin.experimental.ExperimentalNativeApi
 import kotlin.math.min
-import kotlin.native.Platform
-import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeProtobufApi::class)
-internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
+@OptIn(ExperimentalForeignApi::class)
+internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder {
+    init {
+        requireLittleEndian()
+    }
+
     override var recursionDepth: Int = 0
-    override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
+    override var recursionLimit: Int = ProtoConfig.DEFAULT_RECURSION_LIMIT
 
-    // wraps the source in a class that allows to pass data from the source buffer to the C++ encoder
-    // without copying it to an intermediate byte array.
-    private val zeroCopyInput = StableRef.create(ZeroCopyInputSource(source))
+    // Keeps the input alive while the C++ decoder can access it.
+    private val zeroCopyInput = StableRef.create(input)
+    private var open = true
 
-    // construct the pw_decoder_t by passing a pw_zero_copy_input_t that provides a bridge between
-    // the CodedInputStream and the given source buffer. it passes functions that call the respective
-    // ZeroCopyInputSource methods.
-    internal val raw: CPointer<pw_decoder_t> = run {
-        // construct the pw_zero_copy_input_t that functions as a bridge to the ZeroCopyInputSource
+    // Bridges the CodedInputStream to the input.
+    private val rawPointer: CPointer<pw_decoder_t> = run {
         val zeroCopyCInput = cValue<pw_zero_copy_input> {
             ctx = zeroCopyInput.asCPointer()
             next = staticCFunction { ctx, data, size ->
-                ctx!!.asStableRef<ZeroCopyInputSource>().get().next(data!!.reinterpret(), size!!.reinterpret())
+                ctx!!.asStableRef<DecoderInput>().get().next(data!!.reinterpret(), size!!.reinterpret())
             }
             backUp = staticCFunction { ctx, count ->
-                ctx!!.asStableRef<ZeroCopyInputSource>().get().backUp(count)
+                ctx!!.asStableRef<DecoderInput>().get().backUp(count)
             }
             skip = staticCFunction { ctx, count ->
-                ctx!!.asStableRef<ZeroCopyInputSource>().get().skip(count)
+                ctx!!.asStableRef<DecoderInput>().get().skip(count)
             }
             byteCount = staticCFunction { ctx ->
-                ctx!!.asStableRef<ZeroCopyInputSource>().get().byteCount()
+                ctx!!.asStableRef<DecoderInput>().get().byteCount()
             }
         }
         pw_decoder_new(zeroCopyCInput)
             ?: error("Failed to create proto wire decoder")
     }
 
-    val rawCleaner = createCleaner(raw) {
-        pw_decoder_delete(it)
-    }
-
+    internal val raw: CPointer<pw_decoder_t>
+        get() {
+            check(open) { "The WireDecoder is closed" }
+            return rawPointer
+        }
 
     override fun close() {
-        // this will fix the position in the source buffer
-        // (done by deconstructor of CodedInputStream)
-        pw_decoder_close(raw)
-
-        zeroCopyInput.get().close()
-        zeroCopyInput.dispose()
+        if (!open) return
+        open = false
+        try {
+            pw_decoder_delete(rawPointer)
+        } finally {
+            try {
+                input.close()
+            } finally {
+                zeroCopyInput.dispose()
+            }
+        }
     }
 
     override fun readTag(): KTag? = memScoped {
@@ -181,7 +187,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         if (length < 0) throw ProtobufDecodingException.negativeSize()
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
-        if (source.size < length) throw ProtobufDecodingException.truncatedMessage()
+        if (input.availableSize < length) throw ProtobufDecodingException.truncatedMessage()
         if (length == 0) return ByteString() // actually an empty array (no error)
         val bytes = ByteArray(length)
         bytes.usePinned {
@@ -243,7 +249,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     )
 
     private fun <T : Any> readPackedVarInternal(read: () -> T) = readPackedVarInternal(
-        size = { source.size },
+        size = { input.availableSize },
         readFn = read
     )
 
@@ -265,7 +271,7 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
         // fetch the size of the packed repeated field
         var byteLen = readInt32()
         if (byteLen < 0) throw ProtobufDecodingException.negativeSize()
-        if (source.size < byteLen) throw ProtobufDecodingException.truncatedMessage()
+        if (input.availableSize < byteLen) throw ProtobufDecodingException.truncatedMessage()
         if (byteLen % sizeBytes != 0) throw ProtobufDecodingException.truncatedMessage()
         if (byteLen == 0) return emptyList()  // actually an empty list (no error)
 
@@ -310,18 +316,12 @@ internal class WireDecoderNative(private val source: Buffer) : WireDecoder {
     }
 }
 
-@OptIn(ExperimentalNativeApi::class)
-private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
-    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-}
-
 /**
  * This constructor takes a [Source] (which must be a [Buffer]) because
  * the implementation ([WireDecoderNative]) depends on [Buffer]'s internal structure.
  */
 public actual fun WireDecoder(source: Source): WireDecoder {
-    ensureLittleEndian
-    return WireDecoderNative(source as Buffer)
+    return WireDecoderNative(ZeroCopyInputSource(source as Buffer))
 }
 
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {

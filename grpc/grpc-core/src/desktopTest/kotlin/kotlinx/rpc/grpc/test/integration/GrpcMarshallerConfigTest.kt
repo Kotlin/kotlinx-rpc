@@ -4,23 +4,26 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Enum
 import kotlinx.rpc.grpc.test.UnknownFieldsAll
+import kotlinx.rpc.grpc.test.UnknownFieldsAllTestOneofCase
 import kotlinx.rpc.grpc.test.UnknownFieldsSubset
 import kotlinx.rpc.grpc.test.asInternal
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.presence
+import kotlinx.rpc.grpc.test.testOneof
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 
@@ -54,7 +57,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
             int32 = 7
         }
         enumMissing = Enum.ONE
-        testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
+        oneofString = "oneof value"
     }
 
 
@@ -72,7 +75,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
             assertFalse(response.presence.hasIntMissing)
             assertFalse(response.presence.hasAllPrimitivesMissing)
             assertFalse(response.presence.hasEnumMissing)
-            assertNull(response.testOneof)
+            assertEquals(UnknownFieldsAllTestOneofCase.NOT_SET, response.testOneof)
         }
     }
 
@@ -110,7 +113,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
         // encode and decode as UnknownFieldsAll
         val marshaller = grpcMarshallerOf<UnknownFieldsAll>()
-        val decoded = marshaller.decode(marshaller.encode(message))
+        val decoded = marshaller.decodeFromSource(marshaller.encodeToBuffer(message))
         // should have preserved all fields
         assertEquals(message, decoded)
     }

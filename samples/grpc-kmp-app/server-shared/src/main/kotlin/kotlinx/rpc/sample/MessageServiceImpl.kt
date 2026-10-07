@@ -18,7 +18,7 @@ import kotlinx.rpc.sample.messages.invoke
 class MessageServiceImpl: MessageService {
     private val bus = MutableSharedFlow<ChatEntry>(extraBufferCapacity = 64, replay = 0)
 
-    override suspend fun SendMessage(message: SendMessageRequest): SendMessageResponse {
+    override suspend fun sendMessage(message: SendMessageRequest): SendMessageResponse {
         val entry = ChatEntry {
             user = message.user
             text = message.text
@@ -28,7 +28,7 @@ class MessageServiceImpl: MessageService {
         return SendMessageResponse { success = ok }
     }
 
-    override fun ReceiveMessages(message: ReceiveMessagesRequest): Flow<ChatEntry> {
+    override fun receiveMessages(message: ReceiveMessagesRequest): Flow<ChatEntry> {
         return bus.asSharedFlow()
             .filter { it.user != message.user }
     }

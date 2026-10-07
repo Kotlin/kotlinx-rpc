@@ -6,6 +6,8 @@ package kotlinx.rpc.protobuf.test
 
 import Equals
 import OneOfMsg
+import OneOfMsgFieldCase
+import field
 import bytes2OrNull
 import copy
 import invoke
@@ -87,7 +89,7 @@ class CopyTest {
     fun `copy maps - deep copy keys and values`() {
         val original = TestMap {
             primitives = mapOf("a" to 10L, "b" to 20L)
-            messages = mapOf(1 to PresenceCheck { RequiredPresence = 1 }, 2 to PresenceCheck { RequiredPresence = 2 })
+            messages = mapOf(1 to PresenceCheck { requiredPresence = 1 }, 2 to PresenceCheck { requiredPresence = 2 })
         }
 
         val copy = original.copy()
@@ -99,7 +101,7 @@ class CopyTest {
         // deep copy for message map values
         for ((k, v) in original.messages) {
             val cv = copy.messages.getValue(k)
-            assertEquals(v.RequiredPresence, cv.RequiredPresence)
+            assertEquals(v.requiredPresence, cv.requiredPresence)
             assertTrue(v !== cv)
         }
 
@@ -111,16 +113,20 @@ class CopyTest {
 
     @Test
     fun `copy oneof - preserve active case and allow mutation in lambda`() {
-        val o1 = OneOfMsg.Companion { field = OneOfMsg.Field.Sint(7) }
+        val o1 = OneOfMsg.Companion { sint = 7 }
         val c1 = o1.copy()
         assertEquals(o1.field, c1.field)
+        assertEquals(7, c1.sint)
 
         // mutate with copy-lambda (switch case)
-        val c2 = o1.copy { field = OneOfMsg.Field.Other(Other.Companion { arg1 = "x" }) }
+        val c2 = o1.copy { other = Other.Companion { arg1 = "x" } }
         // original unaffected
-        assertEquals(OneOfMsg.Field.Sint(7), o1.field)
+        assertEquals(OneOfMsgFieldCase.SINT, o1.field)
+        assertEquals(7, o1.sint)
         // new case set
-        assertTrue(c2.field is OneOfMsg.Field.Other)
+        assertEquals(OneOfMsgFieldCase.OTHER, c2.field)
+        assertEquals("x", c2.other.arg1)
+        assertEquals(0, c2.sint)
     }
 
     @Test
@@ -146,24 +152,24 @@ class CopyTest {
 
     @Test
     fun `copy preserves presence and required fields`() {
-        val p = PresenceCheck { RequiredPresence = 1 }
+        val p = PresenceCheck { requiredPresence = 1 }
         val cp = p.copy()
-        assertEquals(1, cp.RequiredPresence)
-        assertEquals(0f, cp.OptionalPresence)
-        assertNull(cp.OptionalPresenceOrNull)
+        assertEquals(1, cp.requiredPresence)
+        assertEquals(0f, cp.optionalPresence)
+        assertNull(cp.optionalPresenceOrNull)
         assertFalse(cp.presence.hasOptionalPresence)
 
-        val cp2 = p.copy { OptionalPresence = 5f }
-        assertEquals(1, cp2.RequiredPresence)
-        assertEquals(5f, cp2.OptionalPresence)
-        assertEquals(5f, cp2.OptionalPresenceOrNull)
+        val cp2 = p.copy { optionalPresence = 5f }
+        assertEquals(1, cp2.requiredPresence)
+        assertEquals(5f, cp2.optionalPresence)
+        assertEquals(5f, cp2.optionalPresenceOrNull)
     }
 
     @Test
     fun `copy clear optional scalar removes presence and stays cleared after round trip`() {
         val original = PresenceCheck {
-            RequiredPresence = 1
-            OptionalPresence = 5f
+            requiredPresence = 1
+            optionalPresence = 5f
         }
 
         val cleared = original.copy {
@@ -171,18 +177,18 @@ class CopyTest {
         }
 
         assertTrue(original.presence.hasOptionalPresence)
-        assertEquals(5f, original.OptionalPresence)
-        assertEquals(5f, original.OptionalPresenceOrNull)
+        assertEquals(5f, original.optionalPresence)
+        assertEquals(5f, original.optionalPresenceOrNull)
 
         assertFalse(cleared.presence.hasOptionalPresence)
-        assertEquals(0f, cleared.OptionalPresence)
-        assertNull(cleared.OptionalPresenceOrNull)
+        assertEquals(0f, cleared.optionalPresence)
+        assertNull(cleared.optionalPresenceOrNull)
 
         val decoded = cleared.encodeDecode(grpcMarshallerOf<PresenceCheck>())
-        assertEquals(1, decoded.RequiredPresence)
+        assertEquals(1, decoded.requiredPresence)
         assertFalse(decoded.presence.hasOptionalPresence)
-        assertEquals(0f, decoded.OptionalPresence)
-        assertNull(decoded.OptionalPresenceOrNull)
+        assertEquals(0f, decoded.optionalPresence)
+        assertNull(decoded.optionalPresenceOrNull)
     }
 
     @Test
@@ -266,8 +272,8 @@ class CopyTest {
     @Test
     fun `copy with nested messages - user mutation after copy should not affect copy`() {
         val userMessages = mutableMapOf(
-            1 to PresenceCheck { RequiredPresence = 1 },
-            2 to PresenceCheck { RequiredPresence = 2 }
+            1 to PresenceCheck { requiredPresence = 1 },
+            2 to PresenceCheck { requiredPresence = 2 }
         )
         val original = TestMap {
             messages = userMessages
@@ -276,7 +282,7 @@ class CopyTest {
         val copy = original.copy()
 
         // Mutate user's map after copy
-        userMessages[3] = PresenceCheck { RequiredPresence = 3 }
+        userMessages[3] = PresenceCheck { requiredPresence = 3 }
 
         // Original has all 3, copy should only have original 2
         assertEquals(3, original.messages.size)
@@ -307,13 +313,13 @@ class CopyTest {
     fun `copy with bytes in oneof - mutating must not affect copy`() {
         val userBytes = byteArrayOf(1, 2, 3)
         val original = OneOfMsg {
-            field = OneOfMsg.Field.Bytes(userBytes.asByteString())
+            bytes = userBytes.asByteString()
         }
         val copy = original.copy()
         userBytes[0] = 99
 
-        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (original.field as OneOfMsg.Field.Bytes).value)
-        assertByteStringContentEquals(byteArrayOf(1, 2, 3), (copy.field as OneOfMsg.Field.Bytes).value)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), original.bytes)
+        assertByteStringContentEquals(byteArrayOf(1, 2, 3), copy.bytes)
     }
 
     @Test

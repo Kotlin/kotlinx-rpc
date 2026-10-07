@@ -1,10 +1,11 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
+
+@file:OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CValuesRef
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -16,6 +17,7 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.usePinned
+import kotlinx.io.Buffer
 import kotlinx.io.Sink
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
@@ -56,50 +58,55 @@ import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint32_no_tag
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64
 import kotlinx.rpc.protobuf.internal.cinterop.pw_encoder_write_uint64_no_tag
-import kotlinx.rpc.protobuf.internal.shim.InternalNativeProtobufApi
 import kotlin.experimental.ExperimentalNativeApi
-import kotlin.native.Platform
+import kotlin.native.ref.Cleaner
 import kotlin.native.ref.createCleaner
 
-@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class, InternalNativeProtobufApi::class)
-internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
-    /**
-     * The context object provides a stable reference to the kotlin context.
-     * This is required, as functions must be static and cannot capture environment references.
-     * With this context, the write callback (called by the pw_encoder_t) is able
-     * to write the data to the [sink].
-     */
-    private inner class Ctx {
-        fun write(buf: CPointer<ByteVar>, size: Int): Boolean {
-            sink.writeFully(buf, 0L, size)
-            return true
+// The StableRef points to the output, not the encoder, so a cleaner can close
+// the handle once the encoder is unreachable.
+internal class EncoderHandle(output: EncoderOutput) {
+    private val context = StableRef.create(output)
+    private var open = true
+
+    val raw: CPointer<pw_encoder_t> = pw_encoder_new(context.asCPointer(), staticCFunction { ctx, buf, size ->
+        when {
+            size == 0 -> true
+            ctx == null || buf == null || size < 0 -> false
+            else -> ctx.asStableRef<EncoderOutput>().get().write(buf.reinterpret(), size)
         }
+    }) ?: run {
+        context.dispose()
+        error("Failed to create proto wire encoder")
     }
 
-    // create context as a stable reference that can be passed to static function callback
-    private val context = StableRef.create(this.Ctx())
-
-    // construct encoder with a callback that calls write() on this.context
-    internal val raw: CPointer<pw_encoder_t> = run {
-        pw_encoder_new(context.asCPointer(), staticCFunction { ctx, buf, size ->
-            if (buf == null || ctx == null) {
-                return@staticCFunction false
-            }
-            ctx.asStableRef<Ctx>().get().write(buf.reinterpret(), size)
-        }) ?: error("Failed to create proto wire encoder")
+    fun requireOpen(): CPointer<pw_encoder_t> {
+        check(open) { "The direct encoder has left its storage scope" }
+        return raw
     }
 
-    @Suppress("unused")
-    private val contextCleaner = createCleaner(context) {
-        it.dispose()
+    fun close() {
+        if (!open) return
+        open = false
+        pw_encoder_delete(raw)
+        context.dispose()
+    }
+}
+
+/**
+ * Encodes into the [handle], which is closed either by the [cleaner] or by the encoder's creator.
+ */
+internal class WireEncoderNative(
+    private val handle: EncoderHandle,
+    @Suppress("unused") private val cleaner: Cleaner? = null,
+) : WireEncoder {
+    init {
+        requireLittleEndian()
     }
 
-    @Suppress("unused")
-    private val rawCleaner = createCleaner(raw) {
-        pw_encoder_delete(it)
-    }
+    internal val raw: CPointer<pw_encoder_t>
+        get() = handle.requireOpen()
 
-    override fun flush() {
+    override fun flush() = checked {
         pw_encoder_flush(raw)
     }
 
@@ -246,27 +253,28 @@ internal class WireEncoderNative(private val sink: Sink) : WireEncoder {
     }
 
     override fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int) {
+        handle.requireOpen()
         require(offset >= 0 && offset + length <= bytes.size) { "Invalid offset or length" }
+        if (length == 0) return
         bytes.usePinned { pinned ->
             pw_encoder_write_raw_bytes(raw, pinned.addressOf(offset), length)
         }
     }
+
+    override fun writeRawBytes(buffer: Buffer) {
+        handle.requireOpen()
+        super.writeRawBytes(buffer)
+    }
 }
 
 @OptIn(ExperimentalNativeApi::class)
-private val ensureLittleEndian: Unit = require(Platform.isLittleEndian) {
-    "kotlinx-rpc protobuf native implementation requires a little-endian platform"
-}
-
 public actual fun WireEncoder(sink: Sink): WireEncoder {
-    ensureLittleEndian
-    return WireEncoderNative(sink)
+    val handle = EncoderHandle(BufferOutput(sink))
+    return WireEncoderNative(handle, createCleaner(handle) { it.close() })
 }
-
 
 // the current implementation is slow, as it iterates through the list, to write each element individually,
 // which can be speed up in case of fixed sized types, that are not compressed. KRPC-183
-@OptIn(ExperimentalForeignApi::class, InternalNativeProtobufApi::class)
 private inline fun <T> WireEncoderNative.writePackedInternal(
     fieldNr: Int,
     value: List<T>,

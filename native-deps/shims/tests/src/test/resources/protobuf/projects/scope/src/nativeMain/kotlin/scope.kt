@@ -1,1 +1,0 @@
-fun unrelatedDeclarationIsUnaffected(): String = "ok"

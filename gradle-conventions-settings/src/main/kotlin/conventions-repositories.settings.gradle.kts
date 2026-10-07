@@ -99,9 +99,9 @@ pluginManagement {
             buildDepsEap()
             buildDepsEapForIde()
         } else {
-            mavenCentral()
-            gradlePluginPortal()
-            google()
+            maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
+            maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
+            maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
         }
 
         maven("$globalRootDir/lib-kotlin/")
@@ -218,9 +218,9 @@ gradle.rootProject {
                     buildDepsEap()
                     buildDepsEapForIde()
                 } else {
-                    mavenCentral()
-                    gradlePluginPortal()
-                    google()
+                    maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
+                    maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
+                    maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
                 }
 
                 maven("$globalRootDir/lib-kotlin/")
@@ -232,9 +232,9 @@ gradle.rootProject {
                 buildDepsEap()
                 buildDepsEapForIde()
             } else {
-                mavenCentral()
-                gradlePluginPortal()
-                google()
+                maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
+                maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
+                maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
 
                 maven("https://packages.jetbrains.team/maven/p/kt/dev")
                 maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")

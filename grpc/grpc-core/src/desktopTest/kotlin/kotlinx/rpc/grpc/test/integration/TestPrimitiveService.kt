@@ -14,7 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PrimitiveServiceImpl : PrimitiveService {
-    override suspend fun Echo(message: AllPrimitives): AllPrimitives {
+    override suspend fun echo(message: AllPrimitives): AllPrimitives {
         return message
     }
 }
@@ -27,7 +27,7 @@ class TestPrimitiveService : GrpcTestBase() {
     @Test
     fun testPrimitive() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<PrimitiveService>()
-        val result = service.Echo(AllPrimitives {
+        val result = service.echo(AllPrimitives {
             int32 = 42
         })
 

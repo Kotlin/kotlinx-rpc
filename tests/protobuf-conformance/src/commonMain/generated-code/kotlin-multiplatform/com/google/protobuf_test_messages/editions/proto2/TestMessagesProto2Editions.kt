@@ -3,7 +3,6 @@
 
 package com.google.protobuf_test_messages.editions.proto2
 
-import kotlin.jvm.JvmInline
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
@@ -130,6 +129,15 @@ interface TestAllTypesProto2 {
     val mapStringForeignMessage: Map<String, ForeignMessageProto2>
     val mapStringNestedEnum: Map<String, NestedEnum>
     val mapStringForeignEnum: Map<String, ForeignEnumProto2>
+    val oneofUint32: UInt
+    val oneofNestedMessage: NestedMessage
+    val oneofString: String
+    val oneofBytes: ByteString
+    val oneofBool: Boolean
+    val oneofUint64: ULong
+    val oneofFloat: Float
+    val oneofDouble: Double
+    val oneofEnum: NestedEnum
     val data: Data
     val multiwordgroupfield: MultiWordGroupField
 
@@ -158,53 +166,23 @@ interface TestAllTypesProto2 {
      */
     val fieldname1: Int
     val fieldName2: Int
-    val FieldName3: Int
-    val field_Name4_: Int
+    val _fieldName3: Int
+    val fieldName4_: Int
     val field0name5: Int
-    val field_0Name6: Int
+    val field0Name6: Int
     val fieldName7: Int
-    val FieldName8: Int
-    val field_Name9: Int
-    val Field_Name10: Int
-    val FIELD_NAME11: Int
-    val FIELDName12: Int
-    val _FieldName13: Int
-    val __FieldName14: Int
-    val field_Name15: Int
-    val field__Name16: Int
+    val fieldName8: Int
+    val fieldName9: Int
+    val fieldName10: Int
+    val fieldNAME11: Int
+    val fieldName12: Int
+    val __fieldName13: Int
+    val __fieldName14: Int
+    val fieldName15: Int
+    val fieldName16: Int
     val fieldName17__: Int
-    val FieldName18__: Int
+    val fieldName18__: Int
     val messageSetCorrect: MessageSetCorrect
-    val oneofField: OneofField?
-
-    sealed interface OneofField {
-        @JvmInline
-        value class OneofUint32(val value: UInt): OneofField
-
-        @JvmInline
-        value class OneofNestedMessage(val value: NestedMessage): OneofField
-
-        @JvmInline
-        value class OneofString(val value: String): OneofField
-
-        @JvmInline
-        value class OneofBytes(val value: ByteString): OneofField
-
-        @JvmInline
-        value class OneofBool(val value: Boolean): OneofField
-
-        @JvmInline
-        value class OneofUint64(val value: ULong): OneofField
-
-        @JvmInline
-        value class OneofFloat(val value: Float): OneofField
-
-        @JvmInline
-        value class OneofDouble(val value: Double): OneofField
-
-        @JvmInline
-        value class OneofEnum(val value: NestedEnum): OneofField
-    }
 
     @GeneratedProtoMessage
     interface NestedMessage {
@@ -246,15 +224,8 @@ interface TestAllTypesProto2 {
 
     @GeneratedProtoMessage
     interface ExtensionWithOneof {
-        val oneofField: OneofField?
-
-        sealed interface OneofField {
-            @JvmInline
-            value class A(val value: Int): OneofField
-
-            @JvmInline
-            value class B(val value: Int): OneofField
-        }
+        val a: Int
+        val b: Int
     }
 
     sealed class NestedEnum(open val number: Int) {
@@ -436,24 +407,11 @@ interface TestAllRequiredTypesProto2 {
 
 @GeneratedProtoMessage
 interface TestLargeOneof {
-    val largeOneof: LargeOneof?
-
-    sealed interface LargeOneof {
-        @JvmInline
-        value class A1(val value: TestLargeOneof.A1): LargeOneof
-
-        @JvmInline
-        value class A2(val value: TestLargeOneof.A2): LargeOneof
-
-        @JvmInline
-        value class A3(val value: TestLargeOneof.A3): LargeOneof
-
-        @JvmInline
-        value class A4(val value: TestLargeOneof.A4): LargeOneof
-
-        @JvmInline
-        value class A5(val value: TestLargeOneof.A5): LargeOneof
-    }
+    val a1: A1
+    val a2: A2
+    val a3: A3
+    val a4: A4
+    val a5: A5
 
     @GeneratedProtoMessage
     interface A1

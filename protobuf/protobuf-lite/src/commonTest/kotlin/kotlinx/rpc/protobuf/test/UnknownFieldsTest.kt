@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.io.Buffer
 import kotlinx.io.InternalIoApi
 import kotlinx.io.readByteArray
@@ -22,13 +24,13 @@ import kotlin.test.assertTrue
 class UnknownFieldsTest {
 
     fun send(msg: UnknownFieldsAll): UnknownFieldsSubset {
-        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(msg)
-        return grpcMarshallerOf<UnknownFieldsSubset>().decode(encoded)
+        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encodeToBuffer(msg)
+        return grpcMarshallerOf<UnknownFieldsSubset>().decodeFromSource(encoded)
     }
 
     fun send(msg: UnknownFieldsSubset): UnknownFieldsAll {
-        val encoded = grpcMarshallerOf<UnknownFieldsSubset>().encode(msg)
-        return grpcMarshallerOf<UnknownFieldsAll>().decode(encoded)
+        val encoded = grpcMarshallerOf<UnknownFieldsSubset>().encodeToBuffer(msg)
+        return grpcMarshallerOf<UnknownFieldsAll>().decodeFromSource(encoded)
     }
 
     @Test
@@ -40,18 +42,18 @@ class UnknownFieldsTest {
                 int32 = 7
             }
             enumMissing = MyEnum.ONE
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
+            oneofString = "oneof value"
         }
 
-        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encode(all)
+        val encoded = grpcMarshallerOf<UnknownFieldsAll>().encodeToBuffer(all)
         val discardMarshaller = grpcMarshallerOf<UnknownFieldsSubset>(ProtoConfig { discardUnknownFields = true })
 
-        val subsetDiscarded = discardMarshaller.decode(encoded)
+        val subsetDiscarded = discardMarshaller.decodeFromSource(encoded)
         assertEquals(0L, subsetDiscarded.asInternal()._unknownFields.size)
         assertEquals(all.field1, subsetDiscarded.field1)
 
         val roundTrippedDiscarded =
-            grpcMarshallerOf<UnknownFieldsAll>().decode(discardMarshaller.encode(subsetDiscarded))
+            grpcMarshallerOf<UnknownFieldsAll>().decodeFromSource(discardMarshaller.encodeToBuffer(subsetDiscarded))
         assertFalse(roundTrippedDiscarded.presence.hasIntMissing)
         assertEquals(0, roundTrippedDiscarded.intMissing)
         assertEquals(all.field1, roundTrippedDiscarded.field1)
@@ -59,7 +61,7 @@ class UnknownFieldsTest {
         assertFalse(roundTrippedDiscarded.presence.hasAllPrimitivesMissing)
         assertFalse(roundTrippedDiscarded.presence.hasEnumMissing)
         assertEquals(MyEnum.ZERO, roundTrippedDiscarded.enumMissing)
-        assertEquals(null, roundTrippedDiscarded.testOneof)
+        assertEquals(UnknownFieldsAllTestOneofCase.NOT_SET, roundTrippedDiscarded.testOneof)
     }
 
     @Test
@@ -275,7 +277,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof int`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofInt(999)
+            oneofInt = 999
         }
 
         val subset = send(all)
@@ -290,7 +292,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof string`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof value")
+            oneofString = "oneof value"
         }
 
         val subset = send(all)
@@ -305,10 +307,10 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof message`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofMessage(AllPrimitives {
+            oneofMessage = AllPrimitives {
                 int32 = 777
                 string = "oneof msg"
-            })
+            }
         }
 
         val subset = send(all)
@@ -323,7 +325,7 @@ class UnknownFieldsTest {
     fun `test unknown fields - oneof enum`() {
         val all = UnknownFieldsAll {
             field1 = 123
-            testOneof = UnknownFieldsAll.TestOneof.OneofEnum(MyEnum.THREE)
+            oneofEnum = MyEnum.THREE
         }
 
         val subset = send(all)
@@ -349,7 +351,7 @@ class UnknownFieldsTest {
             repeatedIntMissing = listOf(1, 2, 3)
             repeatedStringMissing = listOf("a", "b")
             mapStringIntMissing = mapOf("key" to 100)
-            testOneof = UnknownFieldsAll.TestOneof.OneofString("oneof")
+            oneofString = "oneof"
         }
 
         val subset = send(all)
@@ -425,14 +427,14 @@ class UnknownFieldsTest {
         val originalBytes = originalCopy.readByteArray()
 
         // decode with UnknownFieldsSubset (which doesn't know about the group fields)
-        val subset = grpcMarshallerOf<UnknownFieldsSubset>().decode(originalBuffer)
+        val subset = grpcMarshallerOf<UnknownFieldsSubset>().decodeFromSource(originalBuffer)
 
         // the unknown fields should be preserved
         val unknownFields = subset.asInternal()._unknownFields
         assertTrue(unknownFields.size > 0L, "Unknown fields should contain the group data")
 
         // re-encode and check that the buffer contains the same data
-        val reencodedBuffer = grpcMarshallerOf<UnknownFieldsSubset>().encode(subset)
+        val reencodedBuffer = grpcMarshallerOf<UnknownFieldsSubset>().encodeToBuffer(subset)
         val reencodedBytes = reencodedBuffer.readByteArray()
 
         // the buffers should be identical
@@ -457,14 +459,14 @@ class UnknownFieldsTest {
         val unknownFieldsNested = subset.nested.asInternal()._unknownFields
         assertTrue(unknownFieldsNested.size != 0L)
 
-        val encodedSubset = grpcMarshallerOf<UnknownFieldsSubset>().encode(subset)
+        val encodedSubset = grpcMarshallerOf<UnknownFieldsSubset>().encodeToBuffer(subset)
 
         val unknownNestedFieldsHex = unknownFieldsNested.copy().readByteArray().toHexString()
         val encodedSubsetHex = encodedSubset.buffer.copy().readByteArray().toHexString()
         assertTrue(encodedSubsetHex.endsWith(unknownNestedFieldsHex),
             "Encoded subset should end with nested unknown fields")
 
-        val all2 = grpcMarshallerOf<UnknownFieldsAll>().decode(encodedSubset)
+        val all2 = grpcMarshallerOf<UnknownFieldsAll>().decodeFromSource(encodedSubset)
         assertEquals(all, all2)
         assertEquals(all2.nested.stringMissing, "nested string")
     }

@@ -26,8 +26,3 @@ project(":kotlinx-rpc-protobuf-shim").projectDir = file("./protobuf")
 
 includePublic(":kotlinx-rpc-native-shims-annotation")
 project(":kotlinx-rpc-native-shims-annotation").projectDir = file("./annotation")
-
-include(":klib-patcher")
-project(":klib-patcher").projectDir = file("./klib-patcher")
-
-include(":tests")

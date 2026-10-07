@@ -429,6 +429,30 @@ tasks.register("test_tasks") {
             "bufLintX86FreeappRelease",
             "bufLintX86RetailappDebug",
             "bufLintX86RetailappRelease",
+
+            // lcok android test
+            "bufLockAndroidTestArmFreeappDebug",
+            "bufLockAndroidTestArmRetailappDebug",
+            "bufLockAndroidTestX86FreeappDebug",
+            "bufLockAndroidTestX86RetailappDebug",
+
+            // lock test (debug only)
+            "bufLockTestArmFreeappDebug",
+            "bufLockTestArmRetailappDebug",
+            "bufLockTestX86FreeappDebug",
+            "bufLockTestX86RetailappDebug",
+
+            // lock arm
+            "bufLockArmFreeappDebug",
+            "bufLockArmFreeappRelease",
+            "bufLockArmRetailappDebug",
+            "bufLockArmRetailappRelease",
+
+            // lock x86
+            "bufLockX86FreeappDebug",
+            "bufLockX86FreeappRelease",
+            "bufLockX86RetailappDebug",
+            "bufLockX86RetailappRelease",
         )
 
         assertTasks(
@@ -490,6 +514,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet armFreeappDebug",
             allTasks.matchingSourceSet("armFreeappDebug"),
+            "bufLockArmFreeappDebug",
             "bufGenerateArmFreeappDebug",
             "bufLintArmFreeappDebug",
         )
@@ -497,6 +522,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet testArmFreeappDebug",
             allTasks.matchingSourceSet("testArmFreeappDebug"),
+            "bufLockTestArmFreeappDebug",
             "bufGenerateTestArmFreeappDebug",
             "bufLintTestArmFreeappDebug",
         )
@@ -504,6 +530,7 @@ tasks.register("test_tasks") {
         assertTasks(
             "all matchingSourceSet androidTestArmFreeappDebug",
             allTasks.matchingSourceSet("androidTestArmFreeappDebug"),
+            "bufLockAndroidTestArmFreeappDebug",
             "bufGenerateAndroidTestArmFreeappDebug",
             "bufLintAndroidTestArmFreeappDebug",
         )

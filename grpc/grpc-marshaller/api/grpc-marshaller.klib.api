@@ -22,11 +22,57 @@ abstract fun interface kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // k
 }
 
 abstract interface <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/GrpcMarshaller { // kotlinx.rpc.grpc.marshaller/GrpcMarshaller|null[0]
-    abstract fun decode(kotlinx.io/Source, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.decode|decode(kotlinx.io.Source;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
-    abstract fun encode(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.encode|encode(1:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    abstract fun decode(kotlinx.rpc.grpc.marshaller/GrpcMessageReader, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.decode|decode(kotlinx.rpc.grpc.marshaller.GrpcMessageReader;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    abstract fun prepare(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage // kotlinx.rpc.grpc.marshaller/GrpcMarshaller.prepare|prepare(1:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage { // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage|null[0]
+    abstract val size // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.size|{}size[0]
+        abstract fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.size.<get-size>|<get-size>(){}[0]
+
+    abstract fun writeTo(kotlinx.rpc.grpc.marshaller/GrpcMessageWriter) // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.writeTo|writeTo(kotlinx.rpc.grpc.marshaller.GrpcMessageWriter){}[0]
+
+    final object Companion { // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.Companion|null[0]
+        final fun of(kotlin/ByteArray): kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.Companion.of|of(kotlin.ByteArray){}[0]
+        final fun of(kotlinx.io/Buffer): kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage // kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage.Companion.of|of(kotlinx.io.Buffer){}[0]
+    }
 }
 
 abstract interface kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig // kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig|null[0]
+
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcMessageReader { // kotlinx.rpc.grpc.marshaller/GrpcMessageReader|null[0]
+    abstract val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining|{}remaining[0]
+        abstract fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.remaining.<get-remaining>|<get-remaining>(){}[0]
+    abstract val size // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size|{}size[0]
+        abstract fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.size.<get-size>|<get-size>(){}[0]
+
+    abstract fun asSource(): kotlinx.io/Source // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.asSource|asSource(){}[0]
+    abstract fun readByte(): kotlin/Byte // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByte|readByte(){}[0]
+    abstract fun readByteArray(kotlin/Int = ...): kotlin/ByteArray // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readByteArray|readByteArray(kotlin.Int){}[0]
+    abstract fun readTo(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageReader.readTo|readTo(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+}
+
+abstract interface kotlinx.rpc.grpc.marshaller/GrpcMessageWriter { // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter|null[0]
+    abstract val size // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size|{}size[0]
+        abstract fun <get-size>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.size.<get-size>|<get-size>(){}[0]
+    abstract val written // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written|{}written[0]
+        abstract fun <get-written>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.written.<get-written>|<get-written>(){}[0]
+    open val remaining // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining|{}remaining[0]
+        open fun <get-remaining>(): kotlin/Int // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.remaining.<get-remaining>|<get-remaining>(){}[0]
+
+    abstract fun write(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlin.ByteArray;kotlin.Int;kotlin.Int){}[0]
+    abstract fun write(kotlinx.io/Buffer, kotlin/Long = ...) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.write|write(kotlinx.io.Buffer;kotlin.Long){}[0]
+    abstract fun writeByte(kotlin/Byte) // kotlinx.rpc.grpc.marshaller/GrpcMessageWriter.writeByte|writeByte(kotlin.Byte){}[0]
+}
+
+abstract class <#A: kotlin/Any?> kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller : kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> { // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.<init>|<init>(){}[0]
+
+    abstract fun decode(kotlinx.io/Source, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?): #A // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.decode|decode(kotlinx.io.Source;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    abstract fun encode(#A, kotlinx.io/Sink, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?) // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.encode|encode(1:0;kotlinx.io.Sink;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    final fun decode(kotlinx.rpc.grpc.marshaller/GrpcMessageReader, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?): #A // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.decode|decode(kotlinx.rpc.grpc.marshaller.GrpcMessageReader;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+    final fun prepare(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig?): kotlinx.rpc.grpc.marshaller/GrpcEncodedMessage // kotlinx.rpc.grpc.marshaller/StreamingGrpcMarshaller.prepare|prepare(1:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){}[0]
+}
 
 final object kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver : kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver { // kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver|null[0]
     final fun resolveOrNull(kotlin.reflect/KType): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<*>? // kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver.resolveOrNull|resolveOrNull(kotlin.reflect.KType){}[0]
@@ -35,4 +81,8 @@ final object kotlinx.rpc.grpc.marshaller/GrpcEmptyMarshallerResolver : kotlinx.r
 final fun (kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver).kotlinx.rpc.grpc.marshaller/plus(kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver): kotlinx.rpc.grpc.marshaller/GrpcMarshallerResolver // kotlinx.rpc.grpc.marshaller/plus|plus@kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver(kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver){}[0]
 final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/grpcMarshallerOf(kotlin.reflect/KClass<#A>, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/grpcMarshallerOf|grpcMarshallerOf(kotlin.reflect.KClass<0:0>;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]
 final fun <#A: kotlin/Any> kotlinx.rpc.grpc.marshaller/grpcMarshallerOf(kotlin.reflect/KType, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/grpcMarshallerOf|grpcMarshallerOf(kotlin.reflect.KType;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A>).kotlinx.rpc.grpc.marshaller/decodeFromByteArray(kotlin/ByteArray, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/decodeFromByteArray|decodeFromByteArray@kotlinx.rpc.grpc.marshaller.GrpcMarshaller<0:0>(kotlin.ByteArray;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A>).kotlinx.rpc.grpc.marshaller/decodeFromSource(kotlinx.io/Source, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): #A // kotlinx.rpc.grpc.marshaller/decodeFromSource|decodeFromSource@kotlinx.rpc.grpc.marshaller.GrpcMarshaller<0:0>(kotlinx.io.Source;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A>).kotlinx.rpc.grpc.marshaller/encodeToBuffer(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.io/Buffer // kotlinx.rpc.grpc.marshaller/encodeToBuffer|encodeToBuffer@kotlinx.rpc.grpc.marshaller.GrpcMarshaller<0:0>(0:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A>).kotlinx.rpc.grpc.marshaller/encodeToByteArray(#A, kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlin/ByteArray // kotlinx.rpc.grpc.marshaller/encodeToByteArray|encodeToByteArray@kotlinx.rpc.grpc.marshaller.GrpcMarshaller<0:0>(0:0;kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any?>}[0]
 final inline fun <#A: reified kotlin/Any> kotlinx.rpc.grpc.marshaller/grpcMarshallerOf(kotlinx.rpc.grpc.marshaller/GrpcMarshallerConfig? = ...): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc.marshaller/grpcMarshallerOf|grpcMarshallerOf(kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig?){0§<kotlin.Any>}[0]

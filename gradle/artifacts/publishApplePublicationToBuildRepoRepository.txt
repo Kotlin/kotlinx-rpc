@@ -58,7 +58,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-tvossimulatorarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-tvossimulatorarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-tvossimulatorarm64/metadata.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-tvossimulatorarm64/sources.jar
-
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-watchosarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-watchosarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-client-watchosarm64/metadata.jar

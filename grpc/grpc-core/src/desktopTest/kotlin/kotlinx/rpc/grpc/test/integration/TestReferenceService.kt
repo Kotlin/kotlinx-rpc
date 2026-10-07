@@ -13,6 +13,14 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Nested
 import kotlinx.rpc.grpc.test.OneOf
+import kotlinx.rpc.grpc.test.OneOfMixedCase
+import kotlinx.rpc.grpc.test.OneOfPrimitivesCase
+import kotlinx.rpc.grpc.test.OneOfReferencesCase
+import kotlinx.rpc.grpc.test.OneOfSingleCase
+import kotlinx.rpc.grpc.test.mixed
+import kotlinx.rpc.grpc.test.primitives
+import kotlinx.rpc.grpc.test.references
+import kotlinx.rpc.grpc.test.single
 import kotlinx.rpc.grpc.test.OptionalTypes
 import kotlinx.rpc.grpc.test.Repeated
 import kotlinx.rpc.grpc.test.TestMap
@@ -32,7 +40,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class ReferenceTestServiceImpl : ReferenceTestService {
-    override suspend fun Get(message: References): kotlinx.rpc.grpc.test.References {
+    override suspend fun get(message: References): kotlinx.rpc.grpc.test.References {
         return kotlinx.rpc.grpc.test.References {
             other = kotlinx.rpc.grpc.test.Other {
                 field = message.other.arg.toInt()
@@ -42,27 +50,27 @@ class ReferenceTestServiceImpl : ReferenceTestService {
         }
     }
 
-    override suspend fun Enum(message: UsingEnum): UsingEnum {
+    override suspend fun `enum`(message: UsingEnum): UsingEnum {
         return message
     }
 
-    override suspend fun Optional(message: OptionalTypes): OptionalTypes {
+    override suspend fun optional(message: OptionalTypes): OptionalTypes {
         return message
     }
 
-    override suspend fun Repeated(message: Repeated): Repeated {
+    override suspend fun repeated(message: Repeated): Repeated {
         return message
     }
 
-    override suspend fun Nested(message: Nested): Nested {
+    override suspend fun nested(message: Nested): Nested {
         return message
     }
 
-    override suspend fun Map(message: TestMap): TestMap {
+    override suspend fun map(message: TestMap): TestMap {
         return message
     }
 
-    override suspend fun OneOf(message: OneOf): OneOf {
+    override suspend fun oneOf(message: OneOf): OneOf {
         return message
     }
 }
@@ -81,7 +89,7 @@ class TestReferenceService : GrpcTestBase() {
             }
         }
 
-        val result = service.Get(arg)
+        val result = service.get(arg)
 
         assertEquals("42", result.primitive)
         assertEquals(42, result.other.field)
@@ -90,7 +98,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testEnum() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Enum(UsingEnum {
+        val result = service.`enum`(UsingEnum {
             enum = kotlinx.rpc.grpc.test.Enum.ONE
         })
 
@@ -100,7 +108,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testOptional() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val resultNotNull = service.Optional(OptionalTypes {
+        val resultNotNull = service.optional(OptionalTypes {
             name = "test"
             age = 42
             reference = kotlinx.rpc.grpc.test.Other {
@@ -112,7 +120,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(42, resultNotNull.age)
         assertEquals(42, resultNotNull.reference.field)
 
-        val resultNullable = service.Optional(OptionalTypes {
+        val resultNullable = service.optional(OptionalTypes {
             clearName()
             clearAge()
         })
@@ -125,7 +133,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testRepeated() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Repeated(Repeated {
+        val result = service.repeated(Repeated {
             listFixed32 = listOf(0u, 1u, 2u)
             listInt32 = listOf(0, 1, 2)
             listString = listOf("test", "hello")
@@ -142,7 +150,7 @@ class TestReferenceService : GrpcTestBase() {
         assertEquals(1, result.listReference.size)
         assertEquals(42, result.listReference[0].other.field)
 
-        val resultEmpty = service.Repeated(Repeated {})
+        val resultEmpty = service.repeated(Repeated {})
 
         assertEquals(emptyList(), resultEmpty.listString)
         assertEquals(emptyList(), resultEmpty.listFixed32)
@@ -153,7 +161,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testNested() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Nested(Nested {
+        val result = service.nested(Nested {
             inner1 = Nested.Inner1 {
                 inner11 = Nested.Inner1.Inner11 {
                     reference12 = Nested.Inner1.Inner12 { }
@@ -222,7 +230,7 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testMap() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result = service.Map(TestMap {
+        val result = service.map(TestMap {
             primitives = mapOf("1" to 2, "2" to 1)
             references = mapOf("ref" to kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
@@ -238,44 +246,52 @@ class TestReferenceService : GrpcTestBase() {
     @Test
     fun testOneOf() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
-        val result1 = service.OneOf(OneOf {
-            primitives = OneOf.Primitives.StringValue("42")
-            references = OneOf.References.Other(kotlinx.rpc.grpc.test.Other {
+        val result1 = service.oneOf(OneOf {
+            stringValue = "42"
+            other = kotlinx.rpc.grpc.test.Other {
                 field = 42
-            })
-            mixed = OneOf.Mixed.Int64(42L)
-            single = OneOf.Single.Bytes(ByteString(42))
+            }
+            int64 = 42L
+            bytes = ByteString(42)
         })
 
-        assertEquals("42", (result1.primitives as OneOf.Primitives.StringValue).value)
-        assertEquals(42, (result1.references as OneOf.References.Other).value.field)
-        assertEquals(42L, (result1.mixed as OneOf.Mixed.Int64).value)
-        assertEquals(ByteString(42), (result1.single as OneOf.Single.Bytes).value)
+        assertEquals(OneOfPrimitivesCase.STRING_VALUE, result1.primitives)
+        assertEquals("42", result1.stringValue)
+        assertEquals(OneOfReferencesCase.OTHER, result1.references)
+        assertEquals(42, result1.other.field)
+        assertEquals(OneOfMixedCase.INT64, result1.mixed)
+        assertEquals(42L, result1.int64)
+        assertEquals(OneOfSingleCase.BYTES, result1.single)
+        assertEquals(ByteString(42), result1.bytes)
 
-        val result2 = service.OneOf(OneOf {
-            primitives = OneOf.Primitives.Bool(true)
-            references = OneOf.References.InnerReferences(kotlinx.rpc.grpc.test.References {
+        val result2 = service.oneOf(OneOf {
+            bool = true
+            innerReferences = kotlinx.rpc.grpc.test.References {
                 other = kotlinx.rpc.grpc.test.Other {
                     field = 42
                 }
-            })
-            mixed = OneOf.Mixed.AllPrimitives(AllPrimitives {
+            }
+            allPrimitives = AllPrimitives {
                 string = "42"
-            })
+            }
         })
 
-        assertEquals(true, (result2.primitives as OneOf.Primitives.Bool).value)
-        assertEquals(42, (result2.references as OneOf.References.InnerReferences).value.other.field)
-        assertEquals("42", (result2.mixed as OneOf.Mixed.AllPrimitives).value.string)
-        assertEquals(null, result2.single)
+        assertEquals(OneOfPrimitivesCase.BOOL, result2.primitives)
+        assertEquals(true, result2.bool)
+        assertEquals(OneOfReferencesCase.INNER_REFERENCES, result2.references)
+        assertEquals(42, result2.innerReferences.other.field)
+        assertEquals(OneOfMixedCase.ALLPRIMITIVES, result2.mixed)
+        assertEquals("42", result2.allPrimitives.string)
+        assertEquals(OneOfSingleCase.NOT_SET, result2.single)
 
-        val result3 = service.OneOf(OneOf {
-            primitives = OneOf.Primitives.Int32(42)
+        val result3 = service.oneOf(OneOf {
+            int32 = 42
         })
 
-        assertEquals(42, (result3.primitives as OneOf.Primitives.Int32).value)
-        assertEquals(null, result3.references)
-        assertEquals(null, result3.mixed)
-        assertEquals(null, result3.single)
+        assertEquals(OneOfPrimitivesCase.INT32, result3.primitives)
+        assertEquals(42, result3.int32)
+        assertEquals(OneOfReferencesCase.NOT_SET, result3.references)
+        assertEquals(OneOfMixedCase.NOT_SET, result3.mixed)
+        assertEquals(OneOfSingleCase.NOT_SET, result3.single)
     }
 }

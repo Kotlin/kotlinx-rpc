@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
@@ -18,6 +20,8 @@ import kotlinx.rpc.grpc.GrpcMetadataKey
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.contains
@@ -68,7 +72,7 @@ class MetadataTest : GrpcTestBase() {
             appendBinary("my-key-bin", byteArrayOf(4, 5, 6))
             append("my-multi-key", "my-value1")
             val protoMsg = EchoRequest { message = "My Proto Header" }
-            appendBinary("my-proto-bin", EchoRequestInternal.MARSHALLER.encode(protoMsg).readByteArray())
+            appendBinary("my-proto-bin", EchoRequestInternal.MARSHALLER.encodeToBuffer(protoMsg).readByteArray())
             append("my-multi-key", "my-value2")
             append("my-multi-key", "my-value3")
         }
@@ -110,7 +114,7 @@ class MetadataTest : GrpcTestBase() {
             val proto = Buffer().apply {
                 write(getBinary("my-proto-bin")!!)
             }
-            val decodedProto = EchoRequestInternal.MARSHALLER.decode(proto)
+            val decodedProto = EchoRequestInternal.MARSHALLER.decodeFromSource(proto)
             assertEquals("My Proto Header", decodedProto.message)
         }
 
@@ -425,7 +429,7 @@ class MetadataTest : GrpcTestBase() {
 
     private suspend fun unaryEcho(grpcClient: GrpcClient) {
         val service = grpcClient.withService<EchoService>()
-        val response = service.UnaryEcho(EchoRequest { message = "Echo" })
+        val response = service.unaryEcho(EchoRequest { message = "Echo" })
         assertEquals("Echo", response.message)
     }
 
@@ -437,13 +441,19 @@ class MetadataTest : GrpcTestBase() {
     // ASCII marshaller - encodes to/from ASCII string (for non-binary methods)
     @OptIn(ExperimentalRpcApi::class)
     private object TestUserAsciiMarshaller : GrpcMarshaller<TestUser> {
-        override fun encode(value: TestUser, config: GrpcMarshallerConfig?): Source {
+        override fun prepare(value: TestUser, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
+            GrpcEncodedMessage.of(encodeBuffer(value, config))
+
+        private fun encodeBuffer(value: TestUser, config: GrpcMarshallerConfig?): Buffer {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
             return Buffer().apply { writeString(asciiString) }
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?   ): TestUser {
+        override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): TestUser =
+            decodeSource(reader.asSource(), config)
+
+        private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): TestUser {
             // Decode from ASCII string
             val asciiString = Buffer().apply { transferFrom(source) }.readString()
             val parts = asciiString.split(":")

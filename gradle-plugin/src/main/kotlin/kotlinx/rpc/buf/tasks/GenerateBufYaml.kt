@@ -10,6 +10,7 @@ import kotlinx.rpc.protoc.ProtoTask
 import kotlinx.rpc.util.ensureRegularFileExists
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.CacheableTask
@@ -59,6 +60,9 @@ public abstract class GenerateBufYaml @Inject internal constructor(
     @get:Input
     internal abstract val importSourceDirExists: Property<Boolean>
 
+    @get:Input
+    internal abstract val deps: ListProperty<String>
+
     /**
      * The `buf.yaml` file to generate/update.
      */
@@ -91,6 +95,12 @@ public abstract class GenerateBufYaml @Inject internal constructor(
                 writer.appendLine("  - path: ${importSourceDir.get()}")
             }
 
+            val depsList = deps.get()
+            if (depsList.isNotEmpty()) {
+                writer.appendLine("deps:")
+                depsList.forEach { writer.appendLine("  - $it") }
+            }
+
             writer.flush()
         }
     }
@@ -106,6 +116,7 @@ internal fun Project.registerGenerateBufYamlTask(
     buildSourceSetsProtoDir: File,
     buildSourceSetsImportDir: File,
     withImport: Provider<Boolean>,
+    depModules: Provider<List<String>>,
     properties: ProtoTask.Properties,
     configure: GenerateBufYaml.() -> Unit = {},
 ): TaskProvider<GenerateBufYaml> {
@@ -119,6 +130,8 @@ internal fun Project.registerGenerateBufYamlTask(
 
         protoSourceDirExists.convention(provider { buildSourceSetsProtoDir.exists() })
         importSourceDirExists.convention(provider { buildSourceSetsImportDir.exists() })
+
+        deps.convention(depModules)
 
         val bufYamlFile = buildSourceSetsDir
             .resolve(BUF_YAML)

@@ -5,29 +5,26 @@ package com.google.protobuf_test_messages.edition2023
 
 import kotlin.reflect.cast
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.ExtensionValue
+import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
+import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.bool
 import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
-import kotlinx.rpc.protobuf.internal.checkForPlatformEncodeException
 import kotlinx.rpc.protobuf.internal.double
 import kotlinx.rpc.protobuf.internal.enum
 import kotlinx.rpc.protobuf.internal.fixed32
@@ -140,27 +137,29 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ComplexMessage> {
-        override fun encode(value: ComplexMessage, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ComplexMessage, ComplexMessageInternal>() {
+        override fun asInternal(value: ComplexMessage): ComplexMessageInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ComplexMessage {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ComplexMessageInternal()
-                checkForPlatformDecodeException {
-                    ComplexMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ComplexMessageInternal {
+            return ComplexMessageInternal()
+        }
+
+        override fun encodeWith(
+            message: ComplexMessageInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: ComplexMessageInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            ComplexMessageInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -176,7 +175,8 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
 }
 
 @InternalRpcApi
-class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, InternalMessage(fieldsWithPresence = 24) {
+@GeneratedProtoOneOfs(names = ["oneofField"])
+class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, InternalMessage(fieldsWithPresence = 33) {
     @InternalRpcApi
     internal object PresenceIndices {
         const val optionalInt32: Int = 0
@@ -201,8 +201,17 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         const val optionalStringPiece: Int = 19
         const val optionalCord: Int = 20
         const val recursiveMessage: Int = 21
-        const val groupliketype: Int = 22
-        const val delimitedField: Int = 23
+        const val oneofUint32: Int = 22
+        const val oneofNestedMessage: Int = 23
+        const val oneofString: Int = 24
+        const val oneofBytes: Int = 25
+        const val oneofBool: Int = 26
+        const val oneofUint64: Int = 27
+        const val oneofFloat: Int = 28
+        const val oneofDouble: Int = 29
+        const val oneofEnum: Int = 30
+        const val groupliketype: Int = 31
+        const val delimitedField: Int = 32
     }
 
     @InternalRpcApi
@@ -213,6 +222,29 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
     @InternalRpcApi
     internal var _unknownFieldsEncoder: WireEncoder? = null
+
+    private var _oneofFieldRef: Any? = null
+    private var _oneofFieldNum: Long = 0L
+
+    @InternalRpcApi
+    val _oneofFieldCase: TestAllTypesEdition2023OneofFieldCase get() = when {
+        presenceMask[PresenceIndices.oneofUint32] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_UINT32
+        presenceMask[PresenceIndices.oneofNestedMessage] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_NESTED_MESSAGE
+        presenceMask[PresenceIndices.oneofString] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_STRING
+        presenceMask[PresenceIndices.oneofBytes] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_BYTES
+        presenceMask[PresenceIndices.oneofBool] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_BOOL
+        presenceMask[PresenceIndices.oneofUint64] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_UINT64
+        presenceMask[PresenceIndices.oneofFloat] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_FLOAT
+        presenceMask[PresenceIndices.oneofDouble] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_DOUBLE
+        presenceMask[PresenceIndices.oneofEnum] -> TestAllTypesEdition2023OneofFieldCase.ONEOF_ENUM
+        else -> TestAllTypesEdition2023OneofFieldCase.NOT_SET
+    }
+
+    override fun clearOneofField() {
+        presenceMask.clearRange(PresenceIndices.oneofUint32, PresenceIndices.oneofEnum)
+        _oneofFieldRef = null
+        _oneofFieldNum = 0L
+    }
 
     internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalInt32) { 0 }
     override var optionalInt32: Int by __optionalInt32Delegate
@@ -482,6 +514,78 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     override var mapStringNestedEnum: Map<String, TestAllTypesEdition2023.NestedEnum> by __mapStringNestedEnumDelegate
     internal val __mapStringForeignEnumDelegate: MsgFieldDelegate<Map<String, ForeignEnumEdition2023>> = MsgFieldDelegate { emptyMap() }
     override var mapStringForeignEnum: Map<String, ForeignEnumEdition2023> by __mapStringForeignEnumDelegate
+    override var oneofUint32: UInt
+        get() = if (presenceMask[PresenceIndices.oneofUint32]) _oneofFieldNum.toUInt() else 0u
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint32, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint32() {
+        if (presenceMask[PresenceIndices.oneofUint32]) clearOneofField()
+    }
+
+    override var oneofNestedMessage: TestAllTypesEdition2023.NestedMessage
+        get() = if (presenceMask[PresenceIndices.oneofNestedMessage]) (_oneofFieldRef as TestAllTypesEdition2023.NestedMessage) else NestedMessageInternal.DEFAULT
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofNestedMessage, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofNestedMessage() {
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) clearOneofField()
+    }
+
+    override var oneofString: String
+        get() = if (presenceMask[PresenceIndices.oneofString]) (_oneofFieldRef as String) else ""
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofString, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofString() {
+        if (presenceMask[PresenceIndices.oneofString]) clearOneofField()
+    }
+
+    override var oneofBytes: ByteString
+        get() = if (presenceMask[PresenceIndices.oneofBytes]) (_oneofFieldRef as ByteString) else ByteString()
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBytes, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldRef = value; _oneofFieldNum = 0L }
+
+    override fun clearOneofBytes() {
+        if (presenceMask[PresenceIndices.oneofBytes]) clearOneofField()
+    }
+
+    override var oneofBool: Boolean
+        get() = if (presenceMask[PresenceIndices.oneofBool]) (_oneofFieldNum != 0L) else false
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofBool, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = if (value) 1L else 0L; _oneofFieldRef = null }
+
+    override fun clearOneofBool() {
+        if (presenceMask[PresenceIndices.oneofBool]) clearOneofField()
+    }
+
+    override var oneofUint64: ULong
+        get() = if (presenceMask[PresenceIndices.oneofUint64]) _oneofFieldNum.toULong() else 0uL
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofUint64, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = value.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofUint64() {
+        if (presenceMask[PresenceIndices.oneofUint64]) clearOneofField()
+    }
+
+    override var oneofFloat: Float
+        get() = if (presenceMask[PresenceIndices.oneofFloat]) Float.fromBits(_oneofFieldNum.toInt()) else 0.0f
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofFloat, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = value.toRawBits().toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofFloat() {
+        if (presenceMask[PresenceIndices.oneofFloat]) clearOneofField()
+    }
+
+    override var oneofDouble: Double
+        get() = if (presenceMask[PresenceIndices.oneofDouble]) Double.fromBits(_oneofFieldNum) else 0.0
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofDouble, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = value.toRawBits(); _oneofFieldRef = null }
+
+    override fun clearOneofDouble() {
+        if (presenceMask[PresenceIndices.oneofDouble]) clearOneofField()
+    }
+
+    override var oneofEnum: TestAllTypesEdition2023.NestedEnum
+        get() = if (presenceMask[PresenceIndices.oneofEnum]) TestAllTypesEdition2023.NestedEnum.fromNumber(_oneofFieldNum.toInt()) else TestAllTypesEdition2023.NestedEnum.FOO
+        set(value) { presenceMask.setExclusive(PresenceIndices.oneofEnum, PresenceIndices.oneofUint32, PresenceIndices.oneofEnum); _oneofFieldNum = value.number.toLong(); _oneofFieldRef = null }
+
+    override fun clearOneofEnum() {
+        if (presenceMask[PresenceIndices.oneofEnum]) clearOneofField()
+    }
+
     internal val __groupliketypeDelegate: MsgFieldDelegate<TestAllTypesEdition2023.GroupLikeType> = MsgFieldDelegate(PresenceIndices.groupliketype) { GroupLikeTypeInternal.DEFAULT }
     override var groupliketype: TestAllTypesEdition2023.GroupLikeType by __groupliketypeDelegate
     override fun clearGroupliketype() {
@@ -496,7 +600,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
     internal val __mapRecursiveDelegate: MsgFieldDelegate<Map<Int, TestAllTypesEdition2023>> = MsgFieldDelegate { emptyMap() }
     override var mapRecursive: Map<Int, TestAllTypesEdition2023> by __mapRecursiveDelegate
-    override var oneofField: TestAllTypesEdition2023.OneofField? = null
 
     private val _owner: TestAllTypesEdition2023Internal = this
 
@@ -547,6 +650,24 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         override val hasOptionalCord: Boolean get() = presenceMask[PresenceIndices.optionalCord]
 
         override val hasRecursiveMessage: Boolean get() = presenceMask[PresenceIndices.recursiveMessage]
+
+        override val hasOneofUint32: Boolean get() = presenceMask[PresenceIndices.oneofUint32]
+
+        override val hasOneofNestedMessage: Boolean get() = presenceMask[PresenceIndices.oneofNestedMessage]
+
+        override val hasOneofString: Boolean get() = presenceMask[PresenceIndices.oneofString]
+
+        override val hasOneofBytes: Boolean get() = presenceMask[PresenceIndices.oneofBytes]
+
+        override val hasOneofBool: Boolean get() = presenceMask[PresenceIndices.oneofBool]
+
+        override val hasOneofUint64: Boolean get() = presenceMask[PresenceIndices.oneofUint64]
+
+        override val hasOneofFloat: Boolean get() = presenceMask[PresenceIndices.oneofFloat]
+
+        override val hasOneofDouble: Boolean get() = presenceMask[PresenceIndices.oneofDouble]
+
+        override val hasOneofEnum: Boolean get() = presenceMask[PresenceIndices.oneofEnum]
 
         override val hasGroupliketype: Boolean get() = presenceMask[PresenceIndices.groupliketype]
 
@@ -644,43 +765,24 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         result = 31 * result + this.mapStringForeignMessage.hashCode()
         result = 31 * result + this.mapStringNestedEnum.hashCode()
         result = 31 * result + this.mapStringForeignEnum.hashCode()
+        result = 31 * result + when {
+            presenceMask[PresenceIndices.oneofUint32] -> 111 * 31 + this.oneofUint32.hashCode()
+            presenceMask[PresenceIndices.oneofNestedMessage] -> 112 * 31 + this.oneofNestedMessage.hashCode()
+            presenceMask[PresenceIndices.oneofString] -> 113 * 31 + this.oneofString.hashCode()
+            presenceMask[PresenceIndices.oneofBytes] -> 114 * 31 + this.oneofBytes.hashCode()
+            presenceMask[PresenceIndices.oneofBool] -> 115 * 31 + this.oneofBool.hashCode()
+            presenceMask[PresenceIndices.oneofUint64] -> 116 * 31 + this.oneofUint64.hashCode()
+            presenceMask[PresenceIndices.oneofFloat] -> 117 * 31 + this.oneofFloat.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofDouble] -> 118 * 31 + this.oneofDouble.toBits().hashCode()
+            presenceMask[PresenceIndices.oneofEnum] -> 119 * 31 + this.oneofEnum.hashCode()
+            else -> 0
+        }
+
         result = 31 * result + if (presenceMask[PresenceIndices.groupliketype]) this.groupliketype.hashCode() else 0
         result = 31 * result + if (presenceMask[PresenceIndices.delimitedField]) this.delimitedField.hashCode() else 0
         result = 31 * result + this.mapRecursive.hashCode()
-        result = 31 * result + (this.oneofField?.oneOfHashCode() ?: 0)
         result = 31 * result + extensionsHashCode()
         return result
-    }
-
-    fun TestAllTypesEdition2023.OneofField.oneOfHashCode(): Int {
-        return when (this) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> hashCode() + 0
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> hashCode() + 1
-            is TestAllTypesEdition2023.OneofField.OneofString -> hashCode() + 2
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> hashCode() + 3
-            is TestAllTypesEdition2023.OneofField.OneofBool -> hashCode() + 4
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> hashCode() + 5
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> value.toBits().hashCode() + 6
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> value.toBits().hashCode() + 7
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> hashCode() + 8
-        }
-    }
-
-    fun oneOfEquals(a: TestAllTypesEdition2023.OneofField?, b: TestAllTypesEdition2023.OneofField?): Boolean {
-        if (a === b) return true
-        if (a == null || b == null) return false
-        if (a::class != b::class) return false
-        return when (a) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofString -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofBool -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> a == b
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> a.value.toBits() == (b as TestAllTypesEdition2023.OneofField.OneofFloat).value.toBits()
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> a.value.toBits() == (b as TestAllTypesEdition2023.OneofField.OneofDouble).value.toBits()
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> a == b
-        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -778,10 +880,18 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         if (this.mapStringForeignMessage != other.mapStringForeignMessage) return false
         if (this.mapStringNestedEnum != other.mapStringNestedEnum) return false
         if (this.mapStringForeignEnum != other.mapStringForeignEnum) return false
+        if (presenceMask[PresenceIndices.oneofUint32] && this.oneofUint32 != other.oneofUint32) return false
+        if (presenceMask[PresenceIndices.oneofNestedMessage] && this.oneofNestedMessage != other.oneofNestedMessage) return false
+        if (presenceMask[PresenceIndices.oneofString] && this.oneofString != other.oneofString) return false
+        if (presenceMask[PresenceIndices.oneofBytes] && this.oneofBytes != other.oneofBytes) return false
+        if (presenceMask[PresenceIndices.oneofBool] && this.oneofBool != other.oneofBool) return false
+        if (presenceMask[PresenceIndices.oneofUint64] && this.oneofUint64 != other.oneofUint64) return false
+        if (presenceMask[PresenceIndices.oneofFloat] && this.oneofFloat.toBits() != other.oneofFloat.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofDouble] && this.oneofDouble.toBits() != other.oneofDouble.toBits()) return false
+        if (presenceMask[PresenceIndices.oneofEnum] && this.oneofEnum != other.oneofEnum) return false
         if (presenceMask[PresenceIndices.groupliketype] && this.groupliketype != other.groupliketype) return false
         if (presenceMask[PresenceIndices.delimitedField] && this.delimitedField != other.delimitedField) return false
         if (this.mapRecursive != other.mapRecursive) return false
-        if (!oneOfEquals(this.oneofField, other.oneofField)) return false
         return extensionsEqual(other)
     }
 
@@ -994,6 +1104,42 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         builder.appendLine("${nextIndentString}mapStringForeignMessage=${this.mapStringForeignMessage},")
         builder.appendLine("${nextIndentString}mapStringNestedEnum=${this.mapStringNestedEnum},")
         builder.appendLine("${nextIndentString}mapStringForeignEnum=${this.mapStringForeignEnum},")
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            builder.appendLine("${nextIndentString}oneofUint32=${this.oneofUint32},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            builder.appendLine("${nextIndentString}oneofNestedMessage=${this.oneofNestedMessage.asInternal().asString(indent = indent + 4)},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            builder.appendLine("${nextIndentString}oneofString=${this.oneofString},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            builder.appendLine("${nextIndentString}oneofBytes=${this.oneofBytes.protoToString()},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            builder.appendLine("${nextIndentString}oneofBool=${this.oneofBool},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            builder.appendLine("${nextIndentString}oneofUint64=${this.oneofUint64},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            builder.appendLine("${nextIndentString}oneofFloat=${this.oneofFloat},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            builder.appendLine("${nextIndentString}oneofDouble=${this.oneofDouble},")
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            builder.appendLine("${nextIndentString}oneofEnum=${this.oneofEnum},")
+        }
+
         if (presenceMask[PresenceIndices.groupliketype]) {
             builder.appendLine("${nextIndentString}groupliketype=${this.groupliketype.asInternal().asString(indent = indent + 4)},")
         } else {
@@ -1007,7 +1153,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         builder.appendLine("${nextIndentString}mapRecursive=${this.mapRecursive},")
-        builder.appendLine("${nextIndentString}oneofField=${this.oneofField},")
         builder.appendExtensions(nextIndentString)
         builder.append("${indentString})")
         return builder.toString()
@@ -1018,7 +1163,9 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     }
 
     @InternalRpcApi
-    fun copyInternal(body: TestAllTypesEdition2023Internal.() -> Unit): TestAllTypesEdition2023Internal {
+    fun copyInternal(
+        body: TestAllTypesEdition2023Internal.() -> Unit,
+    ): TestAllTypesEdition2023Internal {
         val copy = TestAllTypesEdition2023Internal()
         if (presenceMask[PresenceIndices.optionalInt32]) {
             copy.optionalInt32 = this.optionalInt32
@@ -1176,6 +1323,42 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         copy.mapStringForeignMessage = this.mapStringForeignMessage.mapValues { it.value.copy() }
         copy.mapStringNestedEnum = this.mapStringNestedEnum.mapValues { it.value }
         copy.mapStringForeignEnum = this.mapStringForeignEnum.mapValues { it.value }
+        if (presenceMask[PresenceIndices.oneofUint32]) {
+            copy.oneofUint32 = this.oneofUint32
+        }
+
+        if (presenceMask[PresenceIndices.oneofNestedMessage]) {
+            copy.oneofNestedMessage = this.oneofNestedMessage.copy()
+        }
+
+        if (presenceMask[PresenceIndices.oneofString]) {
+            copy.oneofString = this.oneofString
+        }
+
+        if (presenceMask[PresenceIndices.oneofBytes]) {
+            copy.oneofBytes = this.oneofBytes
+        }
+
+        if (presenceMask[PresenceIndices.oneofBool]) {
+            copy.oneofBool = this.oneofBool
+        }
+
+        if (presenceMask[PresenceIndices.oneofUint64]) {
+            copy.oneofUint64 = this.oneofUint64
+        }
+
+        if (presenceMask[PresenceIndices.oneofFloat]) {
+            copy.oneofFloat = this.oneofFloat
+        }
+
+        if (presenceMask[PresenceIndices.oneofDouble]) {
+            copy.oneofDouble = this.oneofDouble
+        }
+
+        if (presenceMask[PresenceIndices.oneofEnum]) {
+            copy.oneofEnum = this.oneofEnum
+        }
+
         if (presenceMask[PresenceIndices.groupliketype]) {
             copy.groupliketype = this.groupliketype.copy()
         }
@@ -1185,44 +1368,10 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         copy.mapRecursive = this.mapRecursive.mapValues { it.value.copy() }
-        copy.oneofField = this.oneofField?.oneOfCopy()
         copy.copyExtensionsFrom(this)
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
-    }
-
-    @InternalRpcApi
-    fun TestAllTypesEdition2023.OneofField.oneOfCopy(): TestAllTypesEdition2023.OneofField {
-        return when (this) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> {
-                TestAllTypesEdition2023.OneofField.OneofNestedMessage(this.value.copy())
-            }
-            is TestAllTypesEdition2023.OneofField.OneofString -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBool -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> {
-                this
-            }
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> {
-                this
-            }
-        }
     }
 
     @InternalRpcApi
@@ -1327,27 +1476,31 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023.NestedMessage> {
-            override fun encode(value: TestAllTypesEdition2023.NestedMessage, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023.NestedMessage, NestedMessageInternal>() {
+            override fun asInternal(
+                value: TestAllTypesEdition2023.NestedMessage,
+            ): NestedMessageInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023.NestedMessage {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = NestedMessageInternal()
-                    checkForPlatformDecodeException {
-                        NestedMessageInternal.decodeWith(msg, it, config as? ProtoConfig)
-                    }
-                    return msg
-                }
+            override fun newInternal(): NestedMessageInternal {
+                return NestedMessageInternal()
+            }
+
+            override fun encodeWith(
+                message: NestedMessageInternal,
+                encoder: WireEncoder,
+                config: ProtoConfig?,
+            ) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(
+                message: NestedMessageInternal,
+                decoder: WireDecoder,
+                config: ProtoConfig?,
+            ) {
+                NestedMessageInternal.decodeWith(message, decoder, config)
             }
         }
 
@@ -2794,27 +2947,31 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         }
 
         @InternalRpcApi
-        object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023.GroupLikeType> {
-            override fun encode(value: TestAllTypesEdition2023.GroupLikeType, config: GrpcMarshallerConfig?): Source {
-                val buffer = Buffer()
-                val encoder = WireEncoder(buffer)
-                val internalMsg = value.asInternal()
-                checkForPlatformEncodeException {
-                    internalMsg.encodeWith(encoder, config as? ProtoConfig)
-                }
-                encoder.flush()
-                return buffer
+        object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023.GroupLikeType, GroupLikeTypeInternal>() {
+            override fun asInternal(
+                value: TestAllTypesEdition2023.GroupLikeType,
+            ): GroupLikeTypeInternal {
+                return value.asInternal()
             }
 
-            override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023.GroupLikeType {
-                WireDecoder(source).use {
-                    (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                    val msg = GroupLikeTypeInternal()
-                    checkForPlatformDecodeException {
-                        GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtoConfig, null)
-                    }
-                    return msg
-                }
+            override fun newInternal(): GroupLikeTypeInternal {
+                return GroupLikeTypeInternal()
+            }
+
+            override fun encodeWith(
+                message: GroupLikeTypeInternal,
+                encoder: WireEncoder,
+                config: ProtoConfig?,
+            ) {
+                message.encodeWith(encoder, config)
+            }
+
+            override fun decodeWith(
+                message: GroupLikeTypeInternal,
+                decoder: WireDecoder,
+                config: ProtoConfig?,
+            ) {
+                GroupLikeTypeInternal.decodeWith(message, decoder, config, null)
             }
         }
 
@@ -2900,27 +3057,29 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<TestAllTypesEdition2023> {
-        override fun encode(value: TestAllTypesEdition2023, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<TestAllTypesEdition2023, TestAllTypesEdition2023Internal>() {
+        override fun asInternal(value: TestAllTypesEdition2023): TestAllTypesEdition2023Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): TestAllTypesEdition2023 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = TestAllTypesEdition2023Internal()
-                checkForPlatformDecodeException {
-                    TestAllTypesEdition2023Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): TestAllTypesEdition2023Internal {
+            return TestAllTypesEdition2023Internal()
+        }
+
+        override fun encodeWith(
+            message: TestAllTypesEdition2023Internal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: TestAllTypesEdition2023Internal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            TestAllTypesEdition2023Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3004,7 +3163,9 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
     }
 
     @InternalRpcApi
-    fun copyInternal(body: ForeignMessageEdition2023Internal.() -> Unit): ForeignMessageEdition2023Internal {
+    fun copyInternal(
+        body: ForeignMessageEdition2023Internal.() -> Unit,
+    ): ForeignMessageEdition2023Internal {
         val copy = ForeignMessageEdition2023Internal()
         if (presenceMask[PresenceIndices.c]) {
             copy.c = this.c
@@ -3016,27 +3177,31 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<ForeignMessageEdition2023> {
-        override fun encode(value: ForeignMessageEdition2023, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<ForeignMessageEdition2023, ForeignMessageEdition2023Internal>() {
+        override fun asInternal(
+            value: ForeignMessageEdition2023,
+        ): ForeignMessageEdition2023Internal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): ForeignMessageEdition2023 {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = ForeignMessageEdition2023Internal()
-                checkForPlatformDecodeException {
-                    ForeignMessageEdition2023Internal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): ForeignMessageEdition2023Internal {
+            return ForeignMessageEdition2023Internal()
+        }
+
+        override fun encodeWith(
+            message: ForeignMessageEdition2023Internal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: ForeignMessageEdition2023Internal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            ForeignMessageEdition2023Internal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3132,27 +3297,29 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
     }
 
     @InternalRpcApi
-    object MARSHALLER: GrpcMarshaller<GroupLikeType> {
-        override fun encode(value: GroupLikeType, config: GrpcMarshallerConfig?): Source {
-            val buffer = Buffer()
-            val encoder = WireEncoder(buffer)
-            val internalMsg = value.asInternal()
-            checkForPlatformEncodeException {
-                internalMsg.encodeWith(encoder, config as? ProtoConfig)
-            }
-            encoder.flush()
-            return buffer
+    object MARSHALLER: ProtoGrpcMarshaller<GroupLikeType, GroupLikeTypeInternal>() {
+        override fun asInternal(value: GroupLikeType): GroupLikeTypeInternal {
+            return value.asInternal()
         }
 
-        override fun decode(source: Source, config: GrpcMarshallerConfig?): GroupLikeType {
-            WireDecoder(source).use {
-                (config as? ProtoConfig)?.let { pbConfig -> it.recursionLimit = pbConfig.recursionLimit }
-                val msg = GroupLikeTypeInternal()
-                checkForPlatformDecodeException {
-                    GroupLikeTypeInternal.decodeWith(msg, it, config as? ProtoConfig)
-                }
-                return msg
-            }
+        override fun newInternal(): GroupLikeTypeInternal {
+            return GroupLikeTypeInternal()
+        }
+
+        override fun encodeWith(
+            message: GroupLikeTypeInternal,
+            encoder: WireEncoder,
+            config: ProtoConfig?,
+        ) {
+            message.encodeWith(encoder, config)
+        }
+
+        override fun decodeWith(
+            message: GroupLikeTypeInternal,
+            decoder: WireDecoder,
+            config: ProtoConfig?,
+        ) {
+            GroupLikeTypeInternal.decodeWith(message, decoder, config)
         }
     }
 
@@ -3183,7 +3350,11 @@ fun ComplexMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?
 }
 
 @InternalRpcApi
-fun ComplexMessageInternal.Companion.decodeWith(msg: ComplexMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ComplexMessageInternal.Companion.decodeWith(
+    msg: ComplexMessageInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -3781,6 +3952,42 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
         }
     }
 
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofUint32]) {
+        encoder.writeUInt32(fieldNr = 111, value = this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofNestedMessage]) {
+        encoder.writeMessage(fieldNr = 112, value = this.oneofNestedMessage.asInternal()) { encoder -> encodeWith(encoder, config) }
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofString]) {
+        encoder.writeString(fieldNr = 113, value = this.oneofString)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofBytes]) {
+        encoder.writeBytes(fieldNr = 114, value = this.oneofBytes)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofBool]) {
+        encoder.writeBool(fieldNr = 115, value = this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofUint64]) {
+        encoder.writeUInt64(fieldNr = 116, value = this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofFloat]) {
+        encoder.writeFloat(fieldNr = 117, value = this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofDouble]) {
+        encoder.writeDouble(fieldNr = 118, value = this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofEnum]) {
+        encoder.writeEnum(fieldNr = 119, value = this.oneofEnum.number)
+    }
+
     if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.groupliketype]) {
         encoder.writeGroupMessage(fieldNr = 201, value = this.groupliketype.asInternal()) { encoder -> encodeWith(encoder, config) }
     }
@@ -3801,38 +4008,6 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
         }
     }
 
-    this.oneofField?.also { value ->
-        when (value) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> {
-                encoder.writeUInt32(fieldNr = 111, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> {
-                encoder.writeMessage(fieldNr = 112, value = value.value.asInternal()) { encoder -> encodeWith(encoder, config) }
-            }
-            is TestAllTypesEdition2023.OneofField.OneofString -> {
-                encoder.writeString(fieldNr = 113, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> {
-                encoder.writeBytes(fieldNr = 114, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBool -> {
-                encoder.writeBool(fieldNr = 115, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> {
-                encoder.writeUInt64(fieldNr = 116, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> {
-                encoder.writeFloat(fieldNr = 117, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> {
-                encoder.writeDouble(fieldNr = 118, value = value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> {
-                encoder.writeEnum(fieldNr = 119, value = value.value.number)
-            }
-        }
-    }
-
     _extensions.forEach { (key, value) ->
         value.descriptor.let { descriptor ->
             descriptor.encode(encoder, key, descriptor.valueType.cast(value.value), config)
@@ -3843,7 +4018,11 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesEdition2023::class) ?: emptyMap()
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
@@ -4469,6 +4648,34 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                     target[key] = value
                 }
             }
+            111 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint32 = decoder.readUInt32()
+            }
+            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                val target = if (msg.presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofNestedMessage]) msg.oneofNestedMessage.asInternal() else TestAllTypesEdition2023Internal.NestedMessageInternal().also { msg.oneofNestedMessage = it }
+                decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
+            }
+            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofString = decoder.readString()
+            }
+            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+                msg.oneofBytes = decoder.readBytes()
+            }
+            115 if tag.wireType == WireType.VARINT -> {
+                msg.oneofBool = decoder.readBool()
+            }
+            116 if tag.wireType == WireType.VARINT -> {
+                msg.oneofUint64 = decoder.readUInt64()
+            }
+            117 if tag.wireType == WireType.FIXED32 -> {
+                msg.oneofFloat = decoder.readFloat()
+            }
+            118 if tag.wireType == WireType.FIXED64 -> {
+                msg.oneofDouble = decoder.readDouble()
+            }
+            119 if tag.wireType == WireType.VARINT -> {
+                msg.oneofEnum = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
+            }
             201 if tag.wireType == WireType.START_GROUP -> {
                 val target = msg.__groupliketypeDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.GroupLikeTypeInternal() }
                 decoder.readGroup(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
@@ -4483,37 +4690,6 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(msg: TestAllTypesEditio
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
-            }
-            111 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofUint32(decoder.readUInt32())
-            }
-            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                val field = (msg.oneofField as? TestAllTypesEdition2023.OneofField.OneofNestedMessage) ?: TestAllTypesEdition2023.OneofField.OneofNestedMessage(TestAllTypesEdition2023Internal.NestedMessageInternal()).also {
-                    msg.oneofField = it
-                }
-
-                decoder.readMessage(field.value.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
-            }
-            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofString(decoder.readString())
-            }
-            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofBytes(decoder.readBytes())
-            }
-            115 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofBool(decoder.readBool())
-            }
-            116 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofUint64(decoder.readUInt64())
-            }
-            117 if tag.wireType == WireType.FIXED32 -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofFloat(decoder.readFloat())
-            }
-            118 if tag.wireType == WireType.FIXED64 -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofDouble(decoder.readDouble())
-            }
-            119 if tag.wireType == WireType.VARINT -> {
-                msg.oneofField = TestAllTypesEdition2023.OneofField.OneofEnum(TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum()))
             }
             else -> {
                 val extension = knownExtensions[tag.fieldNr] as? InternalExtensionDescriptor
@@ -5021,6 +5197,42 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
         }
     }
 
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofUint32]) {
+        __result += WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(this.oneofUint32)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofNestedMessage]) {
+        __result += this.oneofNestedMessage.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofString]) {
+        __result += WireSize.string(this.oneofString).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofBytes]) {
+        __result += WireSize.bytes(this.oneofBytes).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofBool]) {
+        __result += WireSize.tag(115, WireType.VARINT) + WireSize.bool(this.oneofBool)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofUint64]) {
+        __result += WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(this.oneofUint64)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofFloat]) {
+        __result += WireSize.tag(117, WireType.FIXED32) + WireSize.float(this.oneofFloat)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofDouble]) {
+        __result += WireSize.tag(118, WireType.FIXED64) + WireSize.double(this.oneofDouble)
+    }
+
+    if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofEnum]) {
+        __result += WireSize.tag(119, WireType.VARINT) + WireSize.enum(this.oneofEnum.number)
+    }
+
     if (presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.groupliketype]) {
         __result += this.groupliketype.asInternal()._size.let { (2 * WireSize.tag(201, WireType.START_GROUP)) + it }
     }
@@ -5036,38 +5248,6 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
                 value = kEntry.value
             }
             ._size.let { WireSize.tag(301, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-        }
-    }
-
-    this.oneofField?.also { value ->
-        __result += when (value) {
-            is TestAllTypesEdition2023.OneofField.OneofUint32 -> {
-                WireSize.tag(111, WireType.VARINT) + WireSize.uInt32(value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofNestedMessage -> {
-                value.value.asInternal()._size.let { WireSize.tag(112, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesEdition2023.OneofField.OneofString -> {
-                WireSize.string(value.value).let { WireSize.tag(113, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBytes -> {
-                WireSize.bytes(value.value).let { WireSize.tag(114, WireType.LENGTH_DELIMITED) + WireSize.int32(it) + it }
-            }
-            is TestAllTypesEdition2023.OneofField.OneofBool -> {
-                WireSize.tag(115, WireType.VARINT) + WireSize.bool(value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofUint64 -> {
-                WireSize.tag(116, WireType.VARINT) + WireSize.uInt64(value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofFloat -> {
-                WireSize.tag(117, WireType.FIXED32) + WireSize.float(value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofDouble -> {
-                WireSize.tag(118, WireType.FIXED64) + WireSize.double(value.value)
-            }
-            is TestAllTypesEdition2023.OneofField.OneofEnum -> {
-                WireSize.tag(119, WireType.VARINT) + WireSize.enum(value.value.number)
-            }
         }
     }
 
@@ -5097,7 +5277,11 @@ fun ForeignMessageEdition2023Internal.encodeWith(encoder: WireEncoder, config: P
 }
 
 @InternalRpcApi
-fun ForeignMessageEdition2023Internal.Companion.decodeWith(msg: ForeignMessageEdition2023Internal, decoder: WireDecoder, config: ProtoConfig?) {
+fun ForeignMessageEdition2023Internal.Companion.decodeWith(
+    msg: ForeignMessageEdition2023Internal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5157,7 +5341,11 @@ fun GroupLikeTypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?)
 }
 
 @InternalRpcApi
-fun GroupLikeTypeInternal.Companion.decodeWith(msg: GroupLikeTypeInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun GroupLikeTypeInternal.Companion.decodeWith(
+    msg: GroupLikeTypeInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5202,7 +5390,10 @@ fun GroupLikeType.asInternal(): GroupLikeTypeInternal {
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.NestedMessageInternal.PresenceIndices.a]) {
         encoder.writeInt32(fieldNr = 1, value = this.a)
     }
@@ -5221,7 +5412,11 @@ fun TestAllTypesEdition2023Internal.NestedMessageInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.NestedMessageInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.NestedMessageInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5274,7 +5469,10 @@ fun TestAllTypesEdition2023.NestedMessage.asInternal(): TestAllTypesEdition2023I
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.PresenceIndices.key]) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -5293,7 +5491,11 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.encodeWith(encode
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5345,7 +5547,10 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.asInternal(): Tes
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.PresenceIndices.key]) {
         encoder.writeInt64(fieldNr = 1, value = this.key)
     }
@@ -5364,7 +5569,11 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.encodeWith(encode
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5416,7 +5625,10 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.asInternal(): Tes
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.PresenceIndices.key]) {
         encoder.writeUInt32(fieldNr = 1, value = this.key)
     }
@@ -5435,7 +5647,11 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5487,7 +5703,10 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.asInternal(): T
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.PresenceIndices.key]) {
         encoder.writeUInt64(fieldNr = 1, value = this.key)
     }
@@ -5506,7 +5725,11 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5558,7 +5781,10 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.asInternal(): T
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.PresenceIndices.key]) {
         encoder.writeSInt32(fieldNr = 1, value = this.key)
     }
@@ -5577,7 +5803,11 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5629,7 +5859,10 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.asInternal(): T
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.PresenceIndices.key]) {
         encoder.writeSInt64(fieldNr = 1, value = this.key)
     }
@@ -5648,7 +5881,11 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5700,7 +5937,10 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.asInternal(): T
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.PresenceIndices.key]) {
         encoder.writeFixed32(fieldNr = 1, value = this.key)
     }
@@ -5719,7 +5959,11 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.encodeWith(en
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5771,7 +6015,10 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.asInternal():
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.PresenceIndices.key]) {
         encoder.writeFixed64(fieldNr = 1, value = this.key)
     }
@@ -5790,7 +6037,11 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.encodeWith(en
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5842,7 +6093,10 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.asInternal():
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.PresenceIndices.key]) {
         encoder.writeSFixed32(fieldNr = 1, value = this.key)
     }
@@ -5861,7 +6115,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.encodeWith(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5913,7 +6171,10 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.asInternal(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.PresenceIndices.key]) {
         encoder.writeSFixed64(fieldNr = 1, value = this.key)
     }
@@ -5932,7 +6193,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.encodeWith(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -5984,7 +6249,10 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.asInternal(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.PresenceIndices.key]) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6003,7 +6271,11 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.encodeWith(encode
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6055,7 +6327,10 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.asInternal(): Tes
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.PresenceIndices.key]) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6074,7 +6349,11 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6126,7 +6405,10 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.asInternal(): Te
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.PresenceIndices.key]) {
         encoder.writeBool(fieldNr = 1, value = this.key)
     }
@@ -6145,7 +6427,11 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.encodeWith(encoder:
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6197,7 +6483,10 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.asInternal(): TestA
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringStringEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6216,7 +6505,11 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.encodeWith(enco
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringStringEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringStringEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6268,7 +6561,10 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.asInternal(): T
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6287,7 +6583,11 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.encodeWith(encod
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringBytesEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringBytesEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6339,7 +6639,10 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.asInternal(): Te
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6358,7 +6661,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.encodeWi
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6411,7 +6718,10 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.asIntern
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6430,7 +6740,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.encodeW
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6483,7 +6797,10 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.asInter
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6502,7 +6819,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.encodeWith(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6554,7 +6875,10 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.asInternal(
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.PresenceIndices.key]) {
         encoder.writeString(fieldNr = 1, value = this.key)
     }
@@ -6573,7 +6897,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.encodeWith
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6625,7 +6953,10 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.asInternal
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.GroupLikeTypeInternal.PresenceIndices.groupInt32]) {
         encoder.writeInt32(fieldNr = 202, value = this.groupInt32)
     }
@@ -6644,7 +6975,12 @@ fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.encodeWith(encoder: Wi
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.GroupLikeTypeInternal, decoder: WireDecoder, config: ProtoConfig?, startGroup: KTag?) {
+fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.GroupLikeTypeInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+    startGroup: KTag?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: run {
             startGroup?.let {
@@ -6704,7 +7040,10 @@ fun TestAllTypesEdition2023.GroupLikeType.asInternal(): TestAllTypesEdition2023I
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.encodeWith(
+    encoder: WireEncoder,
+    config: ProtoConfig?,
+) {
     if (presenceMask[TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.PresenceIndices.key]) {
         encoder.writeInt32(fieldNr = 1, value = this.key)
     }
@@ -6723,7 +7062,11 @@ fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.encodeWith(encoder
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWith(msg: TestAllTypesEdition2023Internal.MapRecursiveEntryInternal, decoder: WireDecoder, config: ProtoConfig?) {
+fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWith(
+    msg: TestAllTypesEdition2023Internal.MapRecursiveEntryInternal,
+    decoder: WireDecoder,
+    config: ProtoConfig?,
+) {
     while (true) {
         val tag = decoder.readTag() ?: break // EOF, we read the whole message
         when (tag.fieldNr) {
@@ -6794,7 +7137,9 @@ fun ForeignEnumEdition2023.Companion.fromNumber(number: Int): ForeignEnumEdition
 }
 
 @InternalRpcApi
-fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(number: Int): TestAllTypesEdition2023.NestedEnum {
+fun TestAllTypesEdition2023.NestedEnum.Companion.fromNumber(
+    number: Int,
+): TestAllTypesEdition2023.NestedEnum {
     return when (number) {
         0 -> {
             TestAllTypesEdition2023.NestedEnum.FOO

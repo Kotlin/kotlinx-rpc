@@ -1,23 +1,33 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protobuf.test
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import OneOfMsg
+import OneOfMsgFieldCase
 import OneOfWithRequired
 import Outer
 import asInternal
 import encodeWith
+import field
 import invoke
+import presence
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import test.groups.WithGroups
+import test.groups.WithGroupsOneOfWithGroupCase
 import test.groups.invoke
+import test.groups.oneOfWithGroup
 import test.nested.NestedOuter
 import test.nested.NotInside
 import test.nested.invoke
@@ -31,11 +41,10 @@ import test.submsg.encodeWith
 import test.submsg.invoke
 import test.submsg.presence
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
-import kotlin.test.assertIs
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ProtosTest {
@@ -44,8 +53,8 @@ class ProtosTest {
         msg: M,
         marshaller: GrpcMarshaller<M>,
     ): M {
-        val source = marshaller.encode(msg)
-        return marshaller.decode(source)
+        val source = marshaller.encodeToBuffer(msg)
+        return marshaller.decodeFromSource(source)
     }
 
     private fun encodeToBytes(block: (WireEncoder) -> Unit): ByteArray {
@@ -57,7 +66,7 @@ class ProtosTest {
     }
 
     // PresenceCheck wire bytes that contain only the optional field (field 2),
-    // i.e. the required `RequiredPresence` (field 1) is missing.
+    // i.e. the required `requiredPresence` (field 1) is missing.
     private fun presenceCheckMissingRequired(): ByteArray = encodeToBytes {
         it.writeFloat(2, 1f)
     }
@@ -74,7 +83,7 @@ class ProtosTest {
         encoder.writeFixed32(9, 1234u)
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<AllPrimitives>().decode(buffer)
+        val decoded = grpcMarshallerOf<AllPrimitives>().decodeFromSource(buffer)
         assertEquals(12, decoded.sint32)
         assertFalse(decoded.presence.hasSint64)
         assertEquals(0, decoded.sint64)
@@ -107,6 +116,29 @@ class ProtosTest {
     }
 
     @Test
+    fun sizeFirstMarshallerProducesIdenticalBytesForBufferAndByteArray() {
+        val message = AllPrimitives {
+            int32 = -123
+            uint64 = 123456789uL
+            string = "size-first"
+            bytes = byteArrayOf(1, 2, 3, 4).asByteString()
+        }
+        val expected = encodeToBytes { encoder ->
+            message.asInternal().encodeWith(encoder, null)
+        }
+        val marshaller = grpcMarshallerOf<AllPrimitives>()
+
+        val buffer = Buffer()
+        marshaller.prepare(message).writeTo(BufferMessageWriter(buffer, expected.size))
+        assertContentEquals(expected, buffer.readByteArray())
+
+        val bytes = ByteArray(expected.size)
+        marshaller.prepare(message).writeTo(ByteArrayMessageWriter(bytes))
+        assertContentEquals(expected, bytes)
+        assertEquals(message, marshaller.decode(ByteArrayMessageReader(bytes)))
+    }
+
+    @Test
     fun testRepeatedProto() {
         val elem = { i: Int -> Repeated.Other { a = i } }
         val msg = Repeated {
@@ -133,7 +165,7 @@ class ProtosTest {
     fun testRepeatedWithRequiredSubField() {
         assertFailsWith<ProtobufException> {
             RepeatedWithRequired {
-                msgList = listOf(PresenceCheck { RequiredPresence = 2 }, PresenceCheck { })
+                msgList = listOf(PresenceCheck { requiredPresence = 2 }, PresenceCheck { })
             }
         }
     }
@@ -154,7 +186,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<RepeatedWithRequired>().decode(buffer)
+            grpcMarshallerOf<RepeatedWithRequired>().decodeFromSource(buffer)
         }
     }
 
@@ -172,7 +204,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<PresenceCheck>().decode(buffer)
+            grpcMarshallerOf<PresenceCheck>().decodeFromSource(buffer)
         }
     }
 
@@ -184,7 +216,7 @@ class ProtosTest {
         encoder.writeEnum(1, 50)
         encoder.flush()
 
-        val decodedMsg = grpcMarshallerOf<UsingEnum>().decode(buffer)
+        val decodedMsg = grpcMarshallerOf<UsingEnum>().decodeFromSource(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
     }
 
@@ -204,11 +236,11 @@ class ProtosTest {
         // create message without enum field set
         val msg = UsingEnum {}
 
-        val buffer = grpcMarshallerOf<UsingEnum>().encode(msg)
+        val buffer = grpcMarshallerOf<UsingEnum>().encodeToBuffer(msg)
         // buffer should be empty (default is not in wire)
         assertTrue(buffer.exhausted())
 
-        val decoded = grpcMarshallerOf<UsingEnum>().decode(buffer)
+        val decoded = grpcMarshallerOf<UsingEnum>().decodeFromSource(buffer)
         assertEquals(MyEnum.ZERO, decoded.enum)
     }
 
@@ -216,27 +248,29 @@ class ProtosTest {
     fun testOneOf() {
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Sint(23)
+                sint = 23
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(OneOfMsg.Field.Sint(23), decoded.field)
+            assertEquals(OneOfMsgFieldCase.SINT, decoded.field)
+            assertEquals(23, decoded.sint)
         }
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Fixed(21u)
+                fixed = 21u
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(OneOfMsg.Field.Fixed(21u), decoded.field)
+            assertEquals(OneOfMsgFieldCase.FIXED, decoded.field)
+            assertEquals(21u, decoded.fixed)
         }
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Other(Other { arg2 = "test" })
+                other = Other { arg2 = "test" }
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertIs<OneOfMsg.Field.Other>(decoded.field)
-            val decodedOtherField = (decoded.field as OneOfMsg.Field.Other).value
+            assertEquals(OneOfMsgFieldCase.OTHER, decoded.field)
+            val decodedOtherField = decoded.other
             assertFalse(decodedOtherField.presence.hasArg1)
             assertEquals("", decodedOtherField.arg1)
             assertEquals("test", decodedOtherField.arg2)
@@ -246,20 +280,21 @@ class ProtosTest {
 
         run {
             val msg = OneOfMsg {
-                field = OneOfMsg.Field.Enum(MyEnum.ONE_SECOND)
+                enum = MyEnum.ONE_SECOND
             }
             val decoded = encodeDecode(msg, grpcMarshallerOf<OneOfMsg>())
-            assertEquals(MyEnum.ONE, (decoded.field as OneOfMsg.Field.Enum).value)
+            assertEquals(OneOfMsgFieldCase.ENUM, decoded.field)
+            assertEquals(MyEnum.ONE, decoded.enum)
         }
     }
 
     @Test
     fun testOneOfMsgMerging() {
         val part1 = OneOfMsg {
-            field = OneOfMsg.Field.Other(Other { arg2 = "arg2" })
+            other = Other { arg2 = "arg2" }
         }
         val part2 = OneOfMsg {
-            field = OneOfMsg.Field.Other(Other { arg1 = "arg1" })
+            other = Other { arg1 = "arg1" }
         }
 
         val buffer = Buffer()
@@ -269,9 +304,9 @@ class ProtosTest {
         encoder.flush()
 
 
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
-        assertIs<OneOfMsg.Field.Other>(decoded.field)
-        val decodedOther = (decoded.field as OneOfMsg.Field.Other).value
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
+        assertEquals(OneOfMsgFieldCase.OTHER, decoded.field)
+        val decodedOther = decoded.other
         assertEquals("arg2", decodedOther.arg2)
         assertEquals("arg1", decodedOther.arg1)
         assertEquals("", decodedOther.arg3)
@@ -287,15 +322,18 @@ class ProtosTest {
         encoder.writeFixed64(3, 123u)
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
-        assertEquals(OneOfMsg.Field.Fixed(123u), decoded.field)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
+        assertEquals(OneOfMsgFieldCase.FIXED, decoded.field)
+        assertEquals(123u, decoded.fixed)
+        assertFalse(decoded.presence.hasSint)
+        assertEquals(0, decoded.sint)
     }
 
     @Test
     fun testOneOfRequiredSubField() {
         assertFailsWith<ProtobufException> {
             OneOfWithRequired {
-                field = OneOfWithRequired.Field.Msg(PresenceCheck { })
+                msg = PresenceCheck { }
             }
         }
     }
@@ -310,17 +348,18 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<OneOfWithRequired>().decode(buffer)
+            grpcMarshallerOf<OneOfWithRequired>().decodeFromSource(buffer)
         }
     }
 
     @Test
-    fun testOneOfNull() {
-        // write two values on the oneOf field.
-        // the second value must be the one stored during decoding.
+    fun testOneOfNotSet() {
+        // an empty message has no active case
         val buffer = Buffer()
-        val decoded = grpcMarshallerOf<OneOfMsg>().decode(buffer)
-        assertNull(decoded.field)
+        val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
+        assertEquals(OneOfMsgFieldCase.NOT_SET, decoded.field)
+        assertFalse(decoded.presence.hasSint)
+        assertFalse(decoded.presence.hasOther)
     }
 
     @Test
@@ -344,7 +383,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<Outer>().decode(buffer)
+            grpcMarshallerOf<Outer>().decodeFromSource(buffer)
         }
     }
 
@@ -440,7 +479,7 @@ class ProtosTest {
         encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
         encoder.flush()
 
-        val decoded = grpcMarshallerOf<Reference>().decode(buffer)
+        val decoded = grpcMarshallerOf<Reference>().decodeFromSource(buffer)
         assertEquals("first", decoded.other.arg1)
         assertEquals("third", decoded.other.arg2)
         assertEquals("fourth", decoded.other.arg3)
@@ -460,7 +499,7 @@ class ProtosTest {
         assertEquals("first", decodedReference.other.arg1)
         assertEquals("second", decodedReference.other.arg2)
 
-        val emptyReference = referenceMarshaller.decode(Buffer())
+        val emptyReference = referenceMarshaller.decodeFromSource(Buffer())
         assertEquals("", emptyReference.other.arg1)
         assertEquals("", emptyReference.other.arg2)
         assertEquals("", emptyReference.other.arg3)
@@ -476,21 +515,21 @@ class ProtosTest {
         assertEquals(1, decodedRepeated.listMessage.size)
         assertEquals(7, decodedRepeated.listMessage.single().a)
 
-        val emptyRepeated = repeatedMarshaller.decode(Buffer())
+        val emptyRepeated = repeatedMarshaller.decodeFromSource(Buffer())
         assertTrue(emptyRepeated.listInt32.isEmpty())
         assertTrue(emptyRepeated.listMessage.isEmpty())
 
         val mapMarshaller = grpcMarshallerOf<TestMap>()
         val populatedMap = TestMap {
             primitives = mapOf("one" to 1L)
-            messages = mapOf(1 to PresenceCheck { RequiredPresence = 7 })
+            messages = mapOf(1 to PresenceCheck { requiredPresence = 7 })
         }
 
         val decodedMap = encodeDecode(populatedMap, mapMarshaller)
         assertEquals(mapOf("one" to 1L), decodedMap.primitives)
-        assertEquals(7, decodedMap.messages.getValue(1).RequiredPresence)
+        assertEquals(7, decodedMap.messages.getValue(1).requiredPresence)
 
-        val emptyMap = mapMarshaller.decode(Buffer())
+        val emptyMap = mapMarshaller.decodeFromSource(Buffer())
         assertTrue(emptyMap.primitives.isEmpty())
         assertTrue(emptyMap.messages.isEmpty())
     }
@@ -501,8 +540,8 @@ class ProtosTest {
         val msg = TestMap {
             primitives = mapOf("one" to 1, "two" to 2, "three" to 3)
             messages = mapOf(
-                1 to PresenceCheck { RequiredPresence = 1 },
-                2 to PresenceCheck { RequiredPresence = 2; OptionalPresence = 3F }
+                1 to PresenceCheck { requiredPresence = 1 },
+                2 to PresenceCheck { requiredPresence = 2; optionalPresence = 3F }
             )
         }
 
@@ -510,8 +549,8 @@ class ProtosTest {
         assertEquals(msg.primitives, decoded.primitives)
         assertEquals(msg.messages.size, decoded.messages.size)
         for ((key, value) in msg.messages) {
-            assertEquals(value.RequiredPresence, decoded.messages[key]!!.RequiredPresence)
-            assertEquals(value.OptionalPresence, decoded.messages[key]!!.OptionalPresence)
+            assertEquals(value.requiredPresence, decoded.messages[key]!!.requiredPresence)
+            assertEquals(value.optionalPresence, decoded.messages[key]!!.optionalPresence)
         }
     }
 
@@ -542,7 +581,7 @@ class ProtosTest {
         encoder.flush()
 
         assertFailsWith<ProtobufException> {
-            grpcMarshallerOf<TestMap>().decode(buffer)
+            grpcMarshallerOf<TestMap>().decodeFromSource(buffer)
         }
     }
 
@@ -559,9 +598,9 @@ class ProtosTest {
                     value = "Second Item"
                 }
             )
-            oneOfWithGroup = WithGroups.OneOfWithGroup.Testgroup(WithGroups.TestGroup {
+            testgroup = WithGroups.TestGroup {
                 value = 42u
-            })
+            }
         }
 
         val decoded = encodeDecode(msg, grpcMarshallerOf<WithGroups>())
@@ -569,11 +608,8 @@ class ProtosTest {
         for ((i, group) in msg.secondgroup.withIndex()) {
             assertEquals(group.value, decoded.secondgroup[i].value)
         }
-        assertTrue(decoded.oneOfWithGroup is WithGroups.OneOfWithGroup.Testgroup)
-        assertEquals(
-            (msg.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value,
-            (decoded.oneOfWithGroup as WithGroups.OneOfWithGroup.Testgroup).value.value
-        )
+        assertEquals(WithGroupsOneOfWithGroupCase.TESTGROUP, decoded.oneOfWithGroup)
+        assertEquals(msg.testgroup.value, decoded.testgroup.value)
     }
 
     @Test

@@ -29,6 +29,9 @@ For each `.proto` file, the **protobuf plugin** produces three Kotlin files:
 | `<ProtoFile>.ext.kt` | `<proto_package>` | Extension functions (constructors, `copy`, `presence`) |
 | `_rpc_internal/<ProtoFile>.kt` | `<proto_package>` | Internal implementation classes, marshallers, descriptors, encode/decode |
 
+Each generated `MARSHALLER` is an object extending `ProtoGrpcMarshaller`. It prepares an
+exact-size encoded message and decodes through a bounded `AbstractGrpcMessageReader`.
+
 The **gRPC plugin** produces one file per `.proto` file:
 
 | File | Package | Contains |
@@ -182,7 +185,17 @@ val updated = config.copy {
 
 ### OneOf
 
-Proto `oneof` fields generate a sealed interface. Each case is a data class wrapping the value:
+Every member of a proto `oneof` becomes a flat, non-nullable property of the message, exactly like a
+singular field of the same type. When the member is not the active case, the property returns the proto
+default for its type. The oneof itself contributes a top-level `<Message><OneOf>Case` enum class, a
+`<oneOf>` extension property returning the active case, a `clear<OneOf>()` builder function and an
+exhaustive `when<OneOf>` dispatch function. Each member has a `has<Member>` presence getter and a
+`clear<Member>()` builder function.
+
+The `clear<OneOf>()` and `clear<Member>()` functions are members of the `Builder` interface declared by the
+compiler plugin and implemented by the internal class. The internal class is annotated with
+`@GeneratedProtoOneOfs(names = [...])` so that the compiler plugin knows the oneof names
+(see [protobuf/codegen.md](../protobuf/codegen.md)).
 
 ```protobuf
 message Event {
@@ -194,16 +207,53 @@ message Event {
 ```
 
 ```kotlin
-val event = Event {
-    payload = Event.Payload.Text("hello")
+@GeneratedProtoMessage
+interface Event {
+    val text: String
+    val code: Int
 }
 
-when (event.payload) {
-    is Event.Payload.Text -> println(event.payload.value)
-    is Event.Payload.Code -> println(event.payload.value)
-    null -> {}
-}
+enum class EventPayloadCase { TEXT, CODE, NOT_SET }
+
+val Event.payload: EventPayloadCase
+inline fun <R> Event.whenPayload(text: (String) -> R, code: (Int) -> R, notSet: () -> R): R
+
+// declared on Event.Builder by the compiler plugin
+fun clearPayload()
 ```
+
+```kotlin
+val event = Event {
+    text = "hello"
+    code = 5       // switches the case: text is "" again, hasText is false
+}
+
+event.presence.hasCode                          // true
+event.code                                      // 5
+event.text                                      // ""
+
+val length = event.whenPayload(                 // exhaustive and type-linked
+    text = { it.length },
+    code = { it },
+    notSet = { 0 },
+)
+
+when (event.payload) {                          // exhaustive, not type-linked
+    EventPayloadCase.TEXT -> println(event.text)
+    EventPayloadCase.CODE -> println(event.code)
+    EventPayloadCase.NOT_SET -> {}
+}
+
+val cleared = event.copy { clearPayload() }    // payload == EventPayloadCase.NOT_SET
+```
+
+Internally the active case is not stored separately: the members of one oneof have consecutive presence bits,
+and the active member is the one whose bit is set. Values live in at most two typed slots per oneof
+(`Any?` for strings, bytes and messages; `Int` or `Long` for numbers, bools and enums), so setting, decoding
+or reading a oneof member allocates nothing. Floats and doubles are stored as raw bits, enums as their number.
+
+With `generateOptionalFieldOrNullGetters=true`, every member also gets a `<member>OrNull` getter.
+Set `generateOneOfWhenFunctions=false` to omit the `when<OneOf>` functions.
 
 ### Nested Messages
 
@@ -246,11 +296,14 @@ Each service becomes a `@Grpc` interface.
 ```kotlin
 @Grpc
 interface GreeterService {
-    suspend fun SayHello(message: HelloRequest): HelloReply
+    @Grpc.Method(name = "SayHello")
+    suspend fun sayHello(message: HelloRequest): HelloReply
 }
 ```
 
 The compiler plugin then generates the stub class, `RpcServiceDescriptor`, `GrpcServiceDelegate`, and `RpcCallable` entries from this interface (see [grpc/codegen.md](../grpc/codegen.md)).
+
+Note: generated Kotlin names are camel-cased by default. Set `camelCaseNames` to `false` to preserve proto names.
 
 ### Streaming
 
@@ -267,9 +320,14 @@ service StreamingTestService {
 ```kotlin
 @Grpc
 interface StreamingTestService {
-    fun Server(message: References): Flow<References>
-    suspend fun Client(message: Flow<References>): References
-    fun Bidi(message: Flow<References>): Flow<References>
+    @Grpc.Method(name = "Server")
+    fun server(message: References): Flow<References>
+
+    @Grpc.Method(name = "Client")
+    suspend fun client(message: Flow<References>): References
+
+    @Grpc.Method(name = "Bidi")
+    fun bidi(message: Flow<References>): Flow<References>
 }
 ```
 
@@ -277,13 +335,13 @@ Note: server-streaming and bidi methods are **not** `suspend` since they return 
 
 ### Idempotency
 
-Reads `MethodOptions.IdempotencyLevel` from the `.proto` method options and maps to `@GrpcMethod` annotation parameters:
+Reads `MethodOptions.IdempotencyLevel` from the `.proto` method options and maps to `@Grpc.Method` annotation parameters:
 
 | Proto `idempotency_level` | Generated annotation |
 |---|---|
 | (default) | _(none)_ |
-| `IDEMPOTENT` | `@GrpcMethod(idempotent = true)` |
-| `NO_SIDE_EFFECTS` | `@GrpcMethod(idempotent = true, safe = true)` |
+| `IDEMPOTENT` | `@Grpc.Method(idempotent = true)` |
+| `NO_SIDE_EFFECTS` | `@Grpc.Method(idempotent = true, safe = true)` |
 
 ## Pipeline Overview
 
@@ -314,11 +372,14 @@ protoc (or buf)
 
 Both plugins accept the same options (passed via `--<plugin>_opt=key=value`):
 
-| Option                      | Default | Description                                                                                     |
-|-----------------------------|---------|-------------------------------------------------------------------------------------------------|
-| `explicitApiModeEnabled`    | `false` | Add `public`/`internal` visibility modifiers                                                    |
-| `generateComments`          | `true`  | Preserve proto comments as KDoc                                                                 |
-| `generateFileLevelComments` | `true`  | Include file-level proto comments                                                               |
-| `indentSize`                | `4`     | Indentation width in spaces                                                                     |
-| `platform`                  | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
-| `debugOutput`               | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
+| Option                             | Default | Description                                                                                     |
+|------------------------------------|---------|-------------------------------------------------------------------------------------------------|
+| `explicitApiModeEnabled`           | `false` | Add `public`/`internal` visibility modifiers                                                    |
+| `generateComments`                 | `true`  | Preserve proto comments as KDoc                                                                 |
+| `generateFileLevelComments`        | `true`  | Include file-level proto comments                                                               |
+| `indentSize`                       | `4`     | Indentation width in spaces                                                                     |
+| `platform`                         | —       | Target platform (`COMMON`, `JVM`, `JS`, `NATIVE`, `WASM_JS`, `WASM_WASI`)                       |
+| `debugOutput`                      | `false` | Write debug output into `protoBuild/sourceSets/<sourceSet>/protoc-gen-<protoc-plugin-name>.log` |
+| `camelCaseNames`                   | `true`  | Generate Kotlin declaration and member names in camel case                                      |
+| `generateOptionalFieldOrNullGetters` | `false` | Emit `<field>OrNull` getters for fields with presence, including oneof members                |
+| `generateOneOfWhenFunctions`       | `true`  | Emit the exhaustive `when<OneOf>` dispatch function for every oneof                             |

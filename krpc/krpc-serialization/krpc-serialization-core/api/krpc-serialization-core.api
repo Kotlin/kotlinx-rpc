@@ -9,7 +9,6 @@ public final class kotlinx/rpc/krpc/serialization/KrpcSerialFormat$DefaultImpls 
 }
 
 public abstract class kotlinx/rpc/krpc/serialization/KrpcSerialFormatBuilder {
-	public synthetic fun <init> (Lkotlinx/rpc/krpc/serialization/KrpcSerialFormat;Lkotlinx/serialization/SerialFormat;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lkotlinx/rpc/krpc/serialization/KrpcSerialFormat;Lkotlinx/serialization/SerialFormat;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 

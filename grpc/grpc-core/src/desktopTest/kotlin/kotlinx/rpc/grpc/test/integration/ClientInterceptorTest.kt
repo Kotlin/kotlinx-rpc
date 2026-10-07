@@ -235,7 +235,7 @@ class ClientInterceptorTest : GrpcTestBase() {
         }
         runGrpcTest(clientInterceptors = interceptor) {
             val service = it.withService<EchoService>()
-            val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+            val response = service.unaryEcho(EchoRequest { message = "Hello" })
             assertEquals("Modified", response.message)
         }
     }
@@ -247,7 +247,7 @@ class ClientInterceptorTest : GrpcTestBase() {
         }
         runGrpcTest(clientInterceptors = interceptor) {
             val service = it.withService<EchoService>()
-            val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+            val response = service.unaryEcho(EchoRequest { message = "Hello" })
             assertEquals("Modified", response.message)
         }
     }
@@ -269,7 +269,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             clientInterceptors = interceptor
         ) { client ->
             val svc = client.withService<EchoService>()
-            val responses = svc.BidirectionalStreamingEcho(flow {
+            val responses = svc.bidirectionalStreamingEcho(flow {
                 repeat(5) {
                     emit(EchoRequest { message = "Eccchhooo" })
                 }
@@ -318,13 +318,13 @@ class ClientInterceptorTest : GrpcTestBase() {
 
     private suspend fun unaryCall(grpcClient: GrpcClient) {
         val service = grpcClient.withService<EchoService>()
-        val response = service.UnaryEcho(EchoRequest { message = "Hello" })
+        val response = service.unaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
     }
 
     private suspend fun bidiStream(grpcClient: GrpcClient, count: Int = 5) {
         val service = grpcClient.withService<EchoService>()
-        val responses = service.BidirectionalStreamingEcho(flow {
+        val responses = service.bidirectionalStreamingEcho(flow {
             repeat(count) {
                 emit(EchoRequest { message = "Echo-$it" })
             }

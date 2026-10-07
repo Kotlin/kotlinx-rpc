@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protoc.gen.core.model
@@ -87,6 +87,7 @@ sealed interface FqName {
         val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
         val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
         val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoMessage")
+        val GeneratedProtoOneOfs = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoOneOfs")
     }
 
     object RpcClasses {
@@ -100,6 +101,7 @@ sealed interface FqName {
         val WireDecoder = fqDec("kotlinx.rpc.protobuf.internal", "WireDecoder")
         val MsgFieldDelegate = fqDec("kotlinx.rpc.protobuf.internal", "MsgFieldDelegate")
         val GrpcMarshaller = fqDec("kotlinx.rpc.grpc.marshaller", "GrpcMarshaller")
+        val ProtoGrpcMarshaller = fqDec("kotlinx.rpc.protobuf.internal", "ProtoGrpcMarshaller")
         val KTag = fqDec("kotlinx.rpc.protobuf.internal", "KTag")
         val ProtobufException = fqDec("kotlinx.rpc.protobuf", "ProtobufException")
         val ProtobufDecodingException = fqDec("kotlinx.rpc.protobuf", "ProtobufDecodingException")

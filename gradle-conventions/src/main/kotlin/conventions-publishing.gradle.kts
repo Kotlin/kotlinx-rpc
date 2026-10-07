@@ -50,6 +50,7 @@ fun PublishingExtension.configurePublication() {
         configureSpaceEapRepository()
         configureSpaceGrpcRepository()
         configureForIdeRepository()
+        configureIntellijDepsRepository()
         configureLocalDevRepository()
         configureNativeDepsBuildRepository()
     }
@@ -159,6 +160,16 @@ fun RepositoryHandler.configureForIdeRepository() {
         password = "SPACE_PASSWORD"
         name = "forIde"
         url = "https://packages.jetbrains.team/maven/p/krpc/for-ide"
+    }
+}
+
+
+fun RepositoryHandler.configureIntellijDepsRepository() {
+    configureRepository(project) {
+        username = "SPACE_USERNAME"
+        password = "SPACE_PASSWORD"
+        name = "intellijDeps"
+        url = "https://packages.jetbrains.team/maven/p/ij/intellij-dependencies"
     }
 }
 

@@ -1,5 +1,5 @@
 FILE: rpcService.kt
-    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
     @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
         public abstract fun hello(): R|kotlin/Unit|
 

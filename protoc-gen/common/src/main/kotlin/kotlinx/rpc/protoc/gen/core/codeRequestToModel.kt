@@ -17,15 +17,16 @@ import kotlinx.rpc.protoc.gen.core.model.MethodDeclaration
 import kotlinx.rpc.protoc.gen.core.model.Model
 import kotlinx.rpc.protoc.gen.core.model.OneOfDeclaration
 import kotlinx.rpc.protoc.gen.core.model.ServiceDeclaration
-import kotlinx.rpc.protoc.gen.core.model.nested
+import kotlinx.rpc.protoc.gen.core.model.fullNestedNameAsList
+import kotlinx.rpc.protoc.gen.core.model.packageName
 import kotlin.Boolean
-import kotlin.collections.plus
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 private val nameCache = mutableMapOf<Descriptors.GenericDescriptor, FqName>()
 private val modelCache = mutableMapOf<Descriptors.GenericDescriptor, Any>()
 private val enumPrefixCache = mutableMapOf<Descriptors.EnumDescriptor, String?>()
+private var camelCaseNames: Boolean = true
 
 /**
  * Converts a [CodeGeneratorRequest] into the protoc plugin [Model] of the protobuf.
@@ -34,10 +35,17 @@ private val enumPrefixCache = mutableMapOf<Descriptors.EnumDescriptor, String?>(
  *         the converted protobuf files.
  */
 fun CodeGeneratorRequest.toModel(config: Config): Model {
+    camelCaseNames = config.camelCaseNames
+
+    nameCache.clear()
+    modelCache.clear()
+
     val protoFileMap = protoFileList.associateBy { it.name }
     val fileDescriptors = mutableMapOf<String, Descriptors.FileDescriptor>()
 
-    val files = fileToGenerateList.map { protoFileMap[it]!! }
+    val files = fileToGenerateList
+        .filter { !config.ignoreFiles.contains(it) }
+        .map { protoFileMap[it]!! }
         .map { protoFile -> protoFile.toDescriptor(protoFileMap, fileDescriptors) }
 
     // Build a lookup from proto fully-qualified names to Kotlin FqNames.
@@ -76,6 +84,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.RpcClasses.WireDecoder,
         FqName.RpcClasses.MsgFieldDelegate,
         FqName.RpcClasses.GrpcMarshaller,
+        FqName.RpcClasses.ProtoGrpcMarshaller,
         FqName.RpcClasses.KTag,
         FqName.RpcClasses.ProtobufException,
         FqName.RpcClasses.ProtobufDecodingException,
@@ -95,6 +104,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.Annotations.Grpc,
         FqName.Annotations.GrpcMethod,
         FqName.Annotations.GeneratedProtoMessage,
+        FqName.Annotations.GeneratedProtoOneOfs,
 
         FqName.KotlinLibs.Flow,
         FqName.KotlinLibs.Buffer,
@@ -223,25 +233,36 @@ fun Descriptors.GenericDescriptor.fqName(): FqName {
         return nameCache[this]!!
     }
 
-    val nameCapital = name.simpleProtoNameToKotlin(firstLetterUpper = true)
-    val nameLower = name.simpleProtoNameToKotlin()
+    val preserveName = KotlinKeywords.escapeIfKeyword(name)
+    val upperName = if (camelCaseNames) name.simpleProtoNameToKotlin(CamelCaseFormat.UPPER_CAMEL) else preserveName
+    val lowerName = if (camelCaseNames) name.simpleProtoNameToKotlin(CamelCaseFormat.LOWER_CAMEL) else preserveName
 
     val fqName = when (this) {
         is Descriptors.FileDescriptor -> FqName.Package.fromString(kotlinPackage())
-        is Descriptors.Descriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        is Descriptors.Descriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.FieldDescriptor -> {
-            val usedName = if (realContainingOneof != null) nameCapital else nameLower
-            FqName.Declaration(usedName, containingType?.fqName() ?: file.fqName())
+            FqName.Declaration(lowerName, containingType?.fqName() ?: file.fqName())
         }
 
-        is Descriptors.OneofDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
-        is Descriptors.EnumDescriptor -> FqName.Declaration(nameCapital, containingType?.fqName() ?: file.fqName())
+        // the oneof is represented by its top-level `<Message><OneOf>Case` enum class,
+        // with the (possibly nested) containing message names flattened: `OuterInnerKindCase`
+        is Descriptors.OneofDescriptor -> {
+            val container = containingType.fqName() as FqName.Declaration
+            val flattenedContainer = container.fullNestedNameAsList().joinToString("")
+            val caseName = if (camelCaseNames) {
+                name.simpleProtoNameToKotlinRaw(CamelCaseFormat.UPPER_CAMEL)
+            } else {
+                name
+            }
+            FqName.Declaration("$flattenedContainer${caseName}Case", container.packageName())
+        }
+        is Descriptors.EnumDescriptor -> FqName.Declaration(upperName, containingType?.fqName() ?: file.fqName())
         is Descriptors.EnumValueDescriptor -> {
             val strippedName = type.enumValuePrefix()?.let { prefix -> name.removePrefix(prefix) } ?: name
             FqName.Declaration(KotlinKeywords.escapeIfKeyword(strippedName), type.fqName())
         }
-        is Descriptors.ServiceDescriptor -> FqName.Declaration(nameCapital, file.fqName())
-        is Descriptors.MethodDescriptor -> FqName.Declaration(nameLower, service?.fqName() ?: file.fqName())
+        is Descriptors.ServiceDescriptor -> FqName.Declaration(upperName, file.fqName())
+        is Descriptors.MethodDescriptor -> FqName.Declaration(lowerName, service?.fqName() ?: file.fqName())
         else -> error("Unknown generic descriptor: $this")
     }
 
@@ -302,39 +323,39 @@ private fun Descriptors.FileDescriptor.toModel(
 private fun Descriptors.Descriptor.toModel(comments: Comments?, nameTable: FqNameTable): MessageDeclaration = cached {
     ensureCommentsPresent(fqName(), comments)
 
+    // Presence indices are allocated in declaration order.
+    // The members of one oneof get consecutive indices (in the oneof's declaration order),
+    // so that setting a member can clear all sibling bits with a single range operation.
     var currPresenceIdx = 0
-    var regularFields = fields
-        // only fields that are not part of a oneOf declaration
-        .filter { field -> field.realContainingOneof == null }
-        .map {
-            val presenceIdx = if (it.hasPresence()) currPresenceIdx++ else null
-            it.toModel(comments + Paths.messageFieldCommentPath + it.index, nameTable, presenceIdx = presenceIdx)
-        }
+    val presenceIndices = mutableMapOf<Descriptors.FieldDescriptor, Int>()
+    fields.forEach { field ->
+        val oneOf = field.realContainingOneof
+        when {
+            oneOf != null -> {
+                if (oneOf.fields.first() !in presenceIndices) {
+                    oneOf.fields.forEach { member -> presenceIndices[member] = currPresenceIdx++ }
+                }
+            }
 
+            field.hasPresence() -> presenceIndices[field] = currPresenceIdx++
+        }
+    }
+
+    // all fields in declaration order, oneof members included (they are flat member properties)
+    val allFields = fields.map {
+        it.toModel(comments + Paths.messageFieldCommentPath + it.index, nameTable, presenceIdx = presenceIndices[it])
+    }
+
+    // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
+    // the members are resolved through the model cache, so they are the same objects as in [allFields].
     val oneOfs = oneofs
         .filter { it.fields[0].realContainingOneof != null }
         .map { it.toModel(comments, nameTable) }
 
-    regularFields = regularFields + oneOfs.map {
-        val escapedName = KotlinKeywords.escapeIfKeyword(it.name.simpleName.decapitalize())
-        val rawName = it.dec.name.simpleProtoNameToKotlinRaw()
-        FieldDeclaration(
-            name = escapedName,
-            rawName = rawName,
-            type = FieldType.OneOf(it),
-            doc = it.doc,
-            dec = it.variants.first().dec,
-            deprecated = options.deprecated,
-            containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
-            extensionDescriptorName = null,
-        )
-    }
-
     MessageDeclaration(
         name = fqName(),
         presenceMaskSize = currPresenceIdx,
-        actualFields = regularFields,
-        // get all oneof declarations that are not created from an optional in proto3 https://github.com/googleapis/api-linter/issues/1323
+        actualFields = allFields,
         oneOfDeclarations = oneOfs,
         enumDeclarations = enumTypes.map { it.toModel(comments + Paths.messageEnumCommentPath + it.index, nameTable) },
         nestedDeclarations = nestedTypes.map {
@@ -396,10 +417,10 @@ private fun Descriptors.FieldDescriptor.toModel(
     presenceIdx: Int? = null,
 ): FieldDeclaration =
     cached {
-        val rawName = if (realContainingOneof != null) {
-            name.simpleProtoNameToKotlinRaw(firstLetterUpper = true)
+        val rawName = if (camelCaseNames) {
+            name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL)
         } else {
-            name.simpleProtoNameToKotlinRaw()
+            name
         }
 
         FieldDeclaration(
@@ -412,6 +433,7 @@ private fun Descriptors.FieldDescriptor.toModel(
             deprecated = options.deprecated,
             containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
             extensionDescriptorName = extensionDescriptorName(),
+            containingOneOf = lazy { realContainingOneof?.let { modelCache[it] as OneOfDeclaration } },
         ).apply {
             extensionDescriptorName?.let { nameTable.register(it) }
         }
@@ -421,15 +443,19 @@ private fun Descriptors.OneofDescriptor.toModel(
     parentComments: Comments,
     nameTable: FqNameTable,
 ): OneOfDeclaration = cached {
+    val rawName = if (camelCaseNames) name.simpleProtoNameToKotlinRaw(CamelCaseFormat.LOWER_CAMEL) else name
+
     OneOfDeclaration(
-        name = fqName(),
+        name = KotlinKeywords.escapeIfKeyword(rawName),
+        rawName = rawName,
+        caseTypeName = fqName() as FqName.Declaration,
+        // members must already be in the model cache (with their presence index), see Descriptor.toModel
         variants = fields.map { it.toModel(parentComments + Paths.messageFieldCommentPath + it.index, nameTable) },
         doc = (parentComments + Paths.messageOneOfCommentPath + index).get(),
         dec = this,
+        containingType = lazy { modelCache[containingType]!! as MessageDeclaration },
     ).also { declaration ->
-        declaration.variants.forEach { variant ->
-            nameTable.register { declaration.name.nested(variant.name) }
-        }
+        nameTable.register { declaration.caseTypeName }
     }
 }
 
@@ -502,7 +528,7 @@ private fun Descriptors.ServiceDescriptor.toModel(comments: Comments, nameTable:
 private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: FqNameTable): MethodDeclaration =
     cached {
         MethodDeclaration(
-            name = name.simpleProtoNameToKotlin(),
+            name = fqName().simpleName,
             inputType = lazy { inputType.toModel(null, nameTable) },
             outputType = lazy { outputType.toModel(null, nameTable) },
             dec = this,
@@ -514,6 +540,7 @@ private fun Descriptors.MethodDescriptor.toModel(comments: Comments, nameTable: 
 //// Type Conversion Extension ////
 
 private fun Descriptors.FieldDescriptor.modelType(nameTable: FqNameTable): FieldType {
+    @Suppress("WHEN_SUBJECT_CAN_BE_NULL_IN_JAVA") // can't
     val baseType = when (type) {
         Descriptors.FieldDescriptor.Type.DOUBLE -> FieldType.IntegralType.DOUBLE
         Descriptors.FieldDescriptor.Type.FLOAT -> FieldType.IntegralType.FLOAT
@@ -571,7 +598,7 @@ private fun Descriptors.FileDescriptor.kotlinPackage(): String {
 }
 
 private fun Descriptors.FileDescriptor.protoFileNameToKotlinName(): String {
-    return name.removeSuffix(".proto").fullProtoNameToKotlin(firstLetterUpper = true)
+    return name.removeSuffix(".proto").fullProtoNameToKotlin(CamelCaseFormat.UPPER_CAMEL)
 }
 
 private fun Descriptors.FileDescriptor.internalExtensionDescriptorObjectName(): FqName.Declaration {
@@ -594,34 +621,45 @@ private fun Descriptors.FieldDescriptor.extensionDescriptorName(): FqName.Declar
     return FqName.Declaration(fqName().simpleName, parent)
 }
 
-private fun String.fullProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
+private enum class CamelCaseFormat {
+    UPPER_CAMEL,
+    LOWER_CAMEL,
+}
+
+private fun String.fullProtoNameToKotlin(camelCaseFormat: CamelCaseFormat): String {
     val lastDelimiterIndex = indexOfLast { it == '.' || it == '/' }
-    return if (lastDelimiterIndex != -1) {
-        val name = substring(lastDelimiterIndex + 1)
-        name.simpleProtoNameToKotlin(firstLetterUpper = true)
-    } else {
-        simpleProtoNameToKotlin(firstLetterUpper)
-    }
+    val protoName = if (lastDelimiterIndex != -1) substring(lastDelimiterIndex + 1) else this
+    return protoName.simpleProtoNameToKotlin(camelCaseFormat)
 }
 
-private val snakeRegExp = "(_[a-z]|-[a-z])".toRegex()
+private fun String.snakeToCamelCase(camelCaseFormat: CamelCaseFormat): String {
+    val leadingUnderscores = takeWhile { it == '_' }
+    val trailingUnderscores = takeLastWhile { it == '_' }
+    val name = trim('_')
+    val hasSeparators = name.any { it == '_' || it == '-' }
+    val words = name.split('_', '-').filter { it.isNotEmpty() }
+    if (words.isEmpty()) return this
 
-private fun String.snakeToCamelCase(): String {
-    return replace(snakeRegExp) { it.value.last().uppercase() }
-}
-
-private fun String.simpleProtoNameToKotlinRaw(firstLetterUpper: Boolean = false): String {
-    return snakeToCamelCase().run {
-        if (firstLetterUpper) {
-            replaceFirstChar { it.uppercase() }
-        } else {
-            this
+    val camelCasedName = words.mapIndexed { index, word ->
+        val format = if (index == 0) camelCaseFormat else CamelCaseFormat.UPPER_CAMEL
+        val normalizedWord = if (index == 0 && hasSeparators) word.lowercase() else word
+        normalizedWord.replaceFirstChar { firstChar ->
+            when (format) {
+                CamelCaseFormat.UPPER_CAMEL -> firstChar.uppercase()
+                CamelCaseFormat.LOWER_CAMEL -> firstChar.lowercase()
+            }
         }
-    }
+    }.joinToString(separator = "")
+
+    return leadingUnderscores + camelCasedName + trailingUnderscores
 }
 
-private fun String.simpleProtoNameToKotlin(firstLetterUpper: Boolean = false): String {
-    return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(firstLetterUpper))
+private fun String.simpleProtoNameToKotlinRaw(camelCaseFormat: CamelCaseFormat): String {
+    return snakeToCamelCase(camelCaseFormat)
+}
+
+private fun String.simpleProtoNameToKotlin(camelCaseFormat: CamelCaseFormat): String {
+    return KotlinKeywords.escapeIfKeyword(simpleProtoNameToKotlinRaw(camelCaseFormat))
 }
 
 private val camelToSnakeRegex1 = "([a-z0-9])([A-Z])".toRegex()

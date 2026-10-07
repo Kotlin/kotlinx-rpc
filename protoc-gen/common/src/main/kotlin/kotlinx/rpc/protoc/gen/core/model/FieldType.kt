@@ -48,11 +48,6 @@ sealed interface FieldType {
         override val wireType: WireType by lazy { if (dec.value.isGroup) WireType.START_GROUP else WireType.LENGTH_DELIMITED }
     }
 
-    data class OneOf(val dec: OneOfDeclaration) : FieldType {
-        override val defaultValue: ScopedFormattedString = "null".scoped()
-        override val wireType: WireType = WireType.LENGTH_DELIMITED
-    }
-
     enum class IntegralType(
         val fqName: FqName,
         override val defaultValue: ScopedFormattedString,
@@ -85,6 +80,32 @@ sealed interface FieldType {
             isPackable = isPackable)
     }
 }
+
+/**
+ * True if a singular field of this type is stored by reference in a oneof slot
+ * (`string`, `bytes`, messages and groups). Everything else (numbers, bool, enums) is stored
+ * in the numeric slot.
+ */
+val FieldType.isOneOfReferenceType: Boolean
+    get() = this is FieldType.Message ||
+        this == FieldType.IntegralType.STRING ||
+        this == FieldType.IntegralType.BYTES
+
+/**
+ * True if a numeric oneof member of this type needs a 64-bit slot.
+ */
+val FieldType.isOneOf64BitType: Boolean
+    get() = when (this) {
+        FieldType.IntegralType.INT64,
+        FieldType.IntegralType.UINT64,
+        FieldType.IntegralType.SINT64,
+        FieldType.IntegralType.FIXED64,
+        FieldType.IntegralType.SFIXED64,
+        FieldType.IntegralType.DOUBLE,
+            -> true
+
+        else -> false
+    }
 
 fun FieldType.scalarDefaultSuffix(): String = when (this) {
     FieldType.IntegralType.BOOL -> ""

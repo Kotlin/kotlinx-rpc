@@ -124,7 +124,7 @@ private fun ChatScreen(service: MessageService, httpClient: HttpClient) {
         scope.launch {
             isSending = true
             try {
-                val result = service.SendMessage(
+                val result = service.sendMessage(
                     SendMessageRequest {
                         user = currentUser
                         text = messageText
@@ -178,7 +178,7 @@ private fun ChatScreen(service: MessageService, httpClient: HttpClient) {
 
         val req = ReceiveMessagesRequest { user = currentUser }
         try {
-            service.ReceiveMessages(req)
+            service.receiveMessages(req)
                 .retryWhen { cause, attempt ->
                     if (cause is CancellationException) return@retryWhen false
 

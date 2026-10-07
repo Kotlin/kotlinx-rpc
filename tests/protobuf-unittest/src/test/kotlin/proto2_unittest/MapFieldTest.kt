@@ -49,6 +49,8 @@
 
 package proto2_unittest
 
+import kotlinx.rpc.grpc.marshaller.encodeToBuffer
+import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -87,8 +89,8 @@ class MapFieldTest {
             mapInt32Enum = mapOf(1 to MapEnum.FOO, 2 to MapEnum.BAR)
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(msg.mapInt32Int32, decoded.mapInt32Int32)
         assertEquals(msg.mapInt64Int64, decoded.mapInt64Int64)
@@ -119,8 +121,8 @@ class MapFieldTest {
             mapStringForeignMessage = mapOf("first" to nested1, "second" to nested2)
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(2, decoded.mapInt32ForeignMessage.size)
         assertEquals(42, decoded.mapInt32ForeignMessage[1]?.c)
@@ -141,8 +143,8 @@ class MapFieldTest {
             mapFixed64Fixed64 = mapOf(3uL to 4uL)
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(msg.mapUint32Uint32, decoded.mapUint32Uint32)
         assertEquals(msg.mapUint64Uint64, decoded.mapUint64Uint64)
@@ -161,8 +163,8 @@ class MapFieldTest {
             mapSfixed64Sfixed64 = mapOf(1L to -1L)
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(msg.mapSint32Sint32, decoded.mapSint32Sint32)
         assertEquals(msg.mapSint64Sint64, decoded.mapSint64Sint64)
@@ -180,8 +182,8 @@ class MapFieldTest {
             map2 = mapOf(3 to 30, 4 to 40)
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(mapOf(1 to 10, 2 to 20), decoded.map1)
         assertEquals(mapOf(3 to 30, 4 to 40), decoded.map2)
@@ -226,8 +228,8 @@ class MapFieldTest {
             testMap = inner
         }
 
-        val encoded = marshaller.encode(msg)
-        val decoded = marshaller.decode(encoded)
+        val encoded = marshaller.encodeToBuffer(msg)
+        val decoded = marshaller.decodeFromSource(encoded)
 
         assertEquals(mapOf(1 to 2), decoded.testMap.mapInt32Int32)
         assertEquals(mapOf("x" to "y"), decoded.testMap.mapStringString)

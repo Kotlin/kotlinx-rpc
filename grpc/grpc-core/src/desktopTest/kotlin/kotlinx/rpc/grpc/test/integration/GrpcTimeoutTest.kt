@@ -38,7 +38,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
             ) {
                 // Server will delay for 1 second, but timeout is 0.5 seconds
                 val request = EchoRequest { message = "Echo"; timeout = 1000u }
-                it.withService<EchoService>().UnaryEcho(request)
+                it.withService<EchoService>().unaryEcho(request)
             }
         }
         assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
@@ -54,7 +54,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
         ) {
             // Server will delay for 500ms, timeout is 2 seconds
             val request = EchoRequest { message = "Success"; timeout = 500u }
-            val response = it.withService<EchoService>().UnaryEcho(request)
+            val response = it.withService<EchoService>().unaryEcho(request)
             assertEquals("Success", response.message)
         }
     }
@@ -69,7 +69,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
             }
         ) {
             val request = EchoRequest { message = "Default timeout"; timeout = 100u }
-            val response = it.withService<EchoService>().UnaryEcho(request)
+            val response = it.withService<EchoService>().unaryEcho(request)
             assertEquals("Default timeout", response.message)
         }
     }
@@ -85,7 +85,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
             ) {
                 // Server delays 5s, but 1ms timeout fires well before that
                 val request = EchoRequest { message = "Echo"; timeout = 5000u }
-                it.withService<EchoService>().UnaryEcho(request)
+                it.withService<EchoService>().unaryEcho(request)
             }
         }
         assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, exc.getStatus().statusCode)
