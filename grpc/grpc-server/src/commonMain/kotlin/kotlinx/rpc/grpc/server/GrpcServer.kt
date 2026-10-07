@@ -283,6 +283,13 @@ public class GrpcServerConfiguration internal constructor() {
      * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
      * milliseconds. [Duration.INFINITE] is also accepted for either duration.
      *
+     * The server sends keepalive pings on all connections, including those without active calls.
+     *
+     * Client keepalive pings are accepted at most once every 5 minutes on connections with active calls.
+     * On connections without active calls, the limit is once every 2 hours on the JVM and once every
+     * 5 minutes on Kotlin/Native. Clients that repeatedly ping more often are disconnected
+     * with `too_many_pings`.
+     *
      * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
      * provider does.
      */

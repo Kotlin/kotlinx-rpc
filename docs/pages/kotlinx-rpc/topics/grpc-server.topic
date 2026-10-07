@@ -66,10 +66,15 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures server-side keep-alive pings to detect broken connections.
+                Pings are sent on all connections, including those without active calls.
                 Defaults to a two-hour interval and a 20-second timeout.
                 Set <code>time</code> to <code>Duration.INFINITE</code> to disable pings, or
                 <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response indefinitely.
                 Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
+                The server accepts client keep-alive pings at most once every 5 minutes on connections
+                with active calls. On connections without active calls, the limit is once every 2 hours
+                on the JVM and once every 5 minutes on Kotlin/Native.
+                Clients that repeatedly ping more often are disconnected with <code>too_many_pings</code>.
             </def>
             <def title="maxConnectionIdle">
                 The maximum time a connection may have no active RPCs before it is gracefully closed.

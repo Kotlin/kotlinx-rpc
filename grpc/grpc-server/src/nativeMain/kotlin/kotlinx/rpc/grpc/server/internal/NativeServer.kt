@@ -22,6 +22,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
 import kotlinx.rpc.grpc.internal.GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIMEOUT_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS
@@ -404,6 +405,10 @@ public fun buildServerChannelArgs(
     add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, metadataSize))
     keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
     keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
+    // Without this, C-core only sends keepalive pings on connections with active calls, while grpc-java
+    // also pings idle ones. The same arg makes the server accept client pings on idle connections every
+    // 5 minutes instead of every 2 hours; C-core offers no way to enable one without the other.
+    add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1))
     maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }
     maxConnectionAge?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, it.toChannelArgMilliseconds())) }
     maxConnectionAgeGrace?.let {

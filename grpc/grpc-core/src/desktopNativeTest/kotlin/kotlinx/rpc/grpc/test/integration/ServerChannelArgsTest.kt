@@ -33,6 +33,7 @@ class ServerChannelArgsTest {
         assertEquals(1024, args["grpc.absolute_max_metadata_size"])
         assertEquals(30_000, args["grpc.keepalive_time_ms"])
         assertEquals(5_000, args["grpc.keepalive_timeout_ms"])
+        assertEquals(1, args["grpc.keepalive_permit_without_calls"])
         assertEquals(300_000, args["grpc.max_connection_idle_ms"])
         assertEquals(600_000, args["grpc.max_connection_age_ms"])
         assertEquals(30_000, args["grpc.max_connection_age_grace_ms"])
@@ -58,7 +59,7 @@ class ServerChannelArgsTest {
     }
 
     @Test
-    fun `unset options apply shared size limits without connection limits`() {
+    fun `unset options apply shared defaults without connection limits`() {
         val args = buildServerChannelArgs(
             maxInboundMessageSize = null,
             maxInboundMetadataSize = null,
@@ -73,6 +74,7 @@ class ServerChannelArgsTest {
             "grpc.max_receive_message_length" to 4 * 1024 * 1024,
             "grpc.max_metadata_size" to 8 * 1024,
             "grpc.absolute_max_metadata_size" to 8 * 1024,
+            "grpc.keepalive_permit_without_calls" to 1,
         ), args)
     }
 
