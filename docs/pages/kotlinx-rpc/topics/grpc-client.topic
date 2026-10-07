@@ -53,9 +53,61 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures keep-alive pings to detect broken connections.
-                Disabled by default.
+                Pings are disabled by default (<code>time = Duration.INFINITE</code>),
+                with a 20-second response timeout and <code>withoutCalls = false</code>.
+                Set <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response indefinitely.
+                Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
+            </def>
+            <def title="userAgent">
+                An application User-Agent prefix, followed by the gRPC runtime's own token.
+                Defaults to <code>null</code>, which sends only the runtime token.
+            </def>
+            <def title="maxInboundMessageSize">
+                The maximum size, in bytes, of an inbound message.
+                Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
+                Defaults to 4 MiB (4,194,304 bytes).
+            </def>
+            <def title="maxInboundMetadataSize">
+                The maximum size, in bytes, of inbound metadata.
+                Defaults to 8 KiB (8,192 bytes).
+            </def>
+            <def title="idleTimeout">
+                The duration without ongoing RPCs before the client enters idle mode and closes its
+                connections. A new RPC takes the client out of idle mode.
+                <code>Duration.INFINITE</code> disables automatic idle mode.
+                Defaults to 30 minutes.
             </def>
         </deflist>
+        <note>
+            Finite durations must be less than <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
+        </note>
+    </chapter>
+
+    <chapter title="Call options" id="grpc-client-call-options">
+        <p>
+            <code>GrpcCallOptions.waitForReady</code> controls what a call does when the client
+            failed to connect to the server, for example, because the server is unreachable:
+        </p>
+        <list>
+            <li>
+                <code>null</code> (the default) or <code>false</code>: the call fails immediately
+                with <code>UNAVAILABLE</code>.
+            </li>
+            <li>
+                <code>true</code>: the call waits until the connection succeeds or the call's deadline expires.
+            </li>
+        </list>
+        <p>
+            A call started while the client is still connecting always waits for that connection attempt.
+        </p>
+        <p>
+            See <a href="https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md">wait-for-ready semantics</a>
+            for details.
+        </p>
+        <p>
+            <code>GrpcCallOptions.timeout</code> defaults to <code>null</code> (no deadline).
+            Set a timeout when enabling wait-for-ready to bound how long the call may wait.
+        </p>
     </chapter>
 
     <chapter title="Lifecycle" id="grpc-client-lifecycle">
