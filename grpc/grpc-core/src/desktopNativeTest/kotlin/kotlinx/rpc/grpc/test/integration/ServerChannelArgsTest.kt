@@ -4,8 +4,12 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.internal.GrpcArg
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.internal.buildServerChannelArgs
+import kotlinx.rpc.grpc.server.internal.channelArgs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -111,7 +115,21 @@ class ServerChannelArgsTest {
         maxConnectionAge = maxConnectionAge,
         maxConnectionAgeGrace = maxConnectionAgeGrace,
     )
-
-    private fun List<GrpcArg>.toMap(): Map<String, Int> =
-        associate { it.key to (it as GrpcArg.Integer).value }
 }
+
+/**
+ * Creates a [GrpcServer] with [configure] and returns the channel args it passed to C-core.
+ */
+internal fun createdServerChannelArgs(configure: GrpcServerConfiguration.() -> Unit): Map<String, Int> =
+    runBlocking {
+        val server = GrpcServer(0, configure = configure)
+        try {
+            server.channelArgs.toMap()
+        } finally {
+            server.shutdownNow()
+            server.awaitTermination(30.seconds)
+        }
+    }
+
+private fun List<GrpcArg>.toMap(): Map<String, Int> =
+    associate { it.key to (it as GrpcArg.Integer).value }

@@ -37,6 +37,7 @@ import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
 import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
@@ -84,17 +85,18 @@ internal class NativeServer(
 
     private val cq = CompletionQueue()
 
+    val channelArgs: List<GrpcArg> = buildServerChannelArgs(
+        maxInboundMessageSize = maxInboundMessageSize,
+        maxInboundMetadataSize = maxInboundMetadataSize,
+        keepAliveTime = keepAlive?.time,
+        keepAliveTimeout = keepAlive?.timeout,
+        maxConnectionIdle = maxConnectionIdle,
+        maxConnectionAge = maxConnectionAge,
+        maxConnectionAgeGrace = maxConnectionAgeGrace,
+    )
+
     val raw: CPointer<grpc_server> = memScoped {
-        val args = buildServerChannelArgs(
-            maxInboundMessageSize = maxInboundMessageSize,
-            maxInboundMetadataSize = maxInboundMetadataSize,
-            keepAliveTime = keepAlive?.time,
-            keepAliveTimeout = keepAlive?.timeout,
-            maxConnectionIdle = maxConnectionIdle,
-            maxConnectionAge = maxConnectionAge,
-            maxConnectionAgeGrace = maxConnectionAgeGrace,
-        )
-        val rawArgs = args.takeIf { it.isNotEmpty() }?.toRaw(this)
+        val rawArgs = channelArgs.takeIf { it.isNotEmpty() }?.toRaw(this)
         grpc_server_create(rawArgs?.ptr, null)
     } ?: error("Failed to create server")
 
@@ -381,6 +383,19 @@ internal class NativeServer(
     }
 
 }
+
+/**
+ * The C-core channel args this server was created with.
+ * Exposed for tests to verify that the configuration reaches the native server.
+ */
+@InternalRpcApi
+public val GrpcServer.channelArgs: List<GrpcArg>
+    get() {
+        check(this is GrpcServerImpl) { internalError("Expected GrpcServerImpl") }
+        val server = platformServer
+        check(server is NativeServer) { internalError("Expected NativeServer") }
+        return server.channelArgs
+    }
 
 /**
  * Maps the server configuration options to C-core channel args.
