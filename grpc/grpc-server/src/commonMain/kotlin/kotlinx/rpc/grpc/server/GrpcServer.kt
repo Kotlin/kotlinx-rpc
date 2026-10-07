@@ -279,8 +279,9 @@ public class GrpcServerConfiguration internal constructor() {
      *
      * By default, keepalive uses a two-hour interval and a 20-second timeout.
      * Calling this function overrides these settings as specified in [configure].
-     * Both durations must be positive and, unless [Duration.INFINITE] (which disables
-     * keepalive pings), less than `Int.MAX_VALUE` milliseconds.
+     * Finite keepalive intervals must be at least 10 seconds, and finite response timeouts
+     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
+     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
      *
      * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
      * provider does.
@@ -293,17 +294,19 @@ public class GrpcServerConfiguration internal constructor() {
      * Server-side keepalive settings.
      *
      * @property time The time without read activity before a keepalive ping is sent. Defaults to two hours.
+     * Finite values must be at least 10 seconds.
      * @property timeout The time to wait for read activity after sending a keepalive ping. Defaults to 20 seconds.
+     * Finite values must be at least 10 milliseconds.
      */
     public class KeepAlive internal constructor() {
         public var time: Duration = 2.hours
             set(value) {
-                value.validateConnectionDuration("keepalive time", 1.milliseconds)
+                value.validateConnectionDuration("keepalive time", 10.seconds)
                 field = value
             }
         public var timeout: Duration = 20.seconds
             set(value) {
-                value.validateConnectionDuration("keepalive timeout", 1.milliseconds)
+                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
                 field = value
             }
     }

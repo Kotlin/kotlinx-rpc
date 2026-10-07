@@ -55,6 +55,8 @@
                 Configures keep-alive pings to detect broken connections.
                 Pings are disabled by default (<code>time = Duration.INFINITE</code>),
                 with a 20-second response timeout and <code>withoutCalls = false</code>.
+                Finite intervals must be at least 10 seconds, and finite response timeouts
+                must be at least 10 milliseconds.
             </def>
             <def title="userAgent">
                 An application User-Agent prefix, followed by the gRPC runtime's own token.

@@ -387,8 +387,9 @@ public class GrpcClientConfiguration internal constructor() {
      * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
      *   RPCs on the connection.
      *
-     * Both durations must be positive and, unless [Duration.INFINITE] (which disables
-     * keep-alive pings), less than `Int.MAX_VALUE` milliseconds.
+     * Finite keep-alive intervals must be at least 10 seconds, and finite response timeouts
+     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
+     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
      *
      * @see KeepAlive
      */
@@ -409,10 +410,12 @@ public class GrpcClientConfiguration internal constructor() {
      * @property time Specifies the maximum amount of time the channel can remain idle before a
      * keep-alive ping is sent to the server to check the connection state.
      * The default value is `Duration.INFINITE`, which disables keep-alive pings when idle.
+     * Finite values must be at least 10 seconds.
      *
      * @property timeout Sets the amount of time to wait for a keep-alive ping response.
      * If the server does not respond within this timeout, the connection will be considered broken.
      * The default value is 20 seconds.
+     * Finite values must be at least 10 milliseconds.
      *
      * @property withoutCalls Defines whether keep-alive pings will be sent even when there
      * are no active RPCs on the connection. If set to `true`, pings will be sent regardless
@@ -422,12 +425,12 @@ public class GrpcClientConfiguration internal constructor() {
     public class KeepAlive internal constructor() {
         public var time: Duration = Duration.INFINITE
             set(value) {
-                value.validateConnectionDuration("keepalive time", 1.milliseconds)
+                value.validateConnectionDuration("keepalive time", 10.seconds)
                 field = value
             }
         public var timeout: Duration = 20.seconds
             set(value) {
-                value.validateConnectionDuration("keepalive timeout", 1.milliseconds)
+                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
                 field = value
             }
         public var withoutCalls: Boolean = false
