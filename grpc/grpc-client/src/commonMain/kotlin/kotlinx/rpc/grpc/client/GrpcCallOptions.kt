@@ -30,12 +30,20 @@ public class GrpcCallOptions {
     /**
      * Whether the call should wait for a connection to become available instead of failing immediately.
      *
-     * If `null` (the default), the channel's default behavior applies, which a service config delivered
-     * by the name resolver may override per method. If `true`, the call waits for the connection.
-     * If `false`, the call fails immediately when no connection is available, even if a service config
-     * enables waiting for this method.
+     * Controls what a call does when the client failed to connect to the server,
+     * for example, because the server is unreachable:
+     *
+     * - `null` (the default) or `false`: the call fails immediately
+     *   with [kotlinx.rpc.grpc.GrpcStatusCode.UNAVAILABLE].
+     * - `true`: the call waits until the connection succeeds, or fails with
+     *   [kotlinx.rpc.grpc.GrpcStatusCode.DEADLINE_EXCEEDED] once its [timeout] expires.
+     *
+     * A call started while the client is still connecting always waits for that connection attempt.
      *
      * A deadline should generally be configured with [timeout] to prevent the call from waiting indefinitely.
+     *
+     * See [doc/wait-for-ready.md](https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md)
+     * for the full semantics.
      */
     public var waitForReady: Boolean? = null
 

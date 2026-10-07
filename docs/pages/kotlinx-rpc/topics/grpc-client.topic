@@ -94,11 +94,24 @@
 
     <chapter title="Call options" id="grpc-client-call-options">
         <p>
-            The per-call <code>GrpcCallOptions.waitForReady</code> option defaults to <code>null</code>.
-            This uses the channel's default behavior: calls fail when the channel
-            is in transient failure, unless a service configuration delivered by the name resolver
-            enables waiting for that method. Set <code>true</code> to wait for a connection, or
-            <code>false</code> to override a service configuration that enables waiting.
+            <code>GrpcCallOptions.waitForReady</code> controls what a call does when the client
+            failed to connect to the server, for example, because the server is unreachable:
+        </p>
+        <list>
+            <li>
+                <code>null</code> (the default) or <code>false</code>: the call fails immediately
+                with <code>UNAVAILABLE</code>.
+            </li>
+            <li>
+                <code>true</code>: the call waits until the connection succeeds or the call's deadline expires.
+            </li>
+        </list>
+        <p>
+            A call started while the client is still connecting always waits for that connection attempt.
+        </p>
+        <p>
+            See <a href="https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md">wait-for-ready semantics</a>
+            for details.
         </p>
         <p>
             <code>GrpcCallOptions.timeout</code> defaults to <code>null</code> (no deadline).
