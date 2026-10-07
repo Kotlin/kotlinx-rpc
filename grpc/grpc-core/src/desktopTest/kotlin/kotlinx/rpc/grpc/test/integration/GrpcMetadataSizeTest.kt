@@ -45,7 +45,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
         assertMetadataSizeStatus(error)
@@ -60,7 +60,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
         assertMetadataSizeStatus(error)
@@ -76,7 +76,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
 
@@ -88,7 +88,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         runGrpcTest(
             clientConfiguration = { maxInboundMetadataSize = METADATA_SIZE_LIMIT },
         ) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -102,7 +102,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
 
@@ -114,7 +114,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         runGrpcTest(
             serverConfiguration = { maxInboundMetadataSize = METADATA_SIZE_LIMIT },
         ) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 

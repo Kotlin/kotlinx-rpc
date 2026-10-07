@@ -50,7 +50,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
 
         try {
             val error = assertFailsWith<GrpcStatusException> {
-                client.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                client.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
             assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, error.getStatus().statusCode)
         } finally {
@@ -65,7 +65,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
             assertNull(callOptions.waitForReady)
             proceed(it)
         }) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -91,7 +91,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
 
         try {
             val error = assertFailsWith<GrpcStatusException> {
-                client.withService<EchoService>().UnaryEcho(EchoRequest { message = "Echo" })
+                client.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
             assertEquals(GrpcStatusCode.UNAVAILABLE, error.getStatus().statusCode)
         } finally {

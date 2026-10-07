@@ -27,7 +27,7 @@ internal actual fun GrpcTestBase.testConnectionManagement(
             maxConnectionAgeGrace = maxAgeGrace
         }
     ) {
-        val response = it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+        val response = it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
     }
 }

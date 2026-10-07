@@ -32,7 +32,7 @@ class GrpcMessageSizeTest : GrpcTestBase() {
                 serverConfiguration = { maxInboundMessageSize = 8 * 1024 * 1024 },
             ) {
                 // The serialized response includes overhead in addition to this four MiB string.
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
             }
         }
         assertEquals(GrpcStatusCode.RESOURCE_EXHAUSTED, error.getStatus().statusCode)
@@ -44,7 +44,7 @@ class GrpcMessageSizeTest : GrpcTestBase() {
             runGrpcTest(
                 clientConfiguration = { maxInboundMessageSize = 8 * 1024 * 1024 },
             ) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
             }
         }
         assertEquals(GrpcStatusCode.RESOURCE_EXHAUSTED, error.getStatus().statusCode)
@@ -54,7 +54,7 @@ class GrpcMessageSizeTest : GrpcTestBase() {
     fun `client rejects inbound messages larger than configured maximum`() {
         val error = assertFailsWith<GrpcStatusException> {
             runGrpcTest(clientConfiguration = { maxInboundMessageSize = 128 }) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(1024) })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "x".repeat(1024) })
             }
         }
 
@@ -65,7 +65,7 @@ class GrpcMessageSizeTest : GrpcTestBase() {
     fun `server rejects inbound messages larger than configured maximum`() {
         val error = assertFailsWith<GrpcStatusException> {
             runGrpcTest(serverConfiguration = { maxInboundMessageSize = 128 }) {
-                it.withService<EchoService>().UnaryEcho(EchoRequest { message = "x".repeat(1024) })
+                it.withService<EchoService>().unaryEcho(EchoRequest { message = "x".repeat(1024) })
             }
         }
 

@@ -20,7 +20,7 @@ internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) = runTest {
         runGrpcTest(clientConfiguration = {
             if (timeout != null) idleTimeout = timeout
         }) {
-            it.withService<EchoService>().UnaryEcho(EchoRequest { message = "Hello" })
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         }
     }
 
