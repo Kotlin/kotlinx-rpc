@@ -33,12 +33,6 @@ internal class NativeManagedChannelBuilder(
     private val credentials: Lazy<GrpcClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
     fun buildChannel(): NativeManagedChannel {
-        val keepAlive = config?.keepAlive
-        keepAlive?.run {
-            require(time.isPositive()) { "keepalive time must be positive" }
-            require(timeout.isPositive()) { "keepalive timeout must be positive" }
-        }
-
         return NativeManagedChannel(
             target,
             overrideAuthority = config?.overrideAuthority,
