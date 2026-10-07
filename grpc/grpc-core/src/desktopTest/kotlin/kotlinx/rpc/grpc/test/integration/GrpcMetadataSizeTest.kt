@@ -30,10 +30,14 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
     // baseline call headers (< ~1 KiB) < METADATA_SIZE_LIMIT < oversized header < default limit (8 KiB).
     // An oversized header above the default limit would be rejected even if the configuration
     // were silently ignored; one below the limit but above baseline would never be rejected.
+    //
+    // The status code alone doesn't prove why a call failed, so each rejecting test has a counterpart
+    // that sends the same header under a higher limit and must succeed.
     private companion object {
         const val METADATA_SIZE_LIMIT = 2048
         const val OVERSIZED_HEADER_LENGTH = 4096
         const val ABOVE_DEFAULT_HEADER_LENGTH = 12 * 1024
+        const val RAISED_METADATA_SIZE_LIMIT = 16 * 1024
     }
 
     @Test
@@ -52,6 +56,19 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
     }
 
     @Test
+    fun `client accepts inbound metadata above the default limit when the limit is raised`() {
+        runGrpcTest(
+            clientConfiguration = { maxInboundMetadataSize = RAISED_METADATA_SIZE_LIMIT },
+            serverInterceptors = serverInterceptor {
+                responseHeaders.append("large-metadata", "x".repeat(ABOVE_DEFAULT_HEADER_LENGTH))
+                proceed(it)
+            },
+        ) {
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+        }
+    }
+
+    @Test
     fun `server defaults to an eight KiB inbound metadata limit`() {
         val error = assertFailsWith<GrpcStatusException> {
             runGrpcTest(
@@ -64,6 +81,19 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
             }
         }
         assertMetadataSizeStatus(error)
+    }
+
+    @Test
+    fun `server accepts inbound metadata above the default limit when the limit is raised`() {
+        runGrpcTest(
+            serverConfiguration = { maxInboundMetadataSize = RAISED_METADATA_SIZE_LIMIT },
+            clientInterceptors = clientInterceptor {
+                requestHeaders.append("large-metadata", "x".repeat(ABOVE_DEFAULT_HEADER_LENGTH))
+                proceed(it)
+            },
+        ) {
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+        }
     }
 
     @Test
@@ -81,6 +111,18 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         }
 
         assertMetadataSizeStatus(error)
+    }
+
+    @Test
+    fun `client accepts the oversized inbound metadata under the default limit`() {
+        runGrpcTest(
+            serverInterceptors = serverInterceptor {
+                responseHeaders.append("large-metadata", "x".repeat(OVERSIZED_HEADER_LENGTH))
+                proceed(it)
+            },
+        ) {
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+        }
     }
 
     @Test
@@ -107,6 +149,18 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         }
 
         assertMetadataSizeStatus(error)
+    }
+
+    @Test
+    fun `server accepts the oversized inbound metadata under the default limit`() {
+        runGrpcTest(
+            clientInterceptors = clientInterceptor {
+                requestHeaders.append("large-metadata", "x".repeat(OVERSIZED_HEADER_LENGTH))
+                proceed(it)
+            },
+        ) {
+            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+        }
     }
 
     @Test
