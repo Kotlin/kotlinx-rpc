@@ -409,7 +409,7 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * @property time Specifies the maximum amount of time the channel can remain idle before a
      * keep-alive ping is sent to the server to check the connection state.
-     * The default value is `Duration.INFINITE`, which disables keep-alive pings when idle.
+     * The default value is `Duration.INFINITE`, which disables keep-alive pings.
      * Finite values must be at least 10 seconds.
      *
      * @property timeout Sets the amount of time to wait for a keep-alive ping response.

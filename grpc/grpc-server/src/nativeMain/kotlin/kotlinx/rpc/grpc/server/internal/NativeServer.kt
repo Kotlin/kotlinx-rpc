@@ -96,8 +96,7 @@ internal class NativeServer(
     )
 
     val raw: CPointer<grpc_server> = memScoped {
-        val rawArgs = channelArgs.takeIf { it.isNotEmpty() }?.toRaw(this)
-        grpc_server_create(rawArgs?.ptr, null)
+        grpc_server_create(channelArgs.toRaw(this).ptr, null)
     } ?: error("Failed to create server")
 
     // Lock-free state machine guarding the application-owned grpc_server handle against both
