@@ -129,7 +129,6 @@ the server.
 The examples use the kotlinx-rpc client. `control` is the control-plane `GrpcClientControlService`;
 `testService` is the data-plane `TestService`, whose client attaches `kxrpc-test-call-id: <id>` to every
 call (for example with a `GrpcClientInterceptor` that appends it to `requestHeaders`).
-
 Both examples use this streaming request, which asks the server for two responses of 5 and 7 bytes:
 
 ```kotlin
