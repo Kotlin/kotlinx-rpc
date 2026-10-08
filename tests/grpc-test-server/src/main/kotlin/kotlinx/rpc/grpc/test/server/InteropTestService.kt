@@ -23,8 +23,8 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
 /**
- * The official gRPC interop `TestService`, following grpc-java's v1.81.0
- * [TestServiceImpl](https://github.com/grpc/grpc-java/blob/v1.81.0/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceImpl.java).
+ * The official gRPC interop `TestService`, following `TestServiceImpl` from
+ * [grpc-java's v1.81.0 interop tests](https://github.com/grpc/grpc-java/tree/v1.81.0/interop-testing).
  *
  * Streaming responses are sent from [responseExecutor] so that they honour the requested intervals and,
  * for scenarios with response readiness, the client's readiness (see [ResponseReadinessGate]). Request-streaming
