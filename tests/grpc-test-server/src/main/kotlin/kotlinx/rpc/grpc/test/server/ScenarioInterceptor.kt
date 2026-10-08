@@ -140,7 +140,8 @@ internal class ScenarioInterceptor(
         private val lifecycleLock = Any()
 
         /**
-         * Closes the call with the configured status if the scenario terminates [TerminalStage.BEFORE_INITIAL_METADATA].
+         * Closes the call with the configured status if the scenario terminates
+         * [TerminalStage.BEFORE_INITIAL_METADATA].
          *
          * @return `true` when the call was closed and the service must not be started.
          */
@@ -150,7 +151,10 @@ internal class ScenarioInterceptor(
             return true
         }
 
-        /** Adds the configured initial metadata, and closes the call afterward for [TerminalStage.AFTER_INITIAL_METADATA]. */
+        /**
+         * Adds the configured initial metadata, and closes the call afterward for
+         * [TerminalStage.AFTER_INITIAL_METADATA].
+         */
         override fun sendHeaders(headers: Metadata) {
             if (terminated.get()) return
             try {
