@@ -35,7 +35,7 @@ internal val TEST_CALL_ID_METADATA_KEY: Metadata.Key<String> =
     Metadata.Key.of(TEST_CALL_ID_METADATA_KEY_NAME, Metadata.ASCII_STRING_MARSHALLER)
 
 /**
- * Context key exposing the scenario's `call_id` to service implementations, for example to [FlowControlSupport].
+ * Context key exposing the scenario's `call_id` to service implementations, for example to [ResponseReadinessGate].
  * Set only for calls that carry [TEST_CALL_ID_METADATA_KEY].
  */
 internal val TEST_CALL_ID_CONTEXT_KEY: Context.Key<String> = Context.key(TEST_CALL_ID_METADATA_KEY_NAME)
