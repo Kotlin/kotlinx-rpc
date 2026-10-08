@@ -27,7 +27,9 @@ import java.util.concurrent.TimeUnit
  * [TestServiceImpl](https://github.com/grpc/grpc-java/blob/v1.81.0/interop-testing/src/main/java/io/grpc/testing/integration/TestServiceImpl.java).
  *
  * Streaming responses are sent from [responseExecutor] so that they honour the requested intervals and,
- * for scenarios with flow control, the client's readiness (see [FlowControlSupport]).
+ * for scenarios with response readiness, the client's readiness (see [ResponseReadinessGate]). Request-streaming
+ * methods read requests only as the test grants demand, for scenarios with manual inbound demand (see
+ * [enableManualInboundDemandIfConfigured]).
  * `UnimplementedCall` intentionally keeps the generated base implementation, which returns UNIMPLEMENTED.
  */
 internal class InteropTestService(
@@ -78,7 +80,7 @@ internal class InteropTestService(
             return
         }
 
-        ResponseDispatcher(responseObserver, controlsInboundDemand = false)
+        ResponseDispatcher(responseObserver)
             .enqueue(request.toChunks())
             .completeInput()
     }
@@ -86,11 +88,7 @@ internal class InteropTestService(
     override fun streamingInputCall(
         responseObserver: StreamObserver<StreamingInputCallResponse>,
     ): StreamObserver<StreamingInputCallRequest> {
-        FlowControlSupport.create(
-            registry = registry,
-            responseObserver = responseObserver,
-            controlsInboundDemand = true,
-        )
+        enableManualInboundDemandIfConfigured(registry, responseObserver)
         return object : StreamObserver<StreamingInputCallRequest> {
             private var totalPayloadSize: Int = 0
 
@@ -116,7 +114,8 @@ internal class InteropTestService(
     override fun fullDuplexCall(
         responseObserver: StreamObserver<StreamingOutputCallResponse>,
     ): StreamObserver<StreamingOutputCallRequest> {
-        val dispatcher = ResponseDispatcher(responseObserver, controlsInboundDemand = true)
+        enableManualInboundDemandIfConfigured(registry, responseObserver)
+        val dispatcher = ResponseDispatcher(responseObserver)
         return object : StreamObserver<StreamingOutputCallRequest> {
             override fun onNext(request: StreamingOutputCallRequest) {
                 if (request.hasResponseStatus()) {
@@ -146,7 +145,8 @@ internal class InteropTestService(
     override fun halfDuplexCall(
         responseObserver: StreamObserver<StreamingOutputCallResponse>,
     ): StreamObserver<StreamingOutputCallRequest> {
-        val dispatcher = ResponseDispatcher(responseObserver, controlsInboundDemand = true)
+        enableManualInboundDemandIfConfigured(registry, responseObserver)
+        val dispatcher = ResponseDispatcher(responseObserver)
         val chunks = ArrayDeque<ResponseChunk>()
         return object : StreamObserver<StreamingOutputCallRequest> {
             override fun onNext(request: StreamingOutputCallRequest) {
@@ -182,31 +182,31 @@ internal class InteropTestService(
      * follow. The chunks are sent one at a time from the shared [responseExecutor]: a chunk is scheduled only after
      * the previous one was sent, so each interval counts from the previous response and the order is preserved.
      *
-     * With response readiness enabled in the scenario, [flowControl] can hold a response back. Nothing is scheduled
-     * while it does, and [resumeResponses] restarts delivery once the client is ready again. Completion is never held
-     * back, as it adds no response message.
+     * With response readiness enabled in the scenario, [readinessGate] can hold a response back. Nothing is scheduled
+     * while it does, and [resumeResponses] restarts delivery once the client is ready again.
+     *
+     * Ported from the `ResponseDispatcher` of the upstream grpc-java `TestServiceImpl` linked above. The
+     * [readinessGate] integration was added here, as upstream sends responses regardless of readiness.
      *
      * The handlers call in on grpc-java's call executor, while delivery runs on [responseExecutor], so all state is
      * guarded by this dispatcher's monitor.
      *
      * @param responseObserver The observer the responses are sent to.
-     * @param controlsInboundDemand Whether the call streams requests, so that manual inbound demand applies to it.
      */
     private inner class ResponseDispatcher(
         private val responseObserver: StreamObserver<StreamingOutputCallResponse>,
-        controlsInboundDemand: Boolean,
     ) {
         /** Chunks not sent yet, ending with [COMPLETION_CHUNK] once [completeInput] was called. */
         private val chunks = ArrayDeque<ResponseChunk>()
 
-        /** `null` unless the scenario configures flow control that applies to this call. */
-        private val flowControl = FlowControlSupport.create(
+        /** `null` unless the scenario enables response readiness. */
+        private val readinessGate = ResponseReadinessGate.createIfConfigured(
             registry = registry,
             responseObserver = responseObserver,
-            controlsInboundDemand = controlsInboundDemand,
             resumeResponses = ::resumeResponses,
             cancelResponses = ::cancelFromTransport,
         )
+
         /** Whether a delivery is pending on [responseExecutor]. At most one is, which keeps responses in order. */
         private var scheduled: Boolean = false
 
@@ -243,7 +243,7 @@ internal class InteropTestService(
         }
 
         /**
-         * Drops the queued responses after the client cancelled. Called by [flowControl]'s cancel handler; unlike
+         * Drops the queued responses after the client cancelled. Called by [readinessGate]'s cancel handler; unlike
          * [cancel], it tolerates an earlier cancellation.
          */
         @Synchronized
@@ -285,7 +285,7 @@ internal class InteropTestService(
             try {
                 val chunk = chunks.first()
                 // Readiness is checked again, as it may have changed during the chunk's interval.
-                if (chunk !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
+                if (isHeldBack(chunk)) return
                 chunks.removeFirst()
                 if (chunk === COMPLETION_CHUNK) {
                     responseObserver.onCompleted()
@@ -304,12 +304,12 @@ internal class InteropTestService(
 
         /**
          * Schedules delivery of the first queued chunk after its interval. Does nothing while a delivery is pending,
-         * the queue is empty, the service is closed, or [flowControl] holds responses back.
+         * the queue is empty, the service is closed, or [readinessGate] holds responses back.
          * Must be called holding this dispatcher's monitor.
          */
         private fun scheduleNextChunk() {
             if (scheduled || chunks.isEmpty() || responseExecutor.isShutdown) return
-            if (chunks.first() !== COMPLETION_CHUNK && flowControl?.canDeliverResponse() == false) return
+            if (isHeldBack(chunks.first())) return
             scheduled = true
             responseExecutor.schedule(
                 ::dispatch,
@@ -318,7 +318,15 @@ internal class InteropTestService(
             )
         }
 
-        /** Called by [flowControl] once the client is ready again after delivery was held back. */
+        /**
+         * Whether [readinessGate] holds [chunk] back because the client is not ready. Completion is never held back,
+         * as it adds no response message. Must be called holding this dispatcher's monitor.
+         */
+        private fun isHeldBack(chunk: ResponseChunk): Boolean {
+            return chunk !== COMPLETION_CHUNK && readinessGate?.canDeliverResponse() == false
+        }
+
+        /** Called by [readinessGate] once the client is ready again after delivery was held back. */
         @Synchronized
         private fun resumeResponses() {
             scheduleNextChunk()

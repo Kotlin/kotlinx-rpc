@@ -248,7 +248,8 @@ sequenceDiagram
 | `CallScenarioRegistry.kt`        | Scenario state: configuration, trace, barriers, inbound demand, diagnostics.   |
 | `ScenarioInterceptor.kt`         | Applies a scenario to calls carrying `kxrpc-test-call-id` and records their lifecycle. |
 | `InteropTestService.kt`          | The interop `TestService`; paces streaming responses.                         |
-| `FlowControlSupport.kt`          | Manual inbound demand and readiness-aware response delivery.                  |
+| `ManualInboundDemand.kt`         | Manual inbound demand: requests are read only as the test grants demand.      |
+| `ResponseReadinessGate.kt`       | Response readiness: holds responses back while the client is not ready.       |
 | `MalformedResponseTestService.kt`| Raw handlers that send zero or two responses.                                 |
 | `GrpcClientControlService.kt`    | The control-plane RPCs.                                                       |
 | `DisposableEndpointManager.kt`, `ResettingTcpProxy.kt` | Per-scenario listeners whose connections can be reset.  |
