@@ -1,0 +1,349 @@
+// Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+
+syntax = "proto3";
+
+package kxrpc.testing;
+
+option java_multiple_files = true;
+option java_package = "kxrpc.testing";
+
+// Controls deterministic scenarios executed by the gRPC client reference server.
+//
+// Every request carries the call_id of a scenario registered by
+// ConfigureScenario. Requests for an unknown call_id fail with NOT_FOUND.
+service GrpcClientControlService {
+  // Registers a scenario before its data-plane call starts.
+  rpc ConfigureScenario(ConfigureScenarioRequest) returns (ControlAck);
+
+  // Blocks until the requested event occurrence has been recorded, then
+  // returns it. Fails with DEADLINE_EXCEEDED after the server's wait timeout.
+  rpc AwaitEvent(AwaitEventRequest) returns (CallEvent);
+
+  // Releases one configured server-side barrier.
+  rpc ReleaseBarrier(ReleaseBarrierRequest) returns (ControlAck);
+
+  // Adds explicit inbound request-message demand to a manually controlled call.
+  rpc GrantInboundDemand(GrantInboundDemandRequest) returns (ControlAck);
+
+  // Starts an isolated data-plane listener for connection-loss tests.
+  rpc StartDisposableEndpoint(StartDisposableEndpointRequest) returns (DisposableEndpoint);
+
+  // Abruptly terminates the isolated data-plane listener and all of its calls.
+  rpc StopDisposableEndpoint(StopDisposableEndpointRequest) returns (ControlAck);
+
+  // Returns the currently recorded trace in sequence order.
+  rpc GetTrace(GetTraceRequest) returns (CallTrace);
+
+  // Returns lifecycle and barrier state used to detect leaked scenario work.
+  rpc GetScenarioDiagnostics(GetScenarioDiagnosticsRequest) returns (ScenarioDiagnostics);
+
+  // Removes all state associated with a call.
+  rpc DiscardScenario(DiscardScenarioRequest) returns (ControlAck);
+}
+
+// Supplies raw handlers for client-contract cases that a conforming generated
+// service cannot produce, such as invalid unary response cardinality.
+//
+// Every call must carry the "kxrpc-test-call-id" metadata of a scenario that
+// sets malformed_response_cardinality.
+service MalformedResponseService {
+  // Requires exactly one request message.
+  rpc UnaryCall(MalformedResponseRequest) returns (MalformedResponse);
+
+  // Accepts any number of request messages.
+  rpc StreamingInputCall(stream MalformedResponseRequest) returns (MalformedResponse);
+}
+
+// Registers behavior for a later data-plane RPC. This control request stores
+// the scenario.
+message ConfigureScenarioRequest {
+  // Identifies the scenario. The later RPC selects it using ASCII metadata key
+  // "kxrpc-test-call-id".
+  string call_id = 1;
+
+  // Pauses configured lifecycle points until released through the control API.
+  repeated Barrier barriers = 2;
+
+  // Added to the later RPC's initial response headers, before response messages.
+  // Entry order and duplicate keys are significant.
+  repeated MetadataEntry initial_metadata = 3;
+
+  // Added to the later RPC's terminal trailers. Entry order and duplicate keys
+  // are significant.
+  repeated MetadataEntry trailing_metadata = 4;
+
+  // Overrides normal service completion when present.
+  TerminalBehavior terminal_behavior = 5;
+
+  // Applies only to MalformedResponseService raw handlers.
+  MalformedResponseCardinality malformed_response_cardinality = 6;
+
+  // Enables the flow-control behavior exercised by backpressure scenarios.
+  FlowControlBehavior flow_control = 7;
+}
+
+// Opt-in flow-control behavior for a scenario's data-plane calls. Both flags
+// default to grpc-java's normal automatic behavior.
+message FlowControlBehavior {
+  // Disables automatic inbound request-message demand. The server receives
+  // messages only after GrantInboundDemand adds positive demand.
+  bool manual_inbound_demand = 1;
+
+  // Pauses queued response delivery while grpc-java reports that the client is
+  // not ready, and records the blocked/resumed transitions below.
+  bool respect_response_readiness = 2;
+}
+
+// One gRPC metadata entry, as configured for or observed on a data-plane call.
+message MetadataEntry {
+  // Lowercase gRPC metadata key. A "-bin" suffix selects binary metadata;
+  // other keys require an ASCII value.
+  string key = 1;
+
+  // Exact value bytes. bytes preserves duplicate and empty ASCII/binary values.
+  bytes value = 2;
+}
+
+// Final status of a gRPC call.
+message GrpcStatus {
+  // Canonical gRPC status code, from 0 (OK) to 16 (UNAUTHENTICATED).
+  int32 code = 1;
+
+  // Status message sent to the client. Empty when the status has none.
+  string description = 2;
+}
+
+// Overrides normal call termination at stage, after any CLOSE_CALL barrier.
+message TerminalBehavior {
+  // Status sent with the scenario's trailing_metadata.
+  GrpcStatus status = 1;
+
+  // Response-lifecycle point at which the call closes.
+  TerminalStage stage = 2;
+
+  // Positive only for AFTER_RESPONSE_MESSAGES; zero for other stages.
+  uint32 response_message_count = 3;
+}
+
+enum TerminalStage {
+  // Invalid for TerminalBehavior; omit the behavior for normal completion.
+  TERMINAL_STAGE_UNSPECIFIED = 0;
+
+  // Close before the service starts, without headers or responses.
+  BEFORE_INITIAL_METADATA = 1;
+
+  // Send initial metadata, then close before the first response.
+  AFTER_INITIAL_METADATA = 2;
+
+  // Close after exactly response_message_count responses.
+  AFTER_RESPONSE_MESSAGES = 3;
+
+  // Replace normal status after the service finishes its responses.
+  AFTER_SERVICE_COMPLETION = 4;
+}
+
+// Response cardinality produced by MalformedResponseService. Both methods
+// send initial headers and close with OK after the client half-closes.
+enum MalformedResponseCardinality {
+  // Not configured. MalformedResponseService rejects the call with
+  // INVALID_ARGUMENT.
+  MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED = 0;
+
+  // Closes the call without sending a response message.
+  OMIT_RESPONSE = 1;
+
+  // Sends the same response message twice.
+  DUPLICATE_RESPONSE = 2;
+}
+
+message MalformedResponseRequest {
+  // Echoed in MalformedResponse.payload.
+  bytes payload = 1;
+}
+
+message MalformedResponse {
+  // Payload of the last request message received, or empty if there was none.
+  bytes payload = 1;
+}
+
+// A point at which a data-plane call pauses until the barrier is released
+// through ReleaseBarrier. A released barrier stays released, so a call reaching
+// it later continues without pausing.
+message Barrier {
+  BarrierType type = 1;
+
+  // One-based; see BarrierType for what each type counts. SEND_INITIAL_HEADERS
+  // and CLOSE_CALL are only reached at occurrence 1.
+  uint32 occurrence = 2;
+}
+
+enum BarrierType {
+  // Invalid for barriers.
+  BARRIER_TYPE_UNSPECIFIED = 0;
+
+  // Pauses before the server sends initial headers. Not reached when the call
+  // closes without separate headers (trailers-only).
+  SEND_INITIAL_HEADERS = 1;
+
+  // Pauses before the server sends the occurrence-th response message of the
+  // call.
+  SEND_RESPONSE = 2;
+
+  // Pauses before the server closes the call, including closes caused by
+  // TerminalBehavior or by a server-side failure.
+  CLOSE_CALL = 3;
+
+  // Gates delivery of one received request message to the service
+  // implementation. The occurrence matches the REQUEST_MESSAGE_RECEIVED event,
+  // which is recorded before the call pauses.
+  DELIVER_REQUEST_MESSAGE = 4;
+
+  // Gates delivery of the client's half-close to the service implementation.
+  // The occurrence matches the CLIENT_HALF_CLOSED event, which is recorded
+  // before the call pauses.
+  DELIVER_CLIENT_HALF_CLOSE = 5;
+}
+
+message AwaitEventRequest {
+  string call_id = 1;
+
+  // Event type to wait for. Must not be EVENT_TYPE_UNSPECIFIED.
+  EventType event = 2;
+
+  // One-based occurrence of this event type.
+  uint32 occurrence = 3;
+}
+
+// Fails with FAILED_PRECONDITION if the barrier is not configured for the
+// scenario or was already released.
+message ReleaseBarrierRequest {
+  string call_id = 1;
+  BarrierType barrier = 2;
+
+  // One-based occurrence of this barrier type.
+  uint32 occurrence = 3;
+}
+
+message GrantInboundDemandRequest {
+  string call_id = 1;
+
+  // Number of additional request messages to admit. Must be positive.
+  uint32 message_count = 2;
+}
+
+// Fails with FAILED_PRECONDITION if the scenario already has a disposable
+// endpoint.
+message StartDisposableEndpointRequest {
+  string call_id = 1;
+}
+
+message StopDisposableEndpointRequest {
+  string call_id = 1;
+}
+
+// A listener serving only grpc.testing.TestService. It lives until
+// StopDisposableEndpoint or DiscardScenario.
+message DisposableEndpoint {
+  // Ephemeral port on 127.0.0.1.
+  uint32 port = 1;
+}
+
+message GetTraceRequest {
+  string call_id = 1;
+}
+
+message GetScenarioDiagnosticsRequest {
+  string call_id = 1;
+}
+
+message ScenarioDiagnostics {
+  string call_id = 1;
+
+  // Data-plane calls accepted for this scenario which have not closed.
+  uint32 active_call_count = 2;
+
+  // Configured barriers which have not been released.
+  repeated Barrier outstanding_barriers = 3;
+
+  // AwaitEvent calls currently blocked on this scenario.
+  uint32 control_waiter_count = 4;
+}
+
+message DiscardScenarioRequest {
+  string call_id = 1;
+}
+
+// Empty acknowledgement for control calls which return no data.
+message ControlAck {}
+
+// One recorded step of a scenario's data-plane calls.
+message CallEvent {
+  // One-based position of this event in the scenario's trace, counted across
+  // all event types. Consecutive events have consecutive sequence numbers.
+  uint64 sequence = 1;
+
+  EventType type = 2;
+
+  // One-based occurrence of this event type.
+  uint32 occurrence = 3;
+
+  // Exact data-plane payload bytes for request-message events which carry an
+  // official gRPC interop Payload. Empty for other event and message types.
+  bytes request_payload = 4;
+
+  // Exact ordered metadata observed or sent at this event. Used by
+  // CALL_ACCEPTED, INITIAL_HEADERS_SENT, and CALL_CLOSED.
+  repeated MetadataEntry metadata = 5;
+
+  // Terminal status for CALL_CLOSED. Absent for non-terminal events.
+  GrpcStatus status = 6;
+}
+
+// Steps of a data-plane call. Every accepted call ends with exactly one
+// CALL_CLOSED or CLIENT_CANCELLED event.
+enum EventType {
+  // Invalid for AwaitEvent.
+  EVENT_TYPE_UNSPECIFIED = 0;
+
+  // The server accepted a call carrying this scenario's call_id. Carries the
+  // request headers.
+  CALL_ACCEPTED = 1;
+
+  // A request message arrived, before any DELIVER_REQUEST_MESSAGE barrier and
+  // before the service implementation receives it.
+  REQUEST_MESSAGE_RECEIVED = 2;
+
+  // The client half-closed, before any DELIVER_CLIENT_HALF_CLOSE barrier and
+  // before the service implementation observes it.
+  CLIENT_HALF_CLOSED = 3;
+
+  // The server sent initial headers. Carries the headers as sent, including
+  // the scenario's initial_metadata.
+  INITIAL_HEADERS_SENT = 4;
+
+  // The server sent a response message.
+  RESPONSE_MESSAGE_SENT = 5;
+
+  // The server closed the call. Carries the trailers as sent and the status.
+  CALL_CLOSED = 6;
+
+  // The server observed cancellation from the client. This includes explicit
+  // caller cancellation, an elapsed client deadline, and forced channel
+  // shutdown; the client-side result distinguishes those causes.
+  CLIENT_CANCELLED = 7;
+
+  // A queued response could not be sent because grpc-java reported that the
+  // client was not ready. Recorded once for each blocked delivery interval.
+  RESPONSE_DELIVERY_BLOCKED = 8;
+
+  // grpc-java reported ready after RESPONSE_DELIVERY_BLOCKED, allowing queued
+  // response delivery to resume.
+  RESPONSE_DELIVERY_READY = 9;
+}
+
+message CallTrace {
+  string call_id = 1;
+
+  // All events recorded for the scenario so far, in sequence order.
+  repeated CallEvent events = 2;
+}

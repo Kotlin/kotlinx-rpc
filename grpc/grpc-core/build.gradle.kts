@@ -5,7 +5,7 @@
 @file:OptIn(InternalRpcApi::class)
 
 import kotlinx.rpc.internal.InternalRpcApi
-import util.withBackgroundTask
+import util.grpc.withGrpcClientTestServer
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -114,14 +114,6 @@ kotlin {
     }
 }
 
-// run gRPC test server (from `test/grpc-test-server` module) background while tests are running
-tasks.matching { it.name.endsWith("Test") && !it.name.startsWith("clean") }.configureEach {
-    dependsOn(":tests:grpc-test-server:installDist")
-
-    val testServerBuildDir = project(":tests:grpc-test-server").layout.buildDirectory.get().asFile
-    withBackgroundTask {
-        workingDir = testServerBuildDir
-        commandLine("install/grpc-test-server/bin/grpc-test-server")
-        readyString = "[GRPC-TEST-SERVER] Server started"
-    }
+tasks.withType<AbstractTestTask>().configureEach {
+    withGrpcClientTestServer()
 }
