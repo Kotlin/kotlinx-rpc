@@ -1,0 +1,400 @@
+/*
+ * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.rpc.grpc.client
+
+import grpc.testing.Empty
+import grpc.testing.invoke
+import kotlinx.coroutines.flow.Flow
+import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.append
+import kotlinx.rpc.grpc.appendBinary
+import kotlinx.rpc.grpc.client.testing.assertGrpcStatus
+import kotlinx.rpc.grpc.client.testing.grpcClientTest
+import kotlinx.rpc.grpc.client.testing.successfulUnaryEvents
+import kotlinx.rpc.grpc.getAll
+import kotlinx.rpc.grpc.getAllBinary
+import kotlinx.rpc.grpc.keys
+import kotlinx.rpc.grpc.statusCode
+import kotlinx.rpc.grpc.trailers
+import kxrpc.testing.EventType
+import kxrpc.testing.GrpcStatus as ScenarioGrpcStatus
+import kxrpc.testing.MetadataEntry
+import kxrpc.testing.TerminalBehavior
+import kxrpc.testing.TerminalStage
+import kxrpc.testing.invoke
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+
+class GrpcClientMetadataAndStatusTest {
+    @Test
+    fun metadataAndCallbacksPreserveWireSemantics() {
+        val initialBinary = byteArrayOf(0, 1, -1, 42)
+        val trailingBinary = ByteArray(1_024) { index -> index.toByte() }
+        val requestBinary = byteArrayOf(-1, 0, 1, 127)
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = { intercept(metadataInterceptor(callback, requestBinary)) },
+            scenario = {
+                // Make one call exercise duplicate/empty ASCII values, binary values, and a
+                // non-OK close while keeping initial headers and trailers distinguishable.
+                initialMetadata = listOf(
+                    metadataEntry(RESPONSE_ASCII_KEY, "first"),
+                    metadataEntry(RESPONSE_ASCII_KEY, ""),
+                    metadataEntry(RESPONSE_BINARY_KEY, initialBinary),
+                )
+                trailingMetadata = listOf(
+                    metadataEntry(TRAILER_ASCII_KEY, "done"),
+                    metadataEntry(TRAILER_ASCII_KEY, ""),
+                    metadataEntry(TRAILER_BINARY_KEY, trailingBinary),
+                )
+                terminalBehavior = terminalBehavior(
+                    code = GrpcStatusCode.DATA_LOSS,
+                    description = METADATA_FAILURE_DESCRIPTION,
+                    stage = TerminalStage.AFTER_SERVICE_COMPLETION,
+                )
+            },
+        ) {
+            val failure = assertGrpcStatus(GrpcStatusCode.DATA_LOSS, METADATA_FAILURE_DESCRIPTION) {
+                testService.emptyCall(Empty {})
+            }
+
+            // Client callbacks must fire exactly once despite the error.
+            assertEquals(1, callback.headerCount)
+            assertEquals(1, callback.closeCount)
+            assertEquals(GrpcStatusCode.DATA_LOSS, callback.status?.statusCode)
+
+            val headers = assertNotNull(callback.headers)
+            assertEquals(listOf("first", ""), headers.getAll(RESPONSE_ASCII_KEY.uppercase()))
+            assertContentEquals(initialBinary, headers.getAllBinary(RESPONSE_BINARY_KEY).single())
+            assertFalse(headers.keys().any { it.startsWith(':') }, "HTTP/2 pseudo-header escaped into metadata")
+
+            val callbackTrailers = assertNotNull(callback.trailers)
+            assertEquals(listOf("done", ""), callbackTrailers.getAll(TRAILER_ASCII_KEY))
+            assertContentEquals(trailingBinary, callbackTrailers.getAllBinary(TRAILER_BINARY_KEY).single())
+            val exceptionTrailers = assertNotNull(failure.trailers)
+            assertEquals(listOf("done", ""), exceptionTrailers.getAll(TRAILER_ASCII_KEY))
+            assertContentEquals(trailingBinary, exceptionTrailers.getAllBinary(TRAILER_BINARY_KEY).single())
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key.startsWith("x-request-") }
+            // Verify what reached the wire: lowercase keys, preserved duplicates/binary data,
+            // and the documented ASCII replacement of the non-ASCII request value.
+            assertEquals(
+                listOf(
+                    metadataEntry(REQUEST_ASCII_KEY, "alpha"),
+                    metadataEntry(REQUEST_ASCII_KEY, ""),
+                    metadataEntry(REQUEST_REPLACED_ASCII_KEY, "caf?"),
+                    metadataEntry(REQUEST_BINARY_KEY, requestBinary),
+                ),
+                acceptedMetadata,
+            )
+            assertServerTrace(successfulUnaryEvents())
+        }
+    }
+
+    @Test
+    fun largeBinaryMetadataRoundTrip() {
+        val largeBinary = ByteArray(2 * 1024) { index -> (index % 256).toByte() }
+        val responseBinary = ByteArray(2 * 1024) { index -> ((index + 42) % 256).toByte() }
+        val trailerBinary = ByteArray(2 * 1024) { index -> ((index + 100) % 256).toByte() }
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-large-req-bin", largeBinary)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(metadataEntry("x-large-resp-bin", responseBinary))
+                trailingMetadata = listOf(metadataEntry("x-large-trailer-bin", trailerBinary))
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertContentEquals(responseBinary, headers.getAllBinary("x-large-resp-bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertContentEquals(trailerBinary, trailers.getAllBinary("x-large-trailer-bin").single())
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-large-req-bin" }
+            assertEquals(1, acceptedMetadata.size)
+            assertContentEquals(largeBinary, acceptedMetadata.single().value.toByteArray())
+        }
+    }
+
+    @Test
+    fun duplicateBinaryMetadataValues() {
+        val bin1 = byteArrayOf(1, 2, 3)
+        val bin2 = byteArrayOf(4, 5, 6, 7)
+        val bin3 = byteArrayOf(8)
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-multi-bin", bin1)
+                    requestHeaders.appendBinary("x-multi-bin", bin2)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(
+                    metadataEntry("x-resp-multi-bin", bin1),
+                    metadataEntry("x-resp-multi-bin", bin2),
+                    metadataEntry("x-resp-multi-bin", bin3),
+                )
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            val respBins = headers.getAllBinary("x-resp-multi-bin")
+            assertEquals(3, respBins.size)
+            assertContentEquals(bin1, respBins[0])
+            assertContentEquals(bin2, respBins[1])
+            assertContentEquals(bin3, respBins[2])
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-multi-bin" }
+            assertEquals(2, acceptedMetadata.size)
+            assertContentEquals(bin1, acceptedMetadata[0].value.toByteArray())
+            assertContentEquals(bin2, acceptedMetadata[1].value.toByteArray())
+        }
+    }
+
+    @Test
+    fun emptyBinaryMetadata() {
+        val emptyBin = byteArrayOf()
+        val callback = CallbackRecorder()
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.appendBinary("x-empty-bin", emptyBin)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(metadataEntry("x-empty-resp-bin", emptyBin))
+                trailingMetadata = listOf(metadataEntry("x-empty-trailer-bin", emptyBin))
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertContentEquals(emptyBin, headers.getAllBinary("x-empty-resp-bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertContentEquals(emptyBin, trailers.getAllBinary("x-empty-trailer-bin").single())
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+                .filter { it.key == "x-empty-bin" }
+            assertEquals(1, acceptedMetadata.size)
+            assertContentEquals(emptyBin, acceptedMetadata.single().value.toByteArray())
+        }
+    }
+
+    @Test
+    fun caseInsensitiveMetadataLookup() {
+        val callback = CallbackRecorder()
+        val binValue = byteArrayOf(9, 8, 7)
+
+        grpcClientTest(
+            clientConfig = {
+                intercept(recordingInterceptor(callback) {
+                    requestHeaders.append("X-MixedCase-Req", "req-val")
+                    requestHeaders.appendBinary("X-MixedCase-Req-Bin", binValue)
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(
+                    metadataEntry("x-mixedcase-resp", "resp-val"),
+                    metadataEntry("x-mixedcase-resp-bin", binValue),
+                )
+                trailingMetadata = listOf(
+                    metadataEntry("x-mixedcase-trailer", "trailer-val"),
+                )
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            val headers = assertNotNull(callback.headers)
+            assertEquals(listOf("resp-val"), headers.getAll("X-MIXEDCASE-RESP"))
+            assertEquals(listOf("resp-val"), headers.getAll("x-mixedcase-resp"))
+            assertEquals(listOf("resp-val"), headers.getAll("X-MixedCase-Resp"))
+            assertContentEquals(binValue, headers.getAllBinary("X-MIXEDCASE-RESP-BIN").single())
+            assertContentEquals(binValue, headers.getAllBinary("x-mixedcase-resp-bin").single())
+            assertContentEquals(binValue, headers.getAllBinary("X-MixedCase-Resp-Bin").single())
+
+            val trailers = assertNotNull(callback.trailers)
+            assertEquals(listOf("trailer-val"), trailers.getAll("X-MIXEDCASE-TRAILER"))
+            assertEquals(listOf("trailer-val"), trailers.getAll("x-mixedcase-trailer"))
+            assertEquals(listOf("trailer-val"), trailers.getAll("X-MixedCase-Trailer"))
+
+            val acceptedMetadata = serverTrace().events
+                .single { it.type == EventType.CALL_ACCEPTED }
+                .metadata
+            assertEquals(
+                listOf(metadataEntry("x-mixedcase-req", "req-val")),
+                acceptedMetadata.filter { it.key == "x-mixedcase-req" },
+            )
+            val acceptedBin = acceptedMetadata.filter { it.key == "x-mixedcase-req-bin" }
+            assertEquals(1, acceptedBin.size)
+            assertContentEquals(binValue, acceptedBin.single().value.toByteArray())
+        }
+    }
+
+    @Test fun cancelledStatus() = assertTerminalStatus(GrpcStatusCode.CANCELLED)
+    @Test fun unknownStatus() = assertTerminalStatus(GrpcStatusCode.UNKNOWN)
+    @Test fun invalidArgumentStatus() = assertTerminalStatus(GrpcStatusCode.INVALID_ARGUMENT)
+    @Test fun deadlineExceededStatus() = assertTerminalStatus(GrpcStatusCode.DEADLINE_EXCEEDED)
+    @Test fun notFoundStatus() = assertTerminalStatus(GrpcStatusCode.NOT_FOUND)
+    @Test fun alreadyExistsStatus() = assertTerminalStatus(GrpcStatusCode.ALREADY_EXISTS)
+    @Test fun permissionDeniedStatus() = assertTerminalStatus(GrpcStatusCode.PERMISSION_DENIED)
+    @Test fun resourceExhaustedStatus() = assertTerminalStatus(GrpcStatusCode.RESOURCE_EXHAUSTED)
+    @Test fun failedPreconditionStatus() = assertTerminalStatus(GrpcStatusCode.FAILED_PRECONDITION)
+    @Test fun abortedStatus() = assertTerminalStatus(GrpcStatusCode.ABORTED)
+    @Test fun outOfRangeStatus() = assertTerminalStatus(GrpcStatusCode.OUT_OF_RANGE)
+    @Test fun unimplementedStatus() = assertTerminalStatus(GrpcStatusCode.UNIMPLEMENTED)
+    @Test fun internalStatus() = assertTerminalStatus(GrpcStatusCode.INTERNAL)
+    @Test fun unavailableStatus() = assertTerminalStatus(GrpcStatusCode.UNAVAILABLE)
+    @Test fun dataLossStatus() = assertTerminalStatus(GrpcStatusCode.DATA_LOSS)
+    @Test fun unauthenticatedStatus() = assertTerminalStatus(GrpcStatusCode.UNAUTHENTICATED)
+
+    /**
+     * Has the server fail a unary call with [code] before sending headers, as a trailers-only response.
+     * Expects the client to report [code] with the server's description and trailers, and the server to record
+     * only the accept and the close.
+     */
+    private fun assertTerminalStatus(code: GrpcStatusCode) = grpcClientTest(
+        scenario = {
+            // Close before headers so every canonical error code is tested as a trailers-only response.
+            trailingMetadata = listOf(metadataEntry(STATUS_TRAILER_KEY, code.name))
+            terminalBehavior = terminalBehavior(
+                code = code,
+                description = "configured ${code.name}",
+                stage = TerminalStage.BEFORE_INITIAL_METADATA,
+            )
+        },
+    ) {
+        val failure = assertGrpcStatus(code, "configured ${code.name}") {
+            testService.emptyCall(Empty {})
+        }
+        assertEquals(code.name, assertNotNull(failure.trailers).getAll(STATUS_TRAILER_KEY).single())
+        val trace = serverTrace()
+        assertEquals(
+            listOf(EventType.CALL_ACCEPTED, EventType.CALL_CLOSED),
+            trace.events.map { it.type },
+        )
+        val closed = trace.events.last()
+        assertEquals(code.value, closed.status.code)
+        assertEquals("configured ${code.name}", closed.status.description)
+    }
+
+    private companion object {
+        const val REQUEST_ASCII_KEY: String = "x-request-value"
+        const val REQUEST_REPLACED_ASCII_KEY: String = "x-request-replaced"
+        const val REQUEST_BINARY_KEY: String = "x-request-bin"
+        const val RESPONSE_ASCII_KEY: String = "x-response-value"
+        const val RESPONSE_BINARY_KEY: String = "x-response-bin"
+        const val TRAILER_ASCII_KEY: String = "x-trailer-value"
+        const val TRAILER_BINARY_KEY: String = "x-trailer-bin"
+        const val STATUS_TRAILER_KEY: String = "x-status-name"
+        const val METADATA_FAILURE_DESCRIPTION: String = "metadata terminal status"
+
+        /**
+         * A [recordingInterceptor] that also adds request headers covering the cases the server trace checks:
+         * an upper-case ASCII key (must reach the wire lower-cased), an empty value, a non-ASCII value
+         * (replaced with `?` on the wire), and an upper-case binary key with [requestBinary].
+         */
+        fun metadataInterceptor(callback: CallbackRecorder, requestBinary: ByteArray): GrpcClientInterceptor {
+            return recordingInterceptor(callback) {
+                requestHeaders.append(REQUEST_ASCII_KEY.uppercase(), "alpha")
+                requestHeaders.append(REQUEST_ASCII_KEY, "")
+                requestHeaders.append(REQUEST_REPLACED_ASCII_KEY, "café")
+                requestHeaders.appendBinary(REQUEST_BINARY_KEY.uppercase(), requestBinary)
+            }
+        }
+
+        /**
+         * Returns an interceptor that records the call's `onHeaders` and `onClose` callbacks in [callback], so a test
+         * can check how often they ran and what metadata and status they received.
+         *
+         * [configure] runs on the call scope before the call proceeds, for example to add request headers.
+         */
+        fun recordingInterceptor(
+            callback: CallbackRecorder,
+            configure: GrpcClientCallScope<*, *>.() -> Unit = {},
+        ): GrpcClientInterceptor = object : GrpcClientInterceptor {
+            override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
+                request: Flow<Request>,
+            ): Flow<Response> {
+                configure()
+                onHeaders { headers ->
+                    callback.headerCount++
+                    callback.headers = headers
+                }
+                onClose { status, trailers ->
+                    callback.closeCount++
+                    callback.status = status
+                    callback.trailers = trailers
+                }
+                return proceed(request)
+            }
+        }
+
+        /** An ASCII metadata entry, to configure server metadata or to compare with the server trace. */
+        fun metadataEntry(key: String, value: String): MetadataEntry = metadataEntry(key, value.encodeToByteArray())
+
+        /** A metadata entry with raw [value] bytes, used for binary (`-bin`) keys. */
+        fun metadataEntry(key: String, value: ByteArray): MetadataEntry = MetadataEntry {
+            this.key = key
+            this.value = ByteString(*value)
+        }
+
+        /**
+         * Builds the scenario's terminal behavior: the server closes the call with [code] and [description] at
+         * [stage]. With [TerminalStage.AFTER_RESPONSE_MESSAGES], it first sends [responseCount] responses.
+         */
+        fun terminalBehavior(
+            code: GrpcStatusCode,
+            description: String,
+            stage: TerminalStage,
+            responseCount: UInt = 0U,
+        ): TerminalBehavior = TerminalBehavior {
+            status = ScenarioGrpcStatus {
+                this.code = code.value
+                this.description = description
+            }
+            this.stage = stage
+            responseMessageCount = responseCount
+        }
+    }
+}
+
+/** What a [GrpcClientMetadataAndStatusTest] recording interceptor observed in the call's callbacks. */
+private class CallbackRecorder {
+    var headerCount: Int = 0
+    var closeCount: Int = 0
+    var headers: GrpcMetadata? = null
+    var status: GrpcStatus? = null
+    var trailers: GrpcMetadata? = null
+}
