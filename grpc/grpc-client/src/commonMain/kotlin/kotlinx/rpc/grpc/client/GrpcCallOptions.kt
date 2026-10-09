@@ -95,3 +95,12 @@ public class GrpcCallOptions {
      */
     public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }
+
+/**
+ * Copies these options, so a call can change its options without affecting the original instance.
+ */
+internal fun GrpcCallOptions.copy(): GrpcCallOptions = GrpcCallOptions().also { copy ->
+    copy.timeout = timeout
+    copy.compression = compression
+    copy.callCredentials = callCredentials
+}
