@@ -30,6 +30,13 @@ for formats that need buffering to determine size, and the `encodeToByteArray`,
 `encodeToBuffer`, `decodeFromByteArray`, or `decodeFromSource` helpers outside
 a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
 
+### gRPC client fixes
+
+* Unary and server-streaming calls fail with `INTERNAL` when an interceptor supplies no request or more than one.
+* Re-collecting a response `Flow` uses fresh copies of the call headers and options, so interceptors never mutate the caller's instances.
+* Metadata keys are case-insensitive on the JVM, and empty or bare `-bin` metadata names are rejected.
+* On Kotlin/Native, `onHeaders` is always delivered before the first response message.
+
 # 0.11.0-grpc-190
 > Published 17 Sep 2026
 
