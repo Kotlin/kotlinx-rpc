@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcMetadata
@@ -267,7 +266,8 @@ private class ClientCallScopeImpl<Request, Response>(
                             call.sendMessage(message)
                         }
                     } else {
-                        call.sendMessage(request.single())
+                        // Interceptors can replace the request flow, so enforce exactly one request.
+                        call.sendMessage(request.singleOrStatus("request", method))
                     }
                     call.halfClose()
                 } catch (ex: Exception) {
