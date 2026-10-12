@@ -3,9 +3,9 @@
 #
 # Loops the K/N debug-test binary N times under the LD_PRELOAD/DYLD_INSERT_LIBRARIES
 # crashbt shim and counts process-exit signatures (SIGSEGV/SIGABRT/SIGBUS) vs normal
-# test failures vs successes. Per-run stdout+stderr lands in
-# autoresearch-runs/batch_<stamp>_<target>/run_NNN.log; the shim's backtrace +
-# memory map is interleaved into stderr on crash.
+# test failures vs successes. Each run writes stdout+stderr to
+# autoresearch-runs/batch_<stamp>_<target>/run_NNN.log. On a crash, the shim
+# adds its backtrace and memory map to stderr.
 #
 # Usage:
 #   scripts/stress_native_grpc.sh [TARGET] [RUNS]
@@ -20,16 +20,17 @@
 #
 # A subset of grpc-core native tests (RawClient*, GrpcCoreClient*) need the
 # grpc-test-server JVM fixture running on localhost:50051. The Gradle
-# `<target>Test` task starts it via `withBackgroundTask` (see
-# grpc-core/build.gradle.kts); when running the kexe directly we have to
-# launch+await+kill it ourselves -- this script does so.
+# `<target>Test` task starts it with `withGrpcClientTestServer` (see
+# gradle-conventions/src/main/kotlin/util/grpc/grpcClientTestServer.kt). When
+# you run the kexe directly, this script starts the server, waits until it is
+# ready, and stops it at the end.
 #
 # In TeamCity, the build config invokes those Gradle tasks before this script.
 # TC sets TEAMCITY_VERSION automatically, which switches the script into TC mode
 # (build statistics + crash signatures emitted as ##teamcity[...] messages).
 #
 # Exit code: 0 if zero crashes, 1 otherwise. Test failures (assertion mismatches)
-# are NOT counted as crashes — only process-exit signatures are.
+# don't count as crashes. Only process-exit signatures count.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -137,7 +138,7 @@ echo "TC mode:     $IN_TC" >&2
 echo >&2
 
 # ---- start grpc-test-server fixture ---------------------------------------
-# Mirrors the Gradle `withBackgroundTask` wiring in grpc-core/build.gradle.kts.
+# Does the same as `withGrpcClientTestServer` in the Gradle grpc-core tests.
 # RawClient*/GrpcCoreClient* tests dial localhost:50051 and would fail without it.
 TEST_SERVER_LOG="$BATCH_DIR/test-server.log"
 TEST_SERVER_PID=""
