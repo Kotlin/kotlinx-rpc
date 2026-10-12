@@ -27,28 +27,34 @@ import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.TerminalStage
 
-/** Name of the request metadata through which a data-plane call selects its scenario. */
+/** Name of [TEST_CALL_ID_METADATA_KEY]. */
 internal const val TEST_CALL_ID_METADATA_KEY_NAME: String = "kxrpc-test-call-id"
 
-/** Request metadata key carrying the `call_id` of the scenario a data-plane call opts into. */
+/** Request metadata key with which a data-plane call selects its scenario. The value is the call ID. */
 internal val TEST_CALL_ID_METADATA_KEY: Metadata.Key<String> =
     Metadata.Key.of(TEST_CALL_ID_METADATA_KEY_NAME, Metadata.ASCII_STRING_MARSHALLER)
 
 /**
- * Context key exposing the scenario's `call_id` to service implementations, for example to [ResponseReadinessGate].
- * Set only for calls that carry [TEST_CALL_ID_METADATA_KEY].
+ * Context key that gives the call ID of the scenario to service implementations, for example to
+ * [ResponseReadinessGate]. [ScenarioInterceptor] sets it only for calls that have [TEST_CALL_ID_METADATA_KEY].
  */
 internal val TEST_CALL_ID_CONTEXT_KEY: Context.Key<String> = Context.key(TEST_CALL_ID_METADATA_KEY_NAME)
 
 /**
- * Applies a configured scenario to every data-plane call that carries [TEST_CALL_ID_METADATA_KEY].
+ * Applies the configured scenario to each data-plane call that has [TEST_CALL_ID_METADATA_KEY]. For such a call, the
+ * interceptor does these steps:
  *
- * The call's lifecycle (headers, messages, half-close, cancellation, close) is reported to [registry],
- * paused at the scenario's barriers, extended with its configured metadata, and terminated early when it
- * has a terminal behavior. Calls without the key pass through unchanged.
+ * - Reports the lifecycle of the call to [registry]: headers, messages, half-close, cancellation, and close.
+ * - Pauses the call at the barriers of the scenario.
+ * - Adds the configured metadata.
+ * - Ends the call early if the scenario has a terminal behavior.
  *
- * A call with more than one or a blank call id is rejected with `INVALID_ARGUMENT`, and a call for an unknown or
- * discarded scenario with the status of the failed [CallScenarioRegistry.callAccepted]. Neither reaches the service.
+ * The interceptor doesn't change calls without the key.
+ *
+ * The interceptor rejects these calls, and they don't reach the service:
+ *
+ * - More than one call ID, or a blank call ID: `INVALID_ARGUMENT`.
+ * - The call ID of an unknown or discarded scenario: the status of the failed [CallScenarioRegistry.callAccepted].
  */
 internal class ScenarioInterceptor(
     private val registry: CallScenarioRegistry,
@@ -59,15 +65,18 @@ internal class ScenarioInterceptor(
         next: ServerCallHandler<ReqT, RespT>,
     ): ServerCall.Listener<ReqT> {
         val callIds = headers.getAll(TEST_CALL_ID_METADATA_KEY)?.toList().orEmpty()
-        // If no call id is present, pass through unchanged.
         if (callIds.isEmpty()) return next.startCall(call, headers)
 
         if (callIds.size != 1 || callIds.single().isBlank()) {
-            return reject(call, "metadata '$TEST_CALL_ID_METADATA_KEY_NAME' must contain one non-blank value")
+            return reject(
+                call,
+                "metadata '$TEST_CALL_ID_METADATA_KEY_NAME' doesn't have exactly one non-blank value. " +
+                    "Send one call ID in it",
+            )
         }
 
         val callId = callIds.single()
-        // Records CALL_ACCEPTED first, so the trace starts before anything else can happen to the call.
+        // CALL_ACCEPTED is the first record, so the trace starts before anything else can happen to the call.
         try {
             registry.callAccepted(callId, headers.toMetadataEntries())
         } catch (error: Throwable) {
@@ -75,11 +84,10 @@ internal class ScenarioInterceptor(
         }
 
         val scenarioCall = ScenarioServerCall(call, registry, registry.configuration(callId))
-        // Create a scenario context for the given call id.
         val scenarioContext = Context.current().withValue(TEST_CALL_ID_CONTEXT_KEY, callId)
-        // grpc-java cancels the call's context promptly on a separate executor, while ServerCall.Listener.onCancel
-        // waits on the serialized call executor. That executor may be blocked at a request barrier, so this listener
-        // is what records a cancellation while the call is paused.
+        // grpc-java cancels the context of the call at once on a separate executor, but ServerCall.Listener.onCancel
+        // waits for the serialized call executor. A request barrier can block that executor, so this listener records
+        // a cancellation while the call waits at the barrier.
         scenarioContext.addListener(
             Context.CancellationListener { scenarioCall.clientCancelled() },
             DIRECT_EXECUTOR,
@@ -112,15 +120,18 @@ internal class ScenarioInterceptor(
     }
 
     /**
-     * Applies the scenario to the server's outbound side of one call: headers, response messages, and close.
+     * Applies the scenario to the outbound side of one call: headers, response messages, and close.
      *
-     * Each operation first waits at its barrier, then forwards to the delegate and records the matching event while
-     * holding [lifecycleLock]. Waiting outside the lock lets a cancellation be recorded while the call is paused; the
-     * lock makes the trace order match the order in which the call was actually driven.
+     * Each operation waits at its barrier first. Then, while it holds [lifecycleLock], it forwards to the delegate and
+     * records the matching event. The wait is outside the lock, so [clientCancelled] can record a cancellation while
+     * the call waits at the barrier. The lock makes the order of the trace match the order of the operations on the
+     * call.
      *
-     * The call ends exactly once, through [completeClose] or [clientCancelled], which set [terminated]. Every later
-     * operation is ignored, so the trace contains a single [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED].
-     * Failures inside the scenario logic close the call with the failure's status instead of propagating.
+     * The call ends exactly once, through [completeClose] or [clientCancelled], which set [terminated]. The call
+     * ignores every later operation, so the trace has one [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED].
+     *
+     * If the scenario logic fails, the call closes with the status of the failure, and the exception doesn't
+     * propagate.
      */
     private class ScenarioServerCall<ReqT : Any, RespT : Any>(
         delegate: ServerCall<ReqT, RespT>,
@@ -129,21 +140,27 @@ internal class ScenarioInterceptor(
     ) : ForwardingServerCall.SimpleForwardingServerCall<ReqT, RespT>(delegate) {
         private val callId: String = configuration.callId
 
-        /** Response messages sent on this call, which selects the [BarrierType.SEND_RESPONSE] occurrence. */
+        /** The number of response messages sent on this call. It selects the [BarrierType.SEND_RESPONSE] occurrence. */
         private var responseCount: Int = 0
         private var initialHeadersSent: Boolean = false
 
-        /** Set once when the call closes or is cancelled. Checked again under [lifecycleLock] after each wait. */
+        /**
+         * Set once when the call closes or the client cancels it. Each operation checks it again under
+         * [lifecycleLock] after its wait.
+         */
         private val terminated = AtomicBoolean()
 
-        /** Serializes forwarding to the delegate with recording the matching event and with termination. */
+        /**
+         * Held while an operation forwards to the delegate and records its event, and while the call ends, so these
+         * steps don't interleave.
+         */
         private val lifecycleLock = Any()
 
         /**
-         * Closes the call with the configured status if the scenario terminates
+         * Closes the call with the configured status if the terminal stage of the scenario is
          * [TerminalStage.BEFORE_INITIAL_METADATA].
          *
-         * @return `true` when the call was closed and the service must not be started.
+         * @return `true` if the call closed, so the caller must not start the service.
          */
         fun closeBeforeStartIfConfigured(): Boolean {
             if (configuration.terminalStage() != TerminalStage.BEFORE_INITIAL_METADATA) return false
@@ -152,8 +169,8 @@ internal class ScenarioInterceptor(
         }
 
         /**
-         * Adds the configured initial metadata, and closes the call afterward for
-         * [TerminalStage.AFTER_INITIAL_METADATA].
+         * Adds the configured initial metadata. For [TerminalStage.AFTER_INITIAL_METADATA], closes the call after the
+         * headers.
          */
         override fun sendHeaders(headers: Metadata) {
             if (terminated.get()) return
@@ -178,7 +195,10 @@ internal class ScenarioInterceptor(
             }
         }
 
-        /** Closes the call after the configured response for [TerminalStage.AFTER_RESPONSE_MESSAGES]. */
+        /**
+         * For [TerminalStage.AFTER_RESPONSE_MESSAGES], closes the call after the configured number of response
+         * messages.
+         */
         override fun sendMessage(message: RespT) {
             if (terminated.get()) return
             val occurrence = responseCount + 1
@@ -199,17 +219,18 @@ internal class ScenarioInterceptor(
         }
 
         /**
-         * Handles the service's own close, replacing its status when the scenario has a terminal behavior.
+         * Handles the close from the service. If the scenario has a terminal behavior, its status replaces the status
+         * of the service.
          *
-         * A service that completes before the configured [TerminalStage.AFTER_RESPONSE_MESSAGES] count is reported
-         * as an `INTERNAL` error, since the scenario does not match the call.
+         * If the service completes before the response count of [TerminalStage.AFTER_RESPONSE_MESSAGES], the call
+         * fails with `INTERNAL`, because the scenario doesn't match the call.
          */
         override fun close(status: Status, trailers: Metadata) {
             if (terminated.get()) return
             try {
                 val terminalStage = configuration.terminalStage()
-                // Sends headers explicitly, as grpc-java would otherwise close trailers-only and the configured
-                // initial metadata would never reach the client.
+                // Without explicit headers, grpc-java sends a trailers-only response, and the configured initial
+                // metadata doesn't reach the client.
                 if (!initialHeadersSent &&
                     (configuration.initialMetadataCount > 0 || terminalStage == TerminalStage.AFTER_INITIAL_METADATA)
                 ) {
@@ -222,8 +243,8 @@ internal class ScenarioInterceptor(
                     TerminalStage.AFTER_SERVICE_COMPLETION -> closeConfiguredTerminal(trailers)
                     TerminalStage.AFTER_RESPONSE_MESSAGES -> fail(
                         Status.INTERNAL.withDescription(
-                            "service completed after $responseCount responses before configured response " +
-                                configuration.terminalBehavior.responseMessageCount
+                            "service completed after $responseCount responses, before response_message_count " +
+                                "${configuration.terminalBehavior.responseMessageCount}. Lower response_message_count"
                         )
                     )
                     TerminalStage.BEFORE_INITIAL_METADATA,
@@ -239,10 +260,10 @@ internal class ScenarioInterceptor(
         }
 
         /**
-         * Records an inbound event, then waits at the [barrier] for that event's occurrence.
+         * Records an inbound event, then waits at [barrier] for the occurrence of that event.
          *
-         * @return `true` when the event should be delivered to the service; `false` when the call has ended,
-         * including while it was paused at the barrier.
+         * @return `true` if the listener must deliver the event to the service. `false` if the call has ended, also
+         * during the wait at the barrier.
          */
         fun recordRequestEvent(
             type: EventType,
@@ -267,15 +288,15 @@ internal class ScenarioInterceptor(
             }
         }
 
-        /** Closes the call with the status of [error], used when applying the scenario fails. */
+        /** Closes the call with the status of [error] after the scenario logic fails. */
         fun fail(error: Throwable) {
             fail(error.toGrpcStatus())
         }
 
         /**
-         * Ends the call as cancelled by the client, unless it already ended.
+         * Ends the call as cancelled by the client, if the call didn't end already.
          *
-         * Called from both the context cancellation listener and [ServerCall.Listener.onCancel]; only the first one
+         * The context cancellation listener and [ServerCall.Listener.onCancel] both call it. Only the first call
          * records [EventType.CLIENT_CANCELLED].
          */
         fun clientCancelled() {
@@ -285,12 +306,18 @@ internal class ScenarioInterceptor(
             }
         }
 
-        /** Closes with [status] without the configured trailing metadata, so the client sees a plain server error. */
+        /**
+         * Closes with [status] and without the configured trailing metadata, so the client gets a plain server
+         * error.
+         */
         private fun fail(status: Status) {
             completeClose(status, Metadata(), includeConfiguredTrailers = false)
         }
 
-        /** Closes with the status of the scenario's terminal behavior, keeping the trailers the service provided. */
+        /**
+         * Closes with the status of the terminal behavior. The trailers are [serviceTrailers] and the configured
+         * trailing metadata.
+         */
         private fun closeConfiguredTerminal(serviceTrailers: Metadata = Metadata()) {
             val terminal = configuration.terminalBehavior
             val status = Status.fromCodeValue(terminal.status.code)
@@ -302,8 +329,8 @@ internal class ScenarioInterceptor(
          * Waits at the [BarrierType.CLOSE_CALL] barrier, then closes the delegate and records
          * [EventType.CALL_CLOSED] with the status and trailers as sent.
          *
-         * If the barrier wait fails, for example by timing out, the call closes with that failure's status instead.
-         * The event is recorded even if closing the delegate throws.
+         * If the wait at the barrier fails, for example after a timeout, the call closes with the status of that
+         * failure. The function records the event also if the close of the delegate throws.
          */
         private fun completeClose(
             status: Status,
@@ -339,8 +366,12 @@ internal class ScenarioInterceptor(
     }
 
     /**
-     * Applies the scenario to the inbound side of one call: records request messages and the half-close, holds them
-     * at their barriers, and drops them if the call ended in the meantime.
+     * Applies the scenario to the inbound side of one call. For each request message and for the half-close, the
+     * listener does these steps:
+     *
+     * 1. Records the event.
+     * 2. Holds the event at its barrier.
+     * 3. Drops the event if the call ended in the meantime.
      */
     private class ScenarioServerCallListener<ReqT : Any, RespT : Any>(
         delegate: ServerCall.Listener<ReqT>,
@@ -378,7 +409,7 @@ private fun ConfigureScenarioRequest.terminalStage(): TerminalStage? {
     return if (hasTerminalBehavior()) terminalBehavior.stage else null
 }
 
-/** Returns a copy of this metadata with [entries] appended, keeping their order and duplicate keys. */
+/** Returns a copy of this metadata with [entries] added at the end, in their order and with duplicate keys. */
 private fun Metadata.withConfigured(entries: List<MetadataEntry>): Metadata {
     return Metadata().also { result ->
         result.merge(this)
@@ -398,7 +429,7 @@ private fun Metadata.put(entry: MetadataEntry) {
     }
 }
 
-/** Converts metadata to trace entries in serialization order, skipping HTTP/2 pseudo-headers such as `:path`. */
+/** Converts metadata to trace entries in serialization order. Skips HTTP/2 pseudo-headers such as `:path`. */
 private fun Metadata.toMetadataEntries(): List<MetadataEntry> {
     val serialized = InternalMetadata.serialize(this)
     return buildList(serialized.size / 2) {
@@ -422,12 +453,12 @@ private fun Status.toTraceStatus(): GrpcStatus {
         .build()
 }
 
-/** Payload body recorded with [EventType.REQUEST_MESSAGE_RECEIVED], or `null` for messages without one. */
+/** The payload body to record with [EventType.REQUEST_MESSAGE_RECEIVED], or `null` for messages without a payload. */
 private fun Any.interopPayload(): ByteString? = when (this) {
     is StreamingInputCallRequest -> payload.body
     is StreamingOutputCallRequest -> payload.body
     else -> null
 }
 
-/** Runs the cancellation listener on the thread that cancels the context, without waiting for the call executor. */
+/** Runs the cancellation listener on the thread that cancels the context, so it doesn't wait for the call executor. */
 private val DIRECT_EXECUTOR: Executor = Executor { command -> command.run() }

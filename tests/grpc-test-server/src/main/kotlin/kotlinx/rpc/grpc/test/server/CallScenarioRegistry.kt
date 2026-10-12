@@ -23,14 +23,17 @@ import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.TerminalStage
 
 /**
- * Server-side state of the scenarios configured through [GrpcClientControlService].
+ * Server-side state of the scenarios that [GrpcClientControlService] configures.
  *
- * A test configures a scenario under a `call_id`, then starts a data-plane call carrying that id in
- * the `kxrpc-test-call-id` metadata. [ScenarioInterceptor] reports the call's lifecycle here,
- * which records it as an ordered trace and blocks it at configured barriers until the test releases
- * them. For scenarios with manual inbound demand, it also forwards the test's demand grants to the call (see
- * [InboundDemandEndpoint]). All blocking operations give up after [waitTimeout] so a broken test cannot hang the
- * server.
+ * A test configures a scenario under a call ID. Then it starts a data-plane call with that call ID in the
+ * `kxrpc-test-call-id` metadata. [ScenarioInterceptor] reports the lifecycle of the call to the registry, which:
+ *
+ * - Records the lifecycle as the call trace.
+ * - Blocks the call at each configured barrier until the test releases the barrier.
+ * - Forwards the inbound demand that the test grants to the call, for scenarios with manual inbound demand (see
+ *   [InboundDemandEndpoint]).
+ *
+ * Each blocking operation fails after [waitTimeout], so a broken test can't block the server.
  */
 internal class CallScenarioRegistry(
     private val waitTimeout: Duration = Duration.ofSeconds(10),
@@ -43,13 +46,13 @@ internal class CallScenarioRegistry(
         validateMetadata(request.trailingMetadataList)
         validateTerminalBehavior(request)
         require(request.malformedResponseCardinality != MalformedResponseCardinality.UNRECOGNIZED) {
-            "malformed response cardinality must be recognized"
+            "malformed_response_cardinality has an unknown value. Use a value from client_control.proto"
         }
 
         val barriers = request.barriersList.map { barrier -> barrierKey(barrier.type, barrier.occurrence) }.toSet()
 
         require(barriers.size == request.barriersCount) {
-            "scenario '${request.callId}' contains duplicate barriers"
+            "scenario '${request.callId}' has duplicate barriers. Configure each barrier key once"
         }
 
         check(scenarios.putIfAbsent(request.callId, ScenarioState(request, barriers)) == null) {
@@ -75,7 +78,7 @@ internal class CallScenarioRegistry(
 
     fun recordFlowControlEvent(callId: String, type: EventType): CallEvent? {
         require(type == EventType.RESPONSE_DELIVERY_BLOCKED || type == EventType.RESPONSE_DELIVERY_READY) {
-            "flow-control event type must describe response delivery readiness"
+            "flow-control event type must be RESPONSE_DELIVERY_BLOCKED or RESPONSE_DELIVERY_READY"
         }
         return scenario(callId).recordEventIfCallActive(type)
     }
@@ -88,8 +91,8 @@ internal class CallScenarioRegistry(
     /**
      * Records [EventType.CALL_CLOSED] for the active call and ends it.
      *
-     * If the call used manual inbound demand, its [InboundDemandEndpoint] is detached and closed, and demand still
-     * pending for it is dropped. A later [grantInboundDemand] then fails because no call is active.
+     * If the call uses manual inbound demand, this function detaches and closes its [InboundDemandEndpoint] and sets
+     * the pending demand to zero. A later [grantInboundDemand] then fails because no call is active.
      */
     fun callClosed(
         callId: String,
@@ -102,8 +105,8 @@ internal class CallScenarioRegistry(
     }
 
     /**
-     * Records [EventType.CLIENT_CANCELLED] for the active call and ends it. Inbound demand is cleaned up as in
-     * [callClosed].
+     * Records [EventType.CLIENT_CANCELLED] for the active call and ends it. Ends the inbound demand of the call as
+     * [callClosed] does.
      */
     fun clientCancelled(callId: String): CallEvent {
         val transition = scenario(callId).clientCancelled()
@@ -112,18 +115,18 @@ internal class CallScenarioRegistry(
     }
 
     /**
-     * Attaches the active call of a manual-inbound-demand scenario to the control plane, so that
-     * [grantInboundDemand] reaches it. See [InboundDemandEndpoint] for the whole flow.
+     * Attaches the active call of a scenario with manual inbound demand to the control plane, so that
+     * [grantInboundDemand] reaches the call. [InboundDemandEndpoint] lists all the steps.
      *
-     * Called once per call by [enableManualInboundDemandIfConfigured], from the service method, after grpc-java's
-     * automatic requests were disabled. Demand the test granted before this point is forwarded to [requestMessages]
-     * right away, outside the scenario lock. If that fails, for example because the call ended in the meantime, the
-     * endpoint is detached again and the error is rethrown to the service method.
+     * Call it once for each call, from the service method, after the automatic requests of grpc-java are off.
+     * This function forwards the demand that the test granted before this point to [requestMessages] at once, outside
+     * the scenario lock. If that fails, for example because the call ended, it detaches and closes the endpoint and
+     * throws the error again.
      *
-     * @param requestMessages Requests the given number of additional request messages from grpc-java, i.e.
+     * @param requestMessages Requests the given number of additional request messages from grpc-java, that is
      * `ServerCallStreamObserver.request(n)`.
-     * @throws IllegalStateException if the scenario does not enable manual inbound demand, has no active call, or
-     * already has an endpoint attached.
+     * @throws IllegalStateException if the scenario doesn't enable manual inbound demand, has no active call, or
+     * already has an attached endpoint.
      */
     fun registerInboundDemand(callId: String, requestMessages: (Int) -> Unit) {
         val scenario = scenario(callId)
@@ -139,16 +142,15 @@ internal class CallScenarioRegistry(
     }
 
     /**
-     * Lets the active call of a manual-inbound-demand scenario receive [messageCount] more request messages.
-     * Serves the control-plane `GrantInboundDemand` RPC.
+     * Lets the active call of a scenario with manual inbound demand read [messageCount] more request messages.
      *
-     * Demand is forwarded to grpc-java once the call has registered through [registerInboundDemand]. Until then, it
-     * accumulates and is forwarded on registration, because the test may grant demand before the call has reached
-     * the service method.
+     * The test can grant demand before the call reaches the service method. So the demand accumulates in the
+     * scenario until the call registers through [registerInboundDemand], and the registration forwards it to
+     * grpc-java. After that, each grant goes to grpc-java directly.
      *
-     * @throws IllegalArgumentException if [messageCount] is not positive.
-     * @throws IllegalStateException if the scenario does not enable manual inbound demand, has no active call, or
-     * the accumulated demand would overflow.
+     * @throws IllegalArgumentException if [messageCount] isn't positive.
+     * @throws IllegalStateException if the scenario doesn't enable manual inbound demand, has no active call, or
+     * the accumulated demand overflows `Int`.
      */
     fun grantInboundDemand(callId: String, messageCount: Int) {
         require(messageCount > 0) { "inbound demand message_count must be positive" }
@@ -169,7 +171,7 @@ internal class CallScenarioRegistry(
         scenario(callId).awaitBarrier(barrierKey(type, occurrence), waitTimeout)
     }
 
-    /** Like [awaitBarrier], but returns immediately when the scenario has no such barrier. */
+    /** Like [awaitBarrier], but returns at once when the scenario has no such barrier. */
     fun awaitBarrierIfConfigured(callId: String, type: BarrierType, occurrence: Int) {
         scenario(callId).awaitBarrierIfConfigured(barrierKey(type, occurrence), waitTimeout)
     }
@@ -179,8 +181,8 @@ internal class CallScenarioRegistry(
     fun diagnostics(callId: String): ScenarioDiagnostics = scenario(callId).diagnostics()
 
     /**
-     * Removes the scenario. Threads blocked in it fail with [ScenarioDiscardedException], and an attached
-     * [InboundDemandEndpoint] is closed.
+     * Removes the scenario and closes its attached [InboundDemandEndpoint]. Threads that wait in the scenario fail
+     * with [ScenarioDiscardedException].
      */
     fun discard(callId: String) {
         val scenario = scenarios.remove(callId) ?: throw ScenarioNotFoundException(callId)
@@ -251,30 +253,30 @@ internal class CallScenarioRegistry(
 }
 
 internal class ScenarioNotFoundException(callId: String) :
-    IllegalStateException("scenario '$callId' is not configured")
+    IllegalStateException("scenario '$callId' isn't configured. Call ConfigureScenario first")
 
 internal class ScenarioDiscardedException(callId: String) :
     IllegalStateException("scenario '$callId' was discarded")
 
 internal class ScenarioWaitTimeoutException(callId: String, awaited: String) :
-    IllegalStateException("timed out waiting for $awaited in scenario '$callId'")
+    IllegalStateException("the wait for $awaited in scenario '$callId' timed out")
 
 /**
- * Identifies one barrier of a scenario: the [occurrence]-th time a data-plane call reaches a [type] point.
+ * The [occurrence]-th time that a data-plane call of a scenario reaches a [type] point.
+ * For example, `(SEND_RESPONSE, 2)` blocks the second response message.
  *
- * For example, `(SEND_RESPONSE, 2)` blocks the second response message, while `(CLOSE_CALL, 1)` blocks the close.
- * The [occurrence] is one-based and already validated by [CallScenarioRegistry].
+ * [CallScenarioRegistry] checks that [occurrence] is one-based.
  */
 private data class BarrierKey(val type: BarrierType, val occurrence: Int) {
     override fun toString(): String = "barrier $type occurrence $occurrence"
 }
 
 /**
- * Result of a call ending, either by closing or by client cancellation.
+ * Result of the end of a call: a close or a client cancellation.
  *
  * @property event The recorded [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED] event.
- * @property inboundDemandEndpoint The demand endpoint detached from the ended call, if one was registered.
- * The caller closes it after leaving the scenario lock, see [InboundDemandEndpoint].
+ * @property inboundDemandEndpoint The demand endpoint that the ended call registered, now detached. The caller closes
+ * it outside the scenario lock (see [InboundDemandEndpoint]).
  */
 private data class TerminalTransition(
     val event: CallEvent,
@@ -282,18 +284,20 @@ private data class TerminalTransition(
 )
 
 /**
- * Handle through which control-plane grants reach the inbound demand of one data-plane call.
+ * Connects the control-plane demand grants to the inbound demand of one data-plane call.
  *
- * Used only by scenarios with manual inbound demand, where a call's demand moves through these steps:
+ * Only scenarios with manual inbound demand use it. The inbound demand of a call has these steps:
  *
- * 1. The call is accepted. Grants from `GrantInboundDemand` accumulate in the scenario, as no endpoint is attached.
- * 2. The service method calls [enableManualInboundDemandIfConfigured], which disables grpc-java's automatic requests
- *    and attaches an endpoint wrapping `request(n)` via [CallScenarioRegistry.registerInboundDemand]. The demand
- *    accumulated so far is forwarded to it.
- * 3. Each later grant is forwarded to the endpoint directly.
- * 4. When the call closes or is cancelled, or the scenario is discarded, the endpoint is detached and closed.
+ * 1. The server accepts the call. The call has no endpoint yet, so the grants from `GrantInboundDemand` accumulate in
+ *    the scenario.
+ * 2. The service method calls [enableManualInboundDemandIfConfigured]. It turns off the automatic requests of
+ *    grpc-java and attaches an endpoint that calls `request(n)` through [CallScenarioRegistry.registerInboundDemand].
+ *    The registry forwards the accumulated demand to the endpoint.
+ * 3. The registry forwards each later grant to the endpoint directly.
+ * 4. When the call closes, the client cancels it, or the test discards the scenario, the registry detaches and
+ *    closes the endpoint.
  *
- * @param requestMessages Requests the given number of additional inbound messages from grpc-java.
+ * @param requestMessages Requests the given number of additional request messages from grpc-java.
  */
 private class InboundDemandEndpoint(
     private val requestMessages: (Int) -> Unit,
@@ -303,28 +307,33 @@ private class InboundDemandEndpoint(
     /**
      * Requests [messageCount] more request messages from grpc-java.
      *
-     * @throws IllegalStateException if the endpoint was closed.
+     * @throws IllegalStateException after [close].
      */
     fun grant(messageCount: Int) {
         check(active.get()) { "inbound demand is no longer attached to an active call" }
         requestMessages(messageCount)
     }
 
-    /** Makes every later [grant] fail. Called once the endpoint is detached from its call. */
+    /** Makes each later [grant] fail. */
     fun close() {
         active.set(false)
     }
 }
 
 /**
- * Mutable state of one configured scenario, shared by its data-plane calls and the control plane.
+ * Mutable state of one configured scenario. Its data-plane calls and the control plane share it.
  *
- * All state is guarded by [lock]. Every change signals [changed], so blocked threads re-check their condition:
- * data-plane threads waiting at barriers, control-plane threads waiting for events, and tests waiting for a
- * waiter count. Functions ending in `Locked` expect the caller to hold [lock] already.
+ * Code reads and writes the state only while it holds [lock]. Each change signals [changed], so that these blocked
+ * threads check their condition again:
  *
- * After [discard], further operations on the scenario fail with [ScenarioDiscardedException], and threads already
- * blocked in it wake up and fail the same way.
+ * - Data-plane threads that wait at barriers.
+ * - Control-plane threads that wait for events.
+ * - Tests that wait for a waiter count.
+ *
+ * The caller of a function whose name ends in `Locked` must hold [lock].
+ *
+ * After [discard], later operations on the scenario fail with [ScenarioDiscardedException]. Threads that already
+ * wait in the scenario wake up and fail the same way.
  *
  * @param scenarioConfiguration The validated request that configured this scenario.
  * @param configuredBarriers The barriers from [scenarioConfiguration], deduplicated and validated.
@@ -337,38 +346,38 @@ private class ScenarioState(
     private val lock = ReentrantLock()
     private val changed = lock.newCondition()
 
-    /** The trace in recording order; an event's sequence is its one-based index here. */
+    /** The call trace in recording order. The sequence of an event is its one-based index in this list. */
     private val events = mutableListOf<CallEvent>()
 
-    /** Number of events recorded per type, used to assign each event its one-based occurrence. */
+    /** Number of recorded events of each type. Gives each new event its one-based occurrence. */
     private val eventOccurrences = mutableMapOf<EventType, Int>()
 
-    /** Barriers released by the control plane. A release is never undone, so later arrivals pass through. */
+    /** Barriers that the control plane released. A release is permanent, so a call that arrives later doesn't wait. */
     private val releasedBarriers = mutableSetOf<BarrierKey>()
     private var discarded = false
 
-    /** Threads currently blocked in [await], whether waiting at a barrier or for an event. */
+    /** Number of threads that wait in [await], at a barrier or for an event. */
     private var waiterCount = 0
 
-    /** The subset of [waiterCount] blocked in control-plane [awaitEvent] calls, reported in [diagnostics]. */
+    /** Part of [waiterCount]: the threads that wait in control-plane [awaitEvent] calls. */
     private var controlWaiterCount = 0
 
-    /** Data-plane calls accepted but not yet closed or cancelled. */
+    /** Number of accepted data-plane calls that didn't close or cancel yet. */
     private var activeCallCount = 0
 
     /**
-     * Demand endpoint of the active call, if it uses manual inbound demand and has registered one. Set by
-     * [registerInboundDemand] and cleared by [detachInboundDemandLocked] once the call ends.
+     * Demand endpoint of the active call, if the call uses manual inbound demand and registered an endpoint.
+     * [registerInboundDemand] sets it, and [detachInboundDemandLocked] clears it when the call ends.
      */
     private var inboundDemandEndpoint: InboundDemandEndpoint? = null
 
     /**
-     * Demand granted while no [inboundDemandEndpoint] is attached. [registerInboundDemand] hands it over to the
-     * endpoint, and [detachInboundDemandLocked] drops it once the call ends, so it never carries over to another call.
+     * Demand that the test grants while [inboundDemandEndpoint] is null. [registerInboundDemand] gives it to the
+     * endpoint. [detachInboundDemandLocked] sets it to zero when the call ends, so it never goes to another call.
      */
     private var pendingInboundDemand: Int = 0
 
-    /** Running totals checked against the trace size limits in the companion object. */
+    /** Running totals that [recordEventLocked] checks against the trace size limits of the companion object. */
     private var tracedRequestPayloadBytes = 0L
     private var tracedMetadataBytes = 0L
 
@@ -398,26 +407,26 @@ private class ScenarioState(
     }
 
     /**
-     * Attaches [endpoint] to the active call and hands over the [pendingInboundDemand].
+     * Attaches [endpoint] to the active call and sets [pendingInboundDemand] to zero.
      *
-     * @return The demand granted before registration, which the caller forwards to [endpoint] after leaving [lock].
+     * @return The demand granted before registration. The caller forwards it to [endpoint] outside [lock].
      */
     fun registerInboundDemand(endpoint: InboundDemandEndpoint): Int = lock.withLock {
         checkNotDiscarded()
         check(scenarioConfiguration.flowControl.manualInboundDemand) {
-            "scenario '$callId' does not enable manual inbound demand"
+            "scenario '$callId' doesn't enable manual inbound demand"
         }
         check(activeCallCount > 0) { "scenario '$callId' has no active call for inbound demand" }
         check(inboundDemandEndpoint == null) {
-            "scenario '$callId' already has an inbound-demand handler"
+            "scenario '$callId' already has an inbound demand endpoint"
         }
         inboundDemandEndpoint = endpoint
         pendingInboundDemand.also { pendingInboundDemand = 0 }
     }
 
     /**
-     * Detaches [endpoint] after forwarding its pending demand failed. Does nothing if it was already detached, for
-     * example because the call ended in the meantime.
+     * Detaches [endpoint] when the forwarding of its pending demand failed. Does nothing if the endpoint is already
+     * detached, for example because the call ended.
      */
     fun unregisterInboundDemand(endpoint: InboundDemandEndpoint) = lock.withLock {
         if (inboundDemandEndpoint === endpoint) {
@@ -426,18 +435,19 @@ private class ScenarioState(
     }
 
     /**
-     * Forwards [messageCount] to the attached [inboundDemandEndpoint], or adds it to [pendingInboundDemand] while
-     * none is attached. Unlike the hand-over in [registerInboundDemand], forwarding happens while holding [lock].
+     * Forwards [messageCount] to the attached [inboundDemandEndpoint], or adds it to [pendingInboundDemand] when
+     * [inboundDemandEndpoint] is null. Unlike [registerInboundDemand], this function forwards the demand while it
+     * holds [lock].
      */
     fun grantInboundDemand(messageCount: Int) = lock.withLock {
         checkNotDiscarded()
         check(scenarioConfiguration.flowControl.manualInboundDemand) {
-            "scenario '$callId' does not enable manual inbound demand"
+            "scenario '$callId' doesn't enable manual inbound demand. Set flow_control.manual_inbound_demand"
         }
         check(activeCallCount > 0) { "scenario '$callId' has no active call for inbound demand" }
         inboundDemandEndpoint?.grant(messageCount) ?: run {
             check(pendingInboundDemand <= Int.MAX_VALUE - messageCount) {
-                "scenario '$callId' accumulated too much pending inbound demand"
+                "pending inbound demand of scenario '$callId' overflows Int. Grant less demand"
             }
             pendingInboundDemand += messageCount
             null
@@ -455,7 +465,8 @@ private class ScenarioState(
     }
 
     /**
-     * Records [type] unless no call is active, returning `null` so [ResponseReadinessGate] treats the call as ended.
+     * Records [type] if a call is active. Otherwise returns `null`, so that [ResponseReadinessGate] treats the call
+     * as ended.
      */
     fun recordEventIfCallActive(type: EventType): CallEvent? = lock.withLock {
         checkNotDiscarded()
@@ -469,23 +480,23 @@ private class ScenarioState(
         status: GrpcStatus? = null,
     ): CallEvent {
         check(events.size < MAX_TRACE_EVENTS) {
-            "scenario '$callId' exceeded the maximum trace size of $MAX_TRACE_EVENTS events"
+            "scenario '$callId' exceeds the maximum trace size of $MAX_TRACE_EVENTS events. " +
+                "Use fewer calls or messages in the scenario"
         }
         if (requestPayload != null) {
             check(tracedRequestPayloadBytes + requestPayload.size() <= MAX_TRACE_PAYLOAD_BYTES) {
-                "scenario '$callId' exceeded the maximum traced request payload size of " +
-                    "$MAX_TRACE_PAYLOAD_BYTES bytes"
+                "scenario '$callId' exceeds the maximum traced request payload size of " +
+                    "$MAX_TRACE_PAYLOAD_BYTES bytes. Send smaller request payloads"
             }
             tracedRequestPayloadBytes += requestPayload.size()
         }
         val metadataBytes = metadata.sumOf { entry -> entry.key.length.toLong() + entry.value.size() }
         check(tracedMetadataBytes + metadataBytes <= MAX_TRACE_METADATA_BYTES) {
-            "scenario '$callId' exceeded the maximum traced metadata size of " +
-                "$MAX_TRACE_METADATA_BYTES bytes"
+            "scenario '$callId' exceeds the maximum traced metadata size of " +
+                "$MAX_TRACE_METADATA_BYTES bytes. Send less metadata"
         }
         tracedMetadataBytes += metadataBytes
 
-        // Increase event occurrence
         val occurrence = (eventOccurrences[type] ?: 0) + 1
         eventOccurrences[type] = occurrence
 
@@ -511,7 +522,7 @@ private class ScenarioState(
     fun releaseBarrier(key: BarrierKey) = lock.withLock {
         checkNotDiscarded()
         checkConfigured(key)
-        check(releasedBarriers.add(key)) { "$key was already released for scenario '$callId'" }
+        check(releasedBarriers.add(key)) { "$key of scenario '$callId' is already released. Release each barrier once" }
         changed.signalAll()
     }
 
@@ -525,7 +536,9 @@ private class ScenarioState(
     }
 
     private fun checkConfigured(key: BarrierKey) {
-        check(key in configuredBarriers) { "$key is not configured for scenario '$callId'" }
+        check(key in configuredBarriers) {
+            "$key isn't configured for scenario '$callId'. Add it to the barriers of ConfigureScenarioRequest"
+        }
     }
 
     private fun awaitReleasedLocked(key: BarrierKey, timeout: Duration) {
@@ -562,9 +575,9 @@ private class ScenarioState(
     }
 
     /**
-     * Marks the scenario discarded and wakes all blocked threads, which then fail.
+     * Marks the scenario as discarded and wakes all waiting threads, which then fail.
      *
-     * @return The detached demand endpoint, if one was attached, for the caller to close.
+     * @return The detached demand endpoint, which the caller closes.
      */
     fun discard(): InboundDemandEndpoint? = lock.withLock {
         discarded = true
@@ -585,14 +598,13 @@ private class ScenarioState(
     }
 
     /**
-     * Blocks until [result] returns a non-null value, then returns that value.
-     * The caller must hold [lock]; it is released while waiting on [changed].
+     * Blocks until [result] returns a value that isn't `null`, then returns that value.
+     * The caller must hold [lock]. The thread releases [lock] while it waits on [changed].
      *
-     * Fails with [ScenarioWaitTimeoutException] after [timeout], or with [ScenarioDiscardedException] if the
-     * scenario is discarded. While waiting, the thread is counted in [waiterCount] and, for [controlWaiter]
-     * calls, in [controlWaiterCount].
+     * Fails with [ScenarioWaitTimeoutException] after [timeout], or with [ScenarioDiscardedException] after [discard].
+     * During the wait, [waiterCount] counts the thread. For a [controlWaiter] call, [controlWaiterCount] counts it too.
      *
-     * @param awaited Describes the awaited condition in the timeout message.
+     * @param awaited Text for the awaited condition in the timeout message.
      */
     private fun <T : Any> await(
         timeout: Duration,
@@ -625,10 +637,10 @@ private class ScenarioState(
     }
 
     /**
-     * Detaches the [inboundDemandEndpoint] and drops the [pendingInboundDemand] once the call has ended or the
-     * scenario is discarded.
+     * Detaches the [inboundDemandEndpoint] and sets [pendingInboundDemand] to zero, when the call ends or on
+     * [discard].
      *
-     * @return The detached endpoint, which the caller closes after leaving [lock].
+     * @return The detached endpoint. The caller closes it outside [lock].
      */
     private fun detachInboundDemandLocked(): InboundDemandEndpoint? {
         pendingInboundDemand = 0

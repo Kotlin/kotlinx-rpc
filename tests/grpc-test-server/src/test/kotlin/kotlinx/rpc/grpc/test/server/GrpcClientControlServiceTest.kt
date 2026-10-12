@@ -162,7 +162,7 @@ class GrpcClientControlServiceTest {
         return GetScenarioDiagnosticsRequest.newBuilder().setCallId(callId).build()
     }
 
-    /** Invokes a control method directly and returns its single response, asserting that it completed. */
+    /** Calls a control method directly and returns its single response. Asserts that the call completed. */
     private fun <T> successfulResponse(invoke: (StreamObserver<T>) -> Unit): T {
         val observer = RecordingObserver<T>()
         invoke(observer)

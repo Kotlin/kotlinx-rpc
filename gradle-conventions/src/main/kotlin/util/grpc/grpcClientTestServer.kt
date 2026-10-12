@@ -11,12 +11,12 @@ private const val TEST_SERVER_PROJECT_PATH = ":tests:grpc-test-server"
 private const val TEST_SERVER_DISTRIBUTION_NAME = "grpc-test-server"
 private const val READY_LINE_PREFIX = "[GRPC-TEST-SERVER] Server started on"
 
-/** Must match the line printed by `TestServer.kt` in `:tests:grpc-test-server`. */
+/** Must be the same as the ready line that `TestServer.kt` in `:tests:grpc-test-server` prints. */
 private const val READY_LINE = "$READY_LINE_PREFIX 127.0.0.1:50051; control protocol v1"
 
 /**
- * Runs this test task against the gRPC test server from `:tests:grpc-test-server`,
- * which is started once and shared by all test tasks of the build.
+ * Runs this test task against the gRPC test server from `:tests:grpc-test-server`.
+ * All test tasks of the build use one server process, which starts once.
  */
 fun Task.withGrpcClientTestServer() {
     val installation = project.project(TEST_SERVER_PROJECT_PATH).layout.buildDirectory

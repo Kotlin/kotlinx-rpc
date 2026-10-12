@@ -12,9 +12,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
- * Owns isolated gRPC data endpoints used to simulate connection loss for configured scenarios.
+ * Owns the disposable endpoints. Each one is a separate gRPC data endpoint that simulates a lost connection for one
+ * scenario.
  *
- * @param registry Registry shared with the main test server.
+ * @param registry The registry that the main test server also uses.
  */
 internal class DisposableEndpointManager(
     private val registry: CallScenarioRegistry,
@@ -23,7 +24,7 @@ internal class DisposableEndpointManager(
 
     /** Starts an endpoint for [callId] and returns its ephemeral port. */
     fun start(callId: String): Int {
-        registry.configuration(callId) // fails with NOT_FOUND for an unknown scenario
+        registry.configuration(callId) // Fails with NOT_FOUND for an unknown scenario.
         val service = InteropTestService(registry)
         val server = NettyServerBuilder.forAddress(InetSocketAddress(HOST, 0))
             .addService(
@@ -51,14 +52,14 @@ internal class DisposableEndpointManager(
         }
     }
 
-    /** Stops the endpoint for [callId], resetting its active network connections. */
+    /** Stops the endpoint for [callId] and resets its open network connections. */
     fun stop(callId: String) {
         val endpoint = endpoints.remove(callId)
             ?: error("scenario '$callId' has no disposable endpoint")
         endpoint.close()
     }
 
-    /** Stops the endpoint for [callId] when one exists. */
+    /** Stops the endpoint for [callId] if it exists. */
     fun stopIfPresent(callId: String) {
         endpoints.remove(callId)?.close()
     }
@@ -69,14 +70,13 @@ internal class DisposableEndpointManager(
     }
 
     /**
-     * One running disposable endpoint: a dedicated gRPC server that clients reach only through [proxy].
+     * One running disposable endpoint: a separate gRPC server that clients connect to only through [proxy].
      *
-     * Clients connect to the proxy's port, never to the server's own port. Data-plane calls still use the shared
-     * registry, so their scenarios behave as on the main server.
+     * Data-plane calls use the shared registry, so their scenarios behave as on the main server.
      *
      * @param proxy Forwards client connections to [server] and resets them when the endpoint stops.
-     * @param server The gRPC server serving [service] on an ephemeral loopback port.
-     * @param service The endpoint's own `TestService`, whose response executor must be shut down with it.
+     * @param server The gRPC server for [service] on an ephemeral loopback port.
+     * @param service The `TestService` of this endpoint. Its response executor must stop with the endpoint.
      */
     private class DisposableEndpoint(
         private val proxy: ResettingTcpProxy,
@@ -84,11 +84,10 @@ internal class DisposableEndpointManager(
         private val service: InteropTestService,
     ) {
         /**
-         * Resets all client connections first, then stops the server and the service's response executor.
+         * Resets all client connections first, then stops the server and the response executor of the service.
          *
-         * The order matters: closing the proxy first means the client sees its connections reset at the TCP level
-         * and never receives the server's HTTP/2 shutdown frames. The server and service are stopped even if
-         * closing the proxy fails.
+         * The proxy closes first, so the client sees a TCP reset and doesn't get the HTTP/2 shutdown frames of the
+         * server. If the proxy fails to close, the function still stops the server and the service.
          */
         fun close() {
             try {
@@ -97,7 +96,7 @@ internal class DisposableEndpointManager(
                 service.use {
                     server.shutdownNow()
                     check(server.awaitTermination(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                        "disposable gRPC endpoint did not terminate"
+                        "disposable gRPC endpoint didn't stop"
                     }
                 }
             }

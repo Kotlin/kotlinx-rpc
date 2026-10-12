@@ -27,9 +27,9 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// The reference server is plain grpc-java, so the shared test protos are compiled with the
-// upstream Java generators instead of kotlinx-rpc's. Keep the plugin versions in sync with
-// `protobuf` (protoc 35.x generates code for protobuf-java 4.35.x) and `grpc` in libs.versions.toml.
+// The reference server uses plain grpc-java, so the upstream Java generators generate the code for
+// the shared test protos, not the kotlinx-rpc generators. The plugin versions must match `protobuf`
+// and `grpc` in libs.versions.toml. protoc 35.x generates code for protobuf-java 4.35.x.
 rpc {
     protoc {
         plugins {
@@ -59,13 +59,13 @@ sourceSets.main {
 
         includeDefaultProtobufPlugin = false
         includeDefaultGrpcPlugin = false
-        // Clear the kotlinx-rpc options (e.g. `explicitApiModeEnabled`) that the Java generators reject.
+        // The Java generators reject the kotlinx-rpc options (for example `explicitApiModeEnabled`), so clear them.
         plugin({ options.set(emptyMap()) }) { getByName("java") }
         plugin({ options.set(emptyMap()) }) { getByName("grpc-java") }
     }
 }
 
-// There are no test protos; skip the default kotlinx-rpc generators for the test source set.
+// The test source set has no protos, so it doesn't use the default kotlinx-rpc generators.
 sourceSets.test {
     proto {
         includeDefaultProtobufPlugin = false

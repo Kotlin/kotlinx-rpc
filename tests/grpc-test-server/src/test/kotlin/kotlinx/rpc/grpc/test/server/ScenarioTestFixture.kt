@@ -35,8 +35,10 @@ import kxrpc.testing.ScenarioDiagnostics
 import kotlin.test.assertEquals
 
 /**
- * A test server on an ephemeral port with the scenario-aware interop, malformed-response, and control services,
- * wired like the real test server, plus a control client and a [dataChannel] for data-plane calls.
+ * A test server on an ephemeral port, with a control client and a [dataChannel] for data-plane calls.
+ *
+ * The server has the interop, malformed-response, and control services. As in the real test server,
+ * [ScenarioInterceptor] intercepts the interop and malformed-response services.
  */
 internal class ScenarioTestFixture : AutoCloseable {
     private val registry = CallScenarioRegistry()
@@ -51,7 +53,7 @@ internal class ScenarioTestFixture : AutoCloseable {
     private val controlChannel = channel()
     private val control = GrpcClientControlServiceGrpc.newBlockingStub(controlChannel)
 
-    /** Channel for data-plane calls; select a scenario with [withCallId]. */
+    /** The channel for data-plane calls. Select a scenario with [withCallId]. */
     val dataChannel: ManagedChannel = channel()
 
     fun configure(request: ConfigureScenarioRequest) {
@@ -131,12 +133,12 @@ internal fun callMetadata(callId: String, requestMetadata: Metadata = Metadata()
     }
 }
 
-/** Attaches [callMetadata] to every call made through this stub. */
+/** Attaches [callMetadata] to every call that this stub makes. */
 internal fun <S : AbstractStub<S>> S.withCallId(callId: String, requestMetadata: Metadata = Metadata()): S {
     return withInterceptors(MetadataUtils.newAttachHeadersInterceptor(callMetadata(callId, requestMetadata)))
 }
 
-/** Records stream callbacks so a test can await them in order. */
+/** Records stream callbacks, so that a test can await them in order. */
 internal class AwaitingObserver<T : Any> : StreamObserver<T> {
     private val events = LinkedBlockingQueue<ObserverEvent<T>>()
 
@@ -183,7 +185,7 @@ internal class AwaitingObserver<T : Any> : StreamObserver<T> {
     }
 
     private fun awaitEvent(): ObserverEvent<T> {
-        return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("Timed out waiting for stream event")
+        return events.poll(5, TimeUnit.SECONDS) ?: throw AssertionError("No stream event arrived before the timeout")
     }
 }
 
@@ -193,7 +195,7 @@ internal sealed interface ObserverEvent<out T : Any> {
     data object Completed : ObserverEvent<Nothing>
 }
 
-/** The trace of a successful unary call without barriers or terminal behavior. */
+/** The call trace of a successful unary call that has no barriers and no terminal behavior. */
 internal val EXPECTED_UNARY_EVENTS: List<EventType> = listOf(
     EventType.CALL_ACCEPTED,
     EventType.REQUEST_MESSAGE_RECEIVED,
