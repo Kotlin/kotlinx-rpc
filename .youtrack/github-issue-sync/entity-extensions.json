@@ -1,0 +1,28 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "githubIssueUrl": {
+          "type": "string"
+        },
+        "githubIssueUrls": {
+          "type": "string"
+        },
+        "githubIssueTarget": {
+          "type": "Issue"
+        },
+        "githubIssueSources": {
+          "type": "Issue",
+          "multi": true
+        },
+        "githubIssueKeepOpen": {
+          "type": "boolean"
+        },
+        "githubPendingClosureUrls": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}
