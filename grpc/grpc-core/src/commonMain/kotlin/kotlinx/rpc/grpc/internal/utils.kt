@@ -17,19 +17,17 @@ public fun internalError(message: String): Nothing {
 }
 
 /**
- * Validates a connection-management duration option.
+ * Throws [IllegalArgumentException] when a connection duration option is out of range.
  *
- * `null` and [Duration.INFINITE] are always accepted (both mean "disabled"/"unlimited");
- * finite values must be at least [minimum] and less than `Int.MAX_VALUE` milliseconds.
+ * `null` and [Duration.INFINITE] always pass. They mean "disabled" or "unlimited".
+ * A finite value must be at least [minimum] and less than `Int.MAX_VALUE` milliseconds.
  *
- * The upper bound comes from Kotlin/Native, where these options become C-core channel args whose
- * values are a C `int`. [Duration.INFINITE] is passed as `Int.MAX_VALUE`, the largest value such
- * an arg can hold and the one gRPC treats as effectively unbounded; a finite value at or above it
- * would either be indistinguishable from that or not representable at all.
+ * The upper bound comes from Kotlin/Native. A C-core channel arg is a C `int`, and
+ * [Duration.INFINITE] maps to `Int.MAX_VALUE`. A finite value at or above `Int.MAX_VALUE`
+ * either equals infinite or doesn't fit.
  *
- * The bound is enforced on every platform rather than only on native, so that the same
- * configuration is accepted or rejected identically everywhere — grpc-java itself takes a `long`
- * and would accept larger values.
+ * Every platform enforces the bound, so a configuration behaves the same everywhere.
+ * On the JVM, grpc-java alone accepts larger values, because it takes a `long`.
  */
 @InternalRpcApi
 public fun Duration?.validateConnectionDuration(name: String, minimum: Duration) {

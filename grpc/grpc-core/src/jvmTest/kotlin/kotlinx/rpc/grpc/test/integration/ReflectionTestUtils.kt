@@ -7,11 +7,12 @@ package kotlinx.rpc.grpc.test.integration
 import java.lang.reflect.Field
 
 /**
- * Follows a chain of private fields via reflection, searching each class hierarchy.
+ * Reads a chain of private fields by reflection. For each name, it searches the class hierarchy
+ * of the current object.
  *
- * Used to assert that configuration values propagate into grpc-java internals, since there is
- * no injection seam to observe the builders directly. A grpc-java upgrade that renames one of
- * the reflected fields fails with a [NoSuchFieldException] naming the missing field.
+ * Tests use it to check that configuration values reach grpc-java internals, because the builders
+ * have no other way to read them. A grpc-java upgrade that renames a field makes the call throw
+ * [NoSuchFieldException] with the name of the field.
  */
 internal inline fun <reified R> Any.getField(vararg names: String): R {
     var current: Any = this

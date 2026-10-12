@@ -384,8 +384,7 @@ internal class NativeServer(
 }
 
 /**
- * The C-core channel args this server was created with.
- * Exposed for tests to verify that the configuration reaches the native server.
+ * The C-core channel args that this server passed to `grpc_server_create`.
  */
 @InternalRpcApi
 public val GrpcServer.channelArgs: List<GrpcArg>
@@ -398,7 +397,6 @@ public val GrpcServer.channelArgs: List<GrpcArg>
 
 /**
  * Maps the server configuration options to C-core channel args.
- * Exposed for tests to verify the mapping without constructing a native server.
  */
 @InternalRpcApi
 public fun buildServerChannelArgs(
@@ -419,9 +417,10 @@ public fun buildServerChannelArgs(
     add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, metadataSize))
     keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
     keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
-    // Without this, C-core only sends keepalive pings on connections with active calls, while grpc-java
-    // also pings idle ones. The same arg makes the server accept client pings on idle connections every
-    // 5 minutes instead of every 2 hours; C-core offers no way to enable one without the other.
+    // gRFC A9 says that the server also sends keepalive pings on connections without active calls.
+    // C-core does that only with this arg.
+    // The arg also lets clients ping an idle connection every 5 minutes instead of every 2 hours.
+    // C-core has no separate setting for that.
     add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1))
     maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }
     maxConnectionAge?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, it.toChannelArgMilliseconds())) }

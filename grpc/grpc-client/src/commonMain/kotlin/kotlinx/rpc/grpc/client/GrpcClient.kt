@@ -274,10 +274,10 @@ public class GrpcClientConfiguration internal constructor() {
     public var userAgent: String? = null
 
     /**
-     * The maximum size, in bytes, of an inbound message accepted by this client.
+     * The maximum size, in bytes, of an inbound message.
      *
      * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
-     * Values must be non-negative.
+     * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      */
     public var maxInboundMessageSize: Int? = null
         set(value) {
@@ -286,7 +286,7 @@ public class GrpcClientConfiguration internal constructor() {
         }
 
     /**
-     * The maximum size, in bytes, of inbound metadata accepted by this client.
+     * The maximum size, in bytes, of inbound metadata.
      *
      * If `null` (the default), the limit is 8 KiB (8,192 bytes).
      * Values must be positive.
@@ -298,7 +298,7 @@ public class GrpcClientConfiguration internal constructor() {
         }
 
     /**
-     * The duration without ongoing RPCs before this client enters idle mode and closes its connections.
+     * The time with no active RPCs after which the client enters idle mode and closes its connections.
      * A new RPC takes the client out of idle mode.
      *
      * If `null` (the default), the timeout is 30 minutes.
@@ -414,7 +414,7 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * @property timeout Sets the amount of time to wait for a keep-alive ping response.
      * If the server does not respond within this timeout, the connection will be considered broken.
-     * The default value is 20 seconds.
+     * The default value is 20 seconds. With `Duration.INFINITE`, the client waits without limit.
      * Finite values must be at least 10 milliseconds.
      *
      * @property withoutCalls Defines whether keep-alive pings will be sent even when there

@@ -26,13 +26,14 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
-    // The bounds are calibrated so the tests only pass when the configured limit is applied:
-    // baseline call headers (< ~1 KiB) < METADATA_SIZE_LIMIT < oversized header < default limit (8 KiB).
-    // An oversized header above the default limit would be rejected even if the configuration
-    // were silently ignored; one below the limit but above baseline would never be rejected.
+    // The sizes make a rejecting test pass only when the runtime applies the configured limit.
+    // Order of the sizes, smallest first: baseline call headers (under about 1 KiB), METADATA_SIZE_LIMIT,
+    // oversized header, default limit (8 KiB).
+    // - A header above the default limit fails even when the runtime ignores the configuration.
+    // - A header below the configured limit never fails.
     //
-    // The status code alone doesn't prove why a call failed, so each rejecting test has a counterpart
-    // that sends the same header under a higher limit and must succeed.
+    // A status code doesn't show why a call failed, so each rejecting test has a counterpart.
+    // The counterpart sends the same header under a higher limit and must succeed.
     private companion object {
         const val METADATA_SIZE_LIMIT = 2048
         const val OVERSIZED_HEADER_LENGTH = 4096

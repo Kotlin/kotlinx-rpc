@@ -25,10 +25,10 @@ import kotlin.time.Duration.Companion.seconds
 
 class GrpcWaitForReadyTest : GrpcTestBase() {
     private companion object {
-        // Port 1 (tcpmux) is privileged and never has a listener in dev/CI environments, so
-        // dialing it fails with an immediate connection refused. Unlike reserving an ephemeral
-        // port by binding and releasing it, this cannot race with a concurrent test suite
-        // being handed the same port between release and dial.
+        // Port 1 (tcpmux) is privileged, and no listener runs on it in dev or CI environments.
+        // A connection attempt fails immediately with "connection refused".
+        // A port that the test binds and then releases can go to a concurrent test before the dial.
+        // Port 1 can't.
         const val UNAVAILABLE_PORT = 1
         val FAIL_FAST_TIMEOUT = 10.seconds
     }

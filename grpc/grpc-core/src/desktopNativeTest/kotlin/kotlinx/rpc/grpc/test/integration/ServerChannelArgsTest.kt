@@ -118,7 +118,7 @@ class ServerChannelArgsTest {
 }
 
 /**
- * Creates a [GrpcServer] with [configure] and returns the channel args it passed to C-core.
+ * Returns the channel args that a [GrpcServer] built with [configure] passes to C-core.
  */
 internal fun createdServerChannelArgs(configure: GrpcServerConfiguration.() -> Unit): Map<String, Int> =
     runBlocking {

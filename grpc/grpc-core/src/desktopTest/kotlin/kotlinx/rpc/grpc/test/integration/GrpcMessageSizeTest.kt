@@ -31,7 +31,7 @@ class GrpcMessageSizeTest : GrpcTestBase() {
             runGrpcTest(
                 serverConfiguration = { maxInboundMessageSize = 8 * 1024 * 1024 },
             ) {
-                // The serialized response includes overhead in addition to this four MiB string.
+                // The serialized response adds overhead to this four MiB string.
                 it.withService<EchoService>().unaryEcho(EchoRequest { message = "x".repeat(4 * 1024 * 1024) })
             }
         }

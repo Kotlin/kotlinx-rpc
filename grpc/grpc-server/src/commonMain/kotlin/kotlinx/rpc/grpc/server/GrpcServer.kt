@@ -182,10 +182,10 @@ public class GrpcServerConfiguration internal constructor() {
     public var marshallerConfig: GrpcMarshallerConfig? = null
 
     /**
-     * The maximum size, in bytes, of an inbound message accepted by this server.
+     * The maximum size, in bytes, of an inbound message.
      *
      * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
-     * Values must be non-negative.
+     * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      */
     public var maxInboundMessageSize: Int? = null
         set(value) {
@@ -194,7 +194,7 @@ public class GrpcServerConfiguration internal constructor() {
         }
 
     /**
-     * The maximum size, in bytes, of inbound metadata accepted by this server.
+     * The maximum size, in bytes, of inbound metadata.
      *
      * If `null` (the default), the limit is 8 KiB (8,192 bytes).
      * Values must be positive.
@@ -206,13 +206,12 @@ public class GrpcServerConfiguration internal constructor() {
         }
 
     /**
-     * The maximum time a connection may have no active RPCs before it is gracefully closed.
+     * The maximum time that a connection can have no active RPCs before the server closes it gracefully.
      *
-     * If `null` (the default) or [Duration.INFINITE], the limit is disabled. Finite values must be
+     * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
      * at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
-     * provider does.
+     * On the JVM, the server provider must support this option. The bundled Netty provider does.
      */
     public var maxConnectionIdle: Duration? = null
         set(value) {
@@ -221,13 +220,12 @@ public class GrpcServerConfiguration internal constructor() {
         }
 
     /**
-     * The maximum time a connection may exist before it is gracefully closed.
+     * The maximum time that a connection can exist before the server closes it gracefully.
      *
-     * If `null` (the default) or [Duration.INFINITE], the limit is disabled. Finite values must be
+     * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
      * at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
-     * provider does.
+     * On the JVM, the server provider must support this option. The bundled Netty provider does.
      */
     public var maxConnectionAge: Duration? = null
         set(value) {
@@ -236,13 +234,12 @@ public class GrpcServerConfiguration internal constructor() {
         }
 
     /**
-     * The grace period for active RPCs after [maxConnectionAge] is reached.
+     * The time that active RPCs have to finish after a connection reaches [maxConnectionAge].
      *
-     * If `null` (the default) or [Duration.INFINITE], active RPCs may finish without a deadline.
-     * Finite values must not be negative and must be less than `Int.MAX_VALUE` milliseconds.
+     * If `null` (the default) or [Duration.INFINITE], active RPCs can run to completion without a deadline.
+     * Finite values can't be negative and must be less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
-     * provider does.
+     * On the JVM, the server provider must support this option. The bundled Netty provider does.
      */
     public var maxConnectionAgeGrace: Duration? = null
         set(value) {
@@ -277,21 +274,22 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * Configures server-side keepalive pings.
      *
-     * By default, keepalive uses a two-hour interval and a 20-second timeout.
-     * Calling this function overrides these settings as specified in [configure].
-     * Finite keepalive intervals must be at least 10 seconds, and finite response timeouts
-     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
-     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
+     * The server sends keepalive pings on all connections, including connections without active calls.
+     * The default interval is two hours, and the default timeout is 20 seconds.
+     * Finite intervals must be at least 10 seconds, and finite timeouts must be at least 10 milliseconds.
+     * Finite values must be less than `Int.MAX_VALUE` milliseconds. Both accept [Duration.INFINITE].
      *
-     * The server sends keepalive pings on all connections, including those without active calls.
+     * Independent of this function, the server limits how often a client can send keepalive pings:
      *
-     * Client keepalive pings are accepted at most once every 5 minutes on connections with active calls.
-     * On connections without active calls, the limit is once every 2 hours on the JVM and once every
-     * 5 minutes on Kotlin/Native. Clients that repeatedly ping more often are disconnected
-     * with `too_many_pings`.
+     * - On a connection with active calls: one ping every 5 minutes.
+     * - On a connection without active calls: one ping every 2 hours on the JVM,
+     *   and one every 5 minutes on Kotlin/Native.
      *
-     * On the JVM, requires a server provider that supports this option; the default (bundled Netty)
-     * provider does.
+     * The limits restart each time the server sends response headers or data.
+     * A client that repeatedly pings more often loses its connection.
+     * The server sends `GOAWAY` with the debug data `too_many_pings`.
+     *
+     * On the JVM, the server provider must support this option. The bundled Netty provider does.
      */
     public fun keepAlive(configure: KeepAlive.() -> Unit) {
         keepAlive = KeepAlive().apply(configure)
@@ -300,9 +298,11 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * Server-side keepalive settings.
      *
-     * @property time The time without read activity before a keepalive ping is sent. Defaults to two hours.
+     * @property time The time without read activity after which the server sends a keepalive ping.
+     * Defaults to two hours. [Duration.INFINITE] disables the pings.
      * Finite values must be at least 10 seconds.
-     * @property timeout The time to wait for read activity after sending a keepalive ping. Defaults to 20 seconds.
+     * @property timeout The time that the server waits for read activity after a keepalive ping.
+     * Defaults to 20 seconds. With [Duration.INFINITE], the server waits without limit.
      * Finite values must be at least 10 milliseconds.
      */
     public class KeepAlive internal constructor() {

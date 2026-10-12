@@ -67,18 +67,15 @@ public sealed class GrpcArg(public val key: String) {
 }
 
 /**
- * Converts a duration to a millisecond channel-arg value, mapping [Duration.INFINITE] to
- * `INT_MAX` — the largest value a C-core channel arg can hold, which gRPC treats as
- * effectively unbounded.
+ * Converts a duration to the millisecond value of a C-core channel arg.
  *
- * Channel-arg values are a C `int`, so this narrows [Duration.inWholeMilliseconds] from `Long`.
- * A finite duration of `Int.MAX_VALUE` milliseconds or more (~24.8 days) has no representation
- * and would wrap silently — possibly to a negative value, or exactly onto the `INT_MAX` that
- * a caller means as "unbounded" — so it is rejected here rather than truncated.
+ * Maps [Duration.INFINITE] to `INT_MAX`, which gRPC treats as unbounded.
+ * Throws [IllegalArgumentException] for a negative duration and for a finite duration of
+ * `Int.MAX_VALUE` milliseconds or more (about 24.8 days). A channel arg is a C `int`.
+ * Without the check, such a value wraps to a negative number or to `INT_MAX`.
  *
- * Every public option funnels through [validateConnectionDuration], which rejects out-of-range
- * values earlier with a message naming the option. This check is the backstop for the paths that
- * do not: property defaults, which bypass setters, and any future caller of this function.
+ * [validateConnectionDuration] rejects out-of-range values earlier, with the option name in the message.
+ * This check covers the paths that skip it: property defaults, which bypass the setters, and new callers.
  */
 @InternalRpcApi
 public fun Duration.toChannelArgMilliseconds(): Int {
@@ -92,10 +89,10 @@ public fun Duration.toChannelArgMilliseconds(): Int {
 }
 
 /**
- * Marshals the args into a C-core [grpc_channel_args] allocated in [memScope].
+ * Converts the args to a C-core [grpc_channel_args] allocated in [memScope].
  *
- * [GrpcArg.Integer] values are converted to C `int`, which is 32-bit on every platform
- * kotlinx-rpc targets, so the conversion is lossless there.
+ * A [GrpcArg.Integer] value becomes a C `int`. A C `int` has 32 bits on every platform
+ * that kotlinx-rpc targets, so the conversion loses nothing.
  */
 @InternalRpcApi
 public fun List<GrpcArg>.toRaw(memScope: MemScope): grpc_channel_args {

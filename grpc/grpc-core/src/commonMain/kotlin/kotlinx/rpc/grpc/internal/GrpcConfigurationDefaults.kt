@@ -9,8 +9,8 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * Shared configuration defaults applied explicitly by each gRPC implementation.
- * This prevents different defaults on different platforms.
+ * Configuration defaults that each platform sets explicitly,
+ * so a runtime default can't differ between platforms.
  */
 @InternalRpcApi
 public object GrpcConfigurationDefaults {

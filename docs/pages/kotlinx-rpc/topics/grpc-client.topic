@@ -53,9 +53,11 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures keep-alive pings to detect broken connections.
-                Pings are disabled by default (<code>time = Duration.INFINITE</code>),
-                with a 20-second response timeout and <code>withoutCalls = false</code>.
-                Set <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response indefinitely.
+                Pings are disabled by default, because <code>time</code> is <code>Duration.INFINITE</code>.
+                The default <code>timeout</code> is 20 seconds.
+                Set <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response without limit.
+                By default, <code>withoutCalls</code> is <code>false</code>, and the client sends pings only
+                while calls are active. Set it to <code>true</code> to send pings also when no call is active.
                 Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
             </def>
             <def title="userAgent">
@@ -64,7 +66,7 @@
             </def>
             <def title="maxInboundMessageSize">
                 The maximum size, in bytes, of an inbound message.
-                Larger messages are rejected with <code>RESOURCE_EXHAUSTED</code>.
+                A larger message fails the call with <code>RESOURCE_EXHAUSTED</code>.
                 Defaults to 4 MiB (4,194,304 bytes).
             </def>
             <def title="maxInboundMetadataSize">
@@ -72,7 +74,7 @@
                 Defaults to 8 KiB (8,192 bytes).
             </def>
             <def title="idleTimeout">
-                The duration without ongoing RPCs before the client enters idle mode and closes its
+                The time with no active RPCs after which the client enters idle mode and closes its
                 connections. A new RPC takes the client out of idle mode.
                 <code>Duration.INFINITE</code> disables automatic idle mode.
                 Defaults to 30 minutes.
@@ -85,8 +87,8 @@
 
     <chapter title="Call options" id="grpc-client-call-options">
         <p>
-            <code>GrpcCallOptions.waitForReady</code> controls what a call does when the client
-            failed to connect to the server, for example, because the server is unreachable:
+            <code>GrpcCallOptions.waitForReady</code> sets what a call does when the client
+            can't connect to the server:
         </p>
         <list>
             <li>
@@ -94,19 +96,21 @@
                 with <code>UNAVAILABLE</code>.
             </li>
             <li>
-                <code>true</code>: the call waits until the connection succeeds or the call's deadline expires.
+                <code>true</code>: the call waits until the client connects. It fails with
+                <code>DEADLINE_EXCEEDED</code> when its deadline expires.
             </li>
         </list>
         <p>
-            A call started while the client is still connecting always waits for that connection attempt.
+            A call that starts while the client is connecting always waits for that connection attempt.
         </p>
         <p>
-            See <a href="https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md">wait-for-ready semantics</a>
-            for details.
+            <code>GrpcCallOptions.timeout</code> is <code>null</code> by default, so a call has no deadline.
+            Set a timeout when you use <code>waitForReady = true</code>, because a call without a deadline
+            can wait forever.
         </p>
         <p>
-            <code>GrpcCallOptions.timeout</code> defaults to <code>null</code> (no deadline).
-            Set a timeout when enabling wait-for-ready to bound how long the call may wait.
+            For details, read the
+            <a href="https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md">wait-for-ready semantics</a>.
         </p>
     </chapter>
 
