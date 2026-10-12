@@ -421,6 +421,7 @@ public fun buildServerChannelArgs(
     // C-core does that only with this arg.
     // The arg also lets clients ping an idle connection every 5 minutes instead of every 2 hours.
     // C-core has no separate setting for that.
+    // https://github.com/grpc/proposal/blob/master/A9-server-side-conn-mgt.md
     add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1))
     maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }
     maxConnectionAge?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, it.toChannelArgMilliseconds())) }
