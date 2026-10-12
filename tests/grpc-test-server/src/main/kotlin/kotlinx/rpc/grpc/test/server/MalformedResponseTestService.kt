@@ -17,13 +17,13 @@ import kxrpc.testing.MalformedResponseRequest
 import kxrpc.testing.MalformedResponseServiceGrpc
 
 /**
- * Raw grpc-java handlers for response cardinalities forbidden by generated service adapters.
+ * Raw grpc-java handlers for response cardinalities that the generated service adapters don't allow.
  *
- * This allows the client to test the behavior when the server returns a invalid number of response messages.
+ * Client tests use them to check how the client handles an invalid number of response messages.
  *
- * The methods are re-bound as streaming on the server side so that a call declared as unary or
- * client-streaming in the proto can complete with zero or two response messages, as configured by
- * the scenario's `malformed_response_cardinality`.
+ * The server binds `UnaryCall` as server-streaming and `StreamingInputCall` as bidirectional streaming. So a call
+ * that the proto declares as unary or client-streaming can complete with zero or two response messages. The
+ * `malformed_response_cardinality` of the scenario selects the count.
  */
 internal class MalformedResponseTestService(
     private val registry: CallScenarioRegistry,
@@ -57,17 +57,19 @@ internal class MalformedResponseTestService(
     ): ServerCall.Listener<MalformedResponseRequest> {
         val callId = headers.get(TEST_CALL_ID_METADATA_KEY)
         if (callId == null) {
-            call.closeInvalid("metadata '$TEST_CALL_ID_METADATA_KEY_NAME' is required for malformed response calls")
+            call.closeInvalid(
+                "the call has no '$TEST_CALL_ID_METADATA_KEY_NAME' metadata. Set it to the call ID of a scenario"
+            )
             return object : ServerCall.Listener<MalformedResponseRequest>() {}
         }
 
         val cardinality = registry.configuration(callId).malformedResponseCardinality
         if (cardinality == MalformedResponseCardinality.MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED) {
-            call.closeInvalid("malformed response cardinality must be configured")
+            call.closeInvalid("the scenario doesn't set malformed_response_cardinality. Set it in ConfigureScenario")
             return object : ServerCall.Listener<MalformedResponseRequest>() {}
         }
 
-        // A unary call requests one message beyond the expected request so that a duplicate is detected.
+        // For a unary call, the server requests one message more than expected, so it can find a second request.
         call.request(if (clientStreaming) 1 else 2)
         return MalformedResponseCallListener(call, cardinality, clientStreaming)
     }
@@ -90,14 +92,16 @@ internal class MalformedResponseTestService(
 
         override fun onHalfClose() {
             if (!clientStreaming && requestCount != 1) {
-                call.closeInvalid("unary malformed response call requires exactly one request")
+                call.closeInvalid(
+                    "the unary malformed response call has $requestCount request messages. Send exactly one"
+                )
                 return
             }
 
             call.sendHeaders(Metadata())
             when (cardinality) {
                 MalformedResponseCardinality.OMIT_RESPONSE -> {
-                    // Deliberately close an OK call without a response message.
+                    // No response message. The call closes with OK below.
                 }
                 MalformedResponseCardinality.DUPLICATE_RESPONSE -> {
                     call.sendMessage(responsePayload)

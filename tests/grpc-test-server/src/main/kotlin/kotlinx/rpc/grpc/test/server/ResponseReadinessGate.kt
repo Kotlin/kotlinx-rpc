@@ -9,16 +9,12 @@ import io.grpc.stub.StreamObserver
 import kxrpc.testing.EventType
 
 /**
- * Creates a gate for the scenario attached to the current grpc-java context.
+ * Creates a gate for the scenario that [TEST_CALL_ID_CONTEXT_KEY] selects in the current grpc-java context.
  *
- * Must be called from the service method itself, because grpc-java rejects the handler setup once that
- * method returns.
+ * Call it from the service method itself, because grpc-java rejects the handler setup after that method returns.
  *
- * @param registry Registry containing the selected scenario.
- * @param responseObserver Observer supplied to the generated service method.
- * @param resumeResponses Restarts the dispatcher after a pause ended.
- * @param cancelResponses Drops the dispatcher's queued responses after the client cancelled.
- * @return The gate, or `null` for calls without a scenario or without response readiness.
+ * @param responseObserver The observer that grpc-java gives to the service method.
+ * @return The gate, or `null` if the call has no scenario or the scenario doesn't enable response readiness.
  */
 internal fun ResponseReadinessGate.Companion.createIfConfigured(
     registry: CallScenarioRegistry,
@@ -29,7 +25,7 @@ internal fun ResponseReadinessGate.Companion.createIfConfigured(
     val callId = TEST_CALL_ID_CONTEXT_KEY.get() ?: return null
     if (!registry.configuration(callId).flowControl.respectResponseReadiness) return null
     val serverObserver = responseObserver as? ServerCallStreamObserver<*>
-        ?: error("grpc-java did not supply a ServerCallStreamObserver for scenario '$callId'")
+        ?: error("the response observer of scenario '$callId' isn't a ServerCallStreamObserver")
     return ResponseReadinessGate(
         registry = registry,
         callId = callId,
@@ -41,51 +37,61 @@ internal fun ResponseReadinessGate.Companion.createIfConfigured(
 
 
 /**
- * Holds back a call's queued responses while grpc-java reports the client as not ready, for scenarios that enable
- * `flow_control.respect_response_readiness`.
+ * Holds back the queued responses of a call while grpc-java reports that the client isn't ready, for scenarios that
+ * enable `flow_control.respect_response_readiness`.
  *
- * The gate lets client tests verify receive-side backpressure. When the consumer of a client under test is slow, the
- * client should stop asking for more responses instead of buffering everything. A regular grpc-java server cannot
- * show whether it does: `onNext` never blocks, so the server keeps sending, and responses the client does not take
- * pile up in the server's buffers. A client that eagerly reads everything then looks the same as one that applies
- * backpressure. With the gate, the server stops sending once the client's backpressure reaches it and records
- * [EventType.RESPONSE_DELIVERY_BLOCKED], which proves exactly that. A test can then let the client consume again,
- * wait for [EventType.RESPONSE_DELIVERY_READY], and check that no response is lost or reordered, or that cancelling
- * a call while it is held back works.
+ * Client tests use the gate to check receive-side backpressure. When the consumer of the client under test is slow,
+ * the client must stop asking for more responses, not buffer all of them. A regular grpc-java server can't show
+ * whether the client does this. `onNext` never blocks, so the server continues to send, and the responses that the
+ * client doesn't take collect in the server buffers. Then a client that reads all responses without a pause looks
+ * the same as a client with backpressure.
  *
- * To notice the client's backpressure, the gate relies on grpc-java's readiness. The client never signals readiness
- * itself. grpc-java derives it from HTTP/2 flow control: the client refills its receive window only as it consumes
- * messages, so once it stops, the window is used up and response bytes queue on the server. `isReady()` turns
- * `false` when more than a threshold, 32 KiB by default, is queued. Once the queue drains below it again,
- * `isReady()` turns `true` and grpc-java calls the ready handler.
+ * With the gate, the server stops sending when the backpressure of the client reaches it, and records
+ * [EventType.RESPONSE_DELIVERY_BLOCKED] as proof. Then a test can let the client consume again and wait for
+ * [EventType.RESPONSE_DELIVERY_READY]. After that, the test checks one of these:
  *
- * grpc-java has no callback for becoming not ready, so the gate polls instead: the response dispatcher of
- * [InteropTestService] calls [canDeliverResponse] before each response message, which checks `isReady()`, and stops
- * while the answer is `false`. The ready callback restarts it through [resumeResponses].
+ * - The client gets every response, in order.
+ * - The cancellation of a call works while the gate holds back its responses.
  *
- * Delivery moves through these states:
+ * The gate uses the readiness of grpc-java to find the backpressure of the client. The client never signals
+ * readiness itself. grpc-java gets it from HTTP/2 flow control:
  *
- * ```
- * FLOWING   --a check finds the client not ready--------------> PAUSED
- * PAUSED    --ready callback, or a later check finds it ready--> FLOWING
- * any state --call closed or cancelled------------------------> ENDED
- * ```
+ * 1. The client refills its receive window only when it consumes messages.
+ * 2. When the client stops, the window is used up and the response bytes queue on the server.
+ * 3. When more than a threshold (32 KiB by default) is in the queue, `isReady()` becomes `false`.
+ * 4. When the queue is below the threshold again, `isReady()` becomes `true` and grpc-java calls the ready handler.
  *
- * Entering `PAUSED` records [EventType.RESPONSE_DELIVERY_BLOCKED] and leaving it records
- * [EventType.RESPONSE_DELIVERY_READY], once per pause however often delivery is attempted during it. As the client
- * is checked only when a response is due, `BLOCKED` means that the server wanted to send and could not. A client
- * that is not ready only briefly between two responses leaves no trace. grpc-java may also call the ready handler
- * when the client is no longer ready by the time it runs, so the next check starts another pause. A test may
- * therefore observe more than one `BLOCKED`/`READY` pair and should await specific occurrences.
+ * grpc-java has no callback for "not ready", so the gate polls. Before each response message, the response
+ * dispatcher of [InteropTestService] calls [canDeliverResponse], which checks `isReady()`. The dispatcher stops while
+ * the result is `false`, and the ready callback restarts it through [resumeResponses].
  *
- * [canDeliverResponse] runs on the dispatcher's thread, while grpc-java calls the ready, cancel, and close handlers
- * on the call's executor, so [state] is guarded by [lock]. The dispatcher callbacks are invoked outside [lock].
+ * Delivery has these state changes:
  *
- * @param registry Owns the scenario configuration and trace.
- * @param callId Identifies the configured scenario selected by the data-plane call metadata.
- * @param responseObserver The grpc-java observer whose readiness is respected.
- * @param resumeResponses Restarts the dispatcher after a pause ended.
- * @param cancelResponses Drops the dispatcher's queued responses after the client cancelled.
+ * - `FLOWING` to `PAUSED`: a check finds the client not ready.
+ * - `PAUSED` to `FLOWING`: the ready callback runs, or a later check finds the client ready.
+ * - Any state to `ENDED`: the call closes, the client cancels it, or the registry has no active call for it.
+ *
+ * The change to `PAUSED` records [EventType.RESPONSE_DELIVERY_BLOCKED], and the change back records
+ * [EventType.RESPONSE_DELIVERY_READY]. Each pause records each event once, also when the dispatcher tries to deliver
+ * many times during the pause. The gate checks the client only when a response is due, so `BLOCKED` means that the
+ * server had a response and couldn't send it. If the client isn't ready only for a short time between two
+ * responses, the trace doesn't show it.
+ *
+ * grpc-java can call the ready handler after the client is not ready again, so the next check starts a new pause.
+ * Thus a test can see more than one `BLOCKED`/`READY` pair and must wait for the occurrence that it expects.
+ *
+ * The dispatcher calls [canDeliverResponse] on its response executor and on the call executor. grpc-java calls the
+ * ready, cancel, and close handlers on the call executor. So code reads and writes [state] only while it holds [lock].
+ *
+ * The dispatcher holds its own monitor when it calls [canDeliverResponse], so the gate calls [resumeResponses] and
+ * [cancelResponses] outside [lock].
+ *
+ * @param registry The registry with the scenario configuration and the call trace.
+ * @param callId The call ID that the data-plane call selects in its metadata.
+ * @param responseObserver The observer whose readiness the gate checks. The gate sets its ready, cancel, and close
+ * handlers.
+ * @param resumeResponses Restarts the dispatcher after a pause.
+ * @param cancelResponses Drops the queued responses of the dispatcher after the client cancels.
  */
 internal class ResponseReadinessGate(
     private val registry: CallScenarioRegistry,
@@ -95,13 +101,16 @@ internal class ResponseReadinessGate(
     private val cancelResponses: () -> Unit,
 ) {
     private enum class State {
-        /** Responses are delivered as long as each check finds the client ready. */
+        /** The dispatcher sends a response each time a check finds the client ready. */
         FLOWING,
 
-        /** A check found the client not ready and [EventType.RESPONSE_DELIVERY_BLOCKED] was recorded. */
+        /** A check found the client not ready, and the gate recorded [EventType.RESPONSE_DELIVERY_BLOCKED]. */
         PAUSED,
 
-        /** The call closed or was cancelled, or the registry no longer sees it as active. Nothing is delivered. */
+        /**
+         * The call closed, the client cancelled it, or the registry has no active call for it. The gate holds back
+         * every response.
+         */
         ENDED,
     }
 
@@ -115,20 +124,20 @@ internal class ResponseReadinessGate(
     }
 
     /**
-     * Checks whether the next queued response message may be sent, pausing delivery if the client is not ready.
+     * Returns whether the dispatcher can send the next queued response message. If the client isn't ready, the gate
+     * pauses delivery.
      *
-     * This is the only place where a client that is not ready is noticed, as grpc-java offers no callback for it.
-     * Only response messages are checked. Completing the call is never held back.
+     * Call it only before a response message, so the gate never holds back the completion of the call.
      *
-     * @return `true` when `isReady()` reports the client as ready. `false` when delivery is paused or the call has
-     * ended, after which the dispatcher stops and waits for [resumeResponses].
+     * @return `true` if `isReady()` reports the client as ready. `false` if the gate paused delivery or the call has
+     * ended. After `false`, the dispatcher stops and waits for [resumeResponses].
      */
     fun canDeliverResponse(): Boolean = synchronized(lock) {
         if (state == State.ENDED) return false
         if (!responseObserver.isReady) {
             if (state == State.FLOWING) pauseLocked()
-            // Readiness may have changed while the pause was recorded. If so, deliver now rather than rely on a
-            // later ready callback.
+            // Readiness can change while the gate records the pause. If the client is ready again, the gate lets
+            // the response through now and doesn't wait for a later ready callback.
             if (state == State.ENDED || !responseObserver.isReady) return false
         }
         resumeLocked()
@@ -136,37 +145,37 @@ internal class ResponseReadinessGate(
     }
 
     /**
-     * grpc-java's ready callback: ends the current pause and restarts the dispatcher.
+     * The ready handler. Ends the current pause and restarts the dispatcher.
      *
-     * grpc-java calls it when the queued bytes drop below the threshold, and once when the stream is set up. Outside
-     * a pause, it does nothing.
+     * grpc-java also calls it once when the stream starts. Outside a pause, it does nothing.
      */
     private fun onReady() {
         val resumed = synchronized(lock) { resumeLocked() }
         if (resumed) resumeResponses()
     }
 
-    /** Ends delivery and drops the queued responses, as the client will never receive them. */
+    /** Ends delivery and drops the queued responses of the dispatcher. */
     private fun onCancel() {
         onClose()
         cancelResponses()
     }
 
-    /** Ends delivery once grpc-java has closed the call. */
+    /** Ends delivery after grpc-java closes the call. */
     private fun onClose() {
         synchronized(lock) { state = State.ENDED }
     }
 
-    /** Enters [State.PAUSED] from [State.FLOWING]. Must be called holding [lock]. */
+    /** Changes the state from [State.FLOWING] to [State.PAUSED]. The caller must hold [lock]. */
     private fun pauseLocked() {
         state = State.PAUSED
         if (!recordEvent(EventType.RESPONSE_DELIVERY_BLOCKED)) state = State.ENDED
     }
 
     /**
-     * Leaves [State.PAUSED] for [State.FLOWING], if delivery is paused. Must be called holding [lock].
+     * Changes the state from [State.PAUSED] to [State.FLOWING]. Does nothing outside a pause. The caller must hold
+     * [lock].
      *
-     * @return `true` when a pause ended, so the dispatcher must be restarted.
+     * @return `true` if a pause ended, so the caller must restart the dispatcher.
      */
     private fun resumeLocked(): Boolean {
         if (state != State.PAUSED) return false
@@ -175,7 +184,7 @@ internal class ResponseReadinessGate(
         return state == State.FLOWING
     }
 
-    /** Records [type], returning `false` when the registry has already recorded the end of the call. */
+    /** Records [type]. Returns `false` if the registry has already recorded the end of the call. */
     private fun recordEvent(type: EventType): Boolean = registry.recordFlowControlEvent(callId, type) != null
 
     companion object

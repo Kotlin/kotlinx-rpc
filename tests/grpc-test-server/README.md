@@ -1,11 +1,14 @@
 # grpc-test-server
 
-A standalone grpc-java server that kotlinx-rpc's gRPC client tests run against. Using a plain grpc-java
-server keeps the reference behaviour independent of kotlinx-rpc's own server, and lets tests control
-the server side of a call deterministically: pause it at chosen points, change how it terminates,
-and inspect what it observed.
+A standalone grpc-java server for the gRPC client tests of kotlinx-rpc. The reference behavior comes from
+grpc-java, not from the kotlinx-rpc server. A test can also control the server side of a call
+deterministically:
 
-The server listens on `127.0.0.1:50051` and prints this line once it accepts calls:
+- Pause the call at chosen points.
+- Change how the call ends.
+- Read what the server observed.
+
+The server listens on `127.0.0.1:50051`. When it accepts calls, it prints this line:
 
 ```
 [GRPC-TEST-SERVER] Server started on 127.0.0.1:50051; control protocol v1
@@ -13,7 +16,7 @@ The server listens on `127.0.0.1:50051` and prints this line once it accepts cal
 
 ## Running
 
-Test tasks opt in with `withGrpcClientTestServer()` (`gradle-conventions/.../util/grpc/grpcClientTestServer.kt`):
+A test task opts in with `withGrpcClientTestServer()` (`gradle-conventions/.../util/grpc/grpcClientTestServer.kt`):
 
 ```kotlin
 tasks.withType<AbstractTestTask>().configureEach {
@@ -21,116 +24,149 @@ tasks.withType<AbstractTestTask>().configureEach {
 }
 ```
 
-The server is installed with `:tests:grpc-test-server:installDist`, started before the first such
-task, shared by all of them, and stopped when the build finishes. A task fails if the server cannot
-start or exits while the task runs.
+All these tasks share one server process:
 
-To run it by hand, e.g. for a test binary started outside Gradle:
+1. `:tests:grpc-test-server:installDist` installs the server.
+2. The server starts before the first task that opts in.
+3. The server stops when the build finishes.
+
+A task fails if the server can't start or exits while the task runs.
+
+To start the server by hand, for example for a test binary that runs outside Gradle:
 
 ```bash
 ./gradlew :tests:grpc-test-server:installDist
 tests/grpc-test-server/build/install/grpc-test-server/bin/grpc-test-server
 ```
 
-The server's own tests: `./gradlew :tests:grpc-test-server:test`.
+The tests of the server itself run with `./gradlew :tests:grpc-test-server:test`.
 
 ## Services
 
-All protos are shared with the client tests through `tests/test-protos/src/commonMain/proto`.
+The client tests and the server share all protos in `tests/test-protos/src/commonMain/proto`.
 
-Most tests use the gRPC **interop** service. gRPC's
+Most tests use the gRPC **interop** service. The gRPC
 [interoperability tests](https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md) define a
-standard service, `grpc.testing.TestService`, and a set of test cases on top of it. Every gRPC
-implementation (C++, Java, Go, Swift, ...) ships a server and a client for it, so that any client can be
-checked against any server for the same behaviour. Implementing the same service here means the client
-tests exercise well-known, precisely specified calls (empty, unary, server-, client-, and bidirectional
-streaming with requested sizes, delays, and statuses), and the reference behaviour comes from grpc-java.
+standard service, `grpc.testing.TestService`, and a set of test cases for it. Each gRPC implementation
+(C++, Java, Go, Swift, and others) has a server and a client for it, and a test can check any client
+against any server. This server implements the same service. So the client tests use calls with an exact
+specification: empty, unary, and all streaming kinds, with requested sizes, delays, and statuses.
 
 | Service                                    | Proto                                 | Purpose                                                                                                        |
 |--------------------------------------------|---------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| `EchoService`, `GreeterService`            | `echo_grpc.proto`, `helloworld_grpc.proto` | Simple services used by the `grpc-core` tests.                                                            |
-| `grpc.testing.TestService`                 | `grpc/testing/test.proto` (vendored)  | The official gRPC interop service, implemented like grpc-java's `TestServiceImpl`. `UnimplementedCall` and `UnimplementedService` return `UNIMPLEMENTED`. |
-| `kxrpc.testing.MalformedResponseService`   | `kxrpc/testing/client_control.proto`  | Answers a unary or client-streaming call with zero or two responses, which a conforming server cannot produce. |
-| `kxrpc.testing.GrpcClientControlService`   | `kxrpc/testing/client_control.proto`  | Called by the tests themselves to set up, drive, and inspect scenarios (see [Scenarios](#scenarios)).          |
+| `EchoService`, `GreeterService`            | `echo_grpc.proto`, `helloworld_grpc.proto` | Simple services for the `grpc-core` tests.                                                                |
+| `grpc.testing.TestService`                 | `grpc/testing/test.proto` (vendored)  | The official gRPC interop service, like grpc-java's `TestServiceImpl`. `UnimplementedCall` and `UnimplementedService` return `UNIMPLEMENTED`. |
+| `kxrpc.testing.MalformedResponseService`   | `kxrpc/testing/client_control.proto`  | Answers a unary or client-streaming call with zero or two responses. A conforming server can't do this.        |
+| `kxrpc.testing.GrpcClientControlService`   | `kxrpc/testing/client_control.proto`  | The tests call it to set up, drive, and inspect scenarios (see [Scenarios](#scenarios)).                      |
 
-`TestService` calls without scenario metadata behave exactly like calls to grpc-java's interop server.
-`MalformedResponseService` calls always need a scenario, which selects the cardinality.
+A `TestService` call without scenario metadata behaves exactly like a call to the grpc-java interop server.
+A `MalformedResponseService` call needs a scenario that sets `malformed_response_cardinality`. Without it,
+the call fails with `INVALID_ARGUMENT`.
 
 ## Scenarios
 
 ### Data-plane and control-plane calls
 
-A test sends two kinds of gRPC calls to the server, normally both to `127.0.0.1:50051`:
+A test sends two kinds of gRPC calls to the server. Both go to `127.0.0.1:50051`, except data-plane calls
+to a disposable endpoint.
 
-- **Data-plane calls** are the calls under test: the kotlinx-rpc client code being tested calls
-  `TestService` or `MalformedResponseService`, for example `testService.unaryCall(request)`.
-- **Control-plane calls** are calls that the test makes itself, through a separate client, to
-  `GrpcClientControlService`. They prepare and observe a data-plane call; the client under test never
-  sees them.
+- **Data-plane calls**: the calls under test. The kotlinx-rpc client code under test calls `TestService` or
+  `MalformedResponseService`, for example `testService.unaryCall(request)`.
+- **Control-plane calls**: the test itself calls `GrpcClientControlService` through a separate client. These
+  calls prepare and observe a data-plane call. The client under test never sees them.
 
-A **scenario** connects the two. It is server-side state that the test registers under an id of its
-choice, the `call_id`. A data-plane call opts into the scenario by sending the ASCII request metadata
-`kxrpc-test-call-id: <call_id>`. The server then handles that call as the scenario describes and
-records every step of it.
+A **scenario** connects the two. It is server-side state that the test registers under a call ID of its
+choice, the `call_id`. A data-plane call opts into the scenario with the ASCII request metadata
+`kxrpc-test-call-id: <call_id>`. The server then handles that call as the scenario describes and records
+each step of it.
 
 ### Control-plane methods
 
-All methods of `GrpcClientControlService` take the `call_id` of the scenario they act on.
+Each method of `GrpcClientControlService` takes the `call_id` of the scenario that it acts on.
 
 | Method                                              | What it does                                                                                                                                                             |
 |-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ConfigureScenario`                                 | Registers a scenario and its behaviour (see below). Must be called before the data-plane call starts; each `call_id` can be configured once.                            |
-| `AwaitEvent`                                        | Blocks until the server has recorded the requested event for the scenario, for example the second `RESPONSE_MESSAGE_SENT`, and returns it. Lets a test wait until the server has reached a certain point of the call. |
-| `ReleaseBarrier`                                    | Lets a data-plane call continue that is paused at one of the scenario's barriers.                                                                                       |
-| `GrantInboundDemand`                                | For scenarios with manual inbound demand: allows the server to read the given number of further request messages. Until then, requests stay unread, so a test can check how the client handles backpressure. |
-| `GetTrace`                                          | Returns all events recorded for the scenario so far, in order.                                                                                                           |
-| `GetScenarioDiagnostics`                            | Returns the number of open data-plane calls, the barriers not yet released, and the number of control-plane calls still blocked, so a test can assert that nothing leaked. |
-| `StartDisposableEndpoint`, `StopDisposableEndpoint` | Starts a separate listener on a free port for the scenario's data-plane calls, and later resets all of its TCP connections, which simulates a lost connection.          |
-| `DiscardScenario`                                   | Removes the scenario, fails control-plane calls still waiting on it, and stops its disposable endpoint.                                                                 |
+| `ConfigureScenario`                                 | Registers a scenario and its configuration (see [What a scenario can configure](#what-a-scenario-can-configure)). Call it before the data-plane call starts. A `call_id` accepts one configuration only. |
+| `AwaitEvent`                                        | Blocks until the server records the requested event of the scenario, for example the second `RESPONSE_MESSAGE_SENT`, and returns it. A test uses it to wait until the call reaches a given point. |
+| `ReleaseBarrier`                                    | Releases one barrier of the scenario, so a data-plane call paused at it continues.                                                                                      |
+| `GrantInboundDemand`                                | For a scenario with manual inbound demand: lets the server read the given number of additional request messages. Until then, the requests stay unread, so a test can check how the client handles backpressure. Needs an active data-plane call. |
+| `GetTrace`                                          | Returns the call trace: all events recorded for the scenario so far, in order.                                                                                          |
+| `GetScenarioDiagnostics`                            | Returns the number of open data-plane calls, the barriers that aren't released, and the number of blocked `AwaitEvent` calls. A test uses it to check that it left no open call, barrier, or wait. |
+| `StartDisposableEndpoint`, `StopDisposableEndpoint` | Start: opens a separate listener for the scenario on a free port of `127.0.0.1` and returns the port. The listener serves only `TestService`. Stop: resets all TCP connections of the listener, which simulates a lost connection, and closes it. |
+| `DiscardScenario`                                   | Removes the scenario and stops its disposable endpoint. Calls that still wait on the scenario fail: `AwaitEvent` calls and data-plane calls paused at a barrier.         |
 
-A typical test
+A typical test has these steps:
 
-1. calls `ConfigureScenario`,
-2. starts the data-plane call with the `kxrpc-test-call-id` metadata,
-3. while the call runs, synchronizes with the server using `AwaitEvent`, `ReleaseBarrier`, and `GrantInboundDemand`,
-4. afterwards checks what the server observed with `GetTrace` and `GetScenarioDiagnostics`, and
-5. calls `DiscardScenario`.
+1. Call `ConfigureScenario`.
+2. Start the data-plane call with the `kxrpc-test-call-id` metadata.
+3. While the call runs, synchronize with the server through `AwaitEvent`, `ReleaseBarrier`, and `GrantInboundDemand`.
+4. After the call, check what the server observed with `GetTrace` and `GetScenarioDiagnostics`.
+5. Call `DiscardScenario`.
 
 ### What a scenario can configure
 
-- **Barriers.** A barrier is a point in the server's handling of the call where it pauses until the test
-  calls `ReleaseBarrier`. The types are `SEND_INITIAL_HEADERS`, `SEND_RESPONSE`, `CLOSE_CALL`,
-  `DELIVER_REQUEST_MESSAGE` (before passing a received request to the service), and
-  `DELIVER_CLIENT_HALF_CLOSE`, each with a one-based occurrence: `SEND_RESPONSE` occurrence 2 pauses the
-  call right before its second response. Barriers make races reproducible, for example cancelling a call
-  exactly between two responses.
-- **Metadata**: entries added to the response headers and trailers.
-- **Terminal behaviour**: close the call with a given status before the headers, after the headers, after
-  N responses, or instead of the service's own status.
-- **Flow control**: manual inbound demand (see `GrantInboundDemand`), and pausing responses while the
-  client is not ready to receive them.
-- **Malformed response cardinality**: whether `MalformedResponseService` sends zero or two responses.
+| Field of `ConfigureScenarioRequest`     | Effect                                                                                                   |
+|-----------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `barriers`                              | Points where the call pauses until the test calls `ReleaseBarrier`. See the barrier types below.        |
+| `initial_metadata`, `trailing_metadata` | Entries that the server adds to the response headers and trailers, in order and with duplicate keys.    |
+| `terminal_behavior`                     | Closes the call early with a given status. See the terminal stages below.                               |
+| `flow_control.manual_inbound_demand`    | The server reads request messages only after `GrantInboundDemand`. Only for the request-streaming methods of `TestService`. |
+| `flow_control.respect_response_readiness` | The server holds back responses while the client isn't ready to receive them. Only for the streaming-response methods of `TestService`. |
+| `malformed_response_cardinality`        | `OMIT_RESPONSE` (zero responses) or `DUPLICATE_RESPONSE` (two responses) for `MalformedResponseService`. |
+
+A barrier is a point in the server's handling of the call where the call pauses until the test calls
+`ReleaseBarrier`. Each barrier has a type and a one-based occurrence:
+
+| Barrier type                | The call pauses before                                                     | Occurrence counts                         |
+|-----------------------------|----------------------------------------------------------------------------|-------------------------------------------|
+| `SEND_INITIAL_HEADERS`      | The server sends the initial headers. A trailers-only close skips it.      | A call reaches only occurrence 1.         |
+| `SEND_RESPONSE`             | The server sends a response message.                                       | The response messages of the call.        |
+| `CLOSE_CALL`                | The server closes the call, also for a close from `terminal_behavior` or a server failure. | A call reaches only occurrence 1. |
+| `DELIVER_REQUEST_MESSAGE`   | The service gets a received request message.                               | The `REQUEST_MESSAGE_RECEIVED` events.    |
+| `DELIVER_CLIENT_HALF_CLOSE` | The service gets the client's half-close.                                  | The `CLIENT_HALF_CLOSED` events.          |
+
+For example, `SEND_RESPONSE` occurrence 2 pauses the call right before its second response. A released
+barrier stays released, so a call that reaches it later doesn't pause. Barriers make races reproducible,
+for example a cancellation exactly between two responses.
+
+`terminal_behavior` closes the call with its `status` and the configured trailers at one of these stages:
+
+- `BEFORE_INITIAL_METADATA`: before the service starts, without headers or responses.
+- `AFTER_INITIAL_METADATA`: after the initial headers, before the first response.
+- `AFTER_RESPONSE_MESSAGES`: after `response_message_count` responses. If the service completes before that
+  count, the call fails with `INTERNAL`.
+- `AFTER_SERVICE_COMPLETION`: after the service completes, with this status instead of the service's own status.
 
 ### Events
 
-The server records each step of a scenario's data-plane call as a `CallEvent`: `CALL_ACCEPTED`,
-`REQUEST_MESSAGE_RECEIVED`, `CLIENT_HALF_CLOSED`, `INITIAL_HEADERS_SENT`, `RESPONSE_MESSAGE_SENT`, and
-finally `CALL_CLOSED` or `CLIENT_CANCELLED`; plus `RESPONSE_DELIVERY_BLOCKED`/`RESPONSE_DELIVERY_READY` for
-flow control. Each event has a one-based occurrence per type, which `AwaitEvent` and barriers refer to.
+The server records each step of a scenario's data-plane call as a `CallEvent`:
+
+- Steps of the call: `CALL_ACCEPTED`, `REQUEST_MESSAGE_RECEIVED`, `CLIENT_HALF_CLOSED`,
+  `INITIAL_HEADERS_SENT`, `RESPONSE_MESSAGE_SENT`.
+- End of the call, exactly one of: `CALL_CLOSED`, `CLIENT_CANCELLED`.
+- Response readiness: `RESPONSE_DELIVERY_BLOCKED`, `RESPONSE_DELIVERY_READY`.
+
+Each event has a one-based occurrence for each type, and `AwaitEvent` selects an event by its type and
+occurrence. `client_control.proto` describes each event type and the data that it has.
 
 ### Errors
 
-Control-plane calls for an unknown `call_id` fail with `NOT_FOUND`, invalid configurations with
-`INVALID_ARGUMENT`. Waits give up after 10 seconds with `DEADLINE_EXCEEDED`, so a broken test cannot hang
-the server.
+| Status                | Cause                                                                                                                                                           |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `NOT_FOUND`           | A control-plane call or a data-plane call has an unknown `call_id`.                                                                                             |
+| `INVALID_ARGUMENT`    | The configuration or another control-plane request isn't valid. A data-plane call has more than one or a blank `kxrpc-test-call-id` value.                       |
+| `FAILED_PRECONDITION` | The call isn't valid in the current scenario state. For example, the `call_id` already has a configuration, the barrier isn't configured or is already released, or the test discarded the scenario. |
+| `DEADLINE_EXCEEDED`   | An `AwaitEvent` call or a call paused at a barrier waited for 10 seconds, so a broken test can't block the server.                                            |
 
 ## Examples
 
-The examples use the kotlinx-rpc client. `control` is the control-plane `GrpcClientControlService`;
-`testService` is the data-plane `TestService`, whose client attaches `kxrpc-test-call-id: <id>` to every
-call (for example with a `GrpcClientInterceptor` that appends it to `requestHeaders`).
+The examples use the kotlinx-rpc client:
 
-Both examples use this streaming request, which asks the server for two responses of 5 and 7 bytes:
+- `control`: the control-plane `GrpcClientControlService` client.
+- `testService`: the data-plane `TestService` client. It adds `kxrpc-test-call-id: <id>` to each call, for
+  example with a `GrpcClientInterceptor` that adds it to `requestHeaders`.
+
+Both examples use this streaming request. It asks the server for two responses of 5 and 7 bytes:
 
 ```kotlin
 val request = StreamingOutputCallRequest {
@@ -140,7 +176,7 @@ val request = StreamingOutputCallRequest {
 
 ### Holding a response at a barrier
 
-Check what the client does while the server has sent the first response but not the second:
+This example checks the client after the server sent the first response and before it sends the second:
 
 ```kotlin
 control.configureScenario(ConfigureScenarioRequest {
@@ -185,9 +221,9 @@ sequenceDiagram
 
 ### Checking that a cancellation reached the server
 
-A client that stops collecting a response stream must also cancel the call on the server. The same
-barrier keeps the call open after the first response, so the cancellation cannot race with a normal
-completion. The trace then shows what the server observed:
+A client that stops the collection of a response stream must also cancel the call on the server. The
+same barrier keeps the call open after the first response, so the cancellation can't race with a normal
+completion. The call trace then shows what the server observed:
 
 ```kotlin
 control.configureScenario(ConfigureScenarioRequest {
@@ -244,12 +280,14 @@ sequenceDiagram
 
 | File                             | Role                                                                          |
 |----------------------------------|-------------------------------------------------------------------------------|
-| `TestServer.kt`                  | Entry point; wires the services on port 50051.                                |
-| `CallScenarioRegistry.kt`        | Scenario state: configuration, trace, barriers, inbound demand, diagnostics.   |
-| `ScenarioInterceptor.kt`         | Applies a scenario to calls carrying `kxrpc-test-call-id` and records their lifecycle. |
-| `InteropTestService.kt`          | The interop `TestService`; paces streaming responses.                         |
-| `ManualInboundDemand.kt`         | Manual inbound demand: requests are read only as the test grants demand.      |
-| `ResponseReadinessGate.kt`       | Response readiness: holds responses back while the client is not ready.       |
+| `TestServer.kt`                  | Entry point. Starts all services on `127.0.0.1:50051`.                        |
+| `CallScenarioRegistry.kt`        | Scenario state: configuration, call trace, barriers, inbound demand, diagnostics. |
+| `ScenarioInterceptor.kt`         | Applies a scenario to calls with `kxrpc-test-call-id` and records their events. |
+| `ScenarioStatus.kt`              | Maps scenario failures to the gRPC status codes in [Errors](#errors).          |
+| `InteropTestService.kt`          | The interop `TestService`. Sends streaming responses at the requested intervals. |
+| `ManualInboundDemand.kt`         | Manual inbound demand: the server reads requests only as the test grants demand. |
+| `ResponseReadinessGate.kt`       | Response readiness: holds back responses while the client isn't ready.        |
 | `MalformedResponseTestService.kt`| Raw handlers that send zero or two responses.                                 |
 | `GrpcClientControlService.kt`    | The control-plane RPCs.                                                       |
-| `DisposableEndpointManager.kt`, `ResettingTcpProxy.kt` | Per-scenario listeners whose connections can be reset.  |
+| `EchoServiceImpl.kt`, `GreeterServiceImpl.kt` | `EchoService` and `GreeterService`.                              |
+| `DisposableEndpointManager.kt`, `ResettingTcpProxy.kt` | Disposable endpoints: listeners for one scenario whose connections the test can reset. |

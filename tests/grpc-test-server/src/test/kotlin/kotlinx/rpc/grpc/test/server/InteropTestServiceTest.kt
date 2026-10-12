@@ -537,7 +537,7 @@ class InteropTestServiceTest {
 
         fun awaitClose(): Status {
             return terminalStatus.poll(10, TimeUnit.SECONDS)
-                ?: throw AssertionError("Timed out waiting for manually requested response call to close")
+                ?: throw AssertionError("The manually requested response call didn't close before the timeout")
         }
     }
 

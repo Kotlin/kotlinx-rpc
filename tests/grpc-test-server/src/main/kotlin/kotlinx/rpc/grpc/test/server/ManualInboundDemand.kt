@@ -11,26 +11,29 @@ import io.grpc.stub.StreamObserver
  * Lets the test decide when the server reads the next request message, for scenarios that enable
  * `flow_control.manual_inbound_demand`.
  *
- * This lets client tests exercise send-side backpressure deterministically. When the server stops reading, the client
- * under test should suspend its sends instead of buffering without limit or failing. A regular grpc-java server
- * cannot show whether it does, as it reads as fast as the client sends. With manual demand, a test can stop the
- * server from reading, check that the client suspends, and then check that it continues in order once demand is
- * granted, or that cancelling a call stuck on sending cleans up. The
- * [kxrpc.testing.EventType.REQUEST_MESSAGE_RECEIVED] events show exactly how many messages the server has read, so
- * these tests need no timing assumptions.
+ * Client tests use it to check send-side backpressure. When the server stops reading, the client under test must
+ * suspend its sends, not buffer without limit or fail. A regular grpc-java server reads as fast as the client sends,
+ * so it can't show whether the client does this. With manual inbound demand, a test can do these checks:
  *
- * grpc-java normally requests the next request message on its own. This turns that off and connects the call to the
- * scenario's demand endpoint instead: the server reads a message only after the test grants demand through
- * `GrantInboundDemand`. Unread messages stay in the transport, so the HTTP/2 flow-control window toward the server is
- * no longer replenished, and the client's sends eventually have to wait.
+ * - Stop the server from reading, and check that the client suspends.
+ * - Grant demand, and check that the client continues in order.
+ * - Cancel a call that waits to send, and check that the cancellation cleans up.
  *
- * Does nothing for calls without a scenario or without manual inbound demand. Only methods that stream requests call
- * it, and only from the service method itself, because grpc-java rejects the setup once that method returns.
+ * The [kxrpc.testing.EventType.REQUEST_MESSAGE_RECEIVED] events show how many messages the server has read, so these
+ * tests need no timing assumptions.
  *
- * The response side of flow control is handled separately by [ResponseReadinessGate].
+ * Usually grpc-java requests the next request message itself. This function turns that off and connects the call to
+ * the inbound demand of the scenario. Then the server reads a message only after the test grants demand through
+ * `GrantInboundDemand`. Unread messages stay in the transport, so the HTTP/2 flow-control window toward the server
+ * isn't refilled. Then the sends of the client must wait at some point.
  *
- * @param registry Registry containing the selected scenario.
- * @param responseObserver Observer supplied to the generated service method.
+ * Does nothing if the call has no scenario or the scenario doesn't enable manual inbound demand. Only methods that
+ * stream requests call it. Call it from the service method itself, because grpc-java rejects the setup after that
+ * method returns.
+ *
+ * [ResponseReadinessGate] handles the response side of flow control.
+ *
+ * @param responseObserver The observer that grpc-java gives to the service method.
  */
 internal fun enableManualInboundDemandIfConfigured(
     registry: CallScenarioRegistry,
@@ -39,10 +42,10 @@ internal fun enableManualInboundDemandIfConfigured(
     val callId = TEST_CALL_ID_CONTEXT_KEY.get() ?: return
     if (!registry.configuration(callId).flowControl.manualInboundDemand) return
     val serverObserver = responseObserver as? ServerCallStreamObserver<*>
-        ?: error("grpc-java did not supply a ServerCallStreamObserver for scenario '$callId'")
+        ?: error("the response observer of scenario '$callId' isn't a ServerCallStreamObserver")
 
     serverObserver.disableAutoRequest()
-    // GrantInboundDemand reaches serverObserver.request(n) through the registry, which also forwards demand granted
-    // before this point.
+    // GrantInboundDemand calls serverObserver.request(n) through the registry. The registry also forwards the demand
+    // that the test granted before this point.
     registry.registerInboundDemand(callId, serverObserver::request)
 }

@@ -35,9 +35,11 @@ internal interface BackgroundTaskParameters : BuildServiceParameters {
 }
 
 /**
- * Owns one background process: starts it on first use and stops it when Gradle closes the service
- * at the end of the build. The process's stdout and stderr are echoed to the Gradle log, and their
- * most recent lines are attached to every failure.
+ * Owns one background process. The service starts the process on first use and stops it when Gradle
+ * closes the service at the end of the build.
+ *
+ * The service writes the stdout and stderr of the process to the Gradle log. Every failure has
+ * the most recent output lines.
  */
 internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParameters>, AutoCloseable {
     private val logger = Logging.getLogger(BackgroundTaskService::class.java)
@@ -45,7 +47,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
     private val recentOutput = ArrayDeque<String>()
     private val readinessDecided = CountDownLatch(1)
 
-    /** The first startup or runtime failure; once set, every later use of the service fails with it. */
+    /** The message of the first startup or runtime failure. Every later use of the service fails with it. */
     private val failure = AtomicReference<String?>()
 
     @Volatile
@@ -58,7 +60,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
     private var process: Process? = null
     private var outputReader: Thread? = null
 
-    /** Starts the process unless it was started before, then fails if it is not running. */
+    /** Starts the process on the first call only, then runs [checkHealthy]. */
     @Synchronized
     fun ensureRunning() {
         if (!startAttempted) {
@@ -82,7 +84,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
                 .redirectErrorStream(true)
                 .start()
         } catch (cause: IOException) {
-            throw failure("Could not start the background process", cause)
+            throw failure("The background process didn't start", cause)
         }
         process = started
         outputReader = thread(name = "background-task-output", isDaemon = true) { readOutput(started) }
@@ -93,9 +95,9 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
         } catch (cause: InterruptedException) {
             Thread.currentThread().interrupt()
             stop()
-            throw failure("Interrupted while waiting for background process readiness", cause)
+            throw failure("An interrupt stopped the wait for the ready line", cause)
         }
-        if (!decided) recordFailure("Timed out after ${timeoutSeconds}s waiting for background process readiness")
+        if (!decided) recordFailure("The background process didn't print its ready line in ${timeoutSeconds}s")
         failure.get()?.let { message ->
             stop()
             throw failure(message)
@@ -114,7 +116,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
                 }
             }
         } catch (cause: IOException) {
-            if (!stopping) recordFailure("Could not read background process output: ${cause.message}")
+            if (!stopping) recordFailure("Can't read the background process output: ${cause.message}")
         }
 
         val exitCode = runCatching { started.waitFor() }.getOrNull() ?: "unknown"
@@ -132,10 +134,13 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
             readinessDecided.countDown()
             return
         }
-        // A readiness line from a differently configured process: fail now instead of after the timeout.
+        // A ready line from a process with a different configuration fails the startup now, not after the timeout.
         val readyLinePrefix = parameters.readyLinePrefix.orNull
         if (readyLinePrefix != null && line.startsWith(readyLinePrefix)) {
-            recordFailure("Incompatible readiness line. Expected '$readyLine', received '$line'")
+            recordFailure(
+                "Incompatible ready line. Expected '$readyLine', got '$line'. " +
+                    "Rebuild the process so that it prints the expected ready line"
+            )
             readinessDecided.countDown()
         }
     }
@@ -191,27 +196,28 @@ class BackgroundTaskConfig internal constructor() {
     /** The directory the process runs in. */
     var workingDirectory: Provider<Directory>? = null
 
-    /** The exact output line with which the process reports that it is ready. */
+    /** The exact output line that the process prints when it is ready. */
     var readyLine: String? = null
 
     /**
-     * The prefix of [readyLine]. Another line with this prefix fails the startup immediately, for example when
-     * the process reports a different endpoint or protocol version than expected.
+     * The prefix of [readyLine]. A different line with this prefix fails the startup immediately. For example, the
+     * process reports a different endpoint or protocol version.
      */
     var readyLinePrefix: String? = null
 
     var readyTimeoutSeconds: Int = DEFAULT_READY_TIMEOUT_SECONDS
 
-    /** Prefix of the process output lines echoed to the Gradle log. */
+    /** The prefix of the Gradle log lines for this process. */
     var outputPrefix: String = "[background]"
 }
 
 /**
  * Runs this task with the background process [name].
  *
- * The process starts before the first task that uses it and stops when the build finishes. All tasks using the
- * same [name] share one process; the first registration's configuration wins, so all of them must configure
- * the process identically. A task fails if the process cannot start or exits while the task runs.
+ * - The process starts before the first task that uses it and stops when the build finishes.
+ * - All tasks with the same [name] use one process. Only the configuration of the first registration has an
+ *   effect, so all these tasks must configure the process in the same way.
+ * - A task fails if the process can't start or exits while the task runs.
  */
 fun Task.withBackgroundTask(name: String, configure: BackgroundTaskConfig.() -> Unit) {
     val config = BackgroundTaskConfig().apply(configure)
