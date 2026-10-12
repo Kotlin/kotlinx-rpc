@@ -1,5 +1,8 @@
 # CLAUDE.md
 
+The skill from https://mr3zee.github.io/code-doc-writer/ must be installed 
+and used in every session that adds/changes committed files.
+
 kotlinx-rpc is a Kotlin Multiplatform library for building RPC services.
 Version catalog: `versions-root/libs.versions.toml`
 

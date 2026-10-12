@@ -1,0 +1,11 @@
+{
+  "name": "auto-fix-on-pr-open",
+  "version": "0.0.1",
+  "description": "Sets issues to Fixed in branch when a non-draft GitHub pull request opens",
+  "scripts": {
+    "test": "node --test test/*.test.cjs"
+  },
+  "dependencies": {
+    "@jetbrains/youtrack-scripting-api": "^2022.1.46592"
+  }
+}
