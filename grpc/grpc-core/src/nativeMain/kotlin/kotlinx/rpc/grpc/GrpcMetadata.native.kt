@@ -54,6 +54,7 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     internal fun validateForBinary() {
         validateName()
         require(isBinary) { "Binary header is named ${name}. It must end with '-bin'" }
+        require(name != "-bin") { "Binary header must have a non-empty name before '-bin'" }
     }
 
     internal companion object
@@ -94,8 +95,12 @@ public actual class GrpcMetadata @InternalRpcApi actual constructor() {
 
             for (entry in values) {
                 val size = entry.size.toULong()
-                val valSlice = entry.usePinned { pinned ->
-                    grpc_slice_from_copied_buffer(pinned.addressOf(0), size.convert())
+                val valSlice = if (entry.isEmpty()) {
+                    grpc_slice_from_copied_buffer(null, 0u)
+                } else {
+                    entry.usePinned { pinned ->
+                        grpc_slice_from_copied_buffer(pinned.addressOf(0), size.convert())
+                    }
                 }
                 // we create a fresh reference for each entry
                 val keySliceRef = grpc_slice_ref(keySlice)
@@ -304,6 +309,7 @@ private val VALID_KEY_CHARS by lazy {
 
 @OptIn(ObsoleteNativeApi::class)
 private fun <T> GrpcMetadataKey<T>.validateName() {
+    require(name.isNotEmpty()) { "Header name must not be empty." }
     for (char in name) {
         require(VALID_KEY_CHARS[char.code]) { "Header is named $name. It contains illegal character $char." }
     }
