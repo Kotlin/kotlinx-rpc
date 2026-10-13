@@ -30,6 +30,7 @@ private class NativeServerBuilder(
     private val services = mutableListOf<GrpcServerServiceDefinition>()
     private var fallbackRegistry: GrpcHandlerRegistry = DefaultFallbackRegistry
     var config: GrpcServerConfiguration? = null
+    private var buildCalled = false;
 
     override fun addService(service: GrpcServerServiceDefinition): NativeServerBuilder {
         services.add(service)
@@ -42,6 +43,9 @@ private class NativeServerBuilder(
     }
 
     override fun build(): PlatformServer {
+        require(!buildCalled) { "build() can only be called once" }
+        buildCalled = true
+
         return NativeServer(
             port,
             credentials,
@@ -53,7 +57,11 @@ private class NativeServerBuilder(
             maxConnectionIdle = config?.maxConnectionIdle,
             maxConnectionAge = config?.maxConnectionAge,
             maxConnectionAgeGrace = config?.maxConnectionAgeGrace,
-        )
+        ).also {
+            // Set config to null to release references to configuration lambdas
+            // like services {}
+            config = null
+        }
     }
 }
 
