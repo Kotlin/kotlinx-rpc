@@ -489,11 +489,12 @@ internal class NativeClientCall<Request, Response>(
         ops[0].op = GRPC_OP_SEND_INITIAL_METADATA
         ops[0].data.send_initial_metadata.count = sendInitialMetadata.count
         ops[0].data.send_initial_metadata.metadata = sendInitialMetadata.metadata
-        when (callOptions.waitForReady) {
-            true -> ops[0].flags = GRPC_INITIAL_METADATA_WAIT_FOR_READY or
-                    GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
-            false -> ops[0].flags = GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
-            null -> {}
+        if (callOptions.isWaitForReadyExplicitlySet) {
+            ops[0].flags = when (callOptions.waitForReady) {
+                true -> GRPC_INITIAL_METADATA_WAIT_FOR_READY or
+                        GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
+                false -> GRPC_INITIAL_METADATA_WAIT_FOR_READY_EXPLICITLY_SET
+            }
         }
 
         val recvInitialMetadata = arena.alloc<grpc_metadata_array>()

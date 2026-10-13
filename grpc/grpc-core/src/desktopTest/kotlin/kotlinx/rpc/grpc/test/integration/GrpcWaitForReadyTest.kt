@@ -19,6 +19,7 @@ import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -62,7 +63,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
     @Test
     fun `wait for ready is unset by default`() {
         runGrpcTest(clientInterceptors = clientInterceptor {
-            assertNull(callOptions.waitForReady)
+            assertFalse(callOptions.waitForReady)
             proceed(it)
         }) {
             it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
@@ -83,7 +84,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
         val client = GrpcClient("localhost", UNAVAILABLE_PORT) {
             credentials = plaintext()
             clientInterceptor {
-                callOptions.waitForReady = waitForReady
+                waitForReady?.let { callOptions.waitForReady = it }
                 callOptions.timeout = FAIL_FAST_TIMEOUT
                 proceed(it)
             }.forEach { intercept(it) }

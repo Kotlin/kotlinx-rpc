@@ -8,16 +8,19 @@ import io.grpc.CallOptions
 import kotlinx.rpc.grpc.GrpcCompression
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration
 
 internal fun GrpcCallOptions.toJvm(coroutineContext: CoroutineContext): CallOptions {
     var default = CallOptions.DEFAULT
-    if (timeout != null) {
-        default = default.withDeadlineAfter(timeout!!.inWholeMilliseconds, TimeUnit.MILLISECONDS)
+    if (isTimeoutExplicitlySet && timeout != Duration.INFINITE) {
+        // Only change the java default (infinite) if timeout is explicitly set and not infinite.
+        default = default.withDeadlineAfter(timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
     }
-    when (waitForReady) {
-        true -> default = default.withWaitForReady()
-        false -> default = default.withoutWaitForReady()
-        null -> {}
+    if (isWaitForReadyExplicitlySet) {
+        default = when (waitForReady) {
+            true -> default.withWaitForReady()
+            false -> default.withoutWaitForReady()
+        }
     }
     if (compression !is GrpcCompression.None) {
         default = default.withCompression(compression.name)

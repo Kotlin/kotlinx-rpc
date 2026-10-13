@@ -13,35 +13,60 @@ import kotlin.time.Duration
  * This class allows configuring per-call behavior such as timeouts.
  */
 public class GrpcCallOptions {
+    internal var isTimeoutExplicitlySet = false
+    internal var isWaitForReadyExplicitlySet = false
+
     /**
      * The maximum duration to wait for the RPC to complete.
      *
-     * If set, the RPC will be canceled (with `DEADLINE_EXCEEDED`)
-     * if it does not complete within the specified duration.
-     * The timeout is measured from the moment the call is initiated.
-     * If `null`, no timeout is applied, and the call may run indefinitely.
+     * If the RPC exceeds the timeout, it fails with
+     * [kotlinx.rpc.grpc.GrpcStatusCode.DEADLINE_EXCEEDED].
+     * The timeout starts with the start of the call.
      *
-     * The default value is `null`.
-     *
-     * @see kotlin.time.Duration
+     * The default is [Duration.INFINITE], which sets no per-call timeout.
      */
-    public var timeout: Duration? = null
+    public var timeout: Duration = Duration.INFINITE
+        set(value) {
+            isTimeoutExplicitlySet = true
+            field = value
+        }
+
+    /**
+     * Restores [timeout] to its default.
+     */
+    public fun clearTimeout() {
+        timeout = Duration.INFINITE
+        isTimeoutExplicitlySet = false
+    }
 
     /**
      * Whether the call waits when the client can't connect to the server.
      *
-     * - `null` (the default) or `false`: the call fails immediately with
+     * - `false` (the default): the call fails immediately with
      *   [kotlinx.rpc.grpc.GrpcStatusCode.UNAVAILABLE].
      * - `true`: the call waits until the client connects. It fails with
      *   [kotlinx.rpc.grpc.GrpcStatusCode.DEADLINE_EXCEEDED] when its [timeout] expires.
      *
      * A call that starts while the client is connecting always waits for that connection attempt.
      *
-     * Set [timeout] when you use `true`, because a call without a deadline can wait forever.
+     * When this option is `true`, set a finite [timeout].
+     * Without a deadline, the call can remain pending indefinitely.
      *
      * @see [Wait-for-ready semantics](https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md)
      */
-    public var waitForReady: Boolean? = null
+    public var waitForReady: Boolean = false
+        set(value) {
+            isWaitForReadyExplicitlySet = true
+            field = value
+        }
+
+    /**
+     * Restores [waitForReady] to its default.
+     */
+    public fun clearWaitForReady() {
+        waitForReady = false
+        isWaitForReadyExplicitlySet = false
+    }
 
     /**
      * The compression algorithm to use for encoding outgoing messages in this call.
