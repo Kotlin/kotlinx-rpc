@@ -82,8 +82,8 @@
                 </deflist>
             </def>
             <def title="maxConnectionIdle">
-                *Sets the maximum connection idle time.
-                When a connection exceeds this idle time, the server begins to close it gracefully.*
+                Sets the maximum connection idle time.
+                When a connection exceeds this idle time, the server begins to close it gracefully.
                 Defaults to <code>Duration.INFINITE</code> (no limit).
             </def>
             <def title="maxConnectionAge">
