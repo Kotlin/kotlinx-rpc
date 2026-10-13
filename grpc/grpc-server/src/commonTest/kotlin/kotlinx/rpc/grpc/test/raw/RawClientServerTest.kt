@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.grpc.test.raw
@@ -10,6 +10,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
 import kotlinx.io.Source
 import kotlinx.io.readString
@@ -28,9 +29,11 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.internal.serviceDescriptor
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.internal.PlatformServer
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
+import kotlinx.rpc.grpc.server.internal.applyConfig
 import kotlinx.rpc.grpc.server.internal.bidiStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
@@ -107,7 +110,7 @@ class RawClientServerTest {
         type: GrpcMethodType,
         methodDefinition: CoroutineScope.(GrpcMethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
         block: suspend (GrpcClient, GrpcMethodDescriptor<String, String>) -> Unit,
-    ) = kotlinx.coroutines.test.runTest {
+    ) = runTest {
         val serverJob = Job()
         val serverScope = CoroutineScope(serverJob)
 
@@ -134,6 +137,8 @@ class RawClientServerTest {
                 methods = methods.map { serverScope.methodDefinition(it) },
             )
         )
+        builder.applyConfig(GrpcServerConfiguration())
+
         val server = PlatformServer(builder)
         server.start()
 
