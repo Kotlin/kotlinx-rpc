@@ -119,7 +119,8 @@
         <note>
             On the JVM, the server provider must support <code>keepAlive</code>, <code>maxConnectionIdle</code>,
             <code>maxConnectionAge</code>, and <code>maxConnectionAgeGrace</code>.
-            The bundled Netty provider does.
+            If the provider doesn't support these options, server creation throws a runtime exception.
+            The Netty provider supports these options.
         </note>
         <note>
             Finite durations must be less than <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
