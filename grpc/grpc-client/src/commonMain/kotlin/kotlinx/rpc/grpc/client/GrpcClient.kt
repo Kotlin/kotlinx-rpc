@@ -207,9 +207,9 @@ private fun GrpcClient(
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
-    internal var maxInboundMessageSizeSet = false
-    internal var maxInboundMetadataSizeSet = false
-    internal var idleTimeoutSet = false
+    internal var isMaxInboundMessageSizeExplicitlySet = false
+    internal var isMaxInboundMetadataSizeExplicitlySet = false
+    internal var isIdleTimeoutExplicitlySet = false
 
     /**
      * Configurable resolver used to determine the appropriate marshaller for a given Kotlin type
@@ -285,7 +285,7 @@ public class GrpcClientConfiguration internal constructor() {
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
             require(value >= 0) { "maxInboundMessageSize must be >= 0" }
-            maxInboundMessageSizeSet = true
+            isMaxInboundMessageSizeExplicitlySet = true
             field = value
         }
 
@@ -294,7 +294,7 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public fun clearMaxInboundMessageSize() {
         maxInboundMessageSize = 4 * 1024 * 1024
-        maxInboundMessageSizeSet = false
+        isMaxInboundMessageSizeExplicitlySet = false
     }
 
 
@@ -307,7 +307,7 @@ public class GrpcClientConfiguration internal constructor() {
     public var maxInboundMetadataSize: Int = 8 * 1024
         set(value) {
             require(value > 0) { "maxInboundMetadataSize must be > 0" }
-            maxInboundMetadataSizeSet = true
+            isMaxInboundMetadataSizeExplicitlySet = true
             field = value
         }
     /**
@@ -315,7 +315,7 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public fun clearMaxInboundMetadataSize() {
         maxInboundMetadataSize = 8 * 1024
-        maxInboundMetadataSizeSet = false
+        isMaxInboundMetadataSizeExplicitlySet = false
     }
 
     /**
@@ -329,7 +329,7 @@ public class GrpcClientConfiguration internal constructor() {
     public var idleTimeout: Duration = 30.minutes
         set(value) {
             value.validateConnectionDuration("idleTimeout", 1.seconds)
-            idleTimeoutSet = true
+            isIdleTimeoutExplicitlySet = true
             field = value
         }
 
@@ -338,7 +338,7 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public fun clearIdleTimeout() {
         idleTimeout = 30.minutes
-        idleTimeoutSet = false
+        isIdleTimeoutExplicitlySet = false
     }
 
     /**
