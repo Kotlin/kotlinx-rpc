@@ -40,11 +40,11 @@ public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
 	public final fun getCredentials ()Lio/grpc/ServerCredentials;
 	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
-	public final fun getMaxConnectionAge-FghU774 ()Lkotlin/time/Duration;
-	public final fun getMaxConnectionAgeGrace-FghU774 ()Lkotlin/time/Duration;
-	public final fun getMaxConnectionIdle-FghU774 ()Lkotlin/time/Duration;
-	public final fun getMaxInboundMessageSize ()Ljava/lang/Integer;
-	public final fun getMaxInboundMetadataSize ()Ljava/lang/Integer;
+	public final fun getMaxConnectionAge-UwyO8pc ()J
+	public final fun getMaxConnectionAgeGrace-UwyO8pc ()J
+	public final fun getMaxConnectionIdle-UwyO8pc ()J
+	public final fun getMaxInboundMessageSize ()I
+	public final fun getMaxInboundMetadataSize ()I
 	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
 	public final fun intercept ([Lkotlinx/rpc/grpc/server/GrpcServerInterceptor;)V
 	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
@@ -52,11 +52,11 @@ public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration {
 	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
 	public final fun setFallbackHandlerRegistry (Lio/grpc/HandlerRegistry;)V
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
-	public final fun setMaxConnectionAge-BwNAW2A (Lkotlin/time/Duration;)V
-	public final fun setMaxConnectionAgeGrace-BwNAW2A (Lkotlin/time/Duration;)V
-	public final fun setMaxConnectionIdle-BwNAW2A (Lkotlin/time/Duration;)V
-	public final fun setMaxInboundMessageSize (Ljava/lang/Integer;)V
-	public final fun setMaxInboundMetadataSize (Ljava/lang/Integer;)V
+	public final fun setMaxConnectionAge-LRDsOJo (J)V
+	public final fun setMaxConnectionAgeGrace-LRDsOJo (J)V
+	public final fun setMaxConnectionIdle-LRDsOJo (J)V
+	public final fun setMaxInboundMessageSize (I)V
+	public final fun setMaxInboundMetadataSize (I)V
 	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
 	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
 }
