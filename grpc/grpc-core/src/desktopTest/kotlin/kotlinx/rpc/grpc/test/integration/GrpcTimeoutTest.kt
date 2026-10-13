@@ -17,7 +17,7 @@ import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -64,7 +64,7 @@ class GrpcTimeoutTest : GrpcTestBase() {
         runGrpcTest(
             clientInterceptors = clientInterceptor {
                 // Verify default timeout is null
-                assertNull(callOptions.timeout)
+                assertEquals(Duration.INFINITE, callOptions.timeout)
                 proceed(it)
             }
         ) {
