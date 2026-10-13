@@ -36,6 +36,17 @@ public const val GRPC_ARG_KEEPALIVE_TIME_MS: String = "grpc.keepalive_time_ms"
 @InternalRpcApi
 public const val GRPC_ARG_KEEPALIVE_TIMEOUT_MS: String = "grpc.keepalive_timeout_ms"
 
+/**
+ * The C-core ping acknowledgment timeout.
+ *
+ * C-core 1.81.1 uses this watchdog for keepalive pings.
+ * Set it together with [GRPC_ARG_KEEPALIVE_TIMEOUT_MS] to apply the configured timeout.
+ *
+ * See [C-core watchdog scheduling](https://github.com/grpc/grpc/blob/v1.81.1/src/core/ext/transport/chttp2/transport/writing.cc#L737-L767)
+ */
+@InternalRpcApi
+public const val GRPC_ARG_PING_TIMEOUT_MS: String = "grpc.http2.ping_timeout_ms"
+
 @InternalRpcApi
 public const val GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS: String = "grpc.keepalive_permit_without_calls"
 

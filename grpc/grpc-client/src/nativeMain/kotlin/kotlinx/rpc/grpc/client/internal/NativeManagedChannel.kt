@@ -35,6 +35,7 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIMEOUT_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
+import kotlinx.rpc.grpc.internal.GRPC_ARG_PING_TIMEOUT_MS
 import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.ResourceGuard
@@ -123,13 +124,18 @@ internal class NativeManagedChannel(
         ))
 
         keepAlive?.let {
+            val timeoutMillis = it.timeout.toChannelArgMilliseconds()
             args.add(GrpcArg.Integer(
                 key = GRPC_ARG_KEEPALIVE_TIME_MS,
                 value = it.time.toChannelArgMilliseconds(),
             ))
             args.add(GrpcArg.Integer(
                 key = GRPC_ARG_KEEPALIVE_TIMEOUT_MS,
-                value = it.timeout.toChannelArgMilliseconds(),
+                value = timeoutMillis,
+            ))
+            args.add(GrpcArg.Integer(
+                key = GRPC_ARG_PING_TIMEOUT_MS,
+                value = timeoutMillis,
             ))
             args.add(GrpcArg.Integer(
                 key = GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS,

@@ -30,6 +30,7 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_IDLE_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
+import kotlinx.rpc.grpc.internal.GRPC_ARG_PING_TIMEOUT_MS
 import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
@@ -414,7 +415,11 @@ public fun buildServerChannelArgs(
     add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, maxInboundMetadataSize))
     add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, maxInboundMetadataSize))
     keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
-    keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
+    keepAliveTimeout?.let {
+        val timeoutMillis = it.toChannelArgMilliseconds()
+        add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, timeoutMillis))
+        add(GrpcArg.Integer(GRPC_ARG_PING_TIMEOUT_MS, timeoutMillis))
+    }
     // gRFC A9 says that the server also sends keepalive pings on connections without active calls.
     // C-core does that only with this arg.
     // The arg also lets clients ping an idle connection every 5 minutes instead of every 2 hours.
