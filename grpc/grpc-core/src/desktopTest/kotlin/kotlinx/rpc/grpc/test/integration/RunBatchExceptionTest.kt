@@ -16,7 +16,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
-import kotlinx.rpc.grpc.test.captureStdOut
+import kotlinx.rpc.test.captureStdOut
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test

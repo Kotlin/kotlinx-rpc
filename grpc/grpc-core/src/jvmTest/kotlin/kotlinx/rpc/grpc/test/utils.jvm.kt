@@ -4,8 +4,6 @@
 
 package kotlinx.rpc.grpc.test
 
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 import java.util.logging.Handler
 import java.util.logging.Level
 import java.util.logging.LogRecord
@@ -13,30 +11,6 @@ import java.util.logging.Logger
 
 actual val runtime: Runtime
     get() = Runtime.JVM
-
-actual suspend fun captureStdErr(block: suspend () -> Unit): String {
-    val orig = System.out
-    val baos = ByteArrayOutputStream()
-    System.setOut(PrintStream(baos))
-    try {
-        block()
-        return baos.toString()
-    } finally {
-        System.setOut(orig)
-    }
-}
-
-actual suspend fun captureStdOut(block: suspend () -> Unit): String {
-    val orig = System.out
-    val baos = ByteArrayOutputStream()
-    System.setOut(PrintStream(baos))
-    try {
-        block()
-        return baos.toString()
-    } finally {
-        System.setOut(orig)
-    }
-}
 
 actual suspend fun captureGrpcLogs(
     jvmLogLevel: String,

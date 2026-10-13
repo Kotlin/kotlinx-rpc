@@ -34,16 +34,6 @@ enum class Runtime {
 }
 expect val runtime: Runtime
 
-/**
- * Captures the standard error output written during the execution of the provided suspending block.
- *
- * @param block A suspending lambda function whose standard error output will be captured.
- * @return A string containing the captured standard error output.
- */
-expect suspend fun captureStdErr(block: suspend () -> Unit): String
-
-expect suspend fun captureStdOut(block: suspend () -> Unit): String
-
 expect suspend fun captureGrpcLogs(
     jvmLogLevel: String = "DEBUG",
     jvmLoggers: List<String> = listOf("io.grpc"),

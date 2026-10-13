@@ -26,6 +26,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
                 implementation(projects.grpc.grpcClient)
+                implementation(projects.tests.testUtils)
             }
         }
 
