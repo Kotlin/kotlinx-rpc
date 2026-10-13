@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc.test.integration
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.test.EchoService
@@ -22,13 +22,11 @@ class GrpcConnectionManagementTest : GrpcTestBase() {
     }
 
     @Test
-    fun `connection limits are propagated to the runtime`() {
-        testConnectionManagement(
-            maxIdle = 5.seconds,
-            maxAge = 10.seconds,
-            maxAgeGrace = 2.seconds,
-        )
-    }
+    fun `connection limits are propagated to the runtime`() = testConnectionManagement(
+        maxIdle = 5.seconds,
+        maxAge = 10.seconds,
+        maxAgeGrace = 2.seconds,
+    )
 
     @Test
     fun `connection idle rejects values below one second`() {
@@ -59,16 +57,14 @@ class GrpcConnectionManagementTest : GrpcTestBase() {
     }
 
     @Test
-    fun `infinite connection limits are accepted`() {
-        runBlocking {
-            val server = GrpcServer(0) {
-                maxConnectionIdle = Duration.INFINITE
-                maxConnectionAge = Duration.INFINITE
-                maxConnectionAgeGrace = Duration.INFINITE
-            }
-            server.shutdownNow()
-            server.awaitTermination(30.seconds)
+    fun `infinite connection limits are accepted`() = runTest {
+        val server = GrpcServer(0) {
+            maxConnectionIdle = Duration.INFINITE
+            maxConnectionAge = Duration.INFINITE
+            maxConnectionAgeGrace = Duration.INFINITE
         }
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
     }
 }
 

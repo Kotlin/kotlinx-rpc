@@ -44,7 +44,7 @@ actual fun GrpcTestBase.testKeepAlive(
 actual fun GrpcTestBase.testServerKeepAlive(
     time: Duration,
     timeout: Duration,
-) {
+) = runTest {
     val args = createdServerChannelArgs {
         keepAlive {
             this.time = time

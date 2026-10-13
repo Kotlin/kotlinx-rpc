@@ -211,7 +211,8 @@ public class GrpcServerConfiguration internal constructor() {
      * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
      * at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, the server provider must support this option. The bundled Netty provider does.
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
      */
     public var maxConnectionIdle: Duration? = null
         set(value) {
@@ -225,7 +226,8 @@ public class GrpcServerConfiguration internal constructor() {
      * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
      * at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, the server provider must support this option. The bundled Netty provider does.
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
      */
     public var maxConnectionAge: Duration? = null
         set(value) {
@@ -239,7 +241,8 @@ public class GrpcServerConfiguration internal constructor() {
      * If `null` (the default) or [Duration.INFINITE], active RPCs can run to completion without a deadline.
      * Finite values can't be negative and must be less than `Int.MAX_VALUE` milliseconds.
      *
-     * On the JVM, the server provider must support this option. The bundled Netty provider does.
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
      */
     public var maxConnectionAgeGrace: Duration? = null
         set(value) {
@@ -289,7 +292,8 @@ public class GrpcServerConfiguration internal constructor() {
      * A client that repeatedly pings more often loses its connection.
      * The server sends `GOAWAY` with the debug data `too_many_pings`.
      *
-     * On the JVM, the server provider must support this option. The bundled Netty provider does.
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
      */
     public fun keepAlive(configure: KeepAlive.() -> Unit) {
         keepAlive = KeepAlive().apply(configure)

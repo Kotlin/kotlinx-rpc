@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.test.integration
 
-import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
@@ -120,16 +119,15 @@ class ServerChannelArgsTest {
 /**
  * Returns the channel args that a [GrpcServer] built with [configure] passes to C-core.
  */
-internal fun createdServerChannelArgs(configure: GrpcServerConfiguration.() -> Unit): Map<String, Int> =
-    runBlocking {
-        val server = GrpcServer(0, configure = configure)
-        try {
-            server.channelArgs.toMap()
-        } finally {
-            server.shutdownNow()
-            server.awaitTermination(30.seconds)
-        }
+internal suspend fun createdServerChannelArgs(configure: GrpcServerConfiguration.() -> Unit): Map<String, Int> {
+    val server = GrpcServer(0, configure = configure)
+    try {
+        return server.channelArgs.toMap()
+    } finally {
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
     }
+}
 
 private fun List<GrpcArg>.toMap(): Map<String, Int> =
     associate { it.key to (it as GrpcArg.Integer).value }

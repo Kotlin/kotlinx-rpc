@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -12,7 +13,7 @@ internal actual fun GrpcTestBase.testConnectionManagement(
     maxIdle: Duration,
     maxAge: Duration,
     maxAgeGrace: Duration,
-) {
+) = runTest {
     val args = createdServerChannelArgs {
         maxConnectionIdle = maxIdle
         maxConnectionAge = maxAge

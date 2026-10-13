@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
@@ -52,7 +53,7 @@ actual fun GrpcTestBase.testKeepAlive(
 actual fun GrpcTestBase.testServerKeepAlive(
     time: Duration,
     timeout: Duration,
-) = runBlocking {
+) = runTest {
     val server = GrpcServer(0) {
         keepAlive {
             this.time = time
