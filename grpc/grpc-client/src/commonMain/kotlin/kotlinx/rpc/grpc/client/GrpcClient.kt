@@ -10,7 +10,6 @@ import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
-import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
@@ -30,6 +29,7 @@ import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private typealias RequestClient = Any
@@ -184,7 +184,7 @@ private fun GrpcClient(
     builder: ManagedChannelBuilder<*>,
     config: GrpcClientConfiguration,
 ): GrpcClient {
-    val channel = builder.applyConfig(config).buildChannel()
+    val channel = builder.buildChannel(config)
     val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
     return GrpcClient(
         channel = channel,
@@ -207,6 +207,9 @@ private fun GrpcClient(
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
+    internal var maxInboundMessageSizeSet = false
+    internal var maxInboundMetadataSizeSet = false
+    internal var idleTimeoutSet = false
 
     /**
      * Configurable resolver used to determine the appropriate marshaller for a given Kotlin type
@@ -276,40 +279,67 @@ public class GrpcClientConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of an inbound message.
      *
-     * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
+     * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      */
-    public var maxInboundMessageSize: Int? = null
+    public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
-            require(value == null || value >= 0) { "maxInboundMessageSize must be >= 0" }
+            require(value >= 0) { "maxInboundMessageSize must be >= 0" }
+            maxInboundMessageSizeSet = true
             field = value
         }
 
     /**
+     * Restores the default value of [maxInboundMessageSize].
+     */
+    public fun clearMaxInboundMessageSize() {
+        maxInboundMessageSize = 4 * 1024 * 1024
+        maxInboundMessageSizeSet = false
+    }
+
+
+    /**
      * The maximum size, in bytes, of inbound metadata.
      *
-     * If `null` (the default), the limit is 8 KiB (8,192 bytes).
+     * The default limit is 8 KiB (8,192 bytes).
      * Values must be positive.
      */
-    public var maxInboundMetadataSize: Int? = null
+    public var maxInboundMetadataSize: Int = 8 * 1024
         set(value) {
-            require(value == null || value > 0) { "maxInboundMetadataSize must be > 0" }
+            require(value > 0) { "maxInboundMetadataSize must be > 0" }
+            maxInboundMetadataSizeSet = true
             field = value
         }
+    /**
+     * Restores the default value of [maxInboundMetadataSize].
+     */
+    public fun clearMaxInboundMetadataSize() {
+        maxInboundMetadataSize = 8 * 1024
+        maxInboundMetadataSizeSet = false
+    }
 
     /**
      * The time with no active RPCs after which the client enters idle mode and closes its connections.
      * A new RPC takes the client out of idle mode.
      *
-     * If `null` (the default), the timeout is 30 minutes.
+     * The default timeout is 30 minutes.
      * [Duration.INFINITE] disables automatic idle mode.
      * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
      */
-    public var idleTimeout: Duration? = null
+    public var idleTimeout: Duration = 30.minutes
         set(value) {
             value.validateConnectionDuration("idleTimeout", 1.seconds)
+            idleTimeoutSet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [idleTimeout].
+     */
+    public fun clearIdleTimeout() {
+        idleTimeout = 30.minutes
+        idleTimeoutSet = false
+    }
 
     /**
      * Adds one or more client-side interceptors to the current gRPC client configuration.

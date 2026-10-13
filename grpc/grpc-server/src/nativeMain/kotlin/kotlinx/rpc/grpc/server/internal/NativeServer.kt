@@ -31,7 +31,6 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_IDLE_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
 import kotlinx.rpc.grpc.internal.GrpcArg
-import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
@@ -71,12 +70,12 @@ internal class NativeServer(
     private val credentials: GrpcServerCredentials,
     services: List<GrpcServerServiceDefinition>,
     val fallbackRegistry: GrpcHandlerRegistry,
-    maxInboundMessageSize: Int?,
-    maxInboundMetadataSize: Int?,
+    maxInboundMessageSize: Int,
+    maxInboundMetadataSize: Int,
     keepAlive: GrpcServerConfiguration.KeepAlive?,
-    maxConnectionIdle: Duration?,
-    maxConnectionAge: Duration?,
-    maxConnectionAgeGrace: Duration?,
+    maxConnectionIdle: Duration,
+    maxConnectionAge: Duration,
+    maxConnectionAgeGrace: Duration,
 ) : PlatformServer {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -400,21 +399,20 @@ public val GrpcServer.channelArgs: List<GrpcArg>
  */
 @InternalRpcApi
 public fun buildServerChannelArgs(
-    maxInboundMessageSize: Int?,
-    maxInboundMetadataSize: Int?,
+    maxInboundMessageSize: Int,
+    maxInboundMetadataSize: Int,
     keepAliveTime: Duration?,
     keepAliveTimeout: Duration?,
-    maxConnectionIdle: Duration?,
-    maxConnectionAge: Duration?,
-    maxConnectionAgeGrace: Duration?,
+    maxConnectionIdle: Duration,
+    maxConnectionAge: Duration,
+    maxConnectionAgeGrace: Duration,
 ): List<GrpcArg> = buildList {
     add(GrpcArg.Integer(
         GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
-        maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE,
+        maxInboundMessageSize,
     ))
-    val metadataSize = maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE
-    add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, metadataSize))
-    add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, metadataSize))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, maxInboundMetadataSize))
+    add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, maxInboundMetadataSize))
     keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
     keepAliveTimeout?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, it.toChannelArgMilliseconds())) }
     // gRFC A9 says that the server also sends keepalive pings on connections without active calls.
@@ -423,11 +421,9 @@ public fun buildServerChannelArgs(
     // C-core has no separate setting for that.
     // https://github.com/grpc/proposal/blob/master/A9-server-side-conn-mgt.md
     add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1))
-    maxConnectionIdle?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, it.toChannelArgMilliseconds())) }
-    maxConnectionAge?.let { add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, it.toChannelArgMilliseconds())) }
-    maxConnectionAgeGrace?.let {
-        add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS, it.toChannelArgMilliseconds()))
-    }
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, maxConnectionIdle.toChannelArgMilliseconds()))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, maxConnectionAge.toChannelArgMilliseconds()))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS, maxConnectionAgeGrace.toChannelArgMilliseconds()))
 }
 
 /**

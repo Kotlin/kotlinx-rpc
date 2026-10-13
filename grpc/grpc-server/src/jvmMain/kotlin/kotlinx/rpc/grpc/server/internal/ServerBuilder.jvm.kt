@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.internal
 
 import io.grpc.Grpc
-import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
@@ -32,15 +31,15 @@ public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
 }
 
 internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
-    maxInboundMessageSize(config.maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE)
-    maxInboundMetadataSize(config.maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE)
+    maxInboundMessageSize(config.maxInboundMessageSize)
+    maxInboundMetadataSize(config.maxInboundMetadataSize)
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
     }
-    config.maxConnectionIdle?.let { maxConnectionIdle(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
-    config.maxConnectionAge?.let { maxConnectionAge(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
-    config.maxConnectionAgeGrace?.let { maxConnectionAgeGrace(it.inWholeNanoseconds, TimeUnit.NANOSECONDS) }
+    maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
     return this
 }
 

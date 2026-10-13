@@ -45,8 +45,8 @@ class ServerChannelArgsTest {
     @Test
     fun `infinite durations map to the INT_MAX unbounded value`() {
         val args = buildServerChannelArgs(
-            maxInboundMessageSize = null,
-            maxInboundMetadataSize = null,
+            maxInboundMessageSize = 4 * 1024 * 1024,
+            maxInboundMetadataSize = 8 * 1024,
             keepAliveTime = Duration.INFINITE,
             keepAliveTimeout = Duration.INFINITE,
             maxConnectionIdle = Duration.INFINITE,
@@ -59,26 +59,6 @@ class ServerChannelArgsTest {
         assertEquals(Int.MAX_VALUE, args["grpc.max_connection_idle_ms"])
         assertEquals(Int.MAX_VALUE, args["grpc.max_connection_age_ms"])
         assertEquals(Int.MAX_VALUE, args["grpc.max_connection_age_grace_ms"])
-    }
-
-    @Test
-    fun `unset options apply shared defaults without connection limits`() {
-        val args = buildServerChannelArgs(
-            maxInboundMessageSize = null,
-            maxInboundMetadataSize = null,
-            keepAliveTime = null,
-            keepAliveTimeout = null,
-            maxConnectionIdle = null,
-            maxConnectionAge = null,
-            maxConnectionAgeGrace = null,
-        ).toMap()
-
-        assertEquals(mapOf(
-            "grpc.max_receive_message_length" to 4 * 1024 * 1024,
-            "grpc.max_metadata_size" to 8 * 1024,
-            "grpc.absolute_max_metadata_size" to 8 * 1024,
-            "grpc.keepalive_permit_without_calls" to 1,
-        ), args)
     }
 
     @Test
@@ -103,14 +83,14 @@ class ServerChannelArgsTest {
     }
 
     private fun buildServerChannelArgs(
-        maxConnectionAge: Duration? = null,
-        maxConnectionAgeGrace: Duration? = null,
+        maxConnectionAge: Duration = Duration.INFINITE,
+        maxConnectionAgeGrace: Duration = Duration.INFINITE,
     ): List<GrpcArg> = buildServerChannelArgs(
-        maxInboundMessageSize = null,
-        maxInboundMetadataSize = null,
+        maxInboundMessageSize = 4 * 1024 * 1024,
+        maxInboundMetadataSize = 8 * 1024,
         keepAliveTime = null,
         keepAliveTimeout = null,
-        maxConnectionIdle = null,
+        maxConnectionIdle = Duration.INFINITE,
         maxConnectionAge = maxConnectionAge,
         maxConnectionAgeGrace = maxConnectionAgeGrace,
     )

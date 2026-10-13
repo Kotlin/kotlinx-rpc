@@ -5,7 +5,6 @@
 @file:OptIn(
     ExperimentalForeignApi::class,
     ExperimentalNativeApi::class,
-    InternalNativeRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.client.internal
@@ -37,7 +36,6 @@ import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
 import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
 import kotlinx.rpc.grpc.internal.GrpcArg
-import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.ResourceGuard
 import kotlinx.rpc.grpc.internal.internalError
@@ -50,7 +48,6 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_create_call
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_credentials_release
 import kotlinx.rpc.grpc.internal.cinterop.grpc_channel_destroy
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
-import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.experimental.ExperimentalNativeApi
@@ -70,9 +67,9 @@ internal class NativeManagedChannel(
     val overrideAuthority: String?,
     val keepAlive: GrpcClientConfiguration.KeepAlive?,
     val userAgent: String?,
-    val maxInboundMessageSize: Int?,
-    val maxInboundMetadataSize: Int?,
-    val idleTimeout: Duration?,
+    val maxInboundMessageSize: Int,
+    val maxInboundMetadataSize: Int,
+    val idleTimeout: Duration,
     // this is not a composite channel credentials
     clientCredentials: GrpcClientCredentials,
 ) : ManagedChannel, ManagedChannelPlatform() {
@@ -113,16 +110,16 @@ internal class NativeManagedChannel(
 
         args.add(GrpcArg.Integer(
             key = GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
-            value = maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE,
+            value = maxInboundMessageSize,
         ))
 
-        val metadataSize = maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE
+        val metadataSize = maxInboundMetadataSize
         args.add(GrpcArg.Integer(key = GRPC_ARG_MAX_METADATA_SIZE, value = metadataSize))
         args.add(GrpcArg.Integer(key = GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, value = metadataSize))
 
         args.add(GrpcArg.Integer(
             key = GRPC_ARG_CLIENT_IDLE_TIMEOUT_MS,
-            value = (idleTimeout ?: GrpcConfigurationDefaults.CLIENT_IDLE_TIMEOUT).toChannelArgMilliseconds(),
+            value = (idleTimeout).toChannelArgMilliseconds(),
         ))
 
         keepAlive?.let {

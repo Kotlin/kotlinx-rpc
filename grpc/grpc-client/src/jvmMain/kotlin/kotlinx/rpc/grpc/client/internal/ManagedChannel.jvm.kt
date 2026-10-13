@@ -12,7 +12,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.toJvm
-import kotlinx.rpc.grpc.internal.GrpcConfigurationDefaults
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
@@ -28,11 +27,6 @@ public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
  */
 @InternalRpcApi
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
-
-@InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    return build().toKotlin()
-}
 
 @InternalRpcApi
 public actual fun ManagedChannelBuilder(
@@ -84,7 +78,8 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
         get() = channel
 }
 
-internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
@@ -93,11 +88,12 @@ internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfi
 
     config.overrideAuthority?.let { overrideAuthority(it) }
     config.userAgent?.let { userAgent(it) }
-    maxInboundMessageSize(config.maxInboundMessageSize ?: GrpcConfigurationDefaults.MAX_INBOUND_MESSAGE_SIZE)
-    maxInboundMetadataSize(config.maxInboundMetadataSize ?: GrpcConfigurationDefaults.MAX_INBOUND_METADATA_SIZE)
+    maxInboundMessageSize(config.maxInboundMessageSize)
+    maxInboundMetadataSize(config.maxInboundMetadataSize)
     idleTimeout(
-        (config.idleTimeout ?: GrpcConfigurationDefaults.CLIENT_IDLE_TIMEOUT).inWholeMilliseconds,
+        config.idleTimeout.inWholeMilliseconds,
         TimeUnit.MILLISECONDS,
     )
-    return this
+
+    return build().toKotlin()
 }

@@ -44,6 +44,7 @@ private class NativeServerBuilder(
 
     override fun build(): PlatformServer {
         require(!buildCalled) { "build() can only be called once" }
+        val config = checkNotNull(config) { "config must be set before calling build()" }
         buildCalled = true
 
         return NativeServer(
@@ -51,16 +52,16 @@ private class NativeServerBuilder(
             credentials,
             services,
             fallbackRegistry,
-            maxInboundMessageSize = config?.maxInboundMessageSize,
-            maxInboundMetadataSize = config?.maxInboundMetadataSize,
-            keepAlive = config?.keepAlive,
-            maxConnectionIdle = config?.maxConnectionIdle,
-            maxConnectionAge = config?.maxConnectionAge,
-            maxConnectionAgeGrace = config?.maxConnectionAgeGrace,
+            maxInboundMessageSize = config.maxInboundMessageSize,
+            maxInboundMetadataSize = config.maxInboundMetadataSize,
+            keepAlive = config.keepAlive,
+            maxConnectionIdle = config.maxConnectionIdle,
+            maxConnectionAge = config.maxConnectionAge,
+            maxConnectionAgeGrace = config.maxConnectionAgeGrace,
         ).also {
             // Set config to null to release references to configuration lambdas
             // like services {}
-            config = null
+            this.config = null
         }
     }
 }
