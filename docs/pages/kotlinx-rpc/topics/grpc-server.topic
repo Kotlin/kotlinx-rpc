@@ -66,25 +66,36 @@
             </def>
             <def title="keepAlive { ... }">
                 Configures server-side keep-alive pings to detect broken connections.
-                The server sends pings on all connections, including connections without active calls.
-                Defaults to a two-hour interval and a 20-second timeout.
-                Set <code>time</code> to <code>Duration.INFINITE</code> to disable pings, or
-                <code>timeout</code> to <code>Duration.INFINITE</code> to wait for a ping response without limit.
-                Finite intervals must be at least 10 seconds, and finite timeouts at least 10 milliseconds.
+                The server sends pings on all connections.
+
+                <deflist>
+                    <def title="time">
+                        The time without read activity after which the server sends a keepalive ping.
+                        The default is two hours. With <code>Duration.INFINITE</code>, the server disables the pings.
+                        Finite values must be at least 10 seconds.
+                    </def>
+                    <def title="timeout">
+                        The time that the server waits for read activity after a keepalive ping.
+                        Defaults to 20 seconds. With <code>Duration.INFINITE</code>, the server waits without limit.
+                        Finite values must be at least 10 milliseconds.
+                    </def>
+                </deflist>
             </def>
             <def title="maxConnectionIdle">
-                The maximum time that a connection can have no active RPCs before the server closes it gracefully.
-                Defaults to <code>null</code> (no limit). <code>Duration.INFINITE</code> has the same effect.
+                *Sets the maximum connection idle time.
+                When a connection exceeds this idle time, the server begins to close it gracefully.*
+                Defaults to <code>Duration.INFINITE</code> (no limit).
             </def>
             <def title="maxConnectionAge">
-                The maximum time that a connection can exist before the server closes it gracefully.
-                Defaults to <code>null</code> (no limit). <code>Duration.INFINITE</code> has the same effect.
+                Sets the maximum connection age.
+                When a connection reaches this age, the server begins to close it gracefully.
+                Defaults to <code>Duration.INFINITE</code> (no limit).
             </def>
             <def title="maxConnectionAgeGrace">
-                The time that active RPCs have to finish after a connection reaches
-                <code>maxConnectionAge</code>.
-                Defaults to <code>null</code>, which lets active RPCs run to completion.
-                <code>Duration.INFINITE</code> has the same effect.
+                Sets the grace time for the graceful connection termination.
+                Once the <code>maxConnectionAge</code> is reached, RPCs have the grace time to complete.
+                RPCs that do not complete in time will be cancelled, allowing the connection to terminate.
+                Defaults to <code>Duration.INFINITE</code>, which lets active RPCs run to completion.
             </def>
         </deflist>
         <p>

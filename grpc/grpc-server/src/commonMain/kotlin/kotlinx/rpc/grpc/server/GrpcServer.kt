@@ -184,67 +184,70 @@ public class GrpcServerConfiguration internal constructor() {
     /**
      * The maximum size, in bytes, of an inbound message.
      *
-     * If `null` (the default), the limit is 4 MiB (4,194,304 bytes).
+     * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      */
-    public var maxInboundMessageSize: Int? = null
+    public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
-            require(value == null || value >= 0) { "maxInboundMessageSize must be >= 0" }
+            require(value >= 0) { "maxInboundMessageSize must be >= 0" }
             field = value
         }
 
     /**
      * The maximum size, in bytes, of inbound metadata.
      *
-     * If `null` (the default), the limit is 8 KiB (8,192 bytes).
+     * The default limit is 8 KiB (8,192 bytes).
      * Values must be positive.
      */
-    public var maxInboundMetadataSize: Int? = null
+    public var maxInboundMetadataSize: Int = 8 * 1024
         set(value) {
-            require(value == null || value > 0) { "maxInboundMetadataSize must be > 0" }
+            require(value > 0) { "maxInboundMetadataSize must be > 0" }
             field = value
         }
 
     /**
-     * The maximum time that a connection can have no active RPCs before the server closes it gracefully.
+     * *Sets the maximum connection idle time.
+     * When a connection exceeds this idle time, the server begins to close it gracefully.*
      *
-     * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
-     * at least one second and less than `Int.MAX_VALUE` milliseconds.
+     * The default is [Duration.INFINITE] (no limit).
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
-    public var maxConnectionIdle: Duration? = null
+    public var maxConnectionIdle: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionIdle", 1.seconds)
             field = value
         }
 
     /**
-     * The maximum time that a connection can exist before the server closes it gracefully.
+     * Sets the maximum connection age. When a connection reaches this age, the server begins to close it gracefully.
      *
-     * If `null` (the default) or [Duration.INFINITE], the server sets no limit. Finite values must be
-     * at least one second and less than `Int.MAX_VALUE` milliseconds.
+     * The default is [Duration.INFINITE] (no limit).
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
      *
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
-    public var maxConnectionAge: Duration? = null
+    public var maxConnectionAge: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAge", 1.seconds)
             field = value
         }
 
     /**
-     * The time that active RPCs have to finish after a connection reaches [maxConnectionAge].
+     * Sets the grace time for the graceful connection termination.
+     * Once the [maxConnectionAge] is reached, RPCs have the grace time to complete.
+     * RPCs that do not complete in time will be cancelled, allowing the connection to terminate.
      *
-     * If `null` (the default) or [Duration.INFINITE], active RPCs can run to completion without a deadline.
+     * The default is [Duration.INFINITE] (no deadline).
      * Finite values can't be negative and must be less than `Int.MAX_VALUE` milliseconds.
      *
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
-    public var maxConnectionAgeGrace: Duration? = null
+    public var maxConnectionAgeGrace: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAgeGrace", Duration.ZERO)
             field = value
