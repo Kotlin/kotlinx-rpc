@@ -12,7 +12,7 @@ import io.grpc.ServerCallHandler
 import io.grpc.ServerServiceDefinition
 import io.grpc.Status
 import kxrpc.testing.MalformedResponse
-import kxrpc.testing.MalformedResponseCardinality
+import kxrpc.testing.MalformedResponseCount
 import kxrpc.testing.MalformedResponseRequest
 import kxrpc.testing.MalformedResponseServiceGrpc
 
@@ -23,7 +23,7 @@ import kxrpc.testing.MalformedResponseServiceGrpc
  *
  * The server binds `UnaryCall` as server-streaming and `StreamingInputCall` as bidirectional streaming. So a call
  * that the proto declares as unary or client-streaming can complete with zero or two response messages. The
- * `malformed_response_cardinality` of the scenario selects the count.
+ * `malformed_response_count` of the scenario selects the count.
  */
 internal class MalformedResponseTestService(
     private val registry: CallScenarioRegistry,
@@ -63,20 +63,20 @@ internal class MalformedResponseTestService(
             return object : ServerCall.Listener<MalformedResponseRequest>() {}
         }
 
-        val cardinality = registry.configuration(callId).malformedResponseCardinality
-        if (cardinality == MalformedResponseCardinality.MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED) {
-            call.closeInvalid("the scenario doesn't set malformed_response_cardinality. Set it in ConfigureScenario")
+        val count = registry.configuration(callId).malformedResponseCount
+        if (count == MalformedResponseCount.MALFORMED_RESPONSE_COUNT_UNSPECIFIED) {
+            call.closeInvalid("the scenario doesn't set malformed_response_count. Set it in ConfigureScenario")
             return object : ServerCall.Listener<MalformedResponseRequest>() {}
         }
 
         // For a unary call, the server requests one message more than expected, so it can find a second request.
         call.request(if (clientStreaming) 1 else 2)
-        return MalformedResponseCallListener(call, cardinality, clientStreaming)
+        return MalformedResponseCallListener(call, count, clientStreaming)
     }
 
     private class MalformedResponseCallListener(
         private val call: ServerCall<MalformedResponseRequest, MalformedResponse>,
-        private val cardinality: MalformedResponseCardinality,
+        private val count: MalformedResponseCount,
         private val clientStreaming: Boolean,
     ) : ServerCall.Listener<MalformedResponseRequest>() {
         private var requestCount: Int = 0
@@ -99,18 +99,18 @@ internal class MalformedResponseTestService(
             }
 
             call.sendHeaders(Metadata())
-            when (cardinality) {
-                MalformedResponseCardinality.OMIT_RESPONSE -> {
+            when (count) {
+                MalformedResponseCount.OMIT_RESPONSE -> {
                     // No response message. The call closes with OK below.
                 }
-                MalformedResponseCardinality.DUPLICATE_RESPONSE -> {
+                MalformedResponseCount.DUPLICATE_RESPONSE -> {
                     call.sendMessage(responsePayload)
                     call.sendMessage(responsePayload)
                 }
-                MalformedResponseCardinality.MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED,
-                MalformedResponseCardinality.UNRECOGNIZED,
+                MalformedResponseCount.MALFORMED_RESPONSE_COUNT_UNSPECIFIED,
+                MalformedResponseCount.UNRECOGNIZED,
                 -> {
-                    error("validated malformed response cardinality became invalid")
+                    error("validated malformed response count became invalid")
                 }
             }
             call.close(Status.OK, Metadata())

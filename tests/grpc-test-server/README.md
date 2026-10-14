@@ -65,7 +65,7 @@ specification: empty, unary, and all streaming kinds, with requested sizes, dela
 | `kxrpc.testing.GrpcClientControlService`   | `kxrpc/testing/client_control.proto`  | The tests call it to set up, drive, and inspect scenarios (see [Scenarios](#scenarios)).                      |
 
 A `TestService` call without scenario metadata behaves exactly like a call to the grpc-java interop server.
-A `MalformedResponseService` call needs a scenario that sets `malformed_response_cardinality`. Without it,
+A `MalformedResponseService` call needs a scenario that sets `malformed_response_count`. Without it,
 the call fails with `INVALID_ARGUMENT`.
 
 ## Scenarios
@@ -117,7 +117,7 @@ A typical test has these steps:
 | `terminal_behavior`                     | Closes the call early with a given status. See the terminal stages below.                               |
 | `flow_control.manual_inbound_demand`    | The server reads request messages only after `GrantInboundDemand`. Only for the request-streaming methods of `TestService`. |
 | `flow_control.respect_response_readiness` | The server holds back responses while the client isn't ready to receive them. Only for the streaming-response methods of `TestService`. |
-| `malformed_response_cardinality`        | `OMIT_RESPONSE` (zero responses) or `DUPLICATE_RESPONSE` (two responses) for `MalformedResponseService`. |
+| `malformed_response_count`                | `OMIT_RESPONSE` (zero responses) or `DUPLICATE_RESPONSE` (two responses) for `MalformedResponseService`. |
 
 A barrier is a point in the server's handling of the call where the call pauses until the test calls
 `ReleaseBarrier`. Each barrier has a type and a one-based occurrence:

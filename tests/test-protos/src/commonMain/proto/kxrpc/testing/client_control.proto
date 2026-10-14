@@ -59,7 +59,7 @@ service GrpcClientControlService {
 // such as a unary call with no response message or with two.
 //
 // Each call must carry the "kxrpc-test-call-id" metadata of a scenario that
-// sets malformed_response_cardinality. Without the metadata, the call fails
+// sets malformed_response_count. Without the metadata, the call fails
 // with INVALID_ARGUMENT.
 service MalformedResponseService {
   // Fails with INVALID_ARGUMENT unless the client sends exactly one request
@@ -93,7 +93,7 @@ message ConfigureScenarioRequest {
   TerminalBehavior terminal_behavior = 5;
 
   // Used only by MalformedResponseService.
-  MalformedResponseCardinality malformed_response_cardinality = 6;
+  MalformedResponseCount malformed_response_count = 6;
 
   // Flow-control behavior for backpressure tests.
   FlowControlBehavior flow_control = 7;
@@ -170,12 +170,12 @@ enum TerminalStage {
   AFTER_SERVICE_COMPLETION = 4;
 }
 
-// Response cardinality of MalformedResponseService. Both methods send initial
-// headers and close with OK after the client half-closes.
-enum MalformedResponseCardinality {
+// Number of response messages that MalformedResponseService sends. Both methods
+// send initial headers and close with OK after the client half-closes.
+enum MalformedResponseCount {
   // Not configured. MalformedResponseService rejects the call with
   // INVALID_ARGUMENT.
-  MALFORMED_RESPONSE_CARDINALITY_UNSPECIFIED = 0;
+  MALFORMED_RESPONSE_COUNT_UNSPECIFIED = 0;
 
   // Closes the call with no response message.
   OMIT_RESPONSE = 1;

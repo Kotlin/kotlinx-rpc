@@ -18,7 +18,7 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
-import kxrpc.testing.MalformedResponseCardinality
+import kxrpc.testing.MalformedResponseCount
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.TerminalStage
 
@@ -45,8 +45,8 @@ internal class CallScenarioRegistry(
         validateMetadata(request.initialMetadataList)
         validateMetadata(request.trailingMetadataList)
         validateTerminalBehavior(request)
-        require(request.malformedResponseCardinality != MalformedResponseCardinality.UNRECOGNIZED) {
-            "malformed_response_cardinality has an unknown value. Use a value from client_control.proto"
+        require(request.malformedResponseCount != MalformedResponseCount.UNRECOGNIZED) {
+            "malformed_response_count has an unknown value. Use a value from client_control.proto"
         }
 
         val barriers = request.barriersList.map { barrier -> barrierKey(barrier.type, barrier.occurrence) }.toSet()

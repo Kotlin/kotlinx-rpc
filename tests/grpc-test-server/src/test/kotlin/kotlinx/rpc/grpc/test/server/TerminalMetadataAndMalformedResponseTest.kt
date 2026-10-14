@@ -18,7 +18,7 @@ import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MalformedResponse
-import kxrpc.testing.MalformedResponseCardinality
+import kxrpc.testing.MalformedResponseCount
 import kxrpc.testing.MalformedResponseRequest
 import kxrpc.testing.MalformedResponseServiceGrpc
 import kxrpc.testing.TerminalBehavior
@@ -31,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class TerminalMetadataAndCardinalityTest {
+class TerminalMetadataAndMalformedResponseTest {
     @Test
     fun configuredMetadataAndTerminalStatusArePreservedAndTraced() = withFixture { fixture ->
         val callId = "metadata-terminal"
@@ -219,13 +219,13 @@ class TerminalMetadataAndCardinalityTest {
     @Test
     fun unaryMalformedResponseHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
         listOf(
-            MalformedResponseCardinality.OMIT_RESPONSE,
-            MalformedResponseCardinality.DUPLICATE_RESPONSE,
-        ).forEach { cardinality ->
-            val callId = "unary-${cardinality.name.lowercase()}"
+            MalformedResponseCount.OMIT_RESPONSE,
+            MalformedResponseCount.DUPLICATE_RESPONSE,
+        ).forEach { malformedCount ->
+            val callId = "unary-${malformedCount.name.lowercase()}"
             fixture.configure(
                 scenario(callId)
-                    .setMalformedResponseCardinality(cardinality)
+                    .setMalformedResponseCount(malformedCount)
                     .build()
             )
 
@@ -241,7 +241,7 @@ class TerminalMetadataAndCardinalityTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (cardinality == MalformedResponseCardinality.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
@@ -250,13 +250,13 @@ class TerminalMetadataAndCardinalityTest {
     @Test
     fun clientStreamingMalformedResponseHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
         listOf(
-            MalformedResponseCardinality.OMIT_RESPONSE,
-            MalformedResponseCardinality.DUPLICATE_RESPONSE,
-        ).forEach { cardinality ->
-            val callId = "client-streaming-${cardinality.name.lowercase()}"
+            MalformedResponseCount.OMIT_RESPONSE,
+            MalformedResponseCount.DUPLICATE_RESPONSE,
+        ).forEach { malformedCount ->
+            val callId = "client-streaming-${malformedCount.name.lowercase()}"
             fixture.configure(
                 scenario(callId)
-                    .setMalformedResponseCardinality(cardinality)
+                    .setMalformedResponseCount(malformedCount)
                     .build()
             )
             val response = AwaitingObserver<MalformedResponse>()
@@ -275,7 +275,7 @@ class TerminalMetadataAndCardinalityTest {
             requests.onCompleted()
 
             val events = response.awaitUntilTerminal()
-            if (cardinality == MalformedResponseCardinality.OMIT_RESPONSE) {
+            if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) {
                 assertEquals(0, events.count { it is ObserverEvent.Value })
                 assertEquals(ObserverEvent.Completed, events.last())
             } else {
@@ -285,7 +285,7 @@ class TerminalMetadataAndCardinalityTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (cardinality == MalformedResponseCardinality.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
