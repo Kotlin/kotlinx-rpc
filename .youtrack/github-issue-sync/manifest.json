@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "name": "kxrpc-github-issue-sync",
+  "title": "kotlinx-rpc GitHub issue sync",
+  "description": "Links GitHub issues to canonical YouTrack issues and closes them on resolution.",
+  "version": "1.2.1",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains",
+    "url": "https://www.jetbrains.com/"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "title": "GitHub issue sync settings",
+  "properties": {
+    "githubToken": {
+      "title": "GitHub token",
+      "description": "A GitHub token with permission to write issues in Kotlin/kotlinx-rpc.",
+      "type": "string",
+      "format": "secret",
+      "x-scope": "PROJECT"
+    }
+  },
+  "required": ["githubToken"]
+}
