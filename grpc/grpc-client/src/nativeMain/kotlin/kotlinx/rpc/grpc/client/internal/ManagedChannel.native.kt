@@ -32,29 +32,26 @@ internal class NativeManagedChannelBuilder(
     private val target: String,
     private val credentials: Lazy<GrpcClientCredentials>,
 ) : ManagedChannelBuilder<NativeManagedChannelBuilder>() {
-    fun buildChannel(): NativeManagedChannel {
-        val keepAlive = config?.keepAlive
-        keepAlive?.run {
-            require(time.isPositive()) { "keepalive time must be positive" }
-            require(timeout.isPositive()) { "keepalive timeout must be positive" }
-        }
-
+    fun buildChannel(config: GrpcClientConfiguration): NativeManagedChannel {
         return NativeManagedChannel(
             target,
-            overrideAuthority = config?.overrideAuthority,
-            keepAlive = config?.keepAlive,
-            userAgent = config?.userAgent,
+            overrideAuthority = config.overrideAuthority,
+            keepAlive = config.keepAlive,
+            userAgent = config.userAgent,
+            maxInboundMessageSize = config.maxInboundMessageSize,
+            maxInboundMetadataSize = config.maxInboundMetadataSize,
+            idleTimeout = config.idleTimeout,
             clientCredentials = credentials.value,
         )
     }
 }
 
 @InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
+public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     check(this is NativeManagedChannelBuilder) {
         internalError("Wrong builder type, expected NativeManagedChannelBuilder")
     }
-    return buildChannel()
+    return buildChannel(config)
 }
 
 @InternalRpcApi
@@ -71,9 +68,4 @@ public actual fun ManagedChannelBuilder(
 public actual fun ManagedChannelBuilder(target: String, credentials: GrpcClientCredentials?): ManagedChannelBuilder<*> {
     val credentials = if (credentials == null) lazy { GrpcTlsClientCredentials() } else lazy { credentials }
     return NativeManagedChannelBuilder(target, credentials)
-}
-
-internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
-    this.config = config
-    return this
 }

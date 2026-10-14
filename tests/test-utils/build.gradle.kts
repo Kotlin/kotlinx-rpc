@@ -11,6 +11,7 @@ plugins {
 
 kotlin {
     compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
         commonMain {
@@ -24,6 +25,13 @@ kotlin {
             dependencies {
                 implementation(libs.coroutines.debug)
             }
+        }
+
+        val posixMain by creating {
+            dependsOn(nativeMain.get())
+        }
+        matching { it.name in listOf("appleMain", "linuxMain", "androidNativeMain") }.configureEach {
+            dependsOn(posixMain)
         }
     }
 

@@ -14,16 +14,19 @@ import kotlinx.rpc.grpc.internal.cinterop.GPR_TIMESPAN
 import kotlinx.rpc.grpc.internal.cinterop.gpr_inf_future
 import kotlinx.rpc.grpc.internal.cinterop.gpr_now
 import kotlinx.rpc.grpc.internal.cinterop.gpr_time_add
-import kotlinx.rpc.grpc.internal.cinterop.gpr_time_from_millis
+import kotlinx.rpc.grpc.internal.cinterop.gpr_time_from_nanos
 import kotlinx.rpc.grpc.internal.cinterop.gpr_timespec
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
+import kotlin.time.Duration
 
 @InternalRpcApi
 public fun GrpcCallOptions.rawDeadline(): CValue<gpr_timespec> {
-    return timeout?.let {
+    return if (timeout == Duration.INFINITE) {
+        gpr_inf_future(GPR_CLOCK_REALTIME)
+    } else {
         gpr_time_add(
             gpr_now(GPR_CLOCK_REALTIME),
-            gpr_time_from_millis(it.inWholeMilliseconds, GPR_TIMESPAN)
+            gpr_time_from_nanos(timeout.inWholeNanoseconds, GPR_TIMESPAN)
         )
-    } ?: gpr_inf_future(GPR_CLOCK_REALTIME)
+    }
 }

@@ -14,16 +14,34 @@ import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.asStableRef
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.internal.CallbackTag
 import kotlinx.rpc.grpc.internal.CompletionQueue
+import kotlinx.rpc.grpc.internal.GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIMEOUT_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_KEEPALIVE_TIME_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_AGE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_CONNECTION_IDLE_MS
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_METADATA_SIZE
+import kotlinx.rpc.grpc.internal.GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH
+import kotlinx.rpc.grpc.internal.GRPC_ARG_PING_TIMEOUT_MS
+import kotlinx.rpc.grpc.internal.GrpcArg
 import kotlinx.rpc.grpc.internal.GrpcRuntime
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.grpc.internal.toChannelArgMilliseconds
+import kotlinx.rpc.grpc.internal.toRaw
 import kotlinx.rpc.grpc.server.GrpcHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
+import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_add_http2_port
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_cancel_all_calls
 import kotlinx.rpc.grpc.internal.cinterop.grpc_server_create
@@ -53,6 +71,12 @@ internal class NativeServer(
     private val credentials: GrpcServerCredentials,
     services: List<GrpcServerServiceDefinition>,
     val fallbackRegistry: GrpcHandlerRegistry,
+    maxInboundMessageSize: Int,
+    maxInboundMetadataSize: Int,
+    keepAlive: GrpcServerConfiguration.KeepAlive?,
+    maxConnectionIdle: Duration,
+    maxConnectionAge: Duration,
+    maxConnectionAgeGrace: Duration,
 ) : PlatformServer {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
@@ -61,8 +85,19 @@ internal class NativeServer(
 
     private val cq = CompletionQueue()
 
-    val raw: CPointer<grpc_server> = grpc_server_create(null, null)
-        ?: error("Failed to create server")
+    val channelArgs: List<GrpcArg> = buildServerChannelArgs(
+        maxInboundMessageSize = maxInboundMessageSize,
+        maxInboundMetadataSize = maxInboundMetadataSize,
+        keepAliveTime = keepAlive?.time,
+        keepAliveTimeout = keepAlive?.timeout,
+        maxConnectionIdle = maxConnectionIdle,
+        maxConnectionAge = maxConnectionAge,
+        maxConnectionAgeGrace = maxConnectionAgeGrace,
+    )
+
+    val raw: CPointer<grpc_server> = memScoped {
+        grpc_server_create(channelArgs.toRaw(this).ptr, null)
+    } ?: error("Failed to create server")
 
     // Lock-free state machine guarding the application-owned grpc_server handle against both
     // double-free (between [dispose] and the GC cleaner below) and use-after-free (between
@@ -346,6 +381,54 @@ internal class NativeServer(
         )
     }
 
+}
+
+/**
+ * The C-core channel args that this server passed to `grpc_server_create`.
+ */
+@InternalRpcApi
+public val GrpcServer.channelArgs: List<GrpcArg>
+    get() {
+        check(this is GrpcServerImpl) { internalError("Expected GrpcServerImpl") }
+        val server = platformServer
+        check(server is NativeServer) { internalError("Expected NativeServer") }
+        return server.channelArgs
+    }
+
+/**
+ * Maps the server configuration options to C-core channel args.
+ */
+@InternalRpcApi
+public fun buildServerChannelArgs(
+    maxInboundMessageSize: Int,
+    maxInboundMetadataSize: Int,
+    keepAliveTime: Duration?,
+    keepAliveTimeout: Duration?,
+    maxConnectionIdle: Duration,
+    maxConnectionAge: Duration,
+    maxConnectionAgeGrace: Duration,
+): List<GrpcArg> = buildList {
+    add(GrpcArg.Integer(
+        GRPC_ARG_MAX_RECEIVE_MESSAGE_LENGTH,
+        maxInboundMessageSize,
+    ))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_METADATA_SIZE, maxInboundMetadataSize))
+    add(GrpcArg.Integer(GRPC_ARG_ABSOLUTE_MAX_METADATA_SIZE, maxInboundMetadataSize))
+    keepAliveTime?.let { add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIME_MS, it.toChannelArgMilliseconds())) }
+    keepAliveTimeout?.let {
+        val timeoutMillis = it.toChannelArgMilliseconds()
+        add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, timeoutMillis))
+        add(GrpcArg.Integer(GRPC_ARG_PING_TIMEOUT_MS, timeoutMillis))
+    }
+    // gRFC A9 says that the server also sends keepalive pings on connections without active calls.
+    // C-core does that only with this arg.
+    // The arg also lets clients ping an idle connection every 5 minutes instead of every 2 hours.
+    // C-core has no separate setting for that.
+    // https://github.com/grpc/proposal/blob/master/A9-server-side-conn-mgt.md
+    add(GrpcArg.Integer(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_IDLE_MS, maxConnectionIdle.toChannelArgMilliseconds()))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_MS, maxConnectionAge.toChannelArgMilliseconds()))
+    add(GrpcArg.Integer(GRPC_ARG_MAX_CONNECTION_AGE_GRACE_MS, maxConnectionAgeGrace.toChannelArgMilliseconds()))
 }
 
 /**

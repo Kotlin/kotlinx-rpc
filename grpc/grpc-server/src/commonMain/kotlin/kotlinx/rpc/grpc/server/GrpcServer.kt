@@ -8,11 +8,16 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.grpc.server.internal.GrpcServerImpl
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
+import kotlinx.rpc.grpc.server.internal.applyConfig
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Server for listening for and dispatching incoming calls.
@@ -127,6 +132,7 @@ public fun GrpcServer(
     val config = GrpcServerConfiguration().apply(configure)
     val serverBuilder = ServerBuilder(port, config.credentials).apply {
         config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
+        applyConfig(config)
     }
 
     return GrpcServerImpl(
@@ -149,6 +155,7 @@ public fun GrpcServer(
 public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
+    internal var keepAlive: KeepAlive? = null
 
     /**
      * Sets the credentials to be used by the gRPC server for secure communication.
@@ -175,6 +182,78 @@ public class GrpcServerConfiguration internal constructor() {
     public var marshallerConfig: GrpcMarshallerConfig? = null
 
     /**
+     * The maximum size, in bytes, of an inbound message.
+     *
+     * The default limit is 4 MiB (4,194,304 bytes).
+     * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
+     */
+    public var maxInboundMessageSize: Int = 4 * 1024 * 1024
+        set(value) {
+            require(value >= 0) { "maxInboundMessageSize must be >= 0" }
+            field = value
+        }
+
+    /**
+     * The maximum size, in bytes, of inbound metadata.
+     *
+     * The default limit is 8 KiB (8,192 bytes).
+     * Values must be positive.
+     */
+    public var maxInboundMetadataSize: Int = 8 * 1024
+        set(value) {
+            require(value > 0) { "maxInboundMetadataSize must be > 0" }
+            field = value
+        }
+
+    /**
+     * *Sets the maximum connection idle time.
+     * When a connection exceeds this idle time, the server begins to close it gracefully.*
+     *
+     * The default is [Duration.INFINITE] (no limit).
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
+     */
+    public var maxConnectionIdle: Duration = Duration.INFINITE
+        set(value) {
+            value.validateConnectionDuration("maxConnectionIdle", 1.seconds)
+            field = value
+        }
+
+    /**
+     * Sets the maximum connection age. When a connection reaches this age, the server begins to close it gracefully.
+     *
+     * The default is [Duration.INFINITE] (no limit).
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
+     */
+    public var maxConnectionAge: Duration = Duration.INFINITE
+        set(value) {
+            value.validateConnectionDuration("maxConnectionAge", 1.seconds)
+            field = value
+        }
+
+    /**
+     * Sets the grace time for the graceful connection termination.
+     * Once the [maxConnectionAge] is reached, RPCs have the grace time to complete.
+     * RPCs that do not complete in time will be cancelled, allowing the connection to terminate.
+     *
+     * The default is [Duration.INFINITE] (no deadline).
+     * Finite values can't be negative and must be less than `Int.MAX_VALUE` milliseconds.
+     *
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
+     */
+    public var maxConnectionAgeGrace: Duration = Duration.INFINITE
+        set(value) {
+            value.validateConnectionDuration("maxConnectionAgeGrace", Duration.ZERO)
+            field = value
+        }
+
+    /**
      * Sets a custom [GrpcHandlerRegistry] to be used by the gRPC server for resolving service implementations
      * that were not registered before via the [services] configuration block.
      *
@@ -196,6 +275,54 @@ public class GrpcServerConfiguration internal constructor() {
      */
     public fun intercept(vararg interceptors: GrpcServerInterceptor) {
         this.interceptors.addAll(interceptors)
+    }
+
+    /**
+     * Configures server-side keepalive pings.
+     *
+     * The server sends keepalive pings on all connections, including connections without active calls.
+     * The default interval is two hours, and the default timeout is 20 seconds.
+     * Finite intervals must be at least 10 seconds, and finite timeouts must be at least 10 milliseconds.
+     * Finite values must be less than `Int.MAX_VALUE` milliseconds. Both accept [Duration.INFINITE].
+     *
+     * Independent of this function, the server limits how often a client can send keepalive pings:
+     *
+     * - On a connection with active calls: one ping every 5 minutes.
+     * - On a connection without active calls: one ping every 2 hours on the JVM,
+     *   and one every 5 minutes on Kotlin/Native.
+     *
+     * The limits restart each time the server sends response headers or data.
+     * A client that repeatedly pings more often loses its connection.
+     * The server sends `GOAWAY` with the debug data `too_many_pings`.
+     *
+     * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
+     * Netty supports this option.
+     */
+    public fun keepAlive(configure: KeepAlive.() -> Unit) {
+        keepAlive = KeepAlive().apply(configure)
+    }
+
+    /**
+     * Server-side keepalive settings.
+     *
+     * @property time The time without read activity after which the server sends a keepalive ping.
+     * Defaults to two hours. [Duration.INFINITE] disables the pings.
+     * Finite values must be at least 10 seconds.
+     * @property timeout The time that the server waits for read activity after a keepalive ping.
+     * Defaults to 20 seconds. With [Duration.INFINITE], the server waits without limit.
+     * Finite values must be at least 10 milliseconds.
+     */
+    public class KeepAlive internal constructor() {
+        public var time: Duration = 2.hours
+            set(value) {
+                value.validateConnectionDuration("keepalive time", 10.seconds)
+                field = value
+            }
+        public var timeout: Duration = 20.seconds
+            set(value) {
+                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
+                field = value
+            }
     }
 
     /**

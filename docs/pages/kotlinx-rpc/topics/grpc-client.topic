@@ -52,8 +52,90 @@
                 Interceptors are executed in the order they are added.
             </def>
             <def title="keepAlive { ... }">
-                Configures keep-alive pings to detect broken connections.
-                Disabled by default.
+                Keep-alive ensures that the connection between the client and the server remains active.
+                It helps detect connection issues before a request is made and helps maintain long-lived
+                idle connections.
+
+                Pings are disabled by default, because <code>time</code> is <code>Duration.INFINITE</code>.
+                <deflist>
+                    <def title="time">
+                        Specifies the maximum amount of time the channel can remain idle before a keep-alive ping is
+                        sent to the server to check the connection state.
+                        The default value is <code>Duration.INFINITE</code>, which effectively disables keep-alive pings.
+                        Finite values must be at least 10 seconds.
+                    </def>
+                    <def title="timeout">
+                        Sets the amount of time to wait for a keep-alive ping response.
+                        If the server does not respond within this timeout, the connection will be considered broken.
+                        The default value is 20 seconds. With <code>Duration.INFINITE</code>, the client waits without limit.
+                        Finite values must be at least 10 milliseconds.
+                    </def>
+                    <def title="withoutCalls">
+                        Defines whether keep-alive pings will be sent even when there
+                        are no active RPCs on the connection. If set to <code>true</code>, pings will be sent regardless
+                        of ongoing calls; otherwise, pings are only sent during active RPCs.
+                        The default value is <code>false</code>.
+                    </def>
+                </deflist>
+            </def>
+            <def title="userAgent">
+                An application User-Agent prefix, followed by the gRPC runtime's own token.
+                Defaults to <code>null</code>, which sends only the runtime token.
+            </def>
+            <def title="maxInboundMessageSize">
+                The maximum size, in bytes, of an inbound message.
+                A larger message fails the call with <code>RESOURCE_EXHAUSTED</code>.
+                Defaults to 4 MiB (4,194,304 bytes).
+            </def>
+            <def title="maxInboundMetadataSize">
+                The maximum size, in bytes, of inbound metadata.
+                Defaults to 8 KiB (8,192 bytes).
+            </def>
+            <def title="idleTimeout">
+                The time with no active RPCs after which the client enters idle mode and closes its
+                connections. A new RPC takes the client out of idle mode.
+                <code>Duration.INFINITE</code> disables automatic idle mode.
+                Defaults to 30 minutes.
+            </def>
+        </deflist>
+        <note>
+            Finite durations must be less than <code>Int.MAX_VALUE</code> milliseconds (about 24.8 days).
+        </note>
+    </chapter>
+
+    <chapter title="Call options" id="grpc-client-call-options">
+        <p>
+            <code>GrpcCallOptions</code> configures each RPC.
+        </p>
+        <deflist>
+            <def title="timeout">
+                The maximum duration to wait for the RPC to complete, measured from the start of the call.
+                If the call exceeds its deadline, it fails with <code>DEADLINE_EXCEEDED</code>.
+
+                Defaults to <code>Duration.INFINITE</code>, which sets no per-call timeout.
+            </def>
+            <def title="waitForReady">
+                Sets what a call does when the client can't connect to the server:
+                <list>
+                    <li>
+                        <code>false</code> (the default): the call fails immediately with <code>UNAVAILABLE</code>.
+                    </li>
+                    <li>
+                        <code>true</code>: the call waits until the client connects. It fails with
+                        <code>DEADLINE_EXCEEDED</code> when its deadline expires.
+                    </li>
+                </list>
+                <p>
+                    A call that starts while the client is connecting always waits for that connection attempt.
+                </p>
+                <p>
+                    When <code>waitForReady</code> is <code>true</code>, set a finite timeout.
+                    Without a deadline, the call can remain pending indefinitely.
+                </p>
+                <p>
+                    <a href="https://github.com/grpc/grpc/blob/master/doc/wait-for-ready.md">Wait-for-ready semantics</a>
+                    describes the connection behavior.
+                </p>
             </def>
         </deflist>
     </chapter>

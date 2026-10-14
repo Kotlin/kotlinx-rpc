@@ -87,7 +87,10 @@ public expect fun ManagedChannelBuilder(
     credentials: GrpcClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
-internal expect fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*>
-
+// TODO: Remove default argument once we moved CoreClientTest into grpc-client.
+//       This is a temporary workaround to avoid breaking the API.
+//       Will be done with the grpc-client tests. Also make `buildChannel` internal.
 @InternalRpcApi
-public expect fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel
+public expect fun ManagedChannelBuilder<*>.buildChannel(
+    config: GrpcClientConfiguration = GrpcClientConfiguration(),
+): ManagedChannel

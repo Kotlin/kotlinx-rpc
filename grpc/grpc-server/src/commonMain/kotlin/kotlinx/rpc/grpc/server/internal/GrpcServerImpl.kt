@@ -68,6 +68,9 @@ public class GrpcServerImpl internal constructor(
     private var isBuilt = false
     private lateinit var internalServer: PlatformServer
 
+    internal val platformServer: PlatformServer
+        get() = internalServer
+
     override val port: Int
         get() = internalServer.port
 

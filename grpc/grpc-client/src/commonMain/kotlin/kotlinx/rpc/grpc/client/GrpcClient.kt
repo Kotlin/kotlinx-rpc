@@ -10,7 +10,6 @@ import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
-import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.buildChannel
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
@@ -26,8 +25,11 @@ import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
+import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 private typealias RequestClient = Any
@@ -182,7 +184,7 @@ private fun GrpcClient(
     builder: ManagedChannelBuilder<*>,
     config: GrpcClientConfiguration,
 ): GrpcClient {
-    val channel = builder.applyConfig(config).buildChannel()
+    val channel = builder.buildChannel(config)
     val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
     return GrpcClient(
         channel = channel,
@@ -205,6 +207,9 @@ private fun GrpcClient(
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
+    internal var isMaxInboundMessageSizeExplicitlySet = false
+    internal var isMaxInboundMetadataSizeExplicitlySet = false
+    internal var isIdleTimeoutExplicitlySet = false
 
     /**
      * Configurable resolver used to determine the appropriate marshaller for a given Kotlin type
@@ -270,6 +275,71 @@ public class GrpcClientConfiguration internal constructor() {
      * ```
      */
     public var userAgent: String? = null
+
+    /**
+     * The maximum size, in bytes, of an inbound message.
+     *
+     * The default limit is 4 MiB (4,194,304 bytes).
+     * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
+     */
+    public var maxInboundMessageSize: Int = 4 * 1024 * 1024
+        set(value) {
+            require(value >= 0) { "maxInboundMessageSize must be >= 0" }
+            isMaxInboundMessageSizeExplicitlySet = true
+            field = value
+        }
+
+    /**
+     * Restores the default value of [maxInboundMessageSize].
+     */
+    public fun clearMaxInboundMessageSize() {
+        maxInboundMessageSize = 4 * 1024 * 1024
+        isMaxInboundMessageSizeExplicitlySet = false
+    }
+
+
+    /**
+     * The maximum size, in bytes, of inbound metadata.
+     *
+     * The default limit is 8 KiB (8,192 bytes).
+     * Values must be positive.
+     */
+    public var maxInboundMetadataSize: Int = 8 * 1024
+        set(value) {
+            require(value > 0) { "maxInboundMetadataSize must be > 0" }
+            isMaxInboundMetadataSizeExplicitlySet = true
+            field = value
+        }
+    /**
+     * Restores the default value of [maxInboundMetadataSize].
+     */
+    public fun clearMaxInboundMetadataSize() {
+        maxInboundMetadataSize = 8 * 1024
+        isMaxInboundMetadataSizeExplicitlySet = false
+    }
+
+    /**
+     * The time with no active RPCs after which the client enters idle mode and closes its connections.
+     * A new RPC takes the client out of idle mode.
+     *
+     * The default timeout is 30 minutes.
+     * [Duration.INFINITE] disables automatic idle mode.
+     * Finite values must be at least one second and less than `Int.MAX_VALUE` milliseconds.
+     */
+    public var idleTimeout: Duration = 30.minutes
+        set(value) {
+            value.validateConnectionDuration("idleTimeout", 1.seconds)
+            isIdleTimeoutExplicitlySet = true
+            field = value
+        }
+
+    /**
+     * Restores the default value of [idleTimeout].
+     */
+    public fun clearIdleTimeout() {
+        idleTimeout = 30.minutes
+        isIdleTimeoutExplicitlySet = false
+    }
 
     /**
      * Adds one or more client-side interceptors to the current gRPC client configuration.
@@ -347,6 +417,10 @@ public class GrpcClientConfiguration internal constructor() {
      * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
      *   RPCs on the connection.
      *
+     * Finite keep-alive intervals must be at least 10 seconds, and finite response timeouts
+     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
+     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
+     *
      * @see KeepAlive
      */
     public fun keepAlive(configure: KeepAlive.() -> Unit) {
@@ -365,11 +439,13 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * @property time Specifies the maximum amount of time the channel can remain idle before a
      * keep-alive ping is sent to the server to check the connection state.
-     * The default value is `Duration.INFINITE`, which disables keep-alive pings when idle.
+     * The default value is `Duration.INFINITE`, which disables keep-alive pings.
+     * Finite values must be at least 10 seconds.
      *
      * @property timeout Sets the amount of time to wait for a keep-alive ping response.
      * If the server does not respond within this timeout, the connection will be considered broken.
-     * The default value is 20 seconds.
+     * The default value is 20 seconds. With `Duration.INFINITE`, the client waits without limit.
+     * Finite values must be at least 10 milliseconds.
      *
      * @property withoutCalls Defines whether keep-alive pings will be sent even when there
      * are no active RPCs on the connection. If set to `true`, pings will be sent regardless
@@ -378,8 +454,15 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public class KeepAlive internal constructor() {
         public var time: Duration = Duration.INFINITE
+            set(value) {
+                value.validateConnectionDuration("keepalive time", 10.seconds)
+                field = value
+            }
         public var timeout: Duration = 20.seconds
+            set(value) {
+                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
+                field = value
+            }
         public var withoutCalls: Boolean = false
     }
 }
-

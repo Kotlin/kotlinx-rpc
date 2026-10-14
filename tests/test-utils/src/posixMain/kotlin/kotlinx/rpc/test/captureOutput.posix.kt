@@ -1,0 +1,92 @@
+/*
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+@file:OptIn(ExperimentalForeignApi::class, UnsafeNumber::class)
+
+package kotlinx.rpc.test
+
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.IntVar
+import kotlinx.cinterop.UnsafeNumber
+import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.convert
+import kotlinx.cinterop.get
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.refTo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import platform.posix.STDERR_FILENO
+import platform.posix.STDOUT_FILENO
+import platform.posix.close
+import platform.posix.dup
+import platform.posix.dup2
+import platform.posix.fflush
+import platform.posix.pipe
+import platform.posix.read
+import platform.posix.stderr
+import platform.posix.stdout
+
+actual suspend fun captureStdErr(block: suspend () -> Unit): String = coroutineScope {
+    memScoped {
+        val pipeErr = allocArray<IntVar>(2)
+        check(pipe(pipeErr) == 0) { "Failed to create the stderr pipe" }
+        val savedStderr = dup(STDERR_FILENO)
+        check(dup2(pipeErr[1], STDERR_FILENO) != -1) { "Failed to redirect stderr" }
+        close(pipeErr[1])
+
+        val outputBuf = StringBuilder()
+        val readJob = launch(Dispatchers.IO) {
+            val buf = ByteArray(4096)
+            var r: Long
+            do {
+                r = read(pipeErr[0], buf.refTo(0), buf.size.convert()).convert()
+                if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
+            } while (r > 0)
+            close(pipeErr[0])
+        }
+
+        try {
+            block()
+        } finally {
+            fflush(stderr)
+            dup2(savedStderr, STDERR_FILENO)
+            close(savedStderr)
+        }
+        readJob.join()
+        outputBuf.toString()
+    }
+}
+
+actual suspend fun captureStdOut(block: suspend () -> Unit): String = coroutineScope {
+    memScoped {
+        val pipeOut = allocArray<IntVar>(2)
+        check(pipe(pipeOut) == 0) { "Failed to create the stdout pipe" }
+        val savedStdout = dup(STDOUT_FILENO)
+        check(dup2(pipeOut[1], STDOUT_FILENO) != -1) { "Failed to redirect stdout" }
+        close(pipeOut[1])
+
+        val outputBuf = StringBuilder()
+        val readJob = launch(Dispatchers.IO) {
+            val buf = ByteArray(4096)
+            var r: Long
+            do {
+                r = read(pipeOut[0], buf.refTo(0), buf.size.convert()).convert()
+                if (r > 0) outputBuf.append(buf.decodeToString(0, r.convert()))
+            } while (r > 0)
+            close(pipeOut[0])
+        }
+
+        try {
+            block()
+        } finally {
+            fflush(stdout)
+            dup2(savedStdout, STDOUT_FILENO)
+            close(savedStdout)
+        }
+        readJob.join()
+        outputBuf.toString()
+    }
+}

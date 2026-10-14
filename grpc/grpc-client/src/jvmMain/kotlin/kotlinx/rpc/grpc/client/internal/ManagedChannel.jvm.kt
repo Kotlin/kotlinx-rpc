@@ -29,11 +29,6 @@ public actual typealias ManagedChannelPlatform = io.grpc.ManagedChannel
 public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder<T>
 
 @InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(): ManagedChannel {
-    return build().toKotlin()
-}
-
-@InternalRpcApi
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
@@ -83,7 +78,8 @@ private class JvmManagedChannel(private val channel: io.grpc.ManagedChannel) : M
         get() = channel
 }
 
-internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfiguration): ManagedChannelBuilder<*> {
+@InternalRpcApi
+public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
@@ -92,5 +88,12 @@ internal actual fun ManagedChannelBuilder<*>.applyConfig(config: GrpcClientConfi
 
     config.overrideAuthority?.let { overrideAuthority(it) }
     config.userAgent?.let { userAgent(it) }
-    return this
+    maxInboundMessageSize(config.maxInboundMessageSize)
+    maxInboundMetadataSize(config.maxInboundMetadataSize)
+    idleTimeout(
+        config.idleTimeout.inWholeMilliseconds,
+        TimeUnit.MILLISECONDS,
+    )
+
+    return build().toKotlin()
 }
