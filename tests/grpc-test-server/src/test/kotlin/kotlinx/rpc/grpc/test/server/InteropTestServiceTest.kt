@@ -5,7 +5,7 @@
 package kotlinx.rpc.grpc.test.server
 
 import com.google.protobuf.ByteString
-import grpc.testing.EmptyOuterClass.Empty
+import com.google.protobuf.Empty
 import io.grpc.CallOptions
 import io.grpc.ClientCall
 import io.grpc.ClientInterceptors

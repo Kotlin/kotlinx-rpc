@@ -21,7 +21,7 @@
 
 syntax = "proto3";
 
-import "grpc/testing/empty.proto";
+import "google/protobuf/empty.proto";
 import "grpc/testing/messages.proto";
 
 package grpc.testing;
@@ -32,7 +32,7 @@ option java_package = "io.grpc.testing.integration";
 // performance with various types of payload.
 service TestService {
   // One empty request followed by one empty response.
-  rpc EmptyCall(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc EmptyCall(google.protobuf.Empty) returns (google.protobuf.Empty);
 
   // One request followed by one response.
   rpc UnaryCall(SimpleRequest) returns (SimpleResponse);
@@ -67,20 +67,20 @@ service TestService {
 
   // The test server will not implement this method. It will be used
   // to test the behavior when clients call unimplemented methods.
-  rpc UnimplementedCall(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc UnimplementedCall(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 // A simple service NOT implemented at servers so clients can test for
 // that case.
 service UnimplementedService {
   // A call that no server should implement
-  rpc UnimplementedCall(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc UnimplementedCall(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 // A service used to control reconnect server.
 service ReconnectService {
-  rpc Start(grpc.testing.ReconnectParams) returns (grpc.testing.Empty);
-  rpc Stop(grpc.testing.Empty) returns (grpc.testing.ReconnectInfo);
+  rpc Start(grpc.testing.ReconnectParams) returns (google.protobuf.Empty);
+  rpc Stop(google.protobuf.Empty) returns (grpc.testing.ReconnectInfo);
 }
 
 // A service used to obtain stats for verifying LB behavior.
@@ -98,17 +98,17 @@ service LoadBalancerStatsService {
 service HookService {
   // Sends a request that will "hang" until the return status is set by a call
   // to a SetReturnStatus
-  rpc Hook(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc Hook(google.protobuf.Empty) returns (google.protobuf.Empty);
   // Sets a return status for pending and upcoming calls to Hook
-  rpc SetReturnStatus(SetReturnStatusRequest) returns (grpc.testing.Empty);
+  rpc SetReturnStatus(SetReturnStatusRequest) returns (google.protobuf.Empty);
   // Clears the return status. Incoming calls to Hook will "hang"
-  rpc ClearReturnStatus(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc ClearReturnStatus(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
 // A service to remotely control health status of an xDS test server.
 service XdsUpdateHealthService {
-  rpc SetServing(grpc.testing.Empty) returns (grpc.testing.Empty);
-  rpc SetNotServing(grpc.testing.Empty) returns (grpc.testing.Empty);
+  rpc SetServing(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc SetNotServing(google.protobuf.Empty) returns (google.protobuf.Empty);
   rpc SendHookRequest(HookRequest) returns (HookResponse);
 }
 
