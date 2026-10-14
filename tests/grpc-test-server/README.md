@@ -197,6 +197,9 @@ control.awaitEvent(AwaitEventRequest { callId = id; event = EventType.RESPONSE_M
 control.releaseBarrier(ReleaseBarrierRequest { callId = id; barrier = BarrierType.SEND_RESPONSE; occurrence = 2u })
 
 assertEquals(2, responses.await().size)
+
+// Cleanup the scenario
+control.discardScenario(DiscardScenarioRequest { callId = id })
 ```
 
 ```mermaid

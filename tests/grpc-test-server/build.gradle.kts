@@ -36,12 +36,18 @@ rpc {
             create("java") {
                 isJava = true
                 remote {
+                    // Using the buf.build provider as locator might hit buf's rate limit quota.
+                    // If this becomes a problem we must provide the java protobuf plugin from alternative source.
+                    // https://buf.build/docs/bsr/rate-limits/#filedescriptorsetservice
                     locator = "buf.build/protocolbuffers/java:v35.1"
                 }
             }
             create("grpc-java") {
                 isJava = true
                 remote {
+                    // Using the buf.build provider as source might hit buf's rate limit quota.
+                    // If this becomes a problem we must provide the java grpc plugin from alternative source.
+                    // https://buf.build/docs/bsr/rate-limits/#filedescriptorsetservice
                     locator = "buf.build/grpc/java:v1.81.0"
                 }
             }
@@ -60,6 +66,7 @@ sourceSets.main {
         includeDefaultProtobufPlugin = false
         includeDefaultGrpcPlugin = false
         // The Java generators reject the kotlinx-rpc options (for example `explicitApiModeEnabled`), so clear them.
+        // Remove these option overwrites once KXRPC-690 is fixed.
         plugin({ options.set(emptyMap()) }) { getByName("java") }
         plugin({ options.set(emptyMap()) }) { getByName("grpc-java") }
     }
