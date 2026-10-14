@@ -60,7 +60,7 @@ public fun WireSize.sFixed32(value: Int): Int = 4
 public fun WireSize.sFixed64(value: Long): Int = 8
 
 @InternalRpcApi
-public fun WireSize.bool(value: Boolean): Int = int32(if (value) 1 else 0)
+public fun WireSize.bool(value: Boolean): Int = int32(if (value) { 1 } else { 0 })
 
 @InternalRpcApi
 public fun WireSize.enum(value: Int): Int = int32(value)
@@ -114,4 +114,4 @@ public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 4
 public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 8
 
 @InternalRpcApi
-public fun WireSize.packedBool(value: List<Boolean>): Int = packedSInt32(value.map { if (it) 1 else 0 })
+public fun WireSize.packedBool(value: List<Boolean>): Int = packedSInt32(value.map { if (it) { 1 } else { 0 } })

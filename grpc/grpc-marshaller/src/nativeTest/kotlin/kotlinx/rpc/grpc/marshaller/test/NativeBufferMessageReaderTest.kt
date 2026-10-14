@@ -143,7 +143,7 @@ private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.siz
         scopeCount++
         scopeOpen = true
         try {
-            block(if (size == 0) null else storage)
+            block(if (size == 0) { null } else { storage })
         } catch (cause: Throwable) {
             thrownThroughBuffer = true
             throw cause

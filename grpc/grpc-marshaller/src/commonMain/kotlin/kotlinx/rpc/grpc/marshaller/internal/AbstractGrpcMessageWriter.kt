@@ -21,7 +21,7 @@ public abstract class AbstractGrpcMessageWriter(
             "Cannot encode a gRPC message with size $size: GrpcEncodedMessage.size must be non-negative. " +
                 "Check the message returned by GrpcMarshaller.prepare."
         }
-        state = if (size == 0) WriterState.Complete else WriterState.Open
+        state = if (size == 0) { WriterState.Complete } else { WriterState.Open }
     }
 
     public override val written: Int

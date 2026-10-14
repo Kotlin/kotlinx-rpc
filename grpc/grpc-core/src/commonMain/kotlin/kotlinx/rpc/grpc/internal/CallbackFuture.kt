@@ -43,7 +43,7 @@ public class CallbackFuture<T : Any> {
 
                 is State.Pending -> {
                     val next = State.Pending(s.callbacks + callback) // copy-on-write append
-                    if (state.compareAndSet(s, next)) return
+                    if (state.compareAndSet(s, next)) { return }
                 }
             }
         }

@@ -101,7 +101,7 @@ internal class NativeClientCall<Request, Response>(
     }
 
     private val rawCallCredentials = callOptions.callCredentials.let {
-        if (it is GrpcEmptyCallCredentials) null else it.createRaw(coroutineContext)
+        if (it is GrpcEmptyCallCredentials) { null } else { it.createRaw(coroutineContext) }
     }
 
     // Mirrors rawGuard for the application-owned +1 ref on grpc_call_credentials. Null when no
@@ -109,7 +109,7 @@ internal class NativeClientCall<Request, Response>(
     // Deterministic release happens alongside grpc_call_unref; the cleaner is the guarded
     // fallback. KRPC-588.
     private val rawCallCredentialsGuard: ResourceGuard? =
-        if (rawCallCredentials != null) ResourceGuard() else null
+        if (rawCallCredentials != null) { ResourceGuard() } else { null }
 
     @Suppress("unused")
     private val rawCallCredentialsCleaner = rawCallCredentials?.let { ptr ->
@@ -217,8 +217,8 @@ internal class NativeClientCall<Request, Response>(
     private fun beginOp(): Boolean {
         while (true) {
             val cur = state.value
-            if (cur and CLOSE_REQUESTED != 0) return false
-            if (state.compareAndSet(cur, cur + 1)) return true
+            if (cur and CLOSE_REQUESTED != 0) { return false }
+            if (state.compareAndSet(cur, cur + 1)) { return true }
         }
     }
 
@@ -255,9 +255,9 @@ internal class NativeClientCall<Request, Response>(
         while (true) {
             val cur = state.value
             // Already requested. The reader path drains independently; nothing more here.
-            if (cur and CLOSE_REQUESTED != 0) return
+            if (cur and CLOSE_REQUESTED != 0) { return }
             if (state.compareAndSet(cur, cur or CLOSE_REQUESTED)) {
-                if (cur == 0) finishClose(info)
+                if (cur == 0) { finishClose(info) }
                 return
             }
         }
@@ -271,7 +271,7 @@ internal class NativeClientCall<Request, Response>(
      * the cleaner is a no-op. KRPC-604.
      */
     private fun finishClose(info: Pair<GrpcStatus, GrpcMetadata>) {
-        if (!rawGuard.released.compareAndSet(expect = false, update = true)) return
+        if (!rawGuard.released.compareAndSet(expect = false, update = true)) { return }
         // allows the managed channel to join for the call to finish.
         callJob.complete()
         // Listener may be null if the call failed before start() (e.g., an interceptor throws
@@ -328,7 +328,7 @@ internal class NativeClientCall<Request, Response>(
         // start receiving the status from the completion queue,
         // which is bound to the lifetime of the call.
         val success = startRecvStatus()
-        if (!success) return
+        if (!success) { return }
 
         sendAndReceiveInitialMetadata(headers)
     }
@@ -348,7 +348,7 @@ internal class NativeClientCall<Request, Response>(
         // Single-CAS reader claim atomically (a) checks the call has not requested close and
         // (b) increments the in-flight count. No read-then-CAS pair → no SC-reorder window in
         // which `cq.runBatch` could touch a freed call. KRPC-604.
-        if (!beginOp()) return cleanup()
+        if (!beginOp()) { return cleanup() }
 
         when (val callResult = cq.runBatch(this@NativeClientCall.raw, ops, nOps)) {
             is BatchResult.Submitted -> {
@@ -428,7 +428,7 @@ internal class NativeClientCall<Request, Response>(
 
                     // cleanup
                     grpc_slice_unref(statusDetails.readValue())
-                    if (errorStr.value != null) gpr_free(errorStr.value)
+                    if (errorStr.value != null) { gpr_free(errorStr.value) }
                     // the entries are owned by the call object, so we must only destroy the array
                     grpc_metadata_array_destroy(trailingMetadata.readValue())
                     arena.clear()
@@ -535,7 +535,7 @@ internal class NativeClientCall<Request, Response>(
         // we need to request only one message at a time, so we use a recursive function that
         // requests one message and then calls itself again.
         fun post() {
-            if (remainingMessages-- <= 0) return
+            if (remainingMessages-- <= 0) { return }
 
             val arena = Arena()
             val recvPtr = arena.alloc<CPointerVar<grpc_byte_buffer>>()
@@ -544,7 +544,7 @@ internal class NativeClientCall<Request, Response>(
                 data.recv_message.recv_message = recvPtr.ptr
             }
             runBatch(op.ptr, 1u, cleanup = {
-                if (recvPtr.value != null) grpc_byte_buffer_destroy(recvPtr.value)
+                if (recvPtr.value != null) { grpc_byte_buffer_destroy(recvPtr.value) }
                 arena.clear()
             }) {
                 // if the call was successful, but no message was received, we reached the end-of-stream.
@@ -580,7 +580,7 @@ internal class NativeClientCall<Request, Response>(
         // Hold a reader claim while using `raw` so tryToCloseCall cannot fire grpc_call_unref
         // concurrently. If the claim is refused the call is already closed — cancel after
         // onClose is a no-op (matches gRPC-Java semantics).
-        if (!beginOp()) return
+        if (!beginOp()) { return }
         try {
             val cancelResult = grpc_call_cancel_with_status(raw, statusCode, message, null)
             if (cancelResult != grpc_call_error.GRPC_CALL_OK) {
@@ -596,7 +596,7 @@ internal class NativeClientCall<Request, Response>(
 
     override fun halfClose() {
         check(!halfClosed) { internalError("Already half closed.") }
-        if (cancelled) return
+        if (cancelled) { return }
         halfClosed = true
 
         val arena = Arena()
@@ -616,7 +616,7 @@ internal class NativeClientCall<Request, Response>(
         check(!halfClosed) { internalError("Already half closed.") }
         check(isReady()) { internalError("Not yet ready.") }
 
-        if (cancelled) return
+        if (cancelled) { return }
 
         // set ready false, as only one message can be sent at a time.
         ready.value = false

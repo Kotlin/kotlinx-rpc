@@ -17,5 +17,5 @@ public fun String.rpcInternalHexToReadableBinary(): String {
 private fun Char.display(): String {
     // visible symbols range
     // https://www.asciitable.com/
-    return if (code !in 32..126) "?" else toString()
+    return if (code !in 32..126) { "?" } else { toString() }
 }

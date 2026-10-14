@@ -34,7 +34,7 @@ public abstract class NativeBufferMessageWriter(size: Int) : AbstractGrpcMessage
     override fun write(bytes: ByteArray, startIndex: Int, endIndex: Int) {
         val count = checkedWriteRangeSize(bytes, startIndex, endIndex)
         recordWrite(count) {
-            if (count == 0) return@recordWrite
+            if (count == 0) { return@recordWrite }
             val start = written
             withPointerNotNull { pointer ->
                 bytes.usePinned { pinned ->
@@ -48,7 +48,7 @@ public abstract class NativeBufferMessageWriter(size: Int) : AbstractGrpcMessage
     override fun write(source: Buffer, byteCount: Long) {
         val count = checkedWriteByteCount(source, byteCount)
         recordWrite(count) {
-            if (count == 0) return@recordWrite
+            if (count == 0) { return@recordWrite }
             val start = written
             // Shared segment views preserve the source if the write fails, without
             // allocating and copying the entire message into an intermediate ByteArray.
@@ -89,7 +89,7 @@ public abstract class NativeBufferMessageWriter(size: Int) : AbstractGrpcMessage
                     "GrpcEncodedMessage.size must match the total number of bytes written by writeTo.",
             )
         }
-        if (remaining == 0) return 0
+        if (remaining == 0) { return 0 }
 
         val start = written
         val count = try {

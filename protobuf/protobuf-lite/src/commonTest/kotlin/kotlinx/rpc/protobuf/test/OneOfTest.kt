@@ -326,7 +326,7 @@ class OneOfTest {
             fx64 = { it.toLong() },
             sfx64 = { it },
             u32 = { it.toLong() },
-            b = { if (it) 1L else 0L },
+            b = { if (it) { 1L } else { 0L } },
             notSet = { -1L },
         )
         assertEquals(42L, result)

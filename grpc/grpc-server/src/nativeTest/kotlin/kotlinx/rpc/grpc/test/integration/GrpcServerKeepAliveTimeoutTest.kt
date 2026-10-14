@@ -89,7 +89,7 @@ class GrpcServerKeepAliveTimeoutTest {
                     // C-core can suppress PING ACKs and still complete the HTTP/2 handshake.
                     // https://github.com/grpc/grpc/blob/v1.81.1/src/core/ext/transport/chttp2/transport/chttp2_transport.cc#L452
                     val args = listOf(
-                        GrpcArg.Integer("grpc.http2.ack_pings", if (acknowledgePings) 1 else 0),
+                        GrpcArg.Integer("grpc.http2.ack_pings", if (acknowledgePings) { 1 } else { 0 }),
                         GrpcArg.Integer("grpc.http2.bdp_probe", 0),
                         GrpcArg.Integer("grpc.keepalive_time_ms", Int.MAX_VALUE),
                     ).toRaw(this)

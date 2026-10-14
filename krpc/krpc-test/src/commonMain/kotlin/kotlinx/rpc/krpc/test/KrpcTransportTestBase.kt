@@ -513,7 +513,7 @@ abstract class KrpcTransportTestBase {
     }
 }
 
-private val EXTENDED_TIMEOUT = if (platform.isJs()) 500.seconds else 200.seconds
+private val EXTENDED_TIMEOUT = if (platform.isJs()) { 500.seconds } else { 200.seconds }
 
 @Suppress("unused")
 internal enum class Platform {

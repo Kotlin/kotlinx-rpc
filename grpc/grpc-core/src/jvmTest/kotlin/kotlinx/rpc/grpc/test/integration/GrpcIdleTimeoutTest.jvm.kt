@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.minutes
 
 internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) {
     runGrpcTest(clientConfiguration = {
-        if (timeout != null) idleTimeout = timeout
+        if (timeout != null) { idleTimeout = timeout }
     }) {
         it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
 

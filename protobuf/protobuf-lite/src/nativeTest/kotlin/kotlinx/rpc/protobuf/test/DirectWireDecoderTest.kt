@@ -276,7 +276,7 @@ private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.siz
     init { for (index in bytes.indices) storage[index] = bytes[index] }
 
     override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
-        block(if (size == 0) null else storage)
+        block(if (size == 0) { null } else { storage })
     }
 
     fun overwrite() { for (index in 0 until size) storage[index] = 0 }

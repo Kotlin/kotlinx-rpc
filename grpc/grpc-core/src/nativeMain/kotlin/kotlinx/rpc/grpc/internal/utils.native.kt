@@ -72,7 +72,7 @@ public fun Sink.writeFully(buffer: CPointer<ByteVar>, offset: Long, length: Long
 @InternalRpcApi
 public fun grpc_slice.toByteArray(): ByteArray = memScoped {
     val out = ByteArray(len().toInt())
-    if (out.isEmpty()) return out
+    if (out.isEmpty()) { return out }
 
     out.usePinned {
         memcpy(it.addressOf(0), startPtr(), len().convert())
@@ -104,14 +104,14 @@ public fun CPointer<grpc_byte_buffer>.toKotlin(): Buffer = memScoped {
 @OptIn(UnsafeNumber::class)
 @InternalRpcApi
 public fun Source.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
-    if (this is Buffer) return toGrpcByteBuffer()
+    if (this is Buffer) { return toGrpcByteBuffer() }
 
     val tmp = ByteArray(8192)
     val slices = ArrayList<CValue<grpc_slice>>(4)
 
     while (true) {
         val n = readAtMostTo(tmp, 0, tmp.size)
-        if (n <= 0) break
+        if (n <= 0) { break }
         tmp.usePinned {
             slices += grpc_slice_from_copied_buffer(it.addressOf(0), n.convert())
         }
@@ -138,7 +138,7 @@ public fun Buffer.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> {
 
 @OptIn(UnsafeNumber::class)
 private fun ArrayList<CValue<grpc_slice>>.toGrpcByteBuffer(): CPointer<grpc_byte_buffer> = memScoped {
-    val count = if (isEmpty()) 1 else size
+    val count = if (isEmpty()) { 1 } else { size }
     val sliceArr = allocArray<grpc_slice>(count)
     val base = sliceArr.reinterpret<ByteVar>()
     val stride = sizeOf<grpc_slice>()

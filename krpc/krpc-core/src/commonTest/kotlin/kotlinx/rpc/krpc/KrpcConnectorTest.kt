@@ -369,7 +369,7 @@ private class LocalTransport(
 
     val client: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job).let {
-            if (parentContext != null) parentContext + it else it
+            if (parentContext != null) { parentContext + it } else { it }
         }
 
         override suspend fun send(message: KrpcTransportMessage) {
@@ -383,7 +383,7 @@ private class LocalTransport(
 
     val server: KrpcTransport = object : KrpcTransport {
         override val coroutineContext: CoroutineContext = Job(this@LocalTransport.coroutineContext.job).let {
-            if (parentContext != null) parentContext + it else it
+            if (parentContext != null) { parentContext + it } else { it }
         }
 
         override suspend fun send(message: KrpcTransportMessage) {

@@ -85,7 +85,7 @@ public sealed class GrpcArg(public val key: String) {
  */
 @InternalRpcApi
 public fun Duration.toChannelArgMilliseconds(): Int {
-    if (this == Duration.INFINITE) return Int.MAX_VALUE
+    if (this == Duration.INFINITE) { return Int.MAX_VALUE }
 
     val millis = inWholeMilliseconds
     require(millis in 0 until Int.MAX_VALUE.toLong()) {

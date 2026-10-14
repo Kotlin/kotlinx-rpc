@@ -139,11 +139,11 @@ internal class NativeManagedChannel(
             ))
             args.add(GrpcArg.Integer(
                 key = GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS,
-                value = if (it.withoutCalls) 1 else 0
+                value = if (it.withoutCalls) { 1 } else { 0 }
             ))
         }
 
-        var rawArgs = if (args.isNotEmpty()) args.toRaw(this) else null
+        var rawArgs = if (args.isNotEmpty()) { args.toRaw(this) } else { null }
 
         grpc_channel_create(target, rawChannelCredentials, rawArgs?.ptr)
             ?: error("Failed to create channel")

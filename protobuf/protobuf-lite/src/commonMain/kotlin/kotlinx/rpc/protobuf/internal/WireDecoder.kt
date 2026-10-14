@@ -97,7 +97,7 @@ public interface WireDecoder : AutoCloseable {
         }
         recursionDepth++
         val len = readInt32()
-        if (len < 0) throw ProtobufDecodingException.negativeSize()
+        if (len < 0) { throw ProtobufDecodingException.negativeSize() }
         val limit = pushLimit(len)
         decoder(msg, this)
         if (bytesUntilLimit() != 0) {

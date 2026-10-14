@@ -183,7 +183,7 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             serverCallScope.proceed(requests).collect { response ->
                 @Suppress("UNCHECKED_CAST")
                 // fix for KRPC-173
-                val value = if (responseKType == unitKType) Unit as Response else response
+                val value = if (responseKType == unitKType) { Unit as Response } else { response }
 
                 // once we have a response message, check if we've sent headers yet - if not, do so
                 if (headersSent.value.compareAndSet(expect = false, update = true)) {

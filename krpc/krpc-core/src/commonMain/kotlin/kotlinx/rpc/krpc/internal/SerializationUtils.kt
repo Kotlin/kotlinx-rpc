@@ -30,7 +30,7 @@ internal fun SerializersModule.buildContextualInternal(type: KType): KSerializer
     )
 
     @Suppress("UNCHECKED_CAST")
-    return if (type.isMarkedNullable) result?.nullable else result as? KSerializer<Any?>
+    return if (type.isMarkedNullable) { result?.nullable } else { result as? KSerializer<Any?> }
 }
 
 private fun SerializersModule.buildContextual(type: KType): KSerializer<Any?> {

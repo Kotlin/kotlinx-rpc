@@ -214,7 +214,7 @@ public actual fun GrpcMetadata.remove(key: String, value: String): Boolean {
 public actual fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Boolean {
     key.validateForString()
     val index = getAll(key).indexOf(value)
-    if (index == -1) return false
+    if (index == -1) { return false }
     map[key.name]!!.removeAt(index)
     return true
 }
@@ -223,7 +223,7 @@ public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
     val keyObj = key.toBinaryKey()
     keyObj.validateForBinary()
     val index = getAllBinary(key).indexOf(value)
-    if (index == -1) return false
+    if (index == -1) { return false }
     map[keyObj.name]!!.removeAt(index)
     return true
 }
@@ -231,7 +231,7 @@ public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
 public actual fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: T): Boolean {
     key.validateForBinary()
     val index = getAllBinary(key).indexOf(value)
-    if (index == -1) return false
+    if (index == -1) { return false }
     map[key.name]!!.removeAt(index)
     return true
 }
@@ -272,7 +272,7 @@ private fun ByteArray.toAsciiString(): String {
     return buildString(size) {
         for (b in this@toAsciiString) {
             val ub = b.toInt() and 0xFF
-            append(if (ub in 0..0x7F) ub.toChar() else '\uFFFD')
+            append(if (ub in 0..0x7F) { ub.toChar() } else { '\uFFFD' })
         }
     }
 }
@@ -287,7 +287,7 @@ private fun String.toAsciiBytes(): ByteArray {
     // encode as US_ASCII bytes, replacing non-ASCII chars with '?'
     return ByteArray(length) { idx ->
         val c = this[idx]
-        if (c.code in 0..0x7F) c.code.toByte() else '?'.code.toByte()
+        if (c.code in 0..0x7F) { c.code.toByte() } else { '?'.code.toByte() }
     }
 }
 

@@ -46,7 +46,7 @@ actual suspend fun captureGrpcLogs(
         saved.forEach { (lg, lvl) ->
             lg.level = lvl
             lg.handlers.filterIsInstance<Handler>()
-                .forEach { if (it === handler) lg.removeHandler(it) }
+                .forEach { if (it === handler) { lg.removeHandler(it) } }
         }
     }
 }

@@ -34,7 +34,7 @@ public actual fun ManagedChannelBuilder(
     port: Int,
     credentials: GrpcClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())
+    if (credentials != null) { return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm()) }
     return io.grpc.ManagedChannelBuilder.forAddress(hostname, port)
 }
 
@@ -43,7 +43,7 @@ public actual fun ManagedChannelBuilder(
     target: String,
     credentials: GrpcClientCredentials?,
 ): ManagedChannelBuilder<*> {
-    if (credentials != null) return Grpc.newChannelBuilder(target, credentials.toJvm())
+    if (credentials != null) { return Grpc.newChannelBuilder(target, credentials.toJvm()) }
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 

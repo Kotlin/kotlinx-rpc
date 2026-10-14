@@ -26,7 +26,7 @@ public fun internalError(message: String): Nothing {
  */
 @InternalRpcApi
 public fun Duration.validateConnectionDuration(name: String, minimum: Duration) {
-    if (this == Duration.INFINITE) return
+    if (this == Duration.INFINITE) { return }
     require(this >= minimum) { "$name must be at least $minimum" }
     require(inWholeMilliseconds < Int.MAX_VALUE) {
         "$name must be less than ${Int.MAX_VALUE} milliseconds"

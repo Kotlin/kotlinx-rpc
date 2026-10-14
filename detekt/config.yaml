@@ -516,7 +516,7 @@ style:
     active: true
   BracesOnIfStatements:
     active: true
-    singleLine: 'never'
+    singleLine: 'always'
     multiLine: 'always'
   BracesOnWhenStatements:
     active: true

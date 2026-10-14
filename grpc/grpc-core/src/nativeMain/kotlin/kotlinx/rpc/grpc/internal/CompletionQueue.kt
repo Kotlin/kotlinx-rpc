@@ -132,7 +132,7 @@ public class CompletionQueue {
      */
     @OptIn(UnsafeNumber::class)
     public fun runBatch(call: CPointer<grpc_call>, ops: CPointer<grpc_op>, nOps: ULong): BatchResult {
-        if (_shutdownDone.isCompleted) return BatchResult.CQShutdown
+        if (_shutdownDone.isCompleted) { return BatchResult.CQShutdown }
 
         val completion = CallbackFuture<Boolean>()
         val tag = newCbTag(completion, OPS_COMPLETE_CB)

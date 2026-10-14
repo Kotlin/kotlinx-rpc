@@ -15,7 +15,7 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable
 open class TestClass(val value: Int = 0) {
     override fun equals(other: Any?): Boolean {
-        if (other !is TestClass) return false
+        if (other !is TestClass) { return false }
         return value == other.value
     }
 }
@@ -36,7 +36,7 @@ class TestClassThatThrowsWhileDeserialization(val value: Int = 0) {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is TestClassThatThrowsWhileDeserialization) return false
+        if (other !is TestClassThatThrowsWhileDeserialization) { return false }
         return value == other.value
     }
 }
