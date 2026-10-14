@@ -27,13 +27,12 @@ import kotlinx.rpc.grpc.test.HelloReply
 import kotlinx.rpc.grpc.test.HelloReplyInternal
 import kotlinx.rpc.grpc.test.HelloRequest
 import kotlinx.rpc.grpc.test.HelloRequestInternal
+import kotlinx.rpc.grpc.test.grpcTestServerPort
 import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.seconds
-
-private const val PORT = 50051
 
 /**
  * Client tests that use lower level API directly to test that it behaves correctly.
@@ -60,7 +59,7 @@ class GrpcCoreClientTest {
         platformApi.createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
-        target = "localhost:$PORT",
+        target = "localhost:$grpcTestServerPort",
         credentials = GrpcInsecureClientCredentials()
     ).buildChannel()
 

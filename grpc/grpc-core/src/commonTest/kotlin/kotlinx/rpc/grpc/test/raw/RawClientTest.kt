@@ -18,6 +18,7 @@ import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoRequestInternal
 import kotlinx.rpc.grpc.test.EchoResponse
 import kotlinx.rpc.grpc.test.EchoResponseInternal
+import kotlinx.rpc.grpc.test.grpcTestServerPort
 import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -91,7 +92,7 @@ class RawClientTest {
         type: GrpcMethodType,
         block: suspend (GrpcClient, GrpcMethodDescriptor<EchoRequest, EchoResponse>) -> Unit,
     ) = runTest {
-        val client = GrpcClient("localhost:50051") {
+        val client = GrpcClient("localhost:$grpcTestServerPort") {
             credentials = plaintext()
         }
 

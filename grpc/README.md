@@ -14,7 +14,7 @@ grpc-ktor-server --> grpc-server --\
 grpc-marshaller-kotlinx-serialization --> grpc-marshaller
 ```
 
-**Test server dependency**: Integration tests in `grpc-core` automatically build and start the `:tests:grpc-test-server` as a background process (port 50051). 
+**Test server dependency**: Integration tests in `grpc-core` automatically build and start the `:tests:grpc-test-server` as a background process on a free port. 
 The test task waits for `[GRPC-TEST-SERVER] Server started` before proceeding.
 
 **`@Grpc`** annotation -- marks an interface as a gRPC service (analogous to `@Rpc` for kRPC).

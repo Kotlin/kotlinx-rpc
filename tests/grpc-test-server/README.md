@@ -8,10 +8,10 @@ deterministically:
 - Change how the call ends.
 - Read what the server observed.
 
-The server listens on `127.0.0.1:50051`. When it accepts calls, it prints this line:
+The server listens on `127.0.0.1` on the port from its first argument. When it accepts calls, it prints this line:
 
 ```
-[GRPC-TEST-SERVER] Server started on 127.0.0.1:50051; control protocol v1
+[GRPC-TEST-SERVER] Server started on 127.0.0.1:<port>
 ```
 
 ## Running
@@ -30,14 +30,19 @@ All these tasks share one server process:
 2. The server starts before the first task that opts in.
 3. The server stops when the build finishes.
 
+Gradle chooses a free port for each start, passes it to the server, and gives it to the test task in the
+environment variable `GRPC_TEST_SERVER_PORT`. In the tests, use `grpcTestServerPort`.
+
 A task fails if the server can't start or exits while the task runs.
 
 To start the server by hand, for example for a test binary that runs outside Gradle:
 
 ```bash
 ./gradlew :tests:grpc-test-server:installDist
-tests/grpc-test-server/build/install/grpc-test-server/bin/grpc-test-server
+tests/grpc-test-server/build/install/grpc-test-server/bin/grpc-test-server 50051
 ```
+
+The tests read the port from `GRPC_TEST_SERVER_PORT`, so set it to the same value.
 
 The tests of the server itself run with `./gradlew :tests:grpc-test-server:test`.
 
@@ -67,7 +72,7 @@ the call fails with `INVALID_ARGUMENT`.
 
 ### Data-plane and control-plane calls
 
-A test sends two kinds of gRPC calls to the server. Both go to `127.0.0.1:50051`, except data-plane calls
+A test sends two kinds of gRPC calls to the server. Both go to `127.0.0.1:<port>`, except data-plane calls
 to a disposable endpoint.
 
 - **Data-plane calls**: the calls under test. The kotlinx-rpc client code under test calls `TestService` or
@@ -280,7 +285,7 @@ sequenceDiagram
 
 | File                             | Role                                                                          |
 |----------------------------------|-------------------------------------------------------------------------------|
-| `TestServer.kt`                  | Entry point. Starts all services on `127.0.0.1:50051`.                        |
+| `TestServer.kt`                  | Entry point. Starts all services on `127.0.0.1:<port>`.                           |
 | `CallScenarioRegistry.kt`        | Scenario state: configuration, call trace, barriers, inbound demand, diagnostics. |
 | `ScenarioInterceptor.kt`         | Applies a scenario to calls with `kxrpc-test-call-id` and records their events. |
 | `ScenarioStatus.kt`              | Maps scenario failures to the gRPC status codes in [Errors](#errors).          |

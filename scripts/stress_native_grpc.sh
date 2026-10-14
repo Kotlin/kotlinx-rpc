@@ -19,7 +19,7 @@
 #             :tests:grpc-test-server:installDist
 #
 # A subset of grpc-core native tests (RawClient*, GrpcCoreClient*) need the
-# grpc-test-server JVM fixture running on localhost:50051. The Gradle
+# grpc-test-server JVM fixture. They read its port from GRPC_TEST_SERVER_PORT. The Gradle
 # `<target>Test` task starts it with `withGrpcClientTestServer` (see
 # gradle-conventions/src/main/kotlin/util/grpc/grpcClientTestServer.kt). When
 # you run the kexe directly, this script starts the server, waits until it is
@@ -139,7 +139,7 @@ echo >&2
 
 # ---- start grpc-test-server fixture ---------------------------------------
 # Does the same as `withGrpcClientTestServer` in the Gradle grpc-core tests.
-# RawClient*/GrpcCoreClient* tests dial localhost:50051 and would fail without it.
+# RawClient*/GrpcCoreClient* tests dial localhost:$GRPC_TEST_SERVER_PORT and would fail without it.
 TEST_SERVER_LOG="$BATCH_DIR/test-server.log"
 TEST_SERVER_PID=""
 
@@ -157,8 +157,12 @@ cleanup_test_server() {
 }
 trap cleanup_test_server EXIT INT TERM
 
-echo "Starting grpc-test-server fixture..." >&2
-(cd "$TEST_SERVER_DIR" && exec "./install/grpc-test-server/bin/grpc-test-server") \
+# Ask the OS for a free port. The kexe inherits the variable.
+GRPC_TEST_SERVER_PORT="$(python3 -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')"
+export GRPC_TEST_SERVER_PORT
+
+echo "Starting grpc-test-server fixture on port $GRPC_TEST_SERVER_PORT..." >&2
+(cd "$TEST_SERVER_DIR" && exec "./install/grpc-test-server/bin/grpc-test-server" "$GRPC_TEST_SERVER_PORT") \
     > "$TEST_SERVER_LOG" 2>&1 &
 TEST_SERVER_PID=$!
 
