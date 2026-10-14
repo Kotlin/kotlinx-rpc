@@ -36,7 +36,7 @@ class CallScenarioRegistryTest {
         assertEquals(1, firstRequest.occurrence)
         assertEquals(3L, secondRequest.sequence)
         assertEquals(2, secondRequest.occurrence)
-        assertEquals(listOf(accepted, firstRequest, secondRequest), registry.trace("call-1").eventsList)
+        assertEquals(listOf(accepted, firstRequest, secondRequest), registry.getTrace("call-1").eventsList)
     }
 
     @Test
@@ -98,7 +98,7 @@ class CallScenarioRegistryTest {
 
             assertEquals("scenario 'call-4' was discarded", waiter.get(1, TimeUnit.SECONDS).message)
             assertEquals(0, registry.activeScenarioCount())
-            assertFailsWith<ScenarioNotFoundException> { registry.trace("call-4") }
+            assertFailsWith<ScenarioNotFoundException> { registry.getTrace("call-4") }
         } finally {
             executor.shutdownNow()
         }
@@ -260,7 +260,7 @@ class CallScenarioRegistryTest {
             }
             registry.awaitWaiterCount("diagnostics", 1)
 
-            val active = registry.diagnostics("diagnostics")
+            val active = registry.getDiagnostics("diagnostics")
             assertEquals(1, active.activeCallCount)
             assertEquals(listOf(responseBarrier, halfCloseBarrier), active.outstandingBarriersList)
             assertEquals(1, active.controlWaiterCount)
@@ -269,7 +269,7 @@ class CallScenarioRegistryTest {
             val closed = registry.callClosed("diagnostics")
             assertEquals(closed, waiter.get(1, TimeUnit.SECONDS))
 
-            val completed = registry.diagnostics("diagnostics")
+            val completed = registry.getDiagnostics("diagnostics")
             assertEquals(0, completed.activeCallCount)
             assertEquals(listOf(halfCloseBarrier), completed.outstandingBarriersList)
             assertEquals(0, completed.controlWaiterCount)
@@ -287,10 +287,10 @@ class CallScenarioRegistryTest {
         val cancelled = registry.clientCancelled("cancelled")
 
         assertEquals(EventType.CLIENT_CANCELLED, cancelled.type)
-        assertEquals(0, registry.diagnostics("cancelled").activeCallCount)
+        assertEquals(0, registry.getDiagnostics("cancelled").activeCallCount)
         assertEquals(
             listOf(EventType.CALL_ACCEPTED, EventType.CLIENT_CANCELLED),
-            registry.trace("cancelled").eventsList.map { it.type },
+            registry.getTrace("cancelled").eventsList.map { it.type },
         )
         assertFailsWith<IllegalStateException> { registry.clientCancelled("cancelled") }
         assertFailsWith<IllegalStateException> { registry.callClosed("cancelled") }

@@ -85,7 +85,7 @@ internal class GrpcClientControlService(
 
     override fun getTrace(request: GetTraceRequest, responseObserver: StreamObserver<CallTrace>) {
         respond(responseObserver) {
-            registry.trace(request.callId)
+            registry.getTrace(request.callId)
         }
     }
 
@@ -94,7 +94,7 @@ internal class GrpcClientControlService(
         responseObserver: StreamObserver<ScenarioDiagnostics>,
     ) {
         respond(responseObserver) {
-            registry.diagnostics(request.callId)
+            registry.getDiagnostics(request.callId)
         }
     }
 

@@ -176,9 +176,9 @@ internal class CallScenarioRegistry(
         scenario(callId).awaitBarrierIfConfigured(barrierKey(type, occurrence), waitTimeout)
     }
 
-    fun trace(callId: String): CallTrace = scenario(callId).trace()
+    fun getTrace(callId: String): CallTrace = scenario(callId).getTrace()
 
-    fun diagnostics(callId: String): ScenarioDiagnostics = scenario(callId).diagnostics()
+    fun getDiagnostics(callId: String): ScenarioDiagnostics = scenario(callId).getDiagnostics()
 
     /**
      * Removes the scenario and closes its attached [InboundDemandEndpoint]. Threads that wait in the scenario fail
@@ -547,7 +547,7 @@ private class ScenarioState(
         }
     }
 
-    fun trace(): CallTrace = lock.withLock {
+    fun getTrace(): CallTrace = lock.withLock {
         checkNotDiscarded()
         CallTrace.newBuilder()
             .setCallId(callId)
@@ -555,7 +555,7 @@ private class ScenarioState(
             .build()
     }
 
-    fun diagnostics(): ScenarioDiagnostics = lock.withLock {
+    fun getDiagnostics(): ScenarioDiagnostics = lock.withLock {
         checkNotDiscarded()
         val outstandingBarriers = (configuredBarriers - releasedBarriers)
             .sortedWith(compareBy({ it.type.number }, BarrierKey::occurrence))
