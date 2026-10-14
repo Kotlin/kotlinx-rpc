@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
-import kotlinx.io.Source
 import kotlinx.io.readString
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.io.writeString
@@ -108,7 +107,8 @@ class RawClientServerTest {
     private fun runTest(
         methodName: String,
         type: GrpcMethodType,
-        methodDefinition: CoroutineScope.(GrpcMethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
+        methodDefinition: CoroutineScope.
+            (GrpcMethodDescriptor<String, String>) -> ServerMethodDefinition<String, String>,
         block: suspend (GrpcClient, GrpcMethodDescriptor<String, String>) -> Unit,
     ) = runTest {
         val serverJob = Job()
@@ -162,18 +162,10 @@ class RawClientServerTest {
 
         private val simpleMarshaller = object : GrpcMarshaller<String> {
             override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-                GrpcEncodedMessage.of(encodeBuffer(value, config))
-
-            private fun encodeBuffer(value: String, config: GrpcMarshallerConfig?): Buffer {
-                return Buffer().apply { writeString(value) }
-            }
+                GrpcEncodedMessage.of(Buffer().apply { writeString(value) })
 
             override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
-                decodeSource(reader.asSource(), config)
-
-            private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): String {
-                return source.readString()
-            }
+                reader.asSource().readString()
         }
     }
 }

@@ -107,7 +107,11 @@ class GrpcServerKeepAliveTimeoutTest {
                 }
             }
             val disconnected = awaitStateChange(peer, queue, grpc_connectivity_state.GRPC_CHANNEL_READY, 15.seconds)
-            assertEquals(!acknowledgePings, disconnected, "Unexpected connection state for acknowledgePings=$acknowledgePings")
+            assertEquals(
+                !acknowledgePings,
+                disconnected,
+                "Unexpected connection state for acknowledgePings=$acknowledgePings",
+            )
         } finally {
             withContext(NonCancellable) {
                 channel?.let { grpc_channel_destroy(it) }

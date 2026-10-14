@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.test.integration
 
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.server.GrpcServer
