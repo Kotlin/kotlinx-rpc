@@ -223,7 +223,11 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
         }?.let { trailers.merge(it) }
 
         mutex.withLock {
-            handler.close(closeStatus, trailers)
+            // After a deframe failure (for example, an oversized request), grpc-java has already sent the
+            // trailers of the cancelled call. A second close fails the whole Netty connection (grpc-java 1.81).
+            if (!handler.isCancelled()) {
+                handler.close(closeStatus, trailers)
+            }
             serverCallScope.onCloseFuture.complete(Pair(closeStatus, trailers))
         }
     }
