@@ -64,10 +64,10 @@ service GrpcClientControlService {
 service MalformedResponseService {
   // Fails with INVALID_ARGUMENT unless the client sends exactly one request
   // message.
-  rpc UnaryCall(MalformedResponseRequest) returns (MalformedResponse);
+  rpc UnaryCall(EchoRequest) returns (EchoResponse);
 
   // Accepts any number of request messages.
-  rpc StreamingInputCall(stream MalformedResponseRequest) returns (MalformedResponse);
+  rpc StreamingInputCall(stream EchoRequest) returns (EchoResponse);
 }
 
 // Configuration of a scenario. It applies to each later data-plane call that
@@ -184,12 +184,12 @@ enum MalformedResponseCount {
   DUPLICATE_RESPONSE = 2;
 }
 
-message MalformedResponseRequest {
-  // Echoed in MalformedResponse.payload.
+message EchoRequest {
+  // Echoed in EchoResponse.payload.
   bytes payload = 1;
 }
 
-message MalformedResponse {
+message EchoResponse {
   // Payload of the last request message, or empty if the client sent none.
   bytes payload = 1;
 }

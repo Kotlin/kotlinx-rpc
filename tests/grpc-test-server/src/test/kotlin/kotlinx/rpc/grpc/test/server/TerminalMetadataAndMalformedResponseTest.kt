@@ -15,11 +15,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 import kxrpc.testing.BarrierType
+import kxrpc.testing.EchoRequest
+import kxrpc.testing.EchoResponse
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
-import kxrpc.testing.MalformedResponse
 import kxrpc.testing.MalformedResponseCount
-import kxrpc.testing.MalformedResponseRequest
 import kxrpc.testing.MalformedResponseServiceGrpc
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
@@ -231,7 +231,7 @@ class TerminalMetadataAndMalformedResponseTest {
 
             val error = assertFailsWith<StatusRuntimeException> {
                 fixture.malformedResponseClient(callId).unaryCall(
-                    MalformedResponseRequest.newBuilder()
+                    EchoRequest.newBuilder()
                         .setPayload(ByteString.copyFromUtf8("unary"))
                         .build()
                 )
@@ -259,16 +259,16 @@ class TerminalMetadataAndMalformedResponseTest {
                     .setMalformedResponseCount(malformedCount)
                     .build()
             )
-            val response = AwaitingObserver<MalformedResponse>()
+            val response = AwaitingObserver<EchoResponse>()
             val requests = fixture.asyncMalformedResponseClient(callId).streamingInputCall(response)
 
             requests.onNext(
-                MalformedResponseRequest.newBuilder()
+                EchoRequest.newBuilder()
                     .setPayload(ByteString.copyFromUtf8("first"))
                     .build()
             )
             requests.onNext(
-                MalformedResponseRequest.newBuilder()
+                EchoRequest.newBuilder()
                     .setPayload(ByteString.copyFromUtf8("second"))
                     .build()
             )

@@ -11,9 +11,9 @@ import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
 import io.grpc.ServerServiceDefinition
 import io.grpc.Status
-import kxrpc.testing.MalformedResponse
+import kxrpc.testing.EchoRequest
+import kxrpc.testing.EchoResponse
 import kxrpc.testing.MalformedResponseCount
-import kxrpc.testing.MalformedResponseRequest
 import kxrpc.testing.MalformedResponseServiceGrpc
 
 /**
@@ -46,27 +46,27 @@ internal class MalformedResponseTestService(
 
     private fun handler(
         clientStreaming: Boolean,
-    ): ServerCallHandler<MalformedResponseRequest, MalformedResponse> {
+    ): ServerCallHandler<EchoRequest, EchoResponse> {
         return ServerCallHandler { call, headers -> startCall(call, headers, clientStreaming) }
     }
 
     private fun startCall(
-        call: ServerCall<MalformedResponseRequest, MalformedResponse>,
+        call: ServerCall<EchoRequest, EchoResponse>,
         headers: Metadata,
         clientStreaming: Boolean,
-    ): ServerCall.Listener<MalformedResponseRequest> {
+    ): ServerCall.Listener<EchoRequest> {
         val callId = headers.get(TEST_CALL_ID_METADATA_KEY)
         if (callId == null) {
             call.closeInvalid(
                 "the call has no '$TEST_CALL_ID_METADATA_KEY_NAME' metadata. Set it to the call ID of a scenario"
             )
-            return object : ServerCall.Listener<MalformedResponseRequest>() {}
+            return object : ServerCall.Listener<EchoRequest>() {}
         }
 
         val count = registry.configuration(callId).malformedResponseCount
         if (count == MalformedResponseCount.MALFORMED_RESPONSE_COUNT_UNSPECIFIED) {
             call.closeInvalid("the scenario doesn't set malformed_response_count. Set it in ConfigureScenario")
-            return object : ServerCall.Listener<MalformedResponseRequest>() {}
+            return object : ServerCall.Listener<EchoRequest>() {}
         }
 
         // For a unary call, the server requests one message more than expected, so it can find a second request.
@@ -75,16 +75,16 @@ internal class MalformedResponseTestService(
     }
 
     private class MalformedResponseCallListener(
-        private val call: ServerCall<MalformedResponseRequest, MalformedResponse>,
+        private val call: ServerCall<EchoRequest, EchoResponse>,
         private val count: MalformedResponseCount,
         private val clientStreaming: Boolean,
-    ) : ServerCall.Listener<MalformedResponseRequest>() {
+    ) : ServerCall.Listener<EchoRequest>() {
         private var requestCount: Int = 0
-        private var responsePayload = MalformedResponse.getDefaultInstance()
+        private var responsePayload = EchoResponse.getDefaultInstance()
 
-        override fun onMessage(message: MalformedResponseRequest) {
+        override fun onMessage(message: EchoRequest) {
             requestCount++
-            responsePayload = MalformedResponse.newBuilder()
+            responsePayload = EchoResponse.newBuilder()
                 .setPayload(message.payload)
                 .build()
             if (clientStreaming) call.request(1)
