@@ -17,21 +17,16 @@ public fun internalError(message: String): Nothing {
 }
 
 /**
- * Throws [IllegalArgumentException] when a connection duration option is out of range.
+ * Throws [IllegalArgumentException] if a finite connection duration is below [minimum]
+ * or at least `Int.MAX_VALUE` milliseconds. [Duration.INFINITE] always passes and means
+ * "disabled" or "unlimited".
  *
- * `null` and [Duration.INFINITE] always pass. They mean "disabled" or "unlimited".
- * A finite value must be at least [minimum] and less than `Int.MAX_VALUE` milliseconds.
- *
- * The upper bound comes from Kotlin/Native. A C-core channel arg is a C `int`, and
- * [Duration.INFINITE] maps to `Int.MAX_VALUE`. A finite value at or above `Int.MAX_VALUE`
- * either equals infinite or doesn't fit.
- *
- * Every platform enforces the bound, so a configuration behaves the same everywhere.
- * On the JVM, grpc-java alone accepts larger values, because it takes a `long`.
+ * All platforms enforce Kotlin/Native's C-core channel argument limit: a C `int`,
+ * with `Int.MAX_VALUE` reserved for infinity. Larger values don't fit.
  */
 @InternalRpcApi
-public fun Duration?.validateConnectionDuration(name: String, minimum: Duration) {
-    if (this == null || this == Duration.INFINITE) return
+public fun Duration.validateConnectionDuration(name: String, minimum: Duration) {
+    if (this == Duration.INFINITE) return
     require(this >= minimum) { "$name must be at least $minimum" }
     require(inWholeMilliseconds < Int.MAX_VALUE) {
         "$name must be less than ${Int.MAX_VALUE} milliseconds"

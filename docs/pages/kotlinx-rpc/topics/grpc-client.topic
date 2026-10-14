@@ -53,8 +53,8 @@
             </def>
             <def title="keepAlive { ... }">
                 Keep-alive ensures that the connection between the client and the server remains active.
-                It helps detect connection issues proactively before a request is made and facilitates
-                maintaining long-lived idle connections.
+                It helps detect connection issues before a request is made and helps maintain long-lived
+                idle connections.
 
                 Pings are disabled by default, because <code>time</code> is <code>Duration.INFINITE</code>.
                 <deflist>

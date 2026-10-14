@@ -78,15 +78,10 @@ public sealed class GrpcArg(public val key: String) {
 }
 
 /**
- * Converts a duration to the millisecond value of a C-core channel arg.
+ * Converts to C-core channel argument milliseconds. [Duration.INFINITE] maps to `Int.MAX_VALUE` (unbounded).
  *
- * Maps [Duration.INFINITE] to `INT_MAX`, which gRPC treats as unbounded.
- * Throws [IllegalArgumentException] for a negative duration and for a finite duration of
- * `Int.MAX_VALUE` milliseconds or more (about 24.8 days). A channel arg is a C `int`.
- * Without the check, such a value wraps to a negative number or to `INT_MAX`.
- *
- * [validateConnectionDuration] rejects out-of-range values earlier, with the option name in the message.
- * This check covers the paths that skip it: property defaults, which bypass the setters, and new callers.
+ * Throws [IllegalArgumentException] if whole milliseconds are outside `0 until Int.MAX_VALUE`.
+ * Checks defaults and callers that bypass [validateConnectionDuration].
  */
 @InternalRpcApi
 public fun Duration.toChannelArgMilliseconds(): Int {
