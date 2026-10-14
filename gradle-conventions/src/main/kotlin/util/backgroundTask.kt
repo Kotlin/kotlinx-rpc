@@ -8,14 +8,16 @@ import org.gradle.api.GradleException
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.Logging
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
+import java.io.File
 import java.io.IOException
-import java.util.ArrayDeque
+import java.io.Writer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -23,7 +25,6 @@ import kotlin.concurrent.thread
 
 private const val DEFAULT_READY_TIMEOUT_SECONDS = 30
 private const val SHUTDOWN_TIMEOUT_SECONDS = 3L
-private const val MAX_CAPTURED_OUTPUT_LINES = 200
 
 internal interface BackgroundTaskParameters : BuildServiceParameters {
     val command: ListProperty<String>
@@ -32,19 +33,20 @@ internal interface BackgroundTaskParameters : BuildServiceParameters {
     val readyLinePrefix: Property<String>
     val readyTimeoutSeconds: Property<Int>
     val outputPrefix: Property<String>
+    val logFile: RegularFileProperty
 }
 
 /**
  * Owns one background process. The service starts the process on first use and stops it when Gradle
  * closes the service at the end of the build.
  *
- * The service writes the stdout and stderr of the process to the Gradle log. Every failure has
- * the most recent output lines.
+ * The service writes the stdout and stderr of the process to the Gradle log and to a log file.
+ * Every failure message has the path to the log file.
  */
 internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParameters>, AutoCloseable {
     private val logger = Logging.getLogger(BackgroundTaskService::class.java)
     private val prefix: String get() = parameters.outputPrefix.get()
-    private val recentOutput = ArrayDeque<String>()
+    private val logFile: File get() = parameters.logFile.get().asFile
     private val readinessDecided = CountDownLatch(1)
 
     /** The message of the first startup or runtime failure. Every later use of the service fails with it. */
@@ -57,6 +59,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
     private var stopping: Boolean = false
 
     private var startAttempted: Boolean = false
+
     private var process: Process? = null
     private var outputReader: Thread? = null
 
@@ -78,26 +81,32 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
     private fun start() {
         val command = parameters.command.get()
         logger.lifecycle("$prefix Starting: ${command.joinToString(" ")}")
+        logFile.parentFile.mkdirs()
+        val log = logFile.bufferedWriter()
         val started = try {
             ProcessBuilder(command)
                 .directory(parameters.workingDirectory.get().asFile)
                 .redirectErrorStream(true)
                 .start()
         } catch (cause: IOException) {
+            log.close()
             throw failure("The background process didn't start", cause)
         }
         process = started
-        outputReader = thread(name = "background-task-output", isDaemon = true) { readOutput(started) }
+        outputReader = thread(name = "background-task-output", isDaemon = true) { readOutput(started, log) }
 
         val timeoutSeconds = parameters.readyTimeoutSeconds.get()
         val decided = try {
             readinessDecided.await(timeoutSeconds.toLong(), TimeUnit.SECONDS)
         } catch (cause: InterruptedException) {
-            Thread.currentThread().interrupt()
             stop()
+            // Set interrupt flag to prevent further thread blocking
+            Thread.currentThread().interrupt()
             throw failure("An interrupt stopped the wait for the ready line", cause)
         }
-        if (!decided) recordFailure("The background process didn't print its ready line in ${timeoutSeconds}s")
+        if (!decided) {
+            recordFailure("The background process didn't print its ready line in ${timeoutSeconds}s")
+        }
         failure.get()?.let { message ->
             stop()
             throw failure(message)
@@ -105,18 +114,24 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
         logger.lifecycle("$prefix Ready")
     }
 
-    /** Runs on [outputReader] until the process closes its output, then records how the process ended. */
-    private fun readOutput(started: Process) {
+    /**
+     * Runs on [outputReader] until the process closes its output.
+     * Flushes [log] after each line, so that the log file is complete when a failure occurs.
+     */
+    private fun readOutput(started: Process, log: Writer) {
         try {
-            started.inputStream.bufferedReader().useLines { lines ->
-                lines.forEach { line ->
-                    capture(line)
-                    logger.lifecycle("$prefix $line")
-                    if (!ready) checkReadiness(line)
+            log.use {
+                started.inputStream.bufferedReader().useLines { lines ->
+                    lines.forEach { line ->
+                        log.appendLine(line)
+                        log.flush()
+                        logger.lifecycle("$prefix $line")
+                        if (!ready) checkReadiness(line)
+                    }
                 }
             }
         } catch (cause: IOException) {
-            if (!stopping) recordFailure("Can't read the background process output: ${cause.message}")
+            if (!stopping) recordFailure("Can't copy the background process output to the log file: ${cause.message}")
         }
 
         val exitCode = runCatching { started.waitFor() }.getOrNull() ?: "unknown"
@@ -149,19 +164,9 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
         if (failure.compareAndSet(null, message)) logger.error("$prefix $message")
     }
 
-    private fun capture(line: String) {
-        synchronized(recentOutput) {
-            recentOutput.addLast(line)
-            if (recentOutput.size > MAX_CAPTURED_OUTPUT_LINES) recentOutput.removeFirst()
-        }
-    }
-
     private fun failure(message: String, cause: Throwable? = null): GradleException {
         val command = parameters.command.get().joinToString(" ")
-        val output = synchronized(recentOutput) {
-            recentOutput.joinToString(System.lineSeparator()).ifEmpty { "<no process output>" }
-        }
-        val details = listOf("$message.", "Command: $command", "Recent process output:", output)
+        val details = listOf("$message.", "Command: $command", "Process output: ${logFile.absolutePath}")
             .joinToString(System.lineSeparator())
         return GradleException(details, cause)
     }
@@ -179,6 +184,10 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
             }
         }
         outputReader?.join(1_000)
+        if (outputReader?.isAlive == true) {
+            // If the process is still alive after waiting (because of a blocking read/write), interrupt it.
+            outputReader?.interrupt()
+        }
         process = null
         outputReader = null
     }
@@ -190,10 +199,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
 
 /** Configures the process started by [withBackgroundTask]. */
 class BackgroundTaskConfig internal constructor() {
-    /** The command line of the process. */
     var command: Provider<List<String>>? = null
-
-    /** The directory the process runs in. */
     var workingDirectory: Provider<Directory>? = null
 
     /** The exact output line that the process prints when it is ready. */
@@ -206,8 +212,6 @@ class BackgroundTaskConfig internal constructor() {
     var readyLinePrefix: String? = null
 
     var readyTimeoutSeconds: Int = DEFAULT_READY_TIMEOUT_SECONDS
-
-    /** The prefix of the Gradle log lines for this process. */
     var outputPrefix: String = "[background]"
 }
 
@@ -218,6 +222,7 @@ class BackgroundTaskConfig internal constructor() {
  * - All tasks with the same [name] use one process. Only the configuration of the first registration has an
  *   effect, so all these tasks must configure the process in the same way.
  * - A task fails if the process can't start or exits while the task runs.
+ * - The output of the process goes to `build/background-tasks/<name>.log` in the root project.
  */
 fun Task.withBackgroundTask(name: String, configure: BackgroundTaskConfig.() -> Unit) {
     val config = BackgroundTaskConfig().apply(configure)
@@ -233,6 +238,7 @@ fun Task.withBackgroundTask(name: String, configure: BackgroundTaskConfig.() -> 
         parameters.readyLinePrefix.set(config.readyLinePrefix)
         parameters.readyTimeoutSeconds.set(config.readyTimeoutSeconds)
         parameters.outputPrefix.set(config.outputPrefix)
+        parameters.logFile.set(project.rootProject.layout.buildDirectory.file("background-tasks/$name.log"))
     }
 
     usesService(service)
