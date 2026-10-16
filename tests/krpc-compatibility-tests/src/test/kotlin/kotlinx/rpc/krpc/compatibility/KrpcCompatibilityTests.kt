@@ -42,8 +42,8 @@ class KrpcCompatibilityTests {
         val oldApiClassLoader = URLClassLoader(arrayOf(oldResourcePath), javaClass.classLoader)
         val newApiClassLoader = URLClassLoader(arrayOf(newResourcePath), javaClass.classLoader)
 
-        val clientClassLoader = if (oldClient) oldApiClassLoader else newApiClassLoader
-        val serverClassLoader = if (oldClient) newApiClassLoader else oldApiClassLoader
+        val clientClassLoader = if (oldClient) { oldApiClassLoader } else { newApiClassLoader }
+        val serverClassLoader = if (oldClient) { newApiClassLoader } else { oldApiClassLoader }
 
         return ClientServer(clientClassLoader = clientClassLoader, serverClassLoader = serverClassLoader)
     }

@@ -46,7 +46,9 @@ private fun <T> GrpcMarshaller<T>.toMarshaller(): io.grpc.MethodDescriptor.Marsh
                 require(size >= 0) { "The message size must be non-negative: $size" }
                 val source = stream.asSource().buffered()
                 while (buffer.size < size.toLong()) {
-                    if (source.readAtMostTo(buffer, size - buffer.size) == -1L) break
+                    if (source.readAtMostTo(buffer, size - buffer.size) == -1L) {
+                        break
+                    }
                 }
                 check(buffer.size == size.toLong()) {
                     "The message stream ended after ${buffer.size} bytes, expected $size"

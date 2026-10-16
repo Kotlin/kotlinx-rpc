@@ -25,22 +25,24 @@ internal class EncodedMessageInputStream(
     private var materializedBytes: ByteArray? = null
     private var drained: Boolean = false
 
-    override fun available(): Int = if (drained) 0 else materialized?.available() ?: message.size
+    override fun available(): Int = if (drained) { 0 } else { materialized?.available() ?: message.size }
 
-    override fun read(): Int = if (drained) -1 else bytes().read()
+    override fun read(): Int = if (drained) { -1 } else { bytes().read() }
 
     override fun read(bytes: ByteArray, offset: Int, length: Int): Int {
         if (drained) {
             if (offset < 0 || length < 0 || offset > bytes.size - length) {
                 throw IndexOutOfBoundsException("Marshaller $marshallerName read an invalid byte array range")
             }
-            return if (length == 0) 0 else -1
+            return if (length == 0) { 0 } else { -1 }
         }
         return bytes().read(bytes, offset, length)
     }
 
     override fun drainTo(target: OutputStream): Int {
-        if (drained) return 0
+        if (drained) {
+            return 0
+        }
         materialized?.let { stream ->
             val remaining = stream.available()
             val bytes = checkNotNull(materializedBytes)

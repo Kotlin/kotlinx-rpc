@@ -64,7 +64,7 @@ public class KrpcConnector(
 ) : KrpcMessageSender {
     override val transportScope: CoroutineScope = transport
 
-    private val role = if (isServer) SERVER_ROLE else CLIENT_ROLE
+    private val role = if (isServer) { SERVER_ROLE } else { CLIENT_ROLE }
     private val logger = RpcInternalCommonLogger.logger("$role Connector")
 
     private val receiveHandlers = RpcInternalConcurrentHashMap<HandlerKey<*>, KrpcReceiveHandler>()

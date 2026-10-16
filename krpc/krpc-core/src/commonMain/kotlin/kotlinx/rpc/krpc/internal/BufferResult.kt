@@ -11,7 +11,7 @@ internal sealed interface BufferResult<T> {
 }
 
 internal fun <T> BufferResult<T>.getOrNull(): T? {
-    return if (this is BufferResult.Success) message else null
+    return if (this is BufferResult.Success) { message } else { null }
 }
 
 internal inline fun <T> BufferResult<T>.onFailure(body: () -> Unit): BufferResult<T> {

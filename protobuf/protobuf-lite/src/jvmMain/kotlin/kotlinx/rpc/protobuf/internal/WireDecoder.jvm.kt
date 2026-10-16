@@ -23,7 +23,9 @@ internal class WireDecoderJvm(
     override var recursionLimit: Int = kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT
 
     override fun readTag(): KTag? {
-        if (codedInputStream.isAtEnd) return null
+        if (codedInputStream.isAtEnd) {
+            return null
+        }
 
         val posBefore = codedInputStream.totalBytesRead
         val raw64 = try {

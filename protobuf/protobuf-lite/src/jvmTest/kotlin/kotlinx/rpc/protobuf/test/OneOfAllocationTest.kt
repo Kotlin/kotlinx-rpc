@@ -39,7 +39,9 @@ class OneOfAllocationTest {
 
     @Test
     fun settingAndReadingNumericMembersDoesNotAllocate() {
-        if (threadBean == null) return
+        if (threadBean == null) {
+            return
+        }
 
         val msg32 = OneOfNumeric32 { } as OneOfNumeric32Internal
         val msg64 = OneOfNumeric64 { } as OneOfNumeric64Internal
@@ -68,7 +70,9 @@ class OneOfAllocationTest {
 
     @Test
     fun decodingANumericOneOfAllocatesOnlyTheMessage() {
-        if (threadBean == null) return
+        if (threadBean == null) {
+            return
+        }
 
         // both messages have the same wire shape: field 1, varint 123456
         val oneOfBytes = grpcMarshallerOf<OneOfNumeric32>().encodeToByteArray(OneOfNumeric32 { i32 = 123_456 })

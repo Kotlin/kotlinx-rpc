@@ -219,13 +219,13 @@ public interface GrpcTlsClientCredentialsBuilder {
  * Returns the unflattened [GrpcClientCredentials] in case of a [GrpcCombinedClientCredentials].
  */
 internal val GrpcClientCredentials.realClientCredentials
-    get() = if (this is GrpcCombinedClientCredentials) clientCredentials else this
+    get() = if (this is GrpcCombinedClientCredentials) { clientCredentials } else { this }
 
 /**
  * Returns the potential [GrpcCallCredentials] in case of a [GrpcCombinedClientCredentials].
  */
 internal val GrpcClientCredentials.realCallCredentials
-    get() = if (this is GrpcCombinedClientCredentials) callCredentials else GrpcEmptyCallCredentials
+    get() = if (this is GrpcCombinedClientCredentials) { callCredentials } else { GrpcEmptyCallCredentials }
 
 /**
  * Combines a [GrpcClientCredentials] with a [GrpcCallCredentials], which can be expected by the

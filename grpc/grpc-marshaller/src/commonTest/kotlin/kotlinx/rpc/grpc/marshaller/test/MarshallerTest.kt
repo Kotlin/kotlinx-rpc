@@ -31,7 +31,7 @@ class MyGrpcMarshallerConfig(
 object MyGrpcMarshaller: GrpcMarshaller<MyMessage> {
     override fun prepare(value: MyMessage, config: GrpcMarshallerConfig?): GrpcEncodedMessage {
         val appendHello = (config as? MyGrpcMarshallerConfig)?.appendHello ?: false
-        val text = value.value + if (appendHello) "Hello" else ""
+        val text = value.value + if (appendHello) { "Hello" } else { "" }
         return GrpcEncodedMessage.of(text.encodeToByteArray())
     }
 

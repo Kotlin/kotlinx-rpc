@@ -115,7 +115,7 @@ private fun extractAuthority(serviceUrl: String): String {
 
 private fun String.removeUntil(pattern: String): String {
     val idx = indexOf(pattern)
-    return if (idx == -1) this else removeRange(0, idx + pattern.length)
+    return if (idx == -1) { this } else { removeRange(0, idx + pattern.length) }
 }
 
 private fun destroyCallback(state: COpaquePointer?) {

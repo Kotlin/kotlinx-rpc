@@ -40,7 +40,7 @@ class DirectWireEncoderTest {
             marshaller.prepare(message).writeTo(direct)
             assertEquals(0, direct.remaining)
             assertContentEquals(expected, direct.snapshot())
-            assertEquals(if (expected.isEmpty()) 0 else 1, direct.scopes)
+            assertEquals(if (expected.isEmpty()) { 0 } else { 1 }, direct.scopes)
         } finally {
             direct.release()
         }

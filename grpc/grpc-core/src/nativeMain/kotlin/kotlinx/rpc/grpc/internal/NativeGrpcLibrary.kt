@@ -25,12 +25,16 @@ public object GrpcRuntime {
     public fun acquire(): AutoCloseable {
         refLock.withLock {
             val prev = refs++
-            if (prev == 0) grpc_init()
+            if (prev == 0) {
+                grpc_init()
+            }
         }
         return object : AutoCloseable {
             private val done = atomic(false)
             override fun close() {
-                if (!done.compareAndSet(expect = false, update = true)) return
+                if (!done.compareAndSet(expect = false, update = true)) {
+                    return
+                }
                 refLock.withLock {
                     val now = --refs
                     require(now >= 0) { internalError("release() without matching acquire()") }

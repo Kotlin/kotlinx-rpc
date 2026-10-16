@@ -70,7 +70,9 @@ public class TlsCredentialsOptionsBuilder {
         grpc_tls_certificate_provider_release(provider)
 
         val clientAuth = clientAuth
-        if (clientAuth != null) grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth)
+        if (clientAuth != null) {
+            grpc_tls_credentials_options_set_cert_request_type(opts, clientAuth)
+        }
 
         return opts
     }

@@ -115,7 +115,7 @@ private fun ApiTestContext.serialProperty(property: KProperty<*>): String {
     traverseClasses(property.returnType)
     val type = property.returnType
     val kClass = type.rpcInternalKClass<Any>()
-    val nullable = if (type.isMarkedNullable) "Nullable" else null
+    val nullable = if (type.isMarkedNullable) { "Nullable" } else { null }
 
     return lines(
         "${property.serialName()}: ${kClass.serialName()}".prop(),

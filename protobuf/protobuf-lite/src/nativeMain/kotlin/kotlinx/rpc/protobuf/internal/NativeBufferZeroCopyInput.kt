@@ -31,7 +31,9 @@ internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, p
     override val availableSize: Long get() = length.toLong()
 
     override fun next(data: CPointer<CPointerVar<ByteVar>>, size: CPointer<IntVar>): Boolean {
-        if (position == length) return false
+        if (position == length) {
+            return false
+        }
         val count = length - position
         data.pointed.value = checkNotNull(base) + position
         size.pointed.value = count
@@ -42,14 +44,18 @@ internal class NativeBufferZeroCopyInput(private val base: CPointer<ByteVar>?, p
 
     override fun backUp(count: Int) {
         // C++ declares this callback void. Invalid requests cannot throw through that frame.
-        if (count !in 0..lastChunkSize) return
+        if (count !in 0..lastChunkSize) {
+            return
+        }
         position -= count
         lastChunkSize = 0
     }
 
     override fun skip(count: Int): Boolean {
         lastChunkSize = 0
-        if (count < 0 || count > length - position) return false
+        if (count < 0 || count > length - position) {
+            return false
+        }
         position += count
         return true
     }

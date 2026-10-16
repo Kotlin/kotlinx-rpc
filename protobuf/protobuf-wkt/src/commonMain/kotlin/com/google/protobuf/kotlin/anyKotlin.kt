@@ -292,7 +292,7 @@ public inline fun <@GeneratedProtoMessage reified T : kotlin.Any> Any.unpackOrNu
  * @see unpack
  */
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpackOrNull(kType: KType): T? {
-    return if (contains<T>(kType)) unpack(kType) else null
+    return if (contains<T>(kType)) { unpack(kType) } else { null }
 }
 
 /**
@@ -318,5 +318,5 @@ public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpackOrNull(kType: KType
  * @see unpack
  */
 public fun <@GeneratedProtoMessage T : kotlin.Any> Any.unpackOrNull(kClass: KClass<T>): T? {
-    return if (contains(kClass)) unpack(kClass) else null
+    return if (contains(kClass)) { unpack(kClass) } else { null }
 }

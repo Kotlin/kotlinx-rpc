@@ -73,7 +73,7 @@ private fun <T : GoldComparable<T>> loadGold(
     parseGoldFile: (String) -> T,
 ): Pair<T, String>? {
     return fileDir.resolve(filename.goldFile()).toFile().let { file ->
-        if (file.exists()) parseGoldFile(file.readText(Charsets.UTF_8)) to file.absolutePath else null
+        if (file.exists()) { parseGoldFile(file.readText(Charsets.UTF_8)) to file.absolutePath } else { null }
     }
 }
 

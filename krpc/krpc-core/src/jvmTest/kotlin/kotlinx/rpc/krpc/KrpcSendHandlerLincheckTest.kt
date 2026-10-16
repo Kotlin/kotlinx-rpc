@@ -77,7 +77,7 @@ class SequentialKrpcSendHandler {
             return
         }
 
-        window = if (window == -1) update else window + update
+        window = if (window == -1) { update } else { window + update }
 
         continuations.forEach { it.resume(Unit) }
         continuations.clear()

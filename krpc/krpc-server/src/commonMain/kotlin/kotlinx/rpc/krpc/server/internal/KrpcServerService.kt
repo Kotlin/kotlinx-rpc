@@ -129,7 +129,7 @@ internal class KrpcServerService<@Rpc T : Any>(
         val callable = descriptor.getCallable(callableName)
 
         if (callable == null || !isMethod) {
-            val callType = if (isMethod) "method" else "field"
+            val callType = if (isMethod) { "method" } else { "field" }
             error("Service ${descriptor.fqName} has no $callType '$callableName'")
         }
 

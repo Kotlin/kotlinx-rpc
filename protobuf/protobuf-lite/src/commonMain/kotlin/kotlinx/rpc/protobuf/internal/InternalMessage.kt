@@ -28,7 +28,9 @@ public abstract class InternalMessage(
 
     public fun <V: Any> getExtensionValue(descriptor: InternalExtensionDescriptor<*, V>): V? {
         val value = _extensions[descriptor.fieldNumber] ?: return null
-        if (value.descriptor != descriptor) return null
+        if (value.descriptor != descriptor) {
+            return null
+        }
         @Suppress("UNCHECKED_CAST")
         return value.value as V
     }
@@ -42,10 +44,14 @@ public abstract class InternalMessage(
     }
 
     protected fun extensionsEqual(other: InternalMessage): Boolean {
-        if (_extensions.size != other._extensions.size) return false
+        if (_extensions.size != other._extensions.size) {
+            return false
+        }
         _extensions.entries.forEach { (key, value) ->
             val otherValue = other._extensions[key] ?: return false
-            if (value.value != otherValue.value) return false
+            if (value.value != otherValue.value) {
+                return false
+            }
         }
         return true
     }

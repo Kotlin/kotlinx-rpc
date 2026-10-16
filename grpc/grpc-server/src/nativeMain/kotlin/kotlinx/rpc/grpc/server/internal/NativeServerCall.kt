@@ -212,8 +212,12 @@ internal class NativeServerCall<Request, Response>(
     private fun beginOp(): Boolean {
         while (true) {
             val cur = state.value
-            if (cur and CLOSE_REQUESTED != 0) return false
-            if (state.compareAndSet(cur, cur + 1)) return true
+            if (cur and CLOSE_REQUESTED != 0) {
+                return false
+            }
+            if (state.compareAndSet(cur, cur + 1)) {
+                return true
+            }
         }
     }
 
@@ -248,9 +252,13 @@ internal class NativeServerCall<Request, Response>(
         val wasCancelled = closeInfo.value ?: return
         while (true) {
             val cur = state.value
-            if (cur and CLOSE_REQUESTED != 0) return
+            if (cur and CLOSE_REQUESTED != 0) {
+                return
+            }
             if (state.compareAndSet(cur, cur or CLOSE_REQUESTED)) {
-                if (cur == 0) finishClose(wasCancelled)
+                if (cur == 0) {
+                    finishClose(wasCancelled)
+                }
                 return
             }
         }
@@ -268,7 +276,9 @@ internal class NativeServerCall<Request, Response>(
      * not leak the call ref.
      */
     private fun finishClose(wasCancelled: Boolean) {
-        if (!rawGuard.released.compareAndSet(expect = false, update = true)) return
+        if (!rawGuard.released.compareAndSet(expect = false, update = true)) {
+            return
+        }
         try {
             if (wasCancelled) {
                 this.cancelled = true
@@ -290,7 +300,9 @@ internal class NativeServerCall<Request, Response>(
         // Hold a reader claim while dereferencing `raw` so tryToCloseCall cannot fire
         // grpc_call_unref concurrently. If the claim is refused the call has already finalised
         // — cancel is a no-op. Mirrors NativeClientCall.cancelInternal.
-        if (!beginOp()) return
+        if (!beginOp()) {
+            return
+        }
         try {
             grpc_call_cancel_with_status(raw, status, message, null)
         } finally {
@@ -322,12 +334,16 @@ internal class NativeServerCall<Request, Response>(
     ) {
         // Application-level gates: once we have sent the trailers or local cancellation has
         // been observed, no further application batches are allowed.
-        if (sentStatus || cancelled) return cleanup()
+        if (sentStatus || cancelled) {
+            return cleanup()
+        }
 
         // Single-CAS reader claim atomically (a) checks the call has not requested close and
         // (b) increments the in-flight count. No read-then-CAS pair → no SC-reorder window in
         // which `cq.runBatch` could touch a freed call. KRPC-604.
-        if (!beginOp()) return cleanup()
+        if (!beginOp()) {
+            return cleanup()
+        }
 
         when (val result = cq.runBatch(raw, ops, nOps)) {
             is BatchResult.Submitted -> {
@@ -472,7 +488,7 @@ internal class NativeServerCall<Request, Response>(
         val details = status.getDescription()?.toGrpcSlice()
         val detailsPtr = details?.getPointer(arena)
 
-        val nOps = if (sentInitialMetadata) 1uL else 2uL
+        val nOps = if (sentInitialMetadata) { 1uL } else { 2uL }
 
         val ops = arena.allocArray<grpc_op>(nOps.convert())
 
@@ -491,7 +507,9 @@ internal class NativeServerCall<Request, Response>(
         }
 
         runBatch(ops, nOps, cleanup = {
-            if (details != null) grpc_slice_unref(details)
+            if (details != null) {
+                grpc_slice_unref(details)
+            }
             trailingMetadata.destroyEntries()
             arena.clear()
         }) {
@@ -545,7 +563,9 @@ private class DeferredCallListener<T> : ServerCall.Listener<T>() {
 
     fun setDelegate(d: ServerCall.Listener<T>) {
         mutex.withLock {
-            if (delegate != null) return
+            if (delegate != null) {
+                return
+            }
             // Drain BEFORE publishing `delegate`, and keep both inside the same mutex.
             // A concurrent deliver() fast path reads `delegate` lock-free; if it sees non-null,
             // it must also be able to assume the queue is already drained, otherwise its

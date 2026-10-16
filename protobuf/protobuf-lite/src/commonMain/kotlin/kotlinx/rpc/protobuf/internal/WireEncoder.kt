@@ -77,7 +77,9 @@ public interface WireEncoder {
      * The [buffer] is not consumed by this method.
      */
     public fun writeRawBytes(buffer: Buffer) {
-        if (buffer.size == 0L) return
+        if (buffer.size == 0L) {
+            return
+        }
         // this copy is not a copy of the actual bytes but just a sharedCopy of the segment descriptors
         val sharedCopy = buffer.copy()
         // pass all segments to the native byte encoder
