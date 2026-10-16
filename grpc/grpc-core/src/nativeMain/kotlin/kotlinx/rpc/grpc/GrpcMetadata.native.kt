@@ -214,7 +214,9 @@ public actual fun GrpcMetadata.remove(key: String, value: String): Boolean {
 public actual fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Boolean {
     key.validateForString()
     val index = getAll(key).indexOf(value)
-    if (index == -1) { return false }
+    if (index == -1) {
+        return false
+    }
     map[key.name]!!.removeAt(index)
     return true
 }
@@ -223,7 +225,9 @@ public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
     val keyObj = key.toBinaryKey()
     keyObj.validateForBinary()
     val index = getAllBinary(key).indexOf(value)
-    if (index == -1) { return false }
+    if (index == -1) {
+        return false
+    }
     map[keyObj.name]!!.removeAt(index)
     return true
 }
@@ -231,7 +235,9 @@ public actual fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Bool
 public actual fun <T> GrpcMetadata.removeBinary(key: GrpcMetadataKey<T>, value: T): Boolean {
     key.validateForBinary()
     val index = getAllBinary(key).indexOf(value)
-    if (index == -1) { return false }
+    if (index == -1) {
+        return false
+    }
     map[key.name]!!.removeAt(index)
     return true
 }

@@ -75,7 +75,9 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
                     // we always fail with GrpcStatus.UNAVAILABLE. (KRPC-233)
                     val description = "Getting metadata from call credentials failed with error: ${err.message}"
                     applier.fail(GrpcStatus.UNAVAILABLE.withDescription(description).withCause(err))
-                    if (err is CancellationException) { throw err }
+                    if (err is CancellationException) {
+                        throw err
+                    }
                 }
             }
         }

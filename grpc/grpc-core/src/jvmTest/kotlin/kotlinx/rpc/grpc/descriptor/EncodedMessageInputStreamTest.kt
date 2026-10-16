@@ -130,7 +130,11 @@ class EncodedMessageInputStreamTest {
     fun grpcJavaFramesTheSamePayloadBytes() {
         val frames = ByteArrayOutputStream()
         val framer = MessageFramer(
-            { frame, _, _, _ -> if (frame != null) { frames.write((frame as RecordingBuffer).bytes()) } },
+            { frame, _, _, _ ->
+                if (frame != null) {
+                    frames.write((frame as RecordingBuffer).bytes())
+                }
+            },
             WritableBufferAllocator { RecordingBuffer(it) },
             StatsTraceContext.NOOP,
         )

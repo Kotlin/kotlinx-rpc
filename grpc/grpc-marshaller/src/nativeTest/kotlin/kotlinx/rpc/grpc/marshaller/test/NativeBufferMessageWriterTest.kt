@@ -182,7 +182,9 @@ private class HeapWriter(size: Int) : NativeBufferMessageWriter(size) {
     }
 
     fun releaseStorage() {
-        if (storageReleased) { return }
+        if (storageReleased) {
+            return
+        }
         storageReleased = true
         nativeHeap.free(storage)
     }

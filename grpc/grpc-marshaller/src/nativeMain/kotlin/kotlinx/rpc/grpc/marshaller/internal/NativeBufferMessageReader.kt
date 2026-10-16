@@ -69,7 +69,9 @@ public abstract class NativeBufferMessageReader(size: Int) : AbstractGrpcMessage
                     "Check the lengths used by GrpcMarshaller.decode; after asSource(), use the returned Source.",
             )
         }
-        if (count == 0) { return }
+        if (count == 0) {
+            return
+        }
         readFromHead { pointer, start, _ ->
             bytes.usePinned { pinned ->
                 memcpy(pinned.addressOf(startIndex), pointer + start, count.convert())
@@ -105,7 +107,9 @@ public abstract class NativeBufferMessageReader(size: Int) : AbstractGrpcMessage
         readAction: (pointer: CPointer<ByteVar>, startIndex: Int, endIndexExclusive: Int) -> Int,
     ): Int {
         checkOpen()
-        if (remaining == 0) { return 0 }
+        if (remaining == 0) {
+            return 0
+        }
         val start = size - remaining
         val count = GuardedNativeBufferAccess.access(::accessBuffer) { pointer ->
             val base = checkNotNull(pointer) {

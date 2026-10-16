@@ -16,7 +16,9 @@ public class BitSet(public val size: Int) {
 
     /** Sets the bit at [index] to 1. */
     public operator fun set(index: Int, value: Boolean) {
-        if (!value) { return clear(index) }
+        if (!value) {
+            return clear(index)
+        }
         require(index in 0 until size) { "Index $index out‑of‑bounds for length $size" }
         val word = index ushr 6
         val mask = 1L shl (index and 63)
@@ -78,7 +80,9 @@ public class BitSet(public val size: Int) {
             val word = i ushr 6
             val startBit = i and 63
             val endBit = if ((to ushr 6) == word) { (to and 63) } else { 63 }
-            if (data[word] and rangeMask(startBit, endBit) != 0L) { return true }
+            if (data[word] and rangeMask(startBit, endBit) != 0L) {
+                return true
+            }
             i = (word + 1) shl 6
         }
         return false
@@ -109,25 +113,37 @@ public class BitSet(public val size: Int) {
         val fullWords = size ushr 6
         // check full 64-bit words
         for (i in 0 until fullWords) {
-            if (data[i] != -1L) { return false }
+            if (data[i] != -1L) {
+                return false
+            }
         }
         // check leftover bits
         val rem = size and 63
         if (rem != 0) {
             val mask = (-1L ushr (64 - rem))
-            if (data[fullWords] != mask) { return false }
+            if (data[fullWords] != mask) {
+                return false
+            }
         }
         return true
     }
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) { return true }
-        if (other == null || this::class != other::class) { return false }
+        if (this === other) {
+            return true
+        }
+        if (other == null || this::class != other::class) {
+            return false
+        }
 
         other as BitSet
 
-        if (size != other.size) { return false }
-        if (!data.contentEquals(other.data)) { return false }
+        if (size != other.size) {
+            return false
+        }
+        if (!data.contentEquals(other.data)) {
+            return false
+        }
 
         return true
     }

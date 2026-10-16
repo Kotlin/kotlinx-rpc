@@ -59,7 +59,9 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
         }
 
     override fun close() {
-        if (!open) { return }
+        if (!open) {
+            return
+        }
         open = false
         try {
             pw_decoder_delete(rawPointer)
@@ -184,11 +186,17 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
     @OptIn(UnsafeByteStringApi::class)
     override fun readBytes(): ByteString {
         val length = readInt32()
-        if (length < 0) { throw ProtobufDecodingException.negativeSize() }
+        if (length < 0) {
+            throw ProtobufDecodingException.negativeSize()
+        }
         // check if the remaining buffer size is less than the set length,
         // we can early abort, without allocating unnecessary memory
-        if (input.availableSize < length) { throw ProtobufDecodingException.truncatedMessage() }
-        if (length == 0) { return ByteString() } // actually an empty array (no error)
+        if (input.availableSize < length) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
+        if (length == 0) {
+            return ByteString() // actually an empty array (no error)
+        }
         val bytes = ByteArray(length)
         bytes.usePinned {
             pw_decoder_read_raw_bytes(raw, it.addressOf(0), length).checkError()
@@ -270,10 +278,18 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
     ): List<T> {
         // fetch the size of the packed repeated field
         var byteLen = readInt32()
-        if (byteLen < 0) { throw ProtobufDecodingException.negativeSize() }
-        if (input.availableSize < byteLen) { throw ProtobufDecodingException.truncatedMessage() }
-        if (byteLen % sizeBytes != 0) { throw ProtobufDecodingException.truncatedMessage() }
-        if (byteLen == 0) { return emptyList() }  // actually an empty list (no error)
+        if (byteLen < 0) {
+            throw ProtobufDecodingException.negativeSize()
+        }
+        if (input.availableSize < byteLen) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
+        if (byteLen % sizeBytes != 0) {
+            throw ProtobufDecodingException.truncatedMessage()
+        }
+        if (byteLen == 0) {
+            return emptyList() // actually an empty list (no error)
+        }
 
         // allocate the buffer array (has at most MAX_PACKED_BULK_SIZE bytes)
         val bufByteLen = minOf(byteLen, MAX_PACKED_BULK_SIZE)
@@ -312,7 +328,9 @@ internal class WireDecoderNative(private val input: DecoderInput) : WireDecoder 
     }
 
     private fun Boolean.checkError() {
-        if (!this) { throw ProtobufDecodingException.genericParsingError() }
+        if (!this) {
+            throw ProtobufDecodingException.genericParsingError()
+        }
     }
 }
 

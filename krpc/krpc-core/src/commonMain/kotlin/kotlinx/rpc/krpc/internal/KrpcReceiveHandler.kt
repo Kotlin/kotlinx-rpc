@@ -163,7 +163,9 @@ internal class KrpcActingReceiveHandler(
                 onMessageFailure(result.cause)
             }
 
-            if (message !is KrpcCallMessage) { continue }
+            if (message !is KrpcCallMessage) {
+                continue
+            }
 
             if (broadcastUpdates) {
                 broadcastWindowUpdate(1, message.connectionId, message.serviceType, message.callId)

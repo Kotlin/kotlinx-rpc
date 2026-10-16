@@ -85,7 +85,9 @@ internal class EncoderHandle(output: EncoderOutput) {
     }
 
     fun close() {
-        if (!open) { return }
+        if (!open) {
+            return
+        }
         open = false
         pw_encoder_delete(raw)
         context.dispose()
@@ -255,7 +257,9 @@ internal class WireEncoderNative(
     override fun writeRawBytes(bytes: ByteArray, offset: Int, length: Int) {
         handle.requireOpen()
         require(offset >= 0 && offset + length <= bytes.size) { "Invalid offset or length" }
-        if (length == 0) { return }
+        if (length == 0) {
+            return
+        }
         bytes.usePinned { pinned ->
             pw_encoder_write_raw_bytes(raw, pinned.addressOf(offset), length)
         }

@@ -169,7 +169,9 @@ class ZeroCopyInputSourceTest {
         var segmentCount = 0
         while (true) {
             val segment = source.nextIntoArray()
-            if (segment.isEmpty()) { break }
+            if (segment.isEmpty()) {
+                break
+            }
             segmentCount++
             allData.addAll(segment.toList())
         }

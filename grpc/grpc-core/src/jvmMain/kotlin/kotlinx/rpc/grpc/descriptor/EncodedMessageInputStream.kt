@@ -40,7 +40,9 @@ internal class EncodedMessageInputStream(
     }
 
     override fun drainTo(target: OutputStream): Int {
-        if (drained) { return 0 }
+        if (drained) {
+            return 0
+        }
         materialized?.let { stream ->
             val remaining = stream.available()
             val bytes = checkNotNull(materializedBytes)

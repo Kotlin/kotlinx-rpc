@@ -134,7 +134,9 @@ internal class NativeServer(
         // the CQ thread that just released the last live reference.
         while (true) {
             val cur = state.value
-            if (cur and DESTROY_REQUESTED != 0) { return@createCleaner }
+            if (cur and DESTROY_REQUESTED != 0) {
+                return@createCleaner
+            }
             if (state.compareAndSet(cur, cur or DESTROY_REQUESTED)) {
                 grpc_server_destroy(ptr)
                 return@createCleaner
@@ -261,7 +263,9 @@ internal class NativeServer(
     private inline fun useRawAlive(block: () -> Unit) {
         while (true) {
             val cur = rawState.value
-            if (cur and DESTROY_REQUESTED != 0) { return }
+            if (cur and DESTROY_REQUESTED != 0) {
+                return
+            }
             if (rawState.compareAndSet(cur, cur + 1)) {
                 try {
                     block()
