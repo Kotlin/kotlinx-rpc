@@ -79,7 +79,7 @@ internal class ScenarioInterceptor(
         // CALL_ACCEPTED is the first record, so the trace starts before anything else can happen to the call.
         try {
             registry.callAccepted(callId, headers.toMetadataEntries())
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             return reject(call, error.toGrpcStatus())
         }
 
@@ -97,7 +97,7 @@ internal class ScenarioInterceptor(
         }
         val listener = try {
             Contexts.interceptCall(scenarioContext, scenarioCall, headers, next)
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             scenarioCall.fail(error)
             return object : ServerCall.Listener<ReqT>() {}
         }
@@ -190,7 +190,7 @@ internal class ScenarioInterceptor(
                     configuration.terminalStage() == TerminalStage.AFTER_INITIAL_METADATA
                 }
                 if (closeAfterHeaders) closeConfiguredTerminal()
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 fail(error)
             }
         }
@@ -213,7 +213,7 @@ internal class ScenarioInterceptor(
                         responseCount == configuration.terminalBehavior.responseMessageCount
                 }
                 if (closeAfterMessage) closeConfiguredTerminal()
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 fail(error)
             }
         }
@@ -254,7 +254,7 @@ internal class ScenarioInterceptor(
                     TerminalStage.UNRECOGNIZED,
                     -> error("validated terminal stage became invalid")
                 }
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 fail(error)
             }
         }
@@ -282,14 +282,14 @@ internal class ScenarioInterceptor(
                 }
                 registry.awaitBarrierIfConfigured(callId, barrier, event.occurrence)
                 !terminated.get()
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 fail(error)
                 false
             }
         }
 
         /** Closes the call with the status of [error] after the scenario logic fails. */
-        fun fail(error: Throwable) {
+        fun fail(error: Exception) {
             fail(error.toGrpcStatus())
         }
 
@@ -302,7 +302,7 @@ internal class ScenarioInterceptor(
         fun clientCancelled() {
             synchronized(lifecycleLock) {
                 if (!terminated.compareAndSet(false, true)) return
-                runCatching { registry.clientCancelled(callId) }
+                runCatching { registry.clientCancelled(callId) }.throwIfError()
             }
         }
 
@@ -345,7 +345,7 @@ internal class ScenarioInterceptor(
                 } else {
                     trailers.withConfigured(emptyList())
                 }
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 error.toGrpcStatus() to Metadata()
             }
             val traceMetadata = outgoingTrailers.toMetadataEntries()
@@ -361,7 +361,7 @@ internal class ScenarioInterceptor(
         }
 
         private fun recordClosed(metadata: List<MetadataEntry>, status: GrpcStatus) {
-            runCatching { registry.callClosed(callId, metadata, status) }
+            runCatching { registry.callClosed(callId, metadata, status) }.throwIfError()
         }
     }
 
@@ -462,3 +462,9 @@ private fun Any.interopPayload(): ByteString? = when (this) {
 
 /** Runs the cancellation listener on the thread that cancels the context, so it doesn't wait for the call executor. */
 private val DIRECT_EXECUTOR: Executor = Executor { command -> command.run() }
+
+private fun <T> Result<T>.throwIfError() = exceptionOrNull()?.let {
+    if (it is Error) {
+        throw it
+    }
+}

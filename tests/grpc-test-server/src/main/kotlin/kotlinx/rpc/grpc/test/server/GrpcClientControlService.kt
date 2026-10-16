@@ -113,7 +113,7 @@ internal class GrpcClientControlService(
         try {
             responseObserver.onNext(operation())
             responseObserver.onCompleted()
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             responseObserver.onError(error.toGrpcStatus().asRuntimeException())
         }
     }

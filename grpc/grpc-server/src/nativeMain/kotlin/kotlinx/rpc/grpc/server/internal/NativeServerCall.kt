@@ -352,6 +352,9 @@ internal class NativeServerCall<Request, Response>(
                         onSuccess()
                     } catch (e: Throwable) {
                         cancel(grpc_status_code.GRPC_STATUS_INTERNAL, e.message ?: "Unknown error")
+                        if (e is Error) {
+                            throw e
+                        }
                     } finally {
                         cleanup()
                         endOp()
@@ -542,6 +545,9 @@ internal class NativeServerCall<Request, Response>(
                 )
             }
             cancel(status.statusCode.toRaw(), status.getDescription() ?: "Unknown error")
+            if (e is Error) {
+                throw e
+            }
             throw GrpcStatusException(status, trailers = null)
         }
     }

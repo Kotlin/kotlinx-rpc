@@ -145,7 +145,7 @@ private fun ChatScreen(service: MessageService, httpClient: HttpClient) {
                 }
             } catch (e: CancellationException) {
                 throw e
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 error = e.toRpcError("sending")
             } finally {
                 isSending = false
@@ -198,7 +198,7 @@ private fun ChatScreen(service: MessageService, httpClient: HttpClient) {
                 .collect { msg -> messages += msg; error = null }
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             error = e.toRpcError("receiving")
         }
     }

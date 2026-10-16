@@ -74,7 +74,7 @@ internal class EncodedMessageInputStream(
                     "Ensure the message returned by GrpcMarshaller.prepare declares the exact number of bytes " +
                     "written by writeTo."
             }
-        } catch (cause: Throwable) {
+        } catch (cause: Exception) {
             throw IllegalStateException(
                 "Failed to encode a message with marshaller $marshallerName using GrpcEncodedMessage $message " +
                     "(declared size: ${message.size} bytes, written: ${writer.written} bytes). " +

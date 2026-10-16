@@ -372,7 +372,7 @@ internal class NativeClientCall<Request, Response>(
                             // if the batch doesn't succeed, this is reflected in the recv status op batch.
                             onSuccess()
                         }
-                    } catch (e: Throwable) {
+                    } catch (e: Exception) {
                         cancelInternal(
                             grpc_status_code.GRPC_STATUS_INTERNAL,
                             "Batch callback failed: ${e.message}"
@@ -573,7 +573,7 @@ internal class NativeClientCall<Request, Response>(
                 val msg = methodDescriptor.responseMarshaller.decode(
                     BufferMessageReader(buffer, buffer.size.toInt()),
                 )
-                safeUserCode("Failed to call onClose.") {
+                safeUserCode("Failed to call onMessage.") {
                     listener.onMessage(msg)
                 }
                 post()
@@ -667,13 +667,13 @@ internal class NativeClientCall<Request, Response>(
     }
 
     /**
-     * Safely executes the provided block of user code, catching any thrown exceptions or errors.
+     * Safely executes the provided block of user code, catching any thrown exceptions.
      * If an exception is caught, it cancels the operation with the specified message and cause.
      */
     private fun safeUserCode(cancelMsg: String, block: () -> Unit) {
         try {
             block()
-        } catch (e: Throwable) {
+        } catch (e: Exception) {
             cancel(cancelMsg, e)
         }
     }

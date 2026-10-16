@@ -292,7 +292,7 @@ internal class InteropTestService(
                 } else {
                     responseObserver.onNext(chunk.toResponse())
                 }
-            } catch (error: Throwable) {
+            } catch (error: Exception) {
                 failure = error
                 if (Status.fromThrowable(error).code == Status.Code.CANCELLED) {
                     chunks.clear()
