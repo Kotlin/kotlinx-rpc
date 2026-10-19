@@ -90,7 +90,9 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
                 .start()
         } catch (cause: IOException) {
             log.close()
-            throw failure("The background process didn't start", cause)
+            val message = "The background process didn't start: ${cause.message}"
+            recordFailure(message)
+            throw failure(message, cause)
         }
         process = started
         outputReader = thread(name = "background-task-output", isDaemon = true) { readOutput(started, log) }
@@ -102,7 +104,9 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
             stop()
             // Set interrupt flag to prevent further thread blocking
             Thread.currentThread().interrupt()
-            throw failure("An interrupt stopped the wait for the ready line", cause)
+            val message = "An interrupt stopped the wait for the ready line"
+            recordFailure(message)
+            throw failure(message, cause)
         }
         if (!decided) {
             recordFailure("The background process didn't print its ready line in ${timeoutSeconds}s")
