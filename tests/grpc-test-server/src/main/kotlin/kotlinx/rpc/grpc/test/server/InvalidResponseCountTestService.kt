@@ -13,8 +13,8 @@ import io.grpc.ServerServiceDefinition
 import io.grpc.Status
 import kxrpc.testing.EchoRequest
 import kxrpc.testing.EchoResponse
-import kxrpc.testing.MalformedResponseCount
-import kxrpc.testing.MalformedResponseServiceGrpc
+import kxrpc.testing.InvalidResponseCount
+import kxrpc.testing.InvalidResponseCountServiceGrpc
 
 /**
  * Raw grpc-java handlers for response cardinalities that the generated service adapters don't allow.
@@ -23,22 +23,22 @@ import kxrpc.testing.MalformedResponseServiceGrpc
  *
  * The server binds `UnaryCall` as server-streaming and `StreamingInputCall` as bidirectional streaming. So a call
  * that the proto declares as unary or client-streaming can complete with zero or two response messages. The
- * `malformed_response_count` of the scenario selects the count.
+ * `invalid_response_count` of the scenario selects the count.
  */
-internal class MalformedResponseTestService(
+internal class InvalidResponseCountTestService(
     private val registry: CallScenarioRegistry,
 ) : BindableService {
     override fun bindService(): ServerServiceDefinition {
-        val unaryMethod = MalformedResponseServiceGrpc.getUnaryCallMethod()
+        val unaryMethod = InvalidResponseCountServiceGrpc.getUnaryCallMethod()
             .toBuilder()
             .setType(MethodDescriptor.MethodType.SERVER_STREAMING)
             .build()
-        val streamingInputMethod = MalformedResponseServiceGrpc.getStreamingInputCallMethod()
+        val streamingInputMethod = InvalidResponseCountServiceGrpc.getStreamingInputCallMethod()
             .toBuilder()
             .setType(MethodDescriptor.MethodType.BIDI_STREAMING)
             .build()
 
-        return ServerServiceDefinition.builder(MalformedResponseServiceGrpc.SERVICE_NAME)
+        return ServerServiceDefinition.builder(InvalidResponseCountServiceGrpc.SERVICE_NAME)
             .addMethod(unaryMethod, handler(clientStreaming = false))
             .addMethod(streamingInputMethod, handler(clientStreaming = true))
             .build()
@@ -63,20 +63,20 @@ internal class MalformedResponseTestService(
             return object : ServerCall.Listener<EchoRequest>() {}
         }
 
-        val count = registry.configuration(callId).malformedResponseCount
-        if (count == MalformedResponseCount.MALFORMED_RESPONSE_COUNT_UNSPECIFIED) {
-            call.closeInvalid("the scenario doesn't set malformed_response_count. Set it in ConfigureScenario")
+        val count = registry.configuration(callId).invalidResponseCount
+        if (count == InvalidResponseCount.INVALID_RESPONSE_COUNT_UNSPECIFIED) {
+            call.closeInvalid("the scenario doesn't set invalid_response_count. Set it in ConfigureScenario")
             return object : ServerCall.Listener<EchoRequest>() {}
         }
 
         // For a unary call, the server requests one message more than expected, so it can find a second request.
         call.request(if (clientStreaming) 1 else 2)
-        return MalformedResponseCallListener(call, count, clientStreaming)
+        return InvalidResponseCountCallListener(call, count, clientStreaming)
     }
 
-    private class MalformedResponseCallListener(
+    private class InvalidResponseCountCallListener(
         private val call: ServerCall<EchoRequest, EchoResponse>,
-        private val count: MalformedResponseCount,
+        private val count: InvalidResponseCount,
         private val clientStreaming: Boolean,
     ) : ServerCall.Listener<EchoRequest>() {
         private var requestCount: Int = 0
@@ -93,24 +93,23 @@ internal class MalformedResponseTestService(
         override fun onHalfClose() {
             if (!clientStreaming && requestCount != 1) {
                 call.closeInvalid(
-                    "the unary malformed response call has $requestCount request messages. Send exactly one"
+                    "the unary call has $requestCount request messages. Send exactly one"
                 )
                 return
             }
 
             call.sendHeaders(Metadata())
             when (count) {
-                MalformedResponseCount.OMIT_RESPONSE -> {
+                InvalidResponseCount.OMIT_RESPONSE -> {
                     // No response message. The call closes with OK below.
                 }
-                MalformedResponseCount.DUPLICATE_RESPONSE -> {
+                InvalidResponseCount.DUPLICATE_RESPONSE -> {
                     call.sendMessage(responsePayload)
                     call.sendMessage(responsePayload)
                 }
-                MalformedResponseCount.MALFORMED_RESPONSE_COUNT_UNSPECIFIED,
-                MalformedResponseCount.UNRECOGNIZED,
-                -> {
-                    error("validated malformed response count became invalid")
+                InvalidResponseCount.INVALID_RESPONSE_COUNT_UNSPECIFIED,
+                InvalidResponseCount.UNRECOGNIZED -> {
+                    error("invalid_response_count changed after validation")
                 }
             }
             call.close(Status.OK, Metadata())

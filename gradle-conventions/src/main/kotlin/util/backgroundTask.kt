@@ -153,8 +153,7 @@ internal abstract class BackgroundTaskService : BuildService<BackgroundTaskParam
         val readyLinePrefix = parameters.readyLinePrefix.orNull
         if (readyLinePrefix != null && line.startsWith(readyLinePrefix)) {
             recordFailure(
-                "Incompatible ready line. Expected '$readyLine', got '$line'. " +
-                    "Rebuild the process so that it prints the expected ready line"
+                "Incompatible ready line. Expected '$readyLine', got '$line'. "
             )
             readinessDecided.countDown()
         }

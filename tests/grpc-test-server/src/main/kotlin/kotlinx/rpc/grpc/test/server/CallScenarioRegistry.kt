@@ -18,7 +18,7 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
-import kxrpc.testing.MalformedResponseCount
+import kxrpc.testing.InvalidResponseCount
 import kxrpc.testing.ScenarioDiagnostics
 import kxrpc.testing.TerminalStage
 
@@ -45,8 +45,8 @@ internal class CallScenarioRegistry(
         validateMetadata(request.initialMetadataList)
         validateMetadata(request.trailingMetadataList)
         validateTerminalBehavior(request)
-        require(request.malformedResponseCount != MalformedResponseCount.UNRECOGNIZED) {
-            "malformed_response_count has an unknown value. Use a value from client_control.proto"
+        require(request.invalidResponseCount != InvalidResponseCount.UNRECOGNIZED) {
+            "invalid_response_count has an unknown value. Use a value from client_control.proto"
         }
 
         val barriers = request.barriersList.map { barrier -> barrierKey(barrier.type, barrier.occurrence) }.toSet()
@@ -294,19 +294,6 @@ private data class TerminalTransition(
 
 /**
  * Connects the control-plane demand grants to the inbound demand of one data-plane call.
- *
- * Only scenarios with manual inbound demand use it. The inbound demand of a call has these steps:
- *
- * 1. The server accepts the call. The call has no endpoint yet, so the grants from `AllowInboundReads` accumulate in
- *    the scenario.
- * 2. The service method calls [enableManualInboundDemandIfConfigured]. It turns off the automatic requests of
- *    grpc-java and attaches an endpoint that calls `request(n)` through [CallScenarioRegistry.registerInboundDemand].
- *    The registry forwards the accumulated demand to the endpoint.
- * 3. The registry forwards each later grant to the endpoint directly.
- * 4. When the call closes, the client cancels it, or the test discards the scenario, the registry detaches and
- *    closes the endpoint.
- *
- * @param requestMessages Requests the given number of additional request messages from grpc-java.
  */
 private class InboundDemandEndpoint(
     private val requestMessages: (Int) -> Unit,

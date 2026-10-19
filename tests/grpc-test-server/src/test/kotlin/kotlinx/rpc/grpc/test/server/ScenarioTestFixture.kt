@@ -37,8 +37,8 @@ import kotlin.test.assertEquals
 /**
  * A test server on an ephemeral port, with a control client and a [dataChannel] for data-plane calls.
  *
- * The server has the interop, malformed-response, and control services. As in the real test server,
- * [ScenarioInterceptor] intercepts the interop and malformed-response services.
+ * The server has the interop, invalid-response-count, and control services. As in the real test server,
+ * [ScenarioInterceptor] intercepts the interop and invalid-response-count services.
  */
 internal class ScenarioTestFixture : AutoCloseable {
     private val registry = CallScenarioRegistry()
@@ -46,7 +46,7 @@ internal class ScenarioTestFixture : AutoCloseable {
     private val scenarioInterceptor = ScenarioInterceptor(registry)
     private val server = NettyServerBuilder.forAddress(InetSocketAddress("127.0.0.1", 0))
         .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
-        .addService(ServerInterceptors.intercept(MalformedResponseTestService(registry), scenarioInterceptor))
+        .addService(ServerInterceptors.intercept(InvalidResponseCountTestService(registry), scenarioInterceptor))
         .addService(GrpcClientControlService(registry))
         .build()
         .start()

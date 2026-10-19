@@ -20,7 +20,7 @@ public fun main(args: Array<String>) {
         .addService(EchoServiceImpl())
         .addService(GreeterServiceImpl())
         .addService(ServerInterceptors.intercept(interopService, scenarioInterceptor))
-        .addService(ServerInterceptors.intercept(MalformedResponseTestService(registry), scenarioInterceptor))
+        .addService(ServerInterceptors.intercept(InvalidResponseCountTestService(registry), scenarioInterceptor))
         .addService(GrpcClientControlService(registry, disposableEndpoints))
         .build()
     try {

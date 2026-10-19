@@ -13,7 +13,7 @@ import kxrpc.testing.ConfigureScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.FlowControlBehavior
 import kxrpc.testing.GrpcStatus
-import kxrpc.testing.MalformedResponseCount
+import kxrpc.testing.InvalidResponseCount
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
 import kotlin.test.Test
@@ -121,10 +121,10 @@ class CallScenarioRegistryTest {
     }
 
     @Test
-    fun preservesMetadataTerminalAndMalformedResponseConfiguration() {
+    fun preservesMetadataTerminalAndInvalidResponseCountConfiguration() {
         val registry = registry()
         val request = ConfigureScenarioRequest.newBuilder()
-            .setCallId("metadata-terminal-malformed-response")
+            .setCallId("metadata-terminal-invalid-response-count")
             .addInitialMetadata(metadataEntry("x-test-value", "first"))
             .addInitialMetadata(metadataEntry("x-test-value", ""))
             .addInitialMetadata(metadataEntry("x-test-bin", byteArrayOf(0, -1, 42)))
@@ -139,12 +139,12 @@ class CallScenarioRegistryTest {
                     .setStage(TerminalStage.AFTER_RESPONSE_MESSAGES)
                     .setResponseMessageCount(2)
             )
-            .setMalformedResponseCount(MalformedResponseCount.DUPLICATE_RESPONSE)
+            .setInvalidResponseCount(InvalidResponseCount.DUPLICATE_RESPONSE)
             .build()
 
         registry.configure(request)
 
-        assertEquals(request, registry.configuration("metadata-terminal-malformed-response"))
+        assertEquals(request, registry.configuration("metadata-terminal-invalid-response-count"))
     }
 
     @Test

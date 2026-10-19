@@ -244,7 +244,7 @@ internal class ScenarioInterceptor(
                     TerminalStage.AFTER_RESPONSE_MESSAGES -> fail(
                         Status.INTERNAL.withDescription(
                             "service completed after $responseCount responses, before response_message_count " +
-                                "${configuration.terminalBehavior.responseMessageCount}. Lower response_message_count"
+                                "${configuration.terminalBehavior.responseMessageCount}"
                         )
                     )
                     TerminalStage.BEFORE_INITIAL_METADATA,

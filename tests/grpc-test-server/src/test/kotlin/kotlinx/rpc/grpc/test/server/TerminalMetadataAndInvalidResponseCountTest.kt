@@ -19,8 +19,8 @@ import kxrpc.testing.EchoRequest
 import kxrpc.testing.EchoResponse
 import kxrpc.testing.EventType
 import kxrpc.testing.GrpcStatus
-import kxrpc.testing.MalformedResponseCount
-import kxrpc.testing.MalformedResponseServiceGrpc
+import kxrpc.testing.InvalidResponseCount
+import kxrpc.testing.InvalidResponseCountServiceGrpc
 import kxrpc.testing.TerminalBehavior
 import kxrpc.testing.TerminalStage
 import kotlin.test.Test
@@ -31,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class TerminalMetadataAndMalformedResponseTest {
+class TerminalMetadataAndInvalidResponseCountTest {
     @Test
     fun configuredMetadataAndTerminalStatusArePreservedAndTraced() = withFixture { fixture ->
         val callId = "metadata-terminal"
@@ -217,20 +217,20 @@ class TerminalMetadataAndMalformedResponseTest {
     }
 
     @Test
-    fun unaryMalformedResponseHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
+    fun unaryInvalidResponseCountHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
         listOf(
-            MalformedResponseCount.OMIT_RESPONSE,
-            MalformedResponseCount.DUPLICATE_RESPONSE,
-        ).forEach { malformedCount ->
-            val callId = "unary-${malformedCount.name.lowercase()}"
+            InvalidResponseCount.OMIT_RESPONSE,
+            InvalidResponseCount.DUPLICATE_RESPONSE,
+        ).forEach { invalidCount ->
+            val callId = "unary-${invalidCount.name.lowercase()}"
             fixture.configure(
                 scenario(callId)
-                    .setMalformedResponseCount(malformedCount)
+                    .setInvalidResponseCount(invalidCount)
                     .build()
             )
 
             val error = assertFailsWith<StatusRuntimeException> {
-                fixture.malformedResponseClient(callId).unaryCall(
+                fixture.invalidResponseCountClient(callId).unaryCall(
                     EchoRequest.newBuilder()
                         .setPayload(ByteString.copyFromUtf8("unary"))
                         .build()
@@ -241,26 +241,26 @@ class TerminalMetadataAndMalformedResponseTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
     }
 
     @Test
-    fun clientStreamingMalformedResponseHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
+    fun clientStreamingInvalidResponseCountHandlerSendsZeroOrTwoResponses() = withFixture { fixture ->
         listOf(
-            MalformedResponseCount.OMIT_RESPONSE,
-            MalformedResponseCount.DUPLICATE_RESPONSE,
-        ).forEach { malformedCount ->
-            val callId = "client-streaming-${malformedCount.name.lowercase()}"
+            InvalidResponseCount.OMIT_RESPONSE,
+            InvalidResponseCount.DUPLICATE_RESPONSE,
+        ).forEach { invalidCount ->
+            val callId = "client-streaming-${invalidCount.name.lowercase()}"
             fixture.configure(
                 scenario(callId)
-                    .setMalformedResponseCount(malformedCount)
+                    .setInvalidResponseCount(invalidCount)
                     .build()
             )
             val response = AwaitingObserver<EchoResponse>()
-            val requests = fixture.asyncMalformedResponseClient(callId).streamingInputCall(response)
+            val requests = fixture.asyncInvalidResponseCountClient(callId).streamingInputCall(response)
 
             requests.onNext(
                 EchoRequest.newBuilder()
@@ -275,7 +275,7 @@ class TerminalMetadataAndMalformedResponseTest {
             requests.onCompleted()
 
             val events = response.awaitUntilTerminal()
-            if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) {
+            if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
                 assertEquals(0, events.count { it is ObserverEvent.Value })
                 assertEquals(ObserverEvent.Completed, events.last())
             } else {
@@ -285,7 +285,7 @@ class TerminalMetadataAndMalformedResponseTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (malformedCount == MalformedResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
@@ -302,16 +302,16 @@ class TerminalMetadataAndMalformedResponseTest {
             .withInterceptors(MetadataUtils.newCaptureMetadataInterceptor(responseHeaders, responseTrailers))
     }
 
-    private fun ScenarioTestFixture.malformedResponseClient(
+    private fun ScenarioTestFixture.invalidResponseCountClient(
         callId: String,
-    ): MalformedResponseServiceGrpc.MalformedResponseServiceBlockingStub {
-        return MalformedResponseServiceGrpc.newBlockingStub(dataChannel).withCallId(callId)
+    ): InvalidResponseCountServiceGrpc.InvalidResponseCountServiceBlockingStub {
+        return InvalidResponseCountServiceGrpc.newBlockingStub(dataChannel).withCallId(callId)
     }
 
-    private fun ScenarioTestFixture.asyncMalformedResponseClient(
+    private fun ScenarioTestFixture.asyncInvalidResponseCountClient(
         callId: String,
-    ): MalformedResponseServiceGrpc.MalformedResponseServiceStub {
-        return MalformedResponseServiceGrpc.newStub(dataChannel).withCallId(callId)
+    ): InvalidResponseCountServiceGrpc.InvalidResponseCountServiceStub {
+        return InvalidResponseCountServiceGrpc.newStub(dataChannel).withCallId(callId)
     }
 
     private companion object {
