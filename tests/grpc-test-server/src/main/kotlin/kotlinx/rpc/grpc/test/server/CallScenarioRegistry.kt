@@ -102,6 +102,8 @@ internal class CallScenarioRegistry(
      *
      * If the call uses manual inbound demand, this function detaches and closes its [InboundDemandEndpoint] and sets
      * the pending demand to zero. A later [grantInboundDemand] then fails because no call is active.
+     *
+     * The call ends also if the trace has no space for the event. The function then throws the recording error.
      */
     fun callClosed(
         callId: String,
@@ -110,7 +112,7 @@ internal class CallScenarioRegistry(
     ): CallEvent {
         val transition = scenario(callId).callClosed(metadata, status)
         transition.inboundDemandEndpoint?.close()
-        return transition.event
+        return transition.event.getOrThrow()
     }
 
     /**
@@ -120,7 +122,7 @@ internal class CallScenarioRegistry(
     fun clientCancelled(callId: String): CallEvent {
         val transition = scenario(callId).clientCancelled()
         transition.inboundDemandEndpoint?.close()
-        return transition.event
+        return transition.event.getOrThrow()
     }
 
     /**
@@ -283,12 +285,13 @@ private data class BarrierKey(val type: BarrierType, val occurrence: Int) {
 /**
  * Result of the end of a call: a close or a client cancellation.
  *
- * @property event The recorded [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED] event.
+ * @property event The recorded [EventType.CALL_CLOSED] or [EventType.CLIENT_CANCELLED] event, or the error if the
+ * trace has no space for it. The call ended in both cases.
  * @property inboundDemandEndpoint The demand endpoint that the ended call registered, now detached. The caller closes
- * it outside the scenario lock (see [InboundDemandEndpoint]).
+ * it outside the scenario lock (see [InboundDemandEndpoint]), also if [event] is a failure.
  */
 private data class TerminalTransition(
-    val event: CallEvent,
+    val event: Result<CallEvent>,
     val inboundDemandEndpoint: InboundDemandEndpoint?,
 )
 
@@ -386,21 +389,27 @@ private class ScenarioState(
         event
     }
 
-    fun callClosed(metadata: List<MetadataEntry>, status: GrpcStatus?): TerminalTransition = lock.withLock {
-        checkNotDiscarded()
-        check(activeCallCount > 0) { "scenario '$callId' has no active call to close" }
-        val event = recordEventLocked(EventType.CALL_CLOSED, metadata = metadata, status = status)
-        activeCallCount--
-        TerminalTransition(event, detachInboundDemandLocked())
-    }
+    fun callClosed(metadata: List<MetadataEntry>, status: GrpcStatus?): TerminalTransition =
+        endCall("close") { recordEventLocked(EventType.CALL_CLOSED, metadata = metadata, status = status) }
 
-    fun clientCancelled(): TerminalTransition = lock.withLock {
-        checkNotDiscarded()
-        check(activeCallCount > 0) { "scenario '$callId' has no active call to cancel" }
-        val event = recordEventLocked(EventType.CLIENT_CANCELLED)
-        activeCallCount--
-        TerminalTransition(event, detachInboundDemandLocked())
-    }
+    fun clientCancelled(): TerminalTransition = endCall("cancel") { recordEventLocked(EventType.CLIENT_CANCELLED) }
+
+    /**
+     * Ends the active call, then records its terminal event with [recordTerminalEvent].
+     *
+     * The call ends before the recording, because the network call ends also if the trace is full. If the scenario
+     * kept the call active, the diagnostics would report it, and later demand would go to its endpoint.
+     *
+     * @param action The verb for the error message when no call is active.
+     */
+    private inline fun endCall(action: String, recordTerminalEvent: () -> CallEvent): TerminalTransition =
+        lock.withLock {
+            checkNotDiscarded()
+            check(activeCallCount > 0) { "scenario '$callId' has no active call to $action" }
+            activeCallCount--
+            val endpoint = detachInboundDemandLocked()
+            TerminalTransition(runCatching(recordTerminalEvent), endpoint)
+        }
 
     /**
      * Attaches [endpoint] to the active call and sets [pendingInboundDemand] to zero.
