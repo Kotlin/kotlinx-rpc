@@ -166,8 +166,8 @@ internal class ResettingTcpProxy(
     }
 }
 
-/** Creates numbered daemon threads, so that proxy threads don't stop the JVM from exiting. */
-private fun daemonThreadFactory(prefix: String): (Runnable) -> Thread {
+/** Creates numbered daemon threads, so that test server threads don't stop the JVM from exiting. */
+internal fun daemonThreadFactory(prefix: String): (Runnable) -> Thread {
     val nextId = AtomicInteger()
     return { task ->
         Thread(task, "$prefix-${nextId.incrementAndGet()}").apply { isDaemon = true }

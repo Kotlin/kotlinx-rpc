@@ -18,6 +18,7 @@ import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
 import io.grpc.testing.integration.Messages.StreamingOutputCallResponse
 import io.grpc.testing.integration.TestServiceGrpc
 import java.util.ArrayDeque
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit
  * The official gRPC interop `TestService`, ported from `TestServiceImpl` in the
  * [grpc-java v1.81.0 interop tests](https://github.com/grpc/grpc-java/tree/v1.81.0/interop-testing).
  *
- * [responseExecutor] sends the streaming responses at the requested intervals. For scenarios with response
+ * [responseScheduler] and [responseSender] send the streaming responses at the requested intervals. For scenarios with response
  * readiness, the server also sends a response only while the client is ready (see [ResponseReadinessGate]). For
  * scenarios with manual inbound demand, request-streaming methods read a request only after the test grants demand
  * (see [enableManualInboundDemandIfConfigured]).
@@ -35,10 +36,18 @@ import java.util.concurrent.TimeUnit
  */
 internal class InteropTestService(
     private val registry: CallScenarioRegistry,
-    private val responseExecutor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor { command ->
-        Thread(command, "grpc-client-test-response-dispatcher").apply { isDaemon = true }
-    },
 ) : TestServiceGrpc.TestServiceImplBase(), AutoCloseable {
+    /** Waits for the response intervals, then gives each response to [responseSender]. It never blocks. */
+    private val responseScheduler: ScheduledExecutorService =
+        Executors.newSingleThreadScheduledExecutor(daemonThreadFactory("grpc-client-test-response-scheduler"))
+
+    /**
+     * Sends the responses. A send can block at a response barrier of [ScenarioInterceptor], so each blocked send has
+     * its own thread and doesn't delay the responses of other calls.
+     */
+    private val responseSender: ExecutorService =
+        Executors.newCachedThreadPool(daemonThreadFactory("grpc-client-test-response-sender"))
+
     override fun emptyCall(request: Empty, responseObserver: StreamObserver<Empty>) {
         responseObserver.onNext(Empty.getDefaultInstance())
         responseObserver.onCompleted()
@@ -165,7 +174,8 @@ internal class InteropTestService(
     }
 
     override fun close() {
-        responseExecutor.shutdownNow()
+        responseScheduler.shutdownNow()
+        responseSender.shutdownNow()
     }
 
     private fun StreamingOutputCallRequest.toChunks(): Collection<ResponseChunk> {
@@ -180,17 +190,19 @@ internal class InteropTestService(
      * Sends the responses of one streaming call in order, each after its requested interval.
      *
      * The service handlers call [enqueue] with the response chunks of each request, and [completeInput] when no more
-     * requests follow. All calls share [responseExecutor], which sends one chunk at a time. The dispatcher schedules a
-     * chunk only after it sent the previous chunk, so each interval starts at the previous response and the order
-     * doesn't change.
+     * requests follow. All calls share [responseScheduler] and [responseSender]. The dispatcher schedules a chunk only
+     * after it sent the previous chunk, so each interval starts at the previous response and the order doesn't change.
      *
      * If the scenario enables response readiness, [readinessGate] can hold back a response. The dispatcher schedules
      * nothing while it does, and [resumeResponses] restarts delivery when the client is ready again.
      *
-     * Ported from the `ResponseDispatcher` of the grpc-java `TestServiceImpl` linked above. Upstream sends responses
-     * regardless of readiness and has no [readinessGate].
+     * Ported from the `ResponseDispatcher` of the grpc-java `TestServiceImpl` linked above. These are the differences:
      *
-     * The handlers call the dispatcher on the call executor of grpc-java, and delivery runs on [responseExecutor], so
+     * - Upstream sends responses regardless of readiness and has no [readinessGate].
+     * - Upstream sends the responses on the thread that waits for the intervals. Here, a send can block at a response
+     *   barrier, so [responseSender] sends them.
+     *
+     * The handlers call the dispatcher on the call executor of grpc-java, and delivery runs on [responseSender], so
      * code reads and writes all state only while it holds the monitor of this dispatcher.
      */
     private inner class ResponseDispatcher(
@@ -207,7 +219,7 @@ internal class InteropTestService(
             cancelResponses = ::cancelFromTransport,
         )
 
-        /** Whether a delivery is pending on [responseExecutor]. At most one is pending, so responses stay in order. */
+        /** Whether a delivery is pending. At most one is pending, so responses stay in order. */
         private var scheduled: Boolean = false
 
         /** Set when the service or the client cancels the call. After that, the dispatcher sends nothing. */
@@ -261,7 +273,7 @@ internal class InteropTestService(
             responseObserver.onError(error)
         }
 
-        /** Sends the next chunk, then schedules the chunk after it. Runs on [responseExecutor]. */
+        /** Sends the next chunk, then schedules the chunk after it. Runs on [responseSender]. */
         private fun dispatch() {
             try {
                 dispatchChunk()
@@ -314,11 +326,11 @@ internal class InteropTestService(
          * - [readinessGate] holds back the first chunk.
          */
         private fun scheduleNextChunk() {
-            if (scheduled || chunks.isEmpty() || responseExecutor.isShutdown) return
+            if (scheduled || chunks.isEmpty() || responseSender.isShutdown) return
             if (isHeldBack(chunks.first())) return
             scheduled = true
-            responseExecutor.schedule(
-                ::dispatch,
+            responseScheduler.schedule(
+                { responseSender.execute(::dispatch) },
                 chunks.first().delayMicroseconds,
                 TimeUnit.MICROSECONDS,
             )
