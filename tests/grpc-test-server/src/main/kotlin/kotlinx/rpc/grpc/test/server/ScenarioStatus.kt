@@ -6,7 +6,12 @@ package kotlinx.rpc.grpc.test.server
 
 import io.grpc.Status
 
-/** Maps a failure of a control or scenario operation to the status reported to the test client. */
+/**
+ * Maps a failure of a control or scenario operation to the status reported to the test client.
+ *
+ * Turning an [InterruptedException] into a gRPC status will implicitly call `Thread.currentThread().interrupt()`
+ * to reset the interrupt flag for the current thread. This will prevent further blocking operations on this thread.
+ */
 internal fun Throwable.toGrpcStatus(): Status {
     val status = when (this) {
         is IllegalArgumentException -> {

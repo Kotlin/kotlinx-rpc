@@ -94,7 +94,7 @@ Each method of `GrpcClientControlService` takes the `call_id` of the scenario th
 | `ConfigureScenario`                                 | Registers a scenario and its configuration (see [What a scenario can configure](#what-a-scenario-can-configure)). Call it before the data-plane call starts. A `call_id` accepts one configuration only. |
 | `AwaitEvent`                                        | Blocks until the server records the requested event of the scenario, for example the second `RESPONSE_MESSAGE_SENT`, and returns it. A test uses it to wait until the call reaches a given point. |
 | `ReleaseBarrier`                                    | Releases one barrier of the scenario, so a data-plane call paused at it continues.                                                                                      |
-| `GrantInboundDemand`                                | For a scenario with manual inbound demand: lets the server read the given number of additional request messages. Until then, the requests stay unread, so a test can check how the client handles backpressure. Needs an active data-plane call. |
+| `AllowInboundReads`                                 | For a scenario with manual inbound demand: lets the server read the given number of additional request messages. Until then, the requests stay unread, so a test can check how the client handles backpressure. Needs an active data-plane call. |
 | `GetTrace`                                          | Returns the call trace: all events recorded for the scenario so far, in order.                                                                                          |
 | `GetScenarioDiagnostics`                            | Returns the number of open data-plane calls, the barriers that aren't released, and the number of blocked `AwaitEvent` calls. A test uses it to check that it left no open call, barrier, or wait. |
 | `StartDisposableEndpoint`, `StopDisposableEndpoint` | Start: opens a separate listener for the scenario on a free port of `127.0.0.1` and returns the port. The listener serves only `TestService`. Stop: resets all TCP connections of the listener, which simulates a lost connection, and closes it. |
@@ -104,7 +104,7 @@ A typical test has these steps:
 
 1. Call `ConfigureScenario`.
 2. Start the data-plane call with the `kxrpc-test-call-id` metadata.
-3. While the call runs, synchronize with the server through `AwaitEvent`, `ReleaseBarrier`, and `GrantInboundDemand`.
+3. While the call runs, synchronize with the server through `AwaitEvent`, `ReleaseBarrier`, and `AllowInboundReads`.
 4. After the call, check what the server observed with `GetTrace` and `GetScenarioDiagnostics`.
 5. Call `DiscardScenario`.
 
@@ -115,7 +115,7 @@ A typical test has these steps:
 | `barriers`                              | Points where the call pauses until the test calls `ReleaseBarrier`. See the barrier types below.        |
 | `initial_metadata`, `trailing_metadata` | Entries that the server adds to the response headers and trailers, in order and with duplicate keys.    |
 | `terminal_behavior`                     | Closes the call early with a given status. See the terminal stages below.                               |
-| `flow_control.manual_inbound_demand`    | The server reads request messages only after `GrantInboundDemand`. Only for the request-streaming methods of `TestService`. |
+| `flow_control.manual_inbound_demand`    | The server reads request messages only after `AllowInboundReads`. Only for the request-streaming methods of `TestService`. |
 | `flow_control.respect_response_readiness` | The server holds back responses while the client isn't ready to receive them. Only for the streaming-response methods of `TestService`. |
 | `malformed_response_count`                | `OMIT_RESPONSE` (zero responses) or `DUPLICATE_RESPONSE` (two responses) for `MalformedResponseService`. |
 

@@ -288,7 +288,7 @@ private data class TerminalTransition(
  *
  * Only scenarios with manual inbound demand use it. The inbound demand of a call has these steps:
  *
- * 1. The server accepts the call. The call has no endpoint yet, so the grants from `GrantInboundDemand` accumulate in
+ * 1. The server accepts the call. The call has no endpoint yet, so the grants from `AllowInboundReads` accumulate in
  *    the scenario.
  * 2. The service method calls [enableManualInboundDemandIfConfigured]. It turns off the automatic requests of
  *    grpc-java and attaches an endpoint that calls `request(n)` through [CallScenarioRegistry.registerInboundDemand].

@@ -18,6 +18,7 @@ import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
 import java.net.InetSocketAddress
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kxrpc.testing.AllowInboundReadsRequest
 import kxrpc.testing.AwaitEventRequest
 import kxrpc.testing.Barrier
 import kxrpc.testing.BarrierType
@@ -27,7 +28,6 @@ import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.EventType
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
-import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.ReleaseBarrierRequest
@@ -81,8 +81,8 @@ internal class ScenarioTestFixture : AutoCloseable {
     }
 
     fun grantInboundDemand(callId: String, messageCount: Int) {
-        control.grantInboundDemand(
-            GrantInboundDemandRequest.newBuilder()
+        control.allowInboundReads(
+            AllowInboundReadsRequest.newBuilder()
                 .setCallId(callId)
                 .setMessageCount(messageCount)
                 .build()

@@ -24,7 +24,7 @@ import io.grpc.stub.StreamObserver
  *
  * Usually grpc-java requests the next request message itself. This function turns that off and connects the call to
  * the inbound demand of the scenario. Then the server reads a message only after the test grants demand through
- * `GrantInboundDemand`. Unread messages stay in the transport, so the HTTP/2 flow-control window toward the server
+ * `AllowInboundReads`. Unread messages stay in the transport, so the HTTP/2 flow-control window toward the server
  * isn't refilled. Then the sends of the client must wait at some point.
  *
  * Does nothing if the call has no scenario or the scenario doesn't enable manual inbound demand. Only methods that
@@ -45,7 +45,7 @@ internal fun enableManualInboundDemandIfConfigured(
         ?: error("the response observer of scenario '$callId' isn't a ServerCallStreamObserver")
 
     serverObserver.disableAutoRequest()
-    // GrantInboundDemand calls serverObserver.request(n) through the registry. The registry also forwards the demand
+    // AllowInboundReads calls serverObserver.request(n) through the registry. The registry also forwards the demand
     // that the test granted before this point.
     registry.registerInboundDemand(callId, serverObserver::request)
 }

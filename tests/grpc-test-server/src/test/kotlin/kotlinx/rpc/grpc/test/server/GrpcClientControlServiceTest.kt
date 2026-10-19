@@ -10,6 +10,7 @@ import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
 import io.grpc.stub.StreamObserver
 import java.util.concurrent.TimeUnit
+import kxrpc.testing.AllowInboundReadsRequest
 import kxrpc.testing.AwaitEventRequest
 import kxrpc.testing.BarrierType
 import kxrpc.testing.CallTrace
@@ -19,7 +20,6 @@ import kxrpc.testing.EventType
 import kxrpc.testing.FlowControlBehavior
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
-import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.StartDisposableEndpointRequest
@@ -135,8 +135,8 @@ class GrpcClientControlServiceTest {
         val demandGrants = mutableListOf<Int>()
         registry.registerInboundDemand(callId, demandGrants::add)
         successfulResponse { observer ->
-            service.grantInboundDemand(
-                GrantInboundDemandRequest.newBuilder()
+            service.allowInboundReads(
+                AllowInboundReadsRequest.newBuilder()
                     .setCallId(callId)
                     .setMessageCount(2)
                     .build(),

@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.server
 
 import io.grpc.stub.StreamObserver
+import kxrpc.testing.AllowInboundReadsRequest
 import kxrpc.testing.AwaitEventRequest
 import kxrpc.testing.CallEvent
 import kxrpc.testing.CallTrace
@@ -14,7 +15,6 @@ import kxrpc.testing.DiscardScenarioRequest
 import kxrpc.testing.DisposableEndpoint
 import kxrpc.testing.GetScenarioDiagnosticsRequest
 import kxrpc.testing.GetTraceRequest
-import kxrpc.testing.GrantInboundDemandRequest
 import kxrpc.testing.GrpcClientControlServiceGrpc
 import kxrpc.testing.ReleaseBarrierRequest
 import kxrpc.testing.ScenarioDiagnostics
@@ -52,8 +52,8 @@ internal class GrpcClientControlService(
         }
     }
 
-    override fun grantInboundDemand(
-        request: GrantInboundDemandRequest,
+    override fun allowInboundReads(
+        request: AllowInboundReadsRequest,
         responseObserver: StreamObserver<ControlAck>,
     ) {
         respond(responseObserver) {

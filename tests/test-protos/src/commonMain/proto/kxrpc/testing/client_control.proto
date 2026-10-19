@@ -33,9 +33,10 @@ service GrpcClientControlService {
   // flow_control.manual_inbound_demand. Fails with FAILED_PRECONDITION if the
   // scenario doesn't set it or has no active call. Demand granted before the
   // service method starts takes effect when the method starts.
-  rpc GrantInboundDemand(GrantInboundDemandRequest) returns (ControlAck);
+  rpc AllowInboundReads(AllowInboundReadsRequest) returns (ControlAck);
 
   // Starts a disposable endpoint for connection-loss tests.
+  //
   rpc StartDisposableEndpoint(StartDisposableEndpointRequest) returns (DisposableEndpoint);
 
   // Stops the disposable endpoint and all of its calls. The endpoint first
@@ -104,7 +105,7 @@ message ConfigureScenarioRequest {
 // grpc-java.
 message FlowControlBehavior {
   // Turns off the automatic inbound demand of grpc-java. The server reads a
-  // request message only after GrantInboundDemand adds demand. Applies to the
+  // request message only after AllowInboundReads adds demand. Applies to the
   // request-streaming TestService methods.
   bool manual_inbound_demand = 1;
 
@@ -253,11 +254,16 @@ message ReleaseBarrierRequest {
   uint32 occurrence = 3;
 }
 
-message GrantInboundDemandRequest {
+// If the scenario's FlowControlBehavior::manual_inbound_demand is set true, this request enables the
+// controlling client to grant additional inbound reads on the server. This allows us to deterministically
+// test client side outbound back pressure, as the server only reads [message_count] incoming messages when we send
+// this request. Otherwise, the server doesn't read any incoming message, so the client's message producer
+// should stop producing messages.
+message AllowInboundReadsRequest {
   string call_id = 1;
 
-  // Number of additional request messages that the server can read. Must be
-  // positive.
+  // Number of additional request messages that the server can read.
+  // Must be positive, otherwise, the request fails.
   uint32 message_count = 2;
 }
 
@@ -336,6 +342,13 @@ message CallEvent {
   GrpcStatus status = 6;
 }
 
+message CallTrace {
+  string call_id = 1;
+
+  // All events recorded for the scenario so far, in sequence order.
+  repeated CallEvent events = 2;
+}
+
 // Steps of a data-plane call. Each accepted call ends with exactly one
 // CALL_CLOSED or CLIENT_CANCELLED event.
 enum EventType {
@@ -381,9 +394,3 @@ enum EventType {
   RESPONSE_DELIVERY_READY = 9;
 }
 
-message CallTrace {
-  string call_id = 1;
-
-  // All events recorded for the scenario so far, in sequence order.
-  repeated CallEvent events = 2;
-}
