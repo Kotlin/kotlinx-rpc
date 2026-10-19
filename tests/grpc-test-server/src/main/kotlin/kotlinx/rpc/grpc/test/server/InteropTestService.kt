@@ -367,11 +367,6 @@ internal class InteropTestService(
     }
 
     private companion object {
-        /**
-         * Queue marker for the end of the responses of a call. The dispatcher sends it as `onCompleted`, not as a
-         * message. Compare it by identity, because a requested response with zero interval and zero size is equal to
-         * it.
-         */
         val COMPLETION_CHUNK: ResponseChunk = ResponseChunk(delayMicroseconds = 0, payloadSize = 0)
     }
 }

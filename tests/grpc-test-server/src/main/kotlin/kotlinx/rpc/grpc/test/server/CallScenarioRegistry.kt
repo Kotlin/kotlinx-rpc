@@ -62,6 +62,15 @@ internal class CallScenarioRegistry(
 
     fun configuration(callId: String): ConfigureScenarioRequest = scenario(callId).configuration()
 
+    /**
+     * Throws [ScenarioNotFoundException] if the scenario with the given [callId] does not exist.
+     */
+    fun checkScenarioExists(callId: String) {
+        if (!scenarios.containsKey(callId))  {
+            throw ScenarioNotFoundException(callId)
+        }
+    }
+
     fun recordEvent(
         callId: String,
         type: EventType,

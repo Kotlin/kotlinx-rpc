@@ -24,7 +24,7 @@ internal class DisposableEndpointManager(
 
     /** Starts an endpoint for [callId] and returns its ephemeral port. */
     fun start(callId: String): Int {
-        registry.configuration(callId) // Fails with NOT_FOUND for an unknown scenario.
+        registry.checkScenarioExists(callId)
         val service = InteropTestService(registry)
         val server = NettyServerBuilder.forAddress(InetSocketAddress(HOST, 0))
             .addService(
@@ -59,7 +59,7 @@ internal class DisposableEndpointManager(
         endpoint.close()
     }
 
-    /** Stops the endpoint for [callId] if it exists. */
+    /** If the endpoint for [callId] exists, it will stop it and reset its open network connections. */
     fun stopIfPresent(callId: String) {
         endpoints.remove(callId)?.close()
     }
@@ -93,11 +93,13 @@ internal class DisposableEndpointManager(
             try {
                 proxy.close()
             } finally {
-                service.use {
+                try {
                     server.shutdownNow()
                     check(server.awaitTermination(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
                         "disposable gRPC endpoint didn't stop"
                     }
+                } finally {
+                    service.close()
                 }
             }
         }
