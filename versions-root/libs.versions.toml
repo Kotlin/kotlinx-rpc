@@ -104,6 +104,8 @@ spring7-core-test = { group = "org.springframework", name = "spring-core-test", 
 spring7-security-core = { group = "org.springframework.security", name = "spring-security-core", version.ref = "springSecurity7" }
 spring-boot4-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc", version.ref = "springBoot4" }
 spring-boot4-starter-websocket = { group = "org.springframework.boot", name = "spring-boot-starter-websocket", version.ref = "springBoot4" }
+spring-boot4-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-autoconfigure", version.ref = "springBoot4" }
+spring-boot4-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test", version.ref = "springBoot4" }
 spring-boot4-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security", version.ref = "springBoot4" }
 
 spring-boot4-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "springBoot4" }

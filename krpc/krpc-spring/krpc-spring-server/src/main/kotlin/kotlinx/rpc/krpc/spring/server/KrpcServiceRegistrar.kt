@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.krpc.spring.server
 
-import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanNameGenerator
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar
@@ -26,17 +25,6 @@ internal class KrpcServiceRegistrar : ImportBeanDefinitionRegistrar {
         val basePackages = attributes.getStringArray(EnableKrpc::basePackages.name)
             .ifEmpty { arrayOf(ClassUtils.getPackageName(importingClassMetadata.className)) }
 
-        val scanner = KrpcBeanScanner(registry)
-        scanner.scan(*basePackages)
-
-        val holdersDefinition = BeanDefinitionBuilder
-            .genericBeanDefinition(KrpcServiceBeanHolders::class.java)
-            .addConstructorArgValue(scanner.serviceClassNames.toList())
-            .beanDefinition
-
-        registry.registerBeanDefinition(
-            nameGenerator.generateBeanName(holdersDefinition, registry),
-            holdersDefinition,
-        )
+        KrpcServiceRegistration.register(registry, basePackages.toList(), nameGenerator)
     }
 }
