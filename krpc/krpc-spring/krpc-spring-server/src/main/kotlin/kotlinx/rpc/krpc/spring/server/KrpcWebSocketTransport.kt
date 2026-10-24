@@ -39,7 +39,7 @@ internal class KrpcWebSocketTransport(
                 exceptionHandler +
                 CoroutineName("krpc-spring-transport-${session.id}")
         ) { context, enricher ->
-            enricher.enrich(session, context)
+            context + enricher.contextFor(session)
         }
 
 

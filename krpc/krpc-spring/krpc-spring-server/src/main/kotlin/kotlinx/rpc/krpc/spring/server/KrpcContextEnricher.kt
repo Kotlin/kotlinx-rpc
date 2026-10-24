@@ -8,5 +8,5 @@ import org.springframework.web.socket.WebSocketSession
 import kotlin.coroutines.CoroutineContext
 
 public interface KrpcContextEnricher {
-    public fun enrich(session: WebSocketSession, coroutineContext: CoroutineContext): CoroutineContext
+    public fun contextFor(session: WebSocketSession): CoroutineContext
 }
