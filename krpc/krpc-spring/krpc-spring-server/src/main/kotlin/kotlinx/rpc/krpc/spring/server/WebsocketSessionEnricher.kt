@@ -9,7 +9,7 @@ import org.springframework.web.socket.WebSocketSession
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-internal open class WebsocketSessionEnricher : TransportContextEnricher {
+internal open class WebsocketSessionEnricher : KrpcContextEnricher {
     override fun enrich(session: WebSocketSession, coroutineContext: CoroutineContext): CoroutineContext {
         return coroutineContext + WebSocketSessionHolder(session)
     }

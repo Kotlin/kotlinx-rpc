@@ -28,7 +28,7 @@ internal class KrpcWebSocketHandler(
     private val webSocketSessionRegistry: WebSocketSessionRegistry,
     private val beanFactory: BeanFactory,
     private val sessionsJob: Job,
-    private val transportContextEnrichers: List<TransportContextEnricher>,
+    private val krpcContextEnrichers: List<KrpcContextEnricher>,
 ) : AbstractWebSocketHandler() {
 
     private val exceptionHandler = CoroutineExceptionHandler { context, exception ->
@@ -36,7 +36,7 @@ internal class KrpcWebSocketHandler(
     }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
-        val transport = KrpcWebSocketTransport(session, sessionsJob, transportContextEnrichers, exceptionHandler)
+        val transport = KrpcWebSocketTransport(session, sessionsJob, krpcContextEnrichers, exceptionHandler)
 
         val server = try {
             SpringKrpcServer(config, transport).also { server ->

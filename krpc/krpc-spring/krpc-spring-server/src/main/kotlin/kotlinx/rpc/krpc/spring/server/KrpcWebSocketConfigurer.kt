@@ -41,7 +41,7 @@ public open class KrpcWebSocketConfigurer(
     private val krpcProperties: KrpcProperties,
     private val krpcConfig: KrpcConfig.Server,
     private val webSocketSessionRegistry: WebSocketSessionRegistry,
-    private val transportContextEnrichers: List<TransportContextEnricher>,
+    private val krpcContextEnrichers: List<KrpcContextEnricher>,
 ) : WebSocketConfigurer, BeanFactoryAware, DisposableBean {
     private val sessionsJob = SupervisorJob()
 
@@ -56,7 +56,7 @@ public open class KrpcWebSocketConfigurer(
             webSocketSessionRegistry = webSocketSessionRegistry,
             beanFactory = beanFactory,
             sessionsJob = sessionsJob,
-            transportContextEnrichers = transportContextEnrichers,
+            krpcContextEnrichers = krpcContextEnrichers,
         )
         registry.addHandler(handler, krpcProperties.krpcPath)
     }

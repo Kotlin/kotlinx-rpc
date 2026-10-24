@@ -27,13 +27,13 @@ import kotlin.coroutines.CoroutineContext
 internal class KrpcWebSocketTransport(
     private val session: WebSocketSession,
     parent: Job,
-    transportContextEnrichers: List<TransportContextEnricher>,
+    krpcContextEnrichers: List<KrpcContextEnricher>,
     exceptionHandler: CoroutineExceptionHandler,
 ) : KrpcTransport {
     private val job = SupervisorJob(parent)
 
     override val coroutineContext: CoroutineContext =
-        transportContextEnrichers.fold(
+        krpcContextEnrichers.fold(
             job +
                 Dispatchers.IO +
                 exceptionHandler +
