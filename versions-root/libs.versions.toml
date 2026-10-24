@@ -100,6 +100,8 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 spring7-context = { group = "org.springframework", name = "spring-context", version.ref = "springFramework7" }
 spring7-websocket = { group = "org.springframework", name = "spring-websocket", version.ref = "springFramework7" }
 spring7-core-test = { group = "org.springframework", name = "spring-core-test", version.ref = "springFramework7" }
+spring-boot4-starter-webmvc = { group = "org.springframework.boot", name = "spring-boot-starter-webmvc", version.ref = "springBoot4" }
+spring-boot4-starter-websocket = { group = "org.springframework.boot", name = "spring-boot-starter-websocket", version.ref = "springBoot4" }
 
 spring-boot4-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "springBoot4" }
 

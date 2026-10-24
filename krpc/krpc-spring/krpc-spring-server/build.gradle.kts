@@ -19,5 +19,18 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     testImplementation(libs.spring7.core.test)
-    testImplementation(project(":krpc:krpc-ktor:krpc-ktor-client"))
+    testImplementation(projects.krpc.krpcKtor.krpcKtorClient)
+    testImplementation(libs.spring.boot4.starter.webmvc)
+    testImplementation(libs.spring.boot4.starter.websocket)
+    testImplementation(libs.kotlin.test)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
+    testRuntimeOnly(libs.junit5.platform.launcher)
+    testImplementation(libs.ktor.client.cio)
+    testImplementation(projects.krpc.krpcSerialization.krpcSerializationJson)
+    testImplementation(projects.krpc.krpcSerialization.krpcSerializationCbor)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
