@@ -67,6 +67,9 @@ includePublic(":krpc:krpc-ktor:krpc-ktor-core")
 includePublic(":krpc:krpc-ktor:krpc-ktor-server")
 includePublic(":krpc:krpc-ktor:krpc-ktor-client")
 
+include(":krpc:krpc-spring")
+includePublic(":krpc:krpc-spring:krpc-spring-server")
+
 include(":tests")
 include(":tests:test-utils")
 include(":tests:krpc-compatibility-tests")

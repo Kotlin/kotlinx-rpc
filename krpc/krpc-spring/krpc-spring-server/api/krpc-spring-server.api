@@ -1,0 +1,38 @@
+public abstract interface annotation class kotlinx/rpc/krpc/spring/server/EnableKrpc : java/lang/annotation/Annotation {
+	public abstract fun basePackages ()[Ljava/lang/String;
+}
+
+public final class kotlinx/rpc/krpc/spring/server/InMemoryWebSocketSessionRegistry : kotlinx/rpc/krpc/spring/server/WebSocketSessionRegistry {
+	public fun <init> ()V
+	public fun get (Lorg/springframework/web/socket/WebSocketSession;)Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;
+	public fun put (Lorg/springframework/web/socket/WebSocketSession;Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;)V
+	public fun remove (Lorg/springframework/web/socket/WebSocketSession;)Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;
+}
+
+public final class kotlinx/rpc/krpc/spring/server/KrpcProperties {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lkotlinx/rpc/krpc/spring/server/KrpcProperties;
+	public static synthetic fun copy$default (Lkotlinx/rpc/krpc/spring/server/KrpcProperties;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/rpc/krpc/spring/server/KrpcProperties;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKrpcPath ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public class kotlinx/rpc/krpc/spring/server/KrpcWebSocketConfigurer : org/springframework/beans/factory/BeanFactoryAware, org/springframework/beans/factory/DisposableBean, org/springframework/web/socket/config/annotation/WebSocketConfigurer {
+	public fun <init> (Lkotlinx/rpc/krpc/spring/server/KrpcProperties;Lkotlinx/rpc/krpc/KrpcConfig$Server;Lkotlinx/rpc/krpc/spring/server/WebSocketSessionRegistry;)V
+	public fun destroy ()V
+	public fun registerWebSocketHandlers (Lorg/springframework/web/socket/config/annotation/WebSocketHandlerRegistry;)V
+	public fun setBeanFactory (Lorg/springframework/beans/factory/BeanFactory;)V
+}
+
+public final class kotlinx/rpc/krpc/spring/server/SpringKrpcServer : kotlinx/rpc/krpc/server/KrpcServer {
+}
+
+public abstract interface class kotlinx/rpc/krpc/spring/server/WebSocketSessionRegistry {
+	public abstract fun get (Lorg/springframework/web/socket/WebSocketSession;)Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;
+	public abstract fun put (Lorg/springframework/web/socket/WebSocketSession;Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;)V
+	public abstract fun remove (Lorg/springframework/web/socket/WebSocketSession;)Lkotlinx/rpc/krpc/spring/server/SpringKrpcServer;
+}
+

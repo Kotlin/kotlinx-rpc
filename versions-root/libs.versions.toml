@@ -45,6 +45,8 @@ protobuf = "4.35.1"
 buf-tool = "1.71.0"
 agp = "8.4.0"
 test-retry = "1.5.9"
+springFramework7 = "7.0.8"
+springBoot4 = "4.1.0"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -93,6 +95,13 @@ ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref 
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref = "ktor" }
+
+# spring
+spring7-context = { group = "org.springframework", name = "spring-context", version.ref = "springFramework7" }
+spring7-websocket = { group = "org.springframework", name = "spring-websocket", version.ref = "springFramework7" }
+spring7-core-test = { group = "org.springframework", name = "spring-core-test", version.ref = "springFramework7" }
+
+spring-boot4-configuration-processor = { group = "org.springframework.boot", name = "spring-boot-configuration-processor", version.ref = "springBoot4" }
 
 # slf4j
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
