@@ -4,14 +4,9 @@
 
 package kotlinx.rpc.krpc.spring.server
 
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ClosedSendChannelException
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.rpc.krpc.KrpcTransport
@@ -32,12 +27,21 @@ import kotlin.coroutines.CoroutineContext
 internal class KrpcWebSocketTransport(
     private val session: WebSocketSession,
     parent: Job,
+    transportContextEnrichers: List<TransportContextEnricher>,
     exceptionHandler: CoroutineExceptionHandler,
 ) : KrpcTransport {
     private val job = SupervisorJob(parent)
 
     override val coroutineContext: CoroutineContext =
-        job + Dispatchers.IO + exceptionHandler + CoroutineName("krpc-spring-transport-${session.id}")
+        transportContextEnrichers.fold(
+            job +
+                Dispatchers.IO +
+                exceptionHandler +
+                CoroutineName("krpc-spring-transport-${session.id}")
+        ) { context, enricher ->
+            enricher.enrich(session, context)
+        }
+
 
     private val incoming = Channel<KrpcTransportMessage>(INCOMING_BUFFER_SIZE)
     private val sendMutex = Mutex()
