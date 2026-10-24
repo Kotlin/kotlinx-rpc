@@ -7,6 +7,8 @@ package kotlinx.rpc.krpc.spring.server.test
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.krpc.ktor.client.KtorRpcClient
 import kotlinx.rpc.krpc.ktor.client.rpc
@@ -32,7 +34,10 @@ internal class KrpcSpringServer(
     private val port = context.environment.getProperty("local.server.port")!!.toInt()
     private val httpClient = HttpClient(CIO) { install(WebSockets) }
 
-    suspend fun <T> withRpcTimeout(block: suspend () -> T): T = withTimeout(10.seconds) { block() }
+    // runTest uses virtual time, so the timeout runs on a real dispatcher.
+    suspend fun <T> withRpcTimeout(block: suspend () -> T): T = withContext(Dispatchers.Default) {
+        withTimeout(10.seconds) { block() }
+    }
 
     fun rpcClient(): KtorRpcClient = httpClient.rpc("ws://127.0.0.1:$port/krpc") {
         rpcConfig {

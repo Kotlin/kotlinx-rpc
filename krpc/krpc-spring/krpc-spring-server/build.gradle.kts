@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation(libs.spring7.core.test)
     testImplementation(projects.krpc.krpcKtor.krpcKtorClient)
+    testImplementation(libs.coroutines.test)
     testImplementation(libs.spring.boot4.starter.webmvc)
     testImplementation(libs.spring.boot4.starter.websocket)
     testImplementation(libs.kotlin.test)

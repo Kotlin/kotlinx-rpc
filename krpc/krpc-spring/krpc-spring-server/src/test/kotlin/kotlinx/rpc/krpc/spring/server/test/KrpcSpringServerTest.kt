@@ -7,16 +7,17 @@ package kotlinx.rpc.krpc.spring.server.test
 import io.ktor.websocket.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.withService
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.assertFails
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
 class KrpcSpringServerTest {
     @Test
-    fun `serves unary calls with JSON serialization`() = runBlocking {
+    fun `serves unary calls with JSON serialization`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
 
@@ -27,7 +28,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `serves unary calls with CBOR serialization`() = runBlocking {
+    fun `serves unary calls with CBOR serialization`() = runTest {
         KrpcSpringServer("cbor").use { server ->
             val client = server.rpcClient()
 
@@ -38,7 +39,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `delivers server stream elements in order`() = runBlocking {
+    fun `delivers server stream elements in order`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
             val actual = server.withRpcTimeout { client.withService<EchoService>().range(512).toList() }
@@ -50,7 +51,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `serves concurrent calls on one connection`() = runBlocking {
+    fun `serves concurrent calls on one connection`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
             val service = client.withService<EchoService>()
@@ -67,7 +68,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `serves each RPC interface implemented by one bean`() = runBlocking {
+    fun `serves each RPC interface implemented by one bean`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
 
@@ -78,13 +79,12 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `a service failure reaches the client without closing the connection`() = runBlocking {
+    fun `a service failure reaches the client without closing the connection`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
             val service = client.withService<EchoService>()
 
-            val failure = server.withRpcTimeout { runCatching { service.fail() }.exceptionOrNull() }
-            assertNotNull(failure)
+            val failure = assertFails { server.withRpcTimeout { service.fail() } }
             assertTrue(failure.message.orEmpty().contains("expected service failure"))
             assertEquals("still connected", server.withRpcTimeout { service.echo("still connected") })
 
@@ -93,7 +93,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `closing a client closes its WebSocket session`() = runBlocking {
+    fun `closing a client closes its WebSocket session`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
             server.withRpcTimeout { client.withService<EchoService>().echo("open") }
@@ -106,7 +106,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `closing one client leaves another client connected`() = runBlocking {
+    fun `closing one client leaves another client connected`() = runTest {
         KrpcSpringServer().use { server ->
             val firstClient = server.rpcClient()
             val secondClient = server.rpcClient()
@@ -124,7 +124,7 @@ class KrpcSpringServerTest {
     }
 
     @Test
-    fun `closing the Spring context closes open client WebSockets`() = runBlocking {
+    fun `closing the Spring context closes open client WebSockets`() = runTest {
         KrpcSpringServer().use { server ->
             val client = server.rpcClient()
             server.withRpcTimeout { client.withService<EchoService>().echo("open") }
@@ -138,6 +138,8 @@ class KrpcSpringServerTest {
     }
 
     private suspend fun awaitSessionClose(session: WebSocketSession) {
-        withTimeout(5.seconds) { session.coroutineContext.job.join() }
+        withContext(Dispatchers.Default) {
+            withTimeout(5.seconds) { session.coroutineContext.job.join() }
+        }
     }
 }
