@@ -17,6 +17,7 @@ import kotlinx.rpc.krpc.spring.server.starter.KrpcCborServerConfiguration
 import kotlinx.rpc.krpc.spring.server.starter.KrpcJsonServerConfiguration
 import kotlinx.rpc.krpc.spring.server.starter.KrpcProtobufServerConfiguration
 import kotlinx.rpc.krpc.spring.server.starter.test.explicit.ExplicitService
+import kotlinx.rpc.krpc.spring.server.starter.test.fqnames.FullyQualifiedNameServiceImpl
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.json.Json
@@ -27,10 +28,13 @@ import org.springframework.boot.test.context.FilteredClassLoader
 import org.springframework.boot.test.context.runner.ApplicationContextRunner
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator
 import org.springframework.web.socket.WebSocketSession
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -56,6 +60,13 @@ open class CustomBeansConfiguration {
 @AutoConfigurationPackage
 @EnableKrpc(basePackages = ["kotlinx.rpc.krpc.spring.server.starter.test.explicit"])
 open class ExplicitPackagesConfiguration
+
+@AutoConfigurationPackage(basePackages = ["kotlinx.rpc.krpc.spring.server.starter.test.fqnames"])
+@ComponentScan(
+    basePackages = ["kotlinx.rpc.krpc.spring.server.starter.test.fqnames"],
+    nameGenerator = FullyQualifiedAnnotationBeanNameGenerator::class,
+)
+open class FullyQualifiedBeanNameConfiguration
 
 @OptIn(ExperimentalSerializationApi::class)
 class KrpcServerAutoConfigurationTest {
@@ -176,6 +187,15 @@ class KrpcServerAutoConfigurationTest {
         runner.withUserConfiguration(ExplicitPackagesConfiguration::class.java).run { context ->
             assertEquals(1, context.getBeansOfType(ExplicitService::class.java).size)
             assertTrue(context.getBeansOfType(TestService::class.java).isEmpty())
+        }
+    }
+
+    @Test
+    fun `does not register a duplicate service with a fully qualified component name`() {
+        runner.withUserConfiguration(FullyQualifiedBeanNameConfiguration::class.java).run { context ->
+            assertNull(context.startupFailure)
+            assertEquals(1, context.getBeansOfType(FullyQualifiedNameServiceImpl::class.java).size)
+            context.getBean(KrpcWebSocketConfigurer::class.java)
         }
     }
 }

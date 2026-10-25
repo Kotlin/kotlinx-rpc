@@ -5,6 +5,7 @@
 package kotlinx.rpc.krpc.spring.server
 
 import kotlinx.rpc.annotations.Rpc
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.config.BeanDefinitionHolder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
@@ -13,12 +14,13 @@ import org.springframework.core.type.filter.TypeFilter
 import org.springframework.stereotype.Component
 
 /**
- * Finds the classes that have [Component] and implement an [Rpc] interface, and registers them as beans.
+ * Finds the classes that have [Component] and implement an [Rpc] interface, and registers them as beans unless
+ * the class is already registered under a different bean name.
  *
  * The scanner requires [Component] because the generated client stub classes also implement the [Rpc] interface.
  */
 internal class KrpcBeanScanner(
-    registry: BeanDefinitionRegistry,
+    private val registry: BeanDefinitionRegistry,
 ) : ClassPathBeanDefinitionScanner(registry, false) {
     private val componentFilter = AnnotationTypeFilter(Component::class.java)
     private val rpcInterfaceFilter = AnnotationTypeFilter(Rpc::class.java, true, true)
@@ -37,5 +39,19 @@ internal class KrpcBeanScanner(
             findCandidateComponents(basePackage).mapNotNullTo(serviceClassNames) { it.beanClassName }
         }
         return super.doScan(*basePackages)
+    }
+
+    override fun checkCandidate(beanName: String, beanDefinition: BeanDefinition): Boolean {
+        val beanClassName = beanDefinition.beanClassName ?: return super.checkCandidate(beanName, beanDefinition)
+        val alreadyRegistered = registry.beanDefinitionNames.any { registeredBeanName ->
+            registeredBeanName != beanName &&
+                registry.getBeanDefinition(registeredBeanName).let { registeredBeanDefinition ->
+                    registeredBeanDefinition.factoryMethodName == null &&
+                        registeredBeanDefinition.beanClassName == beanClassName
+                }
+        }
+
+        if (alreadyRegistered) return false
+        return super.checkCandidate(beanName, beanDefinition)
     }
 }
