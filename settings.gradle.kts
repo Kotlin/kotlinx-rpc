@@ -71,6 +71,7 @@ include(":krpc:krpc-spring")
 includePublic(":krpc:krpc-spring:krpc-spring-server")
 includePublic(":krpc:krpc-spring:krpc-spring-server-starter")
 includePublic(":krpc:krpc-spring:krpc-spring-security")
+includePublic(":krpc:krpc-spring:krpc-spring-security-starter")
 
 include(":tests")
 include(":tests:test-utils")

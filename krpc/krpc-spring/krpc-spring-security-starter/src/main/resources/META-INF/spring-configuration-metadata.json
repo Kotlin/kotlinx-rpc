@@ -1,0 +1,17 @@
+{
+  "groups": [
+    {
+      "name": "kotlinx.rpc.krpc.server.security",
+      "type": "kotlinx.rpc.krpc.spring.security.starter.KrpcSecurityStarterProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "kotlinx.rpc.krpc.server.security.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enables the kRPC Spring Security auto-configuration.",
+      "sourceType": "kotlinx.rpc.krpc.spring.security.starter.KrpcSecurityStarterProperties",
+      "defaultValue": true
+    }
+  ]
+}
