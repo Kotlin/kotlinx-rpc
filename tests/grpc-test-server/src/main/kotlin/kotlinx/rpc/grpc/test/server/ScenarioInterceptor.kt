@@ -343,7 +343,7 @@ internal class ScenarioInterceptor(
                 status to if (includeConfiguredTrailers) {
                     trailers.withConfigured(configuration.trailingMetadataList)
                 } else {
-                    trailers.withConfigured(emptyList())
+                    trailers
                 }
             } catch (error: Exception) {
                 error.toGrpcStatus() to Metadata()

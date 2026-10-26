@@ -230,8 +230,15 @@ internal class CallScenarioRegistry(
             require(METADATA_KEY.matches(entry.key)) {
                 "metadata key '${entry.key}' must contain only lowercase ASCII letters, digits, '-', '_', or '.'"
             }
+            if (!entry.key.endsWith("-bin")) {
+                require(entry.value.isUsAscii()) {
+                    "metadata key '${entry.key}' must contain only US-ASCII characters"
+                }
+            }
         }
     }
+
+    private fun ByteString.isUsAscii(): Boolean = all { byte -> byte <= 0x7f }
 
     private fun validateTerminalBehavior(request: ConfigureScenarioRequest) {
         if (!request.hasTerminalBehavior()) return
