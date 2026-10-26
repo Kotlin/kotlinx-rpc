@@ -172,6 +172,7 @@ abstract class DumpPlatformsTask : DefaultTask() {
                                 ),
                                 targets.nativeGroup(subproject, "linux"),
                                 targets.nativeGroup(subproject, "windows", "mingw"),
+                                targets.nativeGroup(subproject, "androidNative"),
                             ),
                             stub = subproject.optionalPropertyValue(TableColumn.Native.name, "stub"),
                         )

@@ -26,12 +26,12 @@
         </tr>
         <tr>
             <td>Core</td>
-            <td>Jvm (incl. Android), Js, WasmJs, WasmWasi, Apple, Linux, Windows</td>
+            <td>Jvm (incl. Android), Js, WasmJs, WasmWasi, Apple, Linux, Windows, Android Native</td>
             <td></td>
         </tr>
         <tr>
             <td>kRPC</td>
-            <td>Jvm (incl. Android), Js, WasmJs, Apple, Linux, Windows</td>
+            <td>Jvm (incl. Android), Js, WasmJs, Apple, Linux, Windows, Android Native</td>
             <td>
                 WasmWasi is blocked by <a href="https://github.com/oshai/kotlin-logging/issues/433">kotlin-logging</a>.
             </td>
@@ -77,7 +77,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -85,7 +85,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -141,7 +141,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -149,7 +149,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -157,7 +157,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -165,7 +165,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -197,7 +197,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -205,7 +205,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -213,7 +213,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -221,7 +221,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -229,7 +229,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -237,7 +237,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
 <tr>
@@ -245,7 +245,7 @@
 <td>jvm</td>
 <td><list><li>browser</li><li>node</li></list></td>
 <td><list><li>wasmJs<list><li>browser</li><li>node</li></list></li><li>wasmWasi<list><li>node</li></list></li></list></td>
-<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li></list></td>
+<td><list><li>apple<list><li>ios<list><li>iosArm64</li><li>iosSimulatorArm64</li><li>iosX64</li></list></li><li>macos<list><li>macosArm64</li></list></li><li>watchos<list><li>watchosArm64</li><li>watchosDeviceArm64</li><li>watchosSimulatorArm64</li></list></li><li>tvos<list><li>tvosArm64</li><li>tvosSimulatorArm64</li></list></li></list></li><li>linux<list><li>linuxArm64</li><li>linuxX64</li></list></li><li>windows<list><li>mingwX64</li></list></li><li>androidNative<list><li>androidNativeArm32</li><li>androidNativeArm64</li><li>androidNativeX64</li><li>androidNativeX86</li></list></li></list></td>
 </tr>
 
         <!--    PLATFORMS_TABLE_END    -->
