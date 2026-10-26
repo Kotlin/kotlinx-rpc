@@ -231,7 +231,7 @@ message CallEvent {
   uint32 occurrence = 3;
 
   // Exact bytes of Payload.body for a REQUEST_MESSAGE_RECEIVED event whose
-  // message is a grpc.testing StreamingInputCallRequest or
+  // message is a grpc.testing SimpleRequest, StreamingInputCallRequest, or
   // StreamingOutputCallRequest. Empty for other events and messages.
   bytes request_payload = 4;
 

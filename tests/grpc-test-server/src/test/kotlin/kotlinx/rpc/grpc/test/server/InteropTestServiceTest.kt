@@ -85,6 +85,25 @@ class InteropTestServiceTest {
     }
 
     @Test
+    fun unaryCallRecordsRequestPayload() = withFixture { fixture ->
+        val callId = "unary-request-payload"
+        val requestPayload = ByteString.copyFrom(ByteArray(7) { it.toByte() })
+        fixture.configure(callId)
+
+        fixture.testClient(callId).unaryCall(
+            SimpleRequest.newBuilder()
+                .setPayload(Payload.newBuilder().setBody(requestPayload))
+                .build()
+        )
+
+        fixture.awaitEvent(callId, EventType.CALL_CLOSED)
+        val requestEvent = fixture.trace(callId).eventsList
+            .single { it.type == EventType.REQUEST_MESSAGE_RECEIVED }
+        assertEquals(requestPayload, requestEvent.requestPayload)
+        fixture.discard(callId)
+    }
+
+    @Test
     fun unaryCallReturnsRequestedPayloadAndHonorsLifecycleBarriers() = withFixture { fixture ->
         val callId = "unary-call"
         fixture.configure(

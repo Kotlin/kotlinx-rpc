@@ -18,6 +18,7 @@ import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatus
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatusCode
+import kotlinx.rpc.grpc.client.testing.deterministicBytes
 import kotlinx.rpc.grpc.client.testing.failedBeforeResponseEvents
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
 import kotlin.test.Test
@@ -33,13 +34,14 @@ class GrpcClientUnaryTest {
 
     @Test
     fun canonicalUnaryPayload() = grpcClientTest {
+        val requestPayload = deterministicBytes(LARGE_REQUEST_SIZE)
         val response = testService.unaryCall(
             SimpleRequest {
                 responseType = PayloadType.COMPRESSABLE
                 responseSize = LARGE_RESPONSE_SIZE
                 payload = Payload {
                     type = PayloadType.COMPRESSABLE
-                    body = ByteString(*ByteArray(LARGE_REQUEST_SIZE))
+                    body = ByteString(*requestPayload)
                 }
             }
         )
@@ -47,6 +49,7 @@ class GrpcClientUnaryTest {
         assertEquals(PayloadType.COMPRESSABLE, response.payload.type)
         assertContentEquals(ByteArray(LARGE_RESPONSE_SIZE), response.payload.body.toByteArray())
         assertUnaryLifecycle()
+        assertServerRequestPayloads(listOf(requestPayload))
     }
 
     @Test
