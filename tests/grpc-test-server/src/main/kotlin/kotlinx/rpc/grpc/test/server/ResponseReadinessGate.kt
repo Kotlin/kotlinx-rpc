@@ -102,12 +102,12 @@ internal class ResponseReadinessGate(
     fun canDeliverResponse(): Boolean = synchronized(lock) {
         if (state == State.ENDED) return false
         if (!responseObserver.isReady) {
-            if (state == State.FLOWING) pauseLocked()
+            if (state == State.FLOWING) pauseUnsafe()
             // Readiness can change while the gate records the pause. If the client is ready again, the gate lets
             // the response through now and doesn't wait for a later ready callback.
             if (state == State.ENDED || !responseObserver.isReady) return false
         }
-        resumeLocked()
+        resumeUnsafe()
         state != State.ENDED
     }
 
@@ -117,7 +117,7 @@ internal class ResponseReadinessGate(
      * grpc-java also calls it once when the stream starts. Outside a pause, it does nothing.
      */
     private fun onReady() {
-        val resumed = synchronized(lock) { resumeLocked() }
+        val resumed = synchronized(lock) { resumeUnsafe() }
         if (resumed) resumeResponses()
     }
 
@@ -133,7 +133,7 @@ internal class ResponseReadinessGate(
     }
 
     /** Changes the state from [State.FLOWING] to [State.PAUSED]. The caller must hold [lock]. */
-    private fun pauseLocked() {
+    private fun pauseUnsafe() {
         state = State.PAUSED
         if (!recordEvent(EventType.RESPONSE_DELIVERY_BLOCKED)) state = State.ENDED
     }
@@ -144,7 +144,7 @@ internal class ResponseReadinessGate(
      *
      * @return `true` if a pause ended, so the caller must restart the dispatcher.
      */
-    private fun resumeLocked(): Boolean {
+    private fun resumeUnsafe(): Boolean {
         if (state != State.PAUSED) return false
         state = State.FLOWING
         if (!recordEvent(EventType.RESPONSE_DELIVERY_READY)) state = State.ENDED
