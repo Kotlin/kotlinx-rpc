@@ -52,11 +52,6 @@ import kotlin.time.Duration.Companion.seconds
  *   It doesn't use [clientConfig] or send the call id. It stays usable after a test shuts down the data-plane
  *   client.
  *
- * Each fixture has a new random [callId], so concurrent tests on the shared server, such as the JVM and native
- * test tasks, never see the calls of each other.
- *
- * Tests usually get a fixture from [grpcClientTest], which also registers the scenario and calls [close].
- *
  * @param clientConfig Additional configuration of the data-plane client.
  */
 internal class GrpcClientTestFixture(
@@ -143,10 +138,26 @@ internal class GrpcClientTestFixture(
         event: EventType,
         occurrence: UInt = 1U,
     ): CallEvent {
+        return awaitServerEventOneOf(setOf(event), occurrence)
+    }
+
+    /**
+     * Waits until the server records the first event that has one of [events] and the one-based [occurrence] of
+     * its type.
+     *
+     * Use it when the test can't know which event comes, for example a server close or a client cancellation.
+     * Otherwise, it works like [awaitServerEvent].
+     *
+     * @return The recorded event with its metadata and request payload.
+     */
+    internal suspend fun awaitServerEventOneOf(
+        events: Set<EventType>,
+        occurrence: UInt = 1U,
+    ): CallEvent {
         return controlService.awaitEvent(
             AwaitEventRequest {
                 callId = this@GrpcClientTestFixture.callId
-                this.event = event
+                this.events = events.toList()
                 this.occurrence = occurrence
             }
         )
@@ -307,14 +318,13 @@ internal class GrpcClientTestFixture(
     }
 
     /**
-     * Checks that the trace is [expectedBeforeTerminal] followed by a server close or a client cancellation (see
-     * [assertEventsWithEitherTerminal]).
-     *
-     * It doesn't wait for the terminal event, so call it only after the server ends the call.
+     * Waits for a server close or a client cancellation, then checks that the trace is [expectedBeforeTerminal]
+     * followed by this event (see [assertEventsWithEitherTerminal]).
      */
     internal suspend fun assertServerTraceWithEitherTerminal(
         expectedBeforeTerminal: List<ExpectedServerEvent>,
     ) {
+        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
         serverTrace().assertEventsWithEitherTerminal(callId, expectedBeforeTerminal)
     }
 
@@ -377,19 +387,6 @@ internal class GrpcClientTestFixture(
     /**
      * Discards the server state, closes all clients, and returns the cleanup failure.
      *
-     * Every step runs through [GrpcClientTestCleanup], so a failing or hanging step doesn't skip the others. The
-     * first steps depend on [testFailure]:
-     * - After a successful test body, teardown checks a configured scenario. Every data-plane call must have
-     *   ended, and the server must hold no open calls, barriers, or waiters (see [assertNoLeaks]). Then teardown
-     *   shuts down the data-plane clients gracefully.
-     * - After a failed test body, teardown first shuts down the data-plane clients forcefully, because calls can
-     *   still wait at barriers. Then it prints the server trace and diagnostics of a configured scenario, and
-     *   makes no assertions.
-     *
-     * Then teardown discards the scenario on the server if the fixture sent `ConfigureScenario`. This also stops
-     * a disposable endpoint and fails the control calls that still wait on it. At the end, teardown waits for all
-     * clients to terminate.
-     *
      * @param testFailure The test-body failure, or `null` after success.
      * @return The first cleanup failure with the other failures suppressed, or `null`.
      */
@@ -436,7 +433,7 @@ internal class GrpcClientTestFixture(
     }
 
     /**
-     * Checks that the scenario ended cleanly. If no call ended yet, it first waits for [EventType.CALL_CLOSED].
+     * Waits for a server close or a client cancellation, then checks that the scenario ended cleanly.
      *
      * The checks:
      * - Every accepted data-plane call ended with a server close or a client cancellation.
@@ -444,17 +441,14 @@ internal class GrpcClientTestFixture(
      * - The server holds no state for the scenario.
      */
     private suspend fun assertScenarioCompleted() {
-        var trace = serverTrace()
-        if (trace.events.none { it.type.isTerminalServerEvent() }) {
-            awaitServerEvent(EventType.CALL_CLOSED)
-            trace = serverTrace()
-        }
+        awaitServerEventOneOf(TERMINAL_SERVER_EVENTS)
+        val trace = serverTrace()
         val failureMessage = "call_id='$callId', server trace:\n${trace.render()}"
         val acceptedCallCount = trace.events.count { it.type == EventType.CALL_ACCEPTED }
         val closedCallCount = trace.events.count { it.type == EventType.CALL_CLOSED }
         val cancelledCallCount = trace.events.count { it.type == EventType.CLIENT_CANCELLED }
         assertEquals(acceptedCallCount, closedCallCount + cancelledCallCount, failureMessage)
-        assertEquals(true, trace.events.lastOrNull()?.type?.isTerminalServerEvent(), failureMessage)
+        assertEquals(true, trace.events.lastOrNull()?.type in TERMINAL_SERVER_EVENTS, failureMessage)
         serverDiagnostics().assertNoLeaks(callId, trace)
     }
 
@@ -472,10 +466,8 @@ internal class GrpcClientTestFixture(
     }
 }
 
-/** Whether the event ends a data-plane call on the server: a server close or a client cancellation. */
-private fun EventType.isTerminalServerEvent(): Boolean {
-    return this == EventType.CALL_CLOSED || this == EventType.CLIENT_CANCELLED
-}
+/** The events that end a data-plane call on the server: a server close or a client cancellation. */
+private val TERMINAL_SERVER_EVENTS: Set<EventType> = setOf(EventType.CALL_CLOSED, EventType.CLIENT_CANCELLED)
 
 /** Adds [callId] to the request metadata of every data-plane call, so the server applies the scenario of [callId]. */
 private class CallIdInterceptor(

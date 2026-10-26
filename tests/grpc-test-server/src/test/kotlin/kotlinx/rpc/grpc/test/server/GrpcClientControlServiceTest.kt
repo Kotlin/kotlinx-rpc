@@ -58,7 +58,7 @@ class GrpcClientControlServiceTest {
             val awaited = client.awaitEvent(
                 AwaitEventRequest.newBuilder()
                     .setCallId(callId)
-                    .setEvent(EventType.CALL_ACCEPTED)
+                    .addEvents(EventType.CALL_ACCEPTED)
                     .setOccurrence(1)
                     .build()
             )
@@ -100,7 +100,7 @@ class GrpcClientControlServiceTest {
             service.awaitEvent(
                 AwaitEventRequest.newBuilder()
                     .setCallId(callId)
-                    .setEvent(EventType.CALL_ACCEPTED)
+                    .addEvents(EventType.CALL_ACCEPTED)
                     .setOccurrence(1)
                     .build(),
                 observer,

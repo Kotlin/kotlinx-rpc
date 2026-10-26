@@ -16,13 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Runs a common gRPC client test against its own reference-server scenario.
  *
- * Each call creates a [GrpcClientTestFixture] with a new [GrpcClientTestFixture.callId]. If [configureScenario]
- * is `true`, the fixture registers a scenario under this call id before [block] runs. The server then traces every
- * data-plane call of the test and applies [barriers] and [scenario] to it.
- *
- * The test runs under `runTest` with coroutine debug probes and a 30-second timeout. After [block], the fixture
- * closes also when [block] fails (see [GrpcClientTestFixture.close]). [combineTestAndCleanupFailures] selects the
- * failure that the test reports.
+ * The test runs under `runTest` with coroutine debug probes and a 30-second timeout.
  *
  * ```kotlin
  * @Test
@@ -56,16 +50,6 @@ internal fun grpcClientTest(
     executeGrpcClientTest(clientConfig, configureScenario, barriers, scenario, block)
 }
 
-/**
- * The body of [grpcClientTest] without `runTest`, so a test can run it in its own coroutine test and check the
- * failure that it throws.
- *
- * The function always closes the fixture after [block], and then throws the combined failure of scenario setup,
- * [block], and teardown. It closes the fixture under [NonCancellable], so teardown also runs when the test is
- * cancelled, for example by its timeout.
- *
- * The parameters are the same as for [grpcClientTest].
- */
 internal suspend fun executeGrpcClientTest(
     clientConfig: GrpcClientConfiguration.() -> Unit = {},
     configureScenario: Boolean = true,
