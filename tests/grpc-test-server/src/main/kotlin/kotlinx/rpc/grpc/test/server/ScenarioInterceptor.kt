@@ -27,7 +27,6 @@ import kxrpc.testing.GrpcStatus
 import kxrpc.testing.MetadataEntry
 import kxrpc.testing.TerminalStage
 
-/** Name of [TEST_CALL_ID_METADATA_KEY]. */
 internal const val TEST_CALL_ID_METADATA_KEY_NAME: String = "kxrpc-test-call-id"
 
 /** Request metadata key with which a data-plane call selects its scenario. The value is the call ID. */
@@ -89,7 +88,7 @@ internal class ScenarioInterceptor(
         // waits for the serialized call executor. A request barrier can block that executor, so this listener records
         // a cancellation while the call waits at the barrier.
         scenarioContext.addListener(
-            Context.CancellationListener { scenarioCall.clientCancelled() },
+            { scenarioCall.clientCancelled() },
             DIRECT_EXECUTOR,
         )
         if (scenarioCall.closeBeforeStartIfConfigured()) {
