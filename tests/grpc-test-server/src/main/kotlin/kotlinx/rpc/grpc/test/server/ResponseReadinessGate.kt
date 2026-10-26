@@ -40,54 +40,21 @@ internal fun ResponseReadinessGate.Companion.createIfConfigured(
  * Holds back the queued responses of a call while grpc-java reports that the client isn't ready, for scenarios that
  * enable `flow_control.respect_response_readiness`.
  *
- * Client tests use the gate to check receive-side backpressure. When the consumer of the client under test is slow,
- * the client must stop asking for more responses, not buffer all of them. A regular grpc-java server can't show
- * whether the client does this. `onNext` never blocks, so the server continues to send, and the responses that the
- * client doesn't take collect in the server buffers. Then a client that reads all responses without a pause looks
- * the same as a client with backpressure.
+ * A regular server can't show whether the client under test has receive-side backpressure. `onNext` never blocks,
+ * so the server buffers the responses that the client doesn't take.
  *
- * With the gate, the server stops sending when the backpressure of the client reaches it, and records
- * [EventType.RESPONSE_DELIVERY_BLOCKED] as proof. Then a test can let the client consume again and wait for
- * [EventType.RESPONSE_DELIVERY_READY]. After that, the test checks one of these:
+ * grpc-java has no "not ready" callback, so the dispatcher of [InteropTestService] calls [canDeliverResponse] before
+ * each response message. The ready handler restarts the dispatcher through [resumeResponses]. Consequences for the
+ * trace:
  *
- * - The client gets every response, in order.
- * - The cancellation of a call works while the gate holds back its responses.
+ * - The gate checks only when a response is due. A short "not ready" time between two responses isn't in the trace.
+ * - grpc-java can call the ready handler after the client isn't ready again. A test can see more than one
+ *   `BLOCKED`/`READY` pair and must wait for the occurrence that it expects.
  *
- * The gate uses the readiness of grpc-java to find the backpressure of the client. The client never signals
- * readiness itself. grpc-java gets it from HTTP/2 flow control:
+ * [canDeliverResponse] and the grpc-java handlers can run on different threads, so code reads and writes [state] only
+ * while it holds [lock]. The dispatcher holds its own monitor when it calls [canDeliverResponse], so the gate calls
+ * [resumeResponses] and [cancelResponses] outside [lock].
  *
- * 1. The client refills its receive window only when it consumes messages.
- * 2. When the client stops, the window is used up and the response bytes queue on the server.
- * 3. When more than a threshold (32 KiB by default) is in the queue, `isReady()` becomes `false`.
- * 4. When the queue is below the threshold again, `isReady()` becomes `true` and grpc-java calls the ready handler.
- *
- * grpc-java has no callback for "not ready", so the gate polls. Before each response message, the response
- * dispatcher of [InteropTestService] calls [canDeliverResponse], which checks `isReady()`. The dispatcher stops while
- * the result is `false`, and the ready callback restarts it through [resumeResponses].
- *
- * Delivery has these state changes:
- *
- * - `FLOWING` to `PAUSED`: a check finds the client not ready.
- * - `PAUSED` to `FLOWING`: the ready callback runs, or a later check finds the client ready.
- * - Any state to `ENDED`: the call closes, the client cancels it, or the registry has no active call for it.
- *
- * The change to `PAUSED` records [EventType.RESPONSE_DELIVERY_BLOCKED], and the change back records
- * [EventType.RESPONSE_DELIVERY_READY]. Each pause records each event once, also when the dispatcher tries to deliver
- * many times during the pause. The gate checks the client only when a response is due, so `BLOCKED` means that the
- * server had a response and couldn't send it. If the client isn't ready only for a short time between two
- * responses, the trace doesn't show it.
- *
- * grpc-java can call the ready handler after the client is not ready again, so the next check starts a new pause.
- * Thus a test can see more than one `BLOCKED`/`READY` pair and must wait for the occurrence that it expects.
- *
- * The dispatcher calls [canDeliverResponse] on its response executor and on the call executor. grpc-java calls the
- * ready, cancel, and close handlers on the call executor. So code reads and writes [state] only while it holds [lock].
- *
- * The dispatcher holds its own monitor when it calls [canDeliverResponse], so the gate calls [resumeResponses] and
- * [cancelResponses] outside [lock].
- *
- * @param registry The registry with the scenario configuration and the call trace.
- * @param callId The call ID that the data-plane call selects in its metadata.
  * @param responseObserver The observer whose readiness the gate checks. The gate sets its ready, cancel, and close
  * handlers.
  * @param resumeResponses Restarts the dispatcher after a pause.
