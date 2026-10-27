@@ -25,7 +25,7 @@
     },
     "develocity": {
       "type": "http",
-      "url": "https://ge.jetbrains.com/mcp",
+      "url": "https://develocity.jetbrains.com/mcp",
       "headers": {
         "Authorization": "Bearer ${DEVELOCITY_TOKEN}"
       }
