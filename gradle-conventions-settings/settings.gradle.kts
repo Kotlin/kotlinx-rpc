@@ -18,7 +18,7 @@ include(":develocity")
 
 // Should be in sync with ktorbuild.develocity.settings.gradle.kts
 develocity {
-    server = "https://ge.jetbrains.com"
+    server = "https://develocity.jetbrains.com"
 }
 
 val isCIRun = providers.environmentVariable("TEAMCITY_VERSION").isPresent ||

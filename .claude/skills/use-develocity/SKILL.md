@@ -2,11 +2,11 @@
 name: use-develocity
 description: >
   Query and analyze kotlinx-rpc build scans, test results, and failure patterns
-  from the Develocity server (ge.jetbrains.com) using MCP tools. Use this skill
+  from the Develocity server (develocity.jetbrains.com) using MCP tools. Use this skill
   whenever the user wants to look at build scans, investigate CI failures across
   builds, check build cache hit rates, analyze flaky tests, find recurring
   failure patterns, or query build performance history. Also trigger when the
-  user mentions "Develocity", "build scan", "GE", "ge.jetbrains.com",
+  user mentions "Develocity", "build scan", "GE", "develocity.jetbrains.com",
   "build cache stats", "flaky tests", "failure groups", or asks about build
   trends, test stability, or CI health. Trigger even if the user doesn't say
   "Develocity" explicitly -- if they want to look at historical build data,
@@ -23,8 +23,8 @@ Develocity instance via `mcp__develocity__*` MCP tools.
 
 ## Project Setup
 
-- **Server**: `https://ge.jetbrains.com`
-- **Build scan URL pattern**: `https://ge.jetbrains.com/s/<buildId>`
+- **Server**: `https://develocity.jetbrains.com`
+- **Build scan URL pattern**: `https://develocity.jetbrains.com/s/<buildId>`
 - **Gradle project name**: `kotlinx-rpc`
 - **Build tool**: `gradle`
 
@@ -47,7 +47,7 @@ All Develocity configuration lives in a single convention plugin:
 
 ### Build cache
 
-- Remote cache at `ge.jetbrains.com` is always **readable**.
+- Remote cache at `develocity.jetbrains.com` is always **readable**.
 - Only CI builds **push** to the remote cache (`isPush = isCIRun`).
 - Local cache is disabled on CI.
 

@@ -3,7 +3,7 @@
 ## Prefer the `use-develocity` skill
 
 When you need build-scan data, cache hit rates, task timing, or flaky-test
-statistics from `ge.jetbrains.com`, invoke the `use-develocity` skill rather
+statistics from `develocity.jetbrains.com`, invoke the `use-develocity` skill rather
 than calling `mcp__develocity__*` tools directly. The skill knows the right
 pagination and category selection for the KRPC project.
 
