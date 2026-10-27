@@ -5,8 +5,6 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.GrpcStatus
-import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.getAll
 import kotlin.test.Test
@@ -21,68 +19,60 @@ class NativeClientResponseGateTest {
         assertEquals(emptyList(), harness.events)
 
         harness.headers("initial")
-        harness.close(GrpcStatusCode.INTERNAL)
+        harness.close()
 
-        assertEquals(
-            listOf("headers:initial", "message:first", "request-next", "close:INTERNAL"),
-            harness.events,
-        )
+        assertEquals(listOf("headers:initial", "message:first", "request-next", "close"), harness.events)
     }
 
     @Test
-    fun messageBeforeEmptyHeadersProvesAHeadersPhase() {
+    fun messageBeforeEmptyHeadersIsHeldWithItsDemand() {
         val harness = GateHarness()
 
         harness.message("first")
         assertEquals(emptyList(), harness.events)
 
         harness.headers()
-        harness.close(GrpcStatusCode.INTERNAL)
+        harness.close()
 
-        assertEquals(
-            listOf("headers", "message:first", "request-next", "close:INTERNAL"),
-            harness.events,
-        )
+        assertEquals(listOf("headers", "message:first", "request-next", "close"), harness.events)
     }
 
     @Test
-    fun emptyHeadersBeforeNonOkCloseAreSuppressed() {
+    fun emptyHeadersAreDeliveredBeforeAnyMessage() {
         val harness = GateHarness()
 
         harness.headers()
-        assertEquals(emptyList(), harness.events)
+        assertEquals(listOf("headers"), harness.events)
 
-        harness.close(GrpcStatusCode.UNAVAILABLE)
+        harness.message("first")
+        harness.close()
 
-        assertEquals(listOf("close:UNAVAILABLE"), harness.events)
+        assertEquals(listOf("headers", "message:first", "request-next", "close"), harness.events)
     }
 
     @Test
-    fun emptyHeadersBeforeOkCloseAreDelivered() {
+    fun messageWithoutHeadersIsDeliveredAfterEmptyHeadersOnClose() {
         val harness = GateHarness()
 
-        harness.headers()
-        assertEquals(emptyList(), harness.events)
+        harness.message("first")
+        harness.close()
 
-        harness.close(GrpcStatusCode.OK)
-
-        assertEquals(listOf("headers", "close:OK"), harness.events)
+        assertEquals(listOf("headers", "message:first", "request-next", "close"), harness.events)
     }
 
     @Test
-    fun nonEmptyHeadersBeforeNonOkCloseAreDelivered() {
+    fun closeWithoutHeadersOrMessagesDeliversNoHeaders() {
         val harness = GateHarness()
 
-        harness.headers("initial")
-        harness.close(GrpcStatusCode.INTERNAL)
+        harness.close()
 
-        assertEquals(listOf("headers:initial", "close:INTERNAL"), harness.events)
+        assertEquals(listOf("close"), harness.events)
     }
 
     /**
      * Drives a [NativeClientResponseGate] the way [NativeClientCall] does, without a real C-core call, and records
      * everything the gate hands on in [events]: `headers` (or `headers:<marker>`), `message:<value>`,
-     * `request-next` when the gate asks for the next message, and `close:<code>` for the terminal callback.
+     * `request-next` when the gate asks for the next message, and `close` for the terminal callback.
      */
     private class GateHarness {
         val events: MutableList<String> = mutableListOf()
@@ -95,10 +85,7 @@ class NativeClientResponseGateTest {
             onMessage = { message -> events += "message:$message" },
         )
 
-        /**
-         * Completes the initial-metadata operation. Without [marker] the headers are empty, like those C-core reports
-         * for a trailers-only response; with it they carry one entry, so they are real headers.
-         */
+        /** Completes the initial-metadata operation. Without [marker], the headers are empty. */
         fun headers(marker: String? = null) {
             val headers = GrpcMetadata()
             if (marker != null) headers.append(ORDER_KEY, marker)
@@ -110,10 +97,10 @@ class NativeClientResponseGateTest {
             gate.messageReceived(message) { events += "request-next" }
         }
 
-        /** Closes the call with [code]: flushes the gate, then records the terminal callback. */
-        fun close(code: GrpcStatusCode) {
-            gate.flushBeforeClose(GrpcStatus(code))
-            events += "close:${code.name}"
+        /** Closes the call: delivers the pending message, then records the terminal callback. */
+        fun close() {
+            gate.deliverPendingMessage()
+            events += "close"
         }
     }
 

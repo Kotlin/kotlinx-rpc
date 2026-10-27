@@ -15,6 +15,7 @@ import io.grpc.testing.integration.StreamingInputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallRequest
 import io.grpc.testing.integration.StreamingOutputCallResponse
 import io.grpc.testing.integration.invoke
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +40,10 @@ import kotlinx.rpc.grpc.client.testing.successfulServerStreamingEvents
 import kotlinx.rpc.grpc.statusCode
 import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
+import kxrpc.testing.GrpcStatus as ScenarioGrpcStatus
 import kxrpc.testing.MetadataEntry
+import kxrpc.testing.TerminalBehavior
+import kxrpc.testing.TerminalStage
 import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -190,6 +194,62 @@ class GrpcClientInterceptorTest {
         // Callback failures cross the public boundary as CANCELLED while retaining their cause.
         val failure = assertGrpcStatusCode(GrpcStatusCode.CANCELLED) { testService.emptyCall(Empty {}) }
         assertEquals("headers", assertIs<InterceptorFailure>(failure.cause).message)
+    }
+
+    @Test
+    fun onHeadersFailureCancelsACallThatClosesWithoutResponses() = grpcClientTest(
+        clientConfig = {
+            intercept(interceptor { request ->
+                onHeaders { throw InterceptorFailure("headers") }
+                proceed(request)
+            })
+        },
+        scenario = {
+            // The server sends empty headers and then closes with OK, without a response.
+            terminalBehavior = TerminalBehavior {
+                status = ScenarioGrpcStatus { code = GrpcStatusCode.OK.value }
+                stage = TerminalStage.AFTER_INITIAL_METADATA
+            }
+        },
+    ) {
+        val failure = assertGrpcStatusCode(GrpcStatusCode.CANCELLED) {
+            testService.streamingOutputCall(StreamingOutputCallRequest {}).toList()
+        }
+        assertEquals("headers", assertIs<InterceptorFailure>(failure.cause).message)
+    }
+
+    @Test
+    fun onHeadersRunsForEmptyHeadersBeforeTheFirstResponse() {
+        val headersReceived = CompletableDeferred<Unit>()
+        grpcClientTest(
+            clientConfig = {
+                intercept(interceptor { request ->
+                    onHeaders { headersReceived.complete(Unit) }
+                    proceed(request)
+                })
+            },
+            barriers = listOf(serverBarrier(BarrierType.SEND_RESPONSE)),
+        ) {
+            coroutineScope {
+                // The client half-closes only after onHeaders, and the server sends its first response only after
+                // the half-close. So the call completes only if onHeaders runs for the empty headers that the server
+                // sends before the response.
+                val responses = async {
+                    testService.fullDuplexCall(
+                        flow {
+                            emit(StreamingOutputCallRequest {
+                                responseParameters = listOf(ResponseParameters { size = 1 })
+                            })
+                            headersReceived.await()
+                        }
+                    ).toList()
+                }
+
+                awaitServerEvent(EventType.CLIENT_HALF_CLOSED)
+                releaseServerBarrier(BarrierType.SEND_RESPONSE)
+                assertEquals(1, responses.await().size)
+            }
+        }
     }
 
     @Test

@@ -72,6 +72,7 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_op
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice
 import kotlinx.rpc.grpc.internal.cinterop.grpc_slice_unref
 import kotlinx.rpc.grpc.internal.cinterop.grpc_status_code
+import kotlinx.rpc.grpc.internal.cinterop.kgrpc_call_is_trailers_only
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.ExperimentalNativeApi
@@ -94,13 +95,8 @@ private const val CLOSE_REQUESTED = 1 shl 30
  *    batch completes before the initial-metadata callback is buffered by [responseGate] and
  *    only handed to the listener (and only then is its next `RECV_MESSAGE` submitted) after the
  *    headers have been delivered.
- * 2. C-core completes `RECV_INITIAL_METADATA` with an *empty* array for a trailers-only response
- *    (e.g. an `UNAVAILABLE` failure before any header frame). Such empty headers are held
- *    by [responseGate] until a message or an `OK` close proves a real headers phase;
- *    on a non-OK close without messages they are dropped so the listener never observes a
- *    spurious `onHeaders(empty)` for a trailers-only failure. Accepted trade-off: a server that
- *    sends genuinely empty initial headers and then fails non-OK without messages is
- *    indistinguishable at the C-core API and will not receive `onHeaders` on Native.
+ * 2. `onHeaders` doesn't run when the server sent no headers: a trailers-only response, or a
+ *    call that ends before the headers.
  * 3. `onClose` runs exactly once and never interleaves with `onHeaders`/`onMessage`/`onReady`.
  */
 internal class NativeClientCall<Request, Response>(
@@ -324,8 +320,8 @@ internal class NativeClientCall<Request, Response>(
      * the cleaner is a no-op. KRPC-604.
      *
      * Listener dispatch happens under [callbackMutex] so it cannot interleave with a still-
-     * running onHeaders/onMessage callback. Before `onClose`, [responseGate] resolves delayed
-     * headers and messages or suppresses the trailers-only artifact.
+     * running onHeaders/onMessage callback. Before `onClose`, [responseGate] delivers a message
+     * that still waits for headers.
      */
     private fun finishClose(info: Pair<GrpcStatus, GrpcMetadata>) {
         if (!rawGuard.released.compareAndSet(expect = false, update = true)) {
@@ -338,9 +334,11 @@ internal class NativeClientCall<Request, Response>(
         // user observer to notify in that case; resources still need to be released below.
         listener?.let { lst ->
             callbackMutex.withLock {
-                responseGate.flushBeforeClose(info.first)
+                responseGate.deliverPendingMessage()
+                // A listener callback for the pending message can cancel the call, and cancel replaces closeInfo.
+                val (status, trailers) = closeInfo.value ?: info
                 safeUserCode("Failed to call onClose.") {
-                    lst.onClose(info.first, info.second)
+                    lst.onClose(status, trailers)
                 }
             }
         }
@@ -591,6 +589,9 @@ internal class NativeClientCall<Request, Response>(
             grpc_metadata_array_destroy(recvInitialMetadata.readValue())
             arena.clear()
         }) {
+            // C-core also completes RECV_INITIAL_METADATA with an empty array when the server sent no
+            // headers. Like grpc-java, the listener gets no onHeaders then.
+            if (kgrpc_call_is_trailers_only(raw)) return@runBatch
             // copy the metadata before `cleanup` destroys the array; the gate decides delivery.
             onInitialMetadataReceived(GrpcMetadata(recvInitialMetadata))
         }
