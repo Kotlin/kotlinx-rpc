@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.client.internal.GrpcJavaApiClientBackend
+import kotlinx.rpc.grpc.client.internal.GrpcClientBackend
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -47,6 +49,8 @@ public class GrpcClient internal constructor(
 ) : RpcClient {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
+
+    internal val backend: GrpcClientBackend = GrpcJavaApiClientBackend(channel, callCredentials)
 
     public fun shutdown() {
         delegates.clear()
