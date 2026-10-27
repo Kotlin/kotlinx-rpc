@@ -12,6 +12,10 @@ import java.util.logging.Logger
 actual val runtime: Runtime
     get() = Runtime.JVM
 
+actual val grpcTestServerPort: Int by lazy {
+    checkNotNull(System.getenv("GRPC_TEST_SERVER_PORT")) { "GRPC_TEST_SERVER_PORT isn't set" }.toInt()
+}
+
 actual suspend fun captureGrpcLogs(
     jvmLogLevel: String,
     jvmLoggers: List<String>,

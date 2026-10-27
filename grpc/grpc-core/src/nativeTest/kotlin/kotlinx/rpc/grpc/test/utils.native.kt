@@ -9,6 +9,8 @@ package kotlinx.rpc.grpc.test
 import platform.posix.setenv
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.toKString
+import platform.posix.getenv
 import kotlinx.rpc.grpc.internal.cinterop.grpc_tracer_set_enabled
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import platform.posix.unsetenv
@@ -16,6 +18,10 @@ import kotlinx.rpc.test.captureStdErr
 
 actual val runtime: Runtime
     get() = Runtime.NATIVE
+
+actual val grpcTestServerPort: Int by lazy {
+    checkNotNull(getenv("GRPC_TEST_SERVER_PORT")?.toKString()) { "GRPC_TEST_SERVER_PORT isn't set" }.toInt()
+}
 
 fun setNativeEnv(key: String, value: String) {
     setenv(key, value, 1)

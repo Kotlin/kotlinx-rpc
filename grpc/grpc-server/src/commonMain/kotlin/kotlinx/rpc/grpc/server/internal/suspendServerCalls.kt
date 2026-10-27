@@ -230,6 +230,11 @@ private fun <Request, Response> CoroutineScope.serverCallListenerImpl(
             }
             serverCallScope.onCloseFuture.complete(Pair(closeStatus, trailers))
         }
+
+        if (failure is Error) {
+            // Propagate the non-recoverable server error.
+            throw failure
+        }
     }
 
     return serverCallListener(

@@ -48,7 +48,7 @@ class EmitResponsesCancellationTest {
             val sink = FlowCollector<Int> { /* values are dropped; the channel is empty */ }
             try {
                 sink.emitResponses(responses, requestNext = {}, onError = {})
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 observed = e
             }
         }.join()

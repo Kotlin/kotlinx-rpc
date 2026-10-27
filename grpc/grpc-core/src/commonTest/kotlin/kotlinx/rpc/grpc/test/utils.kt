@@ -34,6 +34,9 @@ enum class Runtime {
 }
 expect val runtime: Runtime
 
+/** The port of the `:tests:grpc-test-server`. The test task passes it in `GRPC_TEST_SERVER_PORT`. */
+expect val grpcTestServerPort: Int
+
 expect suspend fun captureGrpcLogs(
     jvmLogLevel: String = "DEBUG",
     jvmLoggers: List<String> = listOf("io.grpc"),

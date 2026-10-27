@@ -327,15 +327,16 @@ private class ClientCallScopeImpl<Request, Response>(
 
             try {
                 onCloseFuture.complete(status to trailers)
-            } catch (exception: Throwable) {
+            } catch (exception: Exception) {
                 cause = exception
                 if (exception !is GrpcStatusException) {
                     val status = GrpcStatus(GrpcStatusCode.CANCELLED, "Interceptor threw an error", exception)
                     cause = GrpcStatusException(status)
                 }
+            } finally {
+                responses.close(cause = cause)
             }
 
-            responses.close(cause = cause)
         },
         onReady = {
             ready.onReady()
