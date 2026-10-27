@@ -92,7 +92,7 @@ Each method of `GrpcClientControlService` takes the `call_id` of the scenario th
 | Method                                              | What it does                                                                                                                                                             |
 |-----------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `ConfigureScenario`                                 | Registers a scenario and its configuration (see [What a scenario can configure](#what-a-scenario-can-configure)). Call it before the data-plane call starts. A `call_id` accepts one configuration only. |
-| `AwaitEvent`                                        | Blocks until the server records the requested event of the scenario, for example the second `RESPONSE_MESSAGE_SENT`, and returns it. A test uses it to wait until the call reaches a given point. |
+| `AwaitEvent`                                        | Blocks until the server records the requested event of the scenario, for example the second `RESPONSE_MESSAGE_SENT`, and returns it. A test uses it to wait until the call reaches a given point. With more than one event type, it returns the first event that matches one of them, for example `CALL_CLOSED` or `CLIENT_CANCELLED`. |
 | `ReleaseBarrier`                                    | Releases one barrier of the scenario, so a data-plane call paused at it continues.                                                                                      |
 | `AllowInboundReads`                                 | For a scenario with manual inbound demand: lets the server read the given number of additional request messages. Until then, the requests stay unread, so a test can check how the client handles backpressure. Needs an active data-plane call. |
 | `GetTrace`                                          | Returns the call trace: all events recorded for the scenario so far, in order.                                                                                          |
@@ -152,7 +152,8 @@ The server records each step of a scenario's data-plane call as a `CallEvent`:
 - Response readiness: `RESPONSE_DELIVERY_BLOCKED`, `RESPONSE_DELIVERY_READY`.
 
 Each event has a one-based occurrence for each type, and `AwaitEvent` selects an event by its type and
-occurrence. `client_control.proto` describes each event type and the data that it has.
+occurrence. To wait for the end of a call that either side can end, give `AwaitEvent` both
+`CALL_CLOSED` and `CLIENT_CANCELLED`. `client_control.proto` describes each event type and the data that it has.
 
 ### Errors
 
@@ -192,7 +193,7 @@ control.configureScenario(ConfigureScenarioRequest {
 val responses = async { testService.streamingOutputCall(request).toList() }
 
 // Returns once the server has sent the first response; it is now paused before the second one.
-control.awaitEvent(AwaitEventRequest { callId = id; event = EventType.RESPONSE_MESSAGE_SENT; occurrence = 1u })
+control.awaitEvent(AwaitEventRequest { callId = id; events = listOf(EventType.RESPONSE_MESSAGE_SENT); occurrence = 1u })
 // ... assert on the client's state here ...
 control.releaseBarrier(ReleaseBarrierRequest { callId = id; barrier = BarrierType.SEND_RESPONSE; occurrence = 2u })
 
@@ -243,7 +244,7 @@ control.configureScenario(ConfigureScenarioRequest {
 testService.streamingOutputCall(request).first()
 
 // The cancellation reaches the server asynchronously, so wait for it.
-control.awaitEvent(AwaitEventRequest { callId = id; event = EventType.CLIENT_CANCELLED; occurrence = 1u })
+control.awaitEvent(AwaitEventRequest { callId = id; events = listOf(EventType.CLIENT_CANCELLED); occurrence = 1u })
 control.releaseBarrier(ReleaseBarrierRequest { callId = id; barrier = BarrierType.SEND_RESPONSE; occurrence = 2u })
 
 val trace = control.getTrace(GetTraceRequest { callId = id })

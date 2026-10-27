@@ -38,7 +38,7 @@ internal class GrpcClientControlService(
 
     override fun awaitEvent(request: AwaitEventRequest, responseObserver: StreamObserver<CallEvent>) {
         respond(responseObserver) {
-            registry.awaitEvent(request.callId, request.event, request.occurrence)
+            registry.awaitEvent(request.callId, request.eventsList.toSet(), request.occurrence)
         }
     }
 

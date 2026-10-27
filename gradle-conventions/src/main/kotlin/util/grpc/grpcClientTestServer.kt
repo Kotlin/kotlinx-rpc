@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.process.ProcessForkOptions
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeSimulatorTest
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 import util.withBackgroundTask
 import java.net.InetAddress
@@ -62,6 +63,8 @@ fun Task.withGrpcClientTestServer() {
 
     doFirst("passGrpcTestServerPort") {
         when (this) {
+            // `simctl spawn` passes only the variables with the `SIMCTL_CHILD_` prefix to the simulator process
+            is KotlinNativeSimulatorTest -> environment("SIMCTL_CHILD_$PORT_ENV", port)
             is KotlinNativeTest -> environment(PORT_ENV, port)
             // ProcessForkOptions covers KotlinJvmTest
             is ProcessForkOptions -> environment(PORT_ENV, port)

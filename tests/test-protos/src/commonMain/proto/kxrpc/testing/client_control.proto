@@ -158,8 +158,10 @@ enum BarrierType {
 message AwaitEventRequest {
   string call_id = 1;
 
-  // Event type to wait for. Must not be EVENT_TYPE_UNSPECIFIED.
-  EventType event = 2;
+  // Event types to wait for. The server returns the first recorded event that
+  // has one of these types and the given occurrence. Must not be empty or
+  // contain EVENT_TYPE_UNSPECIFIED.
+  repeated EventType events = 2;
 
   uint32 occurrence = 3;
 }
@@ -229,7 +231,7 @@ message CallEvent {
   uint32 occurrence = 3;
 
   // Exact bytes of Payload.body for a REQUEST_MESSAGE_RECEIVED event whose
-  // message is a grpc.testing StreamingInputCallRequest or
+  // message is a grpc.testing SimpleRequest, StreamingInputCallRequest, or
   // StreamingOutputCallRequest. Empty for other events and messages.
   bytes request_payload = 4;
 

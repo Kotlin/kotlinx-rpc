@@ -64,7 +64,7 @@ internal class ScenarioTestFixture : AutoCloseable {
         control.awaitEvent(
             AwaitEventRequest.newBuilder()
                 .setCallId(callId)
-                .setEvent(type)
+                .addEvents(type)
                 .setOccurrence(occurrence)
                 .build()
         )

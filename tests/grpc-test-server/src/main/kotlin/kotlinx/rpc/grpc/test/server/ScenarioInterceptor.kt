@@ -15,6 +15,7 @@ import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
 import io.grpc.ServerInterceptor
 import io.grpc.Status
+import io.grpc.testing.integration.Messages.SimpleRequest
 import io.grpc.testing.integration.Messages.StreamingInputCallRequest
 import io.grpc.testing.integration.Messages.StreamingOutputCallRequest
 import java.nio.charset.StandardCharsets.US_ASCII
@@ -454,6 +455,7 @@ private fun Status.toTraceStatus(): GrpcStatus {
 
 /** The payload body to record with [EventType.REQUEST_MESSAGE_RECEIVED], or `null` for messages without a payload. */
 private fun Any.interopPayload(): ByteString? = when (this) {
+    is SimpleRequest -> payload.body
     is StreamingInputCallRequest -> payload.body
     is StreamingOutputCallRequest -> payload.body
     else -> null

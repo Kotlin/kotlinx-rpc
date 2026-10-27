@@ -168,10 +168,16 @@ internal class CallScenarioRegistry(
         scenario(callId).grantInboundDemand(messageCount)
     }
 
-    fun awaitEvent(callId: String, type: EventType, occurrence: Int): CallEvent {
-        requireKnownEvent(type)
+    /**
+     * Waits for the first recorded event that has one of [types] and the one-based [occurrence] of its type.
+     *
+     * For example, `setOf(CALL_CLOSED, CLIENT_CANCELLED)` with occurrence 1 returns when the call ends either way.
+     */
+    fun awaitEvent(callId: String, types: Set<EventType>, occurrence: Int): CallEvent {
+        require(types.isNotEmpty()) { "event types must not be empty" }
+        types.forEach(::requireKnownEvent)
         require(occurrence > 0) { "event occurrence must be one-based" }
-        return scenario(callId).awaitEvent(type, occurrence, waitTimeout)
+        return scenario(callId).awaitEvent(types, occurrence, waitTimeout)
     }
 
     fun releaseBarrier(callId: String, type: BarrierType, occurrence: Int) {
@@ -525,9 +531,10 @@ private class ScenarioState(
         return event
     }
 
-    fun awaitEvent(type: EventType, occurrence: Int, timeout: Duration): CallEvent = lock.withLock {
-        await(timeout, "event $type occurrence $occurrence", controlWaiter = true) {
-            events.firstOrNull { it.type == type && it.occurrence == occurrence }
+    fun awaitEvent(types: Set<EventType>, occurrence: Int, timeout: Duration): CallEvent = lock.withLock {
+        val awaited = types.joinToString(separator = " or ", prefix = "event ", postfix = " occurrence $occurrence")
+        await(timeout, awaited, controlWaiter = true) {
+            events.firstOrNull { it.type in types && it.occurrence == occurrence }
         }
     }
 

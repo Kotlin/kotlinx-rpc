@@ -47,7 +47,7 @@ class CallScenarioRegistryTest {
         val executor = Executors.newSingleThreadExecutor()
         try {
             val waiter = executor.submit<CallEvent> {
-                registry.awaitEvent("call-2", EventType.REQUEST_MESSAGE_RECEIVED, 2)
+                registry.awaitEvent("call-2", setOf(EventType.REQUEST_MESSAGE_RECEIVED), 2)
             }
 
             registry.recordEvent("call-2", EventType.REQUEST_MESSAGE_RECEIVED)
@@ -58,6 +58,44 @@ class CallScenarioRegistryTest {
             assertEquals(2, event.occurrence)
         } finally {
             executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun eventWaiterForSeveralTypesCompletesWithFirstMatchingEvent() {
+        val registry = registry()
+        registry.configure(scenarioRequest("one-of"))
+        registry.callAccepted("one-of")
+        val terminalEvents = setOf(EventType.CALL_CLOSED, EventType.CLIENT_CANCELLED)
+
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val waiter = executor.submit<CallEvent> {
+                registry.awaitEvent("one-of", terminalEvents, 1)
+            }
+            registry.awaitWaiterCount("one-of", 1)
+
+            val cancelled = registry.clientCancelled("one-of")
+
+            assertEquals(cancelled, waiter.get(1, TimeUnit.SECONDS))
+            assertEquals(cancelled, registry.awaitEvent("one-of", terminalEvents, 1))
+            assertEquals(0, registry.getDiagnostics("one-of").controlWaiterCount)
+        } finally {
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun rejectsInvalidEventWait() {
+        val registry = registry()
+        registry.configure(scenarioRequest("invalid-wait"))
+
+        assertFailsWith<IllegalArgumentException> { registry.awaitEvent("invalid-wait", emptySet(), 1) }
+        assertFailsWith<IllegalArgumentException> {
+            registry.awaitEvent("invalid-wait", setOf(EventType.CALL_CLOSED, EventType.EVENT_TYPE_UNSPECIFIED), 1)
+        }
+        assertFailsWith<IllegalArgumentException> {
+            registry.awaitEvent("invalid-wait", setOf(EventType.CALL_CLOSED), 0)
         }
     }
 
@@ -89,7 +127,7 @@ class CallScenarioRegistryTest {
         try {
             val waiter = executor.submit<ScenarioDiscardedException> {
                 assertFailsWith {
-                    registry.awaitEvent("call-4", EventType.CALL_CLOSED, 1)
+                    registry.awaitEvent("call-4", setOf(EventType.CALL_CLOSED), 1)
                 }
             }
 
@@ -256,7 +294,7 @@ class CallScenarioRegistryTest {
         val executor = Executors.newSingleThreadExecutor()
         try {
             val waiter = executor.submit<CallEvent> {
-                registry.awaitEvent("diagnostics", EventType.CALL_CLOSED, 1)
+                registry.awaitEvent("diagnostics", setOf(EventType.CALL_CLOSED), 1)
             }
             registry.awaitWaiterCount("diagnostics", 1)
 
