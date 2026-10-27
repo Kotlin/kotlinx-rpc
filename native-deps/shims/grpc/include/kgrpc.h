@@ -96,6 +96,14 @@ void kgrpc_server_set_batch_method_allocator(
  */
 bool kgrpc_metadata_array_append(grpc_metadata_array *array, grpc_slice key, grpc_slice value);
 
+/**
+ * Wraps grpc_call_is_trailers_only(), which has no extern "C" declaration.
+ *
+ * @return true if the server sent no initial metadata to the client call: a trailers-only response,
+ *         or a stream that ended before the headers. Valid after the RECV_INITIAL_METADATA op completed.
+ */
+bool kgrpc_call_is_trailers_only(const grpc_call *call);
+
 #ifdef __cplusplus
 }
 #endif

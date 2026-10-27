@@ -2,6 +2,7 @@
 
 #include <kgrpc.h>
 #include "src/core/lib/iomgr/iomgr.h"
+#include "src/core/lib/surface/call.h"
 #include "src/core/server/server.h"
 #include "grpc/support/string_util.h"
 
@@ -64,6 +65,10 @@ bool kgrpc_metadata_array_append(grpc_metadata_array *array, grpc_slice key, grp
     };
     array->metadata[array->count++] = entry;
     return true;
+}
+
+bool kgrpc_call_is_trailers_only(const grpc_call *call) {
+    return grpc_call_is_trailers_only(call);
 }
 
 }
