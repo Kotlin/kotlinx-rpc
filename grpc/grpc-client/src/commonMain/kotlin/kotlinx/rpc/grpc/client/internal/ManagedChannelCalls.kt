@@ -4,21 +4,14 @@
 
 package kotlinx.rpc.grpc.client.internal
 
-import io.grpc.Channel
 import kotlinx.rpc.grpc.client.GrpcCallOptions
-import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.coroutines.CoroutineContext
 
 @InternalRpcApi
-public actual typealias GrpcChannel = Channel
-
-@InternalRpcApi
-public actual fun <RequestT, ResponseT> GrpcChannel.createCall(
+public expect fun <RequestT, ResponseT> ManagedChannel.createCall(
     methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,
     coroutineContext: CoroutineContext,
-): ClientCall<RequestT, ResponseT> {
-    return this.newCall(methodDescriptor, callOptions.toJvm(coroutineContext))
-}
+): ClientCall<RequestT, ResponseT>
