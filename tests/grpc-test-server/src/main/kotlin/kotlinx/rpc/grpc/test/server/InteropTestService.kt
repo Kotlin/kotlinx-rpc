@@ -27,10 +27,10 @@ import java.util.concurrent.TimeUnit
  * The official gRPC interop `TestService`, ported from `TestServiceImpl` in the
  * [grpc-java v1.81.0 interop tests](https://github.com/grpc/grpc-java/tree/v1.81.0/interop-testing).
  *
- * [responseScheduler] and [responseSender] send the streaming responses at the requested intervals. For scenarios with response
- * readiness, the server also sends a response only while the client is ready (see [ResponseReadinessGate]). For
- * scenarios with manual inbound demand, request-streaming methods read a request only after the test grants demand
- * (see [enableManualInboundDemandIfConfigured]).
+ * [responseScheduler] and [responseSender] send the streaming responses at the requested intervals. For scenarios
+ * with response readiness, the server also sends a response only while the client is ready (see
+ * [ResponseReadinessGate]). For scenarios with manual inbound demand, request-streaming methods read a request only
+ * after the test grants demand (see [enableManualInboundDemandIfConfigured]).
  *
  * `UnimplementedCall` uses the generated base implementation, which returns `UNIMPLEMENTED`.
  */
@@ -293,11 +293,15 @@ internal class InteropTestService(
          */
         @Synchronized
         private fun dispatchChunk() {
-            if (cancelled) return
+            if (cancelled) {
+                return
+            }
             try {
                 val chunk = chunks.first()
                 // Readiness can change during the interval of the chunk, so the dispatcher checks it again.
-                if (isHeldBack(chunk)) return
+                if (isHeldBack(chunk)) {
+                    return
+                }
                 chunks.removeFirst()
                 if (chunk === COMPLETION_CHUNK) {
                     responseObserver.onCompleted()
@@ -326,8 +330,12 @@ internal class InteropTestService(
          * - [readinessGate] holds back the first chunk.
          */
         private fun scheduleNextChunk() {
-            if (scheduled || chunks.isEmpty() || responseSender.isShutdown) return
-            if (isHeldBack(chunks.first())) return
+            if (scheduled || chunks.isEmpty() || responseSender.isShutdown) {
+                return
+            }
+            if (isHeldBack(chunks.first())) {
+                return
+            }
             scheduled = true
             responseScheduler.schedule(
                 { responseSender.execute(::dispatch) },

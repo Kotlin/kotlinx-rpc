@@ -241,7 +241,14 @@ class TerminalMetadataAndInvalidResponseCountTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(
+                if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                    0
+                } else {
+                    2
+                },
+                responseCount,
+            )
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }
@@ -285,7 +292,14 @@ class TerminalMetadataAndInvalidResponseCountTest {
             fixture.awaitEvent(callId, EventType.CALL_CLOSED)
             val responseCount = fixture.trace(callId).eventsList
                 .count { it.type == EventType.RESPONSE_MESSAGE_SENT }
-            assertEquals(if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) 0 else 2, responseCount)
+            assertEquals(
+                if (invalidCount == InvalidResponseCount.OMIT_RESPONSE) {
+                    0
+                } else {
+                    2
+                },
+                responseCount,
+            )
             fixture.assertNoLeaks(callId)
             fixture.discard(callId)
         }

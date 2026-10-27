@@ -144,7 +144,9 @@ internal class CallScenarioRegistry(
         val endpoint = InboundDemandEndpoint(requestMessages)
         val pendingDemand = scenario.registerInboundDemand(endpoint)
         try {
-            if (pendingDemand > 0) endpoint.grant(pendingDemand)
+            if (pendingDemand > 0) {
+                endpoint.grant(pendingDemand)
+            }
         } catch (error: Throwable) {
             scenario.unregisterInboundDemand(endpoint)
             endpoint.close()
@@ -247,7 +249,9 @@ internal class CallScenarioRegistry(
     private fun ByteString.isUsAscii(): Boolean = all { byte -> byte <= 0x7f }
 
     private fun validateTerminalBehavior(request: ConfigureScenarioRequest) {
-        if (!request.hasTerminalBehavior()) return
+        if (!request.hasTerminalBehavior()) {
+            return
+        }
 
         val terminal = request.terminalBehavior
         require(terminal.hasStatus()) { "terminal behavior must specify a status" }
@@ -488,7 +492,11 @@ private class ScenarioState(
      */
     fun recordEventIfCallActive(type: EventType): CallEvent? = lock.withLock {
         checkNotDiscarded()
-        if (activeCallCount == 0) null else recordEventLocked(type)
+        if (activeCallCount == 0) {
+            null
+        } else {
+            recordEventLocked(type)
+        }
     }
 
     private fun recordEventLocked(
@@ -551,7 +559,9 @@ private class ScenarioState(
     }
 
     fun awaitBarrierIfConfigured(key: BarrierKey, timeout: Duration) = lock.withLock {
-        if (key in configuredBarriers) awaitReleasedLocked(key, timeout)
+        if (key in configuredBarriers) {
+            awaitReleasedLocked(key, timeout)
+        }
     }
 
     private fun checkConfigured(key: BarrierKey) {
@@ -562,7 +572,11 @@ private class ScenarioState(
 
     private fun awaitReleasedLocked(key: BarrierKey, timeout: Duration) {
         await(timeout, key.toString(), controlWaiter = false) {
-            if (key in releasedBarriers) Unit else null
+            if (key in releasedBarriers) {
+                Unit
+            } else {
+                null
+            }
         }
     }
 
@@ -632,7 +646,9 @@ private class ScenarioState(
         result: () -> T?,
     ): T {
         waiterCount++
-        if (controlWaiter) controlWaiterCount++
+        if (controlWaiter) {
+            controlWaiterCount++
+        }
         changed.signalAll()
         try {
             var remainingNanos = timeout.toNanos()
@@ -646,13 +662,17 @@ private class ScenarioState(
             }
         } finally {
             waiterCount--
-            if (controlWaiter) controlWaiterCount--
+            if (controlWaiter) {
+                controlWaiterCount--
+            }
             changed.signalAll()
         }
     }
 
     private fun checkNotDiscarded() {
-        if (discarded) throw ScenarioDiscardedException(callId)
+        if (discarded) {
+            throw ScenarioDiscardedException(callId)
+        }
     }
 
     /**

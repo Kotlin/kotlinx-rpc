@@ -17,7 +17,11 @@ internal class EchoServiceImpl : EchoServiceGrpc.EchoServiceImplBase() {
     }
 
     override fun serverStreamingEcho(request: EchoRequest, responseObserver: StreamObserver<EchoResponse>) {
-        val count = if (request.hasServerStreamReps()) request.serverStreamReps else 5
+        val count = if (request.hasServerStreamReps()) {
+            request.serverStreamReps
+        } else {
+            5
+        }
         repeat(count) {
             responseObserver.onNext(response(request.message))
         }
@@ -66,7 +70,9 @@ internal class EchoServiceImpl : EchoServiceGrpc.EchoServiceImplBase() {
     }
 
     private fun sleep(timeoutMillis: Int) {
-        if (timeoutMillis == 0) return
+        if (timeoutMillis == 0) {
+            return
+        }
         Thread.sleep(Integer.toUnsignedLong(timeoutMillis))
     }
 }

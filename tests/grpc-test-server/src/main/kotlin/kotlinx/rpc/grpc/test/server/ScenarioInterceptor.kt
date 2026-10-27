@@ -65,7 +65,9 @@ internal class ScenarioInterceptor(
         next: ServerCallHandler<ReqT, RespT>,
     ): ServerCall.Listener<ReqT> {
         val callIds = headers.getAll(TEST_CALL_ID_METADATA_KEY)?.toList().orEmpty()
-        if (callIds.isEmpty()) return next.startCall(call, headers)
+        if (callIds.isEmpty()) {
+            return next.startCall(call, headers)
+        }
 
         if (callIds.size != 1 || callIds.single().isBlank()) {
             return reject(
@@ -163,7 +165,9 @@ internal class ScenarioInterceptor(
          * @return `true` if the call closed, so the caller must not start the service.
          */
         fun closeBeforeStartIfConfigured(): Boolean {
-            if (configuration.terminalStage() != TerminalStage.BEFORE_INITIAL_METADATA) return false
+            if (configuration.terminalStage() != TerminalStage.BEFORE_INITIAL_METADATA) {
+                return false
+            }
             closeConfiguredTerminal()
             return true
         }
@@ -173,13 +177,17 @@ internal class ScenarioInterceptor(
          * headers.
          */
         override fun sendHeaders(headers: Metadata) {
-            if (terminated.get()) return
+            if (terminated.get()) {
+                return
+            }
             try {
                 val outgoingHeaders = headers.withConfigured(configuration.initialMetadataList)
                 val traceMetadata = outgoingHeaders.toMetadataEntries()
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_INITIAL_HEADERS, 1)
                 val closeAfterHeaders = synchronized(lifecycleLock) {
-                    if (terminated.get()) return
+                    if (terminated.get()) {
+                        return
+                    }
                     super.sendHeaders(outgoingHeaders)
                     initialHeadersSent = true
                     registry.recordEvent(
@@ -189,7 +197,9 @@ internal class ScenarioInterceptor(
                     )
                     configuration.terminalStage() == TerminalStage.AFTER_INITIAL_METADATA
                 }
-                if (closeAfterHeaders) closeConfiguredTerminal()
+                if (closeAfterHeaders) {
+                    closeConfiguredTerminal()
+                }
             } catch (error: Exception) {
                 fail(error)
             }
@@ -200,19 +210,25 @@ internal class ScenarioInterceptor(
          * messages.
          */
         override fun sendMessage(message: RespT) {
-            if (terminated.get()) return
+            if (terminated.get()) {
+                return
+            }
             val occurrence = responseCount + 1
             try {
                 registry.awaitBarrierIfConfigured(callId, BarrierType.SEND_RESPONSE, occurrence)
                 val closeAfterMessage = synchronized(lifecycleLock) {
-                    if (terminated.get()) return
+                    if (terminated.get()) {
+                        return
+                    }
                     super.sendMessage(message)
                     responseCount = occurrence
                     registry.recordEvent(callId, EventType.RESPONSE_MESSAGE_SENT)
                     configuration.terminalStage() == TerminalStage.AFTER_RESPONSE_MESSAGES &&
                         responseCount == configuration.terminalBehavior.responseMessageCount
                 }
-                if (closeAfterMessage) closeConfiguredTerminal()
+                if (closeAfterMessage) {
+                    closeConfiguredTerminal()
+                }
             } catch (error: Exception) {
                 fail(error)
             }
@@ -226,7 +242,9 @@ internal class ScenarioInterceptor(
          * fails with `INTERNAL`, because the scenario doesn't match the call.
          */
         override fun close(status: Status, trailers: Metadata) {
-            if (terminated.get()) return
+            if (terminated.get()) {
+                return
+            }
             try {
                 val terminalStage = configuration.terminalStage()
                 // Without explicit headers, grpc-java sends a trailers-only response, and the configured initial
@@ -235,7 +253,9 @@ internal class ScenarioInterceptor(
                     (configuration.initialMetadataCount > 0 || terminalStage == TerminalStage.AFTER_INITIAL_METADATA)
                 ) {
                     sendHeaders(Metadata())
-                    if (terminated.get()) return
+                    if (terminated.get()) {
+                        return
+                    }
                 }
 
                 when (terminalStage) {
@@ -270,10 +290,14 @@ internal class ScenarioInterceptor(
             barrier: BarrierType,
             requestPayload: ByteString? = null,
         ): Boolean {
-            if (terminated.get()) return false
+            if (terminated.get()) {
+                return false
+            }
             return try {
                 val event = synchronized(lifecycleLock) {
-                    if (terminated.get()) return false
+                    if (terminated.get()) {
+                        return false
+                    }
                     if (type == EventType.REQUEST_MESSAGE_RECEIVED) {
                         registry.recordRequestMessage(callId, requestPayload)
                     } else {
@@ -301,7 +325,9 @@ internal class ScenarioInterceptor(
          */
         fun clientCancelled() {
             synchronized(lifecycleLock) {
-                if (!terminated.compareAndSet(false, true)) return
+                if (!terminated.compareAndSet(false, true)) {
+                    return
+                }
                 runCatching { registry.clientCancelled(callId) }.throwIfError()
             }
         }
@@ -337,7 +363,9 @@ internal class ScenarioInterceptor(
             trailers: Metadata,
             includeConfiguredTrailers: Boolean = true,
         ) {
-            if (terminated.get()) return
+            if (terminated.get()) {
+                return
+            }
             val (outgoingStatus, outgoingTrailers) = try {
                 registry.awaitBarrierIfConfigured(callId, BarrierType.CLOSE_CALL, 1)
                 status to if (includeConfiguredTrailers) {
@@ -351,7 +379,9 @@ internal class ScenarioInterceptor(
             val traceMetadata = outgoingTrailers.toMetadataEntries()
             val traceStatus = outgoingStatus.toTraceStatus()
             synchronized(lifecycleLock) {
-                if (!terminated.compareAndSet(false, true)) return
+                if (!terminated.compareAndSet(false, true)) {
+                    return
+                }
                 try {
                     super.close(outgoingStatus, outgoingTrailers)
                 } finally {
@@ -406,7 +436,11 @@ internal class ScenarioInterceptor(
 }
 
 private fun ConfigureScenarioRequest.terminalStage(): TerminalStage? {
-    return if (hasTerminalBehavior()) terminalBehavior.stage else null
+    return if (hasTerminalBehavior()) {
+        terminalBehavior.stage
+    } else {
+        null
+    }
 }
 
 /** Returns a copy of this metadata with [entries] added at the end, in their order and with duplicate keys. */
@@ -435,7 +469,9 @@ private fun Metadata.toMetadataEntries(): List<MetadataEntry> {
     return buildList(serialized.size / 2) {
         for (index in serialized.indices step 2) {
             val key = String(serialized[index], US_ASCII)
-            if (key.startsWith(':')) continue
+            if (key.startsWith(':')) {
+                continue
+            }
             add(
                 MetadataEntry.newBuilder()
                     .setKey(key)

@@ -23,7 +23,9 @@ internal fun ResponseReadinessGate.Companion.createIfConfigured(
     cancelResponses: () -> Unit,
 ): ResponseReadinessGate? {
     val callId = TEST_CALL_ID_CONTEXT_KEY.get() ?: return null
-    if (!registry.configuration(callId).flowControl.respectResponseReadiness) return null
+    if (!registry.configuration(callId).flowControl.respectResponseReadiness) {
+        return null
+    }
     val serverObserver = responseObserver as? ServerCallStreamObserver<*>
         ?: error("the response observer of scenario '$callId' isn't a ServerCallStreamObserver")
     return ResponseReadinessGate(
@@ -100,12 +102,18 @@ internal class ResponseReadinessGate(
      * ended. After `false`, the dispatcher stops and waits for [resumeResponses].
      */
     fun canDeliverResponse(): Boolean = synchronized(lock) {
-        if (state == State.ENDED) return false
+        if (state == State.ENDED) {
+            return false
+        }
         if (!responseObserver.isReady) {
-            if (state == State.FLOWING) pauseUnsafe()
+            if (state == State.FLOWING) {
+                pauseUnsafe()
+            }
             // Readiness can change while the gate records the pause. If the client is ready again, the gate lets
             // the response through now and doesn't wait for a later ready callback.
-            if (state == State.ENDED || !responseObserver.isReady) return false
+            if (state == State.ENDED || !responseObserver.isReady) {
+                return false
+            }
         }
         resumeUnsafe()
         state != State.ENDED
@@ -118,7 +126,9 @@ internal class ResponseReadinessGate(
      */
     private fun onReady() {
         val resumed = synchronized(lock) { resumeUnsafe() }
-        if (resumed) resumeResponses()
+        if (resumed) {
+            resumeResponses()
+        }
     }
 
     /** Ends delivery and drops the queued responses of the dispatcher. */
@@ -135,7 +145,9 @@ internal class ResponseReadinessGate(
     /** Changes the state from [State.FLOWING] to [State.PAUSED]. The caller must hold [lock]. */
     private fun pauseUnsafe() {
         state = State.PAUSED
-        if (!recordEvent(EventType.RESPONSE_DELIVERY_BLOCKED)) state = State.ENDED
+        if (!recordEvent(EventType.RESPONSE_DELIVERY_BLOCKED)) {
+            state = State.ENDED
+        }
     }
 
     /**
@@ -145,9 +157,13 @@ internal class ResponseReadinessGate(
      * @return `true` if a pause ended, so the caller must restart the dispatcher.
      */
     private fun resumeUnsafe(): Boolean {
-        if (state != State.PAUSED) return false
+        if (state != State.PAUSED) {
+            return false
+        }
         state = State.FLOWING
-        if (!recordEvent(EventType.RESPONSE_DELIVERY_READY)) state = State.ENDED
+        if (!recordEvent(EventType.RESPONSE_DELIVERY_READY)) {
+            state = State.ENDED
+        }
         return state == State.FLOWING
     }
 

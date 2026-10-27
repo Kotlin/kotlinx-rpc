@@ -70,7 +70,13 @@ internal class InvalidResponseCountTestService(
         }
 
         // For a unary call, the server requests one message more than expected, so it can find a second request.
-        call.request(if (clientStreaming) 1 else 2)
+        call.request(
+            if (clientStreaming) {
+                1
+            } else {
+                2
+            }
+        )
         return InvalidResponseCountCallListener(call, count, clientStreaming)
     }
 
@@ -87,7 +93,9 @@ internal class InvalidResponseCountTestService(
             responsePayload = EchoResponse.newBuilder()
                 .setPayload(message.payload)
                 .build()
-            if (clientStreaming) call.request(1)
+            if (clientStreaming) {
+                call.request(1)
+            }
         }
 
         override fun onHalfClose() {

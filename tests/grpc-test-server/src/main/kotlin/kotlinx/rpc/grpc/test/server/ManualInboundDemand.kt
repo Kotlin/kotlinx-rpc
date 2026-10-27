@@ -19,7 +19,9 @@ internal fun enableManualInboundDemandIfConfigured(
     responseObserver: StreamObserver<*>,
 ) {
     val callId = TEST_CALL_ID_CONTEXT_KEY.get() ?: return
-    if (!registry.configuration(callId).flowControl.manualInboundDemand) return
+    if (!registry.configuration(callId).flowControl.manualInboundDemand) {
+        return
+    }
     val serverObserver = responseObserver as? ServerCallStreamObserver<*>
         ?: error("the response observer of scenario '$callId' isn't a ServerCallStreamObserver")
 

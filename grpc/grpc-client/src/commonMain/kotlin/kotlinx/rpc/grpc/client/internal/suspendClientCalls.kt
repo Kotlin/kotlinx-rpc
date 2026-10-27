@@ -21,7 +21,6 @@ import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcMetadata
@@ -32,7 +31,9 @@ import kotlinx.rpc.grpc.cause
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.copy
 import kotlinx.rpc.grpc.client.plus
+import kotlinx.rpc.grpc.copy
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
@@ -161,11 +162,13 @@ private fun <Request, Response> GrpcClient.rpcImpl(
     headers: GrpcMetadata,
     request: Flow<Request>,
 ): Flow<Response> = flow {
+    // Interceptors and call credentials mutate the headers and options of their call scope,
+    // so every collection works on its own copies and never changes the caller's instances.
     val clientCallScope = ClientCallScopeImpl(
         client = this@rpcImpl,
         method = descriptor,
-        requestHeaders = headers,
-        callOptions = callOptions,
+        requestHeaders = headers.copy(),
+        callOptions = callOptions.copy(),
     )
     // We must wrap the proceeded flow, because if users try to use
     // retry or retryWhen on a returned flow, it must produce a new call scope,
@@ -267,7 +270,8 @@ private class ClientCallScopeImpl<Request, Response>(
                             call.sendMessage(message)
                         }
                     } else {
-                        call.sendMessage(request.single())
+                        // Interceptors can replace the request flow, so enforce exactly one request.
+                        call.sendMessage(request.singleOrStatus("request", method))
                     }
                     call.halfClose()
                 } catch (ex: Exception) {
