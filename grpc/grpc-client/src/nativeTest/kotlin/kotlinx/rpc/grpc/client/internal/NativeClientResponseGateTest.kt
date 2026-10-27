@@ -80,7 +80,11 @@ class NativeClientResponseGateTest {
         private val gate = NativeClientResponseGate<String>(
             onHeaders = { headers ->
                 val marker = headers.getAll(ORDER_KEY).singleOrNull()
-                events += if (marker == null) "headers" else "headers:$marker"
+                if (marker == null) {
+                    events += "headers"
+                } else {
+                    events += "headers:$marker"
+                }
             },
             onMessage = { message -> events += "message:$message" },
         )
@@ -88,7 +92,9 @@ class NativeClientResponseGateTest {
         /** Completes the initial-metadata operation. Without [marker], the headers are empty. */
         fun headers(marker: String? = null) {
             val headers = GrpcMetadata()
-            if (marker != null) headers.append(ORDER_KEY, marker)
+            if (marker != null) {
+                headers.append(ORDER_KEY, marker)
+            }
             gate.initialMetadataReceived(headers)
         }
 

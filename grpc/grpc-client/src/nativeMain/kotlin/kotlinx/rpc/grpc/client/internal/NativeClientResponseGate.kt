@@ -28,7 +28,9 @@ internal class NativeClientResponseGate<Response>(
     /** Handles completion of the C-core initial-metadata operation. */
     internal fun initialMetadataReceived(headers: GrpcMetadata) {
         // Defensive: onHeaders is at-most-once.
-        if (headersDelivered) return
+        if (headersDelivered) {
+            return
+        }
         deliverHeaders(headers)
     }
 
@@ -50,7 +52,9 @@ internal class NativeClientResponseGate<Response>(
      * is one. Call it immediately before the terminal callback.
      */
     internal fun deliverPendingMessage() {
-        if (!headersDelivered && pendingMessage != null) deliverHeaders(GrpcMetadata())
+        if (!headersDelivered && pendingMessage != null) {
+            deliverHeaders(GrpcMetadata())
+        }
     }
 
     private fun deliverHeaders(headers: GrpcMetadata) {

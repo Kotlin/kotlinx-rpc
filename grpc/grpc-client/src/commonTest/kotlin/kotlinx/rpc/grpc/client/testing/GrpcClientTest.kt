@@ -64,7 +64,9 @@ internal suspend fun executeGrpcClientTest(
     var testFailure: Throwable? = null
 
     try {
-        if (configureScenario) fixture.configureScenario(barriers, scenario)
+        if (configureScenario) {
+            fixture.configureScenario(barriers, scenario)
+        }
         fixture.block()
     } catch (error: Throwable) {
         testFailure = error
@@ -86,7 +88,9 @@ internal fun combineTestAndCleanupFailures(
     testFailure: Throwable?,
     cleanupFailure: Throwable?,
 ): Throwable? {
-    if (testFailure == null) return cleanupFailure
+    if (testFailure == null) {
+        return cleanupFailure
+    }
     cleanupFailure?.let(testFailure::addSuppressed)
     return testFailure
 }

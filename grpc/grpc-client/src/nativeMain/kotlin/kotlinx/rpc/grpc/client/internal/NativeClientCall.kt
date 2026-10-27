@@ -591,7 +591,9 @@ internal class NativeClientCall<Request, Response>(
         }) {
             // C-core also completes RECV_INITIAL_METADATA with an empty array when the server sent no
             // headers. Like grpc-java, the listener gets no onHeaders then.
-            if (kgrpc_call_is_trailers_only(raw)) return@runBatch
+            if (kgrpc_call_is_trailers_only(raw)) {
+                return@runBatch
+            }
             // copy the metadata before `cleanup` destroys the array; the gate decides delivery.
             onInitialMetadataReceived(GrpcMetadata(recvInitialMetadata))
         }

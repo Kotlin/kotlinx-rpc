@@ -51,7 +51,9 @@ internal fun serverBarrier(type: BarrierType, occurrence: UInt = 1U): Barrier {
 
 /** Renders the server trace for failure output, with one `sequence: type occurrence n` line for each event. */
 internal fun CallTrace.render(): String {
-    if (events.isEmpty()) return "  <empty>"
+    if (events.isEmpty()) {
+        return "  <empty>"
+    }
     return events.joinToString(separator = "\n") { event ->
         "  ${event.sequence}: ${event.type} occurrence ${event.occurrence}"
     }
@@ -215,7 +217,9 @@ internal fun successfulServerStreamingEvents(responseCount: Int): List<ExpectedS
     add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
     add(ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED))
     add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
-    if (responseCount > 0) add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+    if (responseCount > 0) {
+        add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+    }
     addOccurrences(EventType.RESPONSE_MESSAGE_SENT, responseCount)
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }
@@ -268,7 +272,9 @@ internal fun successfulPingPongEvents(exchangeCount: Int): List<ExpectedServerEv
     repeat(exchangeCount) { index ->
         val occurrence = (index + 1).toUInt()
         add(ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED, occurrence))
-        if (index == 0) add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+        if (index == 0) {
+            add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+        }
         add(ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence))
     }
     add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
@@ -329,7 +335,9 @@ internal fun successfulHalfDuplexEvents(
     add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
     addOccurrences(EventType.REQUEST_MESSAGE_RECEIVED, requestCount)
     add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
-    if (responseCount > 0) add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+    if (responseCount > 0) {
+        add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
+    }
     addOccurrences(EventType.RESPONSE_MESSAGE_SENT, responseCount)
     add(ExpectedServerEvent(EventType.CALL_CLOSED))
 }

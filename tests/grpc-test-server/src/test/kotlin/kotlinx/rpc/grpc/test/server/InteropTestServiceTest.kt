@@ -488,12 +488,20 @@ class InteropTestServiceTest {
 
     private fun ScenarioTestFixture.testClient(callId: String? = null): TestServiceGrpc.TestServiceBlockingStub {
         val stub = TestServiceGrpc.newBlockingStub(dataChannel)
-        return if (callId == null) stub else stub.withCallId(callId)
+        return if (callId == null) {
+            stub
+        } else {
+            stub.withCallId(callId)
+        }
     }
 
     private fun ScenarioTestFixture.asyncTestClient(callId: String? = null): TestServiceGrpc.TestServiceStub {
         val stub = TestServiceGrpc.newStub(dataChannel)
-        return if (callId == null) stub else stub.withCallId(callId)
+        return if (callId == null) {
+            stub
+        } else {
+            stub.withCallId(callId)
+        }
     }
 
     private fun ScenarioTestFixture.startStreamingOutputCall(

@@ -45,7 +45,9 @@ class GrpcClientLifecycleTest {
                 assertServerTrace(successfulUnaryEvents())
             }
         } finally {
-            if (!barrierReleased) releaseServerBarrier(BarrierType.CLOSE_CALL)
+            if (!barrierReleased) {
+                releaseServerBarrier(BarrierType.CLOSE_CALL)
+            }
         }
     }
 

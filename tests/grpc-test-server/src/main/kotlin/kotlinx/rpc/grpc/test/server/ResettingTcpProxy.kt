@@ -66,7 +66,9 @@ internal class ResettingTcpProxy(
             val client = try {
                 listener.accept().apply { tcpNoDelay = true }
             } catch (error: SocketException) {
-                if (stopped.get()) return
+                if (stopped.get()) {
+                    return
+                }
                 throw error
             }
 
@@ -83,14 +85,18 @@ internal class ResettingTcpProxy(
                 }
             } catch (error: IOException) {
                 client.closeQuietly()
-                if (stopped.get()) return
+                if (stopped.get()) {
+                    return
+                }
                 throw error
             }
             val connection = Connection(client, server)
             connections.add(connection)
 
             if (stopped.get()) {
-                if (connections.remove(connection)) connection.reset()
+                if (connections.remove(connection)) {
+                    connection.reset()
+                }
                 continue
             }
 
@@ -111,13 +117,17 @@ internal class ResettingTcpProxy(
         } catch (_: IOException) {
             // A close or a reset of either socket stops both forwarding directions.
         } finally {
-            if (connections.remove(connection)) connection.close()
+            if (connections.remove(connection)) {
+                connection.close()
+            }
         }
     }
 
     /** Stops new connections, then resets all connections that the listener accepted before it stopped. */
     override fun close() {
-        if (!stopped.compareAndSet(false, true)) return
+        if (!stopped.compareAndSet(false, true)) {
+            return
+        }
 
         listener.closeQuietly()
         acceptExecutor.shutdown()
@@ -126,7 +136,9 @@ internal class ResettingTcpProxy(
         }
 
         connections.toList().forEach { connection ->
-            if (connections.remove(connection)) connection.reset()
+            if (connections.remove(connection)) {
+                connection.reset()
+            }
         }
         forwardExecutor.shutdown()
         check(forwardExecutor.awaitTermination(STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
@@ -147,13 +159,17 @@ internal class ResettingTcpProxy(
         private val closed = AtomicBoolean()
 
         fun close() {
-            if (!closed.compareAndSet(false, true)) return
+            if (!closed.compareAndSet(false, true)) {
+                return
+            }
             client.closeQuietly()
             server.closeQuietly()
         }
 
         fun reset() {
-            if (!closed.compareAndSet(false, true)) return
+            if (!closed.compareAndSet(false, true)) {
+                return
+            }
             client.enableResetOnClose()
             server.enableResetOnClose()
             client.closeQuietly()

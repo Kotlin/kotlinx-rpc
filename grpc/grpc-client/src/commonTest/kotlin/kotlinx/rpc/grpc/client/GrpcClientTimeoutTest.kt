@@ -214,7 +214,9 @@ class GrpcClientTimeoutTest {
                 try {
                     block(callbackEvents)
                 } finally {
-                    if (barrier != null) releaseServerBarrier(barrier.type, barrier.occurrence)
+                    if (barrier != null) {
+                        releaseServerBarrier(barrier.type, barrier.occurrence)
+                    }
                 }
             }
         }
