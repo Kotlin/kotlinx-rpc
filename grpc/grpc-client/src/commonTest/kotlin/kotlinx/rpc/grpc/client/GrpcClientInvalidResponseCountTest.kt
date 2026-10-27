@@ -24,12 +24,12 @@ import kxrpc.testing.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class GrpcClientCardinalityTest {
+class GrpcClientInvalidResponseCountTest {
     @Test
-    fun unaryRequestCannotBeOmitted() = malformedUnaryRequestTest(omitRequest = true)
+    fun unaryRequestCannotBeOmitted() = invalidUnaryRequestCountTest(omitRequest = true)
 
     @Test
-    fun unaryRequestCannotBeDuplicated() = malformedUnaryRequestTest(omitRequest = false)
+    fun unaryRequestCannotBeDuplicated() = invalidUnaryRequestCountTest(omitRequest = false)
 
     @Test
     fun unaryResponseCannotBeOmitted() = invalidUnaryResponseCountTest(InvalidResponseCount.OMIT_RESPONSE)
@@ -63,13 +63,13 @@ class GrpcClientCardinalityTest {
     }
 
     /**
-     * Makes a unary call through [requestCardinalityInterceptor] and expects the client to reject the malformed
-     * request flow with `INTERNAL`.
+     * Makes a unary call through [invalidRequestCountInterceptor] and expects the client to reject the invalid
+     * request count with `INTERNAL`.
      *
      * No scenario is registered: nothing reaches a scenario-aware service, as the client rejects the request first.
      */
-    private fun malformedUnaryRequestTest(omitRequest: Boolean) = grpcClientTest(
-        clientConfig = { intercept(requestCardinalityInterceptor(omitRequest)) },
+    private fun invalidUnaryRequestCountTest(omitRequest: Boolean) = grpcClientTest(
+        clientConfig = { intercept(invalidRequestCountInterceptor(omitRequest)) },
         configureScenario = false,
     ) {
         // The client itself must reject zero or two unary requests, without sending any of them.
@@ -111,16 +111,17 @@ class GrpcClientCardinalityTest {
          * transport.
          *
          * The generated stubs always send exactly one request for unary and server-streaming methods, so an
-         * interceptor replacing the request flow is the only way a malformed request can reach the client runtime.
+         * interceptor that replaces the request flow is the only way an invalid request count can reach the client
+         * runtime.
          *
          * @param omitRequest `true` to replace the request with an empty flow, `false` to emit every request twice.
          */
-        fun requestCardinalityInterceptor(omitRequest: Boolean): GrpcClientInterceptor {
+        fun invalidRequestCountInterceptor(omitRequest: Boolean): GrpcClientInterceptor {
             return object : GrpcClientInterceptor {
                 override fun <Request, Response> GrpcClientCallScope<Request, Response>.intercept(
                     request: Flow<Request>,
                 ): Flow<Response> {
-                    val malformedRequest = if (omitRequest) {
+                    val invalidCountRequest = if (omitRequest) {
                         emptyFlow()
                     } else {
                         flow {
@@ -130,7 +131,7 @@ class GrpcClientCardinalityTest {
                             }
                         }
                     }
-                    return proceed(malformedRequest)
+                    return proceed(invalidCountRequest)
                 }
             }
         }
