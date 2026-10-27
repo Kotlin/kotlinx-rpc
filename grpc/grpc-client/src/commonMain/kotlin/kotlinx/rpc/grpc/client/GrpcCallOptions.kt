@@ -142,6 +142,9 @@ public class GrpcCallOptions {
  */
 internal fun GrpcCallOptions.copy(): GrpcCallOptions = GrpcCallOptions().also { copy ->
     copy.timeout = timeout
+    copy.isTimeoutExplicitlySet = isTimeoutExplicitlySet
+    copy.waitForReady = waitForReady
+    copy.isWaitForReadyExplicitlySet = isWaitForReadyExplicitlySet
     copy.compression = compression
     copy.callCredentials = callCredentials
 }
