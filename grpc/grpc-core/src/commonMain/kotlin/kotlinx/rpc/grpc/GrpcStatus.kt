@@ -9,16 +9,14 @@ package kotlinx.rpc.grpc
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Defines the status of an operation by providing a standard [GrpcStatusCode] in conjunction with an
  * optional descriptive message.
  *
  * For clients, every remote call will return a status on completion.
- * In the case of errors this
- * status may be propagated to blocking stubs as a [RuntimeException] or to a listener as an
- * explicit parameter.
+ * In the case of errors this status may be propagated to blocking stubs
+ * as a [RuntimeException] or to a listener as an explicit parameter.
  *
  * Similarly, servers can report a status by throwing [GrpcStatusException]
  * or by passing the status to a callback.

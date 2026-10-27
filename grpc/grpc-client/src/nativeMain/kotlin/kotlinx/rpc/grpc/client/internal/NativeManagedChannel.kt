@@ -73,7 +73,7 @@ internal class NativeManagedChannel(
     val idleTimeout: Duration,
     // this is not a composite channel credentials
     clientCredentials: GrpcClientCredentials,
-) : ManagedChannel, ManagedChannelPlatform() {
+) : ManagedChannel {
 
     // a reference to make sure the grpc_init() was called. (it is released after shutdown)
     @Suppress("unused")
@@ -166,8 +166,6 @@ internal class NativeManagedChannel(
         }
     }
 
-    override val platformApi: ManagedChannelPlatform = this
-
     private var isShutdownInternal = atomic(false)
     override val isShutdown: Boolean
         get() = isShutdownInternal.value
@@ -223,7 +221,7 @@ internal class NativeManagedChannel(
         }
     }
 
-    override fun <RequestT, ResponseT> newCall(
+    fun <RequestT, ResponseT> newCall(
         methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
         callOptions: GrpcCallOptions,
         coroutineContext: CoroutineContext
