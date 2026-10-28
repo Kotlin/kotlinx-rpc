@@ -427,7 +427,8 @@ class GrpcClientMetadataAndStatusTest {
 
         /**
          * Returns an interceptor that records the call's `onHeaders` and `onClose` callbacks and its response messages
-         * in [callback], so a test can check their order, how often they ran and what metadata and status they received.
+         * in [callback], so a test can check their order, how often they ran and what metadata
+         * and status they received.
          *
          * [configure] runs on the call scope before the call proceeds, for example to add request headers.
          */

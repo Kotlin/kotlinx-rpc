@@ -193,7 +193,9 @@ private class ClientCallScopeImpl<Request, Response>(
                         }
                     }
 
-                    is GrpcClientCallEvents.Message -> emit(event.response)
+                    is GrpcClientCallEvents.Message -> {
+                        emit(event.response)
+                    }
 
                     is GrpcClientCallEvents.Closed -> {
                         val status = event.status
