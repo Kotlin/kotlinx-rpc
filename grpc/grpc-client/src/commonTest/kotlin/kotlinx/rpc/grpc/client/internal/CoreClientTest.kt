@@ -1,7 +1,7 @@
 /*
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
-package kotlinx.rpc.grpc.test.raw
+package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -11,14 +11,10 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
-import kotlinx.rpc.grpc.client.internal.ClientCall
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcInsecureClientCredentials
-import kotlinx.rpc.grpc.client.internal.ManagedChannel
-import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
-import kotlinx.rpc.grpc.client.internal.buildChannel
-import kotlinx.rpc.grpc.client.internal.clientCallListener
-import kotlinx.rpc.grpc.client.internal.createCall
+import kotlinx.rpc.grpc.client.testing.GrpcClientTestServer
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
@@ -27,7 +23,6 @@ import kotlinx.rpc.grpc.test.HelloReply
 import kotlinx.rpc.grpc.test.HelloReplyInternal
 import kotlinx.rpc.grpc.test.HelloRequest
 import kotlinx.rpc.grpc.test.HelloRequestInternal
-import kotlinx.rpc.grpc.test.grpcTestServerPort
 import kotlinx.rpc.grpc.test.invoke
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,8 +30,7 @@ import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Client tests that use lower level API directly to test that it behaves correctly.
- * To run the tests, you must first start the server with `tests/grpc-test-server`.
+ * Tests the channel and call APIs directly. Gradle starts the test server.
  */
 class GrpcCoreClientTest {
 
@@ -59,9 +53,9 @@ class GrpcCoreClientTest {
         createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
-        target = "localhost:$grpcTestServerPort",
+        target = "localhost:${GrpcClientTestServer.port}",
         credentials = GrpcInsecureClientCredentials()
-    ).buildChannel()
+    ).buildChannel(GrpcClientConfiguration())
 
 
     private fun helloReq(timeout: UInt = 0u): HelloRequest = HelloRequest {
