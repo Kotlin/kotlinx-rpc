@@ -12,6 +12,7 @@ import kotlin.io.path.readLines
 
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.kotlin.library.api.watchdog)
     alias(libs.plugins.conventions.jvm)
     alias(libs.plugins.conventions.gradle.publish)
     alias(libs.plugins.gradle.plugin.publish)
@@ -26,6 +27,7 @@ kotlin {
     jvmToolchain(17)
 
     compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
+    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalSubclassingRpcApi")
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -35,10 +37,19 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
+apiWatchdog {
+    enabled = true
+}
+
 dependencies {
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.android.gradle.plugin.api)
+
+    apiWatchdogExemptNonTransitive(gradleApi())
+    apiWatchdogExemptNonTransitive(libs.kotlin.gradle.plugin)
+    apiWatchdogExemptNonTransitive(libs.android.gradle.plugin)
+    apiWatchdogExemptNonTransitive(libs.android.gradle.plugin.api)
 
     testImplementation(libs.kotlin.gradle.plugin)
     testImplementation(gradleTestKit())
@@ -154,3 +165,9 @@ generateSource(
 
 
 logger.lifecycle("[Gradle Plugin] kotlinx.rpc project version: $version")
+
+apiWatchdog {
+    javaInterop {
+        enabled = false
+    }
+}

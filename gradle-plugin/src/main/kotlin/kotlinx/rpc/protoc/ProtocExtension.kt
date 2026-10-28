@@ -7,6 +7,9 @@ package kotlinx.rpc.protoc
 import kotlinx.rpc.buf.BufExtension
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Configuration for the Protoc capabilities.
@@ -25,6 +28,7 @@ import org.gradle.api.NamedDomainObjectContainer
  * kotlinx.rpc.protoc=true
  * ```
  */
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public sealed interface ProtocExtension {
     /**
      * Configuration for the Buf build tool.
@@ -39,10 +43,12 @@ public sealed interface ProtocExtension {
     /**
      * Container of protoc plugins.
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public val plugins: NamedDomainObjectContainer<ProtocPlugin>
 
     /**
      * Configures the protoc plugins.
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun plugins(action: Action<NamedDomainObjectContainer<ProtocPlugin>>)
 }

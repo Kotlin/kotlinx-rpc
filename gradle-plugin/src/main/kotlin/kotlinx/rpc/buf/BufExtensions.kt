@@ -19,12 +19,18 @@ import java.io.File
 import javax.inject.Inject
 import kotlin.reflect.KClass
 import kotlin.time.Duration
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInconsistentParameterOrder
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Options for the Buf tasks.
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/">buf commands</a>
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 public open class BufExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `--config` argument value.
@@ -43,6 +49,7 @@ public open class BufExtension @Inject internal constructor(objects: ObjectFacto
     /**
      * Possible values for `--log-format` [logFormat] option.
      */
+    @IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public enum class LogFormat {
         Text,
         Color,
@@ -118,6 +125,7 @@ public open class BufExtension @Inject internal constructor(objects: ObjectFacto
 /**
  * Allows registering custom Buf tasks that can operate on the generated workspace.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class BufTasksExtension @Inject internal constructor(internal val project: Project) {
     /**
      * Registers a custom Buf task that operates on the generated workspace.
@@ -127,6 +135,8 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
      * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
+    @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public fun <T : BufExecTask> registerWorkspaceTask(
         kClass: KClass<T>,
         name: String,
@@ -146,6 +156,8 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
      * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
+    @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public inline fun <reified T : BufExecTask> registerWorkspaceTask(
         name: String,
         configure: Action<T> = Action {},
@@ -168,6 +180,7 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">"buf generate" command</a>
  * @see [BUF_GEN_YAML]
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class BufGenerateExtension @Inject internal constructor(internal val project: Project) {
     /**
      * `--include-imports` option.
@@ -200,6 +213,7 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
      *
      * @see <a href="https://buf.build/docs/reference/cli/buf/generate/#error-format">buf generate --error-format</a>
      */
+    @IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public enum class ErrorFormat(internal val cliValue: String) {
         Text("text"),
         Json("json"),
@@ -294,6 +308,7 @@ public open class BufGenerateExtension @Inject internal constructor(internal val
 /**
  * Extension for configuring comments in the generated code.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class BufCommentsExtension @Inject internal constructor(internal val project: Project) {
     /**
      * Whether to copy comments from the original source files.
@@ -314,6 +329,7 @@ public open class BufCommentsExtension @Inject internal constructor(internal val
  *
  * @see <a href="https://buf.build/docs/configuration/v2/buf-yaml/#deps">buf.yaml deps reference</a>
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class BufDepsExtension @Inject internal constructor(
     internal val project: Project
 ) {

@@ -17,6 +17,14 @@ import util.targets.withKmpConfig
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
+    id("org.jetbrains.kotlin.library.api-watchdog")
+}
+
+val isPublicModule: Boolean by extra(false)
+
+apiWatchdog {
+    enabled = isPublicModule
+    suggestAbiValidation = enableAbiValidation
 }
 
 kotlin {

@@ -18,6 +18,8 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import javax.inject.Inject
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Copy proto files to a temporary directory for Buf to process.
@@ -26,6 +28,7 @@ import javax.inject.Inject
  * copy/sync tasks are not worth caching (the cost of fetching a cached artifact exceeds the
  * cost of re-copying local files).
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 @DisableCachingByDefault(because = "File copy task — caching overhead outweighs benefit")
 public abstract class ProcessProtoFiles @Inject internal constructor(
     @get:Internal
@@ -98,6 +101,7 @@ internal fun Project.registerProcessProtoFilesImportsTask(
  *
  * Registered automatically when proto dependency configurations are used.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public abstract class ExtractDependencyProtoImports @Inject internal constructor(
     @get:Internal
     override val properties: ProtoTask.Properties,

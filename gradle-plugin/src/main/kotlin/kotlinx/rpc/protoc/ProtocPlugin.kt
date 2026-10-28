@@ -20,6 +20,8 @@ import org.gradle.kotlin.dsl.listProperty
 import org.gradle.kotlin.dsl.mapProperty
 import org.gradle.kotlin.dsl.property
 import java.io.File
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Access to the `kotlin-multiplatform` protoc plugin.
@@ -194,6 +196,7 @@ public open class ProtocPlugin internal constructor(
      *
      * @see [strategy]
      */
+    @IntentionallyExhaustive(description = "Fix before 1.0")
     public enum class Strategy {
         Directory, All;
     }
@@ -201,6 +204,7 @@ public open class ProtocPlugin internal constructor(
     /**
      * Artifact for a protoc plugin.
      */
+    @IntentionallyExhaustive(description = "Fix before 1.0")
     public sealed class Artifact {
         /**
          * Local protoc plugin artifact.
@@ -211,6 +215,7 @@ public open class ProtocPlugin internal constructor(
          *     Buf documentation - Type of plugin
          * </a>
          */
+        @IntentionallyWithoutEqualsHashCodeOrToString(description = "Fix before 1.0")
         public class Local internal constructor(private val project: Project) : Artifact() {
             /**
              * Command-line arguments that execute the plugin.
@@ -284,6 +289,7 @@ public open class ProtocPlugin internal constructor(
          *     Buf documentation - Type of plugin
          * </a>
          */
+        @IntentionallyWithoutEqualsHashCodeOrToString(description = "Fix before 1.0")
         public class Remote internal constructor(project: Project) : Artifact() {
             public val locator: Property<String> = project.objects.property()
         }
@@ -295,6 +301,10 @@ public open class ProtocPlugin internal constructor(
 
     override fun hashCode(): Int {
         return name.hashCode()
+    }
+
+    override fun toString(): String {
+        return name
     }
 
     internal fun copy(): ProtocPlugin {

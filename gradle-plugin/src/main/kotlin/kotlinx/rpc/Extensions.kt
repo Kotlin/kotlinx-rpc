@@ -18,12 +18,16 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType<RpcExtension>()
 
 internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class RpcExtension @Inject internal constructor(objects: ObjectFactory, project: Project) {
     /**
      * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
@@ -111,6 +115,7 @@ public open class RpcExtension @Inject internal constructor(objects: ObjectFacto
     }
 }
 
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class RpcStrictModeExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `StateFlow`s in RPC services are deprecated,
@@ -171,6 +176,7 @@ public open class RpcStrictModeExtension @Inject internal constructor(objects: O
     }
 }
 
+@IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public enum class RpcStrictMode {
     NONE, WARNING, ERROR;
 }

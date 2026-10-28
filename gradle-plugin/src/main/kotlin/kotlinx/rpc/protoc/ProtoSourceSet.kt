@@ -19,7 +19,13 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
+/**
+ * Container for [ProtoSourceSet]s.
+ */
 public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
 
 /**
@@ -42,6 +48,7 @@ public typealias ProtoSourceSets = NamedDomainObjectContainer<ProtoSourceSet>
  * }
  * ```
  */
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public sealed interface ProtoSourceSet : SourceDirectorySet {
     /**
      * Whether to include the default [kotlinMultiplatform][ProtocPlugin.KOTLIN_MULTIPLATFORM] protoc plugin
@@ -191,6 +198,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun importsFrom(protoSourceSet: ProtoSourceSet)
 
     /**
@@ -209,6 +217,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun importsFrom(protoSourceSet: Provider<ProtoSourceSet>)
 
     /**
@@ -228,11 +237,13 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun importsAllFrom(protoSourceSets: Provider<List<ProtoSourceSet>>)
 
     /**
      * List of all imported proto source sets.
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public val imports: SetProperty<ProtoSourceSet>
 
     /**
@@ -249,6 +260,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public val fileImports: ConfigurableFileCollection
 
     /**
@@ -269,6 +281,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun extendsFrom(protoSourceSet: ProtoSourceSet)
 
     /**
@@ -311,6 +324,7 @@ public sealed interface ProtoSourceSet : SourceDirectorySet {
 /**
  * Returns the proto source set for this [KotlinSourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val KotlinSourceSet.proto: ProtoSourceSet
     get(): ProtoSourceSet {
         return project.protoSourceSets.getByName(name)
@@ -319,6 +333,7 @@ public val KotlinSourceSet.proto: ProtoSourceSet
 /**
  * Executes the given [action] on the proto source set for this [KotlinSourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public fun KotlinSourceSet.proto(action: Action<ProtoSourceSet>) {
     proto.apply(action::execute)
 }
@@ -326,6 +341,7 @@ public fun KotlinSourceSet.proto(action: Action<ProtoSourceSet>) {
 /**
  * Returns the proto source set for this [KotlinSourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 @get:JvmName("proto_kotlin")
 public val NamedDomainObjectProvider<KotlinSourceSet>.proto: Provider<ProtoSourceSet>
     get() {
@@ -335,6 +351,7 @@ public val NamedDomainObjectProvider<KotlinSourceSet>.proto: Provider<ProtoSourc
 /**
  * Executes the given [action] on the proto source set for this [KotlinSourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 @JvmName("proto_kotlin")
 public fun NamedDomainObjectProvider<KotlinSourceSet>.proto(action: Action<ProtoSourceSet>) {
     configure {
@@ -345,6 +362,7 @@ public fun NamedDomainObjectProvider<KotlinSourceSet>.proto(action: Action<Proto
 /**
  * Returns the proto source set for this [SourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val SourceSet.proto: ProtoSourceSet
     get(): ProtoSourceSet {
         return extensions.getByType(ProtoSourceSet::class.java)
@@ -353,6 +371,7 @@ public val SourceSet.proto: ProtoSourceSet
 /**
  * Executes the given [action] on the proto source set for this [SourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public fun SourceSet.proto(action: Action<ProtoSourceSet>) {
     extensions.configure(ProtoSourceSet::class.java, action::execute)
 }
@@ -360,6 +379,7 @@ public fun SourceSet.proto(action: Action<ProtoSourceSet>) {
 /**
  * Returns the proto source set for this [SourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val NamedDomainObjectProvider<SourceSet>.proto: Provider<ProtoSourceSet>
     get() {
         return map { it.proto }
@@ -368,6 +388,7 @@ public val NamedDomainObjectProvider<SourceSet>.proto: Provider<ProtoSourceSet>
 /**
  * Executes the given [action] on the proto source set for this [SourceSet].
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public fun NamedDomainObjectProvider<SourceSet>.proto(action: Action<ProtoSourceSet>) {
     configure {
         proto(action)
