@@ -356,7 +356,7 @@ class GrpcClientCancellationTest {
             callbackEvents: List<String>,
             headersExpected: Boolean,
         ) {
-            val expectedPrefix = if (headersExpected) listOf("headers") else emptyList()
+            val expectedPrefix = if (headersExpected) { listOf("headers") } else { emptyList() }
             assertTrue(
                 callbackEvents == expectedPrefix || callbackEvents == expectedPrefix + "close:CANCELLED",
                 "unexpected cancellation callbacks: $callbackEvents",

@@ -107,7 +107,7 @@ class GrpcClientCallbackOrderTest {
             ): Flow<Response> {
                 onHeaders { headers ->
                     val marker = headers.getAll(ORDER_KEY).singleOrNull()
-                    callbackEvents += if (marker == null) "headers" else "headers:$marker"
+                    callbackEvents += if (marker == null) { "headers" } else { "headers:$marker" }
                 }
                 onClose { status, _ -> callbackEvents += "close:${status.statusCode.name}" }
                 return proceed(request).onEach { callbackEvents += "message" }
