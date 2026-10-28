@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.client.GrpcCallOptions
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 
 /**
