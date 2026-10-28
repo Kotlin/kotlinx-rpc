@@ -71,9 +71,3 @@ public actual fun ManagedChannelBuilder(
     val credentials = if (credentials == null) { lazy { GrpcTlsClientCredentials() } } else { lazy { credentials } }
     return NativeManagedChannelBuilder(target = "$hostname:$port", credentials)
 }
-
-@InternalRpcApi
-public actual fun ManagedChannelBuilder(target: String, credentials: GrpcClientCredentials?): ManagedChannelBuilder<*> {
-    val credentials = if (credentials == null) { lazy { GrpcTlsClientCredentials() } } else { lazy { credentials } }
-    return NativeManagedChannelBuilder(target, credentials)
-}
