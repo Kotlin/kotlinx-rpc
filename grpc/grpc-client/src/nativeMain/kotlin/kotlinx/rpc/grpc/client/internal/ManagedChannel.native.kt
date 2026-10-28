@@ -8,17 +8,26 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlin.coroutines.CoroutineContext
 
-/**
- * Same as [ManagedChannel], but is platform-exposed.
- */
 @InternalRpcApi
-public actual abstract class ManagedChannelPlatform : GrpcChannel()
+public actual fun <RequestT, ResponseT> ManagedChannel.createCall(
+    methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
+    callOptions: GrpcCallOptions,
+    coroutineContext: CoroutineContext,
+): ClientCall<RequestT, ResponseT> {
+    check(this is NativeManagedChannel) {
+        internalError("Wrong channel type, expected NativeManagedChannel")
+    }
+    return newCall(methodDescriptor, callOptions, coroutineContext)
+}
 
 /**
  * Builder class for [ManagedChannel].
@@ -46,8 +55,7 @@ internal class NativeManagedChannelBuilder(
     }
 }
 
-@InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
+internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     check(this is NativeManagedChannelBuilder) {
         internalError("Wrong builder type, expected NativeManagedChannelBuilder")
     }
