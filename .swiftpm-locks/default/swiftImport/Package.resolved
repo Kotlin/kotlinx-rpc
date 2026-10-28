@@ -23,7 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Kotlin/kotlinx-rpc-grpc-swift.git",
       "state" : {
-        "revision" : "d4504e8837227edd64788894c32aff5a0f4c8e1b"
+        "branch" : "0.0.1",
+        "revision" : "5849e6b85de65f13974cca6035a24d5b0ea42005"
       }
     },
     {
