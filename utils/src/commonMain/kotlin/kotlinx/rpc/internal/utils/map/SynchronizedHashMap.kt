@@ -47,13 +47,15 @@ internal class SynchronizedHashMap<K : Any, V: Any> : RpcInternalConcurrentHashM
     }
 
     override val entries: Set<RpcInternalConcurrentHashMap.Entry<K, V>>
-        get() = synchronized(this) { map.entries }.map { RpcInternalConcurrentHashMap.Entry(it.key, it.value) }.toSet()
+        get() = synchronized(this) {
+            map.entries.map { RpcInternalConcurrentHashMap.Entry(it.key, it.value) }.toSet()
+        }
 
     override val keys: Collection<K>
-        get() = synchronized(this) { map.keys }
+        get() = synchronized(this) { map.keys.toList() }
 
     override val values: Collection<V>
-        get() = synchronized(this) { map.values }
+        get() = synchronized(this) { map.values.toList() }
 
     override fun <T> withKeys(block: (Set<K>) -> T): T {
         synchronized(this) {
