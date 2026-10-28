@@ -54,7 +54,7 @@ internal class SwiftGrpcRequestSource<Request>(
             }
             terminate(null)
         } catch (cause: Exception) {
-            // Request-flow cancellation is EOF. Transport cancellation keeps the call's terminal status.
+            // Request-flow cancellation is EOF, not a failure.
             terminate(cause.takeUnless { it is CancellationException })
         }
     }
@@ -93,7 +93,6 @@ internal class SwiftGrpcRequestSource<Request>(
     }
 
     private fun terminate(failure: Throwable?) {
-        // Pulls re-entering from a completion observe the cancelled channel and complete at once.
         if (termination.compareAndSet(null, Termination(failure))) {
             pulls.cancel()
         }
