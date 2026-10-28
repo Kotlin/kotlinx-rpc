@@ -1,0 +1,25 @@
+public class kotlinx/rpc/krpc/spring/server/starter/KrpcServerAutoConfiguration {
+	public fun <init> ()V
+	public fun krpcProperties (Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerStarterProperties;)Lkotlinx/rpc/krpc/spring/server/KrpcProperties;
+	public fun webSocketSessionRegistry ()Lkotlinx/rpc/krpc/spring/server/WebSocketSessionRegistry;
+}
+
+public final class kotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization : java/lang/Enum {
+	public static final field CBOR Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+	public static final field JSON Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+	public static final field PROTOBUF Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+	public static fun values ()[Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+}
+
+public class kotlinx/rpc/krpc/spring/server/starter/KrpcServerStarterProperties {
+	public fun <init> ()V
+	public final fun getEnabled ()Z
+	public final fun getPath ()Ljava/lang/String;
+	public final fun getSerialization ()Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;
+	public final fun setEnabled (Z)V
+	public final fun setPath (Ljava/lang/String;)V
+	public final fun setSerialization (Lkotlinx/rpc/krpc/spring/server/starter/KrpcServerSerialization;)V
+}
+

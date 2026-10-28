@@ -39,7 +39,7 @@ public abstract class KrpcServer(
     /**
      * Close this server, removing all the services and stopping accepting messages.
      */
-    public fun close(message: String? = null) {
+    public open fun close(message: String? = null) {
         internalScope.cancel(message ?: "Server closed")
     }
 
@@ -111,7 +111,7 @@ public abstract class KrpcServer(
             is KrpcProtocolMessage.Failure -> {
                 logger.error {
                     "Client [${message.connectionId}] failed to handle protocol message ${message.failedMessage}: " +
-                            message.errorMessage
+                        message.errorMessage
                 }
             }
         }
@@ -181,7 +181,7 @@ public abstract class KrpcServer(
             else -> {
                 logger.warn {
                     "Unsupported ${KrpcPluginKey.CANCELLATION_TYPE} $type for server, " +
-                            "only 'endpoint' type may be sent by a client"
+                        "only 'endpoint' type may be sent by a client"
                 }
             }
         }
