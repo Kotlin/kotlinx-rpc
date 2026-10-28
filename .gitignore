@@ -54,3 +54,16 @@ gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
 # Local Agentic context
 .claude/plan
 .junie/plans
+
+# SwiftPM and Xcode build output and user settings
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Keep SwiftPM dependency locks and ignore the generated resolution packages.
+/.swiftpm-locks/**/*
+!/.swiftpm-locks/*/
+!/.swiftpm-locks/*/swiftImport/
+!/.swiftpm-locks/*/swiftImport/Package.resolved
