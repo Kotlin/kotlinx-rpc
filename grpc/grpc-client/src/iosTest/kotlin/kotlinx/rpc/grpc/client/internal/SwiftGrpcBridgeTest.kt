@@ -50,7 +50,7 @@ import kotlin.time.Duration.Companion.seconds
 class SwiftGrpcBridgeTest {
     @Test
     fun requestSourcePullsOneMessageAndThenSignalsEof() = runTest {
-        val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
+        val source = SwiftGrpcRequestSource(this, flowOf(42)) { value ->
             testRequest(value)
         }
 
@@ -67,7 +67,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourcePullArrivesBeforeEmission() = runTest {
         val emitNow = CompletableDeferred<Unit>()
-        val source = KotlinGrpcRequestSource(this, flow {
+        val source = SwiftGrpcRequestSource(this, flow {
             emitNow.await()
             emit(42)
         }) { value ->
@@ -89,7 +89,7 @@ class SwiftGrpcBridgeTest {
     fun requestSourcePreEncodesOneOfferAndWaitsUntilPulled() = runTest {
         val advanced = CompletableDeferred<Unit>()
         val encodeCalls = AtomicInt(0)
-        val source = KotlinGrpcRequestSource(this, flow {
+        val source = SwiftGrpcRequestSource(this, flow {
             emit(42)
             advanced.complete(Unit)
         }) { value ->
@@ -112,7 +112,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun requestSourceDeliversSequentialReentrantPullsInOrder() = runTest {
-        val source = KotlinGrpcRequestSource(this, flowOf(1, 2, 3)) { value ->
+        val source = SwiftGrpcRequestSource(this, flowOf(1, 2, 3)) { value ->
             testRequest(ByteArray(value) { value.toByte() })
         }
         val results = mutableListOf<Pair<Long?, NSError?>>()
@@ -145,7 +145,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourceRejectsConcurrentPullWithoutDisturbingWaitingPull() = runTest {
         val emitNow = CompletableDeferred<Unit>()
-        val source = KotlinGrpcRequestSource(this, flow {
+        val source = SwiftGrpcRequestSource(this, flow {
             emitNow.await()
             emit(42)
             awaitCancellation()
@@ -171,7 +171,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun cancellationCompletesDeliveringAndQueuedPullsAsEof() = runTest {
-        val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
+        val source = SwiftGrpcRequestSource(this, flowOf(42)) { value ->
             testRequest(value)
         }
         // The collector receives the first pull, but has not resumed yet. The second one waits.
@@ -193,7 +193,7 @@ class SwiftGrpcBridgeTest {
     fun cancellingPreEncodedOfferedRequestWithdrawsAndJoins() = runTest {
         val collectorStopped = CompletableDeferred<Unit>()
         val encodeCalls = AtomicInt(0)
-        val source = KotlinGrpcRequestSource(this, flow {
+        val source = SwiftGrpcRequestSource(this, flow {
             try {
                 emit(42)
             } finally {
@@ -213,7 +213,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun requestSourceRetainsOriginalKotlinFailure() = runTest {
         val expected = IllegalStateException("request failed")
-        val source = KotlinGrpcRequestSource<Int>(this, flow { throw expected }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { throw expected }) {
             error("No request should be encoded")
         }
 
@@ -226,7 +226,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun cancellingRequestSourceCompletesOutstandingPull() = runTest {
-        val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
             error("No request should be encoded")
         }
         val result = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
@@ -241,7 +241,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun cancelledRequestSourceCompletesSubsequentPull() = runTest {
-        val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
             error("No request should be encoded")
         }
 
@@ -254,7 +254,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun cancellingRequestSourceCompletesReentrantPull() = runTest {
-        val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
             error("No request should be encoded")
         }
         val reentrantResult = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
@@ -273,7 +273,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun terminationAfterEofDoesNotCompleteAgain() = runTest {
-        val source = KotlinGrpcRequestSource(this, flowOf(42)) { value ->
+        val source = SwiftGrpcRequestSource(this, flowOf(42)) { value ->
             testRequest(value)
         }
         assertNotNull(source.pull().first)
@@ -293,7 +293,7 @@ class SwiftGrpcBridgeTest {
     fun requestFlowFailureCompletesPendingPullOnce() = runTest {
         val expected = IllegalStateException("request failed while pulling")
         val failNow = CompletableDeferred<Unit>()
-        val source = KotlinGrpcRequestSource<Int>(this, flow { failNow.await(); throw expected }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { failNow.await(); throw expected }) {
             error("No request should be encoded")
         }
 
@@ -313,7 +313,7 @@ class SwiftGrpcBridgeTest {
     fun requestFlowErrorPropagatesAndCompletesPendingPullOnce() = runTest {
         val expected = AssertionError("request flow failed")
         val siblingStopped = CompletableDeferred<Unit>()
-        lateinit var source: KotlinGrpcRequestSource<Int>
+        lateinit var source: SwiftGrpcRequestSource<Int>
         lateinit var pull: RecordingCompletion
 
         val failure = assertFailsWith<AssertionError> {
@@ -326,7 +326,7 @@ class SwiftGrpcBridgeTest {
                     }
                 }
                 val failNow = CompletableDeferred<Unit>()
-                source = KotlinGrpcRequestSource(this, flow { failNow.await(); throw expected }, ::testRequest)
+                source = SwiftGrpcRequestSource(this, flow { failNow.await(); throw expected }, ::testRequest)
                 pull = source.pullRecording()
                 failNow.complete(Unit)
             }
@@ -345,11 +345,11 @@ class SwiftGrpcBridgeTest {
     @Test
     fun encodeErrorPropagatesAndCompletesLatePull() = runTest {
         val expected = AssertionError("encode failed")
-        lateinit var source: KotlinGrpcRequestSource<Int>
+        lateinit var source: SwiftGrpcRequestSource<Int>
 
         val failure = assertFailsWith<AssertionError> {
             coroutineScope {
-                source = KotlinGrpcRequestSource(this, flowOf(42)) { throw expected }
+                source = SwiftGrpcRequestSource(this, flowOf(42)) { throw expected }
             }
         }
 
@@ -365,7 +365,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun cancelAfterRequestFlowFailurePreservesFailure() = runTest {
         val expected = IllegalStateException("request failed")
-        val source = KotlinGrpcRequestSource<Int>(this, flow { throw expected }) {
+        val source = SwiftGrpcRequestSource<Int>(this, flow { throw expected }) {
             error("No request should be encoded")
         }
         assertNotNull(source.pull().second)
@@ -382,7 +382,7 @@ class SwiftGrpcBridgeTest {
     fun encodeFailureFailsSourceAndStopsCollector() = runTest {
         val expected = IllegalStateException("encode failed")
         // Encoding is eager, so the source fails before its first pull.
-        val source = KotlinGrpcRequestSource<Int>(this, flowOf(1)) { throw expected }
+        val source = SwiftGrpcRequestSource<Int>(this, flowOf(1)) { throw expected }
 
         val pull = source.pullRecording()
 
@@ -397,7 +397,7 @@ class SwiftGrpcBridgeTest {
 
     @Test
     fun cancellationThrownByRequestFlowCompletesAsEof() = runTest {
-        val source = KotlinGrpcRequestSource<Int>(
+        val source = SwiftGrpcRequestSource<Int>(
             scope = this,
             requests = flow { throw CancellationException("request flow cancelled itself") },
         ) {
@@ -414,7 +414,7 @@ class SwiftGrpcBridgeTest {
     @Test
     fun parentCompletionCompletesPendingPullAsEof() = runTest {
         val parent = Job()
-        val source = KotlinGrpcRequestSource<Int>(
+        val source = SwiftGrpcRequestSource<Int>(
             scope = CoroutineScope(coroutineContext + parent),
             requests = flow { awaitCancellation() },
         ) {
@@ -435,7 +435,7 @@ class SwiftGrpcBridgeTest {
         withContext(Dispatchers.Default) {
             repeat(STRESS_ITERATIONS) {
                 coroutineScope {
-                    val source = KotlinGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
+                    val source = SwiftGrpcRequestSource<Int>(this, flow { awaitCancellation() }) {
                         error("No request should be encoded")
                     }
                     val start = CompletableDeferred<Unit>()
@@ -462,7 +462,7 @@ class SwiftGrpcBridgeTest {
                 coroutineScope {
                     val expected = IllegalStateException("request failed during cancellation")
                     val failNow = CompletableDeferred<Unit>()
-                    val source = KotlinGrpcRequestSource<Int>(
+                    val source = SwiftGrpcRequestSource<Int>(
                         scope = this,
                         requests = flow { failNow.await(); throw expected },
                     ) {
@@ -496,7 +496,7 @@ class SwiftGrpcBridgeTest {
             repeat(STRESS_ITERATIONS) {
                 coroutineScope {
                     val finish = CompletableDeferred<Unit>()
-                    val source = KotlinGrpcRequestSource<Int>(this, flow { finish.await() }) {
+                    val source = SwiftGrpcRequestSource<Int>(this, flow { finish.await() }) {
                         error("No request should be encoded")
                     }
                     val start = CompletableDeferred<Unit>()
@@ -521,7 +521,7 @@ class SwiftGrpcBridgeTest {
         val finish = CompletableDeferred<Unit>()
         val requests = flow { emit(42); finish.await() }
         val validated = requests.singleOrStatusFlow("request", "unary")
-        val source = KotlinGrpcRequestSource<Int>(this, flow { emit(validated.single()) }, ::testRequest)
+        val source = SwiftGrpcRequestSource<Int>(this, flow { emit(validated.single()) }, ::testRequest)
         val pull = source.pullRecording()
 
         assertFalse(pull.result.isCompleted, "the request must not be delivered before the flow ends")
@@ -539,7 +539,7 @@ class SwiftGrpcBridgeTest {
     fun invalidUnaryRequestFailsBeforeEncoding() = runTest {
         for (requests in listOf(flowOf<Int>(), flowOf(1, 2))) {
             val validated = requests.singleOrStatusFlow("request", "unary")
-            val source = KotlinGrpcRequestSource<Int>(this, flow { emit(validated.single()) }) {
+            val source = SwiftGrpcRequestSource<Int>(this, flow { emit(validated.single()) }) {
                 error("An invalid unary request must not be encoded")
             }
 
@@ -553,13 +553,13 @@ class SwiftGrpcBridgeTest {
         }
     }
 
-    private suspend fun KotlinGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestBytes?, NSError?> {
+    private suspend fun SwiftGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestBytes?, NSError?> {
         val result = CompletableDeferred<Pair<SwiftGrpcRequestBytes?, NSError?>>()
         nextRequestWithCompletion { message, error -> result.complete(message to error) }
         return result.await()
     }
 
-    private fun KotlinGrpcRequestSource<*>.pullRecording(): RecordingCompletion =
+    private fun SwiftGrpcRequestSource<*>.pullRecording(): RecordingCompletion =
         RecordingCompletion().also { nextRequestWithCompletion(it.callback) }
 
     /** Records the first result of a request pull and how often its completion was invoked. */
