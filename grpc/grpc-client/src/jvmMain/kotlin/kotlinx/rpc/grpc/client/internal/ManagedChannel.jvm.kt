@@ -89,8 +89,7 @@ private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedCh
     }
 }
 
-@InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
+internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
