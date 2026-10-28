@@ -53,7 +53,8 @@ class GrpcCoreClientTest {
         createCall(descriptorFor(fullName), GrpcCallOptions(), Dispatchers.Default)
 
     private fun createChannel(): ManagedChannel = ManagedChannelBuilder(
-        target = "localhost:${GrpcClientTestServer.port}",
+        hostname = GrpcClientTestServer.HOST,
+        port = GrpcClientTestServer.port,
         credentials = GrpcInsecureClientCredentials()
     ).buildChannel(GrpcClientConfiguration())
 

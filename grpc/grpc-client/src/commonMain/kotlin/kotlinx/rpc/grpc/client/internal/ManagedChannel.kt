@@ -70,12 +70,6 @@ public expect fun ManagedChannelBuilder(
     credentials: GrpcClientCredentials? = null,
 ): ManagedChannelBuilder<*>
 
-@InternalRpcApi
-public expect fun ManagedChannelBuilder(
-    target: String,
-    credentials: GrpcClientCredentials? = null,
-): ManagedChannelBuilder<*>
-
 internal expect fun ManagedChannelBuilder<*>.buildChannel(
     config: GrpcClientConfiguration,
 ): ManagedChannel

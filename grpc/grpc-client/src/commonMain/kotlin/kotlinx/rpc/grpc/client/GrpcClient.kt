@@ -160,30 +160,6 @@ public fun GrpcClient(
     return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
 }
 
-/**
- * Creates and configures a gRPC client instance.
- *
- * This function initializes a new gRPC client with the specified target server
- * and allows optional customization of the client's configuration through a configuration block.
- *
- * @param target The gRPC server endpoint to connect to, typically specified in
- * the format `hostname:port`.
- * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
- * This can include setting up interceptors, specifying credentials, customizing message marshaller
- * resolution, and overriding default authority.
- *
- * @return A new instance of [GrpcClient] configured with the specified target and options.
- *
- * @see GrpcClientConfiguration
- */
-public fun GrpcClient(
-    target: String,
-    configure: GrpcClientConfiguration.() -> Unit = {},
-): GrpcClient {
-    val config = GrpcClientConfiguration().apply(configure)
-    return GrpcClient(ManagedChannelBuilder(target, config.credentials), config)
-}
-
 private fun GrpcClient(
     builder: ManagedChannelBuilder<*>,
     config: GrpcClientConfiguration,
