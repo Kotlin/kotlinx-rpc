@@ -26,7 +26,7 @@ private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
  *
  * The [scope] must belong to one RPC call.
  */
-internal class KotlinGrpcRequestSource<Request>(
+internal class SwiftGrpcRequestSource<Request>(
     scope: CoroutineScope,
     requests: Flow<Request>,
     encode: (Request) -> SwiftGrpcRequestBytes,
