@@ -55,8 +55,7 @@ internal class NativeManagedChannelBuilder(
     }
 }
 
-@InternalRpcApi
-public actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
+internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
     check(this is NativeManagedChannelBuilder) {
         internalError("Wrong builder type, expected NativeManagedChannelBuilder")
     }
