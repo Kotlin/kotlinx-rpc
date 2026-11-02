@@ -1,0 +1,44 @@
+# Checks that the 'native-deps/kotlinx-rpc-grpc-swift' submodule commit equals the commit of the tag that
+# 'grpc-swift-bridge' names in 'versions-root/libs.versions.toml'. The build resolves that published tag,
+# so the submodule must hold the same sources. The check runs on every pull request, so it also fails
+# when the upstream repository moves the tag.
+name: Verify grpc Swift Bridge Submodule
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-grpc-swift-bridge:
+    name: Verify submodule pin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v4
+
+      - name: Compare submodule commit with the published tag
+        run: |
+          set -euo pipefail
+          VERSION="$(python3 -c 'import tomllib; print(tomllib.load(open("versions-root/libs.versions.toml", "rb"))["versions"]["grpc-swift-bridge"])')"
+          SUBMODULE_PATH="native-deps/kotlinx-rpc-grpc-swift"
+          SUBMODULE_COMMIT="$(git rev-parse "HEAD:$SUBMODULE_PATH")"
+          URL="$(git config -f .gitmodules "submodule.$SUBMODULE_PATH.url")"
+          # 'refs/tags/$VERSION^{}' answers with the commit that an annotated tag points to.
+          # A lightweight tag has no peeled entry, so fall back to the plain tag ref.
+          TAG_COMMIT="$(git ls-remote "$URL" "refs/tags/$VERSION^{}" | cut -f1)"
+          if [[ -z "$TAG_COMMIT" ]]; then
+            TAG_COMMIT="$(git ls-remote "$URL" "refs/tags/$VERSION" | cut -f1)"
+          fi
+          if [[ -z "$TAG_COMMIT" ]]; then
+            echo "The tag '$VERSION' of the grpc Swift bridge package doesn't exist in $URL."
+            echo "Set 'grpc-swift-bridge' in 'versions-root/libs.versions.toml' to a published tag."
+            exit 1
+          fi
+          if [[ "$SUBMODULE_COMMIT" != "$TAG_COMMIT" ]]; then
+            echo "The '$SUBMODULE_PATH' submodule commit '$SUBMODULE_COMMIT' doesn't match the '$VERSION' tag commit '$TAG_COMMIT'."
+            echo "Move the submodule to the tag commit, or change 'grpc-swift-bridge' in 'versions-root/libs.versions.toml'."
+            exit 1
+          fi
