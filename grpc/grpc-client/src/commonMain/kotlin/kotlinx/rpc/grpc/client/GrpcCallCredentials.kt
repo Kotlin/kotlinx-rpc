@@ -2,10 +2,15 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+
 package kotlinx.rpc.grpc.client
 
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.plus
+import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyDataClass
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Provides per-call authentication credentials for gRPC calls.
@@ -68,6 +73,7 @@ import kotlinx.rpc.grpc.plus
  * @see plus
  * @see combine
  */
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcCallCredentials {
     /**
      * Retrieves authentication metadata for the gRPC call.
@@ -139,6 +145,8 @@ public interface GrpcCallCredentials {
      * @property methodName The method name of the RPC being invoked.
      */
     // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
+    // TODO: Jozott, check if this should be a data class
+    @IntentionallyDataClass(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public data class Context(
         val authority: String,
         val methodName: String,

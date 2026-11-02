@@ -5,6 +5,9 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Represents a method call from an RPC service.
@@ -14,9 +17,11 @@ import kotlinx.rpc.descriptor.RpcServiceDescriptor
  * @property arguments array of arguments for the call
  * @property serviceId The id of the service that made the call.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(description = "Revisit before 1.0")
 public class RpcCall(
     public val descriptor: RpcServiceDescriptor<*>,
     public val callableName: String,
+    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public val arguments: Array<Any?>,
     public val serviceId: Long,
 )

@@ -6,12 +6,15 @@ package kotlinx.rpc.grpc.client
 
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlin.time.Duration
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * The collection of runtime options for a new gRPC call.
  *
  * This class allows configuring per-call behavior such as timeouts.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public class GrpcCallOptions {
     internal var isTimeoutExplicitlySet = false
     internal var isWaitForReadyExplicitlySet = false

@@ -8,10 +8,13 @@ import kotlinx.io.Buffer
 import kotlinx.io.Sink
 import kotlinx.io.Source
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * A convenience marshaller for formats that need to buffer a message before its encoded size is known.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public abstract class StreamingGrpcMarshaller<T> : GrpcMarshaller<T> {
     /** Encodes [value] into [sink]. */

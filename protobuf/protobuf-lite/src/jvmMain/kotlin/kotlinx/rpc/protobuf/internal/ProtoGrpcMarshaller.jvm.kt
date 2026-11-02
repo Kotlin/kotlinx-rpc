@@ -12,7 +12,10 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.OutputStreamMessageWriter
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInlinedLogic
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
     crossinline block: (WireEncoder) -> Unit,
@@ -47,6 +50,7 @@ public actual inline fun withWireEncoder(
     }
 }
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun <R> withWireDecoder(
     reader: GrpcMessageReader,
     crossinline block: (WireDecoder) -> R,

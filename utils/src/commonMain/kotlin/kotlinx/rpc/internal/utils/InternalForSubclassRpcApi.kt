@@ -7,7 +7,7 @@ package kotlinx.rpc.internal.utils
 /**
  * Opt-in marker for subclassing library types that are not intended to be inherited by user code.
  *
- * Types annotated with `@SubclassOptInRequired(RpcTypeInheritance::class)` require an explicit opt-in
+ * Types annotated with `@SubclassOptInRequired(InternalForSubclassRpcApi::class)` require an explicit opt-in
  * before they can be subclassed. This is used to guard interfaces and classes whose implementations
  * are provided by the library and may change in future versions.
  */
@@ -19,4 +19,4 @@ package kotlinx.rpc.internal.utils
             "If you need to inherit from this, please describe your use case in " +
             "https://github.com/Kotlin/kotlinx-rpc/issues/new?template=feature_request.md"
 )
-public annotation class RpcTypeInheritance
+public annotation class InternalForSubclassRpcApi

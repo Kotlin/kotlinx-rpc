@@ -8,6 +8,7 @@ import compat.patrouille.configureJavaCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
 import util.applyCrashbtShimToNativeTests
+import util.other.isPublicModule
 import util.targets.configureJs
 import util.targets.configureJvm
 import util.targets.configureKotlinExtension
@@ -20,11 +21,12 @@ plugins {
     id("org.jetbrains.kotlin.library.api-watchdog")
 }
 
-val isPublicModule: Boolean by extra(false)
-
 apiWatchdog {
     enabled = isPublicModule
     suggestAbiValidation = enableAbiValidation
+    javaInterop {
+        enabled = false
+    }
 }
 
 kotlin {

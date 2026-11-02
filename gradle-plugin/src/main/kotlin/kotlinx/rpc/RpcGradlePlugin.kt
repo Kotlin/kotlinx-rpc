@@ -11,6 +11,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.create
 
+/**
+ * `kotlinx-rpc` Gradle plugin.
+ *
+ * See more <a href="https://kotlin.github.io/kotlinx-rpc/plugins.html">in docs</a>
+ */
 @Suppress("unused")
 public class RpcGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {

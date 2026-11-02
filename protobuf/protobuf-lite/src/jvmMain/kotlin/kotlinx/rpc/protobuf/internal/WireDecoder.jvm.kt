@@ -13,6 +13,8 @@ import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInlinedLogic
 
 internal class WireDecoderJvm(
     internal val codedInputStream: CodedInputStream,
@@ -158,6 +160,7 @@ internal class WireDecoderJvm(
 }
 
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     try {
         return block()

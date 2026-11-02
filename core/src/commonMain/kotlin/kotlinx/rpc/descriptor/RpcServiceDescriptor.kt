@@ -11,6 +11,10 @@ import kotlinx.rpc.internal.*
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 @ExperimentalRpcApi
 public inline fun <@Rpc reified Service : Any> serviceDescriptorOf(): RpcServiceDescriptor<Service> {
@@ -40,6 +44,7 @@ public fun <@Rpc Service : Any> serviceDescriptorOf(kClass: KClass<Service>): Rp
     )
 }
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface RpcServiceDescriptor<@Rpc Service : Any> {
     public val simpleName: String
@@ -53,11 +58,13 @@ public interface RpcServiceDescriptor<@Rpc Service : Any> {
     public fun createInstance(serviceId: Long, client: RpcClient): Service
 }
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface RpcCallable<@Rpc Service : Any> {
     public val name: String
     public val returnType: RpcType
     public val invokator: RpcInvokator<Service>
+    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public val parameters: Array<out RpcParameter>
 }
 
@@ -69,19 +76,25 @@ public val <@Rpc Service : Any> RpcCallable<Service>.unaryInvokator: RpcInvokato
 public val <@Rpc Service : Any> RpcCallable<Service>.flowInvokator: RpcInvokator.FlowResponse<Service>
     get() = invokator as RpcInvokator.FlowResponse<Service>
 
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public sealed interface RpcInvokator<@Rpc Service : Any> {
+    @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
     @ExperimentalRpcApi
     public fun interface UnaryResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
         public suspend fun call(service: Service, arguments: Array<Any?>): Any?
     }
 
+    @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
     @ExperimentalRpcApi
     public fun interface FlowResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
         public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
 }
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface RpcParameter {
     public val name: String
@@ -96,6 +109,7 @@ public interface RpcParameter {
     public val annotations: List<Annotation>
 }
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface RpcType {
     public val kType: KType

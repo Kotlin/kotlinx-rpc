@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import gradle.kotlin.dsl.accessors._55a6c9f42184da0c402717fd5db9f764.apiWatchdog
 import util.other.libs
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
@@ -35,6 +36,10 @@ if (project.name != "common") {
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
+}
+
+apiWatchdog {
+    enabled = false
 }
 
 tasks.test {

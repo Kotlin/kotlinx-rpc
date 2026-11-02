@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.grpc
 
-import kotlinx.rpc.internal.utils.RpcTypeInheritance
+import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
 
 /**
  * Represents a compression algorithm for gRPC message encoding.
@@ -20,7 +20,7 @@ import kotlinx.rpc.internal.utils.RpcTypeInheritance
  * @see GrpcCompression.None
  * @see GrpcCompression.Gzip
  */
-@SubclassOptInRequired(RpcTypeInheritance::class)
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcCompression {
     /**
      * The name of the compression algorithm as it appears in the `grpc-encoding` header.

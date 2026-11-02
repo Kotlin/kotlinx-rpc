@@ -6,6 +6,9 @@ package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Buffer
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * An exact-size destination supplied by a gRPC runtime.
@@ -13,6 +16,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
  * Implementations reject writes beyond [size].
  * A writer is valid only within the execution of [GrpcEncodedMessage.writeTo].
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface GrpcMessageWriter {
     /**
@@ -35,6 +39,7 @@ public interface GrpcMessageWriter {
     public fun writeByte(byte: Byte)
 
     /** Writes the bytes in the range from [startIndex] (inclusive) to [endIndex] (exclusive). */
+    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public fun write(bytes: ByteArray, startIndex: Int = 0, endIndex: Int = bytes.size)
 
     /**

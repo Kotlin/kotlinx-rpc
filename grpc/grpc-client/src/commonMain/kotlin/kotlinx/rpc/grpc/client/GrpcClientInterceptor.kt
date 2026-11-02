@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * The scope of a single outgoing gRPC client call observed by a [GrpcClientInterceptor].
@@ -46,6 +49,7 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
  * @param Request the request message type of the RPC.
  * @param Response the response message type of the RPC.
  */
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcClientCallScope<Request, Response> {
     /** Descriptor of the RPC method (name, marshalling, type) being invoked. */
     public val method: GrpcMethodDescriptor<Request, Response>
@@ -116,6 +120,7 @@ public interface GrpcClientCallScope<Request, Response> {
  * - Observing headers/trailers and final status.
  * - Transforming request/response flows (e.g., mapping, buffering, throttling).
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface GrpcClientInterceptor {
     /**
      * Intercept a client call.

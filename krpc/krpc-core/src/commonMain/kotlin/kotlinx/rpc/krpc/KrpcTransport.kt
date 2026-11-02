@@ -5,21 +5,29 @@
 package kotlinx.rpc.krpc
 
 import kotlinx.coroutines.CoroutineScope
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * A single message that can be transferred from one RPC endpoint to another.
  * Can be either of string or binary type.
  */
+@IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public sealed interface KrpcTransportMessage {
     /**
      * A single message of the string type that can be transferred from one RPC endpoint to another.
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class StringMessage(public val value: String) : KrpcTransportMessage
 
     /**
      * A single message of the binary type that can be transferred from one RPC endpoint to another.
      */
-    public class BinaryMessage(public val value: ByteArray) : KrpcTransportMessage
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    public class BinaryMessage(@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY) public val value: ByteArray) : KrpcTransportMessage
 }
 
 /**
@@ -38,6 +46,7 @@ public sealed interface KrpcTransportMessage {
  *
  * A good example of the implementation is KtorTransport, that uses websocket protocol to deliver messages.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface KrpcTransport : CoroutineScope {
     /**
      * Sends a single encoded RPC message over a network (or any other medium) to a peer endpoint.

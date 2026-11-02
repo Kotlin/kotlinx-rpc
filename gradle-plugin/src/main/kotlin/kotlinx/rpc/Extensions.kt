@@ -27,6 +27,11 @@ internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType
 internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
+/**
+ * `kotlinx-rpc` plugin configuration.
+ *
+ * See more <a href="https://kotlin.github.io/kotlinx-rpc/plugins.html">in docs</a>
+ */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class RpcExtension @Inject internal constructor(objects: ObjectFactory, project: Project) {
     /**
@@ -115,6 +120,9 @@ public open class RpcExtension @Inject internal constructor(objects: ObjectFacto
     }
 }
 
+/**
+ * Obsolete config for the strict mode.
+ */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public open class RpcStrictModeExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
@@ -176,6 +184,9 @@ public open class RpcStrictModeExtension @Inject internal constructor(objects: O
     }
 }
 
+/**
+ * Obsolete config for the strict mode.
+ */
 @IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public enum class RpcStrictMode {
     NONE, WARNING, ERROR;

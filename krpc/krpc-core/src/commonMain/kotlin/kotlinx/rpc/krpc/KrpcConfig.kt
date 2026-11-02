@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+
 package kotlinx.rpc.krpc
 
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormat
@@ -9,10 +10,15 @@ import kotlinx.rpc.krpc.serialization.KrpcSerialFormatBuilder
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Builder for [KrpcConfig]. Provides DSL to configure parameters for KrpcClient and/or KrpcServer.
  */
+@IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public sealed class KrpcConfigBuilder protected constructor() {
     /**
      * DSL for serialization configuration.
@@ -53,6 +59,7 @@ public sealed class KrpcConfigBuilder protected constructor() {
     /**
      * Configuration for RPC connector - a handler for all messages transferring.
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class Connector {
         /**
          * A flag indicating how long a client or a server should wait for subscribers
@@ -150,6 +157,7 @@ public sealed class KrpcConfigBuilder protected constructor() {
 /**
  * Configuration class that is used by kRPC protocol's client and server (KrpcClient and KrpcServer).
  */
+@IntentionallyExhaustive(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public sealed interface KrpcConfig {
     /**
      * @see KrpcConfigBuilder.serialization
@@ -167,6 +175,7 @@ public sealed interface KrpcConfig {
     /**
      * @see KrpcConfigBuilder.connector
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class Connector internal constructor(
         /**
          * @see KrpcConfigBuilder.Connector.waitTimeout
@@ -191,6 +200,7 @@ public sealed interface KrpcConfig {
     /**
      * @see [KrpcConfig]
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class Client internal constructor(
         /**
          * @see KrpcConfigBuilder.serialization
@@ -203,6 +213,7 @@ public sealed interface KrpcConfig {
     /**
      * @see [KrpcConfig]
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class Server internal constructor(
         /**
          * @see KrpcConfigBuilder.serialization

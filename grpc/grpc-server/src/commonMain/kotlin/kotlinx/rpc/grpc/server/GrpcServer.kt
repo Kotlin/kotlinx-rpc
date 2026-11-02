@@ -12,17 +12,21 @@ import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.grpc.server.internal.GrpcServerImpl
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.applyConfig
+import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Server for listening for and dispatching incoming calls.
  * It is not expected to be implemented by application code or interceptors.
  */
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcServer : RpcServer {
     /**
      * Returns the port number the server is listening on.
@@ -152,6 +156,7 @@ public fun GrpcServer(
  * This class provides an API to configure various server parameters, such as message marshallers,
  * security credentials, server-side interceptors, and service registration.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
@@ -312,6 +317,7 @@ public class GrpcServerConfiguration internal constructor() {
      * Defaults to 20 seconds. With [Duration.INFINITE], the server waits without limit.
      * Finite values must be at least 10 milliseconds.
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
     public class KeepAlive internal constructor() {
         public var time: Duration = 2.hours
             set(value) {

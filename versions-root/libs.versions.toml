@@ -45,7 +45,7 @@ protobuf = "4.35.1"
 buf-tool = "1.71.0"
 agp = "8.4.0"
 test-retry = "1.5.9"
-api-watchdog = "0.1.0-dev-59"
+api-watchdog = "0.1.0-dev-67"
 
 [libraries]
 # kotlinx.rpc – references to the included builds
@@ -160,6 +160,8 @@ kotlin-library-api-watchdog-gradle-plugin = { module = "org.jetbrains.kotlinx:ko
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-lang" }
 kotlin-library-api-watchdog = { id = "org.jetbrains.kotlin.library.api-watchdog", version.ref = "api-watchdog" }
+kotlin-library-api-watchdog-report-aggregation = { id = "org.jetbrains.kotlin.library.api-watchdog-report-aggregation", version.ref = "api-watchdog" }
+
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }

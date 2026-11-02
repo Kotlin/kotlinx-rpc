@@ -6,7 +6,10 @@ package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual class GrpcMethodDescriptor<Request, Response> internal constructor(
     private val fullMethodName: String,
     public val requestMarshaller: GrpcMarshaller<Request>,

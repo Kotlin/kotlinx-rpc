@@ -4,7 +4,11 @@
 
 package kotlinx.rpc.grpc.client
 
-import kotlinx.rpc.internal.utils.RpcTypeInheritance
+import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Base class for client channel credentials.
@@ -27,7 +31,7 @@ import kotlinx.rpc.internal.utils.RpcTypeInheritance
  * @see GrpcInsecureClientCredentials
  * @see GrpcCallCredentials
  */
-@SubclassOptInRequired(RpcTypeInheritance::class)
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcClientCredentials
 
 /**
@@ -140,6 +144,8 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
  * @see GrpcTlsClientCredentialsBuilder
  * @see GrpcInsecureClientCredentials
  */
+// TODO: Jozott, this look a bit weird. It looks like a config class by name, but holds a builder lambda only
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 public class GrpcTlsClientCredentials(
     internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}
 ) : GrpcClientCredentials
@@ -154,6 +160,7 @@ public class GrpcTlsClientCredentials(
  * @see trustManager
  * @see keyManager
  */
+@SubclassOptInRequired(InternalForSubclassRpcApi::class)
 public interface GrpcTlsClientCredentialsBuilder {
     /**
      * Configures the trust manager with root CA certificates for server authentication.

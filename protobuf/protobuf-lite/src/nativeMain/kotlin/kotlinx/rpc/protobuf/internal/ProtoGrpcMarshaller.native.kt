@@ -21,7 +21,10 @@ import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageReaderOperations
 import kotlinx.rpc.grpc.marshaller.internal.UnsafeGrpcMessageWriterOperations
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlin.experimental.ExperimentalNativeApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInlinedLogic
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
     crossinline block: (WireEncoder) -> Unit,
@@ -82,6 +85,7 @@ private fun encodeInto(base: CPointer<ByteVar>?, capacity: Int, block: (WireEnco
     }
 }
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun <R> withWireDecoder(
     reader: GrpcMessageReader,
     crossinline block: (WireDecoder) -> R,

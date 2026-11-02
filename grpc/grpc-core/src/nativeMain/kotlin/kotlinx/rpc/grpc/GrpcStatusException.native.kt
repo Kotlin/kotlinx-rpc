@@ -5,7 +5,12 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEquals
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutHashCode
 
+@IntentionallyWithoutEquals(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutHashCode(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual class GrpcStatusException : Exception {
     private val status: GrpcStatus
     private val trailers: GrpcMetadata?

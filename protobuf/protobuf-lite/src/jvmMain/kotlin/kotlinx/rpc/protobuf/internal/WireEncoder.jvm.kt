@@ -14,6 +14,8 @@ import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import java.io.OutputStream
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInlinedLogic
 
 private class WireEncoderJvm(
     val codedOutputStream: CodedOutputStream,
@@ -255,6 +257,7 @@ public fun WireEncoder.requireComplete() {
     (this as WireEncoderJvm).codedOutputStream.checkNoSpaceLeft()
 }
 
+@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {
     try {
         return block()
