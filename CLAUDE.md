@@ -82,7 +82,8 @@ The most important modules have brief READMEs in their directories, read when yo
 ### Protobuf (mainly used with gRPC)
 - `:protobuf:protobuf-{api,wkt,core}`
 
-### Native shims (standalone Gradle build)
+### Native dependencies
+- `native-deps/kotlinx-rpc-grpc-swift/` -- Swift bridge package sources for gRPC on iOS (git submodule, CI checks it matches the published tag)
 - `native-deps/shims/grpc/` -- gRPC cinterop shim KLIB (`:kotlinx-rpc-grpc-core-shim`)
 - `native-deps/shims/protobuf/` -- Protobuf cinterop shim KLIB (`:kotlinx-rpc-protobuf-shim`)
 - `native-deps/shims/annotation/` -- Shared opt-in markers (`:kotlinx-rpc-native-shims-annotation`)

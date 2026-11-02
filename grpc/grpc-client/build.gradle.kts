@@ -58,7 +58,7 @@ kotlin {
     }
 
     swiftPMDependencies {
-        iosMinimumDeploymentTarget.set("18.0")
+        iosMinimumDeploymentTarget.set(libs.versions.kxrpx.grpc.min.ios)
         discoverClangModulesImplicitly.set(false)
         val products = listOf(product("GrpcSwiftBridge", platforms = setOf(iOS())))
 
