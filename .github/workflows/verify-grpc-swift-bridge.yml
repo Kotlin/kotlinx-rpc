@@ -1,7 +1,6 @@
 # Checks that the 'native-deps/kotlinx-rpc-grpc-swift' submodule commit equals the commit of the tag that
 # 'grpc-swift-bridge' names in 'versions-root/libs.versions.toml'. The build resolves that published tag,
-# so the submodule must hold the same sources. The check runs on every pull request, so it also fails
-# when the upstream repository moves the tag.
+# so the submodule must hold the same sources.
 name: Verify grpc Swift Bridge Submodule
 
 on:
@@ -26,8 +25,6 @@ jobs:
           SUBMODULE_PATH="native-deps/kotlinx-rpc-grpc-swift"
           SUBMODULE_COMMIT="$(git rev-parse "HEAD:$SUBMODULE_PATH")"
           URL="$(git config -f .gitmodules "submodule.$SUBMODULE_PATH.url")"
-          # 'refs/tags/$VERSION^{}' answers with the commit that an annotated tag points to.
-          # A lightweight tag has no peeled entry, so fall back to the plain tag ref.
           TAG_COMMIT="$(git ls-remote "$URL" "refs/tags/$VERSION^{}" | cut -f1)"
           if [[ -z "$TAG_COMMIT" ]]; then
             TAG_COMMIT="$(git ls-remote "$URL" "refs/tags/$VERSION" | cut -f1)"

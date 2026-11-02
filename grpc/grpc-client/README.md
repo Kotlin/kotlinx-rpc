@@ -4,8 +4,6 @@ The iOS source set imports `GrpcSwiftBridge` from the
 [kotlinx-rpc-grpc-swift](https://github.com/Kotlin/kotlinx-rpc-grpc-swift) Swift package.
 The build resolves and compiles the published package revision from the version catalog.
 The `native-deps/kotlinx-rpc-grpc-swift` git submodule holds the sources of that revision.
-The `verify-grpc-swift-bridge` pull request workflow checks that the submodule commit
-matches the tag of the catalog version.
 
 ## Local kotlinx-rpc-grpc-swift development
 
