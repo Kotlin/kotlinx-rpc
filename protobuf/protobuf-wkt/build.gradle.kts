@@ -8,8 +8,9 @@ import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.buf
 import kotlinx.rpc.protoc.generate
-import kotlinx.rpc.protoc.proto
 import kotlinx.rpc.protoc.protoTasks
+import org.jetbrains.kotlinx.library.api.watchdog.WatchdogChecks
+import org.jetbrains.kotlinx.library.api.watchdog.WatchdogSeverity
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -42,6 +43,36 @@ rpc {
             }
         }
     }
+}
+
+apiWatchdog {
+    ignore(
+        check = WatchdogChecks.OPEN_API_WITHOUT_SUBCLASS_OPT_IN,
+        whenAnnotatedWith = "kotlinx.rpc.protobuf.internal.GeneratedProtoMessage",
+        recursive = true,
+    )
+
+    ignore(
+        checks = listOf(
+            WatchdogChecks.EXHAUSTIVE_PUBLIC_API,
+            WatchdogChecks.STATEFUL_CLASS_WITHOUT_TO_STRING,
+            WatchdogChecks.STATEFUL_CLASS_WITHOUT_EQUALS,
+            WatchdogChecks.STATEFUL_CLASS_WITHOUT_HASH_CODE,
+            WatchdogChecks.DATA_CLASS_PUBLIC_API,
+        ),
+        whenAnnotatedWith = "kotlinx.rpc.protobuf.internal.GeneratedProtoEnum",
+        recursive = true,
+    )
+
+    ignore(
+        checks = listOf(
+            WatchdogChecks.EXHAUSTIVE_PUBLIC_API,
+            WatchdogChecks.INLINE_FUNCTION_WITH_LOGIC,
+        ),
+        whenAnnotatedWith = "kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration",
+    )
+
+    nullableBooleanPublicApi = WatchdogSeverity.NONE
 }
 
 protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).configureEach {

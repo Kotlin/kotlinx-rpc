@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.protoc
 
-import kotlinx.rpc.internal.InternalSubclassingRpcApi
+import kotlinx.rpc.internal.InternalForSubclassingRpcApi
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.tasks.Internal
@@ -26,7 +26,7 @@ public interface ProtoTask : Task {
      *
      * Can be used with [ProtoTasks] to filter tasks.
      */
-    @SubclassOptInRequired(InternalSubclassingRpcApi::class)
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public open class Properties(
         /**
          * Whether the task is for a test source set.

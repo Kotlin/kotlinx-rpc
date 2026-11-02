@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.protobuf
 
-import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 import kotlin.reflect.KClass
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
@@ -16,7 +16,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * This interface is not meant to be implemented by users.
  * But is used by the protoc plugin to generate extension descriptors.
  */
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ProtoExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any> {
     /** Message type that can be extended by this descriptor. */
     public val messageType: KClass<T>

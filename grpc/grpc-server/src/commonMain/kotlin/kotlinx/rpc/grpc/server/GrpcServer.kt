@@ -12,7 +12,7 @@ import kotlinx.rpc.grpc.internal.validateConnectionDuration
 import kotlinx.rpc.grpc.server.internal.GrpcServerImpl
 import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.server.internal.applyConfig
-import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Duration
@@ -26,7 +26,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * Server for listening for and dispatching incoming calls.
  * It is not expected to be implemented by application code or interceptors.
  */
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcServer : RpcServer {
     /**
      * Returns the port number the server is listening on.

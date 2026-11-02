@@ -4,7 +4,9 @@
 package com.google.protobuf.conformance
 
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
  * Constructs a new message.
@@ -118,6 +120,7 @@ val ConformanceRequest.payload: ConformanceRequestPayloadCase get() = this.asInt
 /**
  * Exhaustive, typed dispatch on the active case of the `payload` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> ConformanceRequest.whenPayload(
     protobufPayload: (ByteString) -> R,
     jsonPayload: (String) -> R,
@@ -220,6 +223,7 @@ val ConformanceResponse.result: ConformanceResponseResultCase get() = this.asInt
 /**
  * Exhaustive, typed dispatch on the active case of the `result` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> ConformanceResponse.whenResult(
     parseError: (String) -> R,
     serializeError: (String) -> R,
@@ -276,6 +280,7 @@ fun JspbEncodingConfig.copy(body: JspbEncodingConfig.Builder.() -> Unit = {}): J
  * Interface providing field-presence information for [ConformanceRequest] messages.
  * Retrieve it via the [ConformanceRequest.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ConformanceRequestPresence {
     val hasProtobufPayload: Boolean
 
@@ -292,6 +297,7 @@ interface ConformanceRequestPresence {
  * Interface providing field-presence information for [ConformanceResponse] messages.
  * Retrieve it via the [ConformanceResponse.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ConformanceResponsePresence {
     val hasParseError: Boolean
 
@@ -319,6 +325,7 @@ interface ConformanceResponsePresence {
  * protobuf_test_messages.proto3.TestAllTypes proto (as defined in
  * src/google/protobuf/proto3_test_messages.proto).
  */
+@GeneratedProtoDeclaration
 enum class ConformanceRequestPayloadCase {
     PROTOBUF_PAYLOAD,
     JSON_PAYLOAD,
@@ -334,6 +341,7 @@ enum class ConformanceRequestPayloadCase {
  * Cases of the `result` oneof of [ConformanceResponse].
  * Retrieve the active case via the [ConformanceResponse.result] extension property.
  */
+@GeneratedProtoDeclaration
 enum class ConformanceResponseResultCase {
     /**
      * This string should be set to indicate parsing failed.  The string can

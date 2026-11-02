@@ -4,6 +4,7 @@
 package com.google.protobuf.kotlin
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -117,6 +118,7 @@ public interface Field {
     /**
      * Basic field types.
      */
+    @GeneratedProtoEnum
     public sealed class Kind(public open val number: Int) {
         /**
          * Field type unknown.
@@ -223,6 +225,7 @@ public interface Field {
     /**
      * Whether a field is optional, required, or repeated.
      */
+    @GeneratedProtoEnum
     public sealed class Cardinality(public open val number: Int) {
         /**
          * For fields with unknown cardinality.
@@ -349,6 +352,7 @@ public interface Option {
 /**
  * The syntax in which a protocol buffer element is defined.
  */
+@GeneratedProtoEnum
 public sealed class Syntax(public open val number: Int) {
     /**
      * Syntax `proto2`.

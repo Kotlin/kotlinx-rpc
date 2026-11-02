@@ -982,6 +982,9 @@ class ModelToProtobufKotlinCommonGenerator(
         clazz(
             name = declaration.presenceInterfaceName.simpleName,
             declarationType = CodeGenerator.DeclarationType.Interface,
+            annotations = listOf(
+                "@%T(%T::class)".scoped(FqName.Implicits.SubclassOptInRequired, FqName.Annotations.InternalForSubclassingRpcApi),
+            ),
             comment = comment,
         ) {
             declaration.actualFields.forEach { field ->
@@ -2341,6 +2344,9 @@ class ModelToProtobufKotlinCommonGenerator(
             name = oneOf.caseTypeName.simpleName,
             comment = comment,
             modifiers = "enum",
+            annotations = listOf(
+                FqName.Annotations.GeneratedProtoDeclaration.scopedAnnotation(),
+            ),
             declarationType = CodeGenerator.DeclarationType.Class,
         ) {
             oneOf.variants.forEach { variant ->
@@ -2402,6 +2408,9 @@ class ModelToProtobufKotlinCommonGenerator(
         function(
             name = oneOf.whenFunctionName,
             modifiers = "inline",
+            annotations = listOf(
+                FqName.Annotations.GeneratedProtoDeclaration.scopedAnnotation(),
+            ),
             typeParameters = "R".scoped(),
             contextReceiver = declaration.name.scoped(),
             args = args,
@@ -2430,6 +2439,9 @@ class ModelToProtobufKotlinCommonGenerator(
             name = declaration.name.simpleName,
             comment = declaration.doc,
             modifiers = "sealed",
+            annotations = listOf(
+                FqName.Annotations.GeneratedProtoEnum.scopedAnnotation(),
+            ),
             constructorArgs = listOf("open val number: %T".scoped(FqName.Implicits.Int)),
             deprecation = if (declaration.deprecated) DeprecationLevel.WARNING else null,
         ) {

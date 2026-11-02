@@ -18,4 +18,4 @@ public annotation class InternalRpcApi
  */
 @InternalAnnotationMarker
 @RequiresOptIn("This API is not intended to be subclassed")
-public annotation class InternalSubclassingRpcApi
+public annotation class InternalForSubclassingRpcApi

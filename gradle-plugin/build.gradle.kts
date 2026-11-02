@@ -27,7 +27,7 @@ kotlin {
     jvmToolchain(17)
 
     compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
-    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalSubclassingRpcApi")
+    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalForSubclassingRpcApi")
 }
 
 tasks.withType<KotlinCompile>().configureEach {

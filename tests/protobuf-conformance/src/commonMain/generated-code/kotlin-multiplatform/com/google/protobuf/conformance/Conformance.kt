@@ -5,6 +5,7 @@ package com.google.protobuf.conformance
 
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -185,6 +186,7 @@ interface JspbEncodingConfig {
  *   - running as a sub-process may be more tricky in unusual environments like
  *     iOS apps, where fork/stdin/stdout are not available.
  */
+@GeneratedProtoEnum
 sealed class WireFormat(open val number: Int) {
     data object UNSPECIFIED: WireFormat(number = 0)
 
@@ -206,6 +208,7 @@ sealed class WireFormat(open val number: Int) {
     }
 }
 
+@GeneratedProtoEnum
 sealed class TestCategory(open val number: Int) {
     data object UNSPECIFIED_TEST: TestCategory(number = 0)
 

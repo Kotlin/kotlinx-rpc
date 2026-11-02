@@ -4,6 +4,7 @@
 package com.google.protobuf.kotlin
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -84,6 +85,7 @@ public interface ListValue {
  * 
  * The JSON representation for `NullValue` is JSON `null`.
  */
+@GeneratedProtoEnum
 public sealed class NullValue(public open val number: Int) {
     /**
      * Null value.

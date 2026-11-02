@@ -4,10 +4,8 @@
 
 package kotlinx.rpc.grpc.client
 
-import kotlinx.rpc.internal.utils.InternalRpcApi
-import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
@@ -31,7 +29,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * @see GrpcInsecureClientCredentials
  * @see GrpcCallCredentials
  */
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcClientCredentials
 
 /**
@@ -160,7 +158,7 @@ public class GrpcTlsClientCredentials(
  * @see trustManager
  * @see keyManager
  */
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTlsClientCredentialsBuilder {
     /**
      * Configures the trust manager with root CA certificates for server authentication.

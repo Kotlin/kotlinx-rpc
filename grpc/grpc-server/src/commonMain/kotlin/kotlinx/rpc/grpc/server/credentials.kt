@@ -5,10 +5,9 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Credentials used by a gRPC server to accept incoming connections. The same instance may be
@@ -54,7 +53,7 @@ public enum class GrpcTlsClientAuth {
     REQUIRE
 }
 
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTlsServerCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): GrpcTlsServerCredentialsBuilder
     public fun clientAuth(clientAuth: GrpcTlsClientAuth): GrpcTlsServerCredentialsBuilder

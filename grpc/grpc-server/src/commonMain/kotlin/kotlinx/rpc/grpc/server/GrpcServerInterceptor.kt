@@ -10,7 +10,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.server.internal.GrpcContext
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
-import kotlinx.rpc.internal.utils.InternalForSubclassRpcApi
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
@@ -30,7 +30,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
  * @param Request the request message type of the RPC.
  * @param Response the response message type of the RPC.
  */
-@SubclassOptInRequired(InternalForSubclassRpcApi::class)
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcServerCallScope<Request, Response> {
     /** Descriptor of the RPC method (name, marshalling, type) being executed. */
     public val method: GrpcMethodDescriptor<Request, Response>

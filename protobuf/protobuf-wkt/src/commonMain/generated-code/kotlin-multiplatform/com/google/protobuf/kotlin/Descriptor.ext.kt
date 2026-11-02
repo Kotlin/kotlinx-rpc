@@ -4,6 +4,7 @@
 package com.google.protobuf.kotlin
 
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -1750,12 +1751,14 @@ public val GeneratedCodeInfo.Annotation.endOrNull: Int? get() = if (this.presenc
  */
 public val GeneratedCodeInfo.Annotation.semanticOrNull: GeneratedCodeInfo.Annotation.Semantic? get() = if (this.presence.hasSemantic) this.semantic else null
 
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FileDescriptorSetPresence
 
 /**
  * Interface providing field-presence information for [FileDescriptorProto] messages.
  * Retrieve it via the [FileDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FileDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1774,6 +1777,7 @@ public interface FileDescriptorProtoPresence {
  * Interface providing field-presence information for [DescriptorProto] messages.
  * Retrieve it via the [DescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface DescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1785,6 +1789,7 @@ public interface DescriptorProtoPresence {
      * Interface providing field-presence information for [DescriptorProto.ExtensionRange] messages.
      * Retrieve it via the [DescriptorProto.ExtensionRange.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface ExtensionRange {
         public val hasStart: Boolean
 
@@ -1797,6 +1802,7 @@ public interface DescriptorProtoPresence {
      * Interface providing field-presence information for [DescriptorProto.ReservedRange] messages.
      * Retrieve it via the [DescriptorProto.ReservedRange.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface ReservedRange {
         public val hasStart: Boolean
 
@@ -1808,6 +1814,7 @@ public interface DescriptorProtoPresence {
  * Interface providing field-presence information for [ExtensionRangeOptions] messages.
  * Retrieve it via the [ExtensionRangeOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ExtensionRangeOptionsPresence {
     public val hasFeatures: Boolean
 
@@ -1817,6 +1824,7 @@ public interface ExtensionRangeOptionsPresence {
      * Interface providing field-presence information for [ExtensionRangeOptions.Declaration] messages.
      * Retrieve it via the [ExtensionRangeOptions.Declaration.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface Declaration {
         public val hasNumber: Boolean
 
@@ -1834,6 +1842,7 @@ public interface ExtensionRangeOptionsPresence {
  * Interface providing field-presence information for [FieldDescriptorProto] messages.
  * Retrieve it via the [FieldDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FieldDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1862,6 +1871,7 @@ public interface FieldDescriptorProtoPresence {
  * Interface providing field-presence information for [OneofDescriptorProto] messages.
  * Retrieve it via the [OneofDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface OneofDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1872,6 +1882,7 @@ public interface OneofDescriptorProtoPresence {
  * Interface providing field-presence information for [EnumDescriptorProto] messages.
  * Retrieve it via the [EnumDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface EnumDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1883,6 +1894,7 @@ public interface EnumDescriptorProtoPresence {
      * Interface providing field-presence information for [EnumDescriptorProto.EnumReservedRange] messages.
      * Retrieve it via the [EnumDescriptorProto.EnumReservedRange.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface EnumReservedRange {
         public val hasStart: Boolean
 
@@ -1894,6 +1906,7 @@ public interface EnumDescriptorProtoPresence {
  * Interface providing field-presence information for [EnumValueDescriptorProto] messages.
  * Retrieve it via the [EnumValueDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface EnumValueDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1906,6 +1919,7 @@ public interface EnumValueDescriptorProtoPresence {
  * Interface providing field-presence information for [ServiceDescriptorProto] messages.
  * Retrieve it via the [ServiceDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ServiceDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1916,6 +1930,7 @@ public interface ServiceDescriptorProtoPresence {
  * Interface providing field-presence information for [MethodDescriptorProto] messages.
  * Retrieve it via the [MethodDescriptorProto.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface MethodDescriptorProtoPresence {
     public val hasName: Boolean
 
@@ -1934,6 +1949,7 @@ public interface MethodDescriptorProtoPresence {
  * Interface providing field-presence information for [FileOptions] messages.
  * Retrieve it via the [FileOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FileOptionsPresence {
     public val hasJavaPackage: Boolean
 
@@ -1980,6 +1996,7 @@ public interface FileOptionsPresence {
  * Interface providing field-presence information for [MessageOptions] messages.
  * Retrieve it via the [MessageOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface MessageOptionsPresence {
     public val hasMessageSetWireFormat: Boolean
 
@@ -1998,6 +2015,7 @@ public interface MessageOptionsPresence {
  * Interface providing field-presence information for [FieldOptions] messages.
  * Retrieve it via the [FieldOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FieldOptionsPresence {
     public val hasCtype: Boolean
 
@@ -2025,6 +2043,7 @@ public interface FieldOptionsPresence {
      * Interface providing field-presence information for [FieldOptions.EditionDefault] messages.
      * Retrieve it via the [FieldOptions.EditionDefault.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface EditionDefault {
         public val hasEdition: Boolean
 
@@ -2035,6 +2054,7 @@ public interface FieldOptionsPresence {
      * Interface providing field-presence information for [FieldOptions.FeatureSupport] messages.
      * Retrieve it via the [FieldOptions.FeatureSupport.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface FeatureSupport {
         public val hasEditionIntroduced: Boolean
 
@@ -2050,6 +2070,7 @@ public interface FieldOptionsPresence {
  * Interface providing field-presence information for [OneofOptions] messages.
  * Retrieve it via the [OneofOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface OneofOptionsPresence {
     public val hasFeatures: Boolean
 }
@@ -2058,6 +2079,7 @@ public interface OneofOptionsPresence {
  * Interface providing field-presence information for [EnumOptions] messages.
  * Retrieve it via the [EnumOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface EnumOptionsPresence {
     public val hasAllowAlias: Boolean
 
@@ -2072,6 +2094,7 @@ public interface EnumOptionsPresence {
  * Interface providing field-presence information for [EnumValueOptions] messages.
  * Retrieve it via the [EnumValueOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface EnumValueOptionsPresence {
     public val hasDeprecated: Boolean
 
@@ -2086,6 +2109,7 @@ public interface EnumValueOptionsPresence {
  * Interface providing field-presence information for [ServiceOptions] messages.
  * Retrieve it via the [ServiceOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ServiceOptionsPresence {
     public val hasFeatures: Boolean
 
@@ -2096,6 +2120,7 @@ public interface ServiceOptionsPresence {
  * Interface providing field-presence information for [MethodOptions] messages.
  * Retrieve it via the [MethodOptions.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface MethodOptionsPresence {
     public val hasDeprecated: Boolean
 
@@ -2108,6 +2133,7 @@ public interface MethodOptionsPresence {
  * Interface providing field-presence information for [UninterpretedOption] messages.
  * Retrieve it via the [UninterpretedOption.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface UninterpretedOptionPresence {
     public val hasIdentifierValue: Boolean
 
@@ -2125,6 +2151,7 @@ public interface UninterpretedOptionPresence {
      * Interface providing field-presence information for [UninterpretedOption.NamePart] messages.
      * Retrieve it via the [UninterpretedOption.NamePart.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface NamePart {
         public val hasNamePart: Boolean
 
@@ -2136,6 +2163,7 @@ public interface UninterpretedOptionPresence {
  * Interface providing field-presence information for [FeatureSet] messages.
  * Retrieve it via the [FeatureSet.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FeatureSetPresence {
     public val hasFieldPresence: Boolean
 
@@ -2158,6 +2186,7 @@ public interface FeatureSetPresence {
  * Interface providing field-presence information for [FeatureSetDefaults] messages.
  * Retrieve it via the [FeatureSetDefaults.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface FeatureSetDefaultsPresence {
     public val hasMinimumEdition: Boolean
 
@@ -2167,6 +2196,7 @@ public interface FeatureSetDefaultsPresence {
      * Interface providing field-presence information for [FeatureSetDefaults.FeatureSetEditionDefault] messages.
      * Retrieve it via the [FeatureSetDefaults.FeatureSetEditionDefault.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface FeatureSetEditionDefault {
         public val hasEdition: Boolean
 
@@ -2176,11 +2206,13 @@ public interface FeatureSetDefaultsPresence {
     }
 }
 
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface SourceCodeInfoPresence {
     /**
      * Interface providing field-presence information for [SourceCodeInfo.Location] messages.
      * Retrieve it via the [SourceCodeInfo.Location.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface Location {
         public val hasLeadingComments: Boolean
 
@@ -2188,11 +2220,13 @@ public interface SourceCodeInfoPresence {
     }
 }
 
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GeneratedCodeInfoPresence {
     /**
      * Interface providing field-presence information for [GeneratedCodeInfo.Annotation] messages.
      * Retrieve it via the [GeneratedCodeInfo.Annotation.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public interface Annotation {
         public val hasSourceFile: Boolean
 
