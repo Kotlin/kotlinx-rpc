@@ -47,11 +47,21 @@ public interface ProtoTask : Task {
         public val sourceSetNames: Set<String>,
     ) {
         override fun equals(other: Any?): Boolean {
-            return isTest == (other as? Properties)?.isTest && sourceSetNames == other.sourceSetNames
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Properties
+
+            if (isTest != other.isTest) return false
+            if (sourceSetNames != other.sourceSetNames) return false
+
+            return true
         }
 
         override fun hashCode(): Int {
-            return isTest.hashCode() * 31 + sourceSetNames.hashCode()
+            var result = isTest.hashCode()
+            result = 31 * result + sourceSetNames.hashCode()
+            return result
         }
 
         override fun toString(): String {
