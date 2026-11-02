@@ -5,11 +5,12 @@
 @file:OptIn(
     kotlinx.cinterop.ExperimentalForeignApi::class,
     kotlin.concurrent.atomics.ExperimentalAtomicApi::class,
-    kotlinx.rpc.internal.utils.InternalRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -26,16 +27,28 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
+import kotlinx.rpc.grpc.append
+import kotlinx.rpc.grpc.appendBinary
+import kotlinx.rpc.grpc.getAll
+import kotlinx.rpc.grpc.getAllBinary
+import kotlinx.rpc.grpc.get
 import kotlinx.rpc.grpc.internal.singleOrStatusFlow
+import kotlinx.rpc.grpc.keys
+import kotlinx.rpc.grpc.remove
 import kotlinx.rpc.grpc.status
 import kotlinx.rpc.grpc.statusCode
+import kotlinx.rpc.internal.KOTLINX_RPC_VERSION
 import platform.Foundation.NSError
+import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcMetadata
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestBytes
 import kotlin.concurrent.atomics.AtomicInt
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -551,6 +564,97 @@ class SwiftGrpcBridgeTest {
             assertEquals(GrpcStatusCode.INTERNAL, failure.status.statusCode)
             withTimeout(1_000.milliseconds) { source.cancelAndJoin() }
         }
+    }
+
+    @Test
+    fun swiftUserAgentIncludesKotlinxRpcRuntimeToken() {
+        val runtimeToken = "kotlinx-rpc-swift/$KOTLINX_RPC_VERSION"
+
+        assertEquals(runtimeToken, composeSwiftGrpcUserAgent(null))
+        assertEquals(runtimeToken, composeSwiftGrpcUserAgent(""))
+        assertEquals("MyApp/1.2.3 $runtimeToken", composeSwiftGrpcUserAgent("MyApp/1.2.3"))
+    }
+
+    @Test
+    fun kotlinMetadataVisitorPreservesValuesAcrossSwiftRoundTrip() {
+        val expected = ByteArray(20_000) { it.toByte() }
+        val metadata = GrpcMetadata().apply {
+            append("label", "first")
+            appendBinary("data-bin", expected)
+            append("label", "")
+            append("label", "café")
+            appendBinary("data-bin", byteArrayOf())
+            append("removed", "value")
+            remove("removed", "value")
+        }
+
+        val swift = metadata.toSwift()
+        val result = swift.toKotlin()
+        assertEquals(5L, swift.count)
+        assertEquals(listOf("label", "data-bin"), result.keys().toList())
+        assertEquals(metadata.getAll("label"), result.getAll("label"))
+        assertEquals(listOf("first", "", "caf?"), result.getAll("label"))
+        val binary = result.getAllBinary("data-bin")
+        assertEquals(2, binary.size)
+        assertContentEquals(expected, binary[0])
+        assertContentEquals(byteArrayOf(), binary[1])
+        assertEquals(0L, GrpcMetadata().toSwift().count)
+    }
+
+    @Test
+    fun metadataVisitorCopiesDuplicateAndEmptyValues() {
+        val metadata = SwiftGrpcMetadata()
+        metadata.addStringValue("first", forKey = "label")
+        metadata.addStringValue("", forKey = "label")
+        val expected = byteArrayOf(0, 127, -128, -1)
+        expected.usePinned { pinned ->
+            metadata.addBinaryValue(pinned.addressOf(0), expected.size.toLong(), forKey = "data-bin")
+        }
+        metadata.addBinaryValue(null, 0, forKey = "data-bin")
+
+        val result = metadata.toKotlin()
+        assertEquals(listOf("first", ""), result.getAll("label").toList())
+        val binary = result.getAllBinary("data-bin").toList()
+        assertEquals(2, binary.size)
+        assertContentEquals(expected, binary[0])
+        assertContentEquals(byteArrayOf(), binary[1])
+
+        // The Kotlin result owns its bytes independently of the Swift metadata.
+        binary[0][0] = 42
+        assertContentEquals(expected, metadata.toKotlin().getAllBinary("data-bin").first())
+        assertTrue(SwiftGrpcMetadata().toKotlin().keys().isEmpty())
+    }
+
+    @Test
+    fun metadataVisitorFiltersHttp2PseudoHeaders() {
+        val metadata = SwiftGrpcMetadata().apply {
+            addStringValue("200", forKey = ":status")
+            addStringValue("application/grpc", forKey = "content-type")
+            addStringValue("gzip", forKey = "grpc-encoding")
+            addStringValue("value", forKey = "custom-header")
+        }
+
+        val result = metadata.toKotlin()
+        assertFalse(":status" in result.keys())
+        assertEquals("application/grpc", result["content-type"])
+        assertEquals("gzip", result["grpc-encoding"])
+        assertEquals("value", result["custom-header"])
+    }
+
+    @Test
+    fun elapsedDeadlineNormalizesGrpcSwiftResetRace() {
+        val unavailable = GrpcClientCallEvents.Closed(
+            status = GrpcStatus(
+                GrpcStatusCode.UNAVAILABLE,
+                "Stream unexpectedly closed: received $DEADLINE_RST_STREAM_DESCRIPTION.",
+            ),
+            trailers = GrpcMetadata(),
+        )
+
+        val normalized = unavailable.normalizeDeadlineRace(1500.milliseconds, 2.seconds)
+        val closed = normalized as GrpcClientCallEvents.Closed
+        assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, closed.status.statusCode)
+        assertSame(unavailable, unavailable.normalizeDeadlineRace(1500.milliseconds, 1.seconds))
     }
 
     private suspend fun SwiftGrpcRequestSource<*>.pull(): Pair<SwiftGrpcRequestBytes?, NSError?> {

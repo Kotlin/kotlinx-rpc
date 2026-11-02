@@ -170,3 +170,8 @@ internal suspend fun <Response> FlowCollector<GrpcClientCallEvents<Response>>.em
         throw e
     }
 }
+
+internal actual fun GrpcClientBackend(
+    channel: ManagedChannel,
+    callCredentials: GrpcCallCredentials,
+): GrpcClientBackend = GrpcJavaApiClientBackend(channel, callCredentials)

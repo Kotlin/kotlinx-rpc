@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.client.internal.GrpcJavaApiClientBackend
 import kotlinx.rpc.grpc.client.internal.GrpcClientBackend
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
@@ -54,7 +53,7 @@ public class GrpcClient internal constructor(
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
-    internal val backend: GrpcClientBackend = GrpcJavaApiClientBackend(channel, callCredentials)
+    internal val backend: GrpcClientBackend = GrpcClientBackend(channel, callCredentials)
 
     public fun shutdown() {
         delegates.clear()
@@ -245,7 +244,8 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
      * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
-     * JVM, or the `grpc-c/<version>` C-core token on native). A full override is not supported by the
+     * JVM, the `kotlinx-rpc-swift/<version>` token on iOS, and the `grpc-c/<version>` C-core
+     * token on other native targets). A full override is not supported by the
      * underlying gRPC implementations.
      *
      * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
