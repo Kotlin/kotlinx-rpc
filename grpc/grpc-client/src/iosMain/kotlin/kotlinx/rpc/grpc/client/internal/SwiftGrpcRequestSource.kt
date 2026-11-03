@@ -34,7 +34,7 @@ private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
 internal suspend fun <T> withRequestSource(
     requests: Flow<SwiftGrpcRequestBytes>,
     block: suspend (SwiftGrpcRequestSourceProtocol) -> T
-) = coroutineScope {
+): T = coroutineScope {
 
     // The termination state of the request source
     class Termination(val failure: Throwable?)
@@ -63,11 +63,16 @@ internal suspend fun <T> withRequestSource(
                 completion(request, null)
             }
             terminate(null)
-        } catch(cause: Throwable) {
-            // We must catch throwable to define the termination state,
-            // as requests come from the Swift runtime.
-            terminate(cause.takeUnless { it is CancellationException })
+        } catch (cause: CancellationException) {
+            // Cancellation is EOF
+            terminate(null)
             throw cause
+        } catch (cause: Throwable) {
+            // Do not fail the scope here. That cancels the Swift call, and grpc-swift half-closes
+            // a canceled stream before it resets it (https://github.com/grpc/grpc-swift-2/issues/63).
+            // The failed pull makes grpc-swift reset the stream without a half-close.
+            // This function throws the failure after [block] returns. KXRPC-692
+            terminate(cause)
         }
     }
 
@@ -96,7 +101,17 @@ internal suspend fun <T> withRequestSource(
         }
     }
 
-    block(requestSource)
+    // A failed request flow takes precedence over the call result:
+    // the call status only describes the stream reset that the failure caused. KXRPC-692
+    val result = try {
+        block(requestSource)
+    } catch (cause: SwiftGrpcInteropException) {
+        throw termination.value?.failure ?: cause
+    }
+    // The request flow can also fail after the block returns.
+    collector.join()
+    termination.value?.failure?.let { throw it }
+    result
 }
 
 private fun Throwable.toSwiftGrpcError(): NSError =

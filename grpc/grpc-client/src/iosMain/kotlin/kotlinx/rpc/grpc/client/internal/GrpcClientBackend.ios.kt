@@ -78,27 +78,33 @@ internal class SwiftGrpcClientBackend(
             val encodedRequests = requests.map {
                 encodeSwiftRequest(method.requestMarshaller, it)
             }
-            withRequestSource(encodedRequests) { requestSource ->
+            val closedEvent = withRequestSource(encodedRequests) { requestSource ->
                 // A deadline only exists when a finite positive timeout is configured.
                 val deadline = callOptions.timeout.takeIf { it.isFinite() && it.isPositive() }
                 val callStarted = TimeSource.Monotonic.markNow()
                 var call: SwiftGrpcCallAdapter<Response>? = null
                 var closed = false
                 try {
-                    call = channel.startCall(
+                    val startedCall = channel.startCall(
                         method = method,
                         headers = callHeaders,
                         callOptions = callOptions,
                         requestSource = requestSource,
                     )
+                    call = startedCall
 
-                    while (!closed) {
-                        // A raced local deadline can surface as UNAVAILABLE from grpc-swift;
-                        // normalizeDeadlineRace converts that one case to DEADLINE_EXCEEDED.
-                        val event = call.nextEvent().normalizeDeadlineRace(deadline, callStarted.elapsedNow())
-                        closed = event is GrpcClientCallEvents.Closed
+                    // A raced local deadline can surface as UNAVAILABLE from grpc-swift;
+                    // normalizeDeadlineRace converts that one case to DEADLINE_EXCEEDED.
+                    suspend fun nextNormalizedEvent(): GrpcClientCallEvents<Response> = startedCall.nextEvent()
+                        .normalizeDeadlineRace(deadline, callStarted.elapsedNow())
+
+                    var event = nextNormalizedEvent()
+                    while (event !is GrpcClientCallEvents.Closed) {
                         emit(event)
+                        event = nextNormalizedEvent()
                     }
+                    closed = true
+                    event
                 } finally {
                     if (!closed) {
                         withContext(NonCancellable) {
@@ -107,6 +113,9 @@ internal class SwiftGrpcClientBackend(
                     }
                 }
             }
+            // Emit the terminal event only after withRequestSource returns,
+            // because a failed request flow replaces it. KXRPC-692
+            emit(closedEvent)
         }
     }
 }
