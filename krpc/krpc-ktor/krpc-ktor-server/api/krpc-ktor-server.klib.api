@@ -35,11 +35,11 @@ final class kotlinx.rpc.krpc.ktor.server/KrpcRoute : io.ktor.server.websocket/De
         final fun <get-timeoutMillis>(): kotlin/Long // kotlinx.rpc.krpc.ktor.server/KrpcRoute.timeoutMillis.<get-timeoutMillis>|<get-timeoutMillis>(){}[0]
         final fun <set-timeoutMillis>(kotlin/Long) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.timeoutMillis.<set-timeoutMillis>|<set-timeoutMillis>(kotlin.Long){}[0]
 
-    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final fun <#A1: kotlinx.rpc.krpc/KrpcService<#A1>> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlinx.rpc.krpc.KrpcService<0:0>>}[0]
     final fun rpcConfig(kotlin/Function1<kotlinx.rpc.krpc/KrpcConfigBuilder.Server, kotlin/Unit>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.rpcConfig|rpcConfig(kotlin.Function1<kotlinx.rpc.krpc.KrpcConfigBuilder.Server,kotlin.Unit>){}[0]
     final fun start(kotlin.collections/List<io.ktor.websocket/WebSocketExtension<*>>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.start|start(kotlin.collections.List<io.ktor.websocket.WebSocketExtension<*>>){}[0]
     final fun terminate() // kotlinx.rpc.krpc.ktor.server/KrpcRoute.terminate|terminate(){}[0]
-    final inline fun <#A1: reified kotlin/Any> registerService(noinline kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final inline fun <#A1: reified kotlinx.rpc.krpc/KrpcService<#A1>> registerService(noinline kotlin/Function0<#A1>) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.registerService|registerService(kotlin.Function0<0:0>){0§<kotlinx.rpc.krpc.KrpcService<0:0>>}[0]
     final suspend fun flush() // kotlinx.rpc.krpc.ktor.server/KrpcRoute.flush|flush(){}[0]
     final suspend fun send(io.ktor.websocket/Frame) // kotlinx.rpc.krpc.ktor.server/KrpcRoute.send|send(io.ktor.websocket.Frame){}[0]
 }

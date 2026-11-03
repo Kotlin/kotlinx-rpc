@@ -6,11 +6,11 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:krpc-server>
-abstract class kotlinx.rpc.krpc.server/KrpcServer : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcServer { // kotlinx.rpc.krpc.server/KrpcServer|null[0]
+abstract class kotlinx.rpc.krpc.server/KrpcServer : kotlinx.rpc.krpc.internal/KrpcEndpoint, kotlinx.rpc/RpcServer<kotlinx.rpc.krpc/KrpcProtocol> { // kotlinx.rpc.krpc.server/KrpcServer|null[0]
     constructor <init>(kotlinx.rpc.krpc/KrpcConfig.Server, kotlinx.rpc.krpc/KrpcTransport) // kotlinx.rpc.krpc.server/KrpcServer.<init>|<init>(kotlinx.rpc.krpc.KrpcConfig.Server;kotlinx.rpc.krpc.KrpcTransport){}[0]
 
-    final fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-    final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A1>> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlinx.rpc.RpcService<kotlinx.rpc.krpc.KrpcProtocol,0:0>>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A1>> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlinx.rpc.RpcService<kotlinx.rpc.krpc.KrpcProtocol,0:0>>}[0]
     final fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.server/KrpcServer.close|close(kotlin.String?){}[0]
     final suspend fun awaitCompletion() // kotlinx.rpc.krpc.server/KrpcServer.awaitCompletion|awaitCompletion(){}[0]
 }

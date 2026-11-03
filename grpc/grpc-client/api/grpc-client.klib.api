@@ -74,8 +74,8 @@ final class kotlinx.rpc.grpc.client/GrpcCallOptions { // kotlinx.rpc.grpc.client
     final fun clearWaitForReady() // kotlinx.rpc.grpc.client/GrpcCallOptions.clearWaitForReady|clearWaitForReady(){}[0]
 }
 
-final class kotlinx.rpc.grpc.client/GrpcClient : kotlinx.rpc/RpcClient { // kotlinx.rpc.grpc.client/GrpcClient|null[0]
-    final fun <#A1: kotlin/Any?> callServerStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.grpc.client/GrpcClient.callServerStreaming|callServerStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+final class kotlinx.rpc.grpc.client/GrpcClient : kotlinx.rpc/RpcClient<kotlinx.rpc.grpc/GrpcProtocol> { // kotlinx.rpc.grpc.client/GrpcClient|null[0]
+    final fun <#A1: kotlin/Any?> callStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc.grpc.client/GrpcClient.callStreaming|callStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
     final fun shutdown() // kotlinx.rpc.grpc.client/GrpcClient.shutdown|shutdown(){}[0]
     final fun shutdownNow() // kotlinx.rpc.grpc.client/GrpcClient.shutdownNow|shutdownNow(){}[0]
     final suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc.grpc.client/GrpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]

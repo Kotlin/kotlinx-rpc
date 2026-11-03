@@ -62,6 +62,13 @@ public final class kotlinx/rpc/krpc/KrpcConfigKt {
 	public static synthetic fun rpcServerConfig$default (Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/krpc/KrpcConfig$Server;
 }
 
+public abstract interface class kotlinx/rpc/krpc/KrpcProtocol : kotlinx/rpc/RpcProtocol {
+}
+
+public abstract interface class kotlinx/rpc/krpc/KrpcService : kotlinx/rpc/RpcService {
+	public abstract fun getDescriptor ()Lkotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor;
+}
+
 public abstract interface class kotlinx/rpc/krpc/KrpcTransport : kotlinx/coroutines/CoroutineScope {
 	public abstract fun receive (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun send (Lkotlinx/rpc/krpc/KrpcTransportMessage;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
@@ -82,5 +89,8 @@ public final class kotlinx/rpc/krpc/KrpcTransportMessage$BinaryMessage : kotlinx
 public final class kotlinx/rpc/krpc/KrpcTransportMessage$StringMessage : kotlinx/rpc/krpc/KrpcTransportMessage {
 	public fun <init> (Ljava/lang/String;)V
 	public final fun getValue ()Ljava/lang/String;
+}
+
+public abstract interface annotation class kotlinx/rpc/krpc/annotations/Krpc : java/lang/annotation/Annotation {
 }
 

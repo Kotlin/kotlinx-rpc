@@ -13,11 +13,35 @@ open annotation class kotlinx.rpc.annotations/CheckedTypeAnnotation : kotlin/Ann
         final fun <get-checkFor>(): kotlin.reflect/KClass<*> // kotlinx.rpc.annotations/CheckedTypeAnnotation.checkFor.<get-checkFor>|<get-checkFor>(){}[0]
 }
 
-open annotation class kotlinx.rpc.annotations/Rpc : kotlin/Annotation { // kotlinx.rpc.annotations/Rpc|null[0]
-    constructor <init>() // kotlinx.rpc.annotations/Rpc.<init>|<init>(){}[0]
+open annotation class kotlinx.rpc.annotations/RpcMeta : kotlin/Annotation { // kotlinx.rpc.annotations/RpcMeta|null[0]
+    constructor <init>(kotlin.reflect/KClass<*>, kotlin.reflect/KClass<*>, kotlin.reflect/KClass<*>) // kotlinx.rpc.annotations/RpcMeta.<init>|<init>(kotlin.reflect.KClass<*>;kotlin.reflect.KClass<*>;kotlin.reflect.KClass<*>){}[0]
+
+    final val descriptorClass // kotlinx.rpc.annotations/RpcMeta.descriptorClass|{}descriptorClass[0]
+        final fun <get-descriptorClass>(): kotlin.reflect/KClass<*> // kotlinx.rpc.annotations/RpcMeta.descriptorClass.<get-descriptorClass>|<get-descriptorClass>(){}[0]
+    final val protocolClass // kotlinx.rpc.annotations/RpcMeta.protocolClass|{}protocolClass[0]
+        final fun <get-protocolClass>(): kotlin.reflect/KClass<*> // kotlinx.rpc.annotations/RpcMeta.protocolClass.<get-protocolClass>|<get-protocolClass>(){}[0]
+    final val serviceClass // kotlinx.rpc.annotations/RpcMeta.serviceClass|{}serviceClass[0]
+        final fun <get-serviceClass>(): kotlin.reflect/KClass<*> // kotlinx.rpc.annotations/RpcMeta.serviceClass.<get-serviceClass>|<get-serviceClass>(){}[0]
 }
 
-abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcCallable { // kotlinx.rpc.descriptor/RpcCallable|null[0]
+abstract interface <#A: kotlinx.rpc/RpcProtocol, #B: kotlinx.rpc/RpcService<#A, #B>> kotlinx.rpc.descriptor/RpcServiceDescriptor { // kotlinx.rpc.descriptor/RpcServiceDescriptor|null[0]
+    abstract val callables // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables|{}callables[0]
+        abstract fun <get-callables>(): kotlin.collections/Map<kotlin/String, kotlinx.rpc.descriptor/RpcCallable<#B>> // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables.<get-callables>|<get-callables>(){}[0]
+    abstract val fqName // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName|{}fqName[0]
+        abstract fun <get-fqName>(): kotlin/String // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName.<get-fqName>|<get-fqName>(){}[0]
+    abstract val simpleName // kotlinx.rpc.descriptor/RpcServiceDescriptor.simpleName|{}simpleName[0]
+        abstract fun <get-simpleName>(): kotlin/String // kotlinx.rpc.descriptor/RpcServiceDescriptor.simpleName.<get-simpleName>|<get-simpleName>(){}[0]
+
+    abstract fun createInstance(kotlin/Long, kotlinx.rpc/RpcClient<#A>): #B // kotlinx.rpc.descriptor/RpcServiceDescriptor.createInstance|createInstance(kotlin.Long;kotlinx.rpc.RpcClient<1:0>){}[0]
+    abstract fun getCallable(kotlin/String): kotlinx.rpc.descriptor/RpcCallable<#B>? // kotlinx.rpc.descriptor/RpcServiceDescriptor.getCallable|getCallable(kotlin.String){}[0]
+}
+
+abstract interface <#A: kotlinx.rpc/RpcProtocol, #B: kotlinx.rpc/RpcService<#A, #B>> kotlinx.rpc/RpcService { // kotlinx.rpc/RpcService|null[0]
+    abstract val descriptor // kotlinx.rpc/RpcService.descriptor|{}descriptor[0]
+        abstract fun <get-descriptor>(): kotlinx.rpc.descriptor/RpcServiceDescriptor<#A, #B> // kotlinx.rpc/RpcService.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+}
+
+abstract interface <#A: kotlinx.rpc/RpcService<*, #A>> kotlinx.rpc.descriptor/RpcCallable { // kotlinx.rpc.descriptor/RpcCallable|null[0]
     abstract val invokator // kotlinx.rpc.descriptor/RpcCallable.invokator|{}invokator[0]
         abstract fun <get-invokator>(): kotlinx.rpc.descriptor/RpcInvokator<#A> // kotlinx.rpc.descriptor/RpcCallable.invokator.<get-invokator>|<get-invokator>(){}[0]
     abstract val name // kotlinx.rpc.descriptor/RpcCallable.name|{}name[0]
@@ -26,18 +50,6 @@ abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcCallable { // kotl
         abstract fun <get-parameters>(): kotlin/Array<out kotlinx.rpc.descriptor/RpcParameter> // kotlinx.rpc.descriptor/RpcCallable.parameters.<get-parameters>|<get-parameters>(){}[0]
     abstract val returnType // kotlinx.rpc.descriptor/RpcCallable.returnType|{}returnType[0]
         abstract fun <get-returnType>(): kotlinx.rpc.descriptor/RpcType // kotlinx.rpc.descriptor/RpcCallable.returnType.<get-returnType>|<get-returnType>(){}[0]
-}
-
-abstract interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcServiceDescriptor { // kotlinx.rpc.descriptor/RpcServiceDescriptor|null[0]
-    abstract val callables // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables|{}callables[0]
-        abstract fun <get-callables>(): kotlin.collections/Map<kotlin/String, kotlinx.rpc.descriptor/RpcCallable<#A>> // kotlinx.rpc.descriptor/RpcServiceDescriptor.callables.<get-callables>|<get-callables>(){}[0]
-    abstract val fqName // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName|{}fqName[0]
-        abstract fun <get-fqName>(): kotlin/String // kotlinx.rpc.descriptor/RpcServiceDescriptor.fqName.<get-fqName>|<get-fqName>(){}[0]
-    abstract val simpleName // kotlinx.rpc.descriptor/RpcServiceDescriptor.simpleName|{}simpleName[0]
-        abstract fun <get-simpleName>(): kotlin/String // kotlinx.rpc.descriptor/RpcServiceDescriptor.simpleName.<get-simpleName>|<get-simpleName>(){}[0]
-
-    abstract fun createInstance(kotlin/Long, kotlinx.rpc/RpcClient): #A // kotlinx.rpc.descriptor/RpcServiceDescriptor.createInstance|createInstance(kotlin.Long;kotlinx.rpc.RpcClient){}[0]
-    abstract fun getCallable(kotlin/String): kotlinx.rpc.descriptor/RpcCallable<#A>? // kotlinx.rpc.descriptor/RpcServiceDescriptor.getCallable|getCallable(kotlin.String){}[0]
 }
 
 abstract interface kotlinx.rpc.descriptor/RpcParameter { // kotlinx.rpc.descriptor/RpcParameter|null[0]
@@ -60,48 +72,56 @@ abstract interface kotlinx.rpc.descriptor/RpcType { // kotlinx.rpc.descriptor/Rp
 
 abstract interface kotlinx.rpc/RemoteService // kotlinx.rpc/RemoteService|null[0]
 
-abstract interface kotlinx.rpc/RpcClient { // kotlinx.rpc/RpcClient|null[0]
-    abstract fun <#A1: kotlin/Any?> callServerStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc/RpcClient.callServerStreaming|callServerStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
-    abstract suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc/RpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
-}
+abstract interface kotlinx.rpc/RpcProtocol // kotlinx.rpc/RpcProtocol|null[0]
 
-abstract interface kotlinx.rpc/RpcServer { // kotlinx.rpc/RpcServer|null[0]
-    abstract fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc/RpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-    abstract fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc/RpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
-}
-
-sealed interface <#A: kotlin/Any> kotlinx.rpc.descriptor/RpcInvokator { // kotlinx.rpc.descriptor/RpcInvokator|null[0]
-    abstract fun interface <#A1: kotlin/Any> FlowResponse : kotlinx.rpc.descriptor/RpcInvokator<#A1> { // kotlinx.rpc.descriptor/RpcInvokator.FlowResponse|null[0]
+sealed interface <#A: kotlinx.rpc/RpcService<*, #A>> kotlinx.rpc.descriptor/RpcInvokator { // kotlinx.rpc.descriptor/RpcInvokator|null[0]
+    abstract fun interface <#A1: kotlinx.rpc/RpcService<*, #A1>> FlowResponse : kotlinx.rpc.descriptor/RpcInvokator<#A1> { // kotlinx.rpc.descriptor/RpcInvokator.FlowResponse|null[0]
         abstract fun call(#A1, kotlin/Array<kotlin/Any?>): kotlinx.coroutines.flow/Flow<kotlin/Any?> // kotlinx.rpc.descriptor/RpcInvokator.FlowResponse.call|call(1:0;kotlin.Array<kotlin.Any?>){}[0]
     }
 
-    abstract fun interface <#A1: kotlin/Any> UnaryResponse : kotlinx.rpc.descriptor/RpcInvokator<#A1> { // kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse|null[0]
+    abstract fun interface <#A1: kotlinx.rpc/RpcService<*, #A1>> UnaryResponse : kotlinx.rpc.descriptor/RpcInvokator<#A1> { // kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse|null[0]
         abstract suspend fun call(#A1, kotlin/Array<kotlin/Any?>): kotlin/Any? // kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse.call|call(1:0;kotlin.Array<kotlin.Any?>){}[0]
     }
 }
 
+abstract class <#A: kotlinx.rpc/RpcProtocol> kotlinx.rpc/RpcClient { // kotlinx.rpc/RpcClient|null[0]
+    constructor <init>() // kotlinx.rpc/RpcClient.<init>|<init>(){}[0]
+
+    abstract fun <#A1: kotlin/Any?> callStreaming(kotlinx.rpc/RpcCall): kotlinx.coroutines.flow/Flow<#A1> // kotlinx.rpc/RpcClient.callStreaming|callStreaming(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    abstract suspend fun <#A1: kotlin/Any?> call(kotlinx.rpc/RpcCall): #A1 // kotlinx.rpc/RpcClient.call|call(kotlinx.rpc.RpcCall){0§<kotlin.Any?>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<#A, #A1>> service(kotlin.reflect/KClass<#A1>): #A1 // kotlinx.rpc/RpcClient.service|service(kotlin.reflect.KClass<0:0>){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+    final fun <#A1: kotlinx.rpc/RpcService<#A, #A1>> service(kotlin.reflect/KType): #A1 // kotlinx.rpc/RpcClient.service|service(kotlin.reflect.KType){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+    final inline fun <#A1: reified kotlinx.rpc/RpcService<#A, #A1>> service(): #A1 // kotlinx.rpc/RpcClient.service|service(){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+}
+
+abstract class <#A: kotlinx.rpc/RpcProtocol> kotlinx.rpc/RpcServer { // kotlinx.rpc/RpcServer|null[0]
+    constructor <init>() // kotlinx.rpc/RpcServer.<init>|<init>(){}[0]
+
+    abstract fun <#A1: kotlinx.rpc/RpcService<#A, #A1>> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc/RpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+    abstract fun <#A1: kotlinx.rpc/RpcService<#A, #A1>> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc/RpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+    final inline fun <#A1: reified kotlinx.rpc/RpcService<#A, #A1>> registerService(noinline kotlin/Function0<#A1>) // kotlinx.rpc/RpcServer.registerService|registerService(kotlin.Function0<0:0>){0§<kotlinx.rpc.RpcService<1:0,0:0>>}[0]
+}
+
 final class kotlinx.rpc/RpcCall { // kotlinx.rpc/RpcCall|null[0]
-    constructor <init>(kotlinx.rpc.descriptor/RpcServiceDescriptor<*>, kotlin/String, kotlin/Array<kotlin/Any?>, kotlin/Long) // kotlinx.rpc/RpcCall.<init>|<init>(kotlinx.rpc.descriptor.RpcServiceDescriptor<*>;kotlin.String;kotlin.Array<kotlin.Any?>;kotlin.Long){}[0]
+    constructor <init>(kotlinx.rpc.descriptor/RpcServiceDescriptor<*, *>, kotlin/String, kotlin/Array<kotlin/Any?>, kotlin/Long) // kotlinx.rpc/RpcCall.<init>|<init>(kotlinx.rpc.descriptor.RpcServiceDescriptor<*,*>;kotlin.String;kotlin.Array<kotlin.Any?>;kotlin.Long){}[0]
 
     final val arguments // kotlinx.rpc/RpcCall.arguments|{}arguments[0]
         final fun <get-arguments>(): kotlin/Array<kotlin/Any?> // kotlinx.rpc/RpcCall.arguments.<get-arguments>|<get-arguments>(){}[0]
     final val callableName // kotlinx.rpc/RpcCall.callableName|{}callableName[0]
         final fun <get-callableName>(): kotlin/String // kotlinx.rpc/RpcCall.callableName.<get-callableName>|<get-callableName>(){}[0]
     final val descriptor // kotlinx.rpc/RpcCall.descriptor|{}descriptor[0]
-        final fun <get-descriptor>(): kotlinx.rpc.descriptor/RpcServiceDescriptor<*> // kotlinx.rpc/RpcCall.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+        final fun <get-descriptor>(): kotlinx.rpc.descriptor/RpcServiceDescriptor<*, *> // kotlinx.rpc/RpcCall.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
     final val serviceId // kotlinx.rpc/RpcCall.serviceId|{}serviceId[0]
         final fun <get-serviceId>(): kotlin/Long // kotlinx.rpc/RpcCall.serviceId.<get-serviceId>|<get-serviceId>(){}[0]
 }
 
-final val kotlinx.rpc.descriptor/flowInvokator // kotlinx.rpc.descriptor/flowInvokator|@kotlinx.rpc.descriptor.RpcCallable<0:0>{0§<kotlin.Any>}flowInvokator[0]
-    final fun <#A1: kotlin/Any> (kotlinx.rpc.descriptor/RpcCallable<#A1>).<get-flowInvokator>(): kotlinx.rpc.descriptor/RpcInvokator.FlowResponse<#A1> // kotlinx.rpc.descriptor/flowInvokator.<get-flowInvokator>|<get-flowInvokator>@kotlinx.rpc.descriptor.RpcCallable<0:0>(){0§<kotlin.Any>}[0]
-final val kotlinx.rpc.descriptor/unaryInvokator // kotlinx.rpc.descriptor/unaryInvokator|@kotlinx.rpc.descriptor.RpcCallable<0:0>{0§<kotlin.Any>}unaryInvokator[0]
-    final fun <#A1: kotlin/Any> (kotlinx.rpc.descriptor/RpcCallable<#A1>).<get-unaryInvokator>(): kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse<#A1> // kotlinx.rpc.descriptor/unaryInvokator.<get-unaryInvokator>|<get-unaryInvokator>@kotlinx.rpc.descriptor.RpcCallable<0:0>(){0§<kotlin.Any>}[0]
+final val kotlinx.rpc.descriptor/flowInvokator // kotlinx.rpc.descriptor/flowInvokator|@kotlinx.rpc.descriptor.RpcCallable<0:0>{0§<kotlinx.rpc.RpcService<*,0:0>>}flowInvokator[0]
+    final fun <#A1: kotlinx.rpc/RpcService<*, #A1>> (kotlinx.rpc.descriptor/RpcCallable<#A1>).<get-flowInvokator>(): kotlinx.rpc.descriptor/RpcInvokator.FlowResponse<#A1> // kotlinx.rpc.descriptor/flowInvokator.<get-flowInvokator>|<get-flowInvokator>@kotlinx.rpc.descriptor.RpcCallable<0:0>(){0§<kotlinx.rpc.RpcService<*,0:0>>}[0]
+final val kotlinx.rpc.descriptor/unaryInvokator // kotlinx.rpc.descriptor/unaryInvokator|@kotlinx.rpc.descriptor.RpcCallable<0:0>{0§<kotlinx.rpc.RpcService<*,0:0>>}unaryInvokator[0]
+    final fun <#A1: kotlinx.rpc/RpcService<*, #A1>> (kotlinx.rpc.descriptor/RpcCallable<#A1>).<get-unaryInvokator>(): kotlinx.rpc.descriptor/RpcInvokator.UnaryResponse<#A1> // kotlinx.rpc.descriptor/unaryInvokator.<get-unaryInvokator>|<get-unaryInvokator>@kotlinx.rpc.descriptor.RpcCallable<0:0>(){0§<kotlinx.rpc.RpcService<*,0:0>>}[0]
+final val kotlinx.rpc/descriptor // kotlinx.rpc/descriptor|@kotlin.reflect.KClass<0:1>{0§<kotlinx.rpc.RpcProtocol>;1§<kotlinx.rpc.RpcService<0:0,0:1>>}descriptor[0]
+    final fun <#A1: kotlinx.rpc/RpcProtocol, #B1: kotlinx.rpc/RpcService<#A1, #B1>> (kotlin.reflect/KClass<#B1>).<get-descriptor>(): kotlinx.rpc.descriptor/RpcServiceDescriptor<#A1, #B1> // kotlinx.rpc/descriptor.<get-descriptor>|<get-descriptor>@kotlin.reflect.KClass<0:1>(){0§<kotlinx.rpc.RpcProtocol>;1§<kotlinx.rpc.RpcService<0:0,0:1>>}[0]
 
-final fun <#A: kotlin/Any> (kotlinx.rpc/RpcClient).kotlinx.rpc/withService(kotlin.reflect/KClass<#A>): #A // kotlinx.rpc/withService|withService@kotlinx.rpc.RpcClient(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-final fun <#A: kotlin/Any> (kotlinx.rpc/RpcClient).kotlinx.rpc/withService(kotlin.reflect/KType): #A // kotlinx.rpc/withService|withService@kotlinx.rpc.RpcClient(kotlin.reflect.KType){0§<kotlin.Any>}[0]
-final fun <#A: kotlin/Any> kotlinx.rpc.descriptor/serviceDescriptorOf(kotlin.reflect/KClass<#A>): kotlinx.rpc.descriptor/RpcServiceDescriptor<#A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
-final fun <#A: kotlin/Any> kotlinx.rpc.descriptor/serviceDescriptorOf(kotlin.reflect/KType): kotlinx.rpc.descriptor/RpcServiceDescriptor<#A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(kotlin.reflect.KType){0§<kotlin.Any>}[0]
-final inline fun <#A: reified kotlin/Any> (kotlinx.rpc/RpcClient).kotlinx.rpc/withService(): #A // kotlinx.rpc/withService|withService@kotlinx.rpc.RpcClient(){0§<kotlin.Any>}[0]
-final inline fun <#A: reified kotlin/Any> (kotlinx.rpc/RpcServer).kotlinx.rpc/registerService(noinline kotlin/Function0<#A>) // kotlinx.rpc/registerService|registerService@kotlinx.rpc.RpcServer(kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
-final inline fun <#A: reified kotlin/Any> kotlinx.rpc.descriptor/serviceDescriptorOf(): kotlinx.rpc.descriptor/RpcServiceDescriptor<#A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(){0§<kotlin.Any>}[0]
+final fun <#A: kotlinx.rpc/RpcService<*, #A>> kotlinx.rpc.descriptor/serviceDescriptorOf(kotlin.reflect/KClass<#A>): kotlinx.rpc.descriptor/RpcServiceDescriptor<*, #A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(kotlin.reflect.KClass<0:0>){0§<kotlinx.rpc.RpcService<*,0:0>>}[0]
+final fun <#A: kotlinx.rpc/RpcService<*, #A>> kotlinx.rpc.descriptor/serviceDescriptorOf(kotlin.reflect/KType): kotlinx.rpc.descriptor/RpcServiceDescriptor<*, #A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(kotlin.reflect.KType){0§<kotlinx.rpc.RpcService<*,0:0>>}[0]
+final inline fun <#A: reified kotlinx.rpc/RpcService<*, #A>> kotlinx.rpc.descriptor/serviceDescriptorOf(): kotlinx.rpc.descriptor/RpcServiceDescriptor<*, #A> // kotlinx.rpc.descriptor/serviceDescriptorOf|serviceDescriptorOf(){0§<kotlinx.rpc.RpcService<*,0:0>>}[0]

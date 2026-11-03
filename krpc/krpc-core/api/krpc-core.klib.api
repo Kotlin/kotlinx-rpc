@@ -6,6 +6,17 @@
 // - Show declarations: true
 
 // Library unique name: <org.jetbrains.kotlinx:krpc-core>
+open annotation class kotlinx.rpc.krpc.annotations/Krpc : kotlin/Annotation { // kotlinx.rpc.krpc.annotations/Krpc|null[0]
+    constructor <init>() // kotlinx.rpc.krpc.annotations/Krpc.<init>|<init>(){}[0]
+}
+
+abstract interface <#A: kotlinx.rpc.krpc/KrpcService<#A>> kotlinx.rpc.krpc/KrpcService : kotlinx.rpc/RpcService<kotlinx.rpc.krpc/KrpcProtocol, #A> { // kotlinx.rpc.krpc/KrpcService|null[0]
+    abstract val descriptor // kotlinx.rpc.krpc/KrpcService.descriptor|{}descriptor[0]
+        abstract fun <get-descriptor>(): kotlinx.rpc.krpc.descriptor/KrpcServiceDescriptor<#A> // kotlinx.rpc.krpc/KrpcService.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+}
+
+abstract interface kotlinx.rpc.krpc/KrpcProtocol : kotlinx.rpc/RpcProtocol // kotlinx.rpc.krpc/KrpcProtocol|null[0]
+
 abstract interface kotlinx.rpc.krpc/KrpcTransport : kotlinx.coroutines/CoroutineScope { // kotlinx.rpc.krpc/KrpcTransport|null[0]
     abstract suspend fun receive(): kotlinx.rpc.krpc/KrpcTransportMessage // kotlinx.rpc.krpc/KrpcTransport.receive|receive(){}[0]
     abstract suspend fun send(kotlinx.rpc.krpc/KrpcTransportMessage) // kotlinx.rpc.krpc/KrpcTransport.send|send(kotlinx.rpc.krpc.KrpcTransportMessage){}[0]

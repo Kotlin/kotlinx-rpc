@@ -12,6 +12,10 @@ public final class kotlinx/rpc/grpc/GrpcCompression$None : kotlinx/rpc/grpc/Grpc
 	public fun getName ()Ljava/lang/String;
 }
 
+public final class kotlinx/rpc/grpc/GrpcConfig {
+	public fun <init> ()V
+}
+
 public final class kotlinx/rpc/grpc/GrpcMetadataKey {
 	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;)V
 }
@@ -47,6 +51,13 @@ public final class kotlinx/rpc/grpc/GrpcMetadata_jvmKt {
 	public static final fun removeAllBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;)Ljava/util/List;
 	public static final fun removeBinary (Lio/grpc/Metadata;Ljava/lang/String;[B)Z
 	public static final fun removeBinary (Lio/grpc/Metadata;Lkotlinx/rpc/grpc/GrpcMetadataKey;Ljava/lang/Object;)Z
+}
+
+public abstract interface class kotlinx/rpc/grpc/GrpcProtocol : kotlinx/rpc/RpcProtocol {
+}
+
+public abstract interface class kotlinx/rpc/grpc/GrpcService : kotlinx/rpc/RpcService {
+	public abstract fun getDescriptor ()Lkotlinx/rpc/grpc/descriptor/GrpcServiceDescriptor;
 }
 
 public final class kotlinx/rpc/grpc/GrpcStatusCode : java/lang/Enum {

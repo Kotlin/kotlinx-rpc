@@ -36,20 +36,6 @@ abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.server/Gr
     open suspend fun (kotlinx.coroutines.flow/FlowCollector<#B>).proceedUnmodified(kotlinx.coroutines.flow/Flow<#A>) // kotlinx.rpc.grpc.server/GrpcServerCallScope.proceedUnmodified|proceedUnmodified@kotlinx.coroutines.flow.FlowCollector<1:1>(kotlinx.coroutines.flow.Flow<1:0>){}[0]
 }
 
-abstract interface kotlinx.rpc.grpc.server/GrpcServer : kotlinx.rpc/RpcServer { // kotlinx.rpc.grpc.server/GrpcServer|null[0]
-    abstract val isShutdown // kotlinx.rpc.grpc.server/GrpcServer.isShutdown|{}isShutdown[0]
-        abstract fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
-    abstract val isTerminated // kotlinx.rpc.grpc.server/GrpcServer.isTerminated|{}isTerminated[0]
-        abstract fun <get-isTerminated>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isTerminated.<get-isTerminated>|<get-isTerminated>(){}[0]
-    abstract val port // kotlinx.rpc.grpc.server/GrpcServer.port|{}port[0]
-        abstract fun <get-port>(): kotlin/Int // kotlinx.rpc.grpc.server/GrpcServer.port.<get-port>|<get-port>(){}[0]
-
-    abstract fun shutdown(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdown|shutdown(){}[0]
-    abstract fun shutdownNow(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdownNow|shutdownNow(){}[0]
-    abstract fun start(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.start|start(){}[0]
-    abstract suspend fun awaitTermination(kotlin.time/Duration = ...): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
-}
-
 abstract interface kotlinx.rpc.grpc.server/GrpcServerInterceptor { // kotlinx.rpc.grpc.server/GrpcServerInterceptor|null[0]
     abstract fun <#A1: kotlin/Any?, #B1: kotlin/Any?> (kotlinx.rpc.grpc.server/GrpcServerCallScope<#A1, #B1>).intercept(kotlinx.coroutines.flow/Flow<#A1>): kotlinx.coroutines.flow/Flow<#B1> // kotlinx.rpc.grpc.server/GrpcServerInterceptor.intercept|intercept@kotlinx.rpc.grpc.server.GrpcServerCallScope<0:0,0:1>(kotlinx.coroutines.flow.Flow<0:0>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
 }
@@ -65,6 +51,22 @@ abstract class kotlinx.rpc.grpc.server/GrpcHandlerRegistry { // kotlinx.rpc.grpc
     abstract fun getServices(): kotlin.collections/List<kotlinx.rpc.grpc.server/GrpcServerServiceDefinition> // kotlinx.rpc.grpc.server/GrpcHandlerRegistry.getServices|getServices(){}[0]
     abstract fun lookupMethod(kotlin/String, kotlin/String?): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>? // kotlinx.rpc.grpc.server/GrpcHandlerRegistry.lookupMethod|lookupMethod(kotlin.String;kotlin.String?){}[0]
     final fun lookupMethod(kotlin/String): kotlinx.rpc.grpc.server.internal/ServerMethodDefinition<*, *>? // kotlinx.rpc.grpc.server/GrpcHandlerRegistry.lookupMethod|lookupMethod(kotlin.String){}[0]
+}
+
+abstract class kotlinx.rpc.grpc.server/GrpcServer : kotlinx.rpc/RpcServer<kotlinx.rpc.grpc/GrpcProtocol> { // kotlinx.rpc.grpc.server/GrpcServer|null[0]
+    constructor <init>() // kotlinx.rpc.grpc.server/GrpcServer.<init>|<init>(){}[0]
+
+    abstract val isShutdown // kotlinx.rpc.grpc.server/GrpcServer.isShutdown|{}isShutdown[0]
+        abstract fun <get-isShutdown>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isShutdown.<get-isShutdown>|<get-isShutdown>(){}[0]
+    abstract val isTerminated // kotlinx.rpc.grpc.server/GrpcServer.isTerminated|{}isTerminated[0]
+        abstract fun <get-isTerminated>(): kotlin/Boolean // kotlinx.rpc.grpc.server/GrpcServer.isTerminated.<get-isTerminated>|<get-isTerminated>(){}[0]
+    abstract val port // kotlinx.rpc.grpc.server/GrpcServer.port|{}port[0]
+        abstract fun <get-port>(): kotlin/Int // kotlinx.rpc.grpc.server/GrpcServer.port.<get-port>|<get-port>(){}[0]
+
+    abstract fun shutdown(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdown|shutdown(){}[0]
+    abstract fun shutdownNow(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.shutdownNow|shutdownNow(){}[0]
+    abstract fun start(): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.start|start(){}[0]
+    abstract suspend fun awaitTermination(kotlin.time/Duration = ...): kotlinx.rpc.grpc.server/GrpcServer // kotlinx.rpc.grpc.server/GrpcServer.awaitTermination|awaitTermination(kotlin.time.Duration){}[0]
 }
 
 abstract class kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcServerCredentials|null[0]
@@ -106,7 +108,7 @@ final class kotlinx.rpc.grpc.server/GrpcServerConfiguration { // kotlinx.rpc.grp
 
     final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.server/GrpcServerInterceptor>...) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.server.GrpcServerInterceptor>...){}[0]
     final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.server/GrpcServerConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.server.GrpcServerConfiguration.KeepAlive,kotlin.Unit>){}[0]
-    final fun services(kotlin/Function1<kotlinx.rpc/RpcServer, kotlin/Unit>) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.services|services(kotlin.Function1<kotlinx.rpc.RpcServer,kotlin.Unit>){}[0]
+    final fun services(kotlin/Function1<kotlinx.rpc/RpcServer<kotlinx.rpc.grpc/GrpcProtocol>, kotlin/Unit>) // kotlinx.rpc.grpc.server/GrpcServerConfiguration.services|services(kotlin.Function1<kotlinx.rpc.RpcServer<kotlinx.rpc.grpc.GrpcProtocol>,kotlin.Unit>){}[0]
     final fun tls(kotlin/String, kotlin/String, kotlin/Function1<kotlinx.rpc.grpc.server/GrpcTlsServerCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcServerConfiguration.tls|tls(kotlin.String;kotlin.String;kotlin.Function1<kotlinx.rpc.grpc.server.GrpcTlsServerCredentialsBuilder,kotlin.Unit>){}[0]
 
     final class KeepAlive { // kotlinx.rpc.grpc.server/GrpcServerConfiguration.KeepAlive|null[0]

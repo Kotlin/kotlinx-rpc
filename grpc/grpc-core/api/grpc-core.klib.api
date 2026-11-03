@@ -74,6 +74,11 @@ final enum class kotlinx.rpc.grpc/GrpcStatusCode : kotlin/Enum<kotlinx.rpc.grpc/
     final fun values(): kotlin/Array<kotlinx.rpc.grpc/GrpcStatusCode> // kotlinx.rpc.grpc/GrpcStatusCode.values|values#static(){}[0]
 }
 
+abstract interface <#A: kotlinx.rpc.grpc/GrpcService<#A>> kotlinx.rpc.grpc/GrpcService : kotlinx.rpc/RpcService<kotlinx.rpc.grpc/GrpcProtocol, #A> { // kotlinx.rpc.grpc/GrpcService|null[0]
+    abstract val descriptor // kotlinx.rpc.grpc/GrpcService.descriptor|{}descriptor[0]
+        abstract fun <get-descriptor>(): kotlinx.rpc.grpc.descriptor/GrpcServiceDescriptor<#A> // kotlinx.rpc.grpc/GrpcService.descriptor.<get-descriptor>|<get-descriptor>(){}[0]
+}
+
 abstract interface kotlinx.rpc.grpc/GrpcCompression { // kotlinx.rpc.grpc/GrpcCompression|null[0]
     abstract val name // kotlinx.rpc.grpc/GrpcCompression.name|{}name[0]
         abstract fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcCompression.name.<get-name>|<get-name>(){}[0]
@@ -88,6 +93,8 @@ abstract interface kotlinx.rpc.grpc/GrpcCompression { // kotlinx.rpc.grpc/GrpcCo
             final fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcCompression.None.name.<get-name>|<get-name>(){}[0]
     }
 }
+
+abstract interface kotlinx.rpc.grpc/GrpcProtocol : kotlinx.rpc/RpcProtocol // kotlinx.rpc.grpc/GrpcProtocol|null[0]
 
 final class <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.descriptor/GrpcMethodDescriptor { // kotlinx.rpc.grpc.descriptor/GrpcMethodDescriptor|null[0]
     final val methodType // kotlinx.rpc.grpc.descriptor/GrpcMethodDescriptor.methodType|{}methodType[0]
@@ -116,6 +123,10 @@ final class <#A: kotlin/Any?> kotlinx.rpc.grpc/GrpcMetadataKey { // kotlinx.rpc.
         final fun <get-marshaller>(): kotlinx.rpc.grpc.marshaller/GrpcMarshaller<#A> // kotlinx.rpc.grpc/GrpcMetadataKey.marshaller.<get-marshaller>|<get-marshaller>(){}[0]
     final val name // kotlinx.rpc.grpc/GrpcMetadataKey.name|{}name[0]
         final fun <get-name>(): kotlin/String // kotlinx.rpc.grpc/GrpcMetadataKey.name.<get-name>|<get-name>(){}[0]
+}
+
+final class kotlinx.rpc.grpc/GrpcConfig { // kotlinx.rpc.grpc/GrpcConfig|null[0]
+    constructor <init>() // kotlinx.rpc.grpc/GrpcConfig.<init>|<init>(){}[0]
 }
 
 final class kotlinx.rpc.grpc/GrpcMetadata { // kotlinx.rpc.grpc/GrpcMetadata|null[0]
