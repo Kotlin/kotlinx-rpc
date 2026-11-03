@@ -40,12 +40,12 @@
             </tr>
             <tr>
                 <td><a href="https://github.com/grpc/grpc-swift-2">grpc-swift-2</a></td>
-                <td>2.4.3</td>
+                <td>2.4.4</td>
                 <td>iOS client backend, provided transitively by the Swift bridge</td>
             </tr>
             <tr>
                 <td><a href="https://github.com/grpc/grpc-swift-nio-transport">grpc-swift-nio-transport</a></td>
-                <td>2.9.2</td>
+                <td>2.12.0</td>
                 <td>iOS HTTP/2 transport using SwiftNIO Transport Services and Apple's <code>Network.framework</code></td>
             </tr>
             <tr>

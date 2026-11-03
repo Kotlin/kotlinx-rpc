@@ -171,6 +171,7 @@ private class SwiftManagedChannelBuilder(
                 swiftConfig.keepAliveWithoutCalls = keepAlive.withoutCalls
             }
         }
+        swiftConfig.maxInboundMetadataSizeBytes = config.maxInboundMetadataSize.toLong()
 
         val swiftClient = memScoped {
             val error = alloc<ObjCObjectVar<NSError?>>()
