@@ -18,9 +18,7 @@ import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.KrpcSerialFormatConfiguration
 import kotlinx.rpc.krpc.server.KrpcServer
-import kotlinx.rpc.registerService
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -103,7 +101,7 @@ abstract class KrpcTransportTestBase {
             }
         }
 
-        client = KrpcTestClient(clientConfig, clientTransport).withService()
+        client = KrpcTestClient(clientConfig, clientTransport).service()
     }
 
     @Test

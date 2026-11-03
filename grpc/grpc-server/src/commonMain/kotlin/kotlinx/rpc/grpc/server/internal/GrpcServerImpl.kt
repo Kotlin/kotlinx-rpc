@@ -11,14 +11,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.RpcService
 import kotlinx.rpc.descriptor.RpcCallable
 import kotlinx.rpc.descriptor.flowInvokator
-import kotlinx.rpc.descriptor.serviceDescriptorOf
 import kotlinx.rpc.descriptor.unaryInvokator
-import kotlinx.rpc.grpc.annotations.Grpc
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
-import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+import kotlinx.rpc.grpc.descriptor.grpcDescriptor
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
@@ -26,15 +26,14 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.ThrowingGrpcMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.plus
 import kotlinx.rpc.grpc.server.GrpcMutableHandlerRegistry
+import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 import kotlinx.rpc.grpc.server.GrpcServerServiceDefinition
-import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.serverServiceDefinition
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.getValue
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
@@ -59,7 +58,7 @@ public class GrpcServerImpl internal constructor(
     messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
     private val marshallerConfig: GrpcMarshallerConfig? = null,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-) : GrpcServer {
+) : GrpcServer() {
     private val internalContext = SupervisorJob(parentContext[Job])
     private val internalScope = CoroutineScope(parentContext + internalContext)
 
@@ -80,7 +79,7 @@ public class GrpcServerImpl internal constructor(
 
     private val localRegistry = RpcInternalConcurrentHashMap<KClass<*>, GrpcServerServiceDefinition>()
 
-    override fun <@Grpc Service : Any> registerService(
+    override fun <Service : RpcService<GrpcProtocol, Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     ) {
@@ -95,19 +94,17 @@ public class GrpcServerImpl internal constructor(
         }
     }
 
-    override fun <Service : Any> deregisterService(serviceKClass: KClass<Service>) {
+    override fun <Service : RpcService<GrpcProtocol, Service>> deregisterService(serviceKClass: KClass<Service>) {
         localRegistry.remove(serviceKClass)?.let {
             registry.removeService(it)
         }
     }
 
-    private fun <@Grpc Service : Any> getDefinition(
+    private fun <Service : RpcService<GrpcProtocol, Service>> getDefinition(
         service: Service,
         serviceKClass: KClass<Service>,
     ): GrpcServerServiceDefinition {
-        @Suppress("UNCHECKED_CAST")
-        val descriptor = serviceDescriptorOf(serviceKClass) as? GrpcServiceDescriptor<Service>
-            ?: error("Service $serviceKClass is not a gRPC service")
+        val descriptor = serviceKClass.grpcDescriptor
 
         val delegate = descriptor.delegate(messageMarshallerResolver, marshallerConfig)
 
@@ -124,7 +121,7 @@ public class GrpcServerImpl internal constructor(
         return serverServiceDefinition(delegate.serviceDescriptor, methods)
     }
 
-    private fun <@Grpc Service : Any> RpcCallable<Service>.toDefinitionOn(
+    private fun <Service : RpcService<GrpcProtocol, Service>> RpcCallable<Service>.toDefinitionOn(
         descriptor: GrpcMethodDescriptor<RequestType, ResponseType>,
         service: Service,
         interceptors: List<GrpcServerInterceptor>,

@@ -4,7 +4,10 @@
 
 package kotlinx.rpc.grpc.annotations
 
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.annotations.RpcMeta
+import kotlinx.rpc.grpc.GrpcProtocol
+import kotlinx.rpc.grpc.GrpcService
+import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 
 /**
  * Marks an interface as a gRPC service definition.
@@ -33,8 +36,8 @@ import kotlinx.rpc.annotations.Rpc
  * @see Grpc.Method
  * @see kotlinx.rpc.annotations.Rpc
  */
-@Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER)
-@Rpc
+@RpcMeta(GrpcService::class, GrpcProtocol::class, GrpcServiceDescriptor::class)
+@Target(AnnotationTarget.CLASS)
 public annotation class Grpc(
     val protoPackage: String = "",
     val protoServiceName: String = ""

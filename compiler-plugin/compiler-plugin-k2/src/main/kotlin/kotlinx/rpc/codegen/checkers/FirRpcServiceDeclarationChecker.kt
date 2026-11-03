@@ -24,7 +24,7 @@ object FirRpcServiceDeclarationChecker {
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)) {
+        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)) {
             return
         }
 

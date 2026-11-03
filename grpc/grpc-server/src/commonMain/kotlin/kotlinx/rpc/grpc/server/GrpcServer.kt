@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.server
 
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
@@ -23,7 +24,7 @@ import kotlin.time.Duration.Companion.seconds
  * Server for listening for and dispatching incoming calls.
  * It is not expected to be implemented by application code or interceptors.
  */
-public interface GrpcServer : RpcServer {
+public abstract class GrpcServer : RpcServer<GrpcProtocol>() {
     /**
      * Returns the port number the server is listening on.
      * This can return -1 if there is no actual port or the result otherwise doesn't make sense.
@@ -33,19 +34,19 @@ public interface GrpcServer : RpcServer {
      *
      * @throws [IllegalStateException] – if the server has not yet been started.
      */
-    public val port: Int
+    public abstract val port: Int
 
     /**
      * Returns whether the server is shutdown.
      * Shutdown servers reject any new calls but may still have some calls being processed.
      */
-    public val isShutdown: Boolean
+    public abstract val isShutdown: Boolean
 
     /**
      * Returns whether the server is terminated.
      * Terminated servers have no running calls and relevant resources released (like TCP connections).
      */
-    public val isTerminated: Boolean
+    public abstract val isTerminated: Boolean
 
     /**
      * Bind and start the server.
@@ -55,7 +56,7 @@ public interface GrpcServer : RpcServer {
      * Throws `IOException` if unable to bind.
      */
     // TODO, What is IOException in KMP? KRPC-163
-    public fun start(): GrpcServer
+    public abstract fun start(): GrpcServer
 
     /**
      * Initiates an orderly shutdown in which preexisting calls continue but new calls are rejected.
@@ -70,7 +71,7 @@ public interface GrpcServer : RpcServer {
      *
      * @return `this`
      */
-    public fun shutdown(): GrpcServer
+    public abstract fun shutdown(): GrpcServer
 
     /**
      * Initiates a forceful shutdown in which preexisting and new calls are rejected. Although
@@ -83,7 +84,7 @@ public interface GrpcServer : RpcServer {
      *
      * @return `this`
      */
-    public fun shutdownNow(): GrpcServer
+    public abstract fun shutdownNow(): GrpcServer
 
     /**
      * Waits for the server to become terminated, giving up if the timeout is reached.
@@ -93,7 +94,7 @@ public interface GrpcServer : RpcServer {
      *
      * @return `this`
      */
-    public suspend fun awaitTermination(duration: Duration = Duration.INFINITE): GrpcServer
+    public abstract suspend fun awaitTermination(duration: Duration = Duration.INFINITE): GrpcServer
 }
 
 /**
@@ -154,7 +155,7 @@ public fun GrpcServer(
  */
 public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
-    internal var serviceBuilder: RpcServer.() -> Unit = { }
+    internal var serviceBuilder: RpcServer<GrpcProtocol>.() -> Unit = { }
     internal var keepAlive: KeepAlive? = null
 
     /**
@@ -341,7 +342,7 @@ public class GrpcServerConfiguration internal constructor() {
      *
      * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
      */
-    public fun services(block: RpcServer.() -> Unit) {
+    public fun services(block: RpcServer<GrpcProtocol>.() -> Unit) {
         serviceBuilder = block
     }
 

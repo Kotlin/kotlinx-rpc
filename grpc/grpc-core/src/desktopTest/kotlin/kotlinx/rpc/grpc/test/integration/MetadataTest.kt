@@ -15,6 +15,7 @@ import kotlinx.io.readByteArray
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcMetadataKey
 import kotlinx.rpc.grpc.append
@@ -44,8 +45,6 @@ import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -55,7 +54,7 @@ import kotlin.test.assertTrue
 
 class MetadataTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -428,7 +427,7 @@ class MetadataTest : GrpcTestBase() {
 
 
     private suspend fun unaryEcho(grpcClient: GrpcClient) {
-        val service = grpcClient.withService<EchoService>()
+        val service = grpcClient.service<EchoService>()
         val response = service.unaryEcho(EchoRequest { message = "Echo" })
         assertEquals("Echo", response.message)
     }

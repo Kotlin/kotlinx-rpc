@@ -4,7 +4,7 @@
 
 package kotlinx.rpc.internal
 
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.RpcService
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KClass
@@ -13,10 +13,10 @@ import kotlin.reflect.full.findAnnotation
 @InternalRpcApi
 @Target(AnnotationTarget.CLASS)
 public actual annotation class WithServiceDescriptor(
-    actual val stub: KClass<out RpcServiceDescriptor<*>>,
+    actual val stub: KClass<out RpcServiceDescriptor<*, *>>,
 )
 
-internal actual fun <@Rpc T : Any> internalServiceDescriptorOf(kClass: KClass<T>): Any? {
+internal actual fun <Service : RpcService<*, Service>> internalServiceDescriptorOf(kClass: KClass<Service>): Any? {
     val stubClass = kClass.findAnnotation<WithServiceDescriptor>()?.stub ?: return null
     return stubClass.objectInstance
 }

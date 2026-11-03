@@ -4,13 +4,12 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoResponse
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -26,7 +25,7 @@ private interface ClientService {
 
 class GrpcServiceNameTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<ServerService> { object : ServerService {
             override suspend fun echo(request: EchoRequest): EchoResponse =
                 EchoResponse { message = request.message }
@@ -36,7 +35,7 @@ class GrpcServiceNameTest : GrpcTestBase() {
     @Test
     fun `test two service interfaces with the same name`() = runGrpcTest { client ->
         val request = EchoRequest { message = "Hello" }
-        val response = client.withService<ClientService>().echo(request)
+        val response = client.service<ClientService>().echo(request)
         assertEquals("Hello", response.message)
     }
 }

@@ -4,14 +4,15 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
 
 /**
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.
  * Server may contain multiple services.
+ *
+ * @param Protocol the protocol this server implements. Only services of that protocol can be registered.
  */
-public interface RpcServer {
+public abstract class RpcServer<Protocol : RpcProtocol> {
     /**
      * Registers new service. Server will route all designated messages to it.
      * Service of any type should be unique on the server, but RpcServer doesn't specify the actual retention policy.
@@ -24,7 +25,7 @@ public interface RpcServer {
      *
      * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
      */
-    public fun <@Rpc Service : Any> registerService(
+    public abstract fun <Service : RpcService<Protocol, Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     )
@@ -39,24 +40,24 @@ public interface RpcServer {
      *
      * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
      */
-    public fun <@Rpc Service : Any> deregisterService(
+    public abstract fun <Service : RpcService<Protocol, Service>> deregisterService(
         serviceKClass: KClass<Service>,
     )
-}
 
-/**
- * Registers new service to the server. Server will route all designated messages to it.
- * Service of any type should be unique on the server, but RpcServer doesn't specify the actual retention policy.
- *
- * @param Service the exact type of the server to be registered.
- * For example, for a service with `MyService` interface and `MyServiceImpl` implementation
- * the type `MyService` should be specified explicitly.
- * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
- *
- * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
- */
-public inline fun <@Rpc reified Service : Any> RpcServer.registerService(
-    noinline serviceFactory: () -> Service,
-) {
-    registerService(Service::class, serviceFactory)
+    /**
+     * Registers new service to the server. Server will route all designated messages to it.
+     * Service of any type should be unique on the server, but RpcServer doesn't specify the actual retention policy.
+     *
+     * @param Service the exact type of the server to be registered.
+     * For example, for a service with `MyService` interface and `MyServiceImpl` implementation
+     * the type `MyService` should be specified explicitly.
+     * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
+     *
+     * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
+     */
+    public inline fun <reified Service : RpcService<Protocol, Service>> registerService(
+        noinline serviceFactory: () -> Service,
+    ) {
+        registerService(Service::class, serviceFactory)
+    }
 }

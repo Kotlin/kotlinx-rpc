@@ -6,13 +6,15 @@ package kotlinx.rpc.krpc.server
 
 import kotlinx.coroutines.*
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.descriptor.serviceDescriptorOf
+import kotlinx.rpc.RpcService
+import kotlinx.rpc.descriptor
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
+import kotlinx.rpc.krpc.KrpcProtocol
 import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
+import kotlinx.rpc.krpc.descriptor.krpcDescriptor
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
@@ -34,7 +36,7 @@ import kotlin.reflect.KClass
 public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,
-) : RpcServer, KrpcEndpoint {
+) : RpcServer<KrpcProtocol>(), KrpcEndpoint {
 
     /**
      * Close this server, removing all the services and stopping accepting messages.
@@ -117,11 +119,11 @@ public abstract class KrpcServer(
         }
     }
 
-    final override fun <@Rpc Service : Any> registerService(
+    final override fun <Service : RpcService<KrpcProtocol, Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     ) {
-        val descriptor = serviceDescriptorOf(serviceKClass)
+        val descriptor = serviceKClass.krpcDescriptor
 
         internalScope.launch(CoroutineName("krpc-server-service-$descriptor")) {
             connector.subscribeToServiceMessages(descriptor.fqName) { message ->
@@ -134,13 +136,13 @@ public abstract class KrpcServer(
         }
     }
 
-    final override fun <@Rpc Service : Any> deregisterService(serviceKClass: KClass<Service>) {
-        connector.unsubscribeFromServiceMessages(serviceDescriptorOf(serviceKClass).fqName)
-        rpcServices.remove(serviceDescriptorOf(serviceKClass).fqName)?.close()
+    final override fun <Service : RpcService<KrpcProtocol, Service>> deregisterService(serviceKClass: KClass<Service>) {
+        connector.unsubscribeFromServiceMessages(serviceKClass.descriptor.fqName)
+        rpcServices.remove(serviceKClass.descriptor.fqName)?.close()
     }
 
-    private fun <@Rpc Service : Any> createNewServiceInstance(
-        descriptor: RpcServiceDescriptor<Service>,
+    private fun <Service : RpcService<KrpcProtocol, Service>> createNewServiceInstance(
+        descriptor: KrpcServiceDescriptor<Service>,
         serviceFactory: () -> Service,
     ): KrpcServerService<Service> {
         return KrpcServerService(

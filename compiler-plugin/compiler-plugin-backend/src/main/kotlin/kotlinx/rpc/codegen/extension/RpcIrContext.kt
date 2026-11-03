@@ -75,6 +75,10 @@ internal class RpcIrContext(
         referenceRpcIrClassSymbol("RpcServiceDescriptor", "descriptor")
     }
 
+    val krpcServiceDescriptor by lazy {
+        referenceIrBuiltinClassSymbol("kotlinx.rpc.krpc.descriptor", "KrpcServiceDescriptor")
+    }
+
     val grpcServiceDescriptor by lazy {
         referenceIrBuiltinClassSymbol("kotlinx.rpc.grpc.descriptor", "GrpcServiceDescriptor")
     }
@@ -155,10 +159,6 @@ internal class RpcIrContext(
         referenceRpcIrClassSymbol("RpcTypeDefault", "descriptor")
     }
 
-    val rpcTypeKrpc by lazy {
-        referenceRpcIrClassSymbol("RpcTypeKrpc", "descriptor")
-    }
-
     val rpcCallable by lazy {
         referenceRpcIrClassSymbol("RpcCallable", "descriptor")
     }
@@ -211,7 +211,7 @@ internal class RpcIrContext(
         }
 
         val rpcClientCallServerStreaming by lazy {
-            rpcClient.namedFunction("callServerStreaming")
+            rpcClient.namedFunction("callStreaming")
         }
 
         val typeOf by lazy {
@@ -314,6 +314,10 @@ internal class RpcIrContext(
 
         val rpcServiceDescriptorCallables by lazy {
             rpcServiceDescriptor.namedProperty("callables")
+        }
+
+        val krpcServiceDescriptorSerializers by lazy {
+            krpcServiceDescriptor.namedProperty("serializers")
         }
 
         val mapValues by lazy {

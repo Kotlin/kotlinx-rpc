@@ -10,6 +10,7 @@ import References
 import invoke
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.Nested
 import kotlinx.rpc.grpc.test.OneOf
@@ -32,8 +33,6 @@ import kotlinx.rpc.grpc.test.nameOrNull
 import kotlinx.rpc.grpc.test.recursionOrNull
 import kotlinx.rpc.grpc.test.reference21OrNull
 import kotlinx.rpc.grpc.test.referenceOrNull
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -76,13 +75,13 @@ class ReferenceTestServiceImpl : ReferenceTestService {
 }
 
 class TestReferenceService : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<ReferenceTestService> { ReferenceTestServiceImpl() }
     }
 
     @Test
     fun testReferenceService() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val arg = References {
             other = Other {
                 arg = "42"
@@ -97,7 +96,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testEnum() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val result = service.`enum`(UsingEnum {
             enum = kotlinx.rpc.grpc.test.Enum.ONE
         })
@@ -107,7 +106,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testOptional() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val resultNotNull = service.optional(OptionalTypes {
             name = "test"
             age = 42
@@ -132,7 +131,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testRepeated() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val result = service.repeated(Repeated {
             listFixed32 = listOf(0u, 1u, 2u)
             listInt32 = listOf(0, 1, 2)
@@ -160,7 +159,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testNested() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val result = service.nested(Nested {
             inner1 = Nested.Inner1 {
                 inner11 = Nested.Inner1.Inner11 {
@@ -229,7 +228,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testMap() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val result = service.map(TestMap {
             primitives = mapOf("1" to 2, "2" to 1)
             references = mapOf("ref" to kotlinx.rpc.grpc.test.References {
@@ -245,7 +244,7 @@ class TestReferenceService : GrpcTestBase() {
 
     @Test
     fun testOneOf() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<ReferenceTestService>()
+        val service = grpcClient.service<ReferenceTestService>()
         val result1 = service.oneOf(OneOf {
             stringValue = "42"
             other = kotlinx.rpc.grpc.test.Other {

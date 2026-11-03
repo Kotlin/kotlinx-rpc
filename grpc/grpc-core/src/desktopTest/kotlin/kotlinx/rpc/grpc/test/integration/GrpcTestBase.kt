@@ -10,6 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -24,7 +25,7 @@ import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 abstract class GrpcTestBase {
     private val serverMutex = Mutex()
 
-    abstract fun RpcServer.registerServices()
+    abstract fun RpcServer<GrpcProtocol>.registerServices()
 
     fun runGrpcTest(
         serverCreds: GrpcServerCredentials? = null,

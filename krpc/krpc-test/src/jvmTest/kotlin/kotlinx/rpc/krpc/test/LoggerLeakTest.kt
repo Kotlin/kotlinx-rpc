@@ -9,9 +9,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.registerService
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import org.slf4j.LoggerFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -41,7 +39,7 @@ class LoggerLeakTest {
                 server.registerService<TestService> { TestServiceImpl() }
 
                 // triggers lazy creation of the per-service-type KrpcServerService on the server
-                client.withService<TestService>().unary(1)
+                client.service<TestService>().unary(1)
 
                 client.close()
                 server.close()

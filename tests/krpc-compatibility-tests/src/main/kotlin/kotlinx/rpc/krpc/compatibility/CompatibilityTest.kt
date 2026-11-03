@@ -5,7 +5,8 @@
 package kotlinx.rpc.krpc.compatibility
 
 import kotlinx.rpc.RpcClient
+import kotlinx.rpc.krpc.KrpcProtocol
 
 interface CompatibilityTest {
-    fun getAllTests(): Map<String, suspend (RpcClient) -> Unit>
+    fun getAllTests(): Map<String, suspend (RpcClient<KrpcProtocol>) -> Unit>
 }

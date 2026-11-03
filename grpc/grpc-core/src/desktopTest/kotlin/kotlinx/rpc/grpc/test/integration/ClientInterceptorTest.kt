@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -21,8 +22,6 @@ import kotlinx.rpc.grpc.test.EchoResponse
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -32,7 +31,7 @@ import kotlin.test.assertTrue
 
 class ClientInterceptorTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -234,7 +233,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             proceed(modified)
         }
         runGrpcTest(clientInterceptors = interceptor) {
-            val service = it.withService<EchoService>()
+            val service = it.service<EchoService>()
             val response = service.unaryEcho(EchoRequest { message = "Hello" })
             assertEquals("Modified", response.message)
         }
@@ -246,7 +245,7 @@ class ClientInterceptorTest : GrpcTestBase() {
             proceed(it).map { EchoResponse { message = "Modified" } }
         }
         runGrpcTest(clientInterceptors = interceptor) {
-            val service = it.withService<EchoService>()
+            val service = it.service<EchoService>()
             val response = service.unaryEcho(EchoRequest { message = "Hello" })
             assertEquals("Modified", response.message)
         }
@@ -268,7 +267,7 @@ class ClientInterceptorTest : GrpcTestBase() {
         runGrpcTest(
             clientInterceptors = interceptor
         ) { client ->
-            val svc = client.withService<EchoService>()
+            val svc = client.service<EchoService>()
             val responses = svc.bidirectionalStreamingEcho(flow {
                 repeat(5) {
                     emit(EchoRequest { message = "Eccchhooo" })
@@ -317,13 +316,13 @@ class ClientInterceptorTest : GrpcTestBase() {
     }
 
     private suspend fun unaryCall(grpcClient: GrpcClient) {
-        val service = grpcClient.withService<EchoService>()
+        val service = grpcClient.service<EchoService>()
         val response = service.unaryEcho(EchoRequest { message = "Hello" })
         assertEquals("Hello", response.message)
     }
 
     private suspend fun bidiStream(grpcClient: GrpcClient, count: Int = 5) {
-        val service = grpcClient.withService<EchoService>()
+        val service = grpcClient.service<EchoService>()
         val responses = service.bidirectionalStreamingEcho(flow {
             repeat(count) {
                 emit(EchoRequest { message = "Echo-$it" })

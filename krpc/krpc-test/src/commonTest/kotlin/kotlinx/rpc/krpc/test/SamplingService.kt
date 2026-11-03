@@ -7,7 +7,7 @@
 package org.jetbrains.krpc.test.api.util
 
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.krpc.test.plainFlow
 import kotlinx.serialization.Serializable
 
@@ -16,7 +16,7 @@ data class SamplingData(
     val data: String,
 )
 
-@Rpc
+@Krpc
 interface SamplingService {
     suspend fun echo(arg1: String, data: SamplingData): SamplingData
 

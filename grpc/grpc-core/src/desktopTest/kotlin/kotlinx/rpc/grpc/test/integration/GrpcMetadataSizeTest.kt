@@ -5,6 +5,7 @@
 package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.append
@@ -15,14 +16,13 @@ import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.message
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class GrpcMetadataSizeTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -44,7 +44,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
         assertMetadataSizeStatus(error)
@@ -59,7 +59,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                 proceed(it)
             },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -72,7 +72,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
         assertMetadataSizeStatus(error)
@@ -87,7 +87,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                 proceed(it)
             },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -101,7 +101,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
 
@@ -116,7 +116,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                 proceed(it)
             },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -125,7 +125,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         runGrpcTest(
             clientConfiguration = { maxInboundMetadataSize = METADATA_SIZE_LIMIT },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -139,7 +139,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                     proceed(it)
                 },
             ) {
-                it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
         }
 
@@ -154,7 +154,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
                 proceed(it)
             },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -163,7 +163,7 @@ class GrpcMetadataSizeTest : GrpcTestBase() {
         runGrpcTest(
             serverConfiguration = { maxInboundMetadataSize = METADATA_SIZE_LIMIT },
         ) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 

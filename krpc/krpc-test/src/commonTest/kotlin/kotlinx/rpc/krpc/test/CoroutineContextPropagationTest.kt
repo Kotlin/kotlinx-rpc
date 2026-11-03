@@ -12,7 +12,6 @@ import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -56,7 +55,7 @@ class CoroutineContextPropagationTest {
         }
         try {
             withContext(CoroutineElement("client")) {
-                client.withService(Echo::class).echo("request")
+                client.service(Echo::class).echo("request")
             }
             assertEquals(CoroutineElement("transport"), actualContext)
         } finally {

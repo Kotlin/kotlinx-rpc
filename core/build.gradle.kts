@@ -17,9 +17,6 @@ kotlin {
                 api(projects.utils)
                 api(libs.coroutines.core)
 
-                // TODO Remove after KRPC-178
-                implementation(libs.serialization.core)
-
                 implementation(libs.kotlin.reflect)
             }
         }

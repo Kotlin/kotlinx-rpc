@@ -4,13 +4,13 @@
 
 package interfaces
 
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Baz(val field: String, val field2: String = "")
 
-@Rpc
+@Krpc
 interface BazInterface {
     suspend fun get(): Baz
 }

@@ -9,10 +9,13 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 object RpcClassId {
-    val rpcAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("Rpc"))
+    val rpcMetaAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("RpcMeta"))
+    val krpcAnnotation = ClassId(FqName("kotlinx.rpc.krpc.annotations"), Name.identifier("Krpc"))
+
     val grpcAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc"))
     val grpcMethodAnnotation = ClassId(FqName("kotlinx.rpc.grpc.annotations"), Name.identifier("Grpc.Method"))
     val withGrpcMarshallerAnnotation = ClassId(FqName("kotlinx.rpc.grpc.marshaller"), Name.identifier("WithGrpcMarshaller"))
+
     val checkedTypeAnnotation = ClassId(FqName("kotlinx.rpc.annotations"), Name.identifier("CheckedTypeAnnotation"))
 
     val serializableAnnotation = ClassId(FqName("kotlinx.serialization"), Name.identifier("Serializable"))
@@ -29,6 +32,12 @@ object RpcNames {
     val SERVICE_STUB_NAME: Name = Name.identifier("\$rpcServiceStub")
 
     val CHECK_FOR_ARGUMENT_NAME = Name.identifier("checkFor")
+
+    val SERVICE_DESCRIPTOR_PROPERTY_NAME: Name = Name.identifier("descriptor")
+
+    val RPC_META_SERVICE_CLASS: Name = Name.identifier("serviceClass")
+    val RPC_META_PROTOCOL_CLASS: Name = Name.identifier("protocolClass")
+    val RPC_META_DESCRIPTOR_CLASS: Name = Name.identifier("descriptorClass")
 }
 
 object ProtoClassId {

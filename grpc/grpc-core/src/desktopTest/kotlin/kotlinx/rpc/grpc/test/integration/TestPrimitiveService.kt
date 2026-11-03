@@ -5,11 +5,10 @@
 package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.AllPrimitives
 import kotlinx.rpc.grpc.test.PrimitiveService
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,13 +19,13 @@ class PrimitiveServiceImpl : PrimitiveService {
 }
 
 class TestPrimitiveService : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<PrimitiveService> { PrimitiveServiceImpl() }
     }
 
     @Test
     fun testPrimitive() = runGrpcTest { grpcClient ->
-        val service = grpcClient.withService<PrimitiveService>()
+        val service = grpcClient.service<PrimitiveService>()
         val result = service.echo(AllPrimitives {
             int32 = 42
         })

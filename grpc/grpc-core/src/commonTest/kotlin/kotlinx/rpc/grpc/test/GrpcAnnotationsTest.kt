@@ -9,10 +9,10 @@ import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlinx.rpc.grpc.marshaller.GrpcEmptyMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
-import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

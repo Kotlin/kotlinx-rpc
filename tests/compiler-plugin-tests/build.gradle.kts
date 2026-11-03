@@ -31,6 +31,7 @@ val testArtifacts: Configuration by configurations.creating
 dependencies {
     implementation(projects.core)
     implementation(projects.grpc.grpcCore)
+    implementation(projects.krpc.krpcCore)
 
     testArtifacts(libs.kotlin.stdlib)
     testArtifacts(libs.kotlin.stdlib.jdk8)
@@ -69,6 +70,11 @@ dependencies {
     testImplementation(libs.junit5.platform.suite.api)
 
     testDataClasspath(projects.utils)
+    testDataClasspath(projects.krpc.krpcCore)
+    testDataClasspath(projects.krpc.krpcClient)
+    testDataClasspath(projects.krpc.krpcServer)
+    testDataClasspath(projects.grpc.grpcClient)
+    testDataClasspath(projects.grpc.grpcServer)
     testDataClasspath(projects.grpc.grpcMarshaller)
     testDataClasspath(projects.grpc.grpcCore)
     testDataClasspath(projects.protobuf.protobufLite)
@@ -84,6 +90,10 @@ tasks.test {
     dependsOn(project(":core").tasks.getByName("jvmJar"))
     dependsOn(project(":utils").tasks.getByName("jvmJar"))
     dependsOn(project(":krpc:krpc-core").tasks.getByName("jvmJar"))
+    dependsOn(project(":krpc:krpc-client").tasks.getByName("jvmJar"))
+    dependsOn(project(":krpc:krpc-server").tasks.getByName("jvmJar"))
+    dependsOn(project(":grpc:grpc-client").tasks.getByName("jvmJar"))
+    dependsOn(project(":grpc:grpc-server").tasks.getByName("jvmJar"))
     dependsOn(project(":protobuf:protobuf-lite").tasks.getByName("jvmJar"))
     dependsOn(project(":tests:compiler-plugin-tests:compiler-plugin-protos").tasks.getByName("jvmJar"))
     dependsOn("generateTests")

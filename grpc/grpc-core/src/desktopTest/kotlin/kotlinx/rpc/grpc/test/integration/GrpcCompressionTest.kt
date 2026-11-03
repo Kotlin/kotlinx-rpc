@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcCompression
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
@@ -20,8 +21,6 @@ import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.captureGrpcLogs
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.runtime
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.collections.emptyList
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,7 +34,7 @@ import kotlin.test.assertEquals
  * and verify that the client and server actually used the compression algorithm.
  */
 class GrpcCompressionTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         return registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -84,7 +83,7 @@ class GrpcCompressionTest : GrpcTestBase() {
                 proceed(it)
             }
         ) { client ->
-            client.withService<EchoService>().unaryEcho(EchoRequest.invoke { message = "Unknown compression" })
+            client.service<EchoService>().unaryEcho(EchoRequest.invoke { message = "Unknown compression" })
         }
     }
 
@@ -116,7 +115,7 @@ class GrpcCompressionTest : GrpcTestBase() {
                 }
             ) {
                 val message = "Echo with ${clientCompression?.name}"
-                val response = it.withService<EchoService>().unaryEcho(EchoRequest.invoke { this.message = message })
+                val response = it.service<EchoService>().unaryEcho(EchoRequest.invoke { this.message = message })
 
                 // Verify the call succeeded and data is correct
                 assertEquals(message, response.message)

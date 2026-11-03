@@ -7,8 +7,6 @@ package kotlinx.rpc.grpc.ktor.server.test
 import io.ktor.server.testing.*
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.ktor.server.grpc
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.minutes
@@ -38,7 +36,7 @@ class TestServer {
             credentials = plaintext()
         }
 
-        val response = client.withService<KtorTestService>().sayHello(Hello { message = "Hello" })
+        val response = client.service<KtorTestService>().sayHello(Hello { message = "Hello" })
         assertEquals("Hello", response.message, "Wrong response message")
 
         client.shutdown()

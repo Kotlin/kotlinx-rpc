@@ -5,9 +5,9 @@
 package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
-import kotlinx.rpc.registerService
 import kotlin.test.Test
 
 /**
@@ -19,7 +19,7 @@ import kotlin.test.Test
  * `grpc.primary_user_agent` channel argument.
  */
 class GrpcUserAgentTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         return registerService<EchoService> { EchoServiceImpl() }
     }
 

@@ -8,12 +8,11 @@ import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.EmptyInternal
 import com.google.protobuf.kotlin.invoke
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
 import kotlinx.rpc.grpc.client.internal.unaryRpc
 import kotlinx.rpc.grpc.test.withJavaPkg.TheService
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 
 class TheServiceImpl : TheService {
@@ -55,13 +54,13 @@ class JavaPackageOptionTest : GrpcTestBase() {
      */
     @Test
     fun testJavaPackageOptionStub() = runGrpcTest { client ->
-        val service = client.withService<TheService>()
+        val service = client.service<TheService>()
         service.theMethod(Empty {})
 
         // just reach this without an error
     }
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<TheService> { TheServiceImpl() }
     }
 }

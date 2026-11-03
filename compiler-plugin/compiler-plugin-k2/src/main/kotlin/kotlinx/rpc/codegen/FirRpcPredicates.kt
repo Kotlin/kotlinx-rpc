@@ -9,8 +9,12 @@ import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.fir.extensions.predicate.DeclarationPredicate
 
 object FirRpcPredicates {
-    internal val rpc = DeclarationPredicate.create {
-        metaAnnotated(RpcClassId.rpcAnnotation.asSingleFqName(), includeItself = true) // @Rpc
+    internal val rpcMeta = DeclarationPredicate.create {
+        metaAnnotated(RpcClassId.rpcMetaAnnotation.asSingleFqName(), includeItself = true)
+    }
+
+    internal val krpc = DeclarationPredicate.create {
+        metaAnnotated(RpcClassId.krpcAnnotation.asSingleFqName(), includeItself = true)
     }
 
     internal val grpc = DeclarationPredicate.create {

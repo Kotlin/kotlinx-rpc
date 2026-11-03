@@ -27,6 +27,15 @@ internal object FirRpcServiceStubCompanionObject : GeneratedDeclarationKey() {
     }
 }
 
+internal object FirRpcServiceDescriptorPropertyKey : GeneratedDeclarationKey() {
+    override fun toString(): String {
+        return "FirRpcServiceDescriptorPropertyKey"
+    }
+}
+
+internal val FirBasedSymbol<*>.isGeneratedRpcServiceDescriptorProperty: Boolean get() =
+    (origin as? FirDeclarationOrigin.Plugin)?.key == FirRpcServiceDescriptorPropertyKey
+
 internal object FirGeneratedProtoMessageCompanionObject : GeneratedDeclarationKey() {
     override fun toString(): String {
         return "FirGeneratedProtoMessageCompanionObject"

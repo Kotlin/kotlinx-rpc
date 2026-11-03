@@ -1,9 +1,15 @@
 /*
- * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.rpc.annotations
+package kotlinx.rpc.krpc.annotations
 
+import kotlinx.rpc.annotations.RpcMeta
+import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.KrpcService
+import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
+
+// TODO: Adapt KDoc
 /**
  * Every [Rpc] annotated interface will have a code generation process run on it,
  * making the interface effectively usable for RPC calls.
@@ -21,7 +27,7 @@ package kotlinx.rpc.annotations
  * On the client side use [kotlinx.rpc.RpcClient] to get a generated instance of the service, and use it to make calls:
  * ```kotlin
  * val rpcClient: RpcClient
- * val myService = rpcClient.withService<MyService>()
+ * val myService = rpcClient.service<MyService>()
  * val greetingFromServer = myService.sayHello("Alex", "Smith", 35)
  * ```
  * On the server side, define an implementation of this interface and register it on an [kotlinx.rpc.RpcServer]:
@@ -37,10 +43,8 @@ package kotlinx.rpc.annotations
  *
  * @see kotlinx.rpc.RpcClient
  * @see kotlinx.rpc.RpcServer
- * @see CheckedTypeAnnotation
- * @see kotlinx.rpc.withService
  */
-@CheckedTypeAnnotation
-@Target(AnnotationTarget.CLASS, AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.TYPE_PARAMETER)
+@Target(AnnotationTarget.CLASS)
 //@Retention(AnnotationRetention.RUNTIME) // Runtime is the default retention, also see KT-41082
-public annotation class Rpc
+@RpcMeta(KrpcService::class, KrpcProtocol::class, KrpcServiceDescriptor::class)
+public annotation class Krpc

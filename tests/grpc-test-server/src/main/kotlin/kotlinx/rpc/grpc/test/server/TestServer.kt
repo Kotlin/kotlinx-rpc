@@ -7,7 +7,6 @@ package kotlinx.rpc.grpc.test.server
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.GreeterService
-import kotlinx.rpc.registerService
 
 public suspend fun main() {
     val server = GrpcServer(50051) {

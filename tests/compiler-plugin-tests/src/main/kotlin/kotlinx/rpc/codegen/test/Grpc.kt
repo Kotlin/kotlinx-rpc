@@ -5,15 +5,14 @@
 package kotlinx.rpc.codegen.test
 
 import io.grpc.MethodDescriptor
-import kotlinx.rpc.descriptor.serviceDescriptorOf
-import kotlinx.rpc.grpc.annotations.Grpc
-import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
-import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.GrpcService
 import kotlinx.rpc.grpc.descriptor.GrpcServiceDelegate
-import kotlinx.rpc.grpc.descriptor.GrpcServiceDescriptor
+import kotlinx.rpc.grpc.descriptor.grpcDescriptor
+import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
+import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
+import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlin.reflect.KType
 
 /**
@@ -37,8 +36,8 @@ import kotlin.reflect.KType
  * ```
  */
 @Suppress("unused")
-inline fun <@Grpc reified T : Any> grpcDelegate(): GrpcServiceDelegate {
-    val descriptor = serviceDescriptorOf<T>() as GrpcServiceDescriptor
+inline fun <reified T : GrpcService<T>> grpcDelegate(): GrpcServiceDelegate {
+    val descriptor = T::class.grpcDescriptor
     val delegate = descriptor.delegate(SimpleResolver, null)
 
     return delegate

@@ -6,11 +6,12 @@ package kotlinx.rpc.krpc.server.internal
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.RpcService
 import kotlinx.rpc.descriptor.RpcInvokator
-import kotlinx.rpc.descriptor.RpcServiceDescriptor
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
 import kotlinx.rpc.krpc.KrpcConfig
+import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.descriptor.KrpcServiceDescriptor
 import kotlinx.rpc.krpc.internal.*
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.serialization.BinaryFormat
@@ -20,9 +21,9 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import kotlin.reflect.typeOf
 
-internal class KrpcServerService<@Rpc T : Any>(
-    private val service: T,
-    private val descriptor: RpcServiceDescriptor<T>,
+internal class KrpcServerService<Service : RpcService<KrpcProtocol, Service>>(
+    private val service: Service,
+    private val descriptor: KrpcServiceDescriptor<Service>,
     private val config: KrpcConfig.Server,
     private val connector: KrpcServerConnector,
     private val serverScope: CoroutineScope,
@@ -133,7 +134,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             error("Service ${descriptor.fqName} has no $callType '$callableName'")
         }
 
-        val paramsSerializer = CallableParametersSerializer(callable, serialFormat.serializersModule)
+        val paramsSerializer = CallableParametersSerializer(callable, descriptor, serialFormat.serializersModule)
 
         val data = serverStreamContext.scoped(callId) {
             decodeMessageData(serialFormat, paramsSerializer, callData)
@@ -158,7 +159,7 @@ internal class KrpcServerService<@Rpc T : Any>(
                 }
 
                 when (val invokator = callable.invokator) {
-                    is RpcInvokator.UnaryResponse -> {
+                    is RpcInvokator.UnaryResponse<Service> -> {
                         val value = invokator.call(service, data).let { interceptedValue ->
                             // KRPC-173
                             if (callable.returnType.kType == unitKType) {
@@ -169,16 +170,16 @@ internal class KrpcServerService<@Rpc T : Any>(
                         }
 
                         val returnSerializer = serialFormat.serializersModule
-                            .buildContextual(callable.returnType)
+                            .buildContextual(callable.returnType, descriptor)
 
                         sendMessageValue(serialFormat, returnSerializer, value, callData)
                     }
 
-                    is RpcInvokator.FlowResponse -> {
+                    is RpcInvokator.FlowResponse<Service> -> {
                         val value = invokator.call(service, data)
 
                         val returnSerializer = serialFormat.serializersModule
-                            .buildContextual(callable.returnType)
+                            .buildContextual(callable.returnType, descriptor)
 
                         startedCollecting = true
                         sendFlowMessages(serialFormat, returnSerializer, value, callData)
@@ -197,7 +198,7 @@ internal class KrpcServerService<@Rpc T : Any>(
             } catch (cause: Throwable) {
                 failure = cause
             } finally {
-                val isNonSuspendFunction = callable.invokator is RpcInvokator.FlowResponse
+                val isNonSuspendFunction = callable.invokator is RpcInvokator.FlowResponse<Service>
 
                 if (failure != null) {
                     // flow cancellations are handled by the sendFlowMessages function

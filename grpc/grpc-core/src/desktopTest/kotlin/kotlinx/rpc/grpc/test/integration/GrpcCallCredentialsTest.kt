@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.append
@@ -23,8 +24,6 @@ import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,7 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class GrpcCallCredentialsTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -325,7 +324,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 }
 
 private suspend fun unaryCall(grpcClient: GrpcClient) {
-    val service = grpcClient.withService<EchoService>()
+    val service = grpcClient.service<EchoService>()
     val response = service.unaryEcho(EchoRequest { message = "Echo" })
     assertEquals("Echo", response.message)
 }

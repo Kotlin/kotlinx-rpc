@@ -1,6 +1,9 @@
 FILE: flowParameter.kt
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface BoxService : R|kotlin/Any| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface BoxService : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<BoxService>| {
         public abstract suspend fun stream(flow: R|kotlinx/coroutines/flow/Flow<kotlin/String>|): R|kotlin/String|
+
+        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
+            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<BoxService>|
 
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
@@ -11,7 +14,7 @@ FILE: flowParameter.kt
     }
     public final fun box(): R|kotlin/String| {
         ^box R|kotlinx/coroutines/runBlocking|<R|kotlin/String|>(<L> = runBlocking@fun R|kotlinx/coroutines/CoroutineScope|.<anonymous>(): R|kotlin/String| <inline=NoInline, kind=EXACTLY_ONCE>  {
-            lval result: R|kotlin/String| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|kotlinx/rpc/withService|<R|BoxService|>().R|/BoxService.stream|(R|kotlinx/coroutines/flow/flow|<R|kotlin/String|>(<L> = flow@fun R|kotlinx/coroutines/flow/FlowCollector<kotlin/String>|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
+            lval result: R|kotlin/String| = Q|kotlinx/rpc/codegen/test/TestRpcClient|.R|SubstitutionOverride<kotlinx/rpc/codegen/test/TestRpcClient.service: R|T|>|<R|BoxService|>().R|/BoxService.stream|(R|kotlinx/coroutines/flow/flow|<R|kotlin/String|>(<L> = flow@fun R|kotlinx/coroutines/flow/FlowCollector<kotlin/String>|.<anonymous>(): R|kotlin/Unit| <inline=NoInline>  {
                 ^@flow Unit
             }
             ))

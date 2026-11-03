@@ -6,13 +6,12 @@
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.withService
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
 data class TestData(val value: String)
 
-@Rpc
+@Krpc
 interface BoxService {
     suspend fun test1(testData: TestData): String
 
@@ -20,8 +19,8 @@ interface BoxService {
 }
 
 fun box(): String = runBlocking {
-    val test1 = TestRpcClient.withService<BoxService>().test1(TestData("value"))
-    val test2 = TestRpcClient.withService<BoxService>().test2(TestData("value"))
+    val test1 = TestRpcClient.service<BoxService>().test1(TestData("value"))
+    val test2 = TestRpcClient.service<BoxService>().test2(TestData("value"))
 
     if (test1 == "call_42" && test2 == "call_42") "OK" else "Fail: test1=$test1, test2=$test2"
 }

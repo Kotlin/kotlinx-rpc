@@ -12,13 +12,20 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
+import org.jetbrains.kotlin.fir.extensions.MemberGenerationContext
 import org.jetbrains.kotlin.fir.extensions.NestedClassGenerationContext
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.plugin.createCompanionObject
+import org.jetbrains.kotlin.fir.plugin.createMemberProperty
 import org.jetbrains.kotlin.fir.plugin.createNestedClass
+import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.constructClassLikeType
+import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 
@@ -28,7 +35,7 @@ class FirRpcServiceGenerator(
     private val logger: MessageCollector,
 ) : FirDeclarationGenerationExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
-        register(FirRpcPredicates.rpc)
+        register(FirRpcPredicates.rpcMeta)
     }
 
     /**
@@ -57,9 +64,7 @@ class FirRpcServiceGenerator(
                 setOf(SpecialNames.DEFAULT_NAME_FOR_COMPANION_OBJECT)
             }
 
-            classSymbol.isInterface && (
-                    session.predicateBasedProvider.matches(FirRpcPredicates.rpc, classSymbol)
-                    ) -> {
+            classSymbol.isRpcServiceInterface() -> {
                 setOf(RpcNames.SERVICE_STUB_NAME)
             }
 
@@ -92,6 +97,57 @@ class FirRpcServiceGenerator(
                 error("Cannot run generation for ${owner.classId.createNestedClassId(name).asSingleFqName()}")
             }
         }
+    }
+
+    override fun getCallableNamesForClass(
+        classSymbol: FirClassSymbol<*>,
+        context: MemberGenerationContext,
+    ): Set<Name> {
+        if (classSymbol.generatedRpcServiceStubKey == null && classSymbol.isRpcServiceInterface()) {
+            return setOf(RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME)
+        }
+
+        return super.getCallableNamesForClass(classSymbol, context)
+    }
+
+    override fun generateProperties(
+        callableId: CallableId,
+        context: MemberGenerationContext?,
+    ): List<FirPropertySymbol> {
+        val owner = context?.owner
+        if (owner == null || callableId.callableName != RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME
+            || owner.generatedRpcServiceStubKey != null || !owner.isRpcServiceInterface()
+        ) {
+            return super.generateProperties(callableId, context)
+        }
+
+        val descriptorClass = owner.rpcAnnotation(session, FirRpcPredicates.rpcMeta)
+            ?.classFromRpcMeta(session, RpcNames.RPC_META_DESCRIPTOR_CLASS)
+            ?: return super.generateProperties(callableId, context)
+
+        val descriptorType = descriptorClass.classId?.constructClassLikeType(arrayOf(owner.defaultType()))
+            ?: return super.generateProperties(callableId, context)
+
+        return listOf(
+            createMemberProperty(
+                owner = owner,
+                key = FirRpcServiceDescriptorPropertyKey,
+                name = callableId.callableName,
+                returnType = descriptorType,
+                isVal = true,
+                hasBackingField = false,
+            ) {
+                modality = Modality.OPEN
+                visibility = Visibilities.Public
+                status {
+                    isOverride = true
+                }
+            }.symbol
+        )
+    }
+
+    private fun FirClassSymbol<*>.isRpcServiceInterface(): Boolean {
+        return isInterface && session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, this)
     }
 
     private fun generateCompanionObjectForRpcServiceStub(

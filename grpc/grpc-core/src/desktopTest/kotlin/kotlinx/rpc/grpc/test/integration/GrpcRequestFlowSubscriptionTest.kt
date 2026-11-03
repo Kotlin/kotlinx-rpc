@@ -10,11 +10,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -28,13 +27,13 @@ import kotlin.test.assertTrue
  * could skip subscription entirely.
  */
 class GrpcRequestFlowSubscriptionTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
     @Test
     fun `request flow is subscribed eagerly even if the call is cancelled before readiness`() = runGrpcTest { client ->
-        val service = client.withService<EchoService>()
+        val service = client.service<EchoService>()
         var requestFlowSubscribed = false
 
         coroutineScope {

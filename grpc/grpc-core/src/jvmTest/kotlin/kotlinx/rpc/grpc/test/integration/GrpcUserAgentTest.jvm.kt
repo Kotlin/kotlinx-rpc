@@ -8,7 +8,6 @@ import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.withService
 import kotlin.test.assertTrue
 
 actual fun GrpcTestBase.testUserAgent(
@@ -19,7 +18,7 @@ actual fun GrpcTestBase.testUserAgent(
             this.userAgent = userAgent
         }
     ) {
-        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+        it.service<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
 
         // grpc-java stores the composed user-agent ("<prefix> grpc-java-<transport>/<version>")
         // on ManagedChannelImpl, reachable through the forwarding wrapper's `delegate`.

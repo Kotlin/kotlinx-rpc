@@ -4,12 +4,10 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.annotations.Rpc
-
 /**
  * Marker interface for an RPC service.
  *
  * @see Rpc
  */
-@Deprecated("Use of RemoteService is deprecated. Use only @Rpc annotation", level = DeprecationLevel.ERROR)
+@Deprecated("Use of RemoteService is deprecated. Use @Grpc or @Krpc.", level = DeprecationLevel.ERROR)
 public interface RemoteService

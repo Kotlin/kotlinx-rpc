@@ -4,21 +4,17 @@
 
 package kotlinx.rpc.codegen.extension
 
-import kotlinx.rpc.codegen.VersionSpecificApi
-import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.util.dumpKotlinLike
-import org.jetbrains.kotlin.ir.util.getAnnotation
 import org.jetbrains.kotlin.ir.util.hasDefaultValue
 import org.jetbrains.kotlin.ir.util.kotlinFqName
-import org.jetbrains.kotlin.ir.util.packageFqName
 
 /**
  * This class scans user declared RPC service
@@ -31,15 +27,7 @@ internal object RpcDeclarationScanner {
     fun scanServiceDeclaration(service: IrClass, ctx: RpcIrContext, logger: MessageCollector): ServiceDeclaration {
         var stubClass: IrClass? = null
 
-        val grpcAnnotation = service.getAnnotation(RpcClassId.grpcAnnotation.asSingleFqName())
-        // if the protoPackage is not set by the annotation, we use the service kotlin package name
-        val protoPackage = ctx.vsApi { grpcAnnotation?.valueArgumentAtVS(0)?.assertConstString(this) }
-            ?: service.packageFqName?.asString().orEmpty()
-
-        // if the simpleServiceName is set in the @Grpc annotation, we use it instead of the service's class name
-        val simpleName = ctx.vsApi { grpcAnnotation?.valueArgumentAtVS(1)?.assertConstString(this) }
-            ?.takeIf { it.isNotBlank() }
-            ?: service.kotlinFqName.shortName().asString()
+        val simpleName = service.kotlinFqName.shortName().asString()
 
         val declarations = service.declarations.memoryOptimizedMap { declaration ->
             when (declaration) {
@@ -54,13 +42,12 @@ internal object RpcDeclarationScanner {
                             declaration.valueParametersVS().memoryOptimizedMap { param ->
                                 ServiceDeclaration.Method.Argument(param, param.type, param.hasDefaultValue())
                             }
-                        },
-                        ctx = ctx
+                        }
                     )
                 }
 
                 is IrProperty -> {
-                    if (declaration.isFakeOverride) {
+                    if (declaration.isFakeOverride || declaration.isGeneratedServiceDescriptor()) {
                         return@memoryOptimizedMap null
                     }
 
@@ -93,7 +80,6 @@ internal object RpcDeclarationScanner {
             stubClass = stubClassNotNull,
             methods = declarations.filterNotNull(),
             simpleName = simpleName,
-            protoPackage = protoPackage.trim(),
         )
     }
 }
@@ -107,6 +93,7 @@ private fun unsupportedDeclaration(service: IrClass, declaration: IrDeclaration,
     return null
 }
 
-private fun IrExpression.assertConstString(vsApi: VersionSpecificApi) = with(vsApi) {
-    asConstValueVS(String::class)
-} ?: error("Expected IrConst of kind String, got ${dumpKotlinLike()}")
+// declared by FIR in the service interface, its getter is implemented in RpcIrServiceProcessor
+private fun IrProperty.isGeneratedServiceDescriptor(): Boolean {
+    return origin is IrDeclarationOrigin.GeneratedByPlugin && name == RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME
+}

@@ -5,7 +5,7 @@
 package kotlinx.rpc.krpc.test
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.serialization.Serializable
 
 data class LocalDate(
@@ -39,7 +39,7 @@ data class LocalDateTime(
     }
 }
 
-@Rpc
+@Krpc
 interface KrpcTestService {
     fun nonSuspendFlow(): Flow<Int>
     fun nonSuspendFlowErrorOnEmit(): Flow<Int>

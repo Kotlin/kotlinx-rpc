@@ -6,6 +6,8 @@ package kotlinx.rpc.codegen.test
 
 import kotlinx.rpc.codegen.test.runners.AbstractBoxTest
 import kotlinx.rpc.codegen.test.runners.AbstractDiagnosticTest
+import kotlinx.rpc.codegen.test.runners.AbstractGrpcSharedDiagnosticTest
+import kotlinx.rpc.codegen.test.runners.AbstractKrpcSharedDiagnosticTest
 import org.jetbrains.kotlin.generators.dsl.junit5.generateTestGroupSuiteWithJUnit5
 
 fun main() {
@@ -13,6 +15,14 @@ fun main() {
         testGroup(testDataRoot = "src/testData", testsRoot = "src/test-gen") {
             testClass<AbstractDiagnosticTest> {
                 model("diagnostics")
+            }
+
+            testClass<AbstractKrpcSharedDiagnosticTest> {
+                model("diagnosticsShared")
+            }
+
+            testClass<AbstractGrpcSharedDiagnosticTest> {
+                model("diagnosticsShared")
             }
 
             testClass<AbstractBoxTest> {

@@ -6,17 +6,16 @@
 
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.withService
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
-@Rpc
+@Krpc
 interface BoxService {
     suspend fun stream(flow: Flow<String>): String
 }
 
 fun box(): String = runBlocking {
-    val result = TestRpcClient.withService<BoxService>().stream(flow { })
+    val result = TestRpcClient.service<BoxService>().stream(flow { })
 
     if (result == "call_42") "OK" else "Fail: $result"
 }

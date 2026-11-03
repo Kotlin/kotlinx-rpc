@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -20,7 +19,6 @@ import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
@@ -44,7 +42,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrAnnotation
@@ -56,7 +53,6 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrAnnotationImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.fromSymbolOwner
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -81,7 +77,6 @@ import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CommonConfigurationKeys
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.descriptors.SourceElement
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.expressions.IrAnnotation
@@ -93,7 +88,6 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrAnnotationImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.fromSymbolOwner
 import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
@@ -234,50 +228,6 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     override val messageCollectorKeyVS: CompilerConfigurationKey<MessageCollector>
         get() = CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY
 
-    override fun IrCallImplVS(
-        startOffset: Int,
-        endOffset: Int,
-        type: IrType,
-        symbol: IrSimpleFunctionSymbol,
-        typeArgumentsCount: Int,
-        valueArgumentsCount: Int,
-        origin: IrStatementOrigin?,
-        superQualifierSymbol: IrClassSymbol?,
-    ): IrCallImpl {
-        return IrCallImpl(
-            startOffset = startOffset,
-            endOffset = endOffset,
-            type = type,
-            symbol = symbol,
-            typeArgumentsCount = typeArgumentsCount,
-            origin = origin,
-            superQualifierSymbol = superQualifierSymbol,
-        )
-    }
-
-    override fun IrConstructorCallImplVS(
-        startOffset: Int,
-        endOffset: Int,
-        type: IrType,
-        symbol: IrConstructorSymbol,
-        typeArgumentsCount: Int,
-        valueArgumentsCount: Int,
-        constructorTypeArgumentsCount: Int,
-        origin: IrStatementOrigin?,
-        source: SourceElement,
-    ): IrConstructorCallImpl {
-        return IrConstructorCallImpl(
-            startOffset = startOffset,
-            endOffset = endOffset,
-            type = type,
-            symbol = symbol,
-            typeArgumentsCount = typeArgumentsCount,
-            constructorTypeArgumentsCount = constructorTypeArgumentsCount,
-            origin = origin,
-            source = source,
-        )
-    }
-
     override fun IrFunction.valueParametersVS(): List<IrValueParameter> {
         return parameters.filter { it.kind == IrParameterKind.Regular }
     }
@@ -325,14 +275,13 @@ object VersionSpecificApiImpl : VersionSpecificApi {
     ): IrMemberAccessExpression<*> {
         //##csm IrAnnotationVS
         //##csm specific=[2.2.0...2.3.99]
-        return IrConstructorCallImplVS(
+        return IrConstructorCallImpl(
             startOffset = startOffset,
             endOffset = endOffset,
             type = type,
             symbol = symbol,
             typeArgumentsCount = typeArgumentsCount,
             constructorTypeArgumentsCount = constructorTypeArgumentsCount,
-            valueArgumentsCount = valueArgumentsCount,
         )
         //##csm /specific
         //##csm default

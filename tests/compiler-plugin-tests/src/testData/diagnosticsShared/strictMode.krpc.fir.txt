@@ -80,7 +80,7 @@ FILE: b.kt
         public final fun copy(text: R|kotlin/String| = this@R|/SimpleFilter|.R|/SimpleFilter.text|): R|SimpleFilter|
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<MyService>| {
         public abstract val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
             public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
 
@@ -137,6 +137,9 @@ FILE: b.kt
         public abstract fun nonSuspendNoFlowString(): R|kotlin/String|
 
         public abstract suspend fun complex(filter: R|ComplexFilter|): R|kotlin/String|
+
+        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyService>|
+            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyService>|
 
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {

@@ -9,10 +9,10 @@
 import kotlin.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.annotations.Rpc
+// PROTOCOL_IMPORT
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
-@Rpc
+@Protocol
 interface MyService {
     <!NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE!>fun hello()<!>
 
@@ -33,10 +33,10 @@ interface MyService {
     <!AD_HOC_POLYMORPHISM_IN_RPC_SERVICE!>suspend fun sameName2(a: Int)<!>
 }
 
-@Rpc
+@Protocol
 interface MyServiceT<!TYPE_PARAMETERS_IN_RPC_INTERFACE!><T><!>
 
-@Rpc
+@Protocol
 interface MyServiceT2<!TYPE_PARAMETERS_IN_RPC_INTERFACE!><T, R, A, B><!>
 
 /* GENERATED_FIR_TAGS: annotationUseSiteTargetFile, classReference, functionDeclaration, interfaceDeclaration,

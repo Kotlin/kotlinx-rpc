@@ -4,9 +4,9 @@
 
 package interfaces
 
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 
-@Rpc
+@Krpc
 interface BarInterface {
     suspend fun get()
 }

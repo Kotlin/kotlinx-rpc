@@ -5,8 +5,8 @@
 package kotlinx.rpc.codegen.extension
 
 import kotlinx.rpc.codegen.VersionSpecificApi
-import kotlinx.rpc.codegen.VersionSpecificApiImpl.asConstValueVS
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.common.RpcNames
 import org.jetbrains.kotlin.backend.jvm.functionByName
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -17,23 +17,17 @@ import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
 import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
 import org.jetbrains.kotlin.ir.builders.declarations.addConstructor
 import org.jetbrains.kotlin.ir.builders.declarations.addFunction
+import org.jetbrains.kotlin.ir.builders.declarations.addGetter
 import org.jetbrains.kotlin.ir.builders.declarations.addProperty
 import org.jetbrains.kotlin.ir.builders.declarations.addValueParameter
 import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.builders.irAs
-import org.jetbrains.kotlin.ir.builders.irBlock
 import org.jetbrains.kotlin.ir.builders.irBlockBody
-import org.jetbrains.kotlin.ir.builders.irBranch
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irCallConstructor
-import org.jetbrains.kotlin.ir.builders.irEqualsNull
 import org.jetbrains.kotlin.ir.builders.irGet
-import org.jetbrains.kotlin.ir.builders.irIfNull
 import org.jetbrains.kotlin.ir.builders.irReturn
-import org.jetbrains.kotlin.ir.builders.irTemporary
-import org.jetbrains.kotlin.ir.builders.irTrue
 import org.jetbrains.kotlin.ir.builders.irVararg
-import org.jetbrains.kotlin.ir.builders.irWhen
 import org.jetbrains.kotlin.ir.declarations.IrAnnotationContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
@@ -42,7 +36,6 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrProperty
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.declarations.IrValueParameter
-import org.jetbrains.kotlin.ir.declarations.IrVariable
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrClassReference
 import org.jetbrains.kotlin.ir.expressions.IrExpression
@@ -54,7 +47,6 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrGetEnumValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrTypeOperatorCallImpl
@@ -66,26 +58,18 @@ import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.ir.types.classFqName
-import org.jetbrains.kotlin.ir.types.classOrFail
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.createType
 import org.jetbrains.kotlin.ir.types.defaultType
-import org.jetbrains.kotlin.ir.types.makeNotNull
-import org.jetbrains.kotlin.ir.types.makeNullable
-import org.jetbrains.kotlin.ir.types.starProjectedType
 import org.jetbrains.kotlin.ir.types.typeWith
-import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
-import org.jetbrains.kotlin.ir.util.dumpKotlinLike
 import org.jetbrains.kotlin.ir.util.file
 import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.getAnnotation
-import org.jetbrains.kotlin.ir.util.isObject
-import org.jetbrains.kotlin.ir.util.kotlinFqName
-import org.jetbrains.kotlin.ir.util.primaryConstructor
+import org.jetbrains.kotlin.ir.util.parentAsClass
+import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.types.Variance
@@ -107,24 +91,54 @@ private object Descriptor {
     const val CREATE_INSTANCE = "createInstance"
 }
 
-private object GrpcDescriptor {
-    const val DELEGATE = "delegate"
-}
-
-internal class RpcStubGenerator(
-    private val declaration: ServiceDeclaration,
-    private val ctx: RpcIrContext,
+internal open class RpcStubGenerator(
+    protected val declaration: ServiceDeclaration,
+    protected val ctx: RpcIrContext,
     @Suppress("unused")
     private val logger: MessageCollector,
 ) {
-    private var stubClass: IrClass by Delegates.notNull()
-    private var stubClassThisReceiver: IrValueParameter by Delegates.notNull()
+    protected var stubClass: IrClass by Delegates.notNull()
+        private set
+
+    protected var stubClassThisReceiver: IrValueParameter by Delegates.notNull()
+        private set
 
     fun generate() {
         generateStubClass()
 
         addWithServiceDescriptorAnnotation()
     }
+
+    /**
+     * Type of the descriptor (stub companion object): `RpcMeta.descriptorClass` applied to the service type,
+     * e.g. `KrpcServiceDescriptor<MyService>`.
+     *
+     * Must match the type FIR gives to the generated `descriptor` property of the service interface.
+     */
+    private fun descriptorType(): IrType {
+        val descriptorClass = declaration.service.rpcMetaInformation(RpcNames.RPC_META_DESCRIPTOR_CLASS).classOrNull
+            ?: error("Expected a class as 'descriptorClass' of RpcMeta for ${declaration.service.name}")
+
+        val typeParameterCount = descriptorClass.owner.typeParameters.size
+        if (typeParameterCount != 1) {
+            error(
+                "Expected 'descriptorClass' ${descriptorClass.owner.name} of RpcMeta for ${declaration.service.name} " +
+                        "to have a single type parameter for the service type, found $typeParameterCount"
+            )
+        }
+
+        return descriptorClass.typeWith(declaration.serviceType)
+    }
+
+    /**
+     * Called after the base content of the descriptor (stub companion object) is generated.
+     */
+    protected open fun IrClass.generateAdditionalDescriptorContent() {}
+
+    /**
+     * Value of the descriptor's `simpleName`. Defaults to the service interface name.
+     */
+    protected open fun descriptorSimpleName(): String = declaration.simpleName
 
     private fun generateStubClass() {
         declaration.stubClass.apply {
@@ -164,7 +178,9 @@ internal class RpcStubGenerator(
 
             clientValueParameter = addValueParameter {
                 name = Name.identifier(Stub.CLIENT)
-                type = ctx.rpcClient.defaultType
+                type = ctx.rpcClient.typeWith(
+                    declaration.service.rpcMetaInformation(RpcNames.RPC_META_PROTOCOL_CLASS)
+                )
             }
 
             addDefaultConstructor(ctx.pluginContext, this)
@@ -178,7 +194,47 @@ internal class RpcStubGenerator(
 
         generateCompanionObject()
 
+        addDescriptorFakeOverride()
+
         addAnyOverrides(declaration.service)
+    }
+
+    private fun IrClass.addDescriptorFakeOverride() {
+        val interfaceProperty = declaration.service.properties.singleOrNull {
+            it.name == RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME && !it.isFakeOverride
+        } ?: error(
+            "Expected a generated '${RpcNames.SERVICE_DESCRIPTOR_PROPERTY_NAME}' property " +
+                    "in ${declaration.service.name.asString()}"
+        )
+
+        val interfaceGetter = interfaceProperty.getterOrFail
+
+        addProperty {
+            name = interfaceProperty.name
+            visibility = DescriptorVisibilities.PUBLIC
+            modality = Modality.OPEN
+            origin = IrDeclarationOrigin.FAKE_OVERRIDE
+
+            isFakeOverride = true
+        }.apply {
+            overriddenSymbols = listOf(interfaceProperty.symbol)
+
+            addGetter {
+                visibility = DescriptorVisibilities.PUBLIC
+                modality = Modality.OPEN
+                origin = IrDeclarationOrigin.FAKE_OVERRIDE
+
+                isFakeOverride = true
+                returnType = interfaceGetter.returnType
+            }.apply {
+                overriddenSymbols = listOf(interfaceGetter.symbol)
+
+                vsApi {
+                    dispatchReceiverParameterVS = stubClassThisReceiver
+                        .copyToVS(this@apply, origin = IrDeclarationOrigin.DEFINED)
+                }
+            }
+        }
     }
 
     private fun IrClass.generateProperties() {
@@ -210,7 +266,13 @@ internal class RpcStubGenerator(
      * ```
      */
     private fun IrClass.clientProperty() {
-        clientProperty = addConstructorProperty(Stub.CLIENT, ctx.rpcClient.defaultType, clientValueParameter)
+        clientProperty = addConstructorProperty(
+            Stub.CLIENT,
+            ctx.rpcClient.typeWith(
+                declaration.service.rpcMetaInformation(RpcNames.RPC_META_PROTOCOL_CLASS)
+            ),
+            clientValueParameter
+        )
     }
 
     private fun IrClass.addConstructorProperty(
@@ -471,35 +533,34 @@ internal class RpcStubGenerator(
         )
     }
 
-    private fun irCallProperty(receiver: IrExpression, property: IrProperty): IrCall {
+    protected fun irCallProperty(receiver: IrExpression, property: IrProperty): IrCall {
         val getter = property.getterOrFail
 
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = getter.returnType,
-                symbol = getter.symbol,
-                origin = IrStatementOrigin.GET_PROPERTY,
-                valueArgumentsCount = vsApi { getter.valueParametersVS() }.size,
-                typeArgumentsCount = getter.typeParameters.size,
-            )
-        }.apply {
+        return IrCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = getter.returnType,
+            symbol = getter.symbol,
+            origin = IrStatementOrigin.GET_PROPERTY,
+            typeArgumentsCount = getter.typeParameters.size,
+        ).apply {
             arguments {
                 dispatchReceiver = receiver
             }
         }
     }
 
-    private var stubCompanionObject: IrClassSymbol by Delegates.notNull()
-    private var stubCompanionObjectThisReceiver: IrValueParameter by Delegates.notNull()
+    protected var stubCompanionObject: IrClassSymbol by Delegates.notNull()
+        private set
+    protected var stubCompanionObjectThisReceiver: IrValueParameter by Delegates.notNull()
+        private set
 
     /**
      * Companion object for the RPC service stub.
      * The empty object should already be generated
      *
      * ```kotlin
-     *  companion object : RpcServiceDescriptor<MyService>
+     *  companion object : RpcServiceDescriptor<MyProtocol, MyService>
      * ```
      */
     private fun IrClass.generateCompanionObject() {
@@ -511,14 +572,14 @@ internal class RpcStubGenerator(
             stubCompanionObjectThisReceiver = thisReceiver
                 ?: error("Stub companion object expected to have thisReceiver: ${name.asString()}")
 
-            superTypes = listOfNotNull(
-                ctx.rpcServiceDescriptor.typeWith(declaration.serviceType),
-                if (declaration.isGrpc) ctx.grpcServiceDescriptor.typeWith(declaration.serviceType) else null,
-            )
+            // descriptorClass extends RpcServiceDescriptor<Protocol, T>
+            superTypes = listOf(descriptorType())
 
             generateCompanionObjectConstructor(ctx.pluginContext)
 
             generateCompanionObjectContent()
+
+            generateAdditionalDescriptorContent()
 
             addAnyOverrides(ctx.rpcServiceDescriptor.owner)
         } ?: error("Expected companion object to be present")
@@ -536,10 +597,6 @@ internal class RpcStubGenerator(
         generateGetCallableFunction()
 
         generateCreateInstanceFunction()
-
-        if (declaration.isGrpc) {
-            generateGrpcDelegateProperty()
-        }
     }
 
     /**
@@ -553,7 +610,7 @@ internal class RpcStubGenerator(
         generateStringOverriddenProperty(
             propertyName = Descriptor.SIMPLE_NAME,
             propertySymbol = ctx.properties.rpcServiceDescriptorSimpleName,
-            value = declaration.simpleName,
+            value = descriptorSimpleName(),
         )
     }
 
@@ -575,13 +632,13 @@ internal class RpcStubGenerator(
     private val invokators = mutableMapOf<String, IrProperty>()
 
     private fun IrClass.generateInvokators() {
-        declaration.methods.forEach { callable ->
-            generateInvokator(callable)
+        declaration.methods.forEach { method ->
+            generateInvokator(method)
         }
     }
 
     /**
-     * Generates an invokator (`RpcInvokator`) for this callable.
+     * Generates an invokator (`RpcInvokator`) for this method.
      *
      * For suspend methods:
      * ```kotlin
@@ -609,16 +666,12 @@ internal class RpcStubGenerator(
      *  - `<method-name>` - the name of the method
      *  - <argument-type-k> - type of the kth argument
      */
-    private fun IrClass.generateInvokator(callable: ServiceDeclaration.Callable) {
-        check(callable is ServiceDeclaration.Method) {
-            "Only methods are allowed here"
-        }
-
-        invokators[callable.name] = addProperty {
-            name = Name.identifier("${callable.name}Invokator")
+    private fun IrClass.generateInvokator(method: ServiceDeclaration.Method) {
+        invokators[method.name] = addProperty {
+            name = Name.identifier("${method.name}Invokator")
             visibility = DescriptorVisibilities.PRIVATE
         }.apply {
-            val returnsFlow = !callable.function.isSuspend
+            val returnsFlow = !method.function.isSuspend
 
             val propertyType = when {
                 returnsFlow -> ctx.rpcInvokatorFlowResponse.typeWith(declaration.serviceType)
@@ -658,12 +711,12 @@ internal class RpcStubGenerator(
                     }
 
                     body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
-                        val call = irCall(callable.function).apply {
+                        val call = irCall(method.function).apply {
                             arguments {
                                 dispatchReceiver = irGet(serviceParameter)
 
                                 values {
-                                    callable.arguments.forEachIndexed { argIndex, arg ->
+                                    method.arguments.forEachIndexed { argIndex, arg ->
                                         val argument = irCall(
                                             callee = ctx.functions.arrayGet.symbol,
                                             type = ctx.anyNullable,
@@ -733,7 +786,8 @@ internal class RpcStubGenerator(
         }
     }
 
-    private var callables: IrProperty by Delegates.notNull()
+    protected var callables: IrProperty by Delegates.notNull()
+        private set
 
     /**
      * Callable names map.
@@ -805,36 +859,23 @@ internal class RpcStubGenerator(
      *  - `<method-parameter-name-k>` - if a method, its k-th parameter name
      *  - `<method-parameter-type-k>` - if a method, its k-th parameter type
      */
-    private fun irRpcCallable(callable: ServiceDeclaration.Callable): IrExpression {
-        return vsApi {
-            IrConstructorCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.rpcCallable.typeWith(declaration.serviceType),
-                symbol = ctx.rpcCallableDefault.constructors.single(),
-                typeArgumentsCount = 1,
-                valueArgumentsCount = if (declaration.isGrpc) 5 else 4,
-                constructorTypeArgumentsCount = 1,
-            )
-        }.apply {
+    private fun irRpcCallable(method: ServiceDeclaration.Method): IrExpression {
+        return IrConstructorCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.rpcCallable.typeWith(declaration.serviceType),
+            symbol = ctx.rpcCallableDefault.constructors.single(),
+            typeArgumentsCount = 1,
+            constructorTypeArgumentsCount = 1
+        ).apply {
             putConstructorTypeArgument(0, declaration.serviceType)
 
-            callable as ServiceDeclaration.Method
+            val returnType = method.unwrappedReturnType()
 
-            val returnType = when {
-                callable.function.isNonSuspendingWithFlowReturn(declaration.stubClass.file) -> {
-                    (callable.function.returnType as IrSimpleType).arguments.single().typeOrFail
-                }
+            val invokator = invokators[method.name]
+                ?: error("Expected invokator for ${method.name} in ${declaration.service.name}")
 
-                else -> {
-                    callable.function.returnType
-                }
-            }
-
-            val invokator = invokators[callable.name]
-                ?: error("Expected invokator for ${callable.name} in ${declaration.service.name}")
-
-            val parameters = callable.arguments
+            val parameters = method.arguments
 
             val callee = if (parameters.isEmpty()) {
                 ctx.functions.emptyArray
@@ -847,16 +888,13 @@ internal class RpcStubGenerator(
                 Variance.OUT_VARIANCE,
             )
 
-            val arrayOfCall = vsApi {
-                IrCallImplVS(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = arrayParametersType,
-                    symbol = callee,
-                    typeArgumentsCount = 1,
-                    valueArgumentsCount = if (parameters.isEmpty()) 0 else 1,
-                )
-            }.apply arrayOfCall@{
+            val arrayOfCall = IrCallImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = arrayParametersType,
+                symbol = callee,
+                typeArgumentsCount = 1,
+            ).apply arrayOfCall@{
                 if (parameters.isEmpty()) {
                     arguments {
                         types { +ctx.rpcParameter.defaultType }
@@ -871,17 +909,14 @@ internal class RpcStubGenerator(
                     type = arrayParametersType,
                     varargElementType = ctx.rpcParameter.defaultType,
                     elements = parameters.memoryOptimizedMap { parameter ->
-                        vsApi {
-                            IrConstructorCallImplVS(
-                                startOffset = UNDEFINED_OFFSET,
-                                endOffset = UNDEFINED_OFFSET,
-                                type = ctx.rpcParameter.defaultType,
-                                symbol = ctx.rpcParameterDefault.constructors.single(),
-                                typeArgumentsCount = 0,
-                                constructorTypeArgumentsCount = 0,
-                                valueArgumentsCount = 3,
-                            )
-                        }.apply {
+                        IrConstructorCallImpl(
+                            startOffset = UNDEFINED_OFFSET,
+                            endOffset = UNDEFINED_OFFSET,
+                            type = ctx.rpcParameter.defaultType,
+                            symbol = ctx.rpcParameterDefault.constructors.single(),
+                            typeArgumentsCount = 0,
+                            constructorTypeArgumentsCount = 0,
+                        ).apply {
                             arguments {
                                 values {
                                     +stringConst(parameter.value.name.asString())
@@ -908,7 +943,7 @@ internal class RpcStubGenerator(
             arguments {
                 values {
                     // name
-                    +stringConst(callable.name)
+                    +stringConst(method.name)
 
                     // returnType
                     +irRpcTypeCall(returnType)
@@ -929,6 +964,20 @@ internal class RpcStubGenerator(
 
     private fun IrSimpleFunction.isNonSuspendingWithFlowReturn(from: IrFile): Boolean {
         return returnType.classOrNull == ctx.flow(from) && !isSuspend
+    }
+
+    /**
+     * Return type of the callable: the element type for a non-suspending function returning `Flow`,
+     * the return type itself otherwise.
+     *
+     * Annotations of this type are the ones that apply to the callable's result (e.g. `@Serializable(with = ...)`).
+     */
+    protected fun ServiceDeclaration.Method.unwrappedReturnType(): IrType {
+        return if (function.isNonSuspendingWithFlowReturn(declaration.stubClass.file)) {
+            (function.returnType as IrSimpleType).arguments.single().typeOrFail
+        } else {
+            function.returnType
+        }
     }
 
     /**
@@ -978,7 +1027,9 @@ internal class RpcStubGenerator(
 
             val client = addValueParameter {
                 name = Name.identifier("client")
-                type = ctx.rpcClient.defaultType
+                type = ctx.rpcClient.typeWith(
+                    declaration.service.rpcMetaInformation(RpcNames.RPC_META_PROTOCOL_CLASS)
+                )
             }
 
             body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
@@ -997,386 +1048,6 @@ internal class RpcStubGenerator(
                 )
             }
         }
-    }
-
-    /**
-     * ```kotlin
-     * override fun delegate(resolver: GrpcMarshallerResolver, marshallerConfig: GrpcMarshallerConfig?): GrpcServiceDelegate {
-     *     val methodDescriptorMap = ...
-     *     val serviceDescriptor = ...
-     *
-     *     return GrpcServiceDelegate(methodDescriptorMap, serviceDescriptor)
-     * }
-     * ```
-     */
-    private fun IrClass.generateGrpcDelegateProperty() {
-        addFunction {
-            name = Name.identifier(GrpcDescriptor.DELEGATE)
-            modality = Modality.FINAL
-            visibility = DescriptorVisibilities.PUBLIC
-            returnType = ctx.grpcServiceDelegate.defaultType
-        }.apply delegate@{
-            overriddenSymbols = listOf(ctx.functions.grpcServiceDescriptorDelegate.symbol)
-
-            vsApi {
-                dispatchReceiverParameterVS = stubCompanionObjectThisReceiver
-                    .copyToVS(this@delegate, origin = IrDeclarationOrigin.DEFINED)
-            }
-
-            val resolver = addValueParameter {
-                name = Name.identifier("resolver")
-                type = ctx.grpcMarshallerResolver.defaultType
-            }
-
-            val marshallerConfig = addValueParameter {
-                name = Name.identifier("marshallerConfig")
-                type = ctx.grpcMarshallerConfig.defaultType.makeNullable()
-            }
-
-            body = irBuilder(ctx.pluginContext, symbol).irBlockBody {
-                val methodDescriptorMap = irTemporary(
-                    value = irMethodDescriptorMap(resolver, marshallerConfig),
-                    nameHint = "methodDescriptorMap",
-                )
-
-                val serviceDescriptor = irTemporary(
-                    value = irServiceDescriptor(methodDescriptorMap),
-                    nameHint = "serviceDescriptor",
-                )
-
-                +irReturn(
-                    irCall(
-                        callee = ctx.grpcServiceDelegate.owner.primaryConstructor!!.symbol,
-                        type = ctx.grpcServiceDelegate.defaultType,
-                    ).apply {
-                        arguments {
-                            values {
-                                +irGet(methodDescriptorMap)
-                                +irGet(serviceDescriptor)
-                            }
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    /**
-     * A map that holds MethodDescriptors.
-     *
-     * ```kotlin
-     *  mapOf<String, MethodDescriptors<*, *>>(
-     *      Pair("<callable-name-1>", methodDescriptor(...)),
-     *      ...
-     *      Pair("<callable-name-n>", methodDescriptor(...)),
-     *  )
-     *
-     *  // when n=0:
-     *  emptyMap<String, MethodDescriptors<*, *>>()
-     * ```
-     *
-     * Where:
-     *  - `<callable-name-k>` - the name of the k-th callable in the service
-     */
-    private fun IrBlockBodyBuilder.irMethodDescriptorMap(
-        resolver: IrValueParameter,
-        marshallerConfig: IrValueParameter
-    ): IrCallImpl {
-        return irMapOf(
-            keyType = ctx.irBuiltIns.stringType,
-            valueType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
-            declaration.methods.memoryOptimizedMap { callable ->
-                stringConst(callable.name) to irMethodDescriptor(callable, resolver, marshallerConfig)
-            },
-        )
-    }
-
-    /**
-     * Ir call to `serviceDescriptor`
-     *
-     * ```kotlin
-     * serviceDescriptor(
-     *     name = my.proto.package.MyService, // $declaration.serviceFqName
-     *     methods = methodDescriptorMap.values, // Collection<MethodDescriptor<*, *>>
-     *     schemaDescriptor = null, // for now, only null
-     * )
-     * ```
-     */
-    private fun irServiceDescriptor(methodDescriptorMap: IrVariable): IrCallImpl {
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.grpcPlatformServiceDescriptor(declaration.stubClass.file).defaultType,
-                symbol = ctx.functions.serviceDescriptor,
-                typeArgumentsCount = 0,
-                valueArgumentsCount = 3,
-            )
-        }.apply {
-            arguments {
-                values {
-                    +stringConst(declaration.serviceFqName)
-
-                    +irCallProperty(
-                        receiver = IrGetValueImpl(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = methodDescriptorMap.type,
-                            symbol = methodDescriptorMap.symbol,
-                        ),
-                        property = ctx.properties.mapValues.owner,
-                    ).apply {
-                        type = ctx.irBuiltIns.collectionClass.typeWith(
-                            ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file).starProjectedType,
-                        )
-                    }
-
-                    +nullConst(ctx.anyNullable)
-                }
-            }
-        }
-    }
-
-    /**
-     * gRPC Platform MethodDescriptor call
-     *
-     * ```kotlin
-     * // In scope: resolver: GrpcMarshallerResolver
-     *
-     * methodDescriptor<<request-type>, <response-type>>(
-     *     fullMethodName = "${descriptor.serviceFqName}/${<from Grpc.Method annotation> ?: callable.name}",
-     *     requestMarshaller = <request-marshaller>,
-     *     responseMarshaller = <response-marshaller>,
-     *     type = MethodType.<method-type>,
-     *     schemaDescriptor = null, // null for now
-     *     idempotent = <from Grpc.Method annotation>,
-     *     safe = <from Grpc.Method annotation>,
-     *     sampledToLocalTracing = <from Grpc.Method annotation>,
-     * )
-     * ```
-     *
-     * Where:
-     *   - <request-type> - the type of the request, namely the first parameter, unwrapped if a Flow
-     *   - <response-type> - the type of the response, unwrapped if a Flow
-     *   - <method-name> - the name of the method
-     *   - <method-type> - one of MethodType.UNARY, MethodType.SERVER_STREAMING,
-     *   MethodType.CLIENT_STREAMING, MethodType.BIDI_STREAMING
-     *   - <request-marshaller>/<response-marshaller> - a GrpcMarshaller getter, see [irMarshallerWithConfigCheck]
-     */
-    private fun IrBlockBodyBuilder.irMethodDescriptor(
-        callable: ServiceDeclaration.Callable,
-        resolver: IrValueParameter,
-        marshallerConfig: IrValueParameter,
-    ): IrCall {
-        check(callable is ServiceDeclaration.Method) {
-            "Only methods are allowed here"
-        }
-
-        check(callable.arguments.size <= 1) {
-            "Only single or none argument methods are allowed here"
-        }
-
-        val requestParameterType = callable.arguments.getOrNull(0)?.type ?: ctx.irBuiltIns.unitType
-        val responseParameterType = callable.function.returnType
-
-        val requestType: IrType = requestParameterType.unwrapFlow(declaration.stubClass.file)
-        val responseType: IrType = responseParameterType.unwrapFlow(declaration.stubClass.file)
-
-        val methodDescriptorType = ctx.grpcPlatformMethodDescriptor(declaration.stubClass.file)
-            .typeWith(requestType, responseType)
-
-        return vsApi {
-            irCall(
-                type = methodDescriptorType,
-                callee = ctx.functions.methodDescriptor,
-                typeArgumentsCount = 2,
-            )
-        }.apply {
-            arguments {
-                types {
-                    +requestType
-                    +responseType
-                }
-
-                val grpcMethodAnnotation = callable.function
-                    .getAnnotation(RpcClassId.grpcMethodAnnotation.asSingleFqName())
-
-                values {
-                    // fullMethodName
-                    +stringConst("${declaration.serviceFqName}/${callable.grpcName}")
-
-                    // requestMarshaller
-                    +irMarshallerWithConfigCheck(requestType, resolver, marshallerConfig)
-
-                    // responseMarshaller
-                    +irMarshallerWithConfigCheck(responseType, resolver, marshallerConfig)
-
-                    val flow = ctx.flow(declaration.stubClass.file)
-                    // type
-                    +IrGetEnumValueImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = ctx.grpcPlatformMethodType.defaultType,
-                        symbol = when {
-                            requestParameterType.classOrNull == flow && responseParameterType.classOrNull == flow -> {
-                                ctx.grpcPlatformMethodTypeBidiStreaming
-                            }
-
-                            requestParameterType.classOrNull == flow && responseParameterType.classOrNull != flow -> {
-                                ctx.grpcPlatformMethodTypeClientStreaming
-                            }
-
-                            requestParameterType.classOrNull != flow && responseParameterType.classOrNull == flow -> {
-                                ctx.grpcPlatformMethodTypeServerStreaming
-                            }
-
-                            else -> {
-                                ctx.grpcPlatformMethodTypeUnary
-                            }
-                        },
-                    )
-
-                    // schemaDescriptor
-                    +nullConst(ctx.anyNullable)
-
-                    val idempotent = vsApi {
-                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("idempotent"))
-                    }?.asConstValueVS(Boolean::class) ?: false
-
-                    // idempotent
-                    +booleanConst(idempotent)
-
-                    val safe = vsApi {
-                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("safe"))
-                    }?.asConstValueVS(Boolean::class) ?: false
-
-                    // safe
-                    +booleanConst(safe)
-
-                    val sampledToLocalTracing = vsApi {
-                        grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("sampledToLocalTracing"))
-                    }?.asConstValueVS(Boolean::class) ?: true
-
-                    // sampledToLocalTracing
-                    +booleanConst(sampledToLocalTracing)
-                }
-            }
-        }
-    }
-
-    /**
-     * Check if the [marshallerConfig] is null. If yes, return a wrapped marshaller that uses the default marshaller configuration.
-     * Otherwise, return the marshaller.
-     *
-     * Delegates actual marshaller resolving to [irMarshaller].
-     *
-     * ```
-     * if (marshallerConfig == null) {
-     *    return marshaller // marshaller from irMarshaller
-     * } else {
-     *   return ConfiguredGrpcMarshallerDelegate(config, marshaller)
-     * }
-     * ```
-     */
-    private fun IrBlockBodyBuilder.irMarshallerWithConfigCheck(
-        messageType: IrType,
-        resolver: IrValueParameter,
-        marshallerConfig: IrValueParameter,
-    ): IrExpression {
-
-        val marshaller = irTemporary(
-            value = irMarshaller(messageType, resolver),
-            nameHint = "marshaller",
-            isMutable = false,
-        )
-
-        val resolvedMarshaller = irCallConstructor(
-            callee = ctx.configuredGrpcMarshallerDelegate.constructors.single(),
-            typeArguments = listOf(messageType),
-        ).apply {
-            type = ctx.configuredGrpcMarshallerDelegate.typeWith(messageType)
-            arguments {
-                values {
-                    +irGet(marshallerConfig)
-                    +irGet(marshaller)
-                }
-            }
-        }
-
-        return irIfNull(
-            type = ctx.grpcMarshaller.typeWith(messageType),
-            subject = irGet(marshallerConfig),
-            thenPart = irGet(marshaller),
-            elsePart = resolvedMarshaller,
-        )
-    }
-
-    /**
-     * If [messageType] is annotated with [RpcIrContext.withGrpcMarshallerAnnotation],
-     * we use its marshaller object
-     *
-     * If not, use [resolver].resolveOrNull()
-     */
-    private fun IrBlockBodyBuilder.irMarshaller(messageType: IrType, resolver: IrValueParameter): IrExpression {
-        val owner = messageType.classOrFail.owner
-        val marshallerClassSymbol = computeProtoDeclarationIfNeeded(owner, ctx)
-            ?.marshaller?.symbol
-            ?: owner.extractMarshallerReference()
-
-        return if (marshallerClassSymbol != null) {
-            IrGetObjectValueImpl(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = marshallerClassSymbol.defaultType,
-                symbol = marshallerClassSymbol,
-            )
-        } else {
-            val marshallerType = ctx.grpcMarshaller.typeWith(messageType)
-            val marshallerCall = vsApi {
-                irCall(
-                    type = marshallerType.makeNullable(),
-                    callee = ctx.functions.grpcMarshallerResolverResolveOrNull.symbol,
-                    typeArgumentsCount = 0,
-                )
-            }.apply {
-                arguments {
-                    dispatchReceiver = IrGetValueImpl(
-                        startOffset = UNDEFINED_OFFSET,
-                        endOffset = UNDEFINED_OFFSET,
-                        type = resolver.type,
-                        symbol = resolver.symbol,
-                    )
-
-                    values {
-                        +irTypeOfCall(messageType)
-                    }
-                }
-            }
-
-            irElvis(
-                expression = marshallerCall,
-                ifNull = irCall(ctx.irBuiltIns.illegalArgumentExceptionSymbol).apply {
-                    arguments {
-                        values {
-                            +stringConst("No marshaller found for ${messageType.classFqName}")
-                        }
-                    }
-                },
-            )
-        }
-    }
-
-    private fun IrClass.extractMarshallerReference(): IrClassSymbol? {
-        val withMarshallerAnnotation = getAnnotation(ctx.withGrpcMarshallerAnnotation.owner.kotlinFqName)
-
-        if (withMarshallerAnnotation != null) {
-            val classReference = vsApi { withMarshallerAnnotation.argumentsVS }.single() as? IrClassReference
-                ?: error("Expected IrClassReference for ${ctx.withGrpcMarshallerAnnotation.owner.kotlinFqName} parameter")
-
-            return classReference.classType.classOrFail
-        }
-
-        return null
     }
 
     private fun addWithServiceDescriptorAnnotation() {
@@ -1413,134 +1084,56 @@ internal class RpcStubGenerator(
     }
 
     /**
-     * IR call of the `RpcType(KType, List<Annotation>)` function
+     * IR call of the `RpcTypeDefault(KType, List<Annotation>)` constructor
      */
     private fun irRpcTypeCall(type: IrType): IrConstructorCallImpl {
-        // todo change to extension after KRPC-178
-        val withSerializableAnnotations = type.annotations.any {
-            it.type.isSerializableAnnotation()
-        }
-
-        return vsApi {
-            IrConstructorCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.rpcType.defaultType,
-                symbol = (if (withSerializableAnnotations) ctx.rpcTypeKrpc else ctx.rpcTypeDefault)
-                    .constructors.single(),
-                typeArgumentsCount = 0,
-                valueArgumentsCount = if (withSerializableAnnotations) 3 else 2,
-                constructorTypeArgumentsCount = 0,
-            )
-        }.apply {
+        return IrConstructorCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.rpcType.defaultType,
+            symbol = ctx.rpcTypeDefault.constructors.single(),
+            typeArgumentsCount = 0,
+            constructorTypeArgumentsCount = 0,
+        ).apply {
             arguments {
                 values {
                     +irTypeOfCall(type)
                     +irListOfAnnotations(type)
-
-                    if (withSerializableAnnotations) {
-                        +irMapOf(
-                            keyType = ctx.kSerializerAnyNullableKClass(declaration.stubClass.file),
-                            valueType = ctx.kSerializerAnyNullable(declaration.stubClass.file),
-                            elements = type.annotations
-                                .filter { it.type.isSerializableAnnotation() }
-                                .memoryOptimizedMap {
-                                    val kClassValue = vsApi { it.argumentsVS }.singleOrNull()
-                                            as? IrClassReference
-                                        ?: error("Expected single not null value parameter of KSerializer::class for @Serializable annotation on type '${type.dumpKotlinLike()}'")
-
-                                    kClassValue to kClassValue.classType.irCreateInstance()
-                                }
-                        )
-                    }
                 }
             }
         }
     }
-
-    private fun IrType.irCreateInstance(): IrExpression {
-        val classSymbol =
-            classOrNull ?: error("Expected class type for type to create instance '${dumpKotlinLike()}'")
-
-        return if (classSymbol.owner.isObject) {
-            IrGetObjectValueImpl(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = this,
-                symbol = classSymbol,
-            )
-        } else {
-            val constructor = classSymbol.owner.primaryConstructor
-                ?: error("Expected primary constructor for a serializer '${dumpKotlinLike()}'")
-
-            if (vsApi { constructor.parametersVS.isNotEmpty() }) {
-                error(
-                    "Primary constructor for a serializer '${dumpKotlinLike()}' can't have parameters: " +
-                            vsApi { constructor.parametersVS }.joinToString { it.dumpKotlinLike() }
-                )
-            }
-
-            vsApi {
-                IrConstructorCallImplVS(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    type = ctx.rpcType.defaultType,
-                    symbol = constructor.symbol,
-                    typeArgumentsCount = constructor.typeParameters.size,
-                    valueArgumentsCount = 0,
-                    constructorTypeArgumentsCount = constructor.typeParameters.size,
-                )
-            }.apply {
-                arguments {
-                    types {
-                        repeat(classSymbol.owner.typeParameters.size) {
-                            +ctx.anyNullable
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun IrType.isSerializableAnnotation(): Boolean =
-        classOrNull?.owner?.classId == RpcClassId.serializableAnnotation
 
     /**
      * IR call of the `typeOf<...>()` function
      */
-    private fun irTypeOfCall(type: IrType): IrCall {
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.kTypeClass.defaultType,
-                symbol = ctx.functions.typeOf,
-                typeArgumentsCount = 1,
-                valueArgumentsCount = 0,
-            )
-        }.apply {
+    protected fun irTypeOfCall(type: IrType): IrCall {
+        return IrCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.kTypeClass.defaultType,
+            symbol = ctx.functions.typeOf,
+            typeArgumentsCount = 1,
+        ).apply {
             arguments {
                 types { +type }
             }
         }
     }
 
-    private fun irMapOf(
+    protected fun irMapOf(
         keyType: IrType,
         valueType: IrType,
         elements: List<Pair<IrExpression, IrExpression>>,
         isEmpty: Boolean = elements.isEmpty(),
     ): IrCallImpl {
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.irBuiltIns.mapClass.typeWith(keyType, valueType),
-                symbol = if (isEmpty) ctx.functions.emptyMap else ctx.functions.mapOf,
-                typeArgumentsCount = 2,
-                valueArgumentsCount = if (isEmpty) 0 else 1,
-            )
-        }.apply mapApply@{
+        return IrCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.irBuiltIns.mapClass.typeWith(keyType, valueType),
+            symbol = if (isEmpty) ctx.functions.emptyMap else ctx.functions.mapOf,
+            typeArgumentsCount = 2,
+        ).apply mapApply@{
             if (isEmpty) {
                 arguments {
                     types {
@@ -1562,16 +1155,13 @@ internal class RpcStubGenerator(
                 type = varargType,
                 varargElementType = pairType,
                 elements = elements.memoryOptimizedMap { (key, value) ->
-                    vsApi {
-                        IrCallImplVS(
-                            startOffset = UNDEFINED_OFFSET,
-                            endOffset = UNDEFINED_OFFSET,
-                            type = pairType,
-                            symbol = ctx.functions.to,
-                            typeArgumentsCount = 2,
-                            valueArgumentsCount = 1,
-                        )
-                    }.apply {
+                    IrCallImpl(
+                        startOffset = UNDEFINED_OFFSET,
+                        endOffset = UNDEFINED_OFFSET,
+                        type = pairType,
+                        symbol = ctx.functions.to,
+                        typeArgumentsCount = 2,
+                    ).apply {
                         arguments {
                             types {
                                 +keyType
@@ -1606,16 +1196,13 @@ internal class RpcStubGenerator(
         elements: List<IrExpression>,
         isEmpty: Boolean = elements.isEmpty(),
     ): IrCallImpl {
-        return vsApi {
-            IrCallImplVS(
-                startOffset = UNDEFINED_OFFSET,
-                endOffset = UNDEFINED_OFFSET,
-                type = ctx.irBuiltIns.listClass.typeWith(valueType),
-                symbol = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
-                typeArgumentsCount = 1,
-                valueArgumentsCount = if (isEmpty) 0 else 1,
-            )
-        }.apply listApply@{
+        return IrCallImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = ctx.irBuiltIns.listClass.typeWith(valueType),
+            symbol = if (isEmpty) ctx.functions.emptyList else ctx.functions.listOf,
+            typeArgumentsCount = 1,
+        ).apply listApply@{
             if (isEmpty) {
                 arguments {
                     types {
@@ -1833,76 +1420,56 @@ internal class RpcStubGenerator(
         thisReceiver?.copyToVS(function, origin = IrDeclarationOrigin.DEFINED)
     }
 
-    private fun stringConst(value: String) = IrConstImpl.string(
+    protected fun stringConst(value: String) = IrConstImpl.string(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
         type = ctx.irBuiltIns.stringType,
         value = value,
     )
 
-    private fun nullConst(type: IrType) = IrConstImpl.constNull(
+    protected fun nullConst(type: IrType) = IrConstImpl.constNull(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
         type = type,
     )
 
-    private fun intConst(value: Int) = IrConstImpl.int(
+    protected fun intConst(value: Int) = IrConstImpl.int(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
         type = ctx.irBuiltIns.intType,
         value = value,
     )
 
-    private fun booleanConst(value: Boolean) = IrConstImpl.boolean(
+    protected fun booleanConst(value: Boolean) = IrConstImpl.boolean(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
         type = ctx.irBuiltIns.booleanType,
         value = value,
     )
 
-    private fun IrType.unwrapFlow(from: IrFile): IrType {
-        return if (classOrNull == ctx.flow(from)) {
-            (this as IrSimpleType).arguments[0].typeOrFail
-        } else {
-            this
-        }
-    }
-
-    private inline fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
+    protected inline fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
         return ctx.versionSpecificApi.body()
     }
 
-    private inline fun IrMemberAccessExpression<*>.arguments(body: IrMemberAccessExpressionBuilder.() -> Unit) {
+    protected inline fun IrMemberAccessExpression<*>.arguments(body: IrMemberAccessExpressionBuilder.() -> Unit) {
         return arguments(ctx.versionSpecificApi, body)
     }
 
     fun IrBuilderWithScope.irSafeAs(argument: IrExpression, type: IrType) =
         IrTypeOperatorCallImpl(startOffset, endOffset, type, IrTypeOperator.SAFE_CAST, type, argument)
 
-    fun IrBlockBodyBuilder.irElvis(expression: IrExpression, ifNull: IrExpression): IrExpression {
-        check(expression.type == ifNull.type || ifNull.type == ctx.irBuiltIns.nothingType) {
-            "Type mismatch: ${expression.type.dumpKotlinLike()} != ${ifNull.type.dumpKotlinLike()}"
-        }
+    fun IrClass.rpcMetaInformation(name: Name): IrType {
+        return annotations
+            .firstNotNullOf { annotation ->
+                val annotationClass = annotation.symbol.owner.parentAsClass
 
-        return irBlock(origin = IrStatementOrigin.ELVIS, resultType = expression.type.makeNotNull()) {
-            val temp = irTemporary(
-                value = expression,
-                nameHint = "elvis_left_hand_side",
-                isMutable = false,
-            )
-            +irWhen(
-                type = expression.type,
-                branches = listOf(
-                    irBranch(
-                        condition = irEqualsNull(irGet(temp)),
-                        result = ifNull,
-                    ),
-                    irBranch(
-                        condition = irTrue(),
-                        result = irGet(temp),
-                    ),
-                ),
-            )
-        }
+                val rpcMeta = annotationClass.getAnnotation(RpcClassId.rpcMetaAnnotation.asSingleFqName())
+                    ?: return@firstNotNullOf null
+
+                val argument = vsApi { rpcMeta.getValueArgumentVS(name) } as? IrClassReference
+                    ?: return@firstNotNullOf null
+
+                argument.classType
+            }
     }
 }

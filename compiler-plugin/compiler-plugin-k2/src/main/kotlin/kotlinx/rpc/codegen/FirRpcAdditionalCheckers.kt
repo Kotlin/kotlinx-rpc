@@ -22,8 +22,9 @@ class FirRpcAdditionalCheckers(
     configuration: CompilerConfiguration,
 ) : FirAdditionalCheckersExtension(session) {
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
-        register(FirRpcPredicates.rpc)
+        register(FirRpcPredicates.krpc)
         register(FirRpcPredicates.grpc)
+        register(FirRpcPredicates.rpcMeta)
         register(FirRpcPredicates.withMarshaller)
         register(FirRpcPredicates.checkedAnnotationMeta)
         register(FirRpcPredicates.generatedProtoMessage)

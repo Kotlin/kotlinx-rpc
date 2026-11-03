@@ -8,6 +8,7 @@ import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcStrictModeDiagnostics
 import kotlinx.rpc.codegen.checkers.util.functionParametersRecursionCheck
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.isGeneratedRpcServiceDescriptorProperty
 import kotlinx.rpc.codegen.vsApi
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isAnnotationClass
@@ -27,7 +28,7 @@ object FirRpcStrictModeClassChecker {
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
+        if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)
             // skip checks for annotation classes
             || declaration.classKind.isAnnotationClass
         ) {
@@ -37,7 +38,9 @@ object FirRpcStrictModeClassChecker {
         vsApi { declaration.declarationsVS(context.session) }.forEach { declaration ->
             when (declaration) {
                 is FirPropertySymbol -> {
-                    reporter.reportOn(declaration.source, FirRpcStrictModeDiagnostics.FIELD_IN_RPC_SERVICE, context)
+                    if (!declaration.isGeneratedRpcServiceDescriptorProperty) {
+                        reporter.reportOn(declaration.source, FirRpcStrictModeDiagnostics.FIELD_IN_RPC_SERVICE, context)
+                    }
                 }
 
                 is FirNamedFunctionSymbol -> {

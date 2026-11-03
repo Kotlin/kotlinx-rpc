@@ -49,24 +49,6 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
   }
 
   @Test
-  @TestMetadata("rpcChecked.kt")
-  public void testRpcChecked() {
-    run("rpcChecked.kt");
-  }
-
-  @Test
-  @TestMetadata("rpcService.kt")
-  public void testRpcService() {
-    run("rpcService.kt");
-  }
-
-  @Test
-  @TestMetadata("strictMode.kt")
-  public void testStrictMode() {
-    run("strictMode.kt");
-  }
-
-  @Test
   @TestMetadata("withMarshaller.kt")
   public void testWithMarshaller() {
     run("withMarshaller.kt");

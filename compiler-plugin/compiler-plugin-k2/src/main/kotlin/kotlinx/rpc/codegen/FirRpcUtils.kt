@@ -5,14 +5,17 @@
 package kotlinx.rpc.codegen
 
 import kotlinx.rpc.codegen.common.ProtoNames
+import kotlinx.rpc.codegen.common.RpcClassId
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirClassLikeDeclaration
 import org.jetbrains.kotlin.fir.declarations.findArgumentByName
 import org.jetbrains.kotlin.fir.declarations.getDeprecationsProvider
+import org.jetbrains.kotlin.fir.declarations.toAnnotationClassIdSafe
 import org.jetbrains.kotlin.fir.deserialization.toQualifiedPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.expressions.FirCall
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.UnresolvedExpressionTypeAccess
@@ -26,12 +29,16 @@ import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeClassLikeType
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneTypeSafe
+import org.jetbrains.kotlin.fir.types.resolvedType
+import org.jetbrains.kotlin.fir.types.type
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
@@ -39,18 +46,38 @@ import org.jetbrains.kotlin.types.ConstantValueKind
 import kotlin.collections.plus
 import kotlin.collections.set
 
+fun FirAnnotation.classFromRpcMeta(session: FirSession, parameterName: Name): ConeKotlinType? {
+    val annotationSymbol = resolvedType.toRegularClassSymbol(session) ?: return null
+
+    val rpcMetaAnnotation = annotationSymbol.resolvedCompilerAnnotationsWithClassIds.firstOrNull { annotation ->
+        annotation.toAnnotationClassIdSafe(session) == RpcClassId.rpcMetaAnnotation
+    } ?: return null
+
+    val serviceArgument = rpcMetaAnnotation.argumentMapping.mapping[parameterName] ?: return null
+    return serviceArgument.getType()
+}
+
+private fun FirExpression.getType(): ConeKotlinType? {
+    val markerType = resolvedType as? ConeClassLikeType ?: return null
+
+    return if (markerType.lookupTag.classId == StandardClassIds.KClass) {
+        markerType.typeArguments.firstOrNull()?.type as? ConeClassLikeType
+    } else {
+        markerType
+    }
+}
+
 fun FirBasedSymbol<*>.rpcAnnotationSource(
     session: FirSession,
     predicate: DeclarationPredicate,
-    classId: ClassId?,
 ): KtSourceElement? {
-    return rpcAnnotation(session, predicate, classId)?.source
+    return rpcAnnotation(session, predicate)?.source
 }
 
 fun FirBasedSymbol<*>.rpcAnnotation(
     session: FirSession,
     predicate: DeclarationPredicate,
-    classId: ClassId?,
+    classId: ClassId? = null,
 ): FirAnnotation? {
     return resolvedCompilerAnnotationsWithClassIds.rpcAnnotation(session, predicate, classId)
 }
@@ -63,7 +90,11 @@ fun FirBasedSymbol<*>.rpcAnnotation(
  * have their types resolved when declaration generation runs, the others are still `FirUserTypeRef`s.
  */
 @OptIn(UnresolvedExpressionTypeAccess::class)
-fun List<FirAnnotation>.rpcAnnotation(session: FirSession, predicate: DeclarationPredicate, classId: ClassId?): FirAnnotation? {
+fun List<FirAnnotation>.rpcAnnotation(
+    session: FirSession,
+    predicate: DeclarationPredicate,
+    classId: ClassId? = null,
+): FirAnnotation? {
     return find {
         vsApi {
             it.coneTypeOrNull?.toClassSymbolVS(session)?.let { declaration ->

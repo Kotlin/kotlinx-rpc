@@ -9,8 +9,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.coroutines.CoroutineContext
 
 abstract class BaseServiceTest {
@@ -49,7 +47,7 @@ abstract class BaseServiceTest {
         }
 
         val client = KrpcTestClient(clientConfig, transport.client)
-        val service = client.withService<TestService>()
+        val service = client.service<TestService>()
 
         val server = KrpcTestServer(serverConfig, transport.server)
         val impl = TestServiceImpl()

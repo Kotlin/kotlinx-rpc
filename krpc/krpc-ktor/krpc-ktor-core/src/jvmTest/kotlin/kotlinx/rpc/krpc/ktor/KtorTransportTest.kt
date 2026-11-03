@@ -19,7 +19,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.*
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.internal.logging.dumpLogger
@@ -30,7 +30,6 @@ import kotlinx.rpc.krpc.ktor.server.Krpc
 import kotlinx.rpc.krpc.ktor.server.rpc
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import java.net.ServerSocket
@@ -41,7 +40,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.fail
 import kotlin.time.Duration.Companion.seconds
 
-@Rpc
+@Krpc
 interface NewService {
     suspend fun echo(value: String): String
 }
@@ -56,7 +55,7 @@ class NewServiceImpl(
     }
 }
 
-@Rpc
+@Krpc
 interface SlowService {
     suspend fun verySlow(): String
 }
@@ -105,7 +104,7 @@ class KtorTransportTest {
                 headers["TestHeader"] = "test-header"
             }
 
-        val serviceWithGlobalConfig = ktorRpcClient.withService<NewService>()
+        val serviceWithGlobalConfig = ktorRpcClient.service<NewService>()
 
         val firstActual = serviceWithGlobalConfig.echo("Hello, world!")
 
@@ -125,7 +124,7 @@ class KtorTransportTest {
                     json()
                 }
             }
-        }.withService<NewService>()
+        }.service<NewService>()
 
         val secondActual = serviceWithLocalConfig.echo("Hello, world!")
 
@@ -210,7 +209,7 @@ class KtorTransportTest {
         var cancellationExceptionCaught = false
         val job = launch {
             try {
-                rpcClient.withService<SlowService>().verySlow()
+                rpcClient.service<SlowService>().verySlow()
                 fail("Must not be called")
             } catch (_: CancellationException) {
                 cancellationExceptionCaught = true
@@ -321,7 +320,7 @@ class KtorTransportTest {
         var cancellationExceptionCaught = false
         val job = launch {
             try {
-                rpcClient.withService<SlowService>().verySlow()
+                rpcClient.service<SlowService>().verySlow()
                 fail("Must not be called")
             } catch (_: CancellationException) {
                 cancellationExceptionCaught = true
@@ -384,7 +383,7 @@ class KtorTransportTest {
 
         // The service is never registered on the server, but the call must not dangle: it must fail
         // once the server closes the connection without ever completing the handshake.
-        val service = client.rpc("/rpc").withService<SlowService>()
+        val service = client.rpc("/rpc").service<SlowService>()
 
         assertFailsWith<CancellationException> {
             service.verySlow()

@@ -8,11 +8,11 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.test.EchoRequest
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.message
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -23,7 +23,7 @@ import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcKeepAliveTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -109,7 +109,7 @@ class GrpcKeepAliveTest : GrpcTestBase() {
                 }
             },
         ) {
-            val response = it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+            val response = it.service<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
             assertEquals("Hello", response.message)
         }
     }

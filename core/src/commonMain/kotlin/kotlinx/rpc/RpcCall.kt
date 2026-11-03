@@ -15,7 +15,7 @@ import kotlinx.rpc.descriptor.RpcServiceDescriptor
  * @property serviceId The id of the service that made the call.
  */
 public class RpcCall(
-    public val descriptor: RpcServiceDescriptor<*>,
+    public val descriptor: RpcServiceDescriptor<*, *>,
     public val callableName: String,
     public val arguments: Array<Any?>,
     public val serviceId: Long,

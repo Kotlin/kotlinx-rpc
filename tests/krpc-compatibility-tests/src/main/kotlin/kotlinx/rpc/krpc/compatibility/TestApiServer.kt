@@ -5,7 +5,8 @@
 package kotlinx.rpc.krpc.compatibility
 
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.krpc.KrpcProtocol
 
 interface TestApiServer {
-    fun serveAllInterfaces(rpcServer: RpcServer)
+    fun serveAllInterfaces(rpcServer: RpcServer<KrpcProtocol>)
 }

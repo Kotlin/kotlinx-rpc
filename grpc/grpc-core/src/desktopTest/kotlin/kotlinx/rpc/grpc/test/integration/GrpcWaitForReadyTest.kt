@@ -6,6 +6,7 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -14,8 +15,7 @@ import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
+import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor.Companion.message
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -34,7 +34,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
         val FAIL_FAST_TIMEOUT = 10.seconds
     }
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -51,7 +51,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
 
         try {
             val error = assertFailsWith<GrpcStatusException> {
-                client.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                client.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
             assertEquals(GrpcStatusCode.DEADLINE_EXCEEDED, error.getStatus().statusCode)
         } finally {
@@ -66,7 +66,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
             assertFalse(callOptions.waitForReady)
             proceed(it)
         }) {
-            it.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+            it.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
         }
     }
 
@@ -92,7 +92,7 @@ class GrpcWaitForReadyTest : GrpcTestBase() {
 
         try {
             val error = assertFailsWith<GrpcStatusException> {
-                client.withService<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
+                client.service<EchoService>().unaryEcho(EchoRequest { message = "Echo" })
             }
             assertEquals(GrpcStatusCode.UNAVAILABLE, error.getStatus().statusCode)
         } finally {

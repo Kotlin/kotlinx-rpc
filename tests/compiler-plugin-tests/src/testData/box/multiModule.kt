@@ -6,9 +6,9 @@
 
 // MODULE: lib
 
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 
-@Rpc
+@Krpc
 interface BoxService {
     suspend fun simple(): String
 }
@@ -16,11 +16,10 @@ interface BoxService {
 // MODULE: main(lib)
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.withService
 import kotlinx.rpc.codegen.test.TestRpcClient
 
 fun box(): String = runBlocking {
-    val result = TestRpcClient.withService<BoxService>().simple()
+    val result = TestRpcClient.service<BoxService>().simple()
 
     if (result == "call_42") "OK" else "Fail: $result"
 }

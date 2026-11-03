@@ -1,6 +1,6 @@
 FILE: rpcService.kt
     @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)) [evaluated = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|))])
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface MyService : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<MyService>| {
         public abstract fun hello(): R|kotlin/Unit|
 
         public abstract suspend fun <T> generic(a: R|T|): R|kotlin/Unit|
@@ -19,6 +19,9 @@ FILE: rpcService.kt
 
         public abstract suspend fun sameName2(a: R|kotlin/Int|): R|kotlin/Unit|
 
+        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyService>|
+            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyService>|
+
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
@@ -26,7 +29,10 @@ FILE: rpcService.kt
         }
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT<T> : R|kotlin/Any| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface MyServiceT<T> : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<MyServiceT>| {
+        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyServiceT<T>>|
+            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyServiceT<T>>|
+
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }
@@ -34,7 +40,10 @@ FILE: rpcService.kt
         }
 
     }
-    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any| {
+    @R|kotlinx/rpc/krpc/annotations/Krpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any|, R|kotlinx/rpc/krpc/KrpcService<MyServiceT2>| {
+        public open override val descriptor: R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyServiceT2<T, R, A, B>>|
+            public get(): R|kotlinx/rpc/krpc/descriptor/KrpcServiceDescriptor<MyServiceT2<T, R, A, B>>|
+
         @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
             public final companion object Companion : R|kotlin/Any| {
             }

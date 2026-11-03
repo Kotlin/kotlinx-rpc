@@ -6,31 +6,35 @@ package kotlinx.rpc.descriptor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.annotations.Rpc
-import kotlinx.rpc.internal.*
+import kotlinx.rpc.RpcProtocol
+import kotlinx.rpc.RpcService
+import kotlinx.rpc.internal.internalRpcError
+import kotlinx.rpc.internal.internalServiceDescriptorOf
+import kotlinx.rpc.internal.rpcInternalKClass
+import kotlinx.rpc.internal.rpcInternalQualifiedClassNameOrNull
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 @ExperimentalRpcApi
-public inline fun <@Rpc reified Service : Any> serviceDescriptorOf(): RpcServiceDescriptor<Service> {
+public inline fun <reified Service : RpcService<*, Service>> serviceDescriptorOf(): RpcServiceDescriptor<*, Service> {
     return serviceDescriptorOf(Service::class)
 }
 
 @ExperimentalRpcApi
-public fun <@Rpc Service : Any> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<Service> {
+public fun <Service : RpcService<*, Service>> serviceDescriptorOf(kType: KType): RpcServiceDescriptor<*, Service> {
     return serviceDescriptorOf(kType.rpcInternalKClass())
 }
 
 @ExperimentalRpcApi
-public fun <@Rpc Service : Any> serviceDescriptorOf(kClass: KClass<Service>): RpcServiceDescriptor<Service> {
+public fun <Service : RpcService<*, Service>> serviceDescriptorOf(kClass: KClass<Service>): RpcServiceDescriptor<*, Service> {
     val maybeDescriptor = internalServiceDescriptorOf(kClass)
         ?: internalRpcError("Unable to find a service descriptor of the $kClass. " +
                 "Check that you have applied the “kotlinx.rpc” plugin to your build module.")
 
-    if (maybeDescriptor is RpcServiceDescriptor<*>) {
+    if (maybeDescriptor is RpcServiceDescriptor<*, *>) {
         @Suppress("UNCHECKED_CAST")
-        return maybeDescriptor as RpcServiceDescriptor<Service>
+        return maybeDescriptor as RpcServiceDescriptor<*, Service>
     }
 
     internalRpcError(
@@ -41,7 +45,7 @@ public fun <@Rpc Service : Any> serviceDescriptorOf(kClass: KClass<Service>): Rp
 }
 
 @ExperimentalRpcApi
-public interface RpcServiceDescriptor<@Rpc Service : Any> {
+public interface RpcServiceDescriptor<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>> {
     public val simpleName: String
 
     public val fqName: String
@@ -50,11 +54,11 @@ public interface RpcServiceDescriptor<@Rpc Service : Any> {
 
     public val callables: Map<String, RpcCallable<Service>>
 
-    public fun createInstance(serviceId: Long, client: RpcClient): Service
+    public fun createInstance(serviceId: Long, client: RpcClient<Protocol>): Service
 }
 
 @ExperimentalRpcApi
-public interface RpcCallable<@Rpc Service : Any> {
+public interface RpcCallable<Service : RpcService<*, Service>> {
     public val name: String
     public val returnType: RpcType
     public val invokator: RpcInvokator<Service>
@@ -62,22 +66,22 @@ public interface RpcCallable<@Rpc Service : Any> {
 }
 
 @ExperimentalRpcApi
-public val <@Rpc Service : Any> RpcCallable<Service>.unaryInvokator: RpcInvokator.UnaryResponse<Service>
+public val <Service : RpcService<*, Service>> RpcCallable<Service>.unaryInvokator: RpcInvokator.UnaryResponse<Service>
     get() = invokator as RpcInvokator.UnaryResponse<Service>
 
 @ExperimentalRpcApi
-public val <@Rpc Service : Any> RpcCallable<Service>.flowInvokator: RpcInvokator.FlowResponse<Service>
+public val <Service : RpcService<*, Service>> RpcCallable<Service>.flowInvokator: RpcInvokator.FlowResponse<Service>
     get() = invokator as RpcInvokator.FlowResponse<Service>
 
 @ExperimentalRpcApi
-public sealed interface RpcInvokator<@Rpc Service : Any> {
+public sealed interface RpcInvokator<Service : RpcService<*, Service>> {
     @ExperimentalRpcApi
-    public fun interface UnaryResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+    public fun interface UnaryResponse<Service : RpcService<*, Service>> : RpcInvokator<Service> {
         public suspend fun call(service: Service, arguments: Array<Any?>): Any?
     }
 
     @ExperimentalRpcApi
-    public fun interface FlowResponse<@Rpc Service : Any> : RpcInvokator<Service> {
+    public fun interface FlowResponse<Service : RpcService<*, Service>> : RpcInvokator<Service> {
         public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
 }

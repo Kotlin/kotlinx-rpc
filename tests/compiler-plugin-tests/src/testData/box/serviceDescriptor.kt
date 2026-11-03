@@ -6,11 +6,11 @@
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.descriptor.serviceDescriptorOf
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
-@Rpc
+@Krpc
 interface BoxService {
     suspend fun simple(): String
 }

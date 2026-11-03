@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.rpc.krpc.test.Platform
 import kotlinx.rpc.krpc.test.platform
-import kotlinx.rpc.withService
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -163,7 +162,7 @@ class CancellationTest {
             service.longRequest()
         }
 
-        val secondService = client.withService<CancellationService>()
+        val secondService = client.service<CancellationService>()
 
         val secondRequestJob = launch {
             println("[testCancelClient] secondRequestJob started")
@@ -237,7 +236,7 @@ class CancellationTest {
             service.longRequest()
         }
 
-        val secondService = client.withService<CancellationService>()
+        val secondService = client.service<CancellationService>()
 
         val secondRequestJob = launch {
             println("[testCancelServer] secondRequestJob started")

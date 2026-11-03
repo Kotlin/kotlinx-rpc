@@ -18,8 +18,14 @@ import kotlinx.rpc.krpc.test.compat.CompatServiceImpl
 import kotlinx.rpc.krpc.test.compat.CompatTransport
 import kotlinx.rpc.krpc.test.compat.Starter
 import kotlinx.rpc.krpc.test.compat.TestConfig
+//##csm rpc-helpers-import
+//##csm default
+//##csm /default
+//##csm specific=[0.8.*,0.9.*,0.10.*]
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+//##csm /specific
+//##csm /rpc-helpers-import
 import kotlin.coroutines.CoroutineContext
 
 fun CompatTransport.toKrpc(): KrpcTransport {
@@ -60,7 +66,15 @@ class TestStarter_<rpc-version> : Starter {
         }
 
         client = object : InitializedKrpcClient(clientConfig, transport) {}
+
+        //##csm with-service
+        //##csm default
+        val service = client!!.service<TestService>()
+        //##csm /default
+        //##csm specific=[0.8.*,0.9.*,0.10.*]
         val service = client!!.withService<TestService>()
+        //##csm /specific
+        //##csm /with-service
         return object : CompatService {
             override suspend fun unary(n: Int): Int {
                 return service.unary(n)

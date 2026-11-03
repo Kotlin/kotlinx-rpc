@@ -9,9 +9,9 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
-import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.internal.utils.hex.rpcInternalHexToReadableBinary
 import kotlinx.rpc.krpc.KrpcConfig
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.krpc.client.InitializedKrpcClient
 import kotlinx.rpc.krpc.internal.logging.RpcInternalCommonLogger
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
@@ -20,9 +20,7 @@ import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.server.KrpcServer
-import kotlinx.rpc.registerService
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import kotlinx.serialization.BinaryFormat
 import kotlin.time.Duration.Companion.seconds
 
@@ -88,11 +86,11 @@ abstract class ProtocolTestBase {
             }
         }
 
-        val service: ProtocolTestService by lazy { defaultClient.withService() }
+        val service: ProtocolTestService by lazy { defaultClient.service() }
     }
 }
 
-@Rpc
+@Krpc
 interface ProtocolTestService {
     suspend fun sendRequest()
 }

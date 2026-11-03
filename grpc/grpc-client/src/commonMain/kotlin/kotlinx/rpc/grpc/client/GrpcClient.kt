@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
@@ -44,7 +45,7 @@ public class GrpcClient internal constructor(
     // the default call credentials that are automatically attached to all calls made with this client
     internal val callCredentials: GrpcCallCredentials,
     internal val marshallerConfig: GrpcMarshallerConfig?,
-) : RpcClient {
+) : RpcClient<GrpcProtocol>() {
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
@@ -85,7 +86,7 @@ public class GrpcClient internal constructor(
         }
     }
 
-    override fun <T> callServerStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
+    override fun <T> callStreaming(call: RpcCall): Flow<T> = withGrpcCall(call) { methodDescriptor, request ->
         val callOptions = GrpcCallOptions()
         val headers = GrpcMetadata()
 

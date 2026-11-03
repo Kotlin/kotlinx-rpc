@@ -6,16 +6,15 @@ package kotlinx.rpc.grpc.test.serialization
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
+import kotlinx.rpc.grpc.GrpcService
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.server.GrpcServer
-import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
-import kotlinx.rpc.withService
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.seconds
 
 abstract class  BaseGrpcServiceTest {
-    protected inline fun <@Grpc reified Service : Any> runServiceTest(
+    protected inline fun <reified Service : GrpcService<Service>> runServiceTest(
         resolver: GrpcMarshallerResolver,
         impl: Service,
         noinline block: suspend (Service) -> Unit,
@@ -23,7 +22,7 @@ abstract class  BaseGrpcServiceTest {
         runServiceTest(Service::class, resolver, impl, block)
     }
 
-    protected fun <@Grpc Service : Any> runServiceTest(
+    protected fun <Service : GrpcService<Service>> runServiceTest(
         kClass: KClass<Service>,
         resolver: GrpcMarshallerResolver,
         impl: Service,
@@ -46,7 +45,7 @@ abstract class  BaseGrpcServiceTest {
             credentials = plaintext()
         }
 
-        val service = client.withService(kClass)
+        val service = client.service(kClass)
 
         try {
             block(service)

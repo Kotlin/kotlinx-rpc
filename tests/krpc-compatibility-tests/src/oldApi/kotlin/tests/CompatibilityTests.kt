@@ -11,14 +11,14 @@ import interfaces.BarInterface
 import interfaces.BazInterface
 import interfaces.FooInterface
 import kotlinx.rpc.RpcClient
-import kotlinx.rpc.withService
+import kotlinx.rpc.krpc.KrpcProtocol
 import kotlin.reflect.KCallable
 import kotlin.reflect.full.callSuspend
 import kotlin.test.assertEquals
 
 @Suppress("unused")
 class CompatibilityTests : CompatibilityTest {
-    override fun getAllTests(): Map<String, suspend (RpcClient) -> Unit> {
+    override fun getAllTests(): Map<String, suspend (RpcClient<KrpcProtocol>) -> Unit> {
         return mapOf(
             this::`should work with interface with additional method`.toEntry(),
             this::`should work with newer data class with additional nullable field`.toEntry(),
@@ -26,25 +26,25 @@ class CompatibilityTests : CompatibilityTest {
         )
     }
 
-    suspend fun `should work with newer data class with additional nullable field`(rpcClient: RpcClient) {
-        val service = rpcClient.withService<FooInterface>()
+    suspend fun `should work with newer data class with additional nullable field`(rpcClient: RpcClient<KrpcProtocol>) {
+        val service = rpcClient.service<FooInterface>()
         val res = service.get()
         assertEquals("", res.field)
     }
 
-    suspend fun `should work with interface with additional method`(rpcClient: RpcClient) {
-        val service = rpcClient.withService<BarInterface>()
+    suspend fun `should work with interface with additional method`(rpcClient: RpcClient<KrpcProtocol>) {
+        val service = rpcClient.service<BarInterface>()
         service.get()
     }
 
-    suspend fun `should work with newer data class with a field with default value`(rpcClient: RpcClient) {
-        val service = rpcClient.withService<BazInterface>()
+    suspend fun `should work with newer data class with a field with default value`(rpcClient: RpcClient<KrpcProtocol>) {
+        val service = rpcClient.service<BazInterface>()
         val res = service.get()
         assertEquals("asd", res.field)
         // Of course, we can't call the second method
     }
 
-    private fun KCallable<Unit>.toEntry(): Pair<String, suspend (RpcClient) -> Unit> {
+    private fun KCallable<Unit>.toEntry(): Pair<String, suspend (RpcClient<KrpcProtocol>) -> Unit> {
         return name to { callSuspend(it) }
     }
 }

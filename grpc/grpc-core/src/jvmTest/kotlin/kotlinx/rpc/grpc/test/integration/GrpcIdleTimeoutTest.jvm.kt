@@ -8,7 +8,6 @@ import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -20,7 +19,7 @@ internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) {
             idleTimeout = timeout
         }
     }) {
-        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+        it.service<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
 
         val idleTimeout = it.getField<ManagedChannel>("channel")
             .platformApi

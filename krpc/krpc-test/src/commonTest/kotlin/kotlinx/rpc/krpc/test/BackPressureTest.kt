@@ -13,21 +13,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.job
 import kotlinx.coroutines.test.TestScope
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
-import kotlinx.rpc.registerService
 import kotlinx.rpc.test.WaitCounter
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-@Rpc
+@Krpc
 interface BackPressure {
     suspend fun plain()
 
@@ -184,7 +182,7 @@ abstract class BackPressureTestBase {
         val server = KrpcTestServer(serverConfig, transport.server)
         val impl = BackPressureImpl()
         server.registerService<BackPressure> { impl }
-        val service = client.withService<BackPressure>()
+        val service = client.service<BackPressure>()
 
         try {
             body(service, impl)

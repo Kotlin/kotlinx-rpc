@@ -9,12 +9,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
+//##csm rpc-annotation-import
+//##csm default
+import kotlinx.rpc.krpc.annotations.Krpc
+//##csm /default
+//##csm specific=[0.8.*,0.9.*,0.10.*]
 import kotlinx.rpc.annotations.Rpc
+//##csm /specific
+//##csm /rpc-annotation-import
 import kotlinx.rpc.krpc.test.compat.CompatServiceImpl
 import kotlinx.rpc.krpc.test.compat.CompatWaitCounter
 import kotlin.coroutines.cancellation.CancellationException
 
+//##csm rpc-annotation
+//##csm default
+@Krpc
+//##csm /default
+//##csm specific=[0.8.*,0.9.*,0.10.*]
 @Rpc
+//##csm /specific
+//##csm /rpc-annotation
 interface TestService {
     suspend fun unary(n: Int): Int
     fun serverStreaming(num: Int): Flow<Int>

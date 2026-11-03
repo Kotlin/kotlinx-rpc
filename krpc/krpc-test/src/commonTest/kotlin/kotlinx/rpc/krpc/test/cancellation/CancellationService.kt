@@ -6,10 +6,10 @@ package kotlinx.rpc.krpc.test.cancellation
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.test.WaitCounter
 
-@Rpc
+@Krpc
 interface CancellationService {
     suspend fun longRequest()
 

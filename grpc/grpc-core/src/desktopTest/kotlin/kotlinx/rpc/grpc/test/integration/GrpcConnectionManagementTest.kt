@@ -6,10 +6,10 @@ package kotlinx.rpc.grpc.test.integration
 
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
-import kotlinx.rpc.registerService
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration
@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcConnectionManagementTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 

@@ -11,7 +11,6 @@ import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.withService
 import kotlin.test.assertEquals
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.nanoseconds
@@ -31,7 +30,7 @@ actual fun GrpcTestBase.testKeepAlive(
             }
         }
     ) {
-        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+        it.service<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
         val nettyClientTransport = it.getField<ManagedChannel>("channel")
             .platformApi
             .getField<HashSet<Any>>("delegate", "subchannels")

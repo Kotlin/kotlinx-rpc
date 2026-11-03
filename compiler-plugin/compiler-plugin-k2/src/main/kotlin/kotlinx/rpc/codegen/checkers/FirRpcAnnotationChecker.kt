@@ -6,7 +6,6 @@ package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
-import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.rpcAnnotation
 import kotlinx.rpc.codegen.rpcAnnotationSource
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -24,7 +23,7 @@ object FirRpcAnnotationChecker {
         context: CheckerContext,
         reporter: DiagnosticReporter,
     ) {
-        val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
+        val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpcMeta, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS
 
@@ -32,15 +31,13 @@ object FirRpcAnnotationChecker {
             reporter.reportOn(
                 source = declaration.symbol.rpcAnnotationSource(
                     session = context.session,
-                    predicate = FirRpcPredicates.rpc,
-                    classId = RpcClassId.rpcAnnotation,
+                    predicate = FirRpcPredicates.rpcMeta,
                 ),
                 factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
                 context = context,
                 a = declaration.symbol.rpcAnnotation(
                     session = context.session,
-                    predicate = FirRpcPredicates.rpc,
-                    classId = RpcClassId.rpcAnnotation,
+                    predicate = FirRpcPredicates.rpcMeta,
                 )?.resolvedType
                     ?: error("Unexpected unresolved annotation type for declaration: ${declaration.symbol.classId.asSingleFqName()}"),
             )

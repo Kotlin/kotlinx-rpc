@@ -1,7 +1,7 @@
 # Overview
 
-This is the `:core` module of kotlinx-rpc -- the protocol-agnostic runtime that defines the public API for RPC services. 
-It is a Kotlin Multiplatform module (JVM, JS, Native, WasmJS, WasmWasi). 
+This is the `:core` module of kotlinx-rpc -- the protocol-agnostic runtime that defines the public API for RPC services.
+It is a Kotlin Multiplatform module (JVM, JS, Native, WasmJS, WasmWasi).
 The compiler plugin generates code against the interfaces defined here.
 
 `@Rpc` -- annotation that triggers compiler plugin code generation

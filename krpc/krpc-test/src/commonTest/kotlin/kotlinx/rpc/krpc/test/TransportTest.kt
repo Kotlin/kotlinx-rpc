@@ -10,10 +10,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.rpc.*
-import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfig
 import kotlinx.rpc.krpc.KrpcConfigBuilder
+import kotlinx.rpc.krpc.KrpcService
 import kotlinx.rpc.krpc.KrpcTransport
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.internal.KrpcProtocolMessage
 import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLogger
@@ -21,6 +22,7 @@ import kotlinx.rpc.krpc.internal.logging.RpcInternalDumpLoggerContainer
 import kotlinx.rpc.krpc.rpcClientConfig
 import kotlinx.rpc.krpc.rpcServerConfig
 import kotlinx.rpc.krpc.serialization.json.json
+import kotlinx.rpc.krpc.server.KrpcServer
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,12 +31,12 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-@Rpc
+@Krpc
 interface Echo {
     suspend fun echo(message: String): String
 }
 
-@Rpc
+@Krpc
 interface Second {
     suspend fun second(message: String): String
 }
@@ -78,14 +80,14 @@ class TransportTest {
         }
     }
 
-    private fun clientOf(localTransport: LocalTransport): RpcClient {
+    private fun clientOf(localTransport: LocalTransport): KrpcClient {
         return KrpcTestClient(clientConfig, localTransport.client)
     }
 
     private fun serverOf(
         localTransport: LocalTransport,
         config: (KrpcConfigBuilder.Server.() -> Unit)? = null,
-    ): RpcServer {
+    ): KrpcServer {
         val serverConfig = config?.let { rpcServerConfig(it) } ?: serverConfig
         return KrpcTestServer(serverConfig, localTransport.server)
     }
@@ -128,7 +130,7 @@ class TransportTest {
     fun testUsingWrongService() = runTest {
         val transports = LocalTransport()
 
-        val client = clientOf(transports).withService<KrpcTestService>()
+        val client = clientOf(transports).service<KrpcTestService>()
         val result = async {
             assertFails {
                 client.simpleWithParams("foo")
@@ -154,7 +156,7 @@ class TransportTest {
     fun testLateConnect() = runTest {
         val transports = LocalTransport()
 
-        val client = clientOf(transports).withService<Echo>()
+        val client = clientOf(transports).service<Echo>()
         val result: Deferred<String> = async {
             client.echo("foo")
         }
@@ -173,7 +175,7 @@ class TransportTest {
     fun testLateConnectWithManyCalls() = runTest {
         val transports = LocalTransport()
 
-        val client = clientOf(transports).withService<Echo>()
+        val client = clientOf(transports).service<Echo>()
         val result = List(10) {
             async {
                 client.echo("foo")
@@ -198,7 +200,7 @@ class TransportTest {
 
         val result = List(3) {
             async {
-                val service = client.withService<Echo>()
+                val service = client.service<Echo>()
                 service.echo("foo")
             }
         }
@@ -221,7 +223,7 @@ class TransportTest {
 
         val result = List(10) {
             async {
-                val service = client.withService<Echo>()
+                val service = client.service<Echo>()
                 List(10) {
                     async {
                         service.echo("foo")
@@ -246,12 +248,12 @@ class TransportTest {
 
         val client = clientOf(transports)
 
-        val firstClient = client.withService<Echo>()
+        val firstClient = client.service<Echo>()
         val firstResult = async {
             firstClient.echo("foo")
         }
 
-        val secondClient = client.withService<Second>()
+        val secondClient = client.service<Second>()
         val secondResult = async {
             secondClient.second("bar")
         }
@@ -305,15 +307,15 @@ class TransportTest {
         server.registerServiceAndReturn<Echo, _> { EchoImpl() }
         server.registerServiceAndReturn<Second, _> { SecondServer() }
 
-        client.withService<Echo>().apply { echo("foo"); echo("bar") }
-        client.withService<Second>().apply { second("bar"); second("baz") }
+        client.service<Echo>().apply { echo("foo"); echo("bar") }
+        client.service<Second>().apply { second("bar"); second("baz") }
 
         assertEquals(1, transportInitialized.value)
         assertEquals(1, configInitialized.value)
         assertEquals(1, logs.count { it.matches(clientHandshake) })
     }
 
-    private inline fun <@Rpc reified Service : Any, reified Impl : Service> RpcServer.registerServiceAndReturn(
+    private inline fun <reified Service : KrpcService<Service>, reified Impl : Service> KrpcServer.registerServiceAndReturn(
         crossinline body: () -> Impl,
     ): List<Impl> {
         val instances = mutableListOf<Impl>()

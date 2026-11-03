@@ -9,6 +9,7 @@ import hello.HelloService
 import hello.invoke
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.server.GrpcTlsClientAuth
@@ -24,15 +25,13 @@ import kotlinx.rpc.grpc.test.SERVER_CERT_PEM
 import kotlinx.rpc.grpc.test.SERVER_KEY_PEM
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcTlsTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
     }
 
@@ -42,7 +41,7 @@ class GrpcTlsTest : GrpcTestBase() {
         // TODO: Use a test server controlled by us (KRPC-215)
         val grpcClient = GrpcClient("grpcb.in", 9001)
         try {
-            val service = grpcClient.withService<HelloService>()
+            val service = grpcClient.service<HelloService>()
             val request = HelloRequest {
                 greeting = "world"
             }
@@ -152,7 +151,7 @@ class GrpcTlsTest : GrpcTestBase() {
 }
 
 private suspend fun defaultUnaryTest(client: GrpcClient) {
-    val service = client.withService<EchoService>()
+    val service = client.service<EchoService>()
     val request = EchoRequest { message = "Echo" }
     val response = service.unaryEcho(request)
     assertEquals("Echo", response.message)

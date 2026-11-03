@@ -4,6 +4,7 @@
 
 package tests
 
+import kotlinx.rpc.krpc.KrpcProtocol
 import kotlinx.rpc.krpc.compatibility.TestApiServer
 import interfaces.BarInterface
 import interfaces.BarInterfaceImpl
@@ -12,11 +13,10 @@ import interfaces.BazInterfaceImpl
 import interfaces.FooInterface
 import interfaces.FooInterfaceImpl
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.registerService
 
 @Suppress("unused")
 class ApiServer : TestApiServer {
-    override fun serveAllInterfaces(rpcServer: RpcServer) {
+    override fun serveAllInterfaces(rpcServer: RpcServer<KrpcProtocol>) {
         rpcServer.apply {
             registerService<FooInterface> { FooInterfaceImpl() }
             registerService<BarInterface> { BarInterfaceImpl() }

@@ -6,8 +6,9 @@ package kotlinx.rpc.krpc.ktor.server
 
 import io.ktor.server.websocket.*
 import kotlinx.rpc.RpcServer
-import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
+import kotlinx.rpc.krpc.KrpcProtocol
+import kotlinx.rpc.krpc.KrpcService
 import kotlin.reflect.KClass
 
 /**
@@ -29,7 +30,7 @@ public class KrpcRoute(
         this.configBuilder = configBuilder
     }
 
-    internal val registrations = mutableListOf<(RpcServer) -> Unit>()
+    internal val registrations = mutableListOf<(RpcServer<KrpcProtocol>) -> Unit>()
 
     /**
      * Registers new service to the server. Server will route all designated messages to it.
@@ -41,7 +42,7 @@ public class KrpcRoute(
      * @param serviceKClass [KClass] of the [Service].
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public fun <@Rpc Service : Any> registerService(
+    public fun <Service : KrpcService<Service>> registerService(
         serviceKClass: KClass<Service>,
         serviceFactory: () -> Service,
     ) {
@@ -59,7 +60,7 @@ public class KrpcRoute(
      * type `MyService` should be specified explicitly.
      * @param serviceFactory function that produces the actual implementation of the service that will handle the calls.
      */
-    public inline fun <@Rpc reified Service : Any> registerService(
+    public inline fun <reified Service : KrpcService<Service>> registerService(
         noinline serviceFactory: () -> Service,
     ) {
         registerService(Service::class, serviceFactory)

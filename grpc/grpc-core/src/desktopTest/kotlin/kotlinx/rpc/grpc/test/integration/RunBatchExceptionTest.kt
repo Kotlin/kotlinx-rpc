@@ -9,6 +9,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.readString
 import kotlinx.io.writeString
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.GrpcStatusException
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
@@ -17,8 +18,6 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerResolver
 import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.test.captureStdOut
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -31,7 +30,7 @@ private interface RunBatchExceptionService {
 
 // Regression test for https://github.com/Kotlin/kotlinx-rpc/issues/749
 class RunBatchExceptionTest : GrpcTestBase() {
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<RunBatchExceptionService> {
             object : RunBatchExceptionService {
                 override suspend fun unary(value: String): String = value + value
@@ -53,7 +52,7 @@ class RunBatchExceptionTest : GrpcTestBase() {
             serverConfiguration = { messageMarshallerResolver = stringResolver(stringMarshaller) },
             clientConfiguration = { messageMarshallerResolver = stringResolver(throwingDecodeMarshaller) },
         ) { client ->
-            val service = client.withService<RunBatchExceptionService>()
+            val service = client.service<RunBatchExceptionService>()
             val output = captureStdOut {
                 assertFailsWith<GrpcStatusException> {
                     service.unary("Hello")

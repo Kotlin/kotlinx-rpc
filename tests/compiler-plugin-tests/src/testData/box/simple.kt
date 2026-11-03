@@ -5,17 +5,16 @@
 // RUN_PIPELINE_TILL: BACKEND
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.withService
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 import kotlinx.rpc.codegen.test.TestRpcClient
 
-@Rpc
+@Krpc
 interface BoxService {
     suspend fun simple(): String
 }
 
 fun box(): String = runBlocking {
-    val result = TestRpcClient.withService<BoxService>().simple()
+    val result = TestRpcClient.service<BoxService>().simple()
 
     if (result == "call_42") "OK" else "Fail: $result"
 }

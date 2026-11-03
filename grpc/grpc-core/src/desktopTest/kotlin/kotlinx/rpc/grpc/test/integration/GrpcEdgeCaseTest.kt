@@ -17,7 +17,6 @@ import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -32,7 +31,7 @@ class GrpcEdgeCaseTest {
         try {
             assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
                 runTest {
-                    val service = client.withService<EchoService>()
+                    val service = client.service<EchoService>()
                     service.serverStreamingEcho(message = EchoRequest {
                         message = "Echo"
                     }).retryWhen { cause, attempt ->

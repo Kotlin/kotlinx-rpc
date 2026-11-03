@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.RpcServer
+import kotlinx.rpc.grpc.GrpcProtocol
 import kotlinx.rpc.grpc.annotations.Grpc
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.test.AllPrimitives
@@ -19,8 +20,6 @@ import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.grpc.test.presence
 import kotlinx.rpc.grpc.test.testOneof
 import kotlinx.rpc.protobuf.ProtoConfig
-import kotlinx.rpc.registerService
-import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -46,7 +45,7 @@ private object ServerServiceImpl : ServerTestService {
 
 class GrpcMarshallerConfigTest : GrpcTestBase() {
 
-    override fun RpcServer.registerServices() {
+    override fun RpcServer<GrpcProtocol>.registerServices() {
         registerService<ServerTestService> { ServerServiceImpl }
     }
 
@@ -65,7 +64,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
     fun `test protobuf discardUnknownFields marshaller config in server config`() = runGrpcTest(
         serverConfiguration = { marshallerConfig = ProtoConfig { discardUnknownFields = true } }
     ) { client ->
-        val service = client.withService<ClientTestService>()
+        val service = client.service<ClientTestService>()
         val message = unknownFieldsAllMessage
         val response = service.serverTest(message)
 
@@ -81,7 +80,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test unknown fields presents by default - server`() = runGrpcTest { client ->
-        val service = client.withService<ClientTestService>()
+        val service = client.service<ClientTestService>()
         val message = unknownFieldsAllMessage
         val response = service.serverTest(message)
 
@@ -93,7 +92,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
     fun `test protobuf discardUnknownFields marshaller config in client config`() = runGrpcTest(
         clientConfiguration = { marshallerConfig = ProtoConfig { discardUnknownFields = true } }
     ) { client ->
-        val service = client.withService<ClientTestService>()
+        val service = client.service<ClientTestService>()
         val message = unknownFieldsAllMessage
         val response = service.clientTest(message)
 
@@ -104,7 +103,7 @@ class GrpcMarshallerConfigTest : GrpcTestBase() {
 
     @Test
     fun `test unknown fields presents by default - client`() = runGrpcTest { client ->
-        val service = client.withService<ClientTestService>()
+        val service = client.service<ClientTestService>()
         val message = unknownFieldsAllMessage
         val response = service.clientTest(message)
 

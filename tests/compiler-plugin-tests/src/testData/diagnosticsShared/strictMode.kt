@@ -12,7 +12,7 @@
 import kotlin.coroutines.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.rpc.annotations.Rpc
+// PROTOCOL_IMPORT
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 
 data class InnerFlow(
@@ -36,7 +36,7 @@ data class ComplexFilter(
 
 data class SimpleFilter(val text: String)
 
-@Rpc
+@Protocol
 interface MyService {
     <!FIELD_IN_RPC_SERVICE!>val flow: Flow<Int><!>
     <!FIELD_IN_RPC_SERVICE!>val stateFlow: StateFlow<Int><!>

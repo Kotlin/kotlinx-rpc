@@ -8,9 +8,9 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
-import kotlinx.rpc.annotations.Rpc
+import kotlinx.rpc.krpc.annotations.Krpc
 
-@Rpc
+@Krpc
 interface TestService {
     suspend fun unary(n: Int): Int
     fun serverStreaming(num: Int): Flow<Int>

@@ -16,9 +16,7 @@ import kotlinx.rpc.krpc.serialization.json.json
 import kotlinx.rpc.krpc.test.KrpcTestClient
 import kotlinx.rpc.krpc.test.KrpcTestServer
 import kotlinx.rpc.krpc.test.LocalTransport
-import kotlinx.rpc.registerService
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
-import kotlinx.rpc.withService
 import kotlin.time.Duration.Companion.seconds
 
 fun runCancellationTest(body: suspend CancellationToolkit.() -> Unit): TestResult {
@@ -53,7 +51,7 @@ class CancellationToolkit(scope: CoroutineScope) : CoroutineScope by scope {
         }, transport.client)
     }
 
-    val service: CancellationService by lazy { client.withService() }
+    val service: CancellationService by lazy { client.service() }
 
     val serverInstances: MutableList<CancellationServiceImpl> = mutableListOf()
     private val firstServerInstance = CompletableDeferred<CancellationServiceImpl>()
