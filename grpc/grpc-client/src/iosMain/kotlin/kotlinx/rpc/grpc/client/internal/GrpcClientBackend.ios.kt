@@ -29,7 +29,6 @@ import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
-import platform.UIKit.UISceneSessionActivationRequest.Companion.request
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestBytes
 import kotlin.time.Duration
 import kotlin.time.TimeSource
