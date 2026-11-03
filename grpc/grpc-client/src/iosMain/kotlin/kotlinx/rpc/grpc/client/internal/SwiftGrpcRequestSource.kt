@@ -15,6 +15,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import platform.Foundation.NSError
+import platform.darwin.NSObject
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestBytes
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestSourceProtocol
 import kotlin.coroutines.cancellation.CancellationException
@@ -63,7 +64,7 @@ internal suspend fun <T> withRequestSource(
         terminate(cause.takeUnless { it is CancellationException })
     }
 
-    val requestSource = object : SwiftGrpcRequestSourceProtocol {
+    val requestSource = object : NSObject(), SwiftGrpcRequestSourceProtocol {
         override fun cancel() {
             terminate(null)
             collector.cancel()
