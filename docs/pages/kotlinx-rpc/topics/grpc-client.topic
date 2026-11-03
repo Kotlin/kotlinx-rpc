@@ -113,7 +113,6 @@
             <def title="maxInboundMetadataSize">
                 The maximum size, in bytes, of inbound metadata.
                 Defaults to 8 KiB (8,192 bytes).
-                Not applied on iOS. The iOS transport enforces a fixed metadata limit of 16 KiB.
             </def>
             <def title="idleTimeout">
                 The time with no active RPCs after which the client enters idle mode and closes its
