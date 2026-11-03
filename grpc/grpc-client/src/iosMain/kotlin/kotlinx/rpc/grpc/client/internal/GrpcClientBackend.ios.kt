@@ -13,6 +13,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
@@ -28,6 +29,7 @@ import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
+import platform.UIKit.UISceneSessionActivationRequest.Companion.request
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestBytes
 import kotlin.time.Duration
 import kotlin.time.TimeSource
@@ -74,11 +76,10 @@ internal class SwiftGrpcClientBackend(
                 merge(credentialHeaders)
             }
 
-            val encode = { request: Request ->
-                encodeSwiftRequest(method.requestMarshaller, request)
+            val encodedRequests = requests.map {
+                encodeSwiftRequest(method.requestMarshaller, it)
             }
-
-            withRequestSource(requests, encode) { requestSource ->
+            withRequestSource(encodedRequests) { requestSource ->
                 // A deadline only exists when a finite positive timeout is configured.
                 val deadline = callOptions.timeout.takeIf { it.isFinite() && it.isPositive() }
                 val callStarted = TimeSource.Monotonic.markNow()
