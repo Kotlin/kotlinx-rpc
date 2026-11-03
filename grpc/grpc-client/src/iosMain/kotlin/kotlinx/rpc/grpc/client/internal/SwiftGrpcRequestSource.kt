@@ -25,7 +25,11 @@ private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
 /**
  * Takes a flow of [SwiftGrpcRequestBytes] encoded requests and turns it into a [SwiftGrpcRequestSourceProtocol].
  *
- * The provided [SwiftGrpcRequestSourceProtocol] must only be used within the scope of the [block] lambda.
+ * Use the [SwiftGrpcRequestSourceProtocol] only inside the [block] lambda.
+ *
+ * This function returns only after the request collection ends. The consumer of the request source must call
+ * `cancel`, or pull until the source reports the end of the stream. A consumer that does neither suspends this
+ * function forever.
  */
 internal suspend fun <T> withRequestSource(
     requests: Flow<SwiftGrpcRequestBytes>,
@@ -53,15 +57,18 @@ internal suspend fun <T> withRequestSource(
         context = CoroutineName("grpc-swift-request-source"),
         start = CoroutineStart.UNDISPATCHED
     ) {
-        requests.collect { request ->
-            val completion = pulls.receive()
-            completion(request, null)
+        try {
+            requests.collect { request ->
+                val completion = pulls.receive()
+                completion(request, null)
+            }
+            terminate(null)
+        } catch(cause: Throwable) {
+            // We must catch throwable to define the termination state,
+            // as requests come from the Swift runtime.
+            terminate(cause.takeUnless { it is CancellationException })
+            throw cause
         }
-        terminate(null)
-    }
-
-    collector.invokeOnCompletion { cause ->
-        terminate(cause.takeUnless { it is CancellationException })
     }
 
     val requestSource = object : NSObject(), SwiftGrpcRequestSourceProtocol {
