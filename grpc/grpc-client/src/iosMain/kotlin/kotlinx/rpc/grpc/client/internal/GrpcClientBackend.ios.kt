@@ -77,49 +77,35 @@ internal class SwiftGrpcClientBackend(
             val encode = { request: Request ->
                 encodeSwiftRequest(method.requestMarshaller, request)
             }
-            val requestSource = SwiftGrpcRequestSource(
-                scope = this,
-                requests = requests,
-                encode = encode,
-            )
 
-            // A deadline only exists when a finite positive timeout is configured.
-            val deadline = callOptions.timeout.takeIf { it.isFinite() && it.isPositive() }
-            val callStarted = TimeSource.Monotonic.markNow()
-            var call: SwiftGrpcCallAdapter<Response>? = null
-            var closed = false
-            try {
-                call = channel.startCall(
-                    method = method,
-                    headers = callHeaders,
-                    callOptions = callOptions,
-                    requestSource = requestSource,
-                )
+            withRequestSource(requests, encode) { requestSource ->
+                // A deadline only exists when a finite positive timeout is configured.
+                val deadline = callOptions.timeout.takeIf { it.isFinite() && it.isPositive() }
+                val callStarted = TimeSource.Monotonic.markNow()
+                var call: SwiftGrpcCallAdapter<Response>? = null
+                var closed = false
+                try {
+                    call = channel.startCall(
+                        method = method,
+                        headers = callHeaders,
+                        callOptions = callOptions,
+                        requestSource = requestSource,
+                    )
 
-                while (!closed) {
-                    // A raced local deadline can surface as UNAVAILABLE from grpc-swift;
-                    // normalizeDeadlineRace converts that one case to DEADLINE_EXCEEDED.
-                    val event = call.nextEvent().normalizeDeadlineRace(deadline, callStarted.elapsedNow())
-                    closed = event is GrpcClientCallEvents.Closed
-                    if (closed) {
-                        requestSource.originalFailure?.let { throw it }
+                    while (!closed) {
+                        // A raced local deadline can surface as UNAVAILABLE from grpc-swift;
+                        // normalizeDeadlineRace converts that one case to DEADLINE_EXCEEDED.
+                        val event = call.nextEvent().normalizeDeadlineRace(deadline, callStarted.elapsedNow())
+                        closed = event is GrpcClientCallEvents.Closed
+                        emit(event)
                     }
-                    emit(event)
-                }
-            } catch (cause: SwiftGrpcInteropException) {
-                // Request failures cross Swift as NSError, losing the original Kotlin exception.
-                // Restore it here while leaving exceptions from Kotlin response handling intact.
-                // TODO: Swift must distinguish requestSource failures from purely Swift-side failures
-                //  so an unrelated Swift failure is not replaced by a stored request failure.
-                requestSource.originalFailure?.let { throw it }
-                throw cause
-            } finally {
-                if (!closed) {
-                    withContext(NonCancellable) {
-                        call?.cancelAndWait("Kotlin response collection stopped before the call closed")
+                } finally {
+                    if (!closed) {
+                        withContext(NonCancellable) {
+                            call?.cancelAndWait("Kotlin response collection stopped before the call closed")
+                        }
                     }
                 }
-                requestSource.cancelAndJoin()
             }
         }
     }
