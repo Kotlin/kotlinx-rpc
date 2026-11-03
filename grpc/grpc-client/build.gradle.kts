@@ -14,7 +14,7 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
-configureSwiftPMXcodeBuildConfiguration("Release")
+configureSwiftPMXcodeBuildConfiguration()
 
 kotlin {
     compilerOptions {
