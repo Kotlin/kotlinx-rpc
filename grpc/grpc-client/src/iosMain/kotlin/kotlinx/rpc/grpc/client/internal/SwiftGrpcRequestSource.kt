@@ -21,9 +21,13 @@ import kotlin.coroutines.cancellation.CancellationException
 
 private typealias RequestCompletion = SwiftGrpcCompletion<SwiftGrpcRequestBytes>
 
-internal suspend fun <Request, T> withRequestSource(
-    requests: Flow<Request>,
-    encode: (Request) -> SwiftGrpcRequestBytes,
+/**
+ * Takes a flow of [SwiftGrpcRequestBytes] encoded requests and turns it into a [SwiftGrpcRequestSourceProtocol].
+ *
+ * The provided [SwiftGrpcRequestSourceProtocol] must only be used within the scope of the [block] lambda.
+ */
+internal suspend fun <T> withRequestSource(
+    requests: Flow<SwiftGrpcRequestBytes>,
     block: suspend (SwiftGrpcRequestSourceProtocol) -> T
 ) = coroutineScope {
 
@@ -33,9 +37,9 @@ internal suspend fun <Request, T> withRequestSource(
 
     // The request source adds pull requests (completion callbacks) to the pull queue.
     // There must only be one pull request at a time.
-    val pulls = Channel<RequestCompletion>(capacity = 1, onUndeliveredElement = {
+    val pulls = Channel<RequestCompletion>(capacity = 1, onUndeliveredElement = { completion ->
         // On cancellation of the pull (normal termination), we complete all pending requests.
-        it(null, termination.value?.failure?.toSwiftGrpcError())
+        completion(null, termination.value?.failure?.toSwiftGrpcError())
     })
 
     fun terminate(failure: Throwable?) {
@@ -49,9 +53,8 @@ internal suspend fun <Request, T> withRequestSource(
         start = CoroutineStart.UNDISPATCHED
     ) {
         requests.collect { request ->
-            val message = encode(request)
             val completion = pulls.receive()
-            completion(message, null)
+            completion(request, null)
         }
         terminate(null)
     }
