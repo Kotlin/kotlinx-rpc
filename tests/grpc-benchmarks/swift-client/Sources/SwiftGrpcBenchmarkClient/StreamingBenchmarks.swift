@@ -218,8 +218,7 @@ private func pingPongBenchmark() -> any Benchmark {
                     return StreamMeasurement(
                         requestMessages: Int64(messages),
                         responseMessages: Int64(messages),
-                        applicationRequestBytes: Int64(parameters.requestBytes + parameters.responseBytes) *
-                            Int64(messages),
+                        applicationRequestBytes: Int64(parameters.requestBytes) * Int64(messages),
                         applicationResponseBytes: Int64(parameters.responseBytes) * Int64(messages),
                         latencySamples: samples,
                         timeToFirstResponseNanoseconds: samples.first,
