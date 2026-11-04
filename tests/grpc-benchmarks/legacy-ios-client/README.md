@@ -27,9 +27,17 @@ Build and run the Apple Silicon simulator executable with the helper script:
 ```shell
 ./run.sh list
 ./run.sh run unary-latency
-./run.sh run unary-throughput --format csv
+./run.sh run unary-throughput --format json
 ./run.sh run unary-payload-sweep --case symmetric-1m
-./run.sh run unary-concurrency-sweep --case 1k-c64 --format csv
+./run.sh run unary-concurrency-sweep --case 1k-c64 --format json
+```
+
+For repeated, order-controlled measurements of all implementations, prefer
+`../bench`, which drives this client through its binary:
+
+```shell
+../bench build
+../bench run --implementation current,legacy,swift unary-latency
 ```
 
 The helper incrementally links the release executable, selects or boots an iOS
