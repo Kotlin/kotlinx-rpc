@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
       - name: Dump Platforms Table
         run: ./gradlew dumpPlatformTable --no-configuration-cache --info --stacktrace
       - name: Verify Platforms Table
