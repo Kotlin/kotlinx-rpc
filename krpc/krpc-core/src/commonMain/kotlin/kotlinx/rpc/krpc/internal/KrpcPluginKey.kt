@@ -65,8 +65,8 @@ public enum class KrpcPluginKey(
 
     init {
         require(ordinal == 0 || associatedPlugin != KrpcPlugin.UNKNOWN) {
-            error("associatedPlugin must not be $KrpcPlugin.${KrpcPlugin.UNKNOWN} " +
-                    "for anything other than $KrpcPluginKey.UNKNOWN")
+            "associatedPlugin must not be KrpcPlugin.${KrpcPlugin.UNKNOWN} " +
+                "for anything other than KrpcPluginKey.UNKNOWN"
         }
     }
 
