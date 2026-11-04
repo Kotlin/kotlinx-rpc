@@ -23,8 +23,8 @@ final class BenchmarkTests: XCTestCase {
             [
                 BenchmarkCase(
                     parameters: try BenchmarkParameters(
-                        warmupCalls: 100,
-                        calls: 1_000,
+                        warmupOperations: 200,
+                        operations: 10_000,
                         concurrency: 1,
                         requestBytes: 0,
                         responseBytes: 0
@@ -37,8 +37,8 @@ final class BenchmarkTests: XCTestCase {
             [
                 BenchmarkCase(
                     parameters: try BenchmarkParameters(
-                        warmupCalls: 100,
-                        calls: 10_000,
+                        warmupOperations: 200,
+                        operations: 100_000,
                         concurrency: 16,
                         requestBytes: 1_024,
                         responseBytes: 1_024
@@ -72,8 +72,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             cases.first(where: { $0.name == "upload-1m" })?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 5,
-                calls: 200,
+                warmupOperations: 10,
+                operations: 600,
                 concurrency: 1,
                 requestBytes: 1_024 * 1_024,
                 responseBytes: 64
@@ -82,8 +82,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             cases.first(where: { $0.name == "download-64k" })?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 20,
-                calls: 2_000,
+                warmupOperations: 50,
+                operations: 3_000,
                 concurrency: 1,
                 requestBytes: 64,
                 responseBytes: 64 * 1_024
@@ -92,8 +92,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             cases.first(where: { $0.name == "upload-near-4m" })?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 2,
-                calls: 50,
+                warmupOperations: 5,
+                operations: 150,
                 concurrency: 1,
                 requestBytes: 4 * 1_024 * 1_024 - 1_024,
                 responseBytes: 64
@@ -108,8 +108,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             cases.first(where: { $0.name == "empty-c1" })?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 100,
-                calls: 10_000,
+                warmupOperations: 200,
+                operations: 20_000,
                 concurrency: 1,
                 requestBytes: 0,
                 responseBytes: 0
@@ -118,8 +118,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             cases.first(where: { $0.name == "1k-c128" })?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 1_280,
-                calls: 128_000,
+                warmupOperations: 2_560,
+                operations: 256_000,
                 concurrency: 128,
                 requestBytes: 1_024,
                 responseBytes: 1_024
@@ -146,8 +146,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             overheadCases.last?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 1,
-                calls: 17,
+                warmupOperations: 1,
+                operations: 17,
                 concurrency: 1,
                 requestBytes: 4 * 1_024 * 1_024 - 1_024,
                 responseBytes: 0
@@ -155,7 +155,7 @@ final class BenchmarkTests: XCTestCase {
         )
         let largestOverheadCase = try XCTUnwrap(overheadCases.last?.parameters)
         XCTAssertEqual(
-            Int64(largestOverheadCase.requestBytes) * Int64(largestOverheadCase.calls - 1) + 16 * 1_024,
+            Int64(largestOverheadCase.requestBytes) * Int64(largestOverheadCase.operations - 1) + 16 * 1_024,
             64 * 1_024 * 1_024
         )
         XCTAssertEqual(
@@ -163,10 +163,20 @@ final class BenchmarkTests: XCTestCase {
             ["c1", "c2", "c4", "c8", "c16"]
         )
         XCTAssertEqual(
+            registry.find("stream-concurrency-sweep")?.cases.last?.parameters,
+            try BenchmarkParameters(
+                warmupOperations: 200,
+                operations: 16_384,
+                concurrency: 16,
+                requestBytes: 64,
+                responseBytes: 1_024
+            )
+        )
+        XCTAssertEqual(
             registry.find("server-streaming-throughput")?.cases.first { $0.name == "64k" }?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 10,
-                calls: 1_000,
+                warmupOperations: 20,
+                operations: 2_000,
                 concurrency: 1,
                 requestBytes: 64,
                 responseBytes: 64 * 1_024
@@ -175,8 +185,8 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(
             registry.find("client-streaming-throughput")?.cases.first { $0.name == "64k" }?.parameters,
             try BenchmarkParameters(
-                warmupCalls: 10,
-                calls: 1_000,
+                warmupOperations: 20,
+                operations: 2_000,
                 concurrency: 1,
                 requestBytes: 64 * 1_024,
                 responseBytes: 64
@@ -184,21 +194,49 @@ final class BenchmarkTests: XCTestCase {
         )
     }
 
+    func testLatencyMetricPerFamilyMatchesKotlinClient() {
+        let registry = BenchmarkRegistry(unaryBenchmarks() + streamingBenchmarks())
+
+        XCTAssertEqual(registry.find("unary-latency")?.latencyMetric, .callRoundTrip)
+        XCTAssertEqual(registry.find("server-streaming-throughput")?.latencyMetric, .messageInterarrival)
+        XCTAssertEqual(registry.find("client-streaming-throughput")?.latencyMetric, .requestWriteSuspension)
+        XCTAssertEqual(registry.find("bidi-ping-pong")?.latencyMetric, .pingPongRoundTrip)
+        XCTAssertEqual(registry.find("bidi-full-duplex")?.latencyMetric, .messageInterarrival)
+        for benchmark in registry.all where benchmark.name.hasPrefix("unary") {
+            XCTAssertEqual(benchmark.operationUnit, .rpc, benchmark.name)
+        }
+        for benchmark in registry.all where !benchmark.name.hasPrefix("unary") {
+            XCTAssertEqual(benchmark.operationUnit, .message, benchmark.name)
+        }
+    }
+
+    func testWorkloadMatrixUsesKotlinWireNames() throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(BenchmarkCLI().registry.workloadMatrix())
+        let json = String(data: data, encoding: .utf8)!
+
+        XCTAssertTrue(json.contains("\"latency_metric\" : \"ping_pong_round_trip\""))
+        XCTAssertTrue(json.contains("\"operation_unit\" : \"message\""))
+        XCTAssertTrue(json.contains("\"warmup_operations\" : 200"))
+        XCTAssertTrue(json.contains("\"case\" : \"symmetric-1m\""))
+    }
+
     func testAppliesParameterOverrides() throws {
         let defaults = try BenchmarkParameters(
-            warmupCalls: 1,
-            calls: 2,
+            warmupOperations: 1,
+            operations: 2,
             concurrency: 3,
             requestBytes: 4,
             responseBytes: 5
         )
-        let overrides = BenchmarkOverrides(calls: 20, responseBytes: 50)
+        let overrides = BenchmarkOverrides(operations: 20, responseBytes: 50)
 
         XCTAssertEqual(
             try overrides.applying(to: defaults),
             try BenchmarkParameters(
-                warmupCalls: 1,
-                calls: 20,
+                warmupOperations: 1,
+                operations: 20,
                 concurrency: 3,
                 requestBytes: 4,
                 responseBytes: 50
@@ -210,11 +248,21 @@ final class BenchmarkTests: XCTestCase {
     func testComputesLatencyPercentiles() {
         let statistics = LatencyStatistics(samples: [1, 2, 3, 4, 100])
 
+        XCTAssertEqual(statistics.sampleCount, 5)
         XCTAssertEqual(statistics.minimumNanoseconds, 1)
         XCTAssertEqual(statistics.meanNanoseconds, 22)
         XCTAssertEqual(statistics.p50Nanoseconds, 3)
         XCTAssertEqual(statistics.p90Nanoseconds, 100)
         XCTAssertEqual(statistics.maximumNanoseconds, 100)
+    }
+
+    func testReportsEmptyStatisticsWithoutSamples() {
+        let statistics = LatencyStatistics(samples: [])
+
+        XCTAssertEqual(statistics.sampleCount, 0)
+        XCTAssertNil(statistics.minimumNanoseconds)
+        XCTAssertNil(statistics.p50Nanoseconds)
+        XCTAssertNil(statistics.maximumNanoseconds)
     }
 
     func testFormatsApplicationThroughput() {
@@ -224,64 +272,97 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertEqual(3_500_000_000.0.bytesPerSecond, "3.50 GB/s")
     }
 
-    func testCSVOutputIncludesCaseAndImplementation() throws {
-        let parameters = try BenchmarkParameters(
-            warmupCalls: 0,
-            calls: 1,
-            concurrency: 1,
-            requestBytes: 0,
-            responseBytes: 0
-        )
-        let result = BenchmarkResult(
-            benchmarkName: "example",
-            caseName: "example-case",
+    func testTrialRecordJsonUsesKotlinSchema() throws {
+        let record = TrialRecord(
             implementationName: "swift",
-            platform: "macos",
-            parameters: parameters,
-            elapsed: .nanoseconds(1),
-            applicationBytes: 0,
-            latency: LatencyStatistics(samples: [1])
+            implementationVersion: nil,
+            platform: "ios-simulator-arm64",
+            target: "localhost:50051",
+            startedAtEpochMs: 1_762_268_000_000,
+            connectionReadyNanoseconds: 123_000_000,
+            trial: TrialResult(
+                benchmarkName: "server-streaming-throughput",
+                caseName: "1k",
+                parameters: try BenchmarkParameters(
+                    warmupOperations: 10,
+                    operations: 100,
+                    concurrency: 2,
+                    requestBytes: 64,
+                    responseBytes: 1_024
+                ),
+                latencyMetric: .messageInterarrival,
+                operationUnit: .message,
+                injectedDelayMs: 0,
+                status: .completed,
+                error: nil,
+                elapsedNanoseconds: 1_000_000_000,
+                operations: 101,
+                requestMessages: 1,
+                responseMessages: 100,
+                applicationRequestBytes: 64,
+                applicationResponseBytes: 102_400,
+                latencySamplesNanoseconds: [1, 2, 3],
+                timeToFirstResponseNanoseconds: [500],
+                streamDurationNanoseconds: [999_000_000],
+                finalResponseLatencyNanoseconds: []
+            )
         )
 
-        let output = render(
-            results: [result],
-            target: ServerTarget(host: "localhost", port: 50051),
-            format: .csv
-        )
+        let encoder = JSONEncoder()
+        let json = String(data: try encoder.encode(record), encoding: .utf8)!
 
-        XCTAssertTrue(output.contains("benchmark,case,implementation,platform"))
-        XCTAssertTrue(output.contains("example,example-case,swift,macos"))
+        XCTAssertTrue(json.contains("\"schema_version\":1"), json)
+        XCTAssertTrue(json.contains("\"latency_metric\":\"message_interarrival\""), json)
+        XCTAssertTrue(json.contains("\"operation_unit\":\"message\""), json)
+        XCTAssertTrue(json.contains("\"load_shape\":\"closed_loop\""), json)
+        XCTAssertTrue(json.contains("\"connection_ready_ns\":123000000"), json)
+        XCTAssertTrue(json.contains("\"latency_samples_ns\":[1,2,3]"), json)
+        XCTAssertTrue(json.contains("\"time_to_first_response_ns\":[500]"), json)
+        XCTAssertTrue(json.contains("\"stream_duration_ns\":[999000000]"), json)
+        XCTAssertTrue(json.contains("\"final_response_latency_ns\":[]"), json)
+        XCTAssertTrue(json.contains("\"warmup_operations\":10"), json)
     }
 
-    func testCSVOutputIncludesStreamingMeasurements() throws {
-        let result = BenchmarkResult(
-            benchmarkName: "streaming-example",
-            caseName: "default",
+    func testCsvOutputUsesCsvV2Header() {
+        let record = TrialRecord(
             implementationName: "swift",
-            platform: "macos",
-            parameters: try BenchmarkParameters(
-                warmupCalls: 0,
-                calls: 10,
-                concurrency: 1,
-                requestBytes: 1_024,
-                responseBytes: 64
-            ),
-            elapsed: .seconds(1),
-            applicationBytes: 10_304,
-            latency: LatencyStatistics(samples: [1]),
-            requestMessages: 10,
-            responseMessages: 1,
-            timeToFirstResponse: .nanoseconds(2),
-            finalResponseLatency: .nanoseconds(3)
+            implementationVersion: nil,
+            platform: "ios-simulator-arm64",
+            target: "localhost:50051",
+            startedAtEpochMs: 0,
+            connectionReadyNanoseconds: nil,
+            trial: TrialResult(
+                benchmarkName: "unary-latency",
+                caseName: "default",
+                parameters: try! BenchmarkParameters(
+                    warmupOperations: 0,
+                    operations: 1,
+                    concurrency: 1,
+                    requestBytes: 0,
+                    responseBytes: 0
+                ),
+                latencyMetric: .callRoundTrip,
+                operationUnit: .rpc,
+                injectedDelayMs: 0,
+                status: .completed,
+                error: nil,
+                elapsedNanoseconds: 1_000_000,
+                operations: 1,
+                requestMessages: nil,
+                responseMessages: nil,
+                applicationRequestBytes: 0,
+                applicationResponseBytes: 0,
+                latencySamplesNanoseconds: [1],
+                timeToFirstResponseNanoseconds: [],
+                streamDurationNanoseconds: [],
+                finalResponseLatencyNanoseconds: []
+            )
         )
 
-        let output = render(
-            results: [result],
-            target: ServerTarget(host: "localhost", port: 50051),
-            format: .csv
-        )
+        let output = renderCSV(record: record)
 
-        XCTAssertTrue(output.contains("request_messages,response_messages,messages_per_second"))
-        XCTAssertTrue(output.contains(",10,1,11.0000,0.002,0.003"))
+        XCTAssertTrue(output.hasPrefix("1,swift,ios-simulator-arm64,unary-latency,default,completed,call_round_trip,rpc"))
+        XCTAssertTrue(csvHeader.contains("latency_min_us,latency_mean_us,latency_p50_us"))
+        XCTAssertTrue(csvHeader.contains("time_to_first_response_mean_us,stream_duration_mean_us"))
     }
 }

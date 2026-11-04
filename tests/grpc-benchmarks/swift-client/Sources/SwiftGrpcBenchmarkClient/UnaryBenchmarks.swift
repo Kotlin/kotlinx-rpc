@@ -13,8 +13,8 @@ func unaryBenchmarks() -> [any Benchmark] {
             description: "Warm sequential unary call latency",
             cases: [
                 benchmarkCase(
-                    warmupCalls: 100,
-                    calls: 1_000,
+                    warmupOperations: 200,
+                    operations: 10_000,
                     concurrency: 1,
                     requestBytes: 0,
                     responseBytes: 0
@@ -26,8 +26,8 @@ func unaryBenchmarks() -> [any Benchmark] {
             description: "Warm concurrent unary call throughput",
             cases: [
                 benchmarkCase(
-                    warmupCalls: 100,
-                    calls: 10_000,
+                    warmupOperations: 200,
+                    operations: 100_000,
                     concurrency: 16,
                     requestBytes: 1_024,
                     responseBytes: 1_024
@@ -60,7 +60,8 @@ private func unaryBenchmark(
         )
 
         return MeasuredCall(
-            applicationBytes: Int64(parameters.requestBytes) + Int64(parameters.responseBytes),
+            applicationRequestBytes: Int64(parameters.requestBytes),
+            applicationResponseBytes: Int64(parameters.responseBytes),
             execute: {
                 let response = try await service.unaryCall(request)
                 guard response.payload.body.count == parameters.responseBytes else {
@@ -77,20 +78,20 @@ private func unaryBenchmark(
 private struct PayloadSweepSize {
     let name: String
     let bytes: Int
-    let warmupCalls: Int
-    let calls: Int
+    let warmupOperations: Int
+    let operations: Int
 }
 
 private let payloadSweepSizes = [
-    PayloadSweepSize(name: "64b", bytes: 64, warmupCalls: 100, calls: 10_000),
-    PayloadSweepSize(name: "1k", bytes: 1_024, warmupCalls: 100, calls: 10_000),
-    PayloadSweepSize(name: "64k", bytes: 64 * 1_024, warmupCalls: 20, calls: 2_000),
-    PayloadSweepSize(name: "1m", bytes: 1_024 * 1_024, warmupCalls: 5, calls: 200),
+    PayloadSweepSize(name: "64b", bytes: 64, warmupOperations: 200, operations: 10_000),
+    PayloadSweepSize(name: "1k", bytes: 1_024, warmupOperations: 200, operations: 10_000),
+    PayloadSweepSize(name: "64k", bytes: 64 * 1_024, warmupOperations: 50, operations: 3_000),
+    PayloadSweepSize(name: "1m", bytes: 1_024 * 1_024, warmupOperations: 10, operations: 600),
     PayloadSweepSize(
         name: "near-4m",
         bytes: 4 * 1_024 * 1_024 - 1_024,
-        warmupCalls: 2,
-        calls: 50
+        warmupOperations: 5,
+        operations: 150
     ),
 ]
 
@@ -130,8 +131,8 @@ private func payloadCase(
 ) -> BenchmarkCase {
     benchmarkCase(
         name: name,
-        warmupCalls: size.warmupCalls,
-        calls: size.calls,
+        warmupOperations: size.warmupOperations,
+        operations: size.operations,
         concurrency: 1,
         requestBytes: requestBytes,
         responseBytes: responseBytes
@@ -143,8 +144,8 @@ private func concurrencySweepCases() -> [BenchmarkCase] {
         [1, 2, 4, 8, 16, 32, 64, 128].map { concurrency in
             benchmarkCase(
                 name: "\(payloadName)-c\(concurrency)",
-                warmupCalls: max(100, concurrency * 10),
-                calls: max(10_000, concurrency * 1_000),
+                warmupOperations: max(200, concurrency * 20),
+                operations: max(20_000, concurrency * 2_000),
                 concurrency: concurrency,
                 requestBytes: payloadBytes,
                 responseBytes: payloadBytes
@@ -153,10 +154,10 @@ private func concurrencySweepCases() -> [BenchmarkCase] {
     }
 }
 
-private func benchmarkCase(
+func benchmarkCase(
     name: String = "default",
-    warmupCalls: Int,
-    calls: Int,
+    warmupOperations: Int,
+    operations: Int,
     concurrency: Int,
     requestBytes: Int,
     responseBytes: Int
@@ -164,8 +165,8 @@ private func benchmarkCase(
     BenchmarkCase(
         name: name,
         parameters: try! BenchmarkParameters(
-            warmupCalls: warmupCalls,
-            calls: calls,
+            warmupOperations: warmupOperations,
+            operations: operations,
             concurrency: concurrency,
             requestBytes: requestBytes,
             responseBytes: responseBytes
@@ -175,7 +176,7 @@ private func benchmarkCase(
 
 private let payloadSweepAnchorBytes = 64
 
-private func unaryRequest(requestBytes: Int, responseBytes: Int) -> Grpc_Testing_SimpleRequest {
+func unaryRequest(requestBytes: Int, responseBytes: Int) -> Grpc_Testing_SimpleRequest {
     var payload = Grpc_Testing_Payload()
     payload.type = .compressable
     payload.body = Data((0..<requestBytes).lazy.map { UInt8($0 % 251) })
@@ -187,7 +188,7 @@ private func unaryRequest(requestBytes: Int, responseBytes: Int) -> Grpc_Testing
     return request
 }
 
-private struct UnexpectedResponseSize: Error, CustomStringConvertible, Sendable {
+struct UnexpectedResponseSize: Error, CustomStringConvertible, Sendable {
     let expected: Int
     let actual: Int
 

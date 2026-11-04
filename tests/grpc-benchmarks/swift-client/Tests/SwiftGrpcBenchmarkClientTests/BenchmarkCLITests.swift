@@ -26,6 +26,9 @@ final class BenchmarkCLITests: XCTestCase {
         XCTAssertTrue(output.contains("--concurrency"))
         XCTAssertTrue(output.contains("--case"))
         XCTAssertTrue(output.contains("--request-bytes"))
+        XCTAssertTrue(output.contains("--operations"))
+        XCTAssertTrue(output.contains("--inject-delay-ms"))
+        XCTAssertTrue(output.contains("--platform-label"))
         XCTAssertTrue(output.contains("--format"))
     }
 
@@ -33,7 +36,9 @@ final class BenchmarkCLITests: XCTestCase {
         let command = try self.cli.parse(arguments: [
             "run", "unary-throughput",
             "--target", "[::1]:1234",
-            "--calls", "25",
+            "--operations", "25",
+            "--inject-delay-ms", "3",
+            "--platform-label", "ios-simulator-arm64",
             "--format", "csv",
         ])
 
@@ -44,7 +49,10 @@ final class BenchmarkCLITests: XCTestCase {
                     benchmarkName: "unary-throughput",
                     caseName: nil,
                     target: ServerTarget(host: "::1", port: 1234),
-                    overrides: BenchmarkOverrides(calls: 25),
+                    overrides: BenchmarkOverrides(operations: 25),
+                    injectedDelayMs: 3,
+                    platformLabel: "ios-simulator-arm64",
+                    readinessTimeoutSeconds: 30,
                     format: .csv
                 )
             )
@@ -65,15 +73,25 @@ final class BenchmarkCLITests: XCTestCase {
                     caseName: "upload-1m",
                     target: ServerTarget(host: "localhost", port: 50051),
                     overrides: BenchmarkOverrides(),
+                    injectedDelayMs: 0,
+                    platformLabel: nil,
+                    readinessTimeoutSeconds: 30,
                     format: .human
                 )
             )
         )
     }
 
+    func testParsesPingCommand() throws {
+        let command = try self.cli.parse(arguments: ["ping", "--target", "example.test:1234", "--format", "json"])
+
+        XCTAssertEqual(command, .ping(target: ServerTarget(host: "example.test", port: 1234), format: "json", timeoutSeconds: 30))
+    }
+
     func testRejectsInvalidNumbers() {
-        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unary-latency", "--calls", "many"]))
-        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unary-latency", "--calls", "0"]))
+        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unary-latency", "--operations", "many"]))
+        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unary-latency", "--operations", "0"]))
+        XCTAssertThrowsError(try self.cli.parse(arguments: ["run", "unary-latency", "--inject-delay-ms", "-1"]))
     }
 
     func testRejectsUnknownBenchmarks() {
