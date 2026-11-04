@@ -1,0 +1,901 @@
+#!/usr/bin/env bash
+
+# Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+
+# The entry point for the gRPC client benchmark workflows:
+# list, doctor, build, run, analyze, and compare.
+#
+# Run `./bench help COMMAND` for the options of one command. Progress and
+# diagnostics go to stderr. Machine-readable results and paths go to stdout.
+
+set -euo pipefail
+
+readonly BENCH_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly REPOSITORY_ROOT="$(cd -- "${BENCH_DIR}/../.." && pwd)"
+
+source "${BENCH_DIR}/scripts/ios-simulator.sh"
+source "${BENCH_DIR}/scripts/transient-command.sh"
+
+# Defaults. The bench.config file overrides them, and the command line
+# overrides the config file.
+KXRPC_BENCH_TARGET="${KXRPC_BENCH_TARGET:-localhost:50051}"
+KXRPC_BENCH_PLATFORM="${KXRPC_BENCH_PLATFORM:-ios}"
+KXRPC_BENCH_IMPLEMENTATIONS="${KXRPC_BENCH_IMPLEMENTATIONS:-current,legacy,swift}"
+KXRPC_BENCH_OUTPUT_DIR="${KXRPC_BENCH_OUTPUT_DIR:-${BENCH_DIR}/output}"
+KXRPC_BENCH_REPETITIONS="${KXRPC_BENCH_REPETITIONS:-3}"
+KXRPC_BENCH_ORDER="${KXRPC_BENCH_ORDER:-random}"
+KXRPC_BENCH_SEED="${KXRPC_BENCH_SEED:-}"
+KXRPC_BENCH_TRIAL_TIMEOUT="${KXRPC_BENCH_TRIAL_TIMEOUT:-900}"
+KXRPC_BENCH_GAP_SECONDS="${KXRPC_BENCH_GAP_SECONDS:-0.5}"
+
+if [[ -f "${BENCH_DIR}/bench.config" ]]; then
+    # shellcheck disable=SC1091
+    source "${BENCH_DIR}/bench.config"
+fi
+
+readonly CURRENT_IOS_BINARY="${BENCH_DIR}/kotlinx-rpc-client/build/bin/iosSimulatorArm64/releaseExecutable/kotlinx-rpc-grpc-benchmark-client.kexe"
+readonly CURRENT_MACOS_BINARY="${BENCH_DIR}/kotlinx-rpc-client/build/bin/macosArm64/releaseExecutable/kotlinx-rpc-grpc-benchmark-client.kexe"
+readonly CURRENT_JVM_BINARY="${BENCH_DIR}/kotlinx-rpc-client/build/install/kotlinx-rpc-client-jvm/bin/kotlinx-rpc-client"
+readonly LEGACY_IOS_BINARY="${BENCH_DIR}/legacy-ios-client/build/bin/iosSimulatorArm64/releaseExecutable/legacy-grpc-benchmark-client.kexe"
+readonly SWIFT_IOS_BINARY="${BENCH_DIR}/swift-client/.build/swift-grpc-benchmark-client"
+
+readonly EXIT_OK=0
+readonly EXIT_FAILURE=1
+readonly EXIT_USAGE=2
+
+usage() {
+    cat <<'EOF'
+Usage: ./bench COMMAND [options]
+
+Commands:
+  list                          Show the benchmark workload matrix
+  doctor                        Check the environment, server, binaries, and workload equivalence
+  build [--implementation ...]  Build the release binaries of the selected implementations
+  run BENCHMARK [--case NAME]   Run trials and write a run directory with trial records
+  analyze RUN_DIR [...]         Summarize saved runs offline
+  compare BASE CANDIDATE         Compare two implementations from saved runs
+
+Common options of `run`:
+  --implementation current,legacy,swift   Implementations to measure (default: all three)
+  --platform ios|macos|jvm               Execution platform (default: ios; only `current` builds macos and jvm)
+  --target HOST:PORT                     Benchmark server (default: localhost:50051)
+  --preset smoke|default|rigorous        1, 3, or 9 repetitions per implementation and case
+  --repetitions N                        Repetitions, instead of a preset
+  --order random|fixed                   Trial order (default: random, seeded)
+  --seed N                               Seed for the trial order, recorded in the manifest
+  --output-dir DIR                       Parent of the run directory (default: ./output)
+  --trial-timeout SECONDS                Kill a trial that runs longer (default: 900)
+  --gap SECONDS                          Pause between trials (default: 0.5)
+  --inject-delay-ms N                    Test hook: adds a delay to every measured operation
+  --build                                Build the selected implementations first
+  --                                     Pass every option after this to the benchmark client
+
+Examples:
+  ./bench doctor
+  ./bench run unary-latency
+  ./bench run --implementation current,swift --preset rigorous unary-payload-sweep --case symmetric-1k
+  ./bench compare output/run-...:current output/run-...:swift
+  ./bench analyze output/run-... --format csv --output summary.csv
+EOF
+}
+
+die_usage() {
+    echo "$1" >&2
+    exit "${EXIT_USAGE}"
+}
+
+# Reads stdin lines into the global BENCH_LINES array. macOS still ships bash 3.2,
+# which has no `mapfile`.
+read_lines() {
+    BENCH_LINES=()
+    local line
+    while IFS= read -r line; do
+        BENCH_LINES+=("${line}")
+    done
+}
+
+# ---------------------------------------------------------------------------
+# Client access
+# ---------------------------------------------------------------------------
+
+split_implementations() {
+    local value="$1"
+    local -a implementations=()
+    local implementation
+    local seen=""
+    while IFS= read -r implementation; do
+        [[ -z "${implementation}" ]] && continue
+        if [[ ",${seen}," != *",${implementation},"* ]]; then
+            implementations+=("${implementation}")
+            seen="${seen},${implementation}"
+        fi
+    done < <(tr ',' '\n' <<< "${value}")
+    if [[ ${#implementations[@]} -eq 0 ]]; then
+        die_usage "No implementation selected. Use --implementation current,legacy,swift."
+    fi
+    printf '%s\n' "${implementations[@]}"
+}
+
+client_binary() {
+    local implementation="$1"
+    local platform="$2"
+    case "${implementation}:${platform}" in
+        current:ios) printf '%s' "${CURRENT_IOS_BINARY}" ;;
+        current:macos) printf '%s' "${CURRENT_MACOS_BINARY}" ;;
+        current:jvm) printf '%s' "${CURRENT_JVM_BINARY}" ;;
+        legacy:ios) printf '%s' "${LEGACY_IOS_BINARY}" ;;
+        swift:ios) printf '%s' "${SWIFT_IOS_BINARY}" ;;
+        *)
+            echo "Implementation '${implementation}' has no ${platform} build." >&2
+            return "${EXIT_USAGE}"
+            ;;
+    esac
+}
+
+validate_platform_selection() {
+    local -a implementations=("$@")
+    local implementation
+    for implementation in "${implementations[@]}"; do
+        if [[ "${KXRPC_BENCH_PLATFORM}" != "ios" && "${implementation}" != "current" ]]; then
+            die_usage "Only the 'current' implementation builds for ${KXRPC_BENCH_PLATFORM}."
+        fi
+    done
+}
+
+ensure_client_ready() {
+    local implementation="$1"
+    local binary
+    binary="$(client_binary "${implementation}" "${KXRPC_BENCH_PLATFORM}")" || return "${EXIT_USAGE}"
+    if [[ ! -e "${binary}" ]]; then
+        echo "The ${implementation} ${KXRPC_BENCH_PLATFORM} binary is missing: ${binary}" >&2
+        echo "Run './bench build --implementation ${implementation}' first." >&2
+        return "${EXIT_FAILURE}"
+    fi
+    if [[ "${implementation}" == "current" && "${KXRPC_BENCH_PLATFORM}" == "ios" && ! -d "$(dirname -- "${binary}")/Frameworks" ]]; then
+        echo "The Swift runtime libraries next to the current iOS binary are missing." >&2
+        echo "Run './bench build --implementation current' first." >&2
+        return "${EXIT_FAILURE}"
+    fi
+}
+
+# Resolves the simulator once per invocation, because `simctl list` is slow.
+bench_simulator() {
+    if [[ -z "${_BENCH_SIMULATOR:-}" ]]; then
+        _BENCH_SIMULATOR="$(ensure_ios_simulator)"
+    fi
+    printf '%s' "${_BENCH_SIMULATOR}"
+}
+
+# Runs one client command. Platform-specific launch logic lives here.
+run_client() {
+    local implementation="$1"
+    shift
+    local binary
+    binary="$(client_binary "${implementation}" "${KXRPC_BENCH_PLATFORM}")"
+    case "${KXRPC_BENCH_PLATFORM}" in
+        ios)
+            xcrun simctl spawn "$(bench_simulator)" "${binary}" "$@"
+            ;;
+        macos|jvm)
+            "${binary}" "$@"
+            ;;
+        *)
+            die_usage "Unknown platform '${KXRPC_BENCH_PLATFORM}'; expected ios, macos, or jvm."
+            ;;
+    esac
+}
+
+platform_label() {
+    case "${KXRPC_BENCH_PLATFORM}" in
+        ios) printf 'ios-simulator-arm64' ;;
+        macos) printf 'macos' ;;
+        jvm) printf 'jvm' ;;
+    esac
+}
+
+# Parses the --implementation and --platform flags that several commands share.
+# The remaining arguments stay in BENCH_REMAINING_ARGS.
+parse_common_flags() {
+    BENCH_REMAINING_ARGS=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --implementation)
+                [[ $# -lt 2 ]] && die_usage "--implementation requires a value."
+                KXRPC_BENCH_IMPLEMENTATIONS="$2"; shift 2 ;;
+            --implementation=*)
+                KXRPC_BENCH_IMPLEMENTATIONS="${1#*=}"; shift ;;
+            --platform)
+                [[ $# -lt 2 ]] && die_usage "--platform requires a value."
+                KXRPC_BENCH_PLATFORM="$2"; shift 2 ;;
+            --platform=*)
+                KXRPC_BENCH_PLATFORM="${1#*=}"; shift ;;
+            *)
+                BENCH_REMAINING_ARGS+=("$1"); shift ;;
+        esac
+    done
+}
+
+# ---------------------------------------------------------------------------
+# list
+# ---------------------------------------------------------------------------
+
+cmd_list() {
+    parse_common_flags "$@"
+    local -a implementations=()
+    read_lines < <(split_implementations "${KXRPC_BENCH_IMPLEMENTATIONS}")
+    implementations=("${BENCH_LINES[@]}")
+    validate_platform_selection "${implementations[@]}"
+    ensure_client_ready "${implementations[0]}"
+    run_client "${implementations[0]}" list ${BENCH_REMAINING_ARGS[@]+"${BENCH_REMAINING_ARGS[@]}"}
+}
+
+# ---------------------------------------------------------------------------
+# build
+# ---------------------------------------------------------------------------
+
+cmd_build() {
+    parse_common_flags "$@"
+    local -a implementations=()
+    read_lines < <(split_implementations "${KXRPC_BENCH_IMPLEMENTATIONS}")
+    implementations=("${BENCH_LINES[@]}")
+    if [[ ${#BENCH_REMAINING_ARGS[@]} -gt 0 ]]; then
+        die_usage "Unknown option '${BENCH_REMAINING_ARGS[0]}' for build."
+    fi
+    local implementation
+    for implementation in "${implementations[@]}"; do
+        case "${implementation}:${KXRPC_BENCH_PLATFORM}" in
+            current:ios)
+                run_transient_command \
+                    "platform=ios-simulator-arm64 implementation=current" \
+                    "${REPOSITORY_ROOT}/gradlew" \
+                    :tests:grpc-benchmarks:kotlinx-rpc-client:linkReleaseExecutableIosSimulatorArm64
+                mkdir -p "$(dirname -- "${CURRENT_IOS_BINARY}")/Frameworks"
+                xcrun swift-stdlib-tool \
+                    --copy \
+                    --scan-executable "${CURRENT_IOS_BINARY}" \
+                    --platform iphonesimulator \
+                    --destination "$(dirname -- "${CURRENT_IOS_BINARY}")/Frameworks" >&2
+                ;;
+            current:macos)
+                run_transient_command \
+                    "platform=macos-arm64 implementation=current" \
+                    "${REPOSITORY_ROOT}/gradlew" \
+                    :tests:grpc-benchmarks:kotlinx-rpc-client:linkReleaseExecutableMacosArm64
+                ;;
+            current:jvm)
+                run_transient_command \
+                    "platform=jvm implementation=current" \
+                    "${REPOSITORY_ROOT}/gradlew" \
+                    :tests:grpc-benchmarks:kotlinx-rpc-client:installJvmDist
+                ;;
+            legacy:ios)
+                run_transient_command \
+                    "platform=ios-simulator-arm64 implementation=legacy" \
+                    "${REPOSITORY_ROOT}/gradlew" \
+                    --project-dir "${BENCH_DIR}/legacy-ios-client" \
+                    linkReleaseExecutableIosSimulatorArm64
+                ;;
+            swift:ios)
+                run_transient_command \
+                    "platform=ios-simulator-arm64 implementation=swift" \
+                    "${BENCH_DIR}/swift-client/build.sh"
+                ;;
+            *)
+                die_usage "Implementation '${implementation}' has no ${KXRPC_BENCH_PLATFORM} build."
+                ;;
+        esac
+        echo "built ${implementation} (${KXRPC_BENCH_PLATFORM})" >&2
+    done
+}
+
+# ---------------------------------------------------------------------------
+# doctor
+# ---------------------------------------------------------------------------
+
+cmd_doctor() (
+    local target="${KXRPC_BENCH_TARGET}"
+    local -a implementations=()
+    read_lines < <(split_implementations "${KXRPC_BENCH_IMPLEMENTATIONS}")
+    implementations=("${BENCH_LINES[@]}")
+    validate_platform_selection "${implementations[@]}"
+
+    local problems=0
+    local implementation
+
+    echo "== environment =="
+    if command -v python3 >/dev/null 2>&1; then
+        echo "python3: $(python3 --version 2>&1)"
+    else
+        echo "python3: MISSING. The analysis tools need Python 3." >&2
+        problems=$((problems + 1))
+    fi
+    echo "git revision: $(git -C "${REPOSITORY_ROOT}" rev-parse HEAD 2>/dev/null || echo unknown)"
+    if [[ -n "$(git -C "${REPOSITORY_ROOT}" status --porcelain 2>/dev/null)" ]]; then
+        echo "git state: dirty"
+    else
+        echo "git state: clean"
+    fi
+    echo "host: $(sysctl -n hw.model 2>/dev/null || echo unknown), $(sw_vers -productVersion 2>/dev/null || echo unknown)"
+    echo "Xcode: $(xcodebuild -version 2>/dev/null | tr '\n' ' ' || echo unknown)"
+    echo "thermal: $(pmset -g therm 2>/dev/null | tail -1 || echo unknown)"
+    echo "power: $(pmset -g ps 2>/dev/null | head -1 || echo unknown)"
+    echo
+
+    echo "== iOS Simulator =="
+    if [[ "${KXRPC_BENCH_PLATFORM}" == "ios" ]]; then
+        local simulator
+        if simulator="$(bench_simulator 2>/dev/null)"; then
+            echo "simulator: ${simulator}"
+        else
+            echo "simulator: MISSING. Install an iOS Simulator runtime in Xcode." >&2
+            problems=$((problems + 1))
+        fi
+    else
+        echo "simulator: not required for platform ${KXRPC_BENCH_PLATFORM}"
+    fi
+    echo
+
+    echo "== benchmark server =="
+    local host="${target%%:*}"
+    local port="${target##*:}"
+    if (echo -n > "/dev/tcp/${host}/${port}") >/dev/null 2>&1; then
+        echo "tcp ${target}: reachable"
+    else
+        echo "tcp ${target}: NOT REACHABLE. Start the server with cpp-server/run.sh." >&2
+        problems=$((problems + 1))
+    fi
+    if [[ -e "$(client_binary "${implementations[0]}" "${KXRPC_BENCH_PLATFORM}" 2>/dev/null)" ]]; then
+        if run_client "${implementations[0]}" ping --target "${target}" --format json; then
+            :
+        else
+            echo "readiness ping through the ${implementations[0]} client FAILED." >&2
+            problems=$((problems + 1))
+        fi
+    else
+        echo "readiness ping: SKIPPED, the ${implementations[0]} binary is not built." >&2
+    fi
+    echo
+
+    echo "== client binaries =="
+    for implementation in "${implementations[@]}"; do
+        local binary
+        binary="$(client_binary "${implementation}" "${KXRPC_BENCH_PLATFORM}" 2>/dev/null || true)"
+        if [[ -n "${binary}" && -e "${binary}" ]]; then
+            echo "${implementation}: ${binary}"
+        else
+            echo "${implementation}: MISSING. Run './bench build --implementation ${implementation}'." >&2
+            problems=$((problems + 1))
+        fi
+    done
+    echo
+
+    echo "== workload equivalence =="
+    local matrices_dir
+    matrices_dir="$(mktemp -d)"
+    local have_all_matrices=1
+    local -a matrix_files=()
+    for implementation in "${implementations[@]}"; do
+        local binary
+        binary="$(client_binary "${implementation}" "${KXRPC_BENCH_PLATFORM}" 2>/dev/null || true)"
+        if [[ -n "${binary}" && -e "${binary}" ]]; then
+            local matrix_file="${matrices_dir}/${implementation}.json"
+            if run_client "${implementation}" list --format json > "${matrix_file}" 2>/dev/null; then
+                matrix_files+=("${matrix_file}")
+            else
+                echo "${implementation}: 'list --format json' FAILED." >&2
+                have_all_matrices=0
+                problems=$((problems + 1))
+            fi
+        else
+            have_all_matrices=0
+        fi
+    done
+    if [[ ${#matrix_files[@]} -ge 2 ]]; then
+        if ! python3 "${BENCH_DIR}/analysis/cli.py" equivalence "${matrix_files[@]}"; then
+            problems=$((problems + 1))
+        fi
+    elif [[ ${have_all_matrices} -eq 1 ]]; then
+        echo "workload equivalence: SKIPPED, only one client binary is available."
+    else
+        echo "workload equivalence: SKIPPED, the client binaries are missing."
+        problems=$((problems + 1))
+    fi
+    echo
+
+    if [[ ${problems} -gt 0 ]]; then
+        echo "doctor found ${problems} problem(s)." >&2
+        return "${EXIT_FAILURE}"
+    fi
+    echo "doctor found no problems."
+    return "${EXIT_OK}"
+)
+
+# ---------------------------------------------------------------------------
+# run
+# ---------------------------------------------------------------------------
+
+resolve_preset() {
+    local preset="$1"
+    case "${preset}" in
+        smoke) KXRPC_BENCH_REPETITIONS=1 ;;
+        default) KXRPC_BENCH_REPETITIONS=3 ;;
+        rigorous) KXRPC_BENCH_REPETITIONS=9 ;;
+        *) die_usage "Unknown preset '${preset}'; expected smoke, default, or rigorous." ;;
+    esac
+}
+
+select_cases() (
+    # Prints 'BENCHMARK CASE' lines for the requested benchmark and case.
+    local implementation="$1"
+    local benchmark="$2"
+    local case_name="${3:-}"
+    local list_json
+    list_json="$(mktemp)"
+    run_client "${implementation}" list --format json > "${list_json}"
+    python3 - "${list_json}" "${benchmark}" "${case_name}" <<'PYEOF'
+import json, sys
+
+path, benchmark, case_name = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(path, encoding="utf-8") as file:
+    matrix = json.load(file)
+
+names = [entry["benchmark"] for entry in matrix]
+if benchmark != "all" and benchmark not in names:
+    print(f"Unknown benchmark '{benchmark}'. Registered: {', '.join(names)}.", file=sys.stderr)
+    sys.exit(2)
+
+selected = matrix if benchmark == "all" else [entry for entry in matrix if entry["benchmark"] == benchmark]
+count = 0
+for entry in selected:
+    for case in entry["cases"]:
+        if case_name and case["case"] != case_name:
+            continue
+        print(f"{entry['benchmark']} {case['case']}")
+        count += 1
+if case_name and count == 0:
+    print(f"Benchmark '{benchmark}' has no case '{case_name}'.", file=sys.stderr)
+    sys.exit(2)
+PYEOF
+)
+
+cmd_run() {
+    local benchmark=""
+    local case_name=""
+    local -a passthrough=()
+    local build_first=0
+    local preset=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --implementation)
+                [[ $# -lt 2 ]] && die_usage "--implementation requires a value."
+                KXRPC_BENCH_IMPLEMENTATIONS="$2"; shift 2 ;;
+            --implementation=*)
+                KXRPC_BENCH_IMPLEMENTATIONS="${1#*=}"; shift ;;
+            --platform)
+                [[ $# -lt 2 ]] && die_usage "--platform requires a value."
+                KXRPC_BENCH_PLATFORM="$2"; shift 2 ;;
+            --platform=*)
+                KXRPC_BENCH_PLATFORM="${1#*=}"; shift ;;
+            --target)
+                [[ $# -lt 2 ]] && die_usage "--target requires a value."
+                KXRPC_BENCH_TARGET="$2"; shift 2 ;;
+            --target=*)
+                KXRPC_BENCH_TARGET="${1#*=}"; shift ;;
+            --preset)
+                [[ $# -lt 2 ]] && die_usage "--preset requires a value."
+                preset="$2"; shift 2 ;;
+            --preset=*)
+                preset="${1#*=}"; shift ;;
+            --repetitions)
+                [[ $# -lt 2 ]] && die_usage "--repetitions requires a value."
+                KXRPC_BENCH_REPETITIONS="$2"; shift 2 ;;
+            --repetitions=*)
+                KXRPC_BENCH_REPETITIONS="${1#*=}"; shift ;;
+            --order)
+                [[ $# -lt 2 ]] && die_usage "--order requires a value."
+                KXRPC_BENCH_ORDER="$2"; shift 2 ;;
+            --order=*)
+                KXRPC_BENCH_ORDER="${1#*=}"; shift ;;
+            --seed)
+                [[ $# -lt 2 ]] && die_usage "--seed requires a value."
+                KXRPC_BENCH_SEED="$2"; shift 2 ;;
+            --seed=*)
+                KXRPC_BENCH_SEED="${1#*=}"; shift ;;
+            --output-dir)
+                [[ $# -lt 2 ]] && die_usage "--output-dir requires a value."
+                KXRPC_BENCH_OUTPUT_DIR="$2"; shift 2 ;;
+            --output-dir=*)
+                KXRPC_BENCH_OUTPUT_DIR="${1#*=}"; shift ;;
+            --trial-timeout)
+                [[ $# -lt 2 ]] && die_usage "--trial-timeout requires a value."
+                KXRPC_BENCH_TRIAL_TIMEOUT="$2"; shift 2 ;;
+            --trial-timeout=*)
+                KXRPC_BENCH_TRIAL_TIMEOUT="${1#*=}"; shift ;;
+            --gap)
+                [[ $# -lt 2 ]] && die_usage "--gap requires a value."
+                KXRPC_BENCH_GAP_SECONDS="$2"; shift 2 ;;
+            --gap=*)
+                KXRPC_BENCH_GAP_SECONDS="${1#*=}"; shift ;;
+            --inject-delay-ms)
+                [[ $# -lt 2 ]] && die_usage "--inject-delay-ms requires a value."
+                KXRPC_BENCH_INJECT_DELAY_MS="$2"; shift 2 ;;
+            --inject-delay-ms=*)
+                KXRPC_BENCH_INJECT_DELAY_MS="${1#*=}"; shift ;;
+            --case)
+                [[ $# -lt 2 ]] && die_usage "--case requires a value."
+                case_name="$2"; shift 2 ;;
+            --case=*)
+                case_name="${1#*=}"; shift ;;
+            --build)
+                build_first=1; shift ;;
+            --)
+                shift
+                passthrough=("$@")
+                break ;;
+            -h|--help)
+                usage
+                return "${EXIT_OK}" ;;
+            *)
+                if [[ -z "${benchmark}" ]]; then
+                    benchmark="$1"; shift
+                else
+                    die_usage "Unexpected argument '$1'. Only one benchmark can run at a time."
+                fi ;;
+        esac
+    done
+
+    [[ -z "${benchmark}" ]] && die_usage "No benchmark given. Pass a benchmark name or 'all'."
+    [[ -n "${preset}" ]] && resolve_preset "${preset}"
+    [[ "${KXRPC_BENCH_REPETITIONS}" =~ ^[1-9][0-9]*$ ]] || die_usage "--repetitions must be a positive number."
+    [[ "${KXRPC_BENCH_ORDER}" == "random" || "${KXRPC_BENCH_ORDER}" == "fixed" ]] || die_usage "--order must be random or fixed."
+    [[ -z "${KXRPC_BENCH_SEED}" ]] && KXRPC_BENCH_SEED="$(date +%s)"
+
+    local -a implementations=()
+    read_lines < <(split_implementations "${KXRPC_BENCH_IMPLEMENTATIONS}")
+    implementations=("${BENCH_LINES[@]}")
+    validate_platform_selection "${implementations[@]}"
+
+    if [[ ${build_first} -eq 1 ]]; then
+        KXRPC_BENCH_IMPLEMENTATIONS="${KXRPC_BENCH_IMPLEMENTATIONS}" cmd_build
+    fi
+
+    for implementation in "${implementations[@]}"; do
+        ensure_client_ready "${implementation}"
+    done
+
+    # Resolve the workload from the first implementation. `doctor` verifies
+    # that all clients define the same workload.
+    local -a workload=()
+    select_cases "${implementations[0]}" "${benchmark}" "${case_name}" > "${BENCH_DIR}/.cases.tmp" || return "${EXIT_USAGE}"
+    read_lines < "${BENCH_DIR}/.cases.tmp"
+    workload=("${BENCH_LINES[@]}")
+    rm -f -- "${BENCH_DIR}/.cases.tmp"
+    if [[ ${#workload[@]} -eq 0 ]]; then
+        die_usage "The selection matches no benchmark case."
+    fi
+
+    local repetitions="${KXRPC_BENCH_REPETITIONS}"
+    local -a trials=()
+    local repetition
+    local implementation
+    local entry
+    for implementation in "${implementations[@]}"; do
+        for entry in "${workload[@]}"; do
+            for ((repetition = 1; repetition <= repetitions; repetition++)); do
+                trials+=("${implementation}|${entry}|${repetition}")
+            done
+        done
+    done
+
+    # Execution order. `fixed` keeps the definition order. `random` uses a
+    # seeded shuffle so that order effects, like thermal drift, don't align
+    # with one implementation.
+    local -a trial_order=()
+    if [[ "${KXRPC_BENCH_ORDER}" == "random" ]]; then
+        read_lines < <(python3 "${BENCH_DIR}/analysis/cli.py" order "${KXRPC_BENCH_SEED}" "${#trials[@]}" | tr ' ' '\n')
+        trial_order=("${BENCH_LINES[@]}")
+    else
+        for ((index = 0; index < ${#trials[@]}; index++)); do
+            trial_order+=("${index}")
+        done
+    fi
+    if [[ ${#trial_order[@]} -ne ${#trials[@]} ]]; then
+        echo "Failed to compute the trial order." >&2
+        return "${EXIT_FAILURE}"
+    fi
+
+    mkdir -p "${KXRPC_BENCH_OUTPUT_DIR}"
+    local run_id="run-$(date +%Y%m%d-%H%M%S)-s${KXRPC_BENCH_SEED}"
+    local run_dir="${KXRPC_BENCH_OUTPUT_DIR}/${run_id}"
+    mkdir -p "${run_dir}/trials"
+
+    local total=${#trials[@]}
+    local completed_trials=0
+    local failed_trials=0
+    local index
+    local position=0
+    local trial_list_json="${run_dir}/.trial-list.tmp"
+    : > "${trial_list_json}"
+    local run_started_epoch_ms
+    run_started_epoch_ms="$(( $(date +%s) * 1000 ))"
+
+    local interrupted=0
+    local current_pid=""
+    on_interrupt() {
+        interrupted=1
+        if [[ -n "${current_pid}" ]]; then
+            kill -TERM "${current_pid}" 2>/dev/null || true
+        fi
+    }
+    trap on_interrupt INT TERM
+
+    echo "run: ${run_id}" >&2
+    echo "trials: ${total} (${#workload[@]} case(s) x ${repetitions} repetition(s) x ${#implementations[@]} implementation(s)), order=${KXRPC_BENCH_ORDER}, seed=${KXRPC_BENCH_SEED}" >&2
+
+    local platform_label_value
+    platform_label_value="$(platform_label)"
+
+    for index in "${trial_order[@]}"; do
+        if [[ ${interrupted} -eq 1 ]]; then
+            echo "Interrupted. The finished trials stay in '${run_dir}'." >&2
+            break
+        fi
+        position=$((position + 1))
+        # Trial format: IMPLEMENTATION|BENCHMARK CASE|REPETITION. Case names can
+        # contain any character that survives a file name.
+        local trial="${trials[index]}"
+        local repetition="${trial##*|}"
+        local without_repetition="${trial%|*}"
+        local implementation="${without_repetition%%|*}"
+        local workload_entry="${without_repetition#*|}"
+        local benchmark_name="${workload_entry%% *}"
+        local case_of_trial="${workload_entry#* }"
+        local trial_name
+        trial_name="$(printf '%04d-%s-%s-%s-rep%d' "${index}" "${implementation}" "${benchmark_name}" "${case_of_trial}" "${repetition}")"
+        local record_path="${run_dir}/trials/${trial_name}.json"
+        local stderr_path="${run_dir}/trials/${trial_name}.stderr.log"
+        local timeout_flag="${run_dir}/.timeout.tmp"
+
+        printf '[trial %d/%d] %s %s/%s (repetition %d)\n' \
+            "${position}" "${total}" "${implementation}" "${benchmark_name}" "${case_of_trial}" "${repetition}" >&2
+
+        rm -f -- "${timeout_flag}"
+        local alive_flag="${run_dir}/.trial-alive.tmp"
+        : > "${alive_flag}"
+        local -a client_arguments=(
+            run "${benchmark_name}"
+            --case "${case_of_trial}"
+            --target "${KXRPC_BENCH_TARGET}"
+            --format json
+            --platform-label "${platform_label_value}"
+        )
+        if [[ -n "${KXRPC_BENCH_INJECT_DELAY_MS:-}" && "${KXRPC_BENCH_INJECT_DELAY_MS}" != "0" ]]; then
+            client_arguments+=(--inject-delay-ms "${KXRPC_BENCH_INJECT_DELAY_MS}")
+        fi
+        client_arguments+=(${passthrough[@]+"${passthrough[@]}"})
+
+        local started_at_epoch_ms
+        started_at_epoch_ms="$(( $(date +%s) * 1000 ))"
+
+        run_trial_process() {
+            local timeout_seconds="$1"
+            shift
+            local trial_status=0
+            "$@" > "${record_path}.tmp" 2> "${stderr_path}" &
+            current_pid=$!
+            (
+                # Poll the alive flag instead of one long sleep, so this
+                # watchdog always ends with the trial and never leaks a
+                # process that fires later.
+                local deadline=$((SECONDS + timeout_seconds))
+                while [[ -e "${alive_flag}" ]]; do
+                    if (( SECONDS >= deadline )); then
+                        touch "${timeout_flag}"
+                        kill -TERM "${current_pid}" 2>/dev/null || true
+                        break
+                    fi
+                    sleep 1
+                done
+            ) &
+            local watcher=$!
+            set +e
+            wait "${current_pid}"
+            trial_status=$?
+            set -e
+            current_pid=""
+            rm -f -- "${alive_flag}"
+            kill "${watcher}" 2>/dev/null || true
+            wait "${watcher}" 2>/dev/null || true
+            return "${trial_status}"
+        }
+
+        local status=0
+        run_trial_process "${KXRPC_BENCH_TRIAL_TIMEOUT}" run_client "${implementation}" "${client_arguments[@]}" || status=$?
+
+        local trial_status="completed"
+        if [[ -e "${timeout_flag}" ]]; then
+            trial_status="timeout"
+        elif [[ ${status} -ne 0 ]]; then
+            # The client exits with 1 when it wrote a failed trial record, and
+            # with another code when it crashed before writing one.
+            if ! python3 - "${record_path}.tmp" <<'PYEOF'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as file:
+    for line in file:
+        json.loads(line)
+PYEOF
+            then
+                trial_status="crashed"
+            fi
+        fi
+
+        case "${trial_status}" in
+            completed)
+                if python3 - "${record_path}.tmp" <<'PYEOF'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as file:
+    record = json.loads(file.readline())
+if record.get("status") != "completed":
+    sys.exit(1)
+PYEOF
+            then
+                completed_trials=$((completed_trials + 1))
+            else
+                trial_status="failed"
+                failed_trials=$((failed_trials + 1))
+            fi
+            mv -- "${record_path}.tmp" "${record_path}"
+            ;;
+            failed)
+                failed_trials=$((failed_trials + 1))
+                mv -- "${record_path}.tmp" "${record_path}"
+                ;;
+            timeout)
+                failed_trials=$((failed_trials + 1))
+                rm -f -- "${record_path}.tmp"
+                ;;
+            crashed)
+                failed_trials=$((failed_trials + 1))
+                rm -f -- "${record_path}.tmp"
+                ;;
+        esac
+
+        local record_entry="trials/${trial_name}.json"
+        if [[ "${trial_status}" != "completed" && "${trial_status}" != "failed" ]]; then
+            record_entry=""
+        fi
+        python3 - "${trial_list_json}" "${index}" "${implementation}" "${benchmark_name}" \
+            "${case_of_trial}" "${repetition}" "${record_entry}" "${trial_status}" \
+            "${started_at_epoch_ms}" "trials/${trial_name}.stderr.log" <<'PYENTRY'
+import json, sys
+entry = {
+    "index": int(sys.argv[2]),
+    "implementation": sys.argv[3],
+    "benchmark": sys.argv[4],
+    "case": sys.argv[5],
+    "repetition": int(sys.argv[6]),
+    "record": sys.argv[7] or None,
+    "status": sys.argv[8],
+    "started_at_epoch_ms": int(sys.argv[9]),
+    "stderr": sys.argv[10],
+}
+with open(sys.argv[1], "a", encoding="utf-8") as file:
+    file.write(json.dumps(entry) + "\n")
+PYENTRY
+
+        if [[ ${trial_status} != "completed" ]]; then
+            echo "  trial ${trial_status}; see ${stderr_path}" >&2
+        fi
+        if [[ ${interrupted} -eq 0 && ${position} -lt ${total} ]]; then
+            sleep "${KXRPC_BENCH_GAP_SECONDS}"
+        fi
+    done
+
+    trap - INT TERM
+
+    write_manifest "${run_dir}" "${run_id}" "${run_started_epoch_ms}" "${trial_list_json}" \
+        "${benchmark}" "${case_name}" "${repetitions}" "${total}" "${passthrough[@]+"${passthrough[@]}"}"
+
+    echo "completed: ${completed_trials}, failed: ${failed_trials}, total: ${total}" >&2
+    echo "${run_dir}"
+    if [[ ${failed_trials} -gt 0 || ${interrupted} -eq 1 ]]; then
+        return "${EXIT_FAILURE}"
+    fi
+    return "${EXIT_OK}"
+}
+
+write_manifest() {
+    local run_dir="$1"
+    local run_id="$2"
+    local run_started_epoch_ms="$3"
+    local trial_list_json="$4"
+    local benchmark="$5"
+    local case_name="$6"
+    local repetitions="$7"
+    local total="$8"
+    shift 8
+    local -a passthrough=("$@")
+
+    local passthrough_json="${run_dir}/.passthrough.tmp"
+    python3 - "${passthrough_json}" ${passthrough[@]+"${passthrough[@]}"} <<'PYINNER'
+import json, sys
+json.dump(sys.argv[2:], open(sys.argv[1], "w", encoding="utf-8"))
+PYINNER
+
+    local simulator_name="not applicable"
+    if [[ "${KXRPC_BENCH_PLATFORM}" == "ios" ]]; then
+        simulator_name="$(bench_simulator)"
+    fi
+
+    KXRPC_BENCH_REPOSITORY_ROOT="${REPOSITORY_ROOT}" \
+    KXRPC_BENCH_RUN_ID="${run_id}" \
+    KXRPC_BENCH_CREATED_AT_EPOCH_MS="${run_started_epoch_ms}" \
+    KXRPC_BENCH_REPETITIONS="${repetitions}" \
+    KXRPC_BENCH_ORDER="${KXRPC_BENCH_ORDER}" \
+    KXRPC_BENCH_SEED="${KXRPC_BENCH_SEED}" \
+    KXRPC_BENCH_PLATFORM_LABEL="$(platform_label)" \
+    KXRPC_BENCH_TARGET="${KXRPC_BENCH_TARGET}" \
+    KXRPC_BENCH_SIMULATOR="${simulator_name}" \
+    KXRPC_BENCH_IMPLEMENTATIONS="${KXRPC_BENCH_IMPLEMENTATIONS}" \
+    KXRPC_BENCH_BENCHMARK="${benchmark}" \
+    KXRPC_BENCH_CASE="${case_name}" \
+    KXRPC_BENCH_TRIAL_TIMEOUT="${KXRPC_BENCH_TRIAL_TIMEOUT}" \
+    KXRPC_BENCH_GAP_SECONDS="${KXRPC_BENCH_GAP_SECONDS}" \
+    KXRPC_BENCH_INJECT_DELAY_MS="${KXRPC_BENCH_INJECT_DELAY_MS:-0}" \
+    python3 "${BENCH_DIR}/scripts/write_manifest.py" \
+        "${run_dir}" "${trial_list_json}" "${passthrough_json}"
+}
+
+# ---------------------------------------------------------------------------
+# analyze and compare
+# ---------------------------------------------------------------------------
+
+cmd_analyze() {
+    exec python3 "${BENCH_DIR}/analysis/cli.py" analyze "$@"
+}
+
+cmd_compare() {
+    exec python3 "${BENCH_DIR}/analysis/cli.py" compare "$@"
+}
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+if [[ $# -eq 0 ]]; then
+    usage >&2
+    exit "${EXIT_USAGE}"
+fi
+
+command="$1"
+shift
+
+case "${command}" in
+    help|-h|--help)
+        usage
+        ;;
+    list)
+        cmd_list "$@"
+        ;;
+    doctor)
+        cmd_doctor "$@"
+        ;;
+    build)
+        cmd_build "$@"
+        ;;
+    run)
+        cmd_run "$@"
+        ;;
+    analyze)
+        cmd_analyze "$@"
+        ;;
+    compare)
+        cmd_compare "$@"
+        ;;
+    *)
+        usage >&2
+        echo "Unknown command '${command}'." >&2
+        exit "${EXIT_USAGE}"
+        ;;
+esac

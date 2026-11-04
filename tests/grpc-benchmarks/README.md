@@ -1,233 +1,347 @@
-# gRPC client benchmark roadmap
+# gRPC client benchmarks
 
-This directory compares the iOS gRPC client implementations on the same device,
-against the same server, with the same payloads and workload. Every benchmark in
-this roadmap must be implemented in both:
+This directory compares three gRPC client implementations on the same iOS
+Simulator, against the same pinned C++ server, with the same payloads:
 
-- [`shared-kotlin-client`](shared-kotlin-client), used by the current and legacy
-  kotlinx-rpc clients;
-- [`swift-client`](swift-client), the direct grpc-swift-2 baseline.
+- [`kotlinx-rpc-client`](kotlinx-rpc-client): the current kotlinx-rpc gRPC client
+  from this repository, through the Swift bridge.
+- [`legacy-ios-client`](legacy-ios-client): the published legacy kotlinx-rpc iOS
+  client, built from `0.11.0-grpc-189` artifacts.
+- [`swift-client`](swift-client): the direct grpc-swift-2 client.
 
-The most useful comparison is the current Kotlin client result minus the direct
-Swift result. It estimates the cost added by Kotlin/Native, the Objective-C
-bridge, and the surrounding coroutine/Swift concurrency integration.
+The goal is a comparison that survives scrutiny: repeated independent trials,
+explicit trial order, per-trial raw measurements, and an analysis that states
+its uncertainty instead of a bare ranking.
 
-## Status convention
+## Quick start
 
-`[x]` means that the scenario is registered, runnable, and reports comparable
-results in both clients. A benchmark implemented in only one client stays
-unchecked. A generic CLI override does not make a multi-point sweep complete:
-the required points must be reproducibly enumerated and identified in the
-output.
+```shell
+./cpp-server/run.sh                 # Start the pinned benchmark server on :50051
+./bench doctor                       # Check tools, server, binaries, and workload equivalence
+./bench build                        # Build the release binaries of all clients
+./bench run unary-latency            # 3 trials per client, seeded random order
+./bench compare output/RUN:current output/RUN:swift
+./bench analyze output/RUN --format html --output report.html
+```
 
-Keep the two implementations behaviorally equivalent. They must use matching
-warmups, measured operations, concurrency, payload contents, validation, timing
-boundaries, and connection lifecycle.
+`./bench help` lists every command. Progress goes to stderr; paths and
+machine-readable results go to stdout.
 
-## Benchmark checklist
+## Configuration
+
+`./bench` reads `bench.config` next to the script before it parses the command
+line. The file holds `KEY=VALUE` lines; the command line overrides it.
+
+| Key | Effect |
+|---|---|
+| `KXRPC_BENCH_TARGET` | Benchmark server, `HOST:PORT` |
+| `KXRPC_BENCH_PLATFORM` | `ios`, `macos`, or `jvm` (only `current` builds the last two) |
+| `KXRPC_BENCH_IMPLEMENTATIONS` | Comma-separated client list |
+| `KXRPC_BENCH_OUTPUT_DIR` | Parent directory of the run directories |
+| `KXRPC_BENCH_REPETITIONS` | Trials per implementation and case |
+| `KXRPC_BENCH_ORDER` | `random` or `fixed` |
+| `KXRPC_BENCH_SEED` | Seed of the trial order; the default is the run time |
+| `KXRPC_BENCH_TRIAL_TIMEOUT` | Seconds before the watchdog stops a trial |
+| `KXRPC_BENCH_GAP_SECONDS` | Pause between trials |
+| `KXRPC_BENCH_INJECT_DELAY_MS` | Known delay per operation, for sensitivity checks |
+
+## What one measurement is
+
+A **trial** is one client process that runs exactly one benchmark case once:
+its own channel, its own readiness probe, its own warmup, one measured phase,
+and one JSON record with the raw latency samples. The process exits after the
+trial.
+
+A **run** is a set of trials produced by one `./bench run` invocation. The run
+directory holds the trial records, a manifest, and one stderr log per trial.
+
+Every trial passes through the same phases, in this order:
+
+1. Channel creation and readiness probe. The client repeats one unary call
+   until the server answers, and records the readiness time. This phase is
+   never part of a measurement.
+2. Warmup. The same operations as the measured phase, without recording. Warms
+   the connection, the serializer, and the allocator.
+3. Measured phase. The elapsed time covers only this phase. Latency samples
+   are recorded per operation.
+
+A trial stops at the first failed operation. Its record keeps the `failed`
+status, the error, and the samples that were recorded before the failure.
+
+## Trial order
+
+`./bench run` interleaves all (implementation, case, repetition) trials in one
+list, then shuffles that list with a recorded seed (`--order random`, the
+default) or keeps the definition order (`--order fixed`). A fixed order, such
+as always running `current`, then `legacy`, then `swift`, lets thermal drift
+and server state align with one implementation and distort its results. The
+manifest records the seed, the order mode, and the status of every trial.
+
+## Workload matrix
+
+Every benchmark must be registered in both Kotlin clients and the Swift client
+with identical parameters. `./bench doctor` runs `list --format json` on every
+client and reports any drift, so the implementations can't silently diverge.
+
+A streaming case sets `operations` to the number of messages per direction,
+split across `concurrency` parallel streams on one channel. A unary case sets
+`operations` to the number of calls.
 
 ### Unary calls
 
 - [x] `unary-latency` — Empty request and response, sequential calls over one
-  warm channel.
-- [x] `unary-throughput` — 1 KiB request and response, concurrent calls over
-  one warm channel.
-- [x] `unary-payload-sweep` — Independent request/response sizes of 64 B,
-  1 KiB, 64 KiB, 1 MiB, and 4 MiB minus 1 KiB; include upload-heavy,
-  download-heavy, and symmetric cases.
+  warm channel. One case.
+- [x] `unary-throughput` — 1 KiB request and response, 16 concurrent workers
+  over one warm channel. One case.
+- [x] `unary-payload-sweep` — Request and response sizes of 64 B, 1 KiB,
+  64 KiB, 1 MiB, and 4 MiB minus 1 KiB; symmetric, upload-heavy, and
+  download-heavy.
 - [x] `unary-concurrency-sweep` — Concurrency 1, 2, 4, 8, 16, 32, 64, and 128
-  on one warm channel, using empty and 1 KiB payloads.
+  with empty and 1 KiB payloads.
 - [ ] `unary-connection-startup` — Cold channel creation and first call, first
   call on an unconnected channel, and a warm call on an established connection.
 
 The payload sweep stops just below 4 MiB because the published legacy client
 has a non-configurable 4 MiB receive limit. The final point uses a
-4 MiB-minus-1 KiB body so the serialized protobuf message, including fields
-beyond the body, remains below that limit. Larger-message testing should be
-added when configurable client message limits are available in every
-implementation.
-
-Sweeps emit one result per named case. Use `--case NAME` to run a single point;
-`list` enumerates every case and its parameters. Payload sweep operation counts
-decrease as payload sizes grow, while concurrency sweep operation counts
-increase where necessary to keep every worker active long enough for a stable
-measurement.
+4 MiB-minus-1 KiB body so the serialized message stays below that limit.
+Larger-message testing should return when every implementation can configure
+its message limits.
 
 ### Streaming calls
 
 - [ ] `server-streaming-latency` — Time to first message and completion for one
   request followed by many small responses.
-- [x] `server-streaming-throughput` — Download goodput for many small messages
-  and for fewer large messages.
-- [x] `client-streaming-throughput` — Upload goodput for many small messages
-  and for fewer large messages; also record latency from the final request to
-  the response.
-- [x] `bidi-ping-pong` — Strict send-one/receive-one latency.
-- [x] `bidi-full-duplex` — Independent concurrent upload and download, with
-  balanced and asymmetric message sizes.
-- [x] `stream-message-overhead` — Send the same 64 MiB total as
+- [x] `server-streaming-throughput` — Download goodput for 1 KiB, 64 KiB, and
+  1 MiB messages.
+- [x] `client-streaming-throughput` — Upload goodput for 1 KiB, 64 KiB, and
+  1 MiB messages. Records the stream duration and the final-response latency.
+- [x] `bidi-ping-pong` — Strict send-one/receive-one round trips, empty and
+  1 KiB payloads.
+- [x] `bidi-full-duplex` — Echo stream with balanced and asymmetric message
+  sizes.
+- [x] `stream-message-overhead` — The same 64 MiB total uploaded as
   65,536 × 1 KiB, 1,024 × 64 KiB, 64 × 1 MiB, and sixteen
-  (4 MiB - 1 KiB) messages plus one 16 KiB remainder. The last case stays under
-  the legacy client's fixed 4 MiB message limit.
-- [x] `stream-concurrency-sweep` — 1, 2, 4, 8, and 16 concurrent streams on
-  one channel. The sweep stops below SwiftNIO's recently reset stream limit
-  because this unbounded RPC is cancelled after each measurement.
+  (4 MiB - 1 KiB) messages plus one 16 KiB remainder. The byte total stays
+  fixed so the comparison isolates per-message overhead from bulk byte cost.
+- [x] `stream-concurrency-sweep` — 1, 2, 4, 8, and 16 concurrent streams on one
+  channel.
 
-The fixed-total-byte benchmark is required because it separates per-message
-interop and scheduling overhead from bulk byte-copying cost.
+`StreamingFromServer` is unbounded, so completing each measured stream cancels
+its RPC. SwiftNIO retains a bounded number of recently reset HTTP/2 streams
+and can close the connection when late frames arrive for an evicted stream.
+The sweep stops at 16 streams so the warmup doesn't exhaust that allowance.
+The full-duplex workload uses the finite `StreamingCall` echo because the
+pinned asynchronous server doesn't register `StreamingBothWays`.
 
-For streaming benchmarks, `calls` is the total number of messages in each
-measured direction and `concurrency` is the number of streams sharing the
-channel. Latency samples represent ping-pong round trips, request-write
-suspension, or response inter-arrival time, depending on the call shape. CSV
-output includes the actual request and response message counts, total messages
-per second, time to first response, and final-response latency when applicable.
-The full-duplex workload uses a finite `StreamingCall` echo stream because the
-pinned asynchronous C++ benchmark server does not register `StreamingBothWays`.
-The server-streaming concurrency sweep stops at 32 because `StreamingFromServer`
-is unbounded and each completed measurement resets its stream. SwiftNIO retains
-32 recently reset streams by default, so a larger simultaneous batch can reject
-late frames for an evicted stream and close the shared connection.
+### Not implemented yet
 
-### Backpressure and mixed load
+- Backpressure and mixed load: slow consumers and producers, asymmetric rates,
+  and tiny-unary-under-load cases.
+- Compression: identity versus gzip, per direction.
+- Deadlines, cancellation, and recovery: deadline and cancellation paths,
+  cancellation storms, and connection loss.
+- Endurance and lifecycle: channel and call lifecycles, sustained workloads
+  with resource sampling.
+- Physical device runs, TLS, and network profiles (added latency, bandwidth
+  limits, jitter, packet loss).
 
-- [ ] `server-streaming-slow-consumer` — Compare an immediately available
-  response consumer with paced and bursty consumers; record throughput and peak
-  memory.
-- [ ] `client-streaming-slow-producer` — Compare an immediately available
-  request producer with paced and bursty producers.
-- [ ] `bidi-asymmetric-rates` — Run independent producer and consumer rates,
-  including a slow request producer and a slow response consumer.
-- [ ] `mixed-unary-download` — Measure tiny unary latency while a large
-  server-streaming download is active.
-- [ ] `mixed-unary-upload` — Measure tiny unary latency while a large
-  client-streaming upload is active.
-- [ ] `mixed-ping-pong-bidi` — Measure ping-pong tail latency alongside a bulk
-  bidirectional stream.
+Simulator loopback is the default optimization environment. Runs on a physical
+device or under a network profile validate that a local improvement survives
+realistic conditions; they don't need to be part of every development run.
 
-These cases cover the backpressure and HTTP/2 fairness questions that are likely
-to affect the backend. Buffer-capacity and prefetch experiments belong as
-variants of these benchmarks rather than as separate benchmark names.
+## Metric definitions
 
-### Compression
+Every trial record states what its latency samples measure, so the analysis
+never pools different intervals:
 
-- [ ] `unary-compression` — Identity versus gzip for a small payload,
-  compressible 1 MiB payload, and incompressible 1 MiB payload; vary request and
-  response compression independently.
-- [ ] `streaming-compression` — Identity versus gzip for compressible and
-  incompressible streaming payloads.
-- [ ] `compression-concurrency` — Increase concurrent compressed calls until
-  CPU saturation becomes visible.
+| `latency_metric` | Interval |
+|---|---|
+| `call_round_trip` | One unary request send to the completed receive of its response. |
+| `message_interarrival` | The receive of one response message to the receive of the next. |
+| `request_write_suspension` | The start of one request write to the return of the write call. |
+| `ping_pong_round_trip` | One streaming request send to the completed receive of its response. |
 
-Report application goodput separately from wire throughput for compression
-benchmarks.
+Per-stream events are recorded separately and never mixed into the latency
+samples:
 
-### Deadlines, cancellation, and recovery
+| Event | Meaning |
+|---|---|
+| `time_to_first_response_ns` | Stream start to the first response message. |
+| `stream_duration_ns` | Client-streaming stream start to the single response. |
+| `final_response_latency_ns` | Last request write to the response of a client-streaming call. |
 
-- [ ] `unary-deadline` — Already-expired deadline and deadline while waiting
-  for a response.
-- [ ] `streaming-deadline` — Deadline during request streaming and during
-  response streaming.
-- [ ] `unary-cancellation` — Cancellation before start and while a unary
-  response is outstanding.
-- [ ] `streaming-cancellation` — Cancel with an outstanding request or response
-  operation, and stop response consumption early.
-- [ ] `cancellation-storm` — Concurrent cancellation of 64 or more active
-  calls.
-- [ ] `connection-loss-recovery` — Interrupt an active unary or streaming
-  workload, then record failure and recovery latency.
+Rates state their denominator:
 
-Each failure-path benchmark must record both user-visible completion latency and
-the time required to release call resources.
+- `operations_per_second`: completed RPCs divided by the measured seconds.
+  Reported for unary trials only.
+- `request_messages_per_second` and `response_messages_per_second`: messages
+  per direction divided by the measured seconds. Reported for streaming
+  trials.
+- `application_request_mib_per_second` and `application_response_mib_per_second`:
+  application payload bytes, not wire bytes. Framing, headers, and compression
+  aren't part of these numbers.
 
-### Endurance and lifecycle
+All workloads are closed-loop: a fixed number of workers or streams issues the
+next operation as soon as the previous one completes. The latency samples are
+therefore operation latency under closed-loop load, not the latency an
+externally paced client would see, and the analysis never presents them as
+such.
 
-- [ ] `channel-lifecycle` — Repeated create, first call, and graceful shutdown
-  cycles.
-- [ ] `call-cancel-lifecycle` — Repeated call creation and cancellation,
-  returning to idle between batches.
-- [ ] `unary-endurance` — Sustained small unary workload long enough to expose
-  latency drift and leaks.
-- [ ] `streaming-endurance` — Sustained bidirectional stream with millions of
-  messages.
-- [ ] `mixed-endurance` — Long-running mixture of unary and streaming traffic
-  with periodic cancellation.
+## Result artifacts
 
-Endurance runs must sample memory and concurrency resources during the workload
-and after returning to idle. A fixed operation count is preferable to a
-multi-hour default; longer soak durations can be selected by the caller.
+A run directory contains:
 
-## Execution matrix
-
-Run every completed end-to-end benchmark against the same pinned C++ server in
-[`cpp-server`](cpp-server). At minimum, preserve these comparison baselines:
-
-- [x] Current kotlinx-rpc client through the Swift bridge.
-- [x] Published legacy kotlinx-rpc iOS client.
-- [x] Direct grpc-swift-2 client.
-- [ ] Physical iOS device support for the current Kotlin and Swift clients.
-- [ ] TLS execution mode in addition to the current plaintext mode.
-- [ ] Repeatable network profiles for added latency, bandwidth limits, jitter,
-  and packet loss.
-
-Simulator loopback is the default optimization environment. Physical-device and
-network-profile runs validate that a local improvement remains relevant under
-realistic conditions; they do not need to be part of every development run.
-
-Run the same benchmark across the current kotlinx-rpc, published legacy, and
-direct Swift clients with the combined runner (the C++ benchmark server must
-already be running):
-
-```shell
-./run-all.sh unary-latency
-./run-all.sh all
-./run-all.sh --output-dir ./results unary-payload-sweep --case symmetric-1m
+```
+output/run-20261104-211248-s1793823166/
+  manifest.json                  Resolved configuration, order, seed, environment
+  trials/
+    0000-swift-unary-latency-default-rep1.json
+    0000-swift-unary-latency-default-rep1.stderr.log
+    ...
 ```
 
-The runner uses the same iOS Simulator for all clients and writes their results
-to one timestamped CSV file under `output/` by default. Use `--output-dir` to
-choose another directory. Multi-case runs report a progress bar to stderr with
-the current platform, implementation, benchmark, and case; CSV output remains
-machine-readable.
+The trial record (schema version 1, identical across the three clients):
 
-Build output uses one transient terminal line and is cleared after a successful
-build. If a build fails, its captured output is printed for diagnosis. Set
-`KXRPC_BENCHMARK_VERBOSE_BUILD=1` to keep the complete build output visible.
-When stderr is redirected or is otherwise not a terminal, build output remains
-plain so automation logs continue to show activity.
+```json
+{
+  "schema_version": 1,
+  "implementation": "current",
+  "implementation_version": "workspace",
+  "platform": "ios-simulator-arm64",
+  "benchmark": "unary-latency",
+  "case": "default",
+  "parameters": {"warmup_operations": 200, "operations": 10000, "concurrency": 1,
+                 "request_bytes": 0, "response_bytes": 0},
+  "latency_metric": "call_round_trip",
+  "operation_unit": "rpc",
+  "load_shape": "closed_loop",
+  "target": "localhost:50051",
+  "injected_delay_ms": 0,
+  "status": "completed",
+  "error": null,
+  "started_at_epoch_ms": 1762268000000,
+  "connection_ready_ns": 11242542,
+  "elapsed_ns": 1200000000,
+  "counts": {"operations": 10000, "request_messages": null, "response_messages": null,
+             "application_request_bytes": 0, "application_response_bytes": 0},
+  "latency_samples_ns": [12000, 13500, "..."],
+  "events": {"time_to_first_response_ns": [], "stream_duration_ns": [],
+             "final_response_latency_ns": []}
+}
+```
 
-## Result requirements
+The manifest records the seed, the trial order, every trial's status, the git
+revision and dirty state, the host, the Xcode version, the thermal and power
+state, the simulator, and the server configuration. `./bench analyze` works
+offline from these artifacts and never starts a client or contacts the server.
 
-The clients must emit compatible machine-readable fields so their results can
-be paired without interpretation. The following measurements are required as
-the corresponding benchmarks are added:
+Failed, timed-out, and crashed trials stay in the run directory with an
+explicit status. A trial that the watchdog stops leaves a stderr log and a
+manifest entry, but no record.
 
-- [x] Total elapsed time.
-- [x] Calls per second.
-- [x] Application bytes per second.
-- [x] Latency minimum, mean, p50, p90, p95, p99, p99.9, and maximum.
-- [x] Messages per second for streaming benchmarks.
-- [ ] Time to headers, first message, final response, and terminal status where
-  applicable.
-- [ ] Wire bytes per second for compression and network benchmarks.
-- [ ] CPU time and utilization.
-- [ ] Peak and steady-state resident memory.
-- [ ] Kotlin and Swift allocation counts where measurable.
-- [ ] Kotlin/Native garbage-collection activity and pauses.
-- [ ] Active tasks, coroutines, threads, sockets, and file descriptors for
-  lifecycle and endurance benchmarks.
-- [ ] Resource state after the client returns to idle.
+## Statistics
 
-## Deliberate omissions
+The experimental unit is the trial. The latency percentiles of one trial are
+one observation, no matter how many samples the trial holds. Individual
+operations are never treated as independent repetitions.
 
-This roadmap does not include Kotlin-to-Swift bridge-only microbenchmarks,
-protobuf payload-shape microbenchmarks, grpc-java comparisons, or every possible
-network and channel option. Bridge-only tests cannot be implemented equivalently
-in `swift-client`; payload-shape costs are primarily protobuf serialization
-questions rather than measurements of the gRPC backend. Add either category in
-a separate suite if an end-to-end result identifies it as the likely bottleneck.
+`./bench compare BASE CANDIDATE` pairs completed trials by benchmark, case,
+platform, target, parameters, and injected delay. For each metric it reports:
 
-Similarly, pathological server behaviors such as responding before consuming a
-request stream or permanently stopping request reads require a purpose-built
-server. They should be added only when diagnosing a concrete correctness or
-resource-management problem.
+- The median of each side and the ratio of the medians.
+- A 95th percentile bootstrap interval of the ratio, resampled over trials.
+- A two-sided Mann-Whitney U p-value when each side has at least eight trials.
+- A verdict. The comparison reports a difference only when the bootstrap
+  interval excludes 1. Otherwise the verdict is `inconclusive`, and the
+  comparison never forces a ranking.
+- The confidence level. Fewer than five trials on a side is reported as low
+  confidence.
+
+Tail percentiles are flagged when a trial has too few samples to support them:
+p99 needs 100 samples per trial, and p99.9 would need 1,000.
+
+Two validation workflows are built in:
+
+- **A/A comparison**: run the same implementation twice
+  (`./bench run --implementation current ...`), then
+  `./bench compare RUN_A:current RUN_B:current`. Most verdicts must be
+  inconclusive. A difference detected here measures the noise floor.
+- **Positive control**: `./bench run --inject-delay-ms N` adds a known delay to
+  every measured operation of every implementation, outside the production
+  code paths, and the trial record reports it. Comparing a delayed run against
+  an undelayed run must detect the delay.
+
+## Method sources
+
+The defaults follow the established benchmark harnesses:
+
+- **Google Benchmark**: repetitions with mean, median, standard deviation, and
+  coefficient of variation over runs; seeded random interleaving of
+  repetitions to reduce system-state effects; a measured window of at least
+  half a second; and `compare.py`, which runs a Mann-Whitney U test and needs
+  at least nine repetitions for a meaningful result.
+  <https://github.com/google/benchmark/blob/main/docs/user_guide.md>
+- **JMH**: forked processes as the way to measure run-to-run variance, warmup
+  iterations that are discarded, and the rule that no infrastructure is free
+  of overhead.
+  <https://github.com/openjdk/jmh/tree/master/jmh-samples>
+- **ghz**: fixed-total or duration-based load with a constant concurrency of
+  closed-loop workers, per-request timeouts, and summary output with
+  percentiles.
+  <https://github.com/bojand/ghz>
+- **gRPC performance framework**: a warmup phase before the measured phase,
+  histogram-based latency, and the p50/p90/p95/p99/p99.9 set.
+  <https://github.com/grpc/grpc/blob/master/test/cpp/qps/driver.cc>
+
+Established tools can't replace this harness: JMH and Google Benchmark can't
+run Kotlin/Native or Swift clients, and ghz drives grpc clients of its own
+rather than the implementations under comparison. The methodology is adopted,
+not the tools.
+
+## What the numbers mean
+
+`current` minus `swift` isn't "the bridge overhead". The two clients differ
+in runtime (Kotlin/Native versus Swift), serialization (kotlinx-protobuf
+versus Swift Protobuf), concurrency (kotlinx.coroutines versus structured
+concurrency), and API behavior. The comparison measures complete client
+stacks on the same workload. Only a workload that isolates one layer can
+attribute its cost, and the roadmap marks those cases separately.
+
+The legacy client builds with Kotlin 2.3.0 and its own compiler plugin, so its
+results compare the complete legacy and current stacks, not only their iOS
+backends.
+
+## Conclusions the setup supports
+
+- Differences between complete client stacks on the same workload, with an
+  uncertainty interval from repeated trials.
+- Order-controlled and seeded runs, so the same experiment can repeat.
+- Noise floors from A/A comparisons and sensitivity from injected delays.
+
+The setup doesn't support, on this machine:
+
+- Physical device or network-limited conclusions. The default environment is
+  one simulator on one host over loopback.
+- Server capacity conclusions. The pinned C++ server is a fixed reference,
+  and its own processing time is inside every sample.
+- Absolute energy or thermal claims. The manifest records the host thermal
+  and power state at run time, nothing more.
+
+## Directory map
+
+| Directory | Purpose |
+|---|---|
+| `bench` | The one CLI: `list`, `doctor`, `build`, `run`, `analyze`, `compare` |
+| `analysis/` | Offline analysis, statistics, and reports (Python, standard library only) |
+| `analysis/tests/` | Unit tests: run `python3 -m unittest discover -s analysis/tests` |
+| `cpp-server/` | The pinned standalone C++ benchmark server (Bazel build) |
+| `kotlinx-rpc-client/` | The current kotlinx-rpc client, iOS/macOS/JVM |
+| `legacy-ios-client/` | Standalone Gradle build against the published legacy artifacts |
+| `shared-kotlin-client/` | Source-only harness shared by both Kotlin clients |
+| `swift-client/` | The direct grpc-swift-2 baseline client |
+| `scripts/` | Simulator helpers and the manifest writer |
+
+Client-level details live in the README of each directory. The benchmark
+harness and its tests live in `shared-kotlin-client`; each Kotlin client
+compiles those sources against its own artifacts, so only the small
+generated-service adapters differ.

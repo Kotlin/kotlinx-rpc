@@ -17,7 +17,19 @@ Build the release binary if necessary and run it with the helper script:
 ./run.sh ios run unary-throughput \
     --request-bytes 4096 --response-bytes 4096 --concurrency 32 --format csv
 ./run.sh ios run unary-payload-sweep --case symmetric-1m
-./run.sh ios run unary-concurrency-sweep --case 1k-c64 --format csv
+./run.sh ios run unary-concurrency-sweep --case 1k-c64 --format json
+```
+
+`run --format json` writes one trial record per line, with the raw latency
+samples. `../bench run` orchestrates repeated trials of all clients; use this
+script directly for single ad hoc runs.
+
+For repeated, order-controlled measurements of all implementations, prefer
+`../bench`:
+
+```shell
+../bench build
+../bench run --implementation current unary-latency
 ```
 
 The same helper runs the native macOS and JVM clients:
@@ -29,7 +41,7 @@ The same helper runs the native macOS and JVM clients:
 
 The helper invokes the platform's incremental release-link or JVM distribution
 task before every run, so binaries are rebuilt only when needed. Gradle output
-goes to stderr, leaving stdout clean for CSV results. The iOS option uses a
+goes to stderr, leaving stdout clean for results. The iOS option uses a
 currently booted simulator, or boots the first available iPhone and waits for
 it to become ready. Set `KXRPC_BENCHMARK_SIMULATOR` to a simulator UDID to
 select another one; the helper boots that device when necessary.
@@ -51,7 +63,9 @@ a macOS binary:
 Use `run all` to execute every registered benchmark and every named case. The
 payload and concurrency sweeps enumerate their required points automatically;
 use `--case NAME` to run one point. Command-line values override the selected
-case defaults for ad hoc experiments.
+case defaults for ad hoc experiments. `--inject-delay-ms N` adds a known delay
+to every operation; it exists for sensitivity checks and the trial record
+reports it.
 
 ## Adding a benchmark
 
