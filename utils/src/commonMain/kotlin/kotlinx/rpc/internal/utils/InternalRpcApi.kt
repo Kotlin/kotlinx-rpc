@@ -7,7 +7,7 @@ package kotlinx.rpc.internal.utils
 import org.jetbrains.kotlinx.library.api.watchdog.InternalAnnotationMarker
 
 /**
- * TODO
+ * Marks API that has no compatibility guarantees.
  */
 @RequiresOptIn(
     message = "This is internal kotlinx.rpc api that is subject to change and should not be used",
