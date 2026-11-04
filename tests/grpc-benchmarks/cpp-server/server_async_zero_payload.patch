@@ -1,0 +1,11 @@
+--- a/test/cpp/qps/server_async.cc
++++ b/test/cpp/qps/server_async.cc
+@@ -550,6 +550,8 @@ static Status ProcessSimpleRPC(const PayloadConfig&, SimpleRequest* request,
+                             response->mutable_payload())) {
+       return Status(grpc::StatusCode::INTERNAL, "Error creating payload.");
+     }
++  } else {
++    response->clear_payload();
+   }
+   // We are done using the request. Clear it to reduce working memory.
+   // This proves to reduce cache misses in large message size cases.
