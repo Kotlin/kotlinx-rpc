@@ -2,22 +2,49 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import Foundation
 import GRPCCore
 import GRPCNIOTransportHTTP2TransportServices
 
 typealias BenchmarkClient = GRPCClient<HTTP2ClientTransport.TransportServices>
 
+/// The client-side interval that one latency sample measures.
+///
+/// Every benchmark states its metric, so results never pool samples of different intervals.
+enum LatencyMetric: String, Sendable {
+    /// One request send to the completed receive of its unary response.
+    case callRoundTrip = "call_round_trip"
+    /// The receive of one response message to the receive of the next message.
+    case messageInterarrival = "message_interarrival"
+    /// The start of one request write to the return of the write call.
+    case requestWriteSuspension = "request_write_suspension"
+    /// One request send to the completed receive of its response on a streaming call.
+    case pingPongRoundTrip = "ping_pong_round_trip"
+}
+
+/// The unit of the counted operation of a benchmark.
+enum OperationUnit: String, Sendable {
+    case rpc
+    case message
+}
+
+/// The load shape of every benchmark in this harness.
+let loadShape = "closed_loop"
+
+/// Schema version of the JSON trial record, shared with the Kotlin clients and the analysis tools.
+let trialSchemaVersion = 1
+
 struct BenchmarkOverrides: Equatable, Sendable {
-    var warmupCalls: Int?
-    var calls: Int?
+    var warmupOperations: Int?
+    var operations: Int?
     var concurrency: Int?
     var requestBytes: Int?
     var responseBytes: Int?
 
     func applying(to parameters: BenchmarkParameters) throws -> BenchmarkParameters {
         try BenchmarkParameters(
-            warmupCalls: self.warmupCalls ?? parameters.warmupCalls,
-            calls: self.calls ?? parameters.calls,
+            warmupOperations: self.warmupOperations ?? parameters.warmupOperations,
+            operations: self.operations ?? parameters.operations,
             concurrency: self.concurrency ?? parameters.concurrency,
             requestBytes: self.requestBytes ?? parameters.requestBytes,
             responseBytes: self.responseBytes ?? parameters.responseBytes
@@ -25,22 +52,22 @@ struct BenchmarkOverrides: Equatable, Sendable {
     }
 }
 
-struct BenchmarkParameters: Equatable, Sendable {
-    let warmupCalls: Int
-    let calls: Int
+struct BenchmarkParameters: Sendable {
+    let warmupOperations: Int
+    let operations: Int
     let concurrency: Int
     let requestBytes: Int
     let responseBytes: Int
 
     init(
-        warmupCalls: Int,
-        calls: Int,
+        warmupOperations: Int,
+        operations: Int,
         concurrency: Int,
         requestBytes: Int,
         responseBytes: Int
     ) throws {
-        guard warmupCalls >= 0 else { throw BenchmarkConfigurationError("--warmup must be at least 0") }
-        guard calls > 0 else { throw BenchmarkConfigurationError("--calls must be greater than 0") }
+        guard warmupOperations >= 0 else { throw BenchmarkConfigurationError("--warmup must be at least 0") }
+        guard operations > 0 else { throw BenchmarkConfigurationError("--operations must be greater than 0") }
         guard concurrency > 0 else { throw BenchmarkConfigurationError("--concurrency must be greater than 0") }
         guard requestBytes >= 0 else {
             throw BenchmarkConfigurationError("--request-bytes must be at least 0")
@@ -52,11 +79,30 @@ struct BenchmarkParameters: Equatable, Sendable {
             throw BenchmarkConfigurationError("--response-bytes must fit in a protobuf int32")
         }
 
-        self.warmupCalls = warmupCalls
-        self.calls = calls
+        self.warmupOperations = warmupOperations
+        self.operations = operations
         self.concurrency = concurrency
         self.requestBytes = requestBytes
         self.responseBytes = responseBytes
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case warmupOperations = "warmup_operations"
+        case operations
+        case concurrency
+        case requestBytes = "request_bytes"
+        case responseBytes = "response_bytes"
+    }
+}
+
+extension BenchmarkParameters: Encodable, Equatable {
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.warmupOperations, forKey: .warmupOperations)
+        try container.encode(self.operations, forKey: .operations)
+        try container.encode(self.concurrency, forKey: .concurrency)
+        try container.encode(self.requestBytes, forKey: .requestBytes)
+        try container.encode(self.responseBytes, forKey: .responseBytes)
     }
 }
 
@@ -79,16 +125,45 @@ struct BenchmarkCase: Equatable, Sendable {
     }
 }
 
+struct BenchmarkWorkload: Encodable, Equatable, Sendable {
+    let benchmark: String
+    let description: String
+    let latencyMetric: String
+    let operationUnit: String
+    let cases: [BenchmarkCaseEntry]
+
+    enum CodingKeys: String, CodingKey {
+        case benchmark
+        case description
+        case latencyMetric = "latency_metric"
+        case operationUnit = "operation_unit"
+        case cases
+    }
+}
+
+struct BenchmarkCaseEntry: Encodable, Equatable, Sendable {
+    let name: String
+    let parameters: BenchmarkParameters
+
+    enum CodingKeys: String, CodingKey {
+        case name = "case"
+        case parameters
+    }
+}
+
 protocol Benchmark: Sendable {
     var name: String { get }
     var description: String { get }
     var cases: [BenchmarkCase] { get }
+    var latencyMetric: LatencyMetric { get }
+    var operationUnit: OperationUnit { get }
 
     func run(
         client: BenchmarkClient,
         benchmarkCase: BenchmarkCase,
-        parameters: BenchmarkParameters
-    ) async throws -> BenchmarkResult
+        parameters: BenchmarkParameters,
+        injectedDelayMs: Int
+    ) async throws -> TrialResult
 }
 
 struct BenchmarkRegistry: Sendable {
@@ -111,123 +186,206 @@ struct BenchmarkRegistry: Sendable {
     func find(_ name: String) -> (any Benchmark)? {
         self.all.first { $0.name == name }
     }
-}
 
-struct MeasuredCall: Sendable {
-    let applicationBytes: Int64
-    let execute: @Sendable () async throws -> Void
-}
-
-struct CallBenchmark: Benchmark {
-    let name: String
-    let description: String
-    let cases: [BenchmarkCase]
-    let prepare: @Sendable (BenchmarkClient, BenchmarkParameters) -> MeasuredCall
-
-    func run(
-        client: BenchmarkClient,
-        benchmarkCase: BenchmarkCase,
-        parameters: BenchmarkParameters
-    ) async throws -> BenchmarkResult {
-        let call = self.prepare(client, parameters)
-
-        _ = try await executeCalls(
-            count: parameters.warmupCalls,
-            concurrency: parameters.concurrency,
-            recordLatency: false,
-            call: call.execute
-        )
-
-        let clock = ContinuousClock()
-        let started = clock.now
-        let samples = try await executeCalls(
-            count: parameters.calls,
-            concurrency: parameters.concurrency,
-            recordLatency: true,
-            call: call.execute
-        )
-        let elapsed = started.duration(to: clock.now)
-
-        return BenchmarkResult(
-            benchmarkName: self.name,
-            caseName: benchmarkCase.name,
-            implementationName: "swift",
-            platform: currentPlatform,
-            parameters: parameters,
-            elapsed: elapsed,
-            applicationBytes: call.applicationBytes * Int64(parameters.calls),
-            latency: LatencyStatistics(samples: samples)
-        )
+    /// The workload matrix in the JSON format that the workload equivalence check compares across clients.
+    func workloadMatrix() -> [BenchmarkWorkload] {
+        self.all.map { benchmark in
+            BenchmarkWorkload(
+                benchmark: benchmark.name,
+                description: benchmark.description,
+                latencyMetric: benchmark.latencyMetric.rawValue,
+                operationUnit: benchmark.operationUnit.rawValue,
+                cases: benchmark.cases.map { entry in
+                    BenchmarkCaseEntry(name: entry.name, parameters: entry.parameters)
+                }
+            )
+        }
     }
 }
 
-private func executeCalls(
-    count: Int,
-    concurrency: Int,
-    recordLatency: Bool,
-    call: @escaping @Sendable () async throws -> Void
-) async throws -> [UInt64] {
-    guard count > 0 else { return [] }
+/// The outcome of one benchmark case within one client process.
+enum TrialStatus: String, Sendable {
+    case completed
+    case failed
+}
 
-    let workerCount = min(count, concurrency)
-    let baseCallsPerWorker = count / workerCount
-    let workersWithExtraCall = count % workerCount
+/// The measurement of one benchmark case in one client process.
+///
+/// `elapsedNanoseconds` covers only the measured phase. Channel creation, the readiness probe, and
+/// warmup run before it and are never included.
+///
+/// A trial stops at the first failed operation. `operations` and the byte counts then hold the
+/// work that completed before the failure, and `latencySamplesNanoseconds` holds its samples.
+struct TrialResult: Sendable {
+    let benchmarkName: String
+    let caseName: String
+    let parameters: BenchmarkParameters
+    let latencyMetric: LatencyMetric
+    let operationUnit: OperationUnit
+    let injectedDelayMs: Int
+    let status: TrialStatus
+    let error: String?
+    let elapsedNanoseconds: Int64
+    let operations: Int64
+    let requestMessages: Int64?
+    let responseMessages: Int64?
+    let applicationRequestBytes: Int64
+    let applicationResponseBytes: Int64
+    let latencySamplesNanoseconds: [Int64]
+    let timeToFirstResponseNanoseconds: [Int64]
+    let streamDurationNanoseconds: [Int64]
+    let finalResponseLatencyNanoseconds: [Int64]
+}
 
-    return try await withThrowingTaskGroup(of: [UInt64].self) { group in
-        for workerIndex in 0..<workerCount {
-            let workerCalls = baseCallsPerWorker + (workerIndex < workersWithExtraCall ? 1 : 0)
-            group.addTask {
-                var samples: [UInt64] = []
-                if recordLatency {
-                    samples.reserveCapacity(workerCalls)
-                }
+/// A `TrialResult` with its process context: implementation identity, platform label, server
+/// target, wall-clock start time, and the measured connection readiness of the channel.
+struct TrialRecord: Encodable, Sendable {
+    let implementationName: String
+    let implementationVersion: String?
+    let platform: String
+    let target: String
+    let startedAtEpochMs: Int64
+    let connectionReadyNanoseconds: Int64?
+    let trial: TrialResult
 
-                let clock = ContinuousClock()
-                for _ in 0..<workerCalls {
-                    if recordLatency {
-                        let started = clock.now
-                        try await call()
-                        samples.append(started.duration(to: clock.now).nanoseconds)
-                    } else {
-                        try await call()
-                    }
-                }
-                return samples
-            }
+    enum CodingKeys: String, CodingKey {
+        case schemaVersion = "schema_version"
+        case implementation
+        case implementationVersion = "implementation_version"
+        case platform
+        case benchmark
+        case benchmarkCase = "case"
+        case parameters
+        case latencyMetric = "latency_metric"
+        case operationUnit = "operation_unit"
+        case loadShape = "load_shape"
+        case target
+        case injectedDelayMs = "injected_delay_ms"
+        case status
+        case error
+        case startedAtEpochMs = "started_at_epoch_ms"
+        case connectionReadyNanoseconds = "connection_ready_ns"
+        case elapsedNanoseconds = "elapsed_ns"
+        case counts
+        case latencySamplesNanoseconds = "latency_samples_ns"
+        case events
+    }
+
+    struct Counts: Encodable, Sendable {
+        let operations: Int64
+        let requestMessages: Int64?
+        let responseMessages: Int64?
+
+        enum CodingKeys: String, CodingKey {
+            case operations
+            case requestMessages = "request_messages"
+            case responseMessages = "response_messages"
+            case applicationRequestBytes = "application_request_bytes"
+            case applicationResponseBytes = "application_response_bytes"
         }
 
-        var samples: [UInt64] = []
-        if recordLatency {
-            samples.reserveCapacity(count)
+        let applicationRequestBytes: Int64
+        let applicationResponseBytes: Int64
+    }
+
+    struct Events: Encodable, Sendable {
+        let timeToFirstResponseNanoseconds: [Int64]
+        let streamDurationNanoseconds: [Int64]
+        let finalResponseLatencyNanoseconds: [Int64]
+
+        enum CodingKeys: String, CodingKey {
+            case timeToFirstResponseNanoseconds = "time_to_first_response_ns"
+            case streamDurationNanoseconds = "stream_duration_ns"
+            case finalResponseLatencyNanoseconds = "final_response_latency_ns"
         }
-        for try await workerSamples in group {
-            samples.append(contentsOf: workerSamples)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        let trial = self.trial
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(trialSchemaVersion, forKey: .schemaVersion)
+        try container.encode(self.implementationName, forKey: .implementation)
+        // The Kotlin clients write an explicit null, so the Swift record must
+        // keep the key present with the same value.
+        if let implementationVersion = self.implementationVersion {
+            try container.encode(implementationVersion, forKey: .implementationVersion)
+        } else {
+            try container.encodeNil(forKey: .implementationVersion)
         }
-        return samples
+        try container.encode(self.platform, forKey: .platform)
+        try container.encode(trial.benchmarkName, forKey: .benchmark)
+        try container.encode(trial.caseName, forKey: .benchmarkCase)
+        try container.encode(trial.parameters, forKey: .parameters)
+        try container.encode(trial.latencyMetric.rawValue, forKey: .latencyMetric)
+        try container.encode(trial.operationUnit.rawValue, forKey: .operationUnit)
+        try container.encode(loadShape, forKey: .loadShape)
+        try container.encode(self.target, forKey: .target)
+        try container.encode(trial.injectedDelayMs, forKey: .injectedDelayMs)
+        try container.encode(trial.status.rawValue, forKey: .status)
+        try container.encodeIfPresent(trial.error, forKey: .error)
+        try container.encode(self.startedAtEpochMs, forKey: .startedAtEpochMs)
+        try container.encodeIfPresent(self.connectionReadyNanoseconds, forKey: .connectionReadyNanoseconds)
+        try container.encode(trial.elapsedNanoseconds, forKey: .elapsedNanoseconds)
+        try container.encode(
+            Counts(
+                operations: trial.operations,
+                requestMessages: trial.requestMessages,
+                responseMessages: trial.responseMessages,
+                applicationRequestBytes: trial.applicationRequestBytes,
+                applicationResponseBytes: trial.applicationResponseBytes
+            ),
+            forKey: .counts
+        )
+        try container.encode(trial.latencySamplesNanoseconds, forKey: .latencySamplesNanoseconds)
+        try container.encode(
+            Events(
+                timeToFirstResponseNanoseconds: trial.timeToFirstResponseNanoseconds,
+                streamDurationNanoseconds: trial.streamDurationNanoseconds,
+                finalResponseLatencyNanoseconds: trial.finalResponseLatencyNanoseconds
+            ),
+            forKey: .events
+        )
     }
 }
 
 struct LatencyStatistics: Equatable, Sendable {
-    let minimumNanoseconds: UInt64
-    let meanNanoseconds: UInt64
-    let p50Nanoseconds: UInt64
-    let p90Nanoseconds: UInt64
-    let p95Nanoseconds: UInt64
-    let p99Nanoseconds: UInt64
-    let p999Nanoseconds: UInt64
-    let maximumNanoseconds: UInt64
+    let sampleCount: Int
+    let minimumNanoseconds: Int64?
+    let meanNanoseconds: Int64?
+    let p50Nanoseconds: Int64?
+    let p90Nanoseconds: Int64?
+    let p95Nanoseconds: Int64?
+    let p99Nanoseconds: Int64?
+    let p999Nanoseconds: Int64?
+    let maximumNanoseconds: Int64?
 
-    init(samples: [UInt64]) {
-        precondition(!samples.isEmpty, "At least one latency sample is required")
+    /// Computes the summary with the nearest-rank percentile method.
+    ///
+    /// Returns a summary with null values when there are no samples, which happens when a stream
+    /// delivers fewer than two messages.
+    init(samples: [Int64]) {
+        guard !samples.isEmpty else {
+            self.sampleCount = 0
+            self.minimumNanoseconds = nil
+            self.meanNanoseconds = nil
+            self.p50Nanoseconds = nil
+            self.p90Nanoseconds = nil
+            self.p95Nanoseconds = nil
+            self.p99Nanoseconds = nil
+            self.p999Nanoseconds = nil
+            self.maximumNanoseconds = nil
+            return
+        }
         let sorted = samples.sorted()
 
-        func percentile(_ value: Double) -> UInt64 {
+        func percentile(_ value: Double) -> Int64 {
             let index = Int((value * Double(sorted.count - 1)).rounded())
             return sorted[index]
         }
 
-        self.minimumNanoseconds = sorted[0]
-        self.meanNanoseconds = UInt64(
+        self.sampleCount = sorted.count
+        self.minimumNanoseconds = sorted.first
+        self.meanNanoseconds = Int64(
             (samples.reduce(0.0) { $0 + Double($1) } / Double(samples.count)).rounded(.towardZero)
         )
         self.p50Nanoseconds = percentile(0.50)
@@ -235,75 +393,70 @@ struct LatencyStatistics: Equatable, Sendable {
         self.p95Nanoseconds = percentile(0.95)
         self.p99Nanoseconds = percentile(0.99)
         self.p999Nanoseconds = percentile(0.999)
-        self.maximumNanoseconds = sorted[sorted.count - 1]
+        self.maximumNanoseconds = sorted.last
     }
 }
 
-struct BenchmarkResult: Sendable {
-    let benchmarkName: String
-    let caseName: String
-    let implementationName: String
-    let platform: String
-    let parameters: BenchmarkParameters
-    let elapsed: Duration
-    let applicationBytes: Int64
-    let latency: LatencyStatistics
-    let requestMessages: Int64?
-    let responseMessages: Int64?
-    let timeToFirstResponse: Duration?
-    let finalResponseLatency: Duration?
+/// Calls the server until one call succeeds, and returns the time from the first call to that
+/// success. The first call pays for the connection setup, so the returned duration is an upper
+/// bound for the connect time of the channel.
+///
+/// A call that fails because the server isn't listening yet is retried after a short delay.
+func awaitReadiness(
+    client: BenchmarkClient,
+    target: String,
+    timeout: Duration
+) async throws -> Duration {
+    let service = Grpc_Testing_BenchmarkService.Client(wrapping: client)
+    var payload = Grpc_Testing_Payload()
+    payload.type = .compressable
+    var request = Grpc_Testing_SimpleRequest()
+    request.responseType = .compressable
+    request.responseSize = 0
+    request.payload = payload
 
-    init(
-        benchmarkName: String,
-        caseName: String,
-        implementationName: String,
-        platform: String,
-        parameters: BenchmarkParameters,
-        elapsed: Duration,
-        applicationBytes: Int64,
-        latency: LatencyStatistics,
-        requestMessages: Int64? = nil,
-        responseMessages: Int64? = nil,
-        timeToFirstResponse: Duration? = nil,
-        finalResponseLatency: Duration? = nil
-    ) {
-        self.benchmarkName = benchmarkName
-        self.caseName = caseName
-        self.implementationName = implementationName
-        self.platform = platform
-        self.parameters = parameters
-        self.elapsed = elapsed
-        self.applicationBytes = applicationBytes
-        self.latency = latency
-        self.requestMessages = requestMessages
-        self.responseMessages = responseMessages
-        self.timeToFirstResponse = timeToFirstResponse
-        self.finalResponseLatency = finalResponseLatency
+    let clock = ContinuousClock()
+    let started = clock.now
+    var lastError: String?
+
+    while started.duration(to: clock.now) < timeout {
+        do {
+            _ = try await service.unaryCall(request)
+            return started.duration(to: clock.now)
+        } catch {
+            if error is CancellationError { throw error }
+            lastError = String(describing: error)
+            try await Task.sleep(nanoseconds: 250_000_000)
+        }
     }
+    throw ReadinessTimeoutError(target: target, timeout: timeout, lastError: lastError)
+}
 
-    var callsPerSecond: Double {
-        Double(self.parameters.calls) / self.elapsed.seconds
-    }
+struct ReadinessTimeoutError: Error, CustomStringConvertible, Sendable {
+    let target: String
+    let timeout: Duration
+    let lastError: String?
 
-    var applicationBytesPerSecond: Double {
-        Double(self.applicationBytes) / self.elapsed.seconds
-    }
-
-    var messagesPerSecond: Double? {
-        guard self.requestMessages != nil || self.responseMessages != nil else { return nil }
-        return Double((self.requestMessages ?? 0) + (self.responseMessages ?? 0)) / self.elapsed.seconds
+    var description: String {
+        let lastError = self.lastError.map { " Last error: \($0)" } ?? ""
+        return
+            "The benchmark server at '\(self.target)' did not accept a readiness call within \(self.timeout).\(lastError)"
     }
 }
 
 extension Duration {
-    var seconds: Double {
+    var secondsValue: Double {
         let components = self.components
         return Double(components.seconds) + Double(components.attoseconds) / 1_000_000_000_000_000_000
     }
 
-    var nanoseconds: UInt64 {
-        UInt64(max(0, (self.seconds * 1_000_000_000).rounded()))
+    var millisecondsValue: Int64 {
+        Int64((self.secondsValue * 1_000).rounded())
     }
+}
+
+func monotonicNanoseconds() -> UInt64 {
+    DispatchTime.now().uptimeNanoseconds
 }
 
 let currentPlatform: String = {

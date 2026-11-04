@@ -6,78 +6,6 @@ import Foundation
 import GRPCCore
 import GRPCProtobuf
 
-struct StreamMeasurement: Sendable {
-    let requestMessages: Int64
-    let responseMessages: Int64
-    let applicationBytes: Int64
-    let latencySamples: [UInt64]
-    let timeToFirstResponseNanoseconds: UInt64?
-    let finalResponseLatencyNanoseconds: UInt64?
-
-    init(
-        requestMessages: Int64,
-        responseMessages: Int64,
-        applicationBytes: Int64,
-        latencySamples: [UInt64],
-        timeToFirstResponseNanoseconds: UInt64? = nil,
-        finalResponseLatencyNanoseconds: UInt64? = nil
-    ) {
-        self.requestMessages = requestMessages
-        self.responseMessages = responseMessages
-        self.applicationBytes = applicationBytes
-        self.latencySamples = latencySamples
-        self.timeToFirstResponseNanoseconds = timeToFirstResponseNanoseconds
-        self.finalResponseLatencyNanoseconds = finalResponseLatencyNanoseconds
-    }
-}
-
-struct StreamingBenchmark: Benchmark {
-    let name: String
-    let description: String
-    let cases: [BenchmarkCase]
-    let prepare: @Sendable (BenchmarkClient) -> @Sendable (Int, BenchmarkParameters) async throws -> StreamMeasurement
-
-    func run(
-        client: BenchmarkClient,
-        benchmarkCase: BenchmarkCase,
-        parameters: BenchmarkParameters
-    ) async throws -> BenchmarkResult {
-        let executeStream = self.prepare(client)
-        if parameters.warmupCalls > 0 {
-            _ = try await executeStreams(
-                messageCount: parameters.warmupCalls,
-                parameters: parameters,
-                executeStream: executeStream
-            )
-        }
-
-        let clock = ContinuousClock()
-        let started = clock.now
-        let measurements = try await executeStreams(
-            messageCount: parameters.calls,
-            parameters: parameters,
-            executeStream: executeStream
-        )
-        let elapsed = started.duration(to: clock.now)
-        let samples = measurements.flatMap(\.latencySamples)
-
-        return BenchmarkResult(
-            benchmarkName: self.name,
-            caseName: benchmarkCase.name,
-            implementationName: "swift",
-            platform: currentPlatform,
-            parameters: parameters,
-            elapsed: elapsed,
-            applicationBytes: measurements.reduce(0) { $0 + $1.applicationBytes },
-            latency: LatencyStatistics(samples: samples),
-            requestMessages: measurements.reduce(0) { $0 + $1.requestMessages },
-            responseMessages: measurements.reduce(0) { $0 + $1.responseMessages },
-            timeToFirstResponse: measurements.averageDuration(\.timeToFirstResponseNanoseconds),
-            finalResponseLatency: measurements.averageDuration(\.finalResponseLatencyNanoseconds)
-        )
-    }
-}
-
 func streamingBenchmarks() -> [any Benchmark] {
     [
         serverStreamingBenchmark(
@@ -106,40 +34,19 @@ func streamingBenchmarks() -> [any Benchmark] {
     ]
 }
 
-private func executeStreams(
-    messageCount: Int,
-    parameters: BenchmarkParameters,
-    executeStream: @escaping @Sendable (Int, BenchmarkParameters) async throws -> StreamMeasurement
-) async throws -> [StreamMeasurement] {
-    let streamCount = min(messageCount, parameters.concurrency)
-    let messagesPerStream = messageCount / streamCount
-    let streamsWithExtraMessage = messageCount % streamCount
-
-    return try await withThrowingTaskGroup(of: StreamMeasurement.self) { group in
-        for streamIndex in 0..<streamCount {
-            let messages = messagesPerStream + (streamIndex < streamsWithExtraMessage ? 1 : 0)
-            group.addTask {
-                try await executeStream(messages, parameters)
-            }
-        }
-
-        var measurements: [StreamMeasurement] = []
-        measurements.reserveCapacity(streamCount)
-        for try await measurement in group {
-            measurements.append(measurement)
-        }
-        return measurements
-    }
-}
-
 private func serverStreamingBenchmark(
     name: String,
     description: String,
     cases: [BenchmarkCase]
 ) -> any Benchmark {
-    StreamingBenchmark(name: name, description: description, cases: cases) { client in
+    StreamingBenchmark(
+        name: name,
+        description: description,
+        cases: cases,
+        latencyMetric: .messageInterarrival
+    ) { client in
         let service = Grpc_Testing_BenchmarkService.Client(wrapping: client)
-        return { messages, parameters in
+        return { messages, parameters, injectedDelayMs in
             let request = streamingRequest(
                 requestBytes: parameters.requestBytes,
                 responseBytes: parameters.responseBytes
@@ -147,27 +54,41 @@ private func serverStreamingBenchmark(
             let streamStarted = monotonicNanoseconds()
 
             return try await service.streamingFromServer(request) { response in
-                var previousMessage = streamStarted
-                var samples: [UInt64] = []
-                samples.reserveCapacity(messages)
+                var previous: UInt64? = nil
+                var firstMessageNanos: UInt64? = nil
+                var samples: [Int64] = []
+                samples.reserveCapacity(messages - 1)
+                var received = 0
 
                 for try await message in response.messages {
                     let now = monotonicNanoseconds()
-                    samples.append(now - previousMessage)
-                    previousMessage = now
+                    if let previous {
+                        samples.append(Int64(now - previous))
+                    }
+                    if firstMessageNanos == nil {
+                        firstMessageNanos = now
+                    }
+                    previous = now
                     try validateResponse(message, expectedBytes: parameters.responseBytes)
-                    if samples.count == messages { break }
+                    received += 1
+                    // The delay paces the consumer inside the next inter-arrival window.
+                    if injectedDelayMs > 0 && received < messages {
+                        try await Task.sleep(nanoseconds: UInt64(injectedDelayMs) * 1_000_000)
+                    }
+                    if received == messages { break }
                 }
-                guard samples.count == messages else {
-                    throw UnexpectedStreamMessageCount(expected: messages, actual: samples.count)
+                guard received == messages else {
+                    throw UnexpectedStreamMessageCount(expected: messages, actual: received)
                 }
                 return StreamMeasurement(
                     requestMessages: 1,
                     responseMessages: Int64(messages),
-                    applicationBytes: Int64(parameters.requestBytes) +
-                        Int64(parameters.responseBytes) * Int64(messages),
+                    applicationRequestBytes: Int64(parameters.requestBytes),
+                    applicationResponseBytes: Int64(parameters.responseBytes) * Int64(messages),
                     latencySamples: samples,
-                    timeToFirstResponseNanoseconds: samples[0]
+                    timeToFirstResponseNanoseconds: Int64(firstMessageNanos! - streamStarted),
+                    streamDurationNanoseconds: nil,
+                    finalResponseLatencyNanoseconds: nil
                 )
             }
         }
@@ -180,9 +101,14 @@ private func clientStreamingBenchmark(
     cases: [BenchmarkCase],
     fixedMeasuredRequestBytes: Int64? = nil
 ) -> any Benchmark {
-    StreamingBenchmark(name: name, description: description, cases: cases) { client in
+    StreamingBenchmark(
+        name: name,
+        description: description,
+        cases: cases,
+        latencyMetric: .requestWriteSuspension
+    ) { client in
         let service = Grpc_Testing_BenchmarkService.Client(wrapping: client)
-        return { messages, parameters in
+        return { messages, parameters, injectedDelayMs in
             let request = streamingRequest(
                 requestBytes: parameters.requestBytes,
                 responseBytes: parameters.responseBytes
@@ -208,6 +134,9 @@ private func clientStreamingBenchmark(
             let response = try await service.streamingFromClient(requestProducer: { writer in
                 for index in 0..<messages {
                     let sendStarted = monotonicNanoseconds()
+                    if injectedDelayMs > 0 {
+                        try await Task.sleep(nanoseconds: UInt64(injectedDelayMs) * 1_000_000)
+                    }
                     try await writer.write(index == messages - 1 ? finalRequest ?? request : request)
                     recorder.record(monotonicNanoseconds() - sendStarted)
                 }
@@ -219,11 +148,12 @@ private func clientStreamingBenchmark(
             return StreamMeasurement(
                 requestMessages: Int64(messages),
                 responseMessages: 1,
-                applicationBytes: (measuredFixedTotal ?? Int64(parameters.requestBytes) * Int64(messages)) +
-                    Int64(parameters.responseBytes),
+                applicationRequestBytes: measuredFixedTotal ?? Int64(parameters.requestBytes) * Int64(messages),
+                applicationResponseBytes: Int64(parameters.responseBytes),
                 latencySamples: snapshot.samples,
-                timeToFirstResponseNanoseconds: responseReceived - streamStarted,
-                finalResponseLatencyNanoseconds: responseReceived - snapshot.finalMessageSent
+                timeToFirstResponseNanoseconds: nil,
+                streamDurationNanoseconds: Int64(responseReceived - streamStarted),
+                finalResponseLatencyNanoseconds: Int64(responseReceived - snapshot.finalMessageSent)
             )
         }
     }
@@ -234,19 +164,20 @@ private func pingPongBenchmark() -> any Benchmark {
         name: "bidi-ping-pong",
         description: "Strict send-one/receive-one bidirectional streaming latency",
         cases: [
-            streamingBenchmarkCase(name: "empty", warmupCalls: 100, calls: 10_000, concurrency: 1),
+            streamingBenchmarkCase(name: "empty", warmupOperations: 200, operations: 10_000, concurrency: 1),
             streamingBenchmarkCase(
                 name: "1k",
-                warmupCalls: 100,
-                calls: 10_000,
+                warmupOperations: 200,
+                operations: 10_000,
                 concurrency: 1,
                 requestBytes: 1_024,
                 responseBytes: 1_024
-            ),
-        ]
+            )
+        ],
+        latencyMetric: .pingPongRoundTrip
     ) { client in
         let service = Grpc_Testing_BenchmarkService.Client(wrapping: client)
-        return { messages, parameters in
+        return { messages, parameters, injectedDelayMs in
             let request = streamingRequest(
                 requestBytes: parameters.requestBytes,
                 responseBytes: parameters.responseBytes
@@ -260,18 +191,22 @@ private func pingPongBenchmark() -> any Benchmark {
                     var iterator = nextRequest.stream.makeAsyncIterator()
                     for _ in 1..<messages {
                         _ = await iterator.next()
+                        // The delay runs inside the next round-trip window.
+                        if injectedDelayMs > 0 {
+                            try await Task.sleep(nanoseconds: UInt64(injectedDelayMs) * 1_000_000)
+                        }
                         try await writer.write(request)
                     }
                 },
                 onResponse: { response in
                     defer { nextRequest.continuation.finish() }
                     var sentAt = firstRequestStarted
-                    var samples: [UInt64] = []
+                    var samples: [Int64] = []
                     samples.reserveCapacity(messages)
 
                     for try await message in response.messages {
                         let now = monotonicNanoseconds()
-                        samples.append(now - sentAt)
+                        samples.append(Int64(now - sentAt))
                         try validateResponse(message, expectedBytes: parameters.responseBytes)
                         if samples.count == messages { break }
                         sentAt = monotonicNanoseconds()
@@ -283,10 +218,13 @@ private func pingPongBenchmark() -> any Benchmark {
                     return StreamMeasurement(
                         requestMessages: Int64(messages),
                         responseMessages: Int64(messages),
-                        applicationBytes: Int64(parameters.requestBytes + parameters.responseBytes) *
+                        applicationRequestBytes: Int64(parameters.requestBytes + parameters.responseBytes) *
                             Int64(messages),
+                        applicationResponseBytes: Int64(parameters.responseBytes) * Int64(messages),
                         latencySamples: samples,
-                        timeToFirstResponseNanoseconds: samples[0]
+                        timeToFirstResponseNanoseconds: samples.first,
+                        streamDurationNanoseconds: nil,
+                        finalResponseLatencyNanoseconds: nil
                     )
                 }
             )
@@ -301,40 +239,41 @@ private func fullDuplexBenchmark() -> any Benchmark {
         cases: [
             streamingBenchmarkCase(
                 name: "balanced-1k",
-                warmupCalls: 100,
-                calls: 10_000,
+                warmupOperations: 200,
+                operations: 10_000,
                 concurrency: 1,
                 requestBytes: 1_024,
                 responseBytes: 1_024
             ),
             streamingBenchmarkCase(
                 name: "balanced-64k",
-                warmupCalls: 10,
-                calls: 1_000,
+                warmupOperations: 20,
+                operations: 2_000,
                 concurrency: 1,
                 requestBytes: 64 * 1_024,
                 responseBytes: 64 * 1_024
             ),
             streamingBenchmarkCase(
                 name: "upload-heavy",
-                warmupCalls: 10,
-                calls: 1_000,
+                warmupOperations: 20,
+                operations: 2_000,
                 concurrency: 1,
                 requestBytes: 64 * 1_024,
                 responseBytes: 1_024
             ),
             streamingBenchmarkCase(
                 name: "download-heavy",
-                warmupCalls: 10,
-                calls: 1_000,
+                warmupOperations: 20,
+                operations: 2_000,
                 concurrency: 1,
                 requestBytes: 1_024,
                 responseBytes: 64 * 1_024
-            ),
-        ]
+            )
+        ],
+        latencyMetric: .messageInterarrival
     ) { client in
         let service = Grpc_Testing_BenchmarkService.Client(wrapping: client)
-        return { messages, parameters in
+        return { messages, parameters, injectedDelayMs in
             let request = streamingRequest(
                 requestBytes: parameters.requestBytes,
                 responseBytes: parameters.responseBytes
@@ -344,30 +283,44 @@ private func fullDuplexBenchmark() -> any Benchmark {
             return try await service.streamingCall(
                 requestProducer: { writer in
                     for _ in 0..<messages {
+                        // The delay paces the producer, so it widens the response inter-arrival times.
+                        if injectedDelayMs > 0 {
+                            try await Task.sleep(nanoseconds: UInt64(injectedDelayMs) * 1_000_000)
+                        }
                         try await writer.write(request)
                     }
                 },
                 onResponse: { response in
-                    var previousMessage = streamStarted
-                    var samples: [UInt64] = []
-                    samples.reserveCapacity(messages)
+                    var previous: UInt64? = nil
+                    var firstMessageNanos: UInt64? = nil
+                    var samples: [Int64] = []
+                    samples.reserveCapacity(messages - 1)
+                    var received = 0
 
                     for try await message in response.messages {
                         let now = monotonicNanoseconds()
-                        samples.append(now - previousMessage)
-                        previousMessage = now
+                        if let previous {
+                            samples.append(Int64(now - previous))
+                        }
+                        if firstMessageNanos == nil {
+                            firstMessageNanos = now
+                        }
+                        previous = now
                         try validateResponse(message, expectedBytes: parameters.responseBytes)
+                        received += 1
                     }
-                    guard samples.count == messages else {
-                        throw UnexpectedStreamMessageCount(expected: messages, actual: samples.count)
+                    guard received == messages else {
+                        throw UnexpectedStreamMessageCount(expected: messages, actual: received)
                     }
                     return StreamMeasurement(
                         requestMessages: Int64(messages),
                         responseMessages: Int64(messages),
-                        applicationBytes: Int64(parameters.requestBytes + parameters.responseBytes) *
-                            Int64(messages),
+                        applicationRequestBytes: Int64(parameters.requestBytes) * Int64(messages),
+                        applicationResponseBytes: Int64(parameters.responseBytes) * Int64(messages),
                         latencySamples: samples,
-                        timeToFirstResponseNanoseconds: samples[0]
+                        timeToFirstResponseNanoseconds: Int64(firstMessageNanos! - streamStarted),
+                        streamDurationNanoseconds: nil,
+                        finalResponseLatencyNanoseconds: nil
                     )
                 }
             )
@@ -379,24 +332,24 @@ private func serverThroughputCases() -> [BenchmarkCase] {
     [
         streamingBenchmarkCase(
             name: "1k",
-            warmupCalls: 100,
-            calls: 10_000,
+            warmupOperations: 200,
+            operations: 40_000,
             concurrency: 1,
             requestBytes: streamControlPayloadBytes,
             responseBytes: 1_024
         ),
         streamingBenchmarkCase(
             name: "64k",
-            warmupCalls: 10,
-            calls: 1_000,
+            warmupOperations: 20,
+            operations: 2_000,
             concurrency: 1,
             requestBytes: streamControlPayloadBytes,
             responseBytes: 64 * 1_024
         ),
         streamingBenchmarkCase(
             name: "1m",
-            warmupCalls: 2,
-            calls: 64,
+            warmupOperations: 5,
+            operations: 256,
             concurrency: 1,
             requestBytes: streamControlPayloadBytes,
             responseBytes: 1_024 * 1_024
@@ -408,24 +361,24 @@ private func clientThroughputCases() -> [BenchmarkCase] {
     [
         streamingBenchmarkCase(
             name: "1k",
-            warmupCalls: 100,
-            calls: 10_000,
+            warmupOperations: 200,
+            operations: 40_000,
             concurrency: 1,
             requestBytes: 1_024,
             responseBytes: streamControlPayloadBytes
         ),
         streamingBenchmarkCase(
             name: "64k",
-            warmupCalls: 10,
-            calls: 1_000,
+            warmupOperations: 20,
+            operations: 2_000,
             concurrency: 1,
             requestBytes: 64 * 1_024,
             responseBytes: streamControlPayloadBytes
         ),
         streamingBenchmarkCase(
             name: "1m",
-            warmupCalls: 2,
-            calls: 64,
+            warmupOperations: 5,
+            operations: 256,
             concurrency: 1,
             requestBytes: 1_024 * 1_024,
             responseBytes: streamControlPayloadBytes
@@ -435,28 +388,28 @@ private func clientThroughputCases() -> [BenchmarkCase] {
 
 private func messageOverheadCases() -> [BenchmarkCase] {
     [
-        streamingBenchmarkCase(name: "1k", warmupCalls: 128, calls: 64 * 1_024, concurrency: 1, requestBytes: 1_024),
-        streamingBenchmarkCase(name: "64k", warmupCalls: 16, calls: 1_024, concurrency: 1, requestBytes: 64 * 1_024),
-        streamingBenchmarkCase(name: "1m", warmupCalls: 2, calls: 64, concurrency: 1, requestBytes: 1_024 * 1_024),
+        streamingBenchmarkCase(name: "1k", warmupOperations: 128, operations: 64 * 1_024, concurrency: 1, requestBytes: 1_024),
+        streamingBenchmarkCase(name: "64k", warmupOperations: 16, operations: 1_024, concurrency: 1, requestBytes: 64 * 1_024),
+        streamingBenchmarkCase(name: "1m", warmupOperations: 2, operations: 64, concurrency: 1, requestBytes: 1_024 * 1_024),
         streamingBenchmarkCase(
             name: "near-4m",
-            warmupCalls: 1,
-            calls: 17,
+            warmupOperations: 1,
+            operations: 17,
             concurrency: 1,
             requestBytes: 4 * 1_024 * 1_024 - 1_024
         ),
     ]
 }
 
-// StreamingFromServer is unbounded, so completing each measurement resets its stream. SwiftNIO
-// retains a bounded number of recently reset HTTP/2 streams and can close the connection when late
-// frames arrive for an evicted stream. Stop at 16 so the warmup does not exhaust that allowance.
+// StreamingFromServer is unbounded, so completing each stream cancels its RPC. SwiftNIO retains a
+// bounded number of recently reset HTTP/2 streams and can close the connection when late frames
+// arrive for an evicted stream. Stop at 16 so the warmup does not exhaust that allowance.
 private func streamConcurrencyCases() -> [BenchmarkCase] {
     [1, 2, 4, 8, 16].map { concurrency in
         streamingBenchmarkCase(
             name: "c\(concurrency)",
-            warmupCalls: max(128, concurrency * 4),
-            calls: max(8_192, concurrency * 128),
+            warmupOperations: max(200, concurrency * 8),
+            operations: max(16_384, concurrency * 512),
             concurrency: concurrency,
             requestBytes: 64,
             responseBytes: 1_024
@@ -466,8 +419,8 @@ private func streamConcurrencyCases() -> [BenchmarkCase] {
 
 private func streamingBenchmarkCase(
     name: String,
-    warmupCalls: Int,
-    calls: Int,
+    warmupOperations: Int,
+    operations: Int,
     concurrency: Int,
     requestBytes: Int = 0,
     responseBytes: Int = 0
@@ -475,8 +428,8 @@ private func streamingBenchmarkCase(
     BenchmarkCase(
         name: name,
         parameters: try! BenchmarkParameters(
-            warmupCalls: warmupCalls,
-            calls: calls,
+            warmupOperations: warmupOperations,
+            operations: operations,
             concurrency: concurrency,
             requestBytes: requestBytes,
             responseBytes: responseBytes
@@ -484,16 +437,8 @@ private func streamingBenchmarkCase(
     )
 }
 
-private func streamingRequest(requestBytes: Int, responseBytes: Int) -> Grpc_Testing_SimpleRequest {
-    var payload = Grpc_Testing_Payload()
-    payload.type = .compressable
-    payload.body = Data((0..<requestBytes).lazy.map { UInt8($0 % 251) })
-
-    var request = Grpc_Testing_SimpleRequest()
-    request.responseType = .compressable
-    request.responseSize = Int32(responseBytes)
-    request.payload = payload
-    return request
+func streamingRequest(requestBytes: Int, responseBytes: Int) -> Grpc_Testing_SimpleRequest {
+    unaryRequest(requestBytes: requestBytes, responseBytes: responseBytes)
 }
 
 private func validateResponse(_ response: Grpc_Testing_SimpleResponse, expectedBytes: Int) throws {
@@ -502,27 +447,14 @@ private func validateResponse(_ response: Grpc_Testing_SimpleResponse, expectedB
     }
 }
 
-private func monotonicNanoseconds() -> UInt64 {
-    DispatchTime.now().uptimeNanoseconds
-}
-
-private extension Array where Element == StreamMeasurement {
-    func averageDuration(_ keyPath: KeyPath<StreamMeasurement, UInt64?>) -> Duration? {
-        let values = self.compactMap { $0[keyPath: keyPath] }
-        guard !values.isEmpty else { return nil }
-        let average = values.reduce(0.0) { $0 + Double($1) } / Double(values.count)
-        return .nanoseconds(Int64(average))
-    }
-}
-
 private final class SendLatencyRecorder: @unchecked Sendable {
     struct Snapshot: Sendable {
-        let samples: [UInt64]
+        let samples: [Int64]
         let finalMessageSent: UInt64
     }
 
     private let lock = NSLock()
-    private var samples: [UInt64]
+    private var samples: [Int64]
     private var finalMessageSent: UInt64 = 0
 
     init(capacity: Int) {
@@ -532,7 +464,7 @@ private final class SendLatencyRecorder: @unchecked Sendable {
 
     func record(_ nanoseconds: UInt64) {
         self.lock.lock()
-        self.samples.append(nanoseconds)
+        self.samples.append(Int64(nanoseconds))
         self.finalMessageSent = monotonicNanoseconds()
         self.lock.unlock()
     }
