@@ -17,8 +17,8 @@ internal fun unaryBenchmarks(backend: BenchmarkBackend) = listOf(
         description = "Warm sequential unary call latency",
         cases = listOf(
             benchmarkCase(
-                warmupCalls = 100,
-                calls = 1_000,
+                warmupOperations = 200,
+                operations = 10_000,
                 concurrency = 1,
                 requestBytes = 0,
                 responseBytes = 0,
@@ -31,8 +31,8 @@ internal fun unaryBenchmarks(backend: BenchmarkBackend) = listOf(
         description = "Warm concurrent unary call throughput",
         cases = listOf(
             benchmarkCase(
-                warmupCalls = 100,
-                calls = 10_000,
+                warmupOperations = 200,
+                operations = 100_000,
                 concurrency = 16,
                 requestBytes = 1_024,
                 responseBytes = 1_024,
@@ -59,12 +59,13 @@ private fun unaryBenchmark(
     description: String,
     cases: List<BenchmarkCase>,
 ): Benchmark {
-    return CallBenchmark(name, description, cases, backend.implementationName) { client, parameters ->
+    return CallBenchmark(name, description, cases) { client, parameters ->
         val unaryCall = backend.prepareUnaryCall(client)
         val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
 
         MeasuredCall(
-            applicationBytes = parameters.requestBytes.toLong() + parameters.responseBytes,
+            applicationRequestBytes = parameters.requestBytes.toLong(),
+            applicationResponseBytes = parameters.responseBytes.toLong(),
             execute = {
                 val response = unaryCall(request)
                 check(response.payload.body.size == parameters.responseBytes) {
@@ -78,20 +79,20 @@ private fun unaryBenchmark(
 private data class PayloadSweepSize(
     val name: String,
     val bytes: Int,
-    val warmupCalls: Int,
-    val calls: Int,
+    val warmupOperations: Int,
+    val operations: Int,
 )
 
 private val payloadSweepSizes = listOf(
-    PayloadSweepSize("64b", 64, warmupCalls = 100, calls = 10_000),
-    PayloadSweepSize("1k", 1_024, warmupCalls = 100, calls = 10_000),
-    PayloadSweepSize("64k", 64 * 1_024, warmupCalls = 20, calls = 2_000),
-    PayloadSweepSize("1m", 1_024 * 1_024, warmupCalls = 5, calls = 200),
+    PayloadSweepSize("64b", 64, warmupOperations = 200, operations = 10_000),
+    PayloadSweepSize("1k", 1_024, warmupOperations = 200, operations = 10_000),
+    PayloadSweepSize("64k", 64 * 1_024, warmupOperations = 50, operations = 3_000),
+    PayloadSweepSize("1m", 1_024 * 1_024, warmupOperations = 10, operations = 600),
     PayloadSweepSize(
         "near-4m",
         4 * 1_024 * 1_024 - 1_024,
-        warmupCalls = 2,
-        calls = 50,
+        warmupOperations = 5,
+        operations = 150,
     ),
 )
 
@@ -114,8 +115,8 @@ private fun payloadCase(
     responseBytes: Int,
 ): BenchmarkCase = benchmarkCase(
     name = name,
-    warmupCalls = size.warmupCalls,
-    calls = size.calls,
+    warmupOperations = size.warmupOperations,
+    operations = size.operations,
     concurrency = 1,
     requestBytes = requestBytes,
     responseBytes = responseBytes,
@@ -127,8 +128,8 @@ private fun concurrencySweepCases(): List<BenchmarkCase> = buildList {
             add(
                 benchmarkCase(
                     name = "$payloadName-c$concurrency",
-                    warmupCalls = maxOf(100, concurrency * 10),
-                    calls = maxOf(10_000, concurrency * 1_000),
+                    warmupOperations = maxOf(200, concurrency * 20),
+                    operations = maxOf(20_000, concurrency * 2_000),
                     concurrency = concurrency,
                     requestBytes = payloadBytes,
                     responseBytes = payloadBytes,
@@ -140,16 +141,16 @@ private fun concurrencySweepCases(): List<BenchmarkCase> = buildList {
 
 internal fun benchmarkCase(
     name: String = "default",
-    warmupCalls: Int,
-    calls: Int,
+    warmupOperations: Int,
+    operations: Int,
     concurrency: Int,
     requestBytes: Int,
     responseBytes: Int,
 ): BenchmarkCase = BenchmarkCase(
     name = name,
     parameters = BenchmarkParameters(
-        warmupCalls = warmupCalls,
-        calls = calls,
+        warmupOperations = warmupOperations,
+        operations = operations,
         concurrency = concurrency,
         requestBytes = requestBytes,
         responseBytes = responseBytes,

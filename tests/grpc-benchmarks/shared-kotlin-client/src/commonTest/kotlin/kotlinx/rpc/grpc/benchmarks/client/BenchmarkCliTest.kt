@@ -5,13 +5,10 @@
 package kotlinx.rpc.grpc.benchmarks.client
 
 import com.github.ajalt.clikt.testing.test
-import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.SimpleResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class BenchmarkCliTest {
     @Test
@@ -28,6 +25,17 @@ class BenchmarkCliTest {
     }
 
     @Test
+    fun listsBenchmarksAsJsonForTheEquivalenceCheck() {
+        val result = benchmarkCommand(TestBenchmarkBackend).test("list --format json")
+
+        assertEquals(0, result.statusCode)
+        assertContains(result.stdout, """"benchmark": "unary-latency"""")
+        assertContains(result.stdout, """"latency_metric": "call_round_trip"""")
+        assertContains(result.stdout, """"warmup_operations": 200""")
+        assertContains(result.stdout, """"case": "symmetric-1m"""")
+    }
+
+    @Test
     fun showsHelpCommand() {
         val rootHelp = benchmarkCommand(TestBenchmarkBackend).test("help")
         val runHelp = benchmarkCommand(TestBenchmarkBackend).test("help run")
@@ -36,6 +44,7 @@ class BenchmarkCliTest {
         assertContains(rootHelp.stdout, "Commands:")
         assertContains(rootHelp.stdout, "help")
         assertContains(rootHelp.stdout, "list")
+        assertContains(rootHelp.stdout, "ping")
         assertContains(rootHelp.stdout, "run")
         assertEquals(0, runHelp.statusCode)
         assertContains(runHelp.stdout, "--target")
@@ -51,17 +60,28 @@ class BenchmarkCliTest {
         assertContains(result.stdout, "--concurrency")
         assertContains(result.stdout, "--case")
         assertContains(result.stdout, "--request-bytes")
-        assertContains(result.stdout, "--case")
+        assertContains(result.stdout, "--operations")
+        assertContains(result.stdout, "--inject-delay-ms")
         assertContains(result.stdout, "--format")
+        assertContains(result.stdout, "--platform-label")
     }
 
     @Test
     fun rejectsInvalidNumbers() {
-        val result = benchmarkCommand(TestBenchmarkBackend).test("run unary-latency --calls many")
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run unary-latency --operations many")
 
         assertEquals(1, result.statusCode)
-        assertContains(result.stderr, "--calls")
+        assertContains(result.stderr, "--operations")
         assertContains(result.stderr, "invalid", ignoreCase = true)
+    }
+
+    @Test
+    fun rejectsNegativeInjectedDelay() {
+        val result = benchmarkCommand(TestBenchmarkBackend).test("run unary-latency --inject-delay-ms -1")
+
+        assertEquals(1, result.statusCode)
+        assertContains(result.stderr, "--inject-delay-ms")
+        assertContains(result.stderr, "non-negative")
     }
 
     @Test
@@ -86,6 +106,14 @@ class BenchmarkCliTest {
 
         assertEquals(1, result.statusCode)
         assertContains(result.stderr, "requires a specific benchmark")
+    }
+
+    @Test
+    fun rejectsInvalidPingTarget() {
+        val result = benchmarkCommand(TestBenchmarkBackend).test("ping --target no-colon")
+
+        assertEquals(2, result.statusCode)
+        assertContains(result.stderr, "no-colon")
     }
 
     @Test
@@ -141,22 +169,14 @@ class BenchmarkCliTest {
         assertEquals("\n", renderBenchmarkProgressLineBreak(previousLength = 8))
     }
 
-    private object TestBenchmarkBackend : BenchmarkBackend {
-        override val implementationName: String = "test"
+    @Test
+    fun registryJsonMatchesWorkloadMatrixOfBothKotlinClients() {
+        val json = encodeJson(BenchmarkRegistry(
+            unaryBenchmarks(TestBenchmarkBackend) + streamingBenchmarks(TestBenchmarkBackend),
+        ).toJson(), pretty = true)
 
-        override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse =
-            error("Benchmark execution is not expected in CLI parsing tests")
-
-        override fun preparePingPongCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in CLI parsing tests")
-
-        override fun prepareClientStreamingCall(client: GrpcClient): suspend (Flow<SimpleRequest>) -> SimpleResponse =
-            error("Benchmark execution is not expected in CLI parsing tests")
-
-        override fun prepareServerStreamingCall(client: GrpcClient): (SimpleRequest) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in CLI parsing tests")
-
-        override fun prepareFullDuplexCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in CLI parsing tests")
+        assertTrue(json.contains("\"benchmark\": \"bidi-ping-pong\""))
+        assertTrue(json.contains("\"latency_metric\": \"ping_pong_round_trip\""))
+        assertTrue(json.contains("\"operation_unit\": \"message\""))
     }
 }

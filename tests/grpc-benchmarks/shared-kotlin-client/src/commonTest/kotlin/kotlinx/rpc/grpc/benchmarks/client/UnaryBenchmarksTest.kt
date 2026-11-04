@@ -4,10 +4,6 @@
 
 package kotlinx.rpc.grpc.benchmarks.client
 
-import io.grpc.testing.integration.SimpleRequest
-import io.grpc.testing.integration.SimpleResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -37,15 +33,15 @@ class UnaryBenchmarksTest {
             cases.map(BenchmarkCase::name),
         )
         assertEquals(
-            BenchmarkParameters(5, 200, 1, 1_024 * 1_024, 64),
+            BenchmarkParameters(10, 600, 1, 1_024 * 1_024, 64),
             cases.single { it.name == "upload-1m" }.parameters,
         )
         assertEquals(
-            BenchmarkParameters(20, 2_000, 1, 64, 64 * 1_024),
+            BenchmarkParameters(50, 3_000, 1, 64, 64 * 1_024),
             cases.single { it.name == "download-64k" }.parameters,
         )
         assertEquals(
-            BenchmarkParameters(2, 50, 1, 4 * 1_024 * 1_024 - 1_024, 64),
+            BenchmarkParameters(5, 150, 1, 4 * 1_024 * 1_024 - 1_024, 64),
             cases.single { it.name == "upload-near-4m" }.parameters,
         )
     }
@@ -56,31 +52,12 @@ class UnaryBenchmarksTest {
 
         assertEquals(16, cases.size)
         assertEquals(
-            BenchmarkParameters(100, 10_000, 1, 0, 0),
+            BenchmarkParameters(200, 20_000, 1, 0, 0),
             cases.single { it.name == "empty-c1" }.parameters,
         )
         assertEquals(
-            BenchmarkParameters(1_280, 128_000, 128, 1_024, 1_024),
+            BenchmarkParameters(2_560, 256_000, 128, 1_024, 1_024),
             cases.single { it.name == "1k-c128" }.parameters,
         )
-    }
-
-    private object TestBenchmarkBackend : BenchmarkBackend {
-        override val implementationName: String = "test"
-
-        override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse =
-            error("Benchmark execution is not expected in definition tests")
-
-        override fun preparePingPongCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in definition tests")
-
-        override fun prepareClientStreamingCall(client: GrpcClient): suspend (Flow<SimpleRequest>) -> SimpleResponse =
-            error("Benchmark execution is not expected in definition tests")
-
-        override fun prepareServerStreamingCall(client: GrpcClient): (SimpleRequest) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in definition tests")
-
-        override fun prepareFullDuplexCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse> =
-            error("Benchmark execution is not expected in definition tests")
     }
 }
