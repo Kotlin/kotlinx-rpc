@@ -10,6 +10,9 @@ from typing import Any
 
 TRIALS_DIR = "trials"
 
+# Version 2 added the CPU and memory counters. Records of every version stay readable.
+SUPPORTED_TRIAL_SCHEMA_VERSIONS = (1, 2)
+
 # A latency percentile is only meaningful when the per-trial sample count
 # reaches this bound. The analysis flags any smaller trial instead of
 # silently reporting the maximum as the percentile.
@@ -73,6 +76,13 @@ class Trial:
     @property
     def elapsed_ns(self) -> int:
         return self.record["elapsed_ns"]
+
+    def cpu_total_ns(self) -> int | None:
+        """The CPU time of the measured phase, summed over all threads. None for schema v1 records."""
+        return self.record.get("cpu_total_ns")
+
+    def max_rss_bytes(self) -> int | None:
+        return self.record.get("max_rss_bytes")
 
     @property
     def error(self) -> str | None:
@@ -155,9 +165,10 @@ def load_run(run_dir: str) -> Run:
         except (OSError, json.JSONDecodeError) as error:
             raise ArtifactError(f"'{path}' is not valid JSON: {error}") from error
         schema = record.get("schema_version")
-        if schema != TRIAL_SCHEMA_VERSION_SUPPORTED:
+        if schema not in SUPPORTED_TRIAL_SCHEMA_VERSIONS:
             raise ArtifactError(
-                f"'{path}' has schema version {schema!r}; this analysis reads version {TRIAL_SCHEMA_VERSION_SUPPORTED}."
+                f"'{path}' has schema version {schema!r};"
+                f" this analysis reads versions {', '.join(str(v) for v in SUPPORTED_TRIAL_SCHEMA_VERSIONS)}."
             )
         if record.get("status") not in ("completed", "failed"):
             raise ArtifactError(f"'{path}' has status {record.get('status')!r}.")
@@ -175,9 +186,6 @@ def load_run(run_dir: str) -> Run:
                 )
             )
     return run
-
-
-TRIAL_SCHEMA_VERSION_SUPPORTED = 1
 
 
 def _runner_failure_record(entry: dict[str, Any], run: Run) -> dict[str, Any]:
@@ -277,6 +285,21 @@ def trial_metrics(trial: Trial) -> dict[str, float | None]:
     for event in ("time_to_first_response_ns", "final_response_latency_ns", "stream_duration_ns"):
         values = trial.events(event)
         metrics[f"{event}_us"] = _median(values) / 1000.0 if values else None
+
+    # CPU efficiency of the measured phase. A platform that can't read its process
+    # counters reports no CPU values, and these metrics stay unset.
+    cpu_total_ns = trial.cpu_total_ns()
+    operations = trial.counts("operations") or 0
+    if cpu_total_ns is not None and trial.status == "completed":
+        if operations:
+            metrics["cpu_per_operation_us"] = cpu_total_ns / 1000.0 / operations
+        total_mib = (trial.counts("application_request_bytes") or 0) + (trial.counts("application_response_bytes") or 0)
+        if total_mib > 0:
+            metrics["cpu_per_mib_ms"] = cpu_total_ns / 1_000_000.0 / (total_mib / (1024 * 1024))
+        if elapsed_s:
+            metrics["cpu_to_wall_ratio"] = cpu_total_ns / 1_000_000_000.0 / elapsed_s
+    for name in ("cpu_per_operation_us", "cpu_per_mib_ms", "cpu_to_wall_ratio"):
+        metrics.setdefault(name, None)
 
     return metrics
 

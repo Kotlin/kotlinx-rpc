@@ -32,7 +32,48 @@ enum OperationUnit: String, Sendable {
 let loadShape = "closed_loop"
 
 /// Schema version of the JSON trial record, shared with the Kotlin clients and the analysis tools.
-let trialSchemaVersion = 1
+let trialSchemaVersion = 2
+
+/// The process resource counters of one point in time.
+///
+/// The CPU values are the totals of all threads of the process.
+struct ProcessResourceUsage: Sendable {
+    let cpuUserNanoseconds: Int64?
+    let cpuSystemNanoseconds: Int64?
+    let cpuTotalNanoseconds: Int64
+    let maxRssBytes: Int64?
+}
+
+/// Reads the current process resource counters. Darwin fills the user and system split and the
+/// peak resident size in bytes.
+func processResourceUsage() -> ProcessResourceUsage? {
+    var usage = rusage()
+    guard getrusage(RUSAGE_SELF, &usage) == 0 else { return nil }
+    let userNanoseconds = Int64(usage.ru_utime.tv_sec) * 1_000_000_000 + Int64(usage.ru_utime.tv_usec) * 1_000
+    let systemNanoseconds = Int64(usage.ru_stime.tv_sec) * 1_000_000_000 + Int64(usage.ru_stime.tv_usec) * 1_000
+    return ProcessResourceUsage(
+        cpuUserNanoseconds: userNanoseconds,
+        cpuSystemNanoseconds: systemNanoseconds,
+        cpuTotalNanoseconds: userNanoseconds + systemNanoseconds,
+        maxRssBytes: Int64(usage.ru_maxrss)
+    )
+}
+
+/// The CPU time between two resource snapshots, in nanoseconds.
+func cpuDelta(before: ProcessResourceUsage?, after: ProcessResourceUsage?) -> ProcessResourceUsage? {
+    guard let before, let after else { return nil }
+    return ProcessResourceUsage(
+        cpuUserNanoseconds: deltaOf(before.cpuUserNanoseconds, after.cpuUserNanoseconds),
+        cpuSystemNanoseconds: deltaOf(before.cpuSystemNanoseconds, after.cpuSystemNanoseconds),
+        cpuTotalNanoseconds: after.cpuTotalNanoseconds - before.cpuTotalNanoseconds,
+        maxRssBytes: nil
+    )
+}
+
+private func deltaOf(_ before: Int64?, _ after: Int64?) -> Int64? {
+    guard let before, let after else { return nil }
+    return after - before
+}
 
 struct BenchmarkOverrides: Equatable, Sendable {
     var warmupOperations: Int?
@@ -235,6 +276,12 @@ struct TrialResult: Sendable {
     let timeToFirstResponseNanoseconds: [Int64]
     let streamDurationNanoseconds: [Int64]
     let finalResponseLatencyNanoseconds: [Int64]
+    /// The CPU time of the measured phase, from resource snapshots at its boundaries.
+    /// `maxRssBytes` is the process-lifetime peak at the end of the trial, warmup included.
+    var cpuUserNanoseconds: Int64? = nil
+    var cpuSystemNanoseconds: Int64? = nil
+    var cpuTotalNanoseconds: Int64? = nil
+    var maxRssBytes: Int64? = nil
 }
 
 /// A `TrialResult` with its process context: implementation identity, platform label, server
@@ -269,6 +316,10 @@ struct TrialRecord: Encodable, Sendable {
         case counts
         case latencySamplesNanoseconds = "latency_samples_ns"
         case events
+        case cpuUserNanoseconds = "cpu_user_ns"
+        case cpuSystemNanoseconds = "cpu_system_ns"
+        case cpuTotalNanoseconds = "cpu_total_ns"
+        case maxRssBytes = "max_rss_bytes"
     }
 
     struct Counts: Encodable, Sendable {
@@ -345,6 +396,27 @@ struct TrialRecord: Encodable, Sendable {
             ),
             forKey: .events
         )
+        // The Kotlin clients write explicit nulls for absent counters, so the Swift record
+        // keeps the same keys and values.
+        try encodeOptional(trial.cpuUserNanoseconds, to: container, for: .cpuUserNanoseconds)
+        try encodeOptional(trial.cpuSystemNanoseconds, to: container, for: .cpuSystemNanoseconds)
+        try encodeOptional(trial.cpuTotalNanoseconds, to: container, for: .cpuTotalNanoseconds)
+        try encodeOptional(trial.maxRssBytes, to: container, for: .maxRssBytes)
+    }
+}
+
+private func encodeOptional<N: Encodable>(
+    _ value: N?,
+    to container: KeyedEncodingContainer<TrialRecord.CodingKeys>,
+    for key: TrialRecord.CodingKeys
+) throws {
+    // The encoding requirements of KeyedEncodingContainerProtocol are mutating,
+    // so this works on a mutable copy of the passed container.
+    var container = container
+    if let value {
+        try container.encode(value, forKey: key)
+    } else {
+        try container.encodeNil(forKey: key)
     }
 }
 

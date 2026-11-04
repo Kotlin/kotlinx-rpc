@@ -170,6 +170,19 @@ samples:
 | `stream_duration_ns` | Client-streaming stream start to the single response. |
 | `final_response_latency_ns` | Last request write to the response of a client-streaming call. |
 
+Process resource counters state their phase:
+
+- `cpu_user_ns`, `cpu_system_ns`, and `cpu_total_ns`: the CPU time of the measured
+  phase, summed over all threads of the client process, from resource snapshots at
+  the phase boundaries. The JVM client reports only the combined total.
+- `max_rss_bytes`: the process-lifetime peak resident size at the end of the trial,
+  warmup included.
+
+CPU time is a proxy for energy, not its measurement: clock frequency, core
+placement, and memory power are outside it. The analysis reports CPU per
+operation, CPU per MiB, and the CPU-to-wall ratio; the manifest records the host
+power source and thermal state of every run.
+
 Rates state their denominator:
 
 - `operations_per_second`: completed RPCs divided by the measured seconds.
@@ -200,7 +213,8 @@ output/run-20261104-211248-s1793823166/
     ...
 ```
 
-The trial record (schema version 1, identical across the three clients):
+The trial record (schema version 2, identical across the three clients; the analysis also
+reads version 1 records, which carry no resource counters):
 
 ```json
 {
@@ -224,6 +238,8 @@ The trial record (schema version 1, identical across the three clients):
   "elapsed_ns": 1200000000,
   "counts": {"operations": 10000, "request_messages": null, "response_messages": null,
              "application_request_bytes": 0, "application_response_bytes": 0},
+  "cpu_user_ns": 1500000, "cpu_system_ns": 500000, "cpu_total_ns": 2000000,
+  "max_rss_bytes": 67108864,
   "latency_samples_ns": [12000, 13500, "..."],
   "events": {"time_to_first_response_ns": [], "stream_duration_ns": [],
              "final_response_latency_ns": []}

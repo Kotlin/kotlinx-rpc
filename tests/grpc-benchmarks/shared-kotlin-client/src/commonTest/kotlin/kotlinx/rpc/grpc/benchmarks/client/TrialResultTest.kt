@@ -59,12 +59,16 @@ class TrialResultTest {
                 latencySamplesNanos = longArrayOf(1, 2, 3),
                 timeToFirstResponseNanos = listOf(500),
                 streamDurationNanos = listOf(999_000_000),
+                cpuUserNanos = 1_500_000,
+                cpuSystemNanos = 500_000,
+                cpuTotalNanos = 2_000_000,
+                maxRssBytes = 64 * 1_024 * 1_024,
             ),
         )
 
         val json = encodeJson(record.toJson())
 
-        assertTrue(json.startsWith("""{"schema_version":1,"implementation":"current","""), json)
+        assertTrue(json.startsWith("""{"schema_version":2,"implementation":"current","""), json)
         assertContains(json, """"latency_metric":"message_interarrival"""")
         assertContains(json, """"load_shape":"closed_loop"""")
         assertContains(json, """"connection_ready_ns":123000000""")
@@ -72,6 +76,10 @@ class TrialResultTest {
         assertContains(json, """"time_to_first_response_ns":[500]""")
         assertContains(json, """"stream_duration_ns":[999000000]""")
         assertContains(json, """"final_response_latency_ns":[]""")
+        assertContains(json, """"cpu_user_ns":1500000""")
+        assertContains(json, """"cpu_system_ns":500000""")
+        assertContains(json, """"cpu_total_ns":2000000""")
+        assertContains(json, """"max_rss_bytes":67108864""")
     }
 
     private fun assertContains(text: String, part: String) {

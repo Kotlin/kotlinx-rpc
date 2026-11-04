@@ -66,24 +66,29 @@ internal class StreamingBenchmark(
             )
         }
 
+        val resourcesBefore = processResourceUsage()
         val started = TimeSource.Monotonic.markNow()
         val outcome = executeStreams(parameters.operations, parameters, injectedDelayMs, executeStream)
         val elapsed = started.elapsedNow().inWholeNanoseconds
+        val resourcesAfter = processResourceUsage()
+        val cpu = cpuDelta(resourcesBefore, resourcesAfter)
         val measurements = outcome.completed
 
         return if (outcome.failure == null) {
-            trialResult(benchmarkCase, parameters, injectedDelayMs, TrialStatus.COMPLETED, null, elapsed, measurements)
+            trialResult(
+                benchmarkCase, parameters, injectedDelayMs, TrialStatus.COMPLETED, null, elapsed, measurements,
+                cpu, resourcesAfter,
+            )
         } else {
             val cause = outcome.failure.cause
             val failureMessage = cause?.message ?: "unknown error"
             trialResult(
-                benchmarkCase,
-                parameters,
-                injectedDelayMs,
-                TrialStatus.FAILED,
+                benchmarkCase, parameters, injectedDelayMs, TrialStatus.FAILED,
                 "Measured stream failed: $failureMessage",
                 elapsed,
                 measurements,
+                cpu,
+                resourcesAfter,
             )
         }
     }
@@ -96,6 +101,8 @@ internal class StreamingBenchmark(
         error: String?,
         elapsedNanos: Long,
         measurements: List<StreamMeasurement>,
+        cpu: ProcessResourceUsage?,
+        resourcesAfter: ProcessResourceUsage?,
     ): TrialResult {
         // A failed trial counts only the streams that completed. The messages of the stream that
         // failed, and of the streams cancelled with it, aren't counted.
@@ -120,6 +127,10 @@ internal class StreamingBenchmark(
             timeToFirstResponseNanos = measurements.mapNotNull(StreamMeasurement::timeToFirstResponseNanos),
             streamDurationNanos = measurements.mapNotNull(StreamMeasurement::streamDurationNanos),
             finalResponseLatencyNanos = measurements.mapNotNull(StreamMeasurement::finalResponseLatencyNanos),
+            cpuUserNanos = cpu?.cpuUserNanos,
+            cpuSystemNanos = cpu?.cpuSystemNanos,
+            cpuTotalNanos = cpu?.cpuTotalNanos,
+            maxRssBytes = resourcesAfter?.maxRssBytes,
         )
     }
 
@@ -136,6 +147,8 @@ internal class StreamingBenchmark(
         error,
         elapsedNanos = 0,
         measurements = emptyList(),
+        cpu = null,
+        resourcesAfter = null,
     )
 }
 

@@ -63,7 +63,9 @@ internal data class LatencyStatistics(
  * The measurement of one benchmark case in one client process.
  *
  * [elapsedNanos] covers only the measured phase. Channel creation, the readiness probe, and
- * warmup run before it and are never included.
+ * warmup run before it and are never included. The [cpuUserNanos], [cpuSystemNanos], and
+ * [cpuTotalNanos] counters cover the same phase, from resource snapshots at its boundaries.
+ * [maxRssBytes] is the process-lifetime peak at the end of the trial, warmup included.
  *
  * A trial stops at the first failed operation. [operations] and the byte counts then hold the
  * work that completed before the failure, and [latencySamplesNanos] holds its samples.
@@ -87,12 +89,16 @@ internal data class TrialResult(
     val timeToFirstResponseNanos: List<Long> = emptyList(),
     val streamDurationNanos: List<Long> = emptyList(),
     val finalResponseLatencyNanos: List<Long> = emptyList(),
+    val cpuUserNanos: Long? = null,
+    val cpuSystemNanos: Long? = null,
+    val cpuTotalNanos: Long? = null,
+    val maxRssBytes: Long? = null,
 ) {
     val latencyStatistics: LatencyStatistics get() = LatencyStatistics.from(latencySamplesNanos)
 }
 
 /** Schema version of the JSON trial record, shared with the Swift client and the analysis tools. */
-internal const val TRIAL_SCHEMA_VERSION: Int = 1
+internal const val TRIAL_SCHEMA_VERSION: Int = 2
 
 /**
  * A [TrialResult] with its process context: implementation identity, platform label, server
@@ -134,6 +140,10 @@ internal data class TrialRecord(
                 "application_request_bytes" to JsonLong(trial.applicationRequestBytes),
                 "application_response_bytes" to JsonLong(trial.applicationResponseBytes),
             ),
+            "cpu_user_ns" to (trial.cpuUserNanos?.let(::JsonLong) ?: JsonNullValue),
+            "cpu_system_ns" to (trial.cpuSystemNanos?.let(::JsonLong) ?: JsonNullValue),
+            "cpu_total_ns" to (trial.cpuTotalNanos?.let(::JsonLong) ?: JsonNullValue),
+            "max_rss_bytes" to (trial.maxRssBytes?.let(::JsonLong) ?: JsonNullValue),
             "latency_samples_ns" to JsonArray.ofNanos(trial.latencySamplesNanos),
             "events" to JsonObject.of(
                 "time_to_first_response_ns" to JsonArray.ofNanos(trial.timeToFirstResponseNanos),

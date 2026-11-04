@@ -38,7 +38,7 @@ def trial_record(
     latency_metric="call_round_trip",
 ):
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "implementation": implementation,
         "implementation_version": None,
         "platform": platform,
@@ -71,6 +71,10 @@ def trial_record(
         },
         "latency_samples_ns": list(samples),
         "events": events or {},
+        "cpu_user_ns": 1_500_000,
+        "cpu_system_ns": 500_000,
+        "cpu_total_ns": 2_000_000,
+        "max_rss_bytes": 64 * 1024 * 1024,
     }
 
 
@@ -142,6 +146,10 @@ class LoadRunTest(unittest.TestCase):
 
 
 class TrialMetricsTest(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+
     def testComputesLatencyAndThroughputPerTrial(self):
         # Samples are nanoseconds: 200 samples from 100.0 us to 100.199 us.
         trial = artifacts.Trial(trial_record(samples=tuple(range(100_000, 100_200))), "run", "dir")
@@ -194,6 +202,38 @@ class TrialMetricsTest(unittest.TestCase):
         # the analysis never pairs it, so its rates stay unset.
         self.assertIsNone(metrics["operations_per_second"])
         self.assertIsNotNone(metrics["latency_p50_us"])
+
+    def testCpuEfficiencyMetrics(self):
+        # 100 operations, 2 seconds elapsed, 2 MiB of application data, 2 ms of CPU.
+        trial = artifacts.Trial(
+            trial_record(
+                samples=(1000,) * 100,
+                operations=100,
+                elapsed_ns=2_000_000_000,
+            ),
+            "run",
+            "dir",
+        )
+        metrics = artifacts.trial_metrics(trial)
+
+        self.assertAlmostEqual(20.0, metrics["cpu_per_operation_us"], delta=0.001)
+        # 2 ms of CPU over 102_400 application bytes is 20.48 ms per MiB.
+        self.assertAlmostEqual(20.48, metrics["cpu_per_mib_ms"], delta=0.01)
+        self.assertAlmostEqual(0.001, metrics["cpu_to_wall_ratio"], delta=0.0001)
+
+    def testSchemaOneRecordsLoadWithoutCpuMetrics(self):
+        record = trial_record()
+        del record["cpu_user_ns"], record["cpu_system_ns"], record["cpu_total_ns"], record["max_rss_bytes"]
+        record["schema_version"] = 1
+        run_dir = write_run(self.temporary.name, "old-schema", [record])
+
+        run = artifacts.load_run(str(run_dir))
+        metrics = artifacts.trial_metrics(run.trials[0])
+
+        self.assertIsNone(metrics["cpu_per_operation_us"])
+        self.assertIsNone(metrics["cpu_per_mib_ms"])
+        self.assertIsNone(metrics["cpu_to_wall_ratio"])
+        self.assertIsNotNone(metrics["operations_per_second"])
 
     def testComparableKeyExcludesFailedAndMismatches(self):
         completed = artifacts.Trial(trial_record(), "run", "dir")
