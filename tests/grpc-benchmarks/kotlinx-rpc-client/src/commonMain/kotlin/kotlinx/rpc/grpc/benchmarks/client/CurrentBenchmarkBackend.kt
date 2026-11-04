@@ -15,6 +15,8 @@ import kotlinx.rpc.withService
 internal object CurrentBenchmarkBackend : BenchmarkBackend {
     override val implementationName: String = "current"
 
+    override val implementationVersion: String? = "workspace"
+
     override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse {
         val service = client.withService<BenchmarkService>()
         return { request -> service.unaryCall(request) }

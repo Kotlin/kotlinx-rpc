@@ -4,4 +4,8 @@
 
 package kotlinx.rpc.grpc.benchmarks.client
 
+/** The platform name written to results when `--platform-label` is not set. */
 internal expect val currentPlatform: String
+
+/** The wall-clock time in milliseconds since the Unix epoch. */
+internal expect fun epochMillis(): Long

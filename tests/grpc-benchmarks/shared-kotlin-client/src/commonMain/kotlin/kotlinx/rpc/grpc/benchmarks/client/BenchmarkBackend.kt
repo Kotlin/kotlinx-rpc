@@ -13,6 +13,12 @@ import kotlinx.rpc.grpc.client.GrpcClient
 internal interface BenchmarkBackend {
     val implementationName: String
 
+    /**
+     * The version of the client stack that runs the benchmarks, or null when the client can't
+     * report one. The runner records the authoritative value in the run manifest.
+     */
+    val implementationVersion: String?
+
     fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse
 
     fun preparePingPongCall(client: GrpcClient): (Flow<SimpleRequest>) -> Flow<SimpleResponse>

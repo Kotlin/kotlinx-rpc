@@ -14,3 +14,7 @@ Keep common sources compatible with the Kotlin version pinned by the legacy
 build. Shared tests are executed by the current client's JVM test target, while
 both iOS release link tasks verify source compatibility with their respective
 client and compiler-plugin versions.
+
+Both Kotlin clients and the Swift client must define the same workload matrix.
+`../bench doctor` compares the `list --format json` output of every client and
+reports any drift.

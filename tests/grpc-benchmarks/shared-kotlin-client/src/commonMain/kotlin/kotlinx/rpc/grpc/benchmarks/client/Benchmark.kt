@@ -21,12 +21,21 @@ internal interface Benchmark {
     val name: String
     val description: String
     val cases: List<BenchmarkCase>
+    val latencyMetric: LatencyMetric
+    val operationUnit: OperationUnit
 
+    /**
+     * Runs one case on a channel that has already passed the readiness probe.
+     *
+     * Returns a failed [TrialResult] instead of throwing when an operation fails, so one failed
+     * case can't drop the results of the remaining cases of a process.
+     */
     suspend fun run(
         client: GrpcClient,
         benchmarkCase: BenchmarkCase,
         parameters: BenchmarkParameters,
-    ): BenchmarkResult
+        injectedDelayMs: Int,
+    ): TrialResult
 }
 
 /** Provides name-based access to the available benchmarks. */
@@ -47,4 +56,24 @@ internal class BenchmarkRegistry(benchmarks: List<Benchmark>) {
     }
 
     fun find(name: String): Benchmark? = all.firstOrNull { it.name == name }
+
+    /** The workload matrix in the JSON format that the workload equivalence check compares across clients. */
+    fun toJson(): JsonArray = JsonArray(
+        all.map { benchmark ->
+            JsonObject.of(
+                "benchmark" to JsonString(benchmark.name),
+                "description" to JsonString(benchmark.description),
+                "latency_metric" to JsonString(benchmark.latencyMetric.wireName),
+                "operation_unit" to JsonString(benchmark.operationUnit.wireName),
+                "cases" to JsonArray(
+                    benchmark.cases.map { benchmarkCase ->
+                        JsonObject.of(
+                            "case" to JsonString(benchmarkCase.name),
+                            "parameters" to benchmarkCase.parameters.toJson(),
+                        )
+                    },
+                ),
+            )
+        },
+    )
 }

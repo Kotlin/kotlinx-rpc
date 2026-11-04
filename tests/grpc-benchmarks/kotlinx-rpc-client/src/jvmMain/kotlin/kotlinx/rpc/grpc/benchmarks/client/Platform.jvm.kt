@@ -5,3 +5,5 @@
 package kotlinx.rpc.grpc.benchmarks.client
 
 internal actual val currentPlatform: String = "jvm"
+
+internal actual fun epochMillis(): Long = System.currentTimeMillis()

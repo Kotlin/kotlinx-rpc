@@ -6,11 +6,13 @@ package kotlinx.rpc.grpc.benchmarks.client
 
 import io.grpc.testing.integration.SimpleRequest
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.take
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 internal fun streamingBenchmarks(backend: BenchmarkBackend): List<Benchmark> = listOf(
@@ -48,29 +50,43 @@ private fun serverStreamingBenchmark(
     name: String,
     description: String,
     cases: List<BenchmarkCase>,
-): Benchmark = StreamingBenchmark(name, description, cases, backend.implementationName) { client ->
+): Benchmark = StreamingBenchmark(
+    name = name,
+    description = description,
+    cases = cases,
+    latencyMetric = LatencyMetric.MESSAGE_INTERARRIVAL,
+) { client ->
     val call = backend.prepareServerStreamingCall(client)
-    val executeStream: suspend (Int, BenchmarkParameters) -> StreamMeasurement = { messages, parameters ->
+    val executeStream: suspend (Int, BenchmarkParameters, Int) -> StreamMeasurement = { messages, parameters, injectedDelayMs ->
         val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
-        val samples = LongArray(messages)
+        val samples = ArrayList<Long>(messages - 1)
         val streamStarted = TimeSource.Monotonic.markNow()
-        var previousMessage = streamStarted
+        var previous: TimeSource.Monotonic.ValueTimeMark? = null
         var received = 0
+        var timeToFirstResponseNanos: Long? = null
 
         call(request).take(messages).collect { response ->
-            val latency = previousMessage.elapsedNow().inWholeNanoseconds
-            previousMessage = TimeSource.Monotonic.markNow()
+            if (received == 0) {
+                timeToFirstResponseNanos = streamStarted.elapsedNow().inWholeNanoseconds
+            }
+            previous?.let { samples += it.elapsedNow().inWholeNanoseconds }
+            previous = TimeSource.Monotonic.markNow()
             checkResponseSize(response.payload.body.size, parameters.responseBytes)
-            samples[received++] = latency
+            received++
+            // The delay paces the consumer inside the next inter-arrival window.
+            if (injectedDelayMs > 0 && received < messages) {
+                delay(injectedDelayMs.milliseconds)
+            }
         }
         check(received == messages) { "Expected $messages responses, got $received" }
 
         StreamMeasurement(
             requestMessages = 1,
             responseMessages = messages.toLong(),
-            applicationBytes = parameters.requestBytes.toLong() + parameters.responseBytes.toLong() * messages,
-            latencySamples = samples,
-            timeToFirstResponseNanoseconds = samples.first(),
+            applicationRequestBytes = parameters.requestBytes.toLong(),
+            applicationResponseBytes = parameters.responseBytes.toLong() * messages,
+            latencySamples = samples.toLongArray(),
+            timeToFirstResponseNanos = timeToFirstResponseNanos,
         )
     }
     executeStream
@@ -82,13 +98,18 @@ private fun clientStreamingBenchmark(
     description: String,
     cases: List<BenchmarkCase>,
     fixedMeasuredRequestBytes: Long? = null,
-): Benchmark = StreamingBenchmark(name, description, cases, backend.implementationName) { client ->
+): Benchmark = StreamingBenchmark(
+    name = name,
+    description = description,
+    cases = cases,
+    latencyMetric = LatencyMetric.REQUEST_WRITE_SUSPENSION,
+) { client ->
     val call = backend.prepareClientStreamingCall(client)
-    val executeStream: suspend (Int, BenchmarkParameters) -> StreamMeasurement = { messages, parameters ->
+    val executeStream: suspend (Int, BenchmarkParameters, Int) -> StreamMeasurement = { messages, parameters, injectedDelayMs ->
         val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
         val measuredFixedTotal = fixedMeasuredRequestBytes?.takeIf { totalBytes ->
             parameters.requestBytes > 0 &&
-            messages.toLong() == (totalBytes + parameters.requestBytes - 1) / parameters.requestBytes
+                messages.toLong() == (totalBytes + parameters.requestBytes - 1) / parameters.requestBytes
         }
         val finalRequest = measuredFixedTotal?.let { totalBytes ->
             val finalRequestBytes = totalBytes - parameters.requestBytes.toLong() * (messages - 1)
@@ -97,30 +118,35 @@ private fun clientStreamingBenchmark(
             }
             benchmarkRequest(finalRequestBytes.toInt(), parameters.responseBytes)
         }
-        val samples = LongArray(messages)
+        val samples = ArrayList<Long>(messages)
         val streamStarted = TimeSource.Monotonic.markNow()
-        var finalMessageSent = streamStarted
+        var finalMessageSent: TimeSource.Monotonic.ValueTimeMark? = null
         val response = call(
             flow {
                 repeat(messages) { index ->
                     val sendStarted = TimeSource.Monotonic.markNow()
+                    if (injectedDelayMs > 0) {
+                        delay(injectedDelayMs.milliseconds)
+                    }
                     emit(if (index == messages - 1) finalRequest ?: request else request)
-                    samples[index] = sendStarted.elapsedNow().inWholeNanoseconds
-                    finalMessageSent = TimeSource.Monotonic.markNow()
+                    samples += sendStarted.elapsedNow().inWholeNanoseconds
+                    if (index == messages - 1) {
+                        finalMessageSent = TimeSource.Monotonic.markNow()
+                    }
                 }
             },
         )
-        val finalResponseLatency = finalMessageSent.elapsedNow().inWholeNanoseconds
+        val finalResponseLatency = finalMessageSent!!.elapsedNow().inWholeNanoseconds
         checkResponseSize(response.payload.body.size, parameters.responseBytes)
 
         StreamMeasurement(
             requestMessages = messages.toLong(),
             responseMessages = 1,
-            applicationBytes = (measuredFixedTotal ?: parameters.requestBytes.toLong() * messages) +
-                parameters.responseBytes,
-            latencySamples = samples,
-            timeToFirstResponseNanoseconds = streamStarted.elapsedNow().inWholeNanoseconds,
-            finalResponseLatencyNanoseconds = finalResponseLatency,
+            applicationRequestBytes = measuredFixedTotal ?: parameters.requestBytes.toLong() * messages,
+            applicationResponseBytes = parameters.responseBytes.toLong(),
+            latencySamples = samples.toLongArray(),
+            streamDurationNanos = streamStarted.elapsedNow().inWholeNanoseconds,
+            finalResponseLatencyNanos = finalResponseLatency,
         )
     }
     executeStream
@@ -130,16 +156,16 @@ private fun pingPongBenchmark(backend: BenchmarkBackend): Benchmark = StreamingB
     name = "bidi-ping-pong",
     description = "Strict send-one/receive-one bidirectional streaming latency",
     cases = listOf(
-        benchmarkCase("empty", 100, 10_000, 1, 0, 0),
-        benchmarkCase("1k", 100, 10_000, 1, 1_024, 1_024),
+        benchmarkCase(name = "empty", warmupOperations = 200, operations = 10_000, concurrency = 1, requestBytes = 0, responseBytes = 0),
+        benchmarkCase(name = "1k", warmupOperations = 200, operations = 10_000, concurrency = 1, requestBytes = 1_024, responseBytes = 1_024),
     ),
-    implementationName = backend.implementationName,
+    latencyMetric = LatencyMetric.PING_PONG_ROUND_TRIP,
 ) { client ->
     val call = backend.preparePingPongCall(client)
-    val executeStream: suspend (Int, BenchmarkParameters) -> StreamMeasurement = { messages, parameters ->
+    val executeStream: suspend (Int, BenchmarkParameters, Int) -> StreamMeasurement = { messages, parameters, injectedDelayMs ->
         val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
         val requests = Channel<SimpleRequest>(capacity = 1)
-        val samples = LongArray(messages)
+        val samples = ArrayList<Long>(messages)
         var sentAt = TimeSource.Monotonic.markNow()
         requests.trySend(request).getOrThrow()
         var received = 0
@@ -147,10 +173,14 @@ private fun pingPongBenchmark(backend: BenchmarkBackend): Benchmark = StreamingB
         try {
             call(requests.receiveAsFlow()).take(messages).collect { response ->
                 checkResponseSize(response.payload.body.size, parameters.responseBytes)
-                samples[received] = sentAt.elapsedNow().inWholeNanoseconds
+                samples += sentAt.elapsedNow().inWholeNanoseconds
                 received++
                 if (received < messages) {
                     sentAt = TimeSource.Monotonic.markNow()
+                    // The delay runs inside the next round-trip window.
+                    if (injectedDelayMs > 0) {
+                        delay(injectedDelayMs.milliseconds)
+                    }
                     requests.send(request)
                 }
             }
@@ -162,9 +192,10 @@ private fun pingPongBenchmark(backend: BenchmarkBackend): Benchmark = StreamingB
         StreamMeasurement(
             requestMessages = messages.toLong(),
             responseMessages = messages.toLong(),
-            applicationBytes = (parameters.requestBytes.toLong() + parameters.responseBytes) * messages,
-            latencySamples = samples,
-            timeToFirstResponseNanoseconds = samples.first(),
+            applicationRequestBytes = parameters.requestBytes.toLong() * messages,
+            applicationResponseBytes = parameters.responseBytes.toLong() * messages,
+            latencySamples = samples.toLongArray(),
+            timeToFirstResponseNanos = samples.first(),
         )
     }
     executeStream
@@ -174,69 +205,81 @@ private fun fullDuplexBenchmark(backend: BenchmarkBackend): Benchmark = Streamin
     name = "bidi-full-duplex",
     description = "Independent concurrent upload and download over one stream",
     cases = listOf(
-        benchmarkCase("balanced-1k", 100, 10_000, 1, 1_024, 1_024),
-        benchmarkCase("balanced-64k", 10, 1_000, 1, 64 * 1_024, 64 * 1_024),
-        benchmarkCase("upload-heavy", 10, 1_000, 1, 64 * 1_024, 1_024),
-        benchmarkCase("download-heavy", 10, 1_000, 1, 1_024, 64 * 1_024),
+        benchmarkCase(name = "balanced-1k", warmupOperations = 200, operations = 10_000, concurrency = 1, requestBytes = 1_024, responseBytes = 1_024),
+        benchmarkCase(name = "balanced-64k", warmupOperations = 20, operations = 2_000, concurrency = 1, requestBytes = 64 * 1_024, responseBytes = 64 * 1_024),
+        benchmarkCase(name = "upload-heavy", warmupOperations = 20, operations = 2_000, concurrency = 1, requestBytes = 64 * 1_024, responseBytes = 1_024),
+        benchmarkCase(name = "download-heavy", warmupOperations = 20, operations = 2_000, concurrency = 1, requestBytes = 1_024, responseBytes = 64 * 1_024),
     ),
-    implementationName = backend.implementationName,
+    latencyMetric = LatencyMetric.MESSAGE_INTERARRIVAL,
 ) { client ->
     val call = backend.prepareFullDuplexCall(client)
-    val executeStream: suspend (Int, BenchmarkParameters) -> StreamMeasurement = { messages, parameters ->
+    val executeStream: suspend (Int, BenchmarkParameters, Int) -> StreamMeasurement = { messages, parameters, injectedDelayMs ->
         val request = benchmarkRequest(parameters.requestBytes, parameters.responseBytes)
-        val samples = mutableListOf<Long>()
+        val samples = ArrayList<Long>(messages - 1)
         val streamStarted = TimeSource.Monotonic.markNow()
-        var previousMessage = streamStarted
+        var previous: TimeSource.Monotonic.ValueTimeMark? = null
+        var received = 0
+        var timeToFirstResponseNanos: Long? = null
         val requests: Flow<SimpleRequest> = flow {
-            repeat(messages) { emit(request) }
+            repeat(messages) {
+                // The delay paces the producer, so it widens the response inter-arrival times.
+                if (injectedDelayMs > 0) {
+                    delay(injectedDelayMs.milliseconds)
+                }
+                emit(request)
+            }
         }
 
         call(requests).collect { response ->
-            val latency = previousMessage.elapsedNow().inWholeNanoseconds
-            previousMessage = TimeSource.Monotonic.markNow()
+            if (received == 0) {
+                timeToFirstResponseNanos = streamStarted.elapsedNow().inWholeNanoseconds
+            }
+            previous?.let { samples += it.elapsedNow().inWholeNanoseconds }
+            previous = TimeSource.Monotonic.markNow()
             checkResponseSize(response.payload.body.size, parameters.responseBytes)
-            samples += latency
+            received++
         }
-        check(samples.size == messages) { "Expected $messages responses, got ${samples.size}" }
+        check(received == messages) { "Expected $messages responses, got $received" }
 
         StreamMeasurement(
             requestMessages = messages.toLong(),
             responseMessages = messages.toLong(),
-            applicationBytes = (parameters.requestBytes.toLong() + parameters.responseBytes) * messages,
+            applicationRequestBytes = parameters.requestBytes.toLong() * messages,
+            applicationResponseBytes = parameters.responseBytes.toLong() * messages,
             latencySamples = samples.toLongArray(),
-            timeToFirstResponseNanoseconds = samples.first(),
+            timeToFirstResponseNanos = timeToFirstResponseNanos,
         )
     }
     executeStream
 }
 
 private fun serverThroughputCases(): List<BenchmarkCase> = listOf(
-    benchmarkCase("1k", 100, 10_000, 1, STREAM_CONTROL_PAYLOAD_BYTES, 1_024),
-    benchmarkCase("64k", 10, 1_000, 1, STREAM_CONTROL_PAYLOAD_BYTES, 64 * 1_024),
-    benchmarkCase("1m", 2, 64, 1, STREAM_CONTROL_PAYLOAD_BYTES, 1_024 * 1_024),
+    benchmarkCase(name = "1k", warmupOperations = 200, operations = 40_000, concurrency = 1, requestBytes = STREAM_CONTROL_PAYLOAD_BYTES, responseBytes = 1_024),
+    benchmarkCase(name = "64k", warmupOperations = 20, operations = 2_000, concurrency = 1, requestBytes = STREAM_CONTROL_PAYLOAD_BYTES, responseBytes = 64 * 1_024),
+    benchmarkCase(name = "1m", warmupOperations = 5, operations = 256, concurrency = 1, requestBytes = STREAM_CONTROL_PAYLOAD_BYTES, responseBytes = 1_024 * 1_024),
 )
 
 private fun clientThroughputCases(): List<BenchmarkCase> = listOf(
-    benchmarkCase("1k", 100, 10_000, 1, 1_024, STREAM_CONTROL_PAYLOAD_BYTES),
-    benchmarkCase("64k", 10, 1_000, 1, 64 * 1_024, STREAM_CONTROL_PAYLOAD_BYTES),
-    benchmarkCase("1m", 2, 64, 1, 1_024 * 1_024, STREAM_CONTROL_PAYLOAD_BYTES),
+    benchmarkCase(name = "1k", warmupOperations = 200, operations = 40_000, concurrency = 1, requestBytes = 1_024, responseBytes = STREAM_CONTROL_PAYLOAD_BYTES),
+    benchmarkCase(name = "64k", warmupOperations = 20, operations = 2_000, concurrency = 1, requestBytes = 64 * 1_024, responseBytes = STREAM_CONTROL_PAYLOAD_BYTES),
+    benchmarkCase(name = "1m", warmupOperations = 5, operations = 256, concurrency = 1, requestBytes = 1_024 * 1_024, responseBytes = STREAM_CONTROL_PAYLOAD_BYTES),
 )
 
 private fun messageOverheadCases(): List<BenchmarkCase> = listOf(
-    benchmarkCase("1k", 128, 64 * 1_024, 1, 1_024, 0),
-    benchmarkCase("64k", 16, 1_024, 1, 64 * 1_024, 0),
-    benchmarkCase("1m", 2, 64, 1, 1_024 * 1_024, 0),
-    benchmarkCase("near-4m", 1, 17, 1, 4 * 1_024 * 1_024 - 1_024, 0),
+    benchmarkCase(name = "1k", warmupOperations = 128, operations = 64 * 1_024, concurrency = 1, requestBytes = 1_024, responseBytes = 0),
+    benchmarkCase(name = "64k", warmupOperations = 16, operations = 1_024, concurrency = 1, requestBytes = 64 * 1_024, responseBytes = 0),
+    benchmarkCase(name = "1m", warmupOperations = 2, operations = 64, concurrency = 1, requestBytes = 1_024 * 1_024, responseBytes = 0),
+    benchmarkCase(name = "near-4m", warmupOperations = 1, operations = 17, concurrency = 1, requestBytes = 4 * 1_024 * 1_024 - 1_024, responseBytes = 0),
 )
 
-// StreamingFromServer is unbounded, so completing each measurement resets its stream. SwiftNIO
-// retains a bounded number of recently reset HTTP/2 streams and can close the connection when late
-// frames arrive for an evicted stream. Stop at 16 so the warmup does not exhaust that allowance.
+// StreamingFromServer is unbounded, so completing each stream cancels its RPC. SwiftNIO retains a
+// bounded number of recently reset HTTP/2 streams and can close the connection when late frames
+// arrive for an evicted stream. Stop at 16 so the warmup does not exhaust that allowance.
 private fun streamConcurrencyCases(): List<BenchmarkCase> = listOf(1, 2, 4, 8, 16).map { concurrency ->
     benchmarkCase(
         name = "c$concurrency",
-        warmupCalls = maxOf(128, concurrency * 4),
-        calls = maxOf(8_192, concurrency * 128),
+        warmupOperations = maxOf(200, concurrency * 8),
+        operations = maxOf(16_384, concurrency * 512),
         concurrency = concurrency,
         requestBytes = 64,
         responseBytes = 1_024,

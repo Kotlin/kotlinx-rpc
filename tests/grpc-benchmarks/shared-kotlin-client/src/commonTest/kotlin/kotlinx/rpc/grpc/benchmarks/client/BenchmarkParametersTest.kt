@@ -15,7 +15,7 @@ class BenchmarkParametersTest {
 
         assertEquals(
             BenchmarkParameters(1, 20, 3, 4, 50),
-            BenchmarkOverrides(calls = 20, responseBytes = 50).applyTo(defaults),
+            BenchmarkOverrides(operations = 20, responseBytes = 50).applyTo(defaults),
         )
         assertFailsWith<IllegalArgumentException> {
             BenchmarkOverrides(concurrency = 0).applyTo(defaults)

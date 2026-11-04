@@ -15,6 +15,9 @@ import kotlinx.rpc.withService
 internal object LegacyBenchmarkBackend : BenchmarkBackend {
     override val implementationName: String = "legacy"
 
+    // The published artifact version from gradle/libs.versions.toml.
+    override val implementationVersion: String? = "0.11.0-grpc-189"
+
     override fun prepareUnaryCall(client: GrpcClient): suspend (SimpleRequest) -> SimpleResponse {
         val service = client.withService<BenchmarkService>()
         return { request -> service.UnaryCall(request) }
