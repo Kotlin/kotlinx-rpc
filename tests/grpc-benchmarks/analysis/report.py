@@ -20,6 +20,9 @@ from .stats import Comparison, compare_metric
 
 # Metrics that a lower value improves.
 LATENCY_METRICS = {
+    "cpu_per_operation_us",
+    "cpu_per_mib_ms",
+    "cpu_to_wall_ratio",
     "latency_p50_us",
     "latency_p90_us",
     "latency_p95_us",
@@ -43,6 +46,9 @@ THROUGHPUT_METRICS = {
 }
 
 SUMMARY_METRICS = [
+    "cpu_per_operation_us",
+    "cpu_per_mib_ms",
+    "cpu_to_wall_ratio",
     "latency_p50_us",
     "latency_p99_us",
     "operations_per_second",
@@ -56,6 +62,9 @@ SUMMARY_METRICS = [
 ]
 
 COMPARISON_METRICS = [
+    "cpu_per_operation_us",
+    "cpu_per_mib_ms",
+    "cpu_to_wall_ratio",
     "latency_p50_us",
     "latency_p90_us",
     "latency_p99_us",
@@ -69,6 +78,9 @@ COMPARISON_METRICS = [
 ]
 
 METRIC_LABELS = {
+    "cpu_per_operation_us": "CPU per operation (us)",
+    "cpu_per_mib_ms": "CPU per MiB (ms)",
+    "cpu_to_wall_ratio": "CPU to wall ratio",
     "latency_p50_us": "latency p50 (us)",
     "latency_p90_us": "latency p90 (us)",
     "latency_p95_us": "latency p95 (us)",
@@ -88,6 +100,9 @@ METRIC_LABELS = {
 }
 
 METRIC_UNITS = {
+    "cpu_per_operation_us": "us",
+    "cpu_per_mib_ms": "ms",
+    "cpu_to_wall_ratio": "ratio",
     "latency_p50_us": "us",
     "latency_p90_us": "us",
     "latency_p99_us": "us",
@@ -120,6 +135,12 @@ def metric_is_lower_better(metric: str) -> bool:
 def format_value(value: float | None, metric: str) -> str:
     if value is None or not math.isfinite(value):
         return "-"
+    if metric == "cpu_per_mib_ms":
+        if value >= 1_000:
+            return f"{value / 1_000:.1f} s"
+        return f"{value:.2f}"
+    if metric == "cpu_to_wall_ratio":
+        return f"{value:.2f}"
     if metric.endswith("_us"):
         if value >= 10_000:
             return f"{value / 1_000:.1f} ms"

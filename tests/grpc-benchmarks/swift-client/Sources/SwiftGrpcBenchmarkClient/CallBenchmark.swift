@@ -59,6 +59,7 @@ struct CallBenchmark: Benchmark {
         }
 
         let clock = ContinuousClock()
+        let resourcesBefore = processResourceUsage()
         let started = clock.now
         do {
             let samples = try await Self.executeOperations(
@@ -68,6 +69,8 @@ struct CallBenchmark: Benchmark {
                 recordLatency: true,
                 call: call.execute
             )
+            let resourcesAfter = processResourceUsage()
+            let cpu = cpuDelta(before: resourcesBefore, after: resourcesAfter)
             return TrialResult(
                 benchmarkName: self.name,
                 caseName: benchmarkCase.name,
@@ -86,9 +89,15 @@ struct CallBenchmark: Benchmark {
                 latencySamplesNanoseconds: samples,
                 timeToFirstResponseNanoseconds: [],
                 streamDurationNanoseconds: [],
-                finalResponseLatencyNanoseconds: []
+                finalResponseLatencyNanoseconds: [],
+                cpuUserNanoseconds: cpu?.cpuUserNanoseconds,
+                cpuSystemNanoseconds: cpu?.cpuSystemNanoseconds,
+                cpuTotalNanoseconds: cpu?.cpuTotalNanoseconds,
+                maxRssBytes: resourcesAfter?.maxRssBytes
             )
         } catch let failure as OperationFailure {
+            let resourcesAfter = processResourceUsage()
+            let cpu = cpuDelta(before: resourcesBefore, after: resourcesAfter)
             return self.failedTrial(
                 benchmarkCase,
                 parameters,
@@ -98,7 +107,11 @@ struct CallBenchmark: Benchmark {
                 operations: failure.completedOperations,
                 applicationRequestBytes: call.applicationRequestBytes * failure.completedOperations,
                 applicationResponseBytes: call.applicationResponseBytes * failure.completedOperations,
-                samples: failure.samplesSoFar
+                samples: failure.samplesSoFar,
+                cpuUserNanoseconds: cpu?.cpuUserNanoseconds,
+                cpuSystemNanoseconds: cpu?.cpuSystemNanoseconds,
+                cpuTotalNanoseconds: cpu?.cpuTotalNanoseconds,
+                maxRssBytes: resourcesAfter?.maxRssBytes
             )
         }
     }
@@ -112,7 +125,11 @@ struct CallBenchmark: Benchmark {
         operations: Int64 = 0,
         applicationRequestBytes: Int64 = 0,
         applicationResponseBytes: Int64 = 0,
-        samples: [Int64] = []
+        samples: [Int64] = [],
+        cpuUserNanoseconds: Int64? = nil,
+        cpuSystemNanoseconds: Int64? = nil,
+        cpuTotalNanoseconds: Int64? = nil,
+        maxRssBytes: Int64? = nil
     ) -> TrialResult {
         TrialResult(
             benchmarkName: self.name,
@@ -132,7 +149,11 @@ struct CallBenchmark: Benchmark {
             latencySamplesNanoseconds: samples,
             timeToFirstResponseNanoseconds: [],
             streamDurationNanoseconds: [],
-            finalResponseLatencyNanoseconds: []
+            finalResponseLatencyNanoseconds: [],
+            cpuUserNanoseconds: cpuUserNanoseconds,
+            cpuSystemNanoseconds: cpuSystemNanoseconds,
+            cpuTotalNanoseconds: cpuTotalNanoseconds,
+            maxRssBytes: maxRssBytes
         )
     }
 

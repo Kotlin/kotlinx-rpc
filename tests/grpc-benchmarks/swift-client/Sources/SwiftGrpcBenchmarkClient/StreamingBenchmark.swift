@@ -51,11 +51,14 @@ struct StreamingBenchmark: Benchmark {
                 .failed,
                 "Warmup stream failed: \(failure)",
                 elapsedNanoseconds: 0,
-                completed: []
+                completed: [],
+                cpu: nil,
+                resourcesAfter: nil
             )
         }
 
         let clock = ContinuousClock()
+        let resourcesBefore = processResourceUsage()
         let started = clock.now
         let outcome = try await Self.executeStreams(
             messageCount: parameters.operations,
@@ -64,6 +67,8 @@ struct StreamingBenchmark: Benchmark {
             executeStream: executeStream
         )
         let elapsed = started.duration(to: clock.now).nanosecondsValue
+        let resourcesAfter = processResourceUsage()
+        let cpu = cpuDelta(before: resourcesBefore, after: resourcesAfter)
 
         // A failed trial counts only the streams that completed. The messages of the stream
         // that failed, and of the streams cancelled with it, aren't counted.
@@ -76,7 +81,9 @@ struct StreamingBenchmark: Benchmark {
                 .failed,
                 "Measured stream failed: \(failure)",
                 elapsedNanoseconds: elapsed,
-                completed: completed
+                completed: completed,
+                cpu: cpu,
+                resourcesAfter: resourcesAfter
             )
         }
         return self.trialResult(
@@ -86,7 +93,9 @@ struct StreamingBenchmark: Benchmark {
             .completed,
             nil,
             elapsedNanoseconds: elapsed,
-            completed: completed
+            completed: completed,
+            cpu: cpu,
+            resourcesAfter: resourcesAfter
         )
     }
 
@@ -97,7 +106,9 @@ struct StreamingBenchmark: Benchmark {
         _ status: TrialStatus,
         _ error: String?,
         elapsedNanoseconds: Int64,
-        completed: [StreamMeasurement]
+        completed: [StreamMeasurement],
+        cpu: ProcessResourceUsage?,
+        resourcesAfter: ProcessResourceUsage?
     ) -> TrialResult {
         let requestMessages = completed.reduce(0) { $0 + $1.requestMessages }
         let responseMessages = completed.reduce(0) { $0 + $1.responseMessages }
@@ -119,7 +130,11 @@ struct StreamingBenchmark: Benchmark {
             latencySamplesNanoseconds: completed.flatMap(\.latencySamples),
             timeToFirstResponseNanoseconds: completed.compactMap(\.timeToFirstResponseNanoseconds),
             streamDurationNanoseconds: completed.compactMap(\.streamDurationNanoseconds),
-            finalResponseLatencyNanoseconds: completed.compactMap(\.finalResponseLatencyNanoseconds)
+            finalResponseLatencyNanoseconds: completed.compactMap(\.finalResponseLatencyNanoseconds),
+            cpuUserNanoseconds: cpu?.cpuUserNanoseconds,
+            cpuSystemNanoseconds: cpu?.cpuSystemNanoseconds,
+            cpuTotalNanoseconds: cpu?.cpuTotalNanoseconds,
+            maxRssBytes: resourcesAfter?.maxRssBytes
         )
     }
 

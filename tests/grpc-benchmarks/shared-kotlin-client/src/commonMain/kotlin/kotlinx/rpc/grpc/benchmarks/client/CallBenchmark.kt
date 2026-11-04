@@ -79,6 +79,7 @@ internal class CallBenchmark(
             )
         }
 
+        val resourcesBefore = processResourceUsage()
         val started = TimeSource.Monotonic.markNow()
         return try {
             val samples = executeOperations(
@@ -88,6 +89,8 @@ internal class CallBenchmark(
                 recordLatency = true,
                 call = call.execute,
             )
+            val resourcesAfter = processResourceUsage()
+            val cpu = cpuDelta(resourcesBefore, resourcesAfter)
             TrialResult(
                 benchmarkName = name,
                 caseName = benchmarkCase.name,
@@ -104,8 +107,14 @@ internal class CallBenchmark(
                 applicationRequestBytes = call.applicationRequestBytes * parameters.operations,
                 applicationResponseBytes = call.applicationResponseBytes * parameters.operations,
                 latencySamplesNanos = samples,
+                cpuUserNanos = cpu?.cpuUserNanos,
+                cpuSystemNanos = cpu?.cpuSystemNanos,
+                cpuTotalNanos = cpu?.cpuTotalNanos,
+                maxRssBytes = resourcesAfter?.maxRssBytes,
             )
         } catch (error: OperationFailureException) {
+            val resourcesAfter = processResourceUsage()
+            val cpu = cpuDelta(resourcesBefore, resourcesAfter)
             failedTrial(
                 benchmarkCase,
                 parameters,
@@ -117,6 +126,10 @@ internal class CallBenchmark(
                 samples = error.samplesSoFar,
                 error = "Measured operation ${error.completedOperations + 1} of ${parameters.operations} failed: " +
                     "${error.cause?.message ?: error::class.simpleName}",
+                cpuUserNanos = cpu?.cpuUserNanos,
+                cpuSystemNanos = cpu?.cpuSystemNanos,
+                cpuTotalNanos = cpu?.cpuTotalNanos,
+                maxRssBytes = resourcesAfter?.maxRssBytes,
             )
         }
     }
@@ -131,6 +144,10 @@ internal class CallBenchmark(
         applicationRequestBytes: Long = 0,
         applicationResponseBytes: Long = 0,
         samples: LongArray = LongArray(0),
+        cpuUserNanos: Long? = null,
+        cpuSystemNanos: Long? = null,
+        cpuTotalNanos: Long? = null,
+        maxRssBytes: Long? = null,
     ): TrialResult = TrialResult(
         benchmarkName = name,
         caseName = benchmarkCase.name,
@@ -147,6 +164,10 @@ internal class CallBenchmark(
         applicationRequestBytes = applicationRequestBytes,
         applicationResponseBytes = applicationResponseBytes,
         latencySamplesNanos = samples,
+        cpuUserNanos = cpuUserNanos,
+        cpuSystemNanos = cpuSystemNanos,
+        cpuTotalNanos = cpuTotalNanos,
+        maxRssBytes = maxRssBytes,
     )
 }
 

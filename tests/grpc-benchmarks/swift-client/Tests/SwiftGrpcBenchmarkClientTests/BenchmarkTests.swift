@@ -304,14 +304,18 @@ final class BenchmarkTests: XCTestCase {
                 latencySamplesNanoseconds: [1, 2, 3],
                 timeToFirstResponseNanoseconds: [500],
                 streamDurationNanoseconds: [999_000_000],
-                finalResponseLatencyNanoseconds: []
+                finalResponseLatencyNanoseconds: [],
+                cpuUserNanoseconds: 1_500_000,
+                cpuSystemNanoseconds: 500_000,
+                cpuTotalNanoseconds: 2_000_000,
+                maxRssBytes: 64 * 1_024 * 1_024
             )
         )
 
         let encoder = JSONEncoder()
         let json = String(data: try encoder.encode(record), encoding: .utf8)!
 
-        XCTAssertTrue(json.contains("\"schema_version\":1"), json)
+        XCTAssertTrue(json.contains("\"schema_version\":2"), json)
         XCTAssertTrue(json.contains("\"latency_metric\":\"message_interarrival\""), json)
         XCTAssertTrue(json.contains("\"operation_unit\":\"message\""), json)
         XCTAssertTrue(json.contains("\"load_shape\":\"closed_loop\""), json)
@@ -321,6 +325,50 @@ final class BenchmarkTests: XCTestCase {
         XCTAssertTrue(json.contains("\"stream_duration_ns\":[999000000]"), json)
         XCTAssertTrue(json.contains("\"final_response_latency_ns\":[]"), json)
         XCTAssertTrue(json.contains("\"warmup_operations\":10"), json)
+        XCTAssertTrue(json.contains("\"cpu_user_ns\":1500000"), json)
+        XCTAssertTrue(json.contains("\"cpu_system_ns\":500000"), json)
+        XCTAssertTrue(json.contains("\"cpu_total_ns\":2000000"), json)
+        XCTAssertTrue(json.contains("\"max_rss_bytes\":67108864"), json)
+    }
+
+    func testTrialRecordWritesNullsForMissingCounters() throws {
+        let record = TrialRecord(
+            implementationName: "swift",
+            implementationVersion: nil,
+            platform: "macos",
+            target: "localhost:50051",
+            startedAtEpochMs: 0,
+            connectionReadyNanoseconds: nil,
+            trial: TrialResult(
+                benchmarkName: "unary-latency",
+                caseName: "default",
+                parameters: try! BenchmarkParameters(
+                    warmupOperations: 0, operations: 1, concurrency: 1, requestBytes: 0, responseBytes: 0
+                ),
+                latencyMetric: .callRoundTrip,
+                operationUnit: .rpc,
+                injectedDelayMs: 0,
+                status: .completed,
+                error: nil,
+                elapsedNanoseconds: 1,
+                operations: 1,
+                requestMessages: nil,
+                responseMessages: nil,
+                applicationRequestBytes: 0,
+                applicationResponseBytes: 0,
+                latencySamplesNanoseconds: [1],
+                timeToFirstResponseNanoseconds: [],
+                streamDurationNanoseconds: [],
+                finalResponseLatencyNanoseconds: []
+            )
+        )
+
+        let json = String(data: try JSONEncoder().encode(record), encoding: .utf8)!
+
+        XCTAssertTrue(json.contains("\"cpu_user_ns\":null"), json)
+        XCTAssertTrue(json.contains("\"cpu_system_ns\":null"), json)
+        XCTAssertTrue(json.contains("\"cpu_total_ns\":null"), json)
+        XCTAssertTrue(json.contains("\"max_rss_bytes\":null"), json)
     }
 
     func testCsvOutputUsesCsvV2Header() {
@@ -361,7 +409,7 @@ final class BenchmarkTests: XCTestCase {
 
         let output = renderCSV(record: record)
 
-        XCTAssertTrue(output.hasPrefix("1,swift,ios-simulator-arm64,unary-latency,default,completed,call_round_trip,rpc"))
+        XCTAssertTrue(output.hasPrefix("2,swift,ios-simulator-arm64,unary-latency,default,completed,call_round_trip,rpc"))
         XCTAssertTrue(csvHeader.contains("latency_min_us,latency_mean_us,latency_p50_us"))
         XCTAssertTrue(csvHeader.contains("time_to_first_response_mean_us,stream_duration_mean_us"))
     }
