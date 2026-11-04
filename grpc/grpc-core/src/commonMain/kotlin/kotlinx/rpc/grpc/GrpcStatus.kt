@@ -64,8 +64,6 @@ public fun GrpcStatus.asException(trailers: GrpcMetadata? = null): GrpcStatusExc
 /**
  * Standard gRPC status codes.
  */
-// TODO: Jozott, how likely gRPC to receive a new status code?
-//  Should we update the class as recommended in IntentionallyExhaustive?
 @IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public enum class GrpcStatusCode(public val value: Int) {
     OK(0),
@@ -85,12 +83,6 @@ public enum class GrpcStatusCode(public val value: Int) {
     UNAVAILABLE(14),
     DATA_LOSS(15),
     UNAUTHENTICATED(16);
-
-    /**
-     * The ASCII-encoded byte representation of the status code value.
-     */
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
-    public val valueAscii: ByteArray = value.toString().encodeToByteArray()
 
     /**
      * Converts this status code to a [GrpcStatus] with an optional [description].

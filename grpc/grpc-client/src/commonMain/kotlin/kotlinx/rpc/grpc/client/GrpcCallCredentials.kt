@@ -10,6 +10,7 @@ import kotlinx.rpc.grpc.plus
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyDataClass
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Provides per-call authentication credentials for gRPC calls.
@@ -72,7 +73,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyDataClass
  * @see plus
  * @see combine
  */
-@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface GrpcCallCredentials {
     /**
      * Retrieves authentication metadata for the gRPC call.

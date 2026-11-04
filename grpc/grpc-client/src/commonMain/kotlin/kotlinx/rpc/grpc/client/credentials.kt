@@ -142,7 +142,6 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
  * @see GrpcTlsClientCredentialsBuilder
  * @see GrpcInsecureClientCredentials
  */
-// TODO: Jozott, this look a bit weird. It looks like a config class by name, but holds a builder lambda only
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 public class GrpcTlsClientCredentials(
     internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}

@@ -5,7 +5,6 @@
 @file:OptIn(
     ExperimentalForeignApi::class,
     ExperimentalNativeApi::class,
-    InternalNativeRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.server
