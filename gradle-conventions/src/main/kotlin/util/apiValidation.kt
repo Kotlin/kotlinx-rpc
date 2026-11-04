@@ -20,6 +20,7 @@ private val excludedProjects = setOf(
     "protobuf-playground",
     "grpc-test-server",
     "test-protos",
+    "test-utils",
 )
 
 val Project.enableAbiValidation get() = name !in excludedProjects
