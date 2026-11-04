@@ -17,7 +17,7 @@ internal-native-shim-annotation = "0.1.0"
 # minimal supported iOS version for grpc
 kxrpx-grpc-min-ios = "18.0"
 # the published grpc Swift bridge tag. The native-deps/kotlinx-rpc-grpc-swift submodule must point to its commit
-grpc-swift-bridge = "0.0.1"
+grpc-swift-bridge = "0.0.2"
 
 # kotlin independent versions
 detekt-analyzer = "1.23.8"
