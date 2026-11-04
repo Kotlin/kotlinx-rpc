@@ -1,0 +1,7 @@
+public class kotlinx/rpc/krpc/spring/security/SecurityContextEnricher : kotlinx/rpc/krpc/spring/server/KrpcContextEnricher {
+	public fun <init> ()V
+	public fun <init> (Lorg/springframework/security/core/context/SecurityContextHolderStrategy;)V
+	public synthetic fun <init> (Lorg/springframework/security/core/context/SecurityContextHolderStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun contextFor (Lorg/springframework/web/socket/WebSocketSession;)Lkotlin/coroutines/CoroutineContext;
+}
+

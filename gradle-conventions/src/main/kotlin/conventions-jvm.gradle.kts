@@ -21,7 +21,10 @@ java {
 }
 
 if (project.name != "gradle-plugin") {
-    configureJavaCompatibility(8)
+    // Modules whose dependencies require a newer JVM (e.g., Spring 7 requires 17)
+    // can override the default via `kotlinx.rpc.jvm.target` in their gradle.properties
+    val jvmTarget = (project.findProperty("kotlinx.rpc.jvm.target") as String?)?.toInt() ?: 8
+    configureJavaCompatibility(jvmTarget)
 }
 
 configureKotlinCompatibility("2.2.0")

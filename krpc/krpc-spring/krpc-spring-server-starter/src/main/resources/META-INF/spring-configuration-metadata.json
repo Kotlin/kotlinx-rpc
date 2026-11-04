@@ -1,0 +1,37 @@
+{
+  "groups": [
+    {
+      "name": "kotlinx.rpc.krpc.server",
+      "type": "kotlinx.rpc.krpc.spring.server.starter.KrpcServerStarterProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "kotlinx.rpc.krpc.server.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "kotlinx.rpc.krpc.spring.server.starter.KrpcServerStarterProperties",
+      "defaultValue": true
+    },
+    {
+      "name": "kotlinx.rpc.krpc.server.path",
+      "type": "java.lang.String",
+      "sourceType": "kotlinx.rpc.krpc.spring.server.starter.KrpcServerStarterProperties",
+      "defaultValue": "/krpc"
+    },
+    {
+      "name": "kotlinx.rpc.krpc.server.serialization",
+      "type": "kotlinx.rpc.krpc.spring.server.starter.KrpcServerSerialization",
+      "sourceType": "kotlinx.rpc.krpc.spring.server.starter.KrpcServerStarterProperties"
+    }
+  ],
+  "hints": [
+    {
+      "name": "kotlinx.rpc.krpc.server.serialization",
+      "values": [
+        { "value": "JSON", "description": "Use JSON serialization." },
+        { "value": "CBOR", "description": "Use CBOR serialization." },
+        { "value": "PROTOBUF", "description": "Use Protocol Buffers serialization." }
+      ]
+    }
+  ]
+}

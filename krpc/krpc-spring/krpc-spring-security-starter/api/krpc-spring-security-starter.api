@@ -1,0 +1,11 @@
+public class kotlinx/rpc/krpc/spring/security/starter/KrpcSecurityAutoConfiguration {
+	public fun <init> ()V
+	public fun securityContextEnricher (Lorg/springframework/beans/factory/ObjectProvider;)Lkotlinx/rpc/krpc/spring/security/SecurityContextEnricher;
+}
+
+public class kotlinx/rpc/krpc/spring/security/starter/KrpcSecurityStarterProperties {
+	public fun <init> ()V
+	public final fun getEnabled ()Z
+	public final fun setEnabled (Z)V
+}
+

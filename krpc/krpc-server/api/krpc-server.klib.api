@@ -11,6 +11,6 @@ abstract class kotlinx.rpc.krpc.server/KrpcServer : kotlinx.rpc.krpc.internal/Kr
 
     final fun <#A1: kotlin/Any> deregisterService(kotlin.reflect/KClass<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.deregisterService|deregisterService(kotlin.reflect.KClass<0:0>){0§<kotlin.Any>}[0]
     final fun <#A1: kotlin/Any> registerService(kotlin.reflect/KClass<#A1>, kotlin/Function0<#A1>) // kotlinx.rpc.krpc.server/KrpcServer.registerService|registerService(kotlin.reflect.KClass<0:0>;kotlin.Function0<0:0>){0§<kotlin.Any>}[0]
-    final fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.server/KrpcServer.close|close(kotlin.String?){}[0]
     final suspend fun awaitCompletion() // kotlinx.rpc.krpc.server/KrpcServer.awaitCompletion|awaitCompletion(){}[0]
+    open fun close(kotlin/String? = ...) // kotlinx.rpc.krpc.server/KrpcServer.close|close(kotlin.String?){}[0]
 }

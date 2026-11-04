@@ -104,6 +104,7 @@ pluginManagement {
             maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
         }
 
+        mavenCentral()
         maven("$globalRootDir/lib-kotlin/")
     }
 }
@@ -223,6 +224,7 @@ gradle.rootProject {
                     maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
                 }
 
+                mavenCentral()
                 maven("$globalRootDir/lib-kotlin/")
             }
         }
@@ -248,6 +250,8 @@ gradle.rootProject {
                 maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
                 maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
             }
+
+            mavenCentral()
 
             // Internal standalone shim artifacts are published here and can be resolved
             // from any consumer project in this composite build.

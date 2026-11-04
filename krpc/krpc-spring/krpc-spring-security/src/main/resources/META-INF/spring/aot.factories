@@ -1,0 +1,2 @@
+org.springframework.aot.hint.RuntimeHintsRegistrar=\
+kotlinx.rpc.krpc.spring.security.KrpcSecurityRuntimeHints
