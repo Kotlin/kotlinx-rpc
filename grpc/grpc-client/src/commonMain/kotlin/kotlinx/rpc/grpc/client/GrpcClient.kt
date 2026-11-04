@@ -261,6 +261,9 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
+     *
+     * iOS currently doesn't support this setting, because of a
+     * [bug in the grpc-swift transport](https://github.com/grpc/grpc-swift-nio-transport/issues/207).
      */
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {

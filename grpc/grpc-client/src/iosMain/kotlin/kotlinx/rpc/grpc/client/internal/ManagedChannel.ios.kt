@@ -133,6 +133,12 @@ private class SwiftManagedChannelBuilder(
     private val credentials: GrpcClientCredentials?,
 ) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
     fun buildChannel(config: GrpcClientConfiguration): SwiftManagedChannel {
+        if (config.isMaxInboundMessageSizeExplicitlySet) {
+            error(
+                "maxInboundMessageSize is not supported by the iOS grpc-swift transport. " +
+                    "See https://github.com/grpc/grpc-swift-nio-transport/issues/207"
+            )
+        }
         val clientCredentials = (credentials ?: GrpcTlsClientCredentials()).realClientCredentials
         val plaintext = when (clientCredentials) {
             is GrpcInsecureClientCredentials -> true
