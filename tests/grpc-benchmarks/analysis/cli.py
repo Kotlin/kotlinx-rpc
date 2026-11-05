@@ -2,8 +2,8 @@
 
 Called by the `bench` script:
 
-    python3 analysis/cli.py analyze RUN_DIR [--format table|csv] [--output FILE]
-    python3 analysis/cli.py compare BASELINE CANDIDATE [--format table|csv] [--output FILE]
+    python3 analysis/cli.py analyze RUN_DIR [--format table|csv|html] [--output FILE]
+    python3 analysis/cli.py compare BASELINE CANDIDATE [--format table|csv|html] [--output FILE]
     python3 analysis/cli.py equivalence MATRIX_JSON MATRIX_JSON ...
     python3 analysis/cli.py order SEED COUNT
 """
@@ -23,14 +23,6 @@ if __package__ in (None, ""):
     __package__ = "analysis"
 
 from .artifacts import ArtifactError, load_run
-from .html_report import analyze_html, comparison_html
-from .report import (
-    comparison_csv,
-    comparison_table,
-    compare_runs,
-    run_summary_csv,
-    summarize_run,
-)
 
 EXIT_OK = 0
 EXIT_USAGE = 2
@@ -80,6 +72,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _analyze(arguments) -> int:
+    from .report import run_summary_csv, summarize_run
+
     try:
         runs = [load_run(run_dir) for run_dir in arguments.runs]
     except ArtifactError as error:
@@ -92,6 +86,8 @@ def _analyze(arguments) -> int:
         if not arguments.output:
             print("error: --format html needs --output FILE.html", file=sys.stderr)
             return EXIT_USAGE
+        from .html_report import analyze_html
+
         _write(analyze_html(runs), arguments.output)
         return EXIT_OK
     else:
@@ -101,6 +97,8 @@ def _analyze(arguments) -> int:
 
 
 def _compare(arguments) -> int:
+    from .report import comparison_csv, comparison_table, compare_runs
+
     try:
         baseline_runs, baseline_label, baseline_implementation = _select_side(arguments.baseline)
         candidate_runs, candidate_label, candidate_implementation = _select_side(arguments.candidate)
@@ -121,6 +119,8 @@ def _compare(arguments) -> int:
         if not arguments.output:
             print("error: --format html needs --output FILE.html", file=sys.stderr)
             return EXIT_USAGE
+        from .html_report import comparison_html
+
         _write(comparison_html(rows, notes, baseline_label, candidate_label), arguments.output)
         return EXIT_OK
     else:

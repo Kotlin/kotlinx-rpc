@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from statistics import median
 import os
 from dataclasses import dataclass, field
 from typing import Any
@@ -284,7 +285,7 @@ def trial_metrics(trial: Trial) -> dict[str, float | None]:
 
     for event in ("time_to_first_response_ns", "final_response_latency_ns", "stream_duration_ns"):
         values = trial.events(event)
-        metrics[f"{event}_us"] = _median(values) / 1000.0 if values else None
+        metrics[f"{event}_us"] = median(values) / 1000.0 if values else None
 
     # CPU efficiency of the measured phase. A platform that can't read its process
     # counters reports no CPU values, and these metrics stay unset.
@@ -310,14 +311,6 @@ def _percentile_us(sorted_samples: list[int], percentile: str) -> float:
     fraction = {"p50": 0.50, "p90": 0.90, "p95": 0.95, "p99": 0.99}[percentile]
     index = int(fraction * (len(sorted_samples) - 1) + 0.5)
     return sorted_samples[index] / 1000.0
-
-
-def _median(values: list[int]) -> float:
-    ordered = sorted(values)
-    middle = len(ordered) // 2
-    if len(ordered) % 2 == 1:
-        return float(ordered[middle])
-    return (ordered[middle - 1] + ordered[middle]) / 2.0
 
 
 def percentile_sample_warnings(trials: list[Trial]) -> dict[str, int]:

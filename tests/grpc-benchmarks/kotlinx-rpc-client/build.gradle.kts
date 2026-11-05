@@ -43,14 +43,6 @@ kotlin {
             }
         }
 
-        commonTest {
-            kotlin.srcDir(sharedKotlinClientSources.dir("commonTest/kotlin"))
-
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
-
         iosMain {
             kotlin.srcDir(sharedKotlinClientSources.dir("iosMain/kotlin"))
         }

@@ -5,7 +5,11 @@ from __future__ import annotations
 import csv
 import io
 import math
+from statistics import median
 from dataclasses import dataclass
+from itertools import groupby
+
+from tabulate import tabulate
 
 from .artifacts import (
     Run,
@@ -203,13 +207,17 @@ def summarize_run(run: Run) -> str:
                 continue
             lines.append(f"  {implementation} ({len(completed)} completed trials)")
             metrics = [trial_metrics(trial) for trial in completed]
+            table = []
             for metric in SUMMARY_METRICS:
                 values = [m[metric] for m in metrics if m.get(metric) is not None]
-                if not values:
-                    continue
-                lines.append(
-                    f"    {METRIC_LABELS.get(metric, metric):32} median {_distribution(values, metric)}"
-                )
+                if values:
+                    table.append([
+                        METRIC_LABELS.get(metric, metric),
+                        format_value(median(values), metric),
+                        format_value(min(values), metric),
+                        format_value(max(values), metric),
+                    ])
+            lines.append(tabulate(table, headers=["metric", "median", "min", "max"], disable_numparse=True))
             warnings = percentile_sample_warnings(completed)
             if warnings:
                 flagged = ", ".join(f"{name} in {count} trials" for name, count in warnings.items())
@@ -217,14 +225,6 @@ def summarize_run(run: Run) -> str:
         lines.append("")
 
     return "\n".join(lines)
-
-
-def _distribution(values: list[float], metric: str) -> str:
-    ordered = sorted(values)
-    median_value = ordered[len(ordered) // 2]
-    low = ordered[0]
-    high = ordered[-1]
-    return f"{format_value(median_value, metric)} [{format_value(low, metric)} .. {format_value(high, metric)}] over {len(ordered)} trials"
 
 
 def run_summary_csv(runs: list[Run]) -> str:
@@ -250,17 +250,9 @@ def run_summary_csv(runs: list[Run]) -> str:
                         continue
                     writer.writerow([
                         run.run_id, implementation, benchmark, case, len(completed), failed,
-                        metric, _csv_number(_median(values)), _csv_number(min(values)), _csv_number(max(values)),
+                        metric, _csv_number(median(values)), _csv_number(min(values)), _csv_number(max(values)),
                     ])
     return output.getvalue()
-
-
-def _median(values: list[float]) -> float:
-    ordered = sorted(values)
-    middle = len(ordered) // 2
-    if len(ordered) % 2 == 1:
-        return ordered[middle]
-    return (ordered[middle - 1] + ordered[middle]) / 2.0
 
 
 def _csv_number(value: float) -> str:
@@ -356,28 +348,31 @@ def comparison_table(rows: list[ComparisonRow], notes: list[str],
     lines.append(f"baseline: {baseline_label}")
     lines.append(f"candidate: {candidate_label}")
     lines.append("")
-    current_workload = None
-    for row in rows:
-        workload = f"{row.benchmark} / {row.case}"
-        if workload != current_workload:
-            lines.append(workload)
-            current_workload = workload
-        comparison = row.comparison
-        interval = (
-            f"[{format_ratio(comparison.ratio_interval[0])} .. {format_ratio(comparison.ratio_interval[1])}]"
-            if comparison.ratio_interval
-            else "[no interval]"
-        )
-        p_value = f"p={comparison.p_value:.3f}" if comparison.p_value is not None else "p=n/a"
-        base = format_value(comparison.baseline_median, row.metric)
-        cand = format_value(comparison.candidate_median, row.metric)
-        direction = "lower is better" if row.lower_is_better else "higher is better"
-        lines.append(
-            f"  {row.label:32} {base} -> {cand}  ratio {format_ratio(comparison.ratio)} {interval}"
-            f"  {p_value}  {comparison.verdict} ({direction})"
-        )
-        if comparison.confidence == "low":
-            lines.append(f"    confidence: low, fewer than 5 trials on a side")
+    for (benchmark, case), workload_rows in groupby(rows, key=lambda row: (row.benchmark, row.case)):
+        lines.append(f"{benchmark} / {case}")
+        table = []
+        for row in workload_rows:
+            comparison = row.comparison
+            interval = (
+                f"{format_ratio(comparison.ratio_interval[0])} .. {format_ratio(comparison.ratio_interval[1])}"
+                if comparison.ratio_interval else "n/a"
+            )
+            table.append([
+                row.label,
+                format_value(comparison.baseline_median, row.metric),
+                format_value(comparison.candidate_median, row.metric),
+                format_ratio(comparison.ratio),
+                interval,
+                f"{comparison.p_value:.3f}" if comparison.p_value is not None else "n/a",
+                comparison.verdict,
+                comparison.confidence,
+                "lower" if row.lower_is_better else "higher",
+            ])
+        lines.append(tabulate(
+            table,
+            headers=["metric", "baseline", "candidate", "ratio", "95% interval", "p", "verdict", "confidence", "better"],
+            disable_numparse=True,
+        ))
     detected = sum(1 for row in rows if row.comparison.difference_detected)
     inconclusive = sum(1 for row in rows if not row.comparison.difference_detected)
     lines.append("")

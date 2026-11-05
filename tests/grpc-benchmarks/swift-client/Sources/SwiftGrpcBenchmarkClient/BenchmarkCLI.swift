@@ -115,7 +115,7 @@ struct BenchmarkCLI: Sendable {
     }
 
     private func parsePing(_ arguments: [String]) throws -> ParsedCommand {
-        var target = try ServerTarget.parse("localhost:50051")
+        var target = ServerTarget(port: 50051)
         var format = "human"
         var timeoutSeconds = 30
         var index = 0
@@ -126,8 +126,12 @@ struct BenchmarkCLI: Sendable {
             }
             let value = arguments[index + 1]
             switch option {
-            case "--target":
-                target = try ServerTarget.parse(value)
+            case "--port":
+                let port = try parsePositiveInteger(value, option: option)
+                guard port <= 65_535 else {
+                    throw CLIError.usage("--port must be between 1 and 65535")
+                }
+                target = ServerTarget(port: port)
             case "--format":
                 guard value == "human" || value == "json" else {
                     throw CLIError.usage("Invalid --format '\(value)'; expected human or json")
@@ -151,7 +155,7 @@ struct BenchmarkCLI: Sendable {
             throw CLIError.usage("Unknown benchmark '\(benchmarkName)'. Run 'list' to see the registered benchmarks.")
         }
 
-        var target = try ServerTarget.parse("localhost:50051")
+        var target = ServerTarget(port: 50051)
         var caseName: String?
         var overrides = BenchmarkOverrides()
         var injectedDelayMs = 0
@@ -168,8 +172,12 @@ struct BenchmarkCLI: Sendable {
             let value = arguments[index + 1]
 
             switch option {
-            case "--target":
-                target = try ServerTarget.parse(value)
+            case "--port":
+                let port = try parsePositiveInteger(value, option: option)
+                guard port <= 65_535 else {
+                    throw CLIError.usage("--port must be between 1 and 65535")
+                }
+                target = ServerTarget(port: port)
             case "--case":
                 caseName = value
             case "--warmup":
@@ -450,7 +458,7 @@ struct BenchmarkCLI: Sendable {
         Usage: swift-grpc-benchmark-client run <benchmark|all> [options]
 
         Options:
-          --target HOST:PORT       Benchmark server (default: localhost:50051)
+          --port PORT              Local benchmark server port (default: 50051)
           --case NAME              Run one named benchmark case
           --warmup COUNT           Warmup operations before measurement
           --operations COUNT       Measured operations
@@ -467,7 +475,7 @@ struct BenchmarkCLI: Sendable {
         Usage: swift-grpc-benchmark-client ping [options]
 
         Options:
-          --target HOST:PORT  Benchmark server (default: localhost:50051)
+          --port PORT         Local benchmark server port (default: 50051)
           --timeout SECONDS   Readiness timeout (default: 30)
           --format human|json Output format (default: human)
         """

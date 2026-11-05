@@ -99,11 +99,8 @@ private class PingCommand(
     override fun help(context: Context): String =
         "Check that the server accepts a call, and report the connection readiness time."
 
-    private val target by option(
-        "--target",
-        help = "Benchmark server",
-        metavar = "HOST:PORT",
-    ).default("localhost:50051")
+    private val port by option("--port", help = "Local benchmark server port")
+        .int().default(50051).check("must be between 1 and 65535") { it in 1..65_535 }
 
     private val timeoutSeconds by option("--timeout", help = "Readiness timeout in seconds").int()
         .default(30)
@@ -114,12 +111,7 @@ private class PingCommand(
         .default("human")
 
     override fun run() {
-        val serverTarget = try {
-            ServerTarget.parse(target)
-        } catch (error: IllegalArgumentException) {
-            echo(error.message ?: "Invalid target '$target'.", err = true)
-            throw ProgramResult(2)
-        }
+        val serverTarget = ServerTarget(port)
         val ready = runBlocking {
             val client = GrpcClient(serverTarget.host, serverTarget.port) { credentials = plaintext() }
             try {
@@ -157,11 +149,8 @@ private class RunBenchmarksCommand(
         it == "all" || registry.find(it) != null
     }
 
-    private val target by option(
-        "--target",
-        help = "Benchmark server",
-        metavar = "HOST:PORT",
-    ).default("localhost:50051")
+    private val port by option("--port", help = "Local benchmark server port")
+        .int().default(50051).check("must be between 1 and 65535") { it in 1..65_535 }
 
     private val warmupOperations by nonNegativeIntOption("--warmup", "Warmup operations before measurement")
     private val operations by positiveIntOption("--operations", "Measured operations")
@@ -211,11 +200,7 @@ private class RunBenchmarksCommand(
             cases.map { benchmark to it }
         }
         val overrides = BenchmarkOverrides(warmupOperations, operations, concurrency, requestBytes, responseBytes)
-        val serverTarget = try {
-            ServerTarget.parse(target)
-        } catch (error: IllegalArgumentException) {
-            currentContext.fail(error.message ?: "Invalid target '$target'.")
-        }
+        val serverTarget = ServerTarget(port)
         var progressLineLength = 0
 
         val records = try {
