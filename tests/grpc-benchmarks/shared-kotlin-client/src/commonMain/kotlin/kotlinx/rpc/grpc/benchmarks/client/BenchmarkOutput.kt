@@ -40,6 +40,7 @@ private fun TrialRecord.renderHuman(): String {
         appendLine("status: ${trial.status.wireName}${trial.error?.let { " ($it)" } ?: ""}")
         appendLine("operations: ${parameters.operations} (${parameters.warmupOperations} warmup) ${trial.operationUnit.wireName}s")
         appendLine("concurrency: ${parameters.concurrency}")
+        if (parameters.pauseMs > 0) appendLine("pause before each group: ${parameters.pauseMs} ms")
         appendLine("payload: ${parameters.requestBytes} B request / ${parameters.responseBytes} B response")
         appendLine("injected delay: ${trial.injectedDelayMs} ms per operation")
         appendLine("elapsed: ${trial.elapsedNanos.formatNanos(DurationUnit.SECONDS, 6)} s")
@@ -89,7 +90,7 @@ private fun TrialRecord.renderHuman(): String {
 
 private const val CSV_HEADER =
     "schema_version,implementation,platform,benchmark,case,status,latency_metric,operation_unit," +
-        "injected_delay_ms,target,warmup_operations,operations,concurrency,request_bytes,response_bytes," +
+        "injected_delay_ms,target,warmup_operations,operations,concurrency,request_bytes,response_bytes,pause_ms," +
         "elapsed_seconds,operations_per_second,request_messages,response_messages," +
         "request_messages_per_second,response_messages_per_second," +
         "application_request_bytes_per_second,application_response_bytes_per_second," +
@@ -121,6 +122,7 @@ private fun TrialRecord.renderCsv(): String {
         trial.parameters.concurrency.toString(),
         trial.parameters.requestBytes.toString(),
         trial.parameters.responseBytes.toString(),
+        trial.parameters.pauseMs.toString(),
         trial.elapsedNanos.formatNanos(DurationUnit.SECONDS, 6),
         callsPerSecond,
         trial.requestMessages?.toString() ?: "",

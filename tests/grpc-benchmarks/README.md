@@ -102,6 +102,7 @@ local patch that clears reused response payloads for zero-byte responses.
 | Workload | Cases |
 |---|---|
 | `unary-latency` | Sequential empty calls |
+| `unary-sparse-bursts` | Single calls after 1/10/100 ms pauses, bursts of 8/32 calls after 10 ms pauses |
 | `unary-throughput` | 1 KiB payload, 16 workers |
 | `unary-payload-sweep` | 64 B through 4 MiB minus 1 KiB, symmetric and asymmetric payloads |
 | `unary-concurrency-sweep` | 1 through 128 workers, empty and 1 KiB payloads |
@@ -111,6 +112,17 @@ local patch that clears reused response payloads for zero-byte responses.
 | `bidi-full-duplex` | Balanced and asymmetric echo streams |
 | `stream-message-overhead` | 64 MiB total with different message sizes |
 | `stream-concurrency-sweep` | 1 through 16 streams |
+
+`unary-sparse-bursts` uses 1 KiB requests and responses on a warm channel.
+Each group starts after the previous group completes and an idle pause elapses.
+`concurrency` sets the group size, and `operations` counts individual calls.
+Warmup uses the same pauses and groups. Per-call latency excludes idle pauses.
+Elapsed time and rates include pauses. JSON records include `parameters.pause_ms`.
+
+```shell
+./bench run unary-sparse-bursts
+./bench run unary-sparse-bursts --case burst-8-10ms
+```
 
 The legacy client has a fixed 4 MiB receive limit. The payload sweep leaves
 1 KiB for serialization overhead. Server streaming cancels unbounded RPCs.

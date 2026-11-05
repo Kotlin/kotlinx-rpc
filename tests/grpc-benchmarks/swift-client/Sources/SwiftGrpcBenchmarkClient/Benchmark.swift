@@ -88,7 +88,8 @@ struct BenchmarkOverrides: Equatable, Sendable {
             operations: self.operations ?? parameters.operations,
             concurrency: self.concurrency ?? parameters.concurrency,
             requestBytes: self.requestBytes ?? parameters.requestBytes,
-            responseBytes: self.responseBytes ?? parameters.responseBytes
+            responseBytes: self.responseBytes ?? parameters.responseBytes,
+            pauseMs: parameters.pauseMs
         )
     }
 }
@@ -99,13 +100,15 @@ struct BenchmarkParameters: Sendable {
     let concurrency: Int
     let requestBytes: Int
     let responseBytes: Int
+    let pauseMs: Int
 
     init(
         warmupOperations: Int,
         operations: Int,
         concurrency: Int,
         requestBytes: Int,
-        responseBytes: Int
+        responseBytes: Int,
+        pauseMs: Int = 0
     ) throws {
         guard warmupOperations >= 0 else { throw BenchmarkConfigurationError("--warmup must be at least 0") }
         guard operations > 0 else { throw BenchmarkConfigurationError("--operations must be greater than 0") }
@@ -124,7 +127,9 @@ struct BenchmarkParameters: Sendable {
         self.operations = operations
         self.concurrency = concurrency
         self.requestBytes = requestBytes
+        guard pauseMs >= 0 else { throw BenchmarkConfigurationError("Pause must be at least 0 ms") }
         self.responseBytes = responseBytes
+        self.pauseMs = pauseMs
     }
 
     enum CodingKeys: String, CodingKey {
@@ -133,6 +138,7 @@ struct BenchmarkParameters: Sendable {
         case concurrency
         case requestBytes = "request_bytes"
         case responseBytes = "response_bytes"
+        case pauseMs = "pause_ms"
     }
 }
 
@@ -144,6 +150,9 @@ extension BenchmarkParameters: Encodable, Equatable {
         try container.encode(self.concurrency, forKey: .concurrency)
         try container.encode(self.requestBytes, forKey: .requestBytes)
         try container.encode(self.responseBytes, forKey: .responseBytes)
+        if self.pauseMs > 0 {
+            try container.encode(self.pauseMs, forKey: .pauseMs)
+        }
     }
 }
 

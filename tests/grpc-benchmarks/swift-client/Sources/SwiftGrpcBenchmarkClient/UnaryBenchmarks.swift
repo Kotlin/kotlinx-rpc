@@ -22,6 +22,17 @@ func unaryBenchmarks() -> [any Benchmark] {
             ]
         ),
         unaryBenchmark(
+            name: "unary-sparse-bursts",
+            description: "Unary latency after idle pauses and in short concurrent bursts",
+            cases: [
+                benchmarkCase(name: "sparse-1ms", warmupOperations: 100, operations: 2_000, concurrency: 1, requestBytes: 1_024, responseBytes: 1_024, pauseMs: 1),
+                benchmarkCase(name: "sparse-10ms", warmupOperations: 50, operations: 500, concurrency: 1, requestBytes: 1_024, responseBytes: 1_024, pauseMs: 10),
+                benchmarkCase(name: "sparse-100ms", warmupOperations: 10, operations: 100, concurrency: 1, requestBytes: 1_024, responseBytes: 1_024, pauseMs: 100),
+                benchmarkCase(name: "burst-8-10ms", warmupOperations: 80, operations: 1_600, concurrency: 8, requestBytes: 1_024, responseBytes: 1_024, pauseMs: 10),
+                benchmarkCase(name: "burst-32-10ms", warmupOperations: 320, operations: 3_200, concurrency: 32, requestBytes: 1_024, responseBytes: 1_024, pauseMs: 10),
+            ]
+        ),
+        unaryBenchmark(
             name: "unary-throughput",
             description: "Warm concurrent unary call throughput",
             cases: [
@@ -160,7 +171,8 @@ func benchmarkCase(
     operations: Int,
     concurrency: Int,
     requestBytes: Int,
-    responseBytes: Int
+    responseBytes: Int,
+    pauseMs: Int = 0
 ) -> BenchmarkCase {
     BenchmarkCase(
         name: name,
@@ -169,7 +181,8 @@ func benchmarkCase(
             operations: operations,
             concurrency: concurrency,
             requestBytes: requestBytes,
-            responseBytes: responseBytes
+            responseBytes: responseBytes,
+            pauseMs: pauseMs
         )
     )
 }

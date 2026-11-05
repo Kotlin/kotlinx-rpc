@@ -27,6 +27,18 @@ internal fun unaryBenchmarks(backend: BenchmarkBackend) = listOf(
     ),
     unaryBenchmark(
         backend = backend,
+        name = "unary-sparse-bursts",
+        description = "Unary latency after idle pauses and in short concurrent bursts",
+        cases = listOf(
+            benchmarkCase("sparse-1ms", 100, 2_000, 1, 1_024, 1_024, pauseMs = 1),
+            benchmarkCase("sparse-10ms", 50, 500, 1, 1_024, 1_024, pauseMs = 10),
+            benchmarkCase("sparse-100ms", 10, 100, 1, 1_024, 1_024, pauseMs = 100),
+            benchmarkCase("burst-8-10ms", 80, 1_600, 8, 1_024, 1_024, pauseMs = 10),
+            benchmarkCase("burst-32-10ms", 320, 3_200, 32, 1_024, 1_024, pauseMs = 10),
+        ),
+    ),
+    unaryBenchmark(
+        backend = backend,
         name = "unary-throughput",
         description = "Warm concurrent unary call throughput",
         cases = listOf(
@@ -146,6 +158,7 @@ internal fun benchmarkCase(
     concurrency: Int,
     requestBytes: Int,
     responseBytes: Int,
+    pauseMs: Int = 0,
 ): BenchmarkCase = BenchmarkCase(
     name = name,
     parameters = BenchmarkParameters(
@@ -154,6 +167,7 @@ internal fun benchmarkCase(
         concurrency = concurrency,
         requestBytes = requestBytes,
         responseBytes = responseBytes,
+        pauseMs = pauseMs,
     ),
 )
 

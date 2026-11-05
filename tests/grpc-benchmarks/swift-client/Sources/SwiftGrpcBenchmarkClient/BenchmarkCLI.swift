@@ -435,7 +435,8 @@ struct BenchmarkCLI: Sendable {
                     "    \(benchmarkCase.name.padding(toLength: 18, withPad: " ", startingAt: 0)) " +
                         "warmup=\(parameters.warmupOperations), operations=\(parameters.operations), " +
                         "concurrency=\(parameters.concurrency), " +
-                        "request=\(parameters.requestBytes) B, response=\(parameters.responseBytes) B"
+                        "request=\(parameters.requestBytes) B, response=\(parameters.responseBytes) B" +
+                        (parameters.pauseMs > 0 ? ", pause=\(parameters.pauseMs) ms" : "")
                 )
             }
         }
@@ -587,7 +588,7 @@ private func writeError(_ message: String) {
 
 let csvHeader =
     "schema_version,implementation,platform,benchmark,case,status,latency_metric,operation_unit," +
-    "injected_delay_ms,target,warmup_operations,operations,concurrency,request_bytes,response_bytes," +
+    "injected_delay_ms,target,warmup_operations,operations,concurrency,request_bytes,response_bytes,pause_ms," +
     "elapsed_seconds,operations_per_second,request_messages,response_messages," +
     "request_messages_per_second,response_messages_per_second," +
     "application_request_bytes_per_second,application_response_bytes_per_second," +
@@ -622,6 +623,7 @@ func renderCSV(record: TrialRecord) -> String {
         String(trial.parameters.concurrency),
         String(trial.parameters.requestBytes),
         String(trial.parameters.responseBytes),
+        String(trial.parameters.pauseMs),
         elapsedSeconds.formatted(6),
         callsPerSecond,
         trial.requestMessages.map(String.init) ?? "",
@@ -686,6 +688,9 @@ func renderHuman(record: TrialRecord) -> String {
     lines.append("status: \(trial.status.rawValue)\(trial.error.map { " (\($0))" } ?? "")")
     lines.append("operations: \(parameters.operations) (\(parameters.warmupOperations) warmup) \(trial.operationUnit.rawValue)s")
     lines.append("concurrency: \(parameters.concurrency)")
+    if parameters.pauseMs > 0 {
+        lines.append("pause before each group: \(parameters.pauseMs) ms")
+    }
     lines.append("payload: \(parameters.requestBytes) B request / \(parameters.responseBytes) B response")
     lines.append("injected delay: \(trial.injectedDelayMs) ms per operation")
     lines.append("elapsed: \(elapsedSeconds.formatted(6)) s")

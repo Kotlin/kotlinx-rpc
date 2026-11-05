@@ -47,6 +47,7 @@ struct CallBenchmark: Benchmark {
                 concurrency: parameters.concurrency,
                 injectedDelayMs: injectedDelayMs,
                 recordLatency: false,
+                pauseMs: parameters.pauseMs,
                 call: call.execute
             )
         } catch let failure as OperationFailure {
@@ -67,6 +68,7 @@ struct CallBenchmark: Benchmark {
                 concurrency: parameters.concurrency,
                 injectedDelayMs: injectedDelayMs,
                 recordLatency: true,
+                pauseMs: parameters.pauseMs,
                 call: call.execute
             )
             let resourcesAfter = processResourceUsage()
@@ -169,9 +171,38 @@ struct CallBenchmark: Benchmark {
         concurrency: Int,
         injectedDelayMs: Int,
         recordLatency: Bool,
+        pauseMs: Int = 0,
         call: @escaping @Sendable () async throws -> Void
     ) async throws -> [Int64] {
         guard count > 0 else { return [] }
+
+        if pauseMs > 0 {
+            var samples: [Int64] = []
+            if recordLatency { samples.reserveCapacity(count) }
+            var completed = 0
+            do {
+                while completed < count {
+                    // Idle time is outside each RPC sample, including the first group after warmup.
+                    try await Task.sleep(nanoseconds: UInt64(pauseMs) * 1_000_000)
+                    let batchSize = min(concurrency, count - completed)
+                    samples += try await Self.executeOperations(
+                        count: batchSize,
+                        concurrency: concurrency,
+                        injectedDelayMs: injectedDelayMs,
+                        recordLatency: recordLatency,
+                        call: call
+                    )
+                    completed += batchSize
+                }
+            } catch let failure as OperationFailure {
+                throw OperationFailure(
+                    completedOperations: Int64(completed) + failure.completedOperations,
+                    samplesSoFar: samples + failure.samplesSoFar,
+                    cause: failure.cause
+                )
+            }
+            return samples
+        }
 
         let workerCount = min(count, concurrency)
         let baseCallsPerWorker = count / workerCount
