@@ -21,12 +21,12 @@ private val excludedProjects = setOf(
     "grpc-test-server",
     "test-protos",
     "test-utils",
+    "grpc-benchmarks",
+    "protos",
+    "kotlinx-rpc-client",
 )
 
-// Benchmark modules have generic names (e.g. `protos`), so they are excluded by path instead
-private const val EXCLUDED_PATH_PREFIX = ":tests:grpc-benchmarks"
-
-val Project.enableAbiValidation get() = name !in excludedProjects && !path.startsWith(EXCLUDED_PATH_PREFIX)
+val Project.enableAbiValidation get() = name !in excludedProjects
 
 @OptIn(ExperimentalAbiValidation::class)
 fun AbiValidationExtension.configureAbiFilters() {

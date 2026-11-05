@@ -38,10 +38,6 @@ let package = Package(
                 .plugin(name: "GRPCProtobufGenerator", package: "grpc-swift-protobuf"),
             ]
         ),
-        .testTarget(
-            name: "SwiftGrpcBenchmarkClientTests",
-            dependencies: ["SwiftGrpcBenchmarkClient"]
-        ),
     ],
     swiftLanguageModes: [.v6]
 )

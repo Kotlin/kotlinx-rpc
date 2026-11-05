@@ -65,7 +65,7 @@ def main() -> int:
         "order": setting("KXRPC_BENCH_ORDER", "random"),
         "seed": number("KXRPC_BENCH_SEED", "0"),
         "platform": setting("KXRPC_BENCH_PLATFORM_LABEL", "unknown"),
-        "target": setting("KXRPC_BENCH_TARGET", "unknown"),
+        "target": f"localhost:{number('KXRPC_BENCH_PORT', '50051')}",
         "simulator": setting("KXRPC_BENCH_SIMULATOR", "not applicable"),
         "implementations": [
             name.strip()

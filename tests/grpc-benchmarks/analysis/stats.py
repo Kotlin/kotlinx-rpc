@@ -1,26 +1,13 @@
-"""Statistics for benchmark comparisons.
-
-The experimental unit is one trial: one client process that ran one benchmark
-case once. Latency percentiles and rates are computed per trial, and the
-uncertainty of a comparison comes from the spread between trials. A single
-trial never proves a difference, no matter how many latency samples it holds.
-
-Sources of the method:
-
-- Google Benchmark reports the mean, median, standard deviation, and
-  coefficient of variation over repetitions, and its `compare.py` tool runs a
-  Mann-Whitney U test, which needs at least nine repetitions to be meaningful.
-- JMH treats run-to-run variance as the quantity to measure, and aggregates
-  results only across separate process launches.
-
-The implementation uses only the Python standard library.
-"""
+"""Compare independent benchmark trials with a bootstrap interval and Mann-Whitney U test."""
 
 from __future__ import annotations
 
 import math
-import random
 from dataclasses import dataclass
+from statistics import median
+
+import numpy as np
+from scipy.stats import bootstrap, mannwhitneyu
 
 # Google Benchmark's compare.py documents this bound for the Mann-Whitney U test.
 MIN_TRIALS_FOR_U_TEST = 8
@@ -57,14 +44,6 @@ class Comparison:
         return "no difference detected"
 
 
-def median(values: list[float]) -> float:
-    ordered = sorted(values)
-    middle = len(ordered) // 2
-    if len(ordered) % 2 == 1:
-        return ordered[middle]
-    return (ordered[middle - 1] + ordered[middle]) / 2.0
-
-
 def compare_metric(
     metric: str,
     baseline: list[float],
@@ -96,7 +75,6 @@ def compare_metric(
     else:
         ratio = candidate_median / baseline_median
 
-    total_trials = len(baseline) + len(candidate)
     if min(len(baseline), len(candidate)) < 3:
         # With fewer than three trials per side the interval is meaningless.
         return Comparison(
@@ -106,7 +84,7 @@ def compare_metric(
 
     interval = _bootstrap_ratio_interval(baseline, candidate)
     p_value = (
-        _mann_whitney_u(baseline, candidate)
+        float(mannwhitneyu(baseline, candidate, alternative="two-sided", method="asymptotic").pvalue)
         if min(len(baseline), len(candidate)) >= MIN_TRIALS_FOR_U_TEST
         else None
     )
@@ -130,78 +108,23 @@ def compare_metric(
 
 
 def _bootstrap_ratio_interval(baseline: list[float], candidate: list[float]) -> tuple[float, float]:
-    """The 95th percentile interval of the ratio of medians over trial resamples."""
-    generator = random.Random(BOOTSTRAP_SEED)
-    ratios: list[float] = []
-    for _ in range(BOOTSTRAP_RESAMPLES):
-        resampled_baseline = _resample(baseline, generator)
-        resampled_candidate = _resample(candidate, generator)
-        baseline_median = median(resampled_baseline)
-        candidate_median = median(resampled_candidate)
-        if baseline_median == 0:
-            continue
-        ratios.append(candidate_median / baseline_median)
-    ratios.sort()
-    if not ratios:
+    """Return the 95% percentile interval of the ratio of independent trial medians."""
+    def ratio(base, candidate, axis=-1):
+        denominator = np.median(base, axis=axis)
+        numerator = np.median(candidate, axis=axis)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            return numerator / denominator
+
+    result = bootstrap(
+        (np.asarray(baseline), np.asarray(candidate)),
+        ratio,
+        paired=False,
+        vectorized=True,
+        n_resamples=BOOTSTRAP_RESAMPLES,
+        method="percentile",
+        rng=np.random.default_rng(BOOTSTRAP_SEED),
+    )
+    interval = result.confidence_interval
+    if not np.isfinite([interval.low, interval.high]).all():
         return (0.0, math.inf)
-    lower = ratios[int(0.025 * (len(ratios) - 1))]
-    upper = ratios[int(0.975 * (len(ratios) - 1))]
-    return (lower, upper)
-
-
-def _resample(values: list[float], generator: random.Random) -> list[float]:
-    count = len(values)
-    return [values[generator.randrange(count)] for _ in range(count)]
-
-
-def _mann_whitney_u(baseline: list[float], candidate: list[float]) -> float:
-    """Two-sided p-value of the Mann-Whitney U test with the normal approximation.
-
-    The null hypothesis is that neither group tends to produce larger values.
-    """
-    combined = [(value, 0) for value in baseline] + [(value, 1) for value in candidate]
-    combined.sort(key=lambda item: item[0])
-
-    # Average ranks over ties.
-    ranks: list[float] = []
-    index = 0
-    while index < len(combined):
-        end = index
-        while end + 1 < len(combined) and combined[end + 1][0] == combined[index][0]:
-            end += 1
-        average_rank = (index + end) / 2.0 + 1.0
-        ranks.extend([average_rank] * (end - index + 1))
-        index = end + 1
-
-    baseline_rank_sum = sum(
-        rank for rank, (_, group) in zip(ranks, combined) if group == 0
-    )
-    n_baseline = len(baseline)
-    n_candidate = len(candidate)
-    u_baseline = baseline_rank_sum - n_baseline * (n_baseline - 1) / 2.0
-    u = min(u_baseline, n_baseline * n_candidate - u_baseline)
-
-    # Normal approximation with the tie correction.
-    total = n_baseline + n_candidate
-    squared_rank_sum = 0.0
-    index = 0
-    while index < len(combined):
-        end = index
-        while end + 1 < len(combined) and combined[end + 1][0] == combined[index][0]:
-            end += 1
-        tie_count = end - index + 1
-        squared_rank_sum += tie_count ** 3 - tie_count
-        index = end + 1
-    variance = (
-        n_baseline * n_candidate / 12.0
-        * ((total + 1) - squared_rank_sum / (total * (total - 1)))
-    )
-    mean_u = n_baseline * n_candidate / 2.0
-    if variance <= 0:
-        return 1.0
-    z = (u - mean_u + 0.5) / math.sqrt(variance)
-    return 2.0 * _normal_cdf(z)
-
-
-def _normal_cdf(value: float) -> float:
-    return 0.5 * (1.0 + math.erf(value / math.sqrt(2.0)))
+    return (float(interval.low), float(interval.high))

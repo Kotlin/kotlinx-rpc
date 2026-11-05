@@ -18,7 +18,7 @@ source "${BENCH_DIR}/scripts/transient-command.sh"
 
 # Defaults. The bench.config file overrides them, and the command line
 # overrides the config file.
-KXRPC_BENCH_TARGET="${KXRPC_BENCH_TARGET:-localhost:50051}"
+KXRPC_BENCH_PORT="${KXRPC_BENCH_PORT:-50051}"
 KXRPC_BENCH_PLATFORM="${KXRPC_BENCH_PLATFORM:-ios}"
 KXRPC_BENCH_IMPLEMENTATIONS="${KXRPC_BENCH_IMPLEMENTATIONS:-current,legacy,swift}"
 KXRPC_BENCH_OUTPUT_DIR="${KXRPC_BENCH_OUTPUT_DIR:-${BENCH_DIR}/output}"
@@ -58,7 +58,7 @@ Commands:
 Common options of `run`:
   --implementation current,legacy,swift   Implementations to measure (default: all three)
   --platform ios|macos|jvm               Execution platform (default: ios; only `current` builds macos and jvm)
-  --target HOST:PORT                     Benchmark server (default: localhost:50051)
+  --port PORT                            Local benchmark server port (default: 50051)
   --preset smoke|default|rigorous        1, 3, or 9 repetitions per implementation and case
   --repetitions N                        Repetitions, instead of a preset
   --order random|fixed                   Trial order (default: random, seeded)
@@ -293,7 +293,7 @@ cmd_build() {
 # ---------------------------------------------------------------------------
 
 cmd_doctor() (
-    local target="${KXRPC_BENCH_TARGET}"
+    local target="localhost:${KXRPC_BENCH_PORT}"
     local -a implementations=()
     read_lines < <(split_implementations "${KXRPC_BENCH_IMPLEMENTATIONS}")
     implementations=("${BENCH_LINES[@]}")
@@ -336,16 +336,14 @@ cmd_doctor() (
     echo
 
     echo "== benchmark server =="
-    local host="${target%%:*}"
-    local port="${target##*:}"
-    if (echo -n > "/dev/tcp/${host}/${port}") >/dev/null 2>&1; then
+    if (echo -n > "/dev/tcp/localhost/${KXRPC_BENCH_PORT}") >/dev/null 2>&1; then
         echo "tcp ${target}: reachable"
     else
         echo "tcp ${target}: NOT REACHABLE. Start the server with cpp-server/run.sh." >&2
         problems=$((problems + 1))
     fi
     if [[ -e "$(client_binary "${implementations[0]}" "${KXRPC_BENCH_PLATFORM}" 2>/dev/null)" ]]; then
-        if run_client "${implementations[0]}" ping --target "${target}" --format json; then
+        if run_client "${implementations[0]}" ping --port "${KXRPC_BENCH_PORT}" --format json; then
             :
         else
             echo "readiness ping through the ${implementations[0]} client FAILED." >&2
@@ -477,11 +475,11 @@ cmd_run() {
                 KXRPC_BENCH_PLATFORM="$2"; shift 2 ;;
             --platform=*)
                 KXRPC_BENCH_PLATFORM="${1#*=}"; shift ;;
-            --target)
-                [[ $# -lt 2 ]] && die_usage "--target requires a value."
-                KXRPC_BENCH_TARGET="$2"; shift 2 ;;
-            --target=*)
-                KXRPC_BENCH_TARGET="${1#*=}"; shift ;;
+            --port)
+                [[ $# -lt 2 ]] && die_usage "--port requires a value."
+                KXRPC_BENCH_PORT="$2"; shift 2 ;;
+            --port=*)
+                KXRPC_BENCH_PORT="${1#*=}"; shift ;;
             --preset)
                 [[ $# -lt 2 ]] && die_usage "--preset requires a value."
                 preset="$2"; shift 2 ;;
@@ -547,6 +545,7 @@ cmd_run() {
 
     [[ -z "${benchmark}" ]] && die_usage "No benchmark given. Pass a benchmark name or 'all'."
     [[ -n "${preset}" ]] && resolve_preset "${preset}"
+    [[ "${KXRPC_BENCH_PORT}" =~ ^[1-9][0-9]{0,4}$ ]] && (( KXRPC_BENCH_PORT <= 65535 )) || die_usage "--port must be between 1 and 65535."
     [[ "${KXRPC_BENCH_REPETITIONS}" =~ ^[1-9][0-9]*$ ]] || die_usage "--repetitions must be a positive number."
     [[ "${KXRPC_BENCH_ORDER}" == "random" || "${KXRPC_BENCH_ORDER}" == "fixed" ]] || die_usage "--order must be random or fixed."
     [[ -z "${KXRPC_BENCH_SEED}" ]] && KXRPC_BENCH_SEED="$(date +%s)"
@@ -666,7 +665,7 @@ cmd_run() {
         local -a client_arguments=(
             run "${benchmark_name}"
             --case "${case_of_trial}"
-            --target "${KXRPC_BENCH_TARGET}"
+            --port "${KXRPC_BENCH_PORT}"
             --format json
             --platform-label "${platform_label_value}"
         )
@@ -835,7 +834,7 @@ PYINNER
     KXRPC_BENCH_ORDER="${KXRPC_BENCH_ORDER}" \
     KXRPC_BENCH_SEED="${KXRPC_BENCH_SEED}" \
     KXRPC_BENCH_PLATFORM_LABEL="$(platform_label)" \
-    KXRPC_BENCH_TARGET="${KXRPC_BENCH_TARGET}" \
+    KXRPC_BENCH_PORT="${KXRPC_BENCH_PORT}" \
     KXRPC_BENCH_SIMULATOR="${simulator_name}" \
     KXRPC_BENCH_IMPLEMENTATIONS="${KXRPC_BENCH_IMPLEMENTATIONS}" \
     KXRPC_BENCH_BENCHMARK="${benchmark}" \
