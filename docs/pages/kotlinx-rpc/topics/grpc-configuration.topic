@@ -221,11 +221,11 @@
                     <tab id="grpc-ios-cli" title="Command line">
                         <p>Run from the Gradle project root:</p>
                         <code-block lang="Shell">
-                            XCODEPROJ_PATH='/absolute/path/iosApp/iosApp.xcodeproj' \
-                                ./gradlew :shared:integrateLinkagePackage
+                            XCODEPROJ_PATH='path/iosApp/iosApp.xcodeproj' \
+                                ./gradlew :<module>:integrateLinkagePackage
                         </code-block>
                         <p>
-                            Replace <code>:shared</code> with the module that produces the Kotlin framework,
+                            Replace <code><module></code> with the module that produces the Kotlin framework,
                             and supply the path to your <path>.xcodeproj</path> bundle.
                             The task adds a <path>KotlinMultiplatformLinkedPackage</path> directory next to the
                             Xcode project and links it into the app target.
@@ -237,9 +237,9 @@
                                 created with the Kotlin Multiplatform wizard, add it in the same run:
                             </p>
                             <code-block lang="Shell">
-                                XCODEPROJ_PATH='/absolute/path/iosApp/iosApp.xcodeproj' \
-                                GRADLE_PROJECT_PATH=':shared' \
-                                    ./gradlew :shared:integrateEmbedAndSign :shared:integrateLinkagePackage
+                                XCODEPROJ_PATH='path/iosApp/iosApp.xcodeproj' \
+                                GRADLE_PROJECT_PATH=':<module>' \
+                                    ./gradlew :<module>:integrateEmbedAndSign :<module>:integrateLinkagePackage
                             </code-block>
                         </tip>
                     </tab>
