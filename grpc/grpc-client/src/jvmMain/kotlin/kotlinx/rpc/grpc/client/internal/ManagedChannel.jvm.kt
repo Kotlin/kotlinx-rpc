@@ -51,6 +51,7 @@ public actual fun ManagedChannelBuilder(
     return io.grpc.ManagedChannelBuilder.forTarget(target)
 }
 
+@InternalRpcApi
 public fun io.grpc.ManagedChannel.toKotlin(): ManagedChannel {
     return JvmManagedChannel(this)
 }

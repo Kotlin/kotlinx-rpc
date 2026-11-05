@@ -73,7 +73,6 @@ public final class kotlinx/rpc/grpc/GrpcStatusCode : java/lang/Enum {
 	public static synthetic fun asStatus$default (Lkotlinx/rpc/grpc/GrpcStatusCode;Ljava/lang/String;ILjava/lang/Object;)Lio/grpc/Status;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public final fun getValue ()I
-	public final fun getValueAscii ()[B
 	public static fun valueOf (Ljava/lang/String;)Lkotlinx/rpc/grpc/GrpcStatusCode;
 	public static fun values ()[Lkotlinx/rpc/grpc/GrpcStatusCode;
 }

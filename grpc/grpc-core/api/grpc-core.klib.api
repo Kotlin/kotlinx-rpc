@@ -65,8 +65,6 @@ final enum class kotlinx.rpc.grpc/GrpcStatusCode : kotlin/Enum<kotlinx.rpc.grpc/
         final fun <get-entries>(): kotlin.enums/EnumEntries<kotlinx.rpc.grpc/GrpcStatusCode> // kotlinx.rpc.grpc/GrpcStatusCode.entries.<get-entries>|<get-entries>#static(){}[0]
     final val value // kotlinx.rpc.grpc/GrpcStatusCode.value|{}value[0]
         final fun <get-value>(): kotlin/Int // kotlinx.rpc.grpc/GrpcStatusCode.value.<get-value>|<get-value>(){}[0]
-    final val valueAscii // kotlinx.rpc.grpc/GrpcStatusCode.valueAscii|{}valueAscii[0]
-        final fun <get-valueAscii>(): kotlin/ByteArray // kotlinx.rpc.grpc/GrpcStatusCode.valueAscii.<get-valueAscii>|<get-valueAscii>(){}[0]
 
     final fun asException(kotlin/String? = ..., kotlinx.rpc.grpc/GrpcMetadata? = ...): kotlinx.rpc.grpc/GrpcStatusException // kotlinx.rpc.grpc/GrpcStatusCode.asException|asException(kotlin.String?;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
     final fun asStatus(kotlin/String? = ...): kotlinx.rpc.grpc/GrpcStatus // kotlinx.rpc.grpc/GrpcStatusCode.asStatus|asStatus(kotlin.String?){}[0]
