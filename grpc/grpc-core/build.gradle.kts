@@ -10,6 +10,15 @@ plugins {
     alias(libs.plugins.serialization) // for tests
 }
 
+// KXRPC-677: SwiftPM metadata from a test dependency is not discovered through Apple main compilations.
+val iosTestSwiftPMMetadata = configurations.dependencyScope("iosTestSwiftPMMetadata")
+dependencies {
+    iosTestSwiftPMMetadata(projects.grpc.grpcClient)
+}
+configurations.matching { it.name == "swiftPMDependenciesMetadataClasspath" }.configureEach {
+    extendsFrom(iosTestSwiftPMMetadata)
+}
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
