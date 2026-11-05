@@ -11,7 +11,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 /**
  * Base class for exceptions thrown during Protobuf encoding or decoding operations.
  */
-@IntentionallyOpen(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyOpen(reason = ExemptionReason.TODO, description = "review before 1.0")
 public open class ProtobufException : RuntimeException {
     protected constructor(message: String, cause: Throwable? = null) : super(message, cause)
 

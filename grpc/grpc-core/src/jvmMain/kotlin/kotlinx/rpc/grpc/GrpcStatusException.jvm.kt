@@ -5,7 +5,10 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
+@IntentionallyOpen(reason = ExemptionReason.INTEROP, description = "grpc-java type")
 public actual typealias GrpcStatusException = io.grpc.StatusException
 
 @InternalRpcApi

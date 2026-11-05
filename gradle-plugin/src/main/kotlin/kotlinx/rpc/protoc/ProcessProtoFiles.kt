@@ -101,7 +101,7 @@ internal fun Project.registerProcessProtoFilesImportsTask(
  *
  * Registered automatically when proto dependency configurations are used.
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public abstract class ExtractDependencyProtoImports @Inject internal constructor(
     @get:Internal
     override val properties: ProtoTask.Properties,

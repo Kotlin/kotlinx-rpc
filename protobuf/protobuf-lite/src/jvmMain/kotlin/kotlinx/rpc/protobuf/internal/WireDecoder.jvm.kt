@@ -160,7 +160,7 @@ internal class WireDecoderJvm(
 }
 
 
-@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyInlinedLogic(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual inline fun checkForPlatformDecodeException(block: () -> Unit) {
     try {
         return block()

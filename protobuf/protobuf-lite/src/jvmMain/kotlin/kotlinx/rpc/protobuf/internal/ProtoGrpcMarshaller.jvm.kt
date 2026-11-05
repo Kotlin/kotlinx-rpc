@@ -15,7 +15,7 @@ import kotlinx.rpc.grpc.marshaller.internal.OutputStreamMessageWriter
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyInlinedLogic
 
-@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyInlinedLogic(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual inline fun withWireEncoder(
     writer: GrpcMessageWriter,
     crossinline block: (WireEncoder) -> Unit,
@@ -50,7 +50,7 @@ public actual inline fun withWireEncoder(
     }
 }
 
-@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyInlinedLogic(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual inline fun <R> withWireDecoder(
     reader: GrpcMessageReader,
     crossinline block: (WireDecoder) -> R,

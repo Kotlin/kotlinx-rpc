@@ -15,7 +15,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /** Encodes [value] into a byte array. */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 @ExperimentalRpcApi
 public fun <T> GrpcMarshaller<T>.encodeToByteArray(
     value: T,
@@ -42,7 +42,7 @@ public fun <T> GrpcMarshaller<T>.encodeToBuffer(
 }
 
 /** Decodes a value from [bytes]. */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 @ExperimentalRpcApi
 public fun <T> GrpcMarshaller<T>.decodeFromByteArray(
     bytes: ByteArray,

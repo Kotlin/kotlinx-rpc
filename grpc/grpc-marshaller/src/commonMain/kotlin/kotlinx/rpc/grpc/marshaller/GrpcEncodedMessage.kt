@@ -38,7 +38,7 @@ public interface GrpcEncodedMessage {
          *
          * The array must not be modified after this call.
          */
-        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+        @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
         public fun of(bytes: ByteArray): GrpcEncodedMessage = ByteArrayEncodedMessage(bytes)
 
         /**

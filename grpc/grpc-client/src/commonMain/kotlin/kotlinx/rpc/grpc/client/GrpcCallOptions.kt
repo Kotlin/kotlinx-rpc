@@ -14,7 +14,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  *
  * This class allows configuring per-call behavior such as timeouts.
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcCallOptions {
     internal var isTimeoutExplicitlySet = false
     internal var isWaitForReadyExplicitlySet = false

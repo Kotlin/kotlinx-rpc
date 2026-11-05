@@ -146,7 +146,7 @@ public interface GrpcCallCredentials {
      * @property methodName The method name of the RPC being invoked.
      */
     // TODO: check whether we should add GrpcCallOptions in the context (KRPC-232)
-    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
     public class Context(
         public val authority: String,
         public val methodName: String,

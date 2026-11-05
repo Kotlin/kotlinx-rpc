@@ -117,7 +117,7 @@ public expect operator fun <T> GrpcMetadata.get(key: GrpcMetadataKey<T>): T?
  * @return the last binary value associated with the key, or `null` if no values exist
  * @throws IllegalArgumentException if the key does not end with `-bin` or contains invalid characters
  */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 public expect fun GrpcMetadata.getBinary(key: String): ByteArray?
 
 /**
@@ -170,7 +170,7 @@ public expect fun <T> GrpcMetadata.getAll(key: GrpcMetadataKey<T>): List<T>
  * @return a list of all binary values associated with the key, or an empty list if no values exist
  * @throws IllegalArgumentException if the key does not end with `-bin` or contains invalid characters
  */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 public expect fun GrpcMetadata.getAllBinary(key: String): List<ByteArray>
 
 /**
@@ -245,7 +245,7 @@ public expect fun <T> GrpcMetadata.append(key: GrpcMetadataKey<T>, value: T)
  * @param value the binary value to add
  * @throws IllegalArgumentException if the key contains invalid characters or does not end with `-bin`
  */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 public expect fun GrpcMetadata.appendBinary(key: String, value: ByteArray)
 
 /**
@@ -302,7 +302,7 @@ public expect fun <T> GrpcMetadata.remove(key: GrpcMetadataKey<T>, value: T): Bo
  * @return `true` if the value was found and removed, `false` if the value was not present
  * @throws IllegalArgumentException if the key does not end with `-bin`
  */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 public expect fun GrpcMetadata.removeBinary(key: String, value: ByteArray): Boolean
 
 /**
@@ -356,7 +356,7 @@ public expect fun <T> GrpcMetadata.removeAll(key: GrpcMetadataKey<T>): List<T>
  * @return a list of all binary values that were removed, or an empty list if there were no values
  * @throws IllegalArgumentException if the key does not end with `-bin`
  */
-@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
 public expect fun GrpcMetadata.removeAllBinary(key: String): List<ByteArray>
 public expect fun <T> GrpcMetadata.removeAllBinary(key: GrpcMetadataKey<T>): List<T>
 

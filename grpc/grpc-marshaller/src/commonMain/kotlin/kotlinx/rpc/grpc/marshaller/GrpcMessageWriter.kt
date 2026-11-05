@@ -39,7 +39,7 @@ public interface GrpcMessageWriter {
     public fun writeByte(byte: Byte)
 
     /** Writes the bytes in the range from [startIndex] (inclusive) to [endIndex] (exclusive). */
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
     public fun write(bytes: ByteArray, startIndex: Int = 0, endIndex: Int = bytes.size)
 
     /**

@@ -257,7 +257,7 @@ public fun WireEncoder.requireComplete() {
     (this as WireEncoderJvm).codedOutputStream.checkNoSpaceLeft()
 }
 
-@IntentionallyInlinedLogic(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyInlinedLogic(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual inline fun checkForPlatformEncodeException(block: () -> Unit) {
     try {
         return block()

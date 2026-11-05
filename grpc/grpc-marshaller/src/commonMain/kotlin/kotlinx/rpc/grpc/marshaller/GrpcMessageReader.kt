@@ -28,11 +28,11 @@ public interface GrpcMessageReader {
     public fun readByte(): Byte
 
     /** Reads exactly `endIndex - startIndex` bytes into [bytes]. */
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
     public fun readTo(bytes: ByteArray, startIndex: Int = 0, endIndex: Int = bytes.size)
 
     /** Reads exactly [byteCount] bytes into a new array. */
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
     public fun readByteArray(byteCount: Int = remaining): ByteArray
 
     /**

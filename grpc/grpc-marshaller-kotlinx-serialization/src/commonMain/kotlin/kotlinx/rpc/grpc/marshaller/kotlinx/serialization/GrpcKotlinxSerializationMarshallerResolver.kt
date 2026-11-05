@@ -19,7 +19,7 @@ import kotlin.reflect.KType
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 @ExperimentalRpcApi
 public class GrpcKotlinxSerializationMarshallerResolver(
     private val serialFormat: SerialFormat,

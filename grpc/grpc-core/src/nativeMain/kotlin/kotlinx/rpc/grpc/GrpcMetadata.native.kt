@@ -42,7 +42,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEquals
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutHashCode
 
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual class GrpcMetadataKey<T> actual constructor(name: String, public val marshaller: GrpcMarshaller<T>) {
     public val name: String = name.lowercase()
     internal val isBinary get() = name.endsWith("-bin")
@@ -65,8 +65,8 @@ public actual class GrpcMetadataKey<T> actual constructor(name: String, public v
     internal companion object
 }
 
-@IntentionallyWithoutEquals(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
-@IntentionallyWithoutHashCode(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEquals(reason = ExemptionReason.TODO, description = "review before 1.0")
+@IntentionallyWithoutHashCode(reason = ExemptionReason.TODO, description = "review before 1.0")
 @Suppress(names = ["RedundantConstructorKeyword"])
 public actual class GrpcMetadata @InternalRpcApi actual constructor() {
     internal val map: LinkedHashMap<String, MutableList<ByteArray>> = linkedMapOf()

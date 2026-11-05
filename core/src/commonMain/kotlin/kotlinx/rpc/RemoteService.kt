@@ -13,6 +13,6 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
  *
  * @see Rpc
  */
-@IntentionallyOpen(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyOpen(reason = ExemptionReason.FOR_DEPRECATION)
 @Deprecated("Use of RemoteService is deprecated. Use only @Rpc annotation", level = DeprecationLevel.ERROR)
 public interface RemoteService

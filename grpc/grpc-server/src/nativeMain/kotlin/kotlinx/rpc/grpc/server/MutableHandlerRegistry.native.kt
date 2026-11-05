@@ -9,10 +9,13 @@ package kotlinx.rpc.grpc.server
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.server.internal.ServerMethodDefinition
 import kotlinx.rpc.internal.utils.map.RpcInternalConcurrentHashMap
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Registry of services and their methods used by servers to dispatching incoming calls.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public actual abstract class GrpcHandlerRegistry {
     /**
      * Returns the [GrpcServerServiceDefinition]s provided by the registry, or an empty list if not

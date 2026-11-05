@@ -21,7 +21,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
 public class RpcCall(
     public val descriptor: RpcServiceDescriptor<*>,
     public val callableName: String,
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
     public val arguments: Array<Any?>,
     public val serviceId: Long,
 )

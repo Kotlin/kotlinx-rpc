@@ -61,7 +61,7 @@ public fun ProtoExtensionRegistry(builder: ProtoExtensionRegistry.Builder.() -> 
  * }
  * ```
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class ProtoExtensionRegistry internal constructor() {
     private val table: MutableMap<KClass<*>, MutableMap<Int, ProtoExtensionDescriptor<*, *>>> = mutableMapOf()
 

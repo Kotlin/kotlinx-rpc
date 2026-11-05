@@ -10,7 +10,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual class GrpcServerServiceDefinition internal constructor(
     private val serviceDescriptor: ServiceDescriptor,
     private val methods: Map<String, ServerMethodDefinition<*, *>>,

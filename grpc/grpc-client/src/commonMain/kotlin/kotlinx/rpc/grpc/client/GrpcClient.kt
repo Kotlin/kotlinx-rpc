@@ -40,7 +40,7 @@ private typealias RequestClient = Any
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
     messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
@@ -208,7 +208,7 @@ private fun GrpcClient(
  * @see overrideAuthority
  * @see intercept
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
@@ -457,7 +457,7 @@ public class GrpcClientConfiguration internal constructor() {
      * of ongoing calls; otherwise, pings are only sent during active RPCs.
      * The default value is `false`.
      */
-    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
     public class KeepAlive internal constructor() {
         public var time: Duration = Duration.INFINITE
             set(value) {

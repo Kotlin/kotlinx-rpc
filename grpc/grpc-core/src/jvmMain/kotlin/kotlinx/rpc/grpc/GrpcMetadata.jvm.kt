@@ -13,7 +13,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
 
 public actual typealias GrpcMetadata = Metadata
 
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual class GrpcMetadataKey<T> public actual constructor(
     name: String,
     private val marshaller: GrpcMarshaller<T>,

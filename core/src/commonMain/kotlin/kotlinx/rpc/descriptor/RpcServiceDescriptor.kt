@@ -64,7 +64,7 @@ public interface RpcCallable<@Rpc Service : Any> {
     public val name: String
     public val returnType: RpcType
     public val invokator: RpcInvokator<Service>
-    @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
     public val parameters: Array<out RpcParameter>
 }
 
@@ -82,14 +82,14 @@ public sealed interface RpcInvokator<@Rpc Service : Any> {
     @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
     @ExperimentalRpcApi
     public fun interface UnaryResponse<@Rpc Service : Any> : RpcInvokator<Service> {
-        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+        @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
         public suspend fun call(service: Service, arguments: Array<Any?>): Any?
     }
 
     @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
     @ExperimentalRpcApi
     public fun interface FlowResponse<@Rpc Service : Any> : RpcInvokator<Service> {
-        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+        @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
         public fun call(service: Service, arguments: Array<Any?>): Flow<Any?>
     }
 }

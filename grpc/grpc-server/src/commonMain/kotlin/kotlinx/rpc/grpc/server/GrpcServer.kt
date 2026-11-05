@@ -156,7 +156,7 @@ public fun GrpcServer(
  * This class provides an API to configure various server parameters, such as message marshallers,
  * security credentials, server-side interceptors, and service registration.
  */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
@@ -317,7 +317,7 @@ public class GrpcServerConfiguration internal constructor() {
      * Defaults to 20 seconds. With [Duration.INFINITE], the server waits without limit.
      * Finite values must be at least 10 milliseconds.
      */
-    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
     public class KeepAlive internal constructor() {
         public var time: Duration = 2.hours
             set(value) {
