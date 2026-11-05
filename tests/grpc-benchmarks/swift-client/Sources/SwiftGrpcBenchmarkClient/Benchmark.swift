@@ -502,12 +502,18 @@ func awaitReadiness(
 
     while started.duration(to: clock.now) < timeout {
         do {
-            _ = try await service.unaryCall(request)
+            var options = CallOptions.defaults
+            options.timeout = timeout - started.duration(to: clock.now)
+            _ = try await service.unaryCall(request, options: options)
             return started.duration(to: clock.now)
         } catch {
             if error is CancellationError { throw error }
+            try Task.checkCancellation()
             lastError = String(describing: error)
-            try await Task.sleep(nanoseconds: 250_000_000)
+            let remaining = timeout - started.duration(to: clock.now)
+            if remaining > .zero {
+                try await Task.sleep(for: min(.milliseconds(250), remaining))
+            }
         }
     }
     throw ReadinessTimeoutError(target: target, timeout: timeout, lastError: lastError)

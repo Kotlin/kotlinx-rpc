@@ -55,14 +55,13 @@ internal class StreamingBenchmark(
             )
         }
 
-        try {
-            executeStreams(parameters.warmupOperations, parameters, injectedDelayMs, executeStream)
-        } catch (error: OperationFailureException) {
+        val warmup = executeStreams(parameters.warmupOperations, parameters, injectedDelayMs, executeStream)
+        if (warmup.failure != null) {
             return failedTrial(
                 benchmarkCase,
                 parameters,
                 injectedDelayMs,
-                "Warmup stream failed: ${error.cause?.message ?: error::class.simpleName}",
+                "Warmup stream failed: ${warmup.failure.cause?.message ?: "unknown error"}",
             )
         }
 
