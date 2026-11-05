@@ -65,6 +65,7 @@ internal class CallBenchmark(
             executeOperations(
                 count = parameters.warmupOperations,
                 concurrency = parameters.concurrency,
+                pauseMs = parameters.pauseMs,
                 injectedDelayMs = injectedDelayMs,
                 recordLatency = false,
                 call = call.execute,
@@ -85,6 +86,7 @@ internal class CallBenchmark(
             val samples = executeOperations(
                 count = parameters.operations,
                 concurrency = parameters.concurrency,
+                pauseMs = parameters.pauseMs,
                 injectedDelayMs = injectedDelayMs,
                 recordLatency = true,
                 call = call.execute,
@@ -205,9 +207,29 @@ private suspend fun executeOperations(
     concurrency: Int,
     injectedDelayMs: Int,
     recordLatency: Boolean,
+    pauseMs: Int = 0,
     call: suspend () -> Unit,
 ): LongArray {
     if (count == 0) return LongArray(0)
+
+    if (pauseMs > 0) {
+        val batches = mutableListOf<LongArray>()
+        var completed = 0
+        try {
+            while (completed < count) {
+                // Idle time is outside each RPC sample, including the first group after warmup.
+                delay(pauseMs.milliseconds)
+                val batchSize = minOf(concurrency, count - completed)
+                batches += executeOperations(batchSize, concurrency, injectedDelayMs, recordLatency, call = call)
+                completed += batchSize
+            }
+        } catch (error: OperationFailureException) {
+            error.completedOperations += completed
+            error.samplesSoFar = (batches + listOf(error.samplesSoFar)).combine()
+            throw error
+        }
+        return batches.combine()
+    }
 
     val workerCount = minOf(count, concurrency)
     val baseCallsPerWorker = count / workerCount

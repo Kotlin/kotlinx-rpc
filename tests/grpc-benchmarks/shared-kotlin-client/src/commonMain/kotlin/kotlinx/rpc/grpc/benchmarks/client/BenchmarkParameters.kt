@@ -26,6 +26,7 @@ internal data class BenchmarkOverrides(
  *
  * For streaming benchmarks, [operations] is the number of messages per direction, split across
  * [concurrency] parallel streams on one channel.
+ * For paced unary calls, [pauseMs] is the idle time before each group of up to [concurrency] calls.
  */
 internal data class BenchmarkParameters(
     val warmupOperations: Int,
@@ -33,20 +34,25 @@ internal data class BenchmarkParameters(
     val concurrency: Int,
     val requestBytes: Int,
     val responseBytes: Int,
+    val pauseMs: Int = 0,
 ) {
     init {
         require(warmupOperations >= 0) { "--warmup must be at least 0" }
         require(operations > 0) { "--operations must be greater than 0" }
         require(concurrency > 0) { "--concurrency must be greater than 0" }
         require(requestBytes >= 0) { "--request-bytes must be at least 0" }
+        require(pauseMs >= 0) { "Pause must be at least 0 ms" }
         require(responseBytes >= 0) { "--response-bytes must be at least 0" }
     }
 
-    fun toJson(): JsonObject = JsonObject.of(
-        "warmup_operations" to JsonLong(warmupOperations.toLong()),
-        "operations" to JsonLong(operations.toLong()),
-        "concurrency" to JsonLong(concurrency.toLong()),
-        "request_bytes" to JsonLong(requestBytes.toLong()),
-        "response_bytes" to JsonLong(responseBytes.toLong()),
-    )
+    fun toJson(): JsonObject {
+        val fields = listOf(
+            "warmup_operations" to JsonLong(warmupOperations.toLong()),
+            "operations" to JsonLong(operations.toLong()),
+            "concurrency" to JsonLong(concurrency.toLong()),
+            "request_bytes" to JsonLong(requestBytes.toLong()),
+            "response_bytes" to JsonLong(responseBytes.toLong()),
+        )
+        return JsonObject(if (pauseMs > 0) fields + ("pause_ms" to JsonLong(pauseMs.toLong())) else fields)
+    }
 }

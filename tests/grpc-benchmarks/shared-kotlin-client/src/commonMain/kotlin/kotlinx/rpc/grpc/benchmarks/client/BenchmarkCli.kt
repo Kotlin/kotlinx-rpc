@@ -87,7 +87,8 @@ private fun renderBenchmarkList(registry: BenchmarkRegistry): String = buildStri
                 "    ${benchmarkCase.name.padEnd(18)} " +
                     "warmup=${parameters.warmupOperations}, operations=${parameters.operations}, " +
                     "concurrency=${parameters.concurrency}, " +
-                    "request=${parameters.requestBytes} B, response=${parameters.responseBytes} B",
+                    "request=${parameters.requestBytes} B, response=${parameters.responseBytes} B" +
+                        if (parameters.pauseMs > 0) ", pause=${parameters.pauseMs} ms" else "",
             )
         }
     }
