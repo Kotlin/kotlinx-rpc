@@ -37,6 +37,7 @@ import kxrpc.testing.invoke
 import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -400,8 +401,6 @@ internal class GrpcClientTestFixture(
             if (scenarioConfigured) {
                 cleanup.run { assertScenarioCompleted() }
             }
-            cleanup.run { dataClient.shutdown() }
-            cleanup.run { disposableDataClient?.shutdown() }
         } else {
             cleanup.run { dataClient.shutdownNow() }
             cleanup.run { disposableDataClient?.shutdownNow() }
@@ -424,10 +423,9 @@ internal class GrpcClientTestFixture(
             }
         }
 
-        cleanup.run { controlClient.shutdown() }
-        cleanup.run { dataClient.awaitTermination(5.seconds) }
-        cleanup.run { disposableDataClient?.awaitTermination(5.seconds) }
-        cleanup.run { controlClient.awaitTermination(5.seconds) }
+        cleanup.shutdownClient(dataClient)
+        disposableDataClient?.let { cleanup.shutdownClient(it) }
+        cleanup.shutdownClient(controlClient)
 
         return cleanup.failure()
     }
@@ -490,12 +488,11 @@ private class CallIdInterceptor(
  *
  * ```kotlin
  * val cleanup = GrpcClientTestCleanup()
- * cleanup.run { client.shutdown() }
- * cleanup.run { client.awaitTermination(5.seconds) }
+ * cleanup.shutdownClient(client)
  * cleanup.failure()?.let { throw it }
  * ```
  *
- * @param stepTimeout Real-time limit of each step. The cleanup records a step over the limit as failed.
+ * @param stepTimeout Default real-time limit of each step. The cleanup records a step over the limit as failed.
  */
 internal class GrpcClientTestCleanup(
     private val stepTimeout: Duration = 3.seconds,
@@ -503,17 +500,28 @@ internal class GrpcClientTestCleanup(
     private val failures = mutableListOf<Throwable>()
 
     /**
-     * Runs one teardown step with the `stepTimeout` limit.
+     * Runs one teardown step with the [timeout] limit.
      *
      * Never throws. The cleanup records each failure of [block], its timeout included, and [failure] reports it.
      */
-    internal suspend fun run(block: suspend () -> Unit) {
+    internal suspend fun run(timeout: Duration = stepTimeout, block: suspend () -> Unit) {
         try {
             withContext(Dispatchers.Default) {
-                withTimeout(stepTimeout) { block() }
+                withTimeout(timeout) { block() }
             }
         } catch (error: Throwable) {
             failures += error
+        }
+    }
+
+    internal suspend fun shutdownClient(client: GrpcClient, terminationTimeout: Duration = 5.seconds) {
+        run { client.shutdownNow() }
+        // The JVM wait blocks, so the cleanup timeout must exceed the channel timeout.
+        run(timeout = terminationTimeout + stepTimeout) {
+            assertTrue(
+                client.channel.awaitTermination(terminationTimeout),
+                "The gRPC client did not terminate within $terminationTimeout",
+            )
         }
     }
 

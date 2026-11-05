@@ -21,6 +21,9 @@ private val excludedProjects = setOf(
     "grpc-test-server",
     "test-protos",
     "test-utils",
+    "grpc-benchmarks",
+    "protos",
+    "kotlinx-rpc-client",
 )
 
 val Project.enableAbiValidation get() = name !in excludedProjects

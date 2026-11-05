@@ -1,0 +1,4 @@
+numpy>=2.2,<3
+scipy>=1.15,<2
+plotly>=6,<7
+tabulate>=0.9,<1
