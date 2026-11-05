@@ -135,11 +135,10 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
      * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
-    @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.TODO, description = "review before 1.0")
     @IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN)
     public fun <T : BufExecTask> registerWorkspaceTask(
-        kClass: KClass<T>,
         name: String,
+        kClass: KClass<T>,
         configure: Action<T> = Action {},
     ): ProtoTasks<T> {
         @Suppress("UNCHECKED_CAST")
@@ -156,13 +155,12 @@ public open class BufTasksExtension @Inject internal constructor(internal val pr
      * named 'bufLintMain' and 'bufLintTest' for Kotlin/JVM projects
      * and 'bufLintCommonMain', 'bufLintCommonTest', 'bufLintNativeMain', etc. for Kotlin/Multiplatform projects.
      */
-    @IntentionallyInconsistentParameterOrder(reason = ExemptionReason.TODO, description = "review before 1.0")
     @IntentionallyMutableCollection(reason = ExemptionReason.API_DESIGN)
     public inline fun <reified T : BufExecTask> registerWorkspaceTask(
         name: String,
         configure: Action<T> = Action {},
     ): ProtoTasks<T> {
-        return registerWorkspaceTask(T::class, name, configure)
+        return registerWorkspaceTask(name, T::class, configure)
     }
 
     internal val customTasks = project.objects.domainObjectContainer(Definition::class.java)
