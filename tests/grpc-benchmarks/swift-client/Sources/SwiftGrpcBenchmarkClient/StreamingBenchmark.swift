@@ -36,14 +36,13 @@ struct StreamingBenchmark: Benchmark {
     ) async throws -> TrialResult {
         let executeStream = self.prepare(client)
 
-        do {
-            _ = try await Self.executeStreams(
-                messageCount: parameters.warmupOperations,
-                parameters: parameters,
-                injectedDelayMs: injectedDelayMs,
-                executeStream: executeStream
-            )
-        } catch let failure as OperationFailure {
+        let warmup = try await Self.executeStreams(
+            messageCount: parameters.warmupOperations,
+            parameters: parameters,
+            injectedDelayMs: injectedDelayMs,
+            executeStream: executeStream
+        )
+        if let failure = warmup.failure {
             return self.trialResult(
                 benchmarkCase,
                 parameters,

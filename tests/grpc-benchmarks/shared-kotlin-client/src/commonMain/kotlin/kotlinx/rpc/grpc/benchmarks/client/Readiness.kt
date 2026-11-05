@@ -4,7 +4,9 @@
 
 package kotlinx.rpc.grpc.benchmarks.client
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -38,17 +40,20 @@ internal suspend fun awaitReadiness(
     val started = TimeSource.Monotonic.markNow()
     var lastError: String? = null
 
-    while (started.elapsedNow() < timeout) {
-        try {
-            unaryCall(request)
-            return started.elapsedNow()
-        } catch (error: Throwable) {
-            if (error is kotlinx.coroutines.CancellationException) throw error
-            lastError = error.message ?: error::class.simpleName
-            delay(READINESS_RETRY_DELAY)
+    val ready = withTimeoutOrNull(timeout) {
+        while (started.elapsedNow() < timeout) {
+            try {
+                unaryCall(request)
+                return@withTimeoutOrNull started.elapsedNow()
+            } catch (error: Throwable) {
+                if (error is CancellationException) throw error
+                lastError = error.message ?: error::class.simpleName
+                delay(READINESS_RETRY_DELAY)
+            }
         }
+        null
     }
-    throw ReadinessTimeoutException(target, timeout, lastError)
+    return ready ?: throw ReadinessTimeoutException(target, timeout, lastError)
 }
 
 private val READINESS_RETRY_DELAY = 250.milliseconds

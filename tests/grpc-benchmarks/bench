@@ -174,15 +174,20 @@ run_client() {
     binary="$(client_binary "${implementation}" "${KXRPC_BENCH_PLATFORM}")"
     case "${KXRPC_BENCH_PLATFORM}" in
         ios)
-            xcrun simctl spawn "$(bench_simulator)" "${binary}" "$@"
+            set -- xcrun simctl spawn "$(bench_simulator)" "${binary}" "$@"
             ;;
         macos|jvm)
-            "${binary}" "$@"
+            set -- "${binary}" "$@"
             ;;
         *)
             die_usage "Unknown platform '${KXRPC_BENCH_PLATFORM}'; expected ios, macos, or jvm."
             ;;
     esac
+    if [[ "${BENCH_EXEC_CLIENT:-0}" == "1" ]]; then
+        exec "$@"
+    else
+        "$@"
+    fi
 }
 
 platform_label() {
@@ -625,6 +630,8 @@ cmd_run() {
         interrupted=1
         if [[ -n "${current_pid}" ]]; then
             kill -TERM "${current_pid}" 2>/dev/null || true
+            sleep 2
+            kill -KILL "${current_pid}" 2>/dev/null || true
         fi
     }
     trap on_interrupt INT TERM
@@ -681,7 +688,8 @@ cmd_run() {
             local timeout_seconds="$1"
             shift
             local trial_status=0
-            "$@" > "${record_path}.tmp" 2> "${stderr_path}" &
+            # The watchdog PID must identify the executable, not a wrapper shell.
+            BENCH_EXEC_CLIENT=1 "$@" > "${record_path}.tmp" 2> "${stderr_path}" &
             current_pid=$!
             (
                 # Poll the alive flag instead of one long sleep, so this
@@ -692,6 +700,8 @@ cmd_run() {
                     if (( SECONDS >= deadline )); then
                         touch "${timeout_flag}"
                         kill -TERM "${current_pid}" 2>/dev/null || true
+                        sleep 2
+                        kill -KILL "${current_pid}" 2>/dev/null || true
                         break
                     fi
                     sleep 1
@@ -701,6 +711,9 @@ cmd_run() {
             set +e
             wait "${current_pid}"
             trial_status=$?
+            if [[ ${interrupted} -eq 1 ]]; then
+                wait "${current_pid}" 2>/dev/null || true
+            fi
             set -e
             current_pid=""
             rm -f -- "${alive_flag}"
@@ -712,49 +725,40 @@ cmd_run() {
         local status=0
         run_trial_process "${KXRPC_BENCH_TRIAL_TIMEOUT}" run_client "${implementation}" "${client_arguments[@]}" || status=$?
 
-        local trial_status="completed"
+        local trial_status
         if [[ -e "${timeout_flag}" ]]; then
             trial_status="timeout"
-        elif [[ ${status} -ne 0 ]]; then
-            # The client exits with 1 when it wrote a failed trial record, and
-            # with another code when it crashed before writing one.
-            if ! python3 - "${record_path}.tmp" <<'PYEOF'
+        elif ! trial_status="$(python3 - "${record_path}.tmp" "${status}" <<'PYEOF'
 import json, sys
-with open(sys.argv[1], encoding="utf-8") as file:
-    for line in file:
-        json.loads(line)
+try:
+    with open(sys.argv[1], encoding="utf-8") as file:
+        record = json.load(file)
+    if not isinstance(record, dict):
+        sys.exit(1)
+    if record.get("schema_version") not in (1, 2):
+        sys.exit(1)
+    if record.get("status") not in ("completed", "failed"):
+        sys.exit(1)
+    if record["status"] == "completed" and int(sys.argv[2]) != 0:
+        sys.exit(1)
+    print(record["status"])
+except (OSError, ValueError):
+    sys.exit(1)
 PYEOF
-            then
-                trial_status="crashed"
-            fi
+        )"; then
+            trial_status="crashed"
         fi
 
         case "${trial_status}" in
             completed)
-                if python3 - "${record_path}.tmp" <<'PYEOF'
-import json, sys
-with open(sys.argv[1], encoding="utf-8") as file:
-    record = json.loads(file.readline())
-if record.get("status") != "completed":
-    sys.exit(1)
-PYEOF
-            then
                 completed_trials=$((completed_trials + 1))
-            else
-                trial_status="failed"
-                failed_trials=$((failed_trials + 1))
-            fi
-            mv -- "${record_path}.tmp" "${record_path}"
-            ;;
+                mv -- "${record_path}.tmp" "${record_path}"
+                ;;
             failed)
                 failed_trials=$((failed_trials + 1))
                 mv -- "${record_path}.tmp" "${record_path}"
                 ;;
-            timeout)
-                failed_trials=$((failed_trials + 1))
-                rm -f -- "${record_path}.tmp"
-                ;;
-            crashed)
+            timeout|crashed)
                 failed_trials=$((failed_trials + 1))
                 rm -f -- "${record_path}.tmp"
                 ;;
