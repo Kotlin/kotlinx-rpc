@@ -1,5 +1,8 @@
 # gRPC client benchmarks
 
+> [!IMPORTANT]
+> This benchmark suite was written by AI and is only used to research potential performance opportunities. It does not represent the performance of real-world application.
+
 Compare three complete gRPC client stacks against the same pinned C++ server.
 The default platform is an arm64 iOS Simulator on localhost.
 
