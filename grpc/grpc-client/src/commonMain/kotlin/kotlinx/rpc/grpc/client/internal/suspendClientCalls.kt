@@ -25,7 +25,6 @@ import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodType
 import kotlinx.rpc.grpc.internal.CallbackFuture
 import kotlinx.rpc.grpc.internal.singleOrStatus
-import kotlinx.rpc.grpc.internal.singleOrStatusFlow
 import kotlinx.rpc.grpc.statusCode
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
@@ -174,7 +173,11 @@ private class ClientCallScopeImpl<Request, Response>(
         val validatedRequest = when (method.methodType) {
             GrpcMethodType.UNARY,
             GrpcMethodType.SERVER_STREAMING,
-            -> request.singleOrStatusFlow("request", method)
+            -> flow {
+                // Hold the request back until the exactly-one check concluded, so no backend
+                // can deliver the first request of an invalid flow to the wire.
+                emit(request.singleOrStatus("request", method))
+            }
             GrpcMethodType.CLIENT_STREAMING,
             GrpcMethodType.BIDI_STREAMING,
             GrpcMethodType.UNKNOWN,

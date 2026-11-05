@@ -160,6 +160,14 @@ class GrpcClientCancellationTest {
                         listOf(
                             cancelledClientStreamingEvents(requestCount = 1, clientHalfClosed = false),
                             cancelledClientStreamingEvents(requestCount = 1, clientHalfClosed = true),
+                            // grpc-swift ends the request stream on cancellation, so the server handler
+                            // can start its response and send initial headers before the cancellation
+                            // arrives.
+                            cancelledClientStreamingEvents(
+                                requestCount = 1,
+                                clientHalfClosed = true,
+                                initialHeadersSent = true,
+                            ),
                         )
                     )
                     assertCancellationCallbacks(callbackEvents, headersExpected = false)
@@ -400,6 +408,7 @@ class GrpcClientCancellationTest {
         fun cancelledClientStreamingEvents(
             requestCount: Int,
             clientHalfClosed: Boolean,
+            initialHeadersSent: Boolean = false,
         ): List<ExpectedServerEvent> = buildList {
             add(ExpectedServerEvent(EventType.CALL_ACCEPTED))
             repeat(requestCount) { index ->
@@ -407,6 +416,9 @@ class GrpcClientCancellationTest {
             }
             if (clientHalfClosed) {
                 add(ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED))
+            }
+            if (initialHeadersSent) {
+                add(ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT))
             }
             add(ExpectedServerEvent(EventType.CLIENT_CANCELLED))
         }

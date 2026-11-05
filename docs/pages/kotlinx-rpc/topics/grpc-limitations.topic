@@ -28,6 +28,20 @@
         </p>
     </chapter>
 
+    <chapter title="iOS client backend" id="grpc-ios-limitations">
+        <deflist>
+            <def title="iOS 18 or newer is required">
+                The grpc-swift backend requires iOS 18.0 or newer and Swift tools 6.3 or newer to build.
+                The Xcode app must also register the generated SwiftPM linkage package.
+                See <a href="grpc-configuration.topic" anchor="grpc-ios-xcode"/>.
+            </def>
+            <def title="Custom TLS trust roots and mutual TLS are not supported">
+                On iOS, <code>tls { ... }</code> can't set a custom trust root or a client certificate.
+                Setting either one throws an error. Only the default TLS configuration is available.
+            </def>
+        </deflist>
+    </chapter>
+
     <chapter title="Protobuf code generation" id="protobuf-codegen">
         <deflist>
             <def title="Field presence API is being redesigned">

@@ -112,9 +112,7 @@ public abstract interface class kotlinx/rpc/grpc/client/GrpcClientInterceptor {
 
 public final class kotlinx/rpc/grpc/client/GrpcClientKt {
 	public static final fun GrpcClient (Ljava/lang/String;ILkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClient;
-	public static final fun GrpcClient (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClient;
 	public static synthetic fun GrpcClient$default (Ljava/lang/String;ILkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
-	public static synthetic fun GrpcClient$default (Ljava/lang/String;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcClient;
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcEmptyCallCredentials : kotlinx/rpc/grpc/client/GrpcCallCredentials {
