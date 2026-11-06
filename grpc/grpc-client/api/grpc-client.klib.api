@@ -33,13 +33,6 @@ abstract interface kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.
             final fun <get-authority>(): kotlin/String // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.authority.<get-authority>|<get-authority>(){}[0]
         final val methodName // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.methodName|{}methodName[0]
             final fun <get-methodName>(): kotlin/String // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.methodName.<get-methodName>|<get-methodName>(){}[0]
-
-        final fun component1(): kotlin/String // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.component1|component1(){}[0]
-        final fun component2(): kotlin/String // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.component2|component2(){}[0]
-        final fun copy(kotlin/String = ..., kotlin/String = ...): kotlinx.rpc.grpc.client/GrpcCallCredentials.Context // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.copy|copy(kotlin.String;kotlin.String){}[0]
-        final fun equals(kotlin/Any?): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.equals|equals(kotlin.Any?){}[0]
-        final fun hashCode(): kotlin/Int // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.hashCode|hashCode(){}[0]
-        final fun toString(): kotlin/String // kotlinx.rpc.grpc.client/GrpcCallCredentials.Context.toString|toString(){}[0]
     }
 }
 

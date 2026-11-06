@@ -2,7 +2,12 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+
 package kotlinx.rpc.grpc.server
+
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
 
 /**
  * Credentials used by a gRPC server to accept incoming connections. The same instance may be
@@ -28,6 +33,7 @@ public fun GrpcTlsServerCredentials(
     return builder.build()
 }
 
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public enum class GrpcTlsClientAuth {
     /** Clients will not present any identity.  */
     NONE,
@@ -47,6 +53,7 @@ public enum class GrpcTlsClientAuth {
     REQUIRE
 }
 
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcTlsServerCredentialsBuilder {
     public fun trustManager(rootCertsPem: String): GrpcTlsServerCredentialsBuilder
     public fun clientAuth(clientAuth: GrpcTlsClientAuth): GrpcTlsServerCredentialsBuilder

@@ -101,9 +101,12 @@ private fun initNameTable(nameTable: FqNameTable) {
 
         FqName.Annotations.ExperimentalRpcApi,
         FqName.Annotations.InternalRpcApi,
+        FqName.Annotations.InternalForSubclassingRpcApi,
         FqName.Annotations.Grpc,
         FqName.Annotations.GrpcMethod,
         FqName.Annotations.GeneratedProtoMessage,
+        FqName.Annotations.GeneratedProtoEnum,
+        FqName.Annotations.GeneratedProtoDeclaration,
         FqName.Annotations.GeneratedProtoOneOfs,
 
         FqName.KotlinLibs.Flow,

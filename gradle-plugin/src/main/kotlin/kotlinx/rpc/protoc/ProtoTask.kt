@@ -4,14 +4,19 @@
 
 package kotlinx.rpc.protoc
 
+import kotlinx.rpc.internal.InternalForSubclassingRpcApi
 import org.gradle.api.DefaultTask
 import org.gradle.api.Task
 import org.gradle.api.tasks.Internal
 import org.gradle.work.DisableCachingByDefault
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Abstract base interface for tasks that work with .proto files.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface ProtoTask : Task {
     @get:Internal
     public val properties: Properties
@@ -21,6 +26,7 @@ public interface ProtoTask : Task {
      *
      * Can be used with [ProtoTasks] to filter tasks.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     public open class Properties(
         /**
          * Whether the task is for a test source set.
@@ -39,7 +45,29 @@ public interface ProtoTask : Task {
          * - `["androidTest", "androidUnitTestDebug", "test", "testDebug"]`
          */
         public val sourceSetNames: Set<String>,
-    )
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Properties
+
+            if (isTest != other.isTest) return false
+            if (sourceSetNames != other.sourceSetNames) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = isTest.hashCode()
+            result = 31 * result + sourceSetNames.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "Properties(isTest=$isTest, sourceSetNames=$sourceSetNames)"
+        }
+    }
 
     /**
      * Properties of the buf task for android source sets.
@@ -91,7 +119,43 @@ public interface ProtoTask : Task {
          * Whether the task is for unit tests.
          */
         public val isUnitTest: Boolean,
-    ) : Properties(isTest, sourceSetNames)
+    ) : Properties(isTest, sourceSetNames) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            if (!super.equals(other)) return false
+
+            other as AndroidProperties
+
+            if (isInstrumentedTest != other.isInstrumentedTest) return false
+            if (isUnitTest != other.isUnitTest) return false
+            if (flavors != other.flavors) return false
+            if (buildType != other.buildType) return false
+            if (variant != other.variant) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = super.hashCode()
+            result = 31 * result + isInstrumentedTest.hashCode()
+            result = 31 * result + isUnitTest.hashCode()
+            result = 31 * result + flavors.hashCode()
+            result = 31 * result + buildType.hashCode()
+            result = 31 * result + variant.hashCode()
+            return result
+        }
+
+        override fun toString(): String {
+            return "AndroidProperties(" +
+                "flavors=$flavors, " +
+                "buildType=$buildType, " +
+                "variant=$variant, " +
+                "isInstrumentedTest=$isInstrumentedTest, " +
+                "isUnitTest=$isUnitTest" +
+                ")"
+        }
+    }
 }
 
 /**
@@ -101,6 +165,8 @@ public interface ProtoTask : Task {
  * Subclasses must declare their caching intent explicitly via `@CacheableTask` or
  * `@DisableCachingByDefault` once they know what they produce.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 @DisableCachingByDefault(because = "Subclasses must declare caching intent explicitly")
 public abstract class DefaultProtoTask(
     @get:Internal

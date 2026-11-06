@@ -19,6 +19,9 @@ import kotlinx.rpc.krpc.server.internal.KrpcServerConnector
 import kotlinx.rpc.krpc.server.internal.KrpcServerService
 import kotlin.concurrent.Volatile
 import kotlin.reflect.KClass
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * kRPC implementation of the [RpcServer].
@@ -31,6 +34,8 @@ import kotlin.reflect.KClass
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
  * IMPORTANT: Must be exclusive to this server, otherwise unexpected behavior may occur.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public abstract class KrpcServer(
     private val config: KrpcConfig.Server,
     transport: KrpcTransport,

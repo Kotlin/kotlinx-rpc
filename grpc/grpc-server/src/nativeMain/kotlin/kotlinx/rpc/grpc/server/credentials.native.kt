@@ -5,7 +5,6 @@
 @file:OptIn(
     ExperimentalForeignApi::class,
     ExperimentalNativeApi::class,
-    InternalNativeRpcApi::class,
 )
 
 package kotlinx.rpc.grpc.server
@@ -23,7 +22,10 @@ import kotlinx.rpc.grpc.internal.cinterop.grpc_tls_server_credentials_create
 import kotlinx.rpc.grpc.internal.shim.InternalNativeRpcApi
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.ref.createCleaner
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual abstract class GrpcServerCredentials internal constructor(
     internal val raw: CPointer<grpc_server_credentials>,
 ) {

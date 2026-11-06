@@ -18,12 +18,21 @@ import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.property
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 internal fun Project.rpcExtensionOrNull(): RpcExtension? = extensions.findByType<RpcExtension>()
 
 internal fun Project.rpcExtension(): RpcExtension = rpcExtensionOrNull()
     ?: error("Rpc extension not found. Please apply the plugin to the project")
 
+/**
+ * `kotlinx-rpc` plugin configuration.
+ *
+ * See more <a href="https://kotlin.github.io/kotlinx-rpc/plugins.html">in docs</a>
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public open class RpcExtension @Inject internal constructor(objects: ObjectFactory, project: Project) {
     /**
      * Controls `@Rpc` [annotation type-safety](https://github.com/Kotlin/kotlinx-rpc/pull/240) compile-time checkers.
@@ -111,6 +120,10 @@ public open class RpcExtension @Inject internal constructor(objects: ObjectFacto
     }
 }
 
+/**
+ * Obsolete config for the strict mode.
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_DEPRECATION)
 public open class RpcStrictModeExtension @Inject internal constructor(objects: ObjectFactory) {
     /**
      * `StateFlow`s in RPC services are deprecated,
@@ -171,6 +184,10 @@ public open class RpcStrictModeExtension @Inject internal constructor(objects: O
     }
 }
 
+/**
+ * Obsolete config for the strict mode.
+ */
+@IntentionallyExhaustive(reason = ExemptionReason.FOR_DEPRECATION)
 public enum class RpcStrictMode {
     NONE, WARNING, ERROR;
 }

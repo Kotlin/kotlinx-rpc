@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.krpc.serialization
 
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+
 /**
  * Special interface to configure serialization for a kRPC protocol in KrpcConfig
  * ```kotlin
@@ -13,6 +16,7 @@ package kotlinx.rpc.krpc.serialization
  * }
  * ```
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface KrpcSerialFormatConfiguration {
     /**
      * Register a serialization format in the KrpcSerialFormatConfiguration.

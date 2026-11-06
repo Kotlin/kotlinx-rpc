@@ -5,6 +5,7 @@ package com.google.protobuf_test_messages.edition2023
 
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 @GeneratedProtoMessage
@@ -155,6 +156,7 @@ interface TestAllTypesEdition2023 {
         val groupUint32: UInt
     }
 
+    @GeneratedProtoEnum
     sealed class NestedEnum(open val number: Int) {
         data object FOO: NestedEnum(number = 0)
 
@@ -185,6 +187,7 @@ interface GroupLikeType {
     val c: Int
 }
 
+@GeneratedProtoEnum
 sealed class ForeignEnumEdition2023(open val number: Int) {
     data object FOREIGN_FOO: ForeignEnumEdition2023(number = 0)
 

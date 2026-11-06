@@ -7,6 +7,9 @@
 package kotlinx.rpc.grpc
 
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Defines the status of an operation by providing a standard [GrpcStatusCode] in conjunction with an
@@ -61,6 +64,7 @@ public fun GrpcStatus.asException(trailers: GrpcMetadata? = null): GrpcStatusExc
 /**
  * Standard gRPC status codes.
  */
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public enum class GrpcStatusCode(public val value: Int) {
     OK(0),
     CANCELLED(1),
@@ -79,11 +83,6 @@ public enum class GrpcStatusCode(public val value: Int) {
     UNAVAILABLE(14),
     DATA_LOSS(15),
     UNAUTHENTICATED(16);
-
-    /**
-     * The ASCII-encoded byte representation of the status code value.
-     */
-    public val valueAscii: ByteArray = value.toString().encodeToByteArray()
 
     /**
      * Converts this status code to a [GrpcStatus] with an optional [description].

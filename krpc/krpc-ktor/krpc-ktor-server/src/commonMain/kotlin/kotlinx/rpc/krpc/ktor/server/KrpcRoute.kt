@@ -9,11 +9,14 @@ import kotlinx.rpc.RpcServer
 import kotlinx.rpc.annotations.Rpc
 import kotlinx.rpc.krpc.KrpcConfigBuilder
 import kotlin.reflect.KClass
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * [KrpcRoute] class represents an RPC server mounted in Ktor routing.
  * This class provides an API to register services and optionally setup configuration.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public class KrpcRoute(
     webSocketSession: DefaultWebSocketServerSession
 ) : DefaultWebSocketServerSession by webSocketSession {

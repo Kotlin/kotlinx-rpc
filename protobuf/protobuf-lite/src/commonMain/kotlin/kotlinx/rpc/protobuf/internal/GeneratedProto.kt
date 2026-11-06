@@ -11,3 +11,18 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 @InternalRpcApi
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE_PARAMETER)
 public annotation class GeneratedProtoMessage
+
+@InternalRpcApi
+@Target(AnnotationTarget.CLASS)
+public annotation class GeneratedProtoEnum
+
+@InternalRpcApi
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FIELD,
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.ANNOTATION_CLASS,
+    AnnotationTarget.FILE,
+)
+public annotation class GeneratedProtoDeclaration

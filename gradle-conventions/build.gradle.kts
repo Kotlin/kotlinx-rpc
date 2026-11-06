@@ -15,6 +15,7 @@ dependencies {
 
     implementation(libs.kover.gradle.plugin)
     implementation(libs.test.retry.gradle.plugin)
+    implementation(libs.kotlin.library.api.watchdog.gradle.plugin)
 
     // https://stackoverflow.com/questions/76713758/use-version-catalog-inside-precompiled-gradle-plugin
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))

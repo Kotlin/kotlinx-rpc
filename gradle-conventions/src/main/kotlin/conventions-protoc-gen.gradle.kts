@@ -2,8 +2,9 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.other.libs
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlinx.library.api.watchdog.WatchdogGradleExtension
+import util.other.libs
 
 plugins {
     id("conventions-jvm")
@@ -35,6 +36,12 @@ if (project.name != "common") {
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
+}
+
+pluginManager.withPlugin("org.jetbrains.kotlin.library.api-watchdog") {
+    configure<WatchdogGradleExtension> {
+        enabled = false
+    }
 }
 
 tasks.test {

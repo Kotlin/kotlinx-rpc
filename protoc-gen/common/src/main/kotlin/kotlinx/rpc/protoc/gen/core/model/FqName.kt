@@ -78,15 +78,19 @@ sealed interface FqName {
         val Deprecated = fq("kotlin", "Deprecated")
         val DeprecationLevel = fq("kotlin", "DeprecationLevel")
         val OptIn = fq("kotlin", "OptIn")
+        val SubclassOptInRequired = fqDec("kotlin", "SubclassOptInRequired")
         val Suppress = fq("kotlin", "Suppress")
     }
 
     object Annotations {
         val ExperimentalRpcApi = fqDec("kotlinx.rpc.internal.utils", "ExperimentalRpcApi")
         val InternalRpcApi = fqDec("kotlinx.rpc.internal.utils", "InternalRpcApi")
+        val InternalForSubclassingRpcApi = fqDec("kotlinx.rpc.internal.utils", "InternalForSubclassingRpcApi")
         val Grpc = fqDec("kotlinx.rpc.grpc.annotations", "Grpc")
         val GrpcMethod = fqDec("kotlinx.rpc.grpc.annotations", "Grpc.Method")
         val GeneratedProtoMessage = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoMessage")
+        val GeneratedProtoEnum = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoEnum")
+        val GeneratedProtoDeclaration = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoDeclaration")
         val GeneratedProtoOneOfs = fqDec("kotlinx.rpc.protobuf.internal", "GeneratedProtoOneOfs")
     }
 

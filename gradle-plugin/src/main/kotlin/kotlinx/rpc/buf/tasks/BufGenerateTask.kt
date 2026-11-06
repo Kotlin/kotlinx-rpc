@@ -28,12 +28,15 @@ import org.gradle.api.tasks.SkipWhenEmpty
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import javax.inject.Inject
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Buf `generate` command.
  *
  * @see <a href="https://buf.build/docs/reference/cli/buf/generate/">buf generate</a>
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 @CacheableTask
 public abstract class BufGenerateTask @Inject internal constructor(
     properties: ProtoTask.Properties,

@@ -22,6 +22,7 @@ import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -224,6 +225,7 @@ interface TestAllTypesProto3 {
         val corecursive: TestAllTypesProto3
     }
 
+    @GeneratedProtoEnum
     sealed class NestedEnum(open val number: Int) {
         data object FOO: NestedEnum(number = 0)
 
@@ -243,6 +245,7 @@ interface TestAllTypesProto3 {
         }
     }
 
+    @GeneratedProtoEnum
     sealed class AliasedEnum(open val number: Int) {
         data object ALIAS_FOO: AliasedEnum(number = 0)
 
@@ -274,6 +277,7 @@ interface NullHypothesisProto3
 
 @GeneratedProtoMessage
 interface EnumOnlyProto3 {
+    @GeneratedProtoEnum
     sealed class Bool(open val number: Int) {
         data object kFalse: Bool(number = 0)
 
@@ -287,6 +291,7 @@ interface EnumOnlyProto3 {
     }
 }
 
+@GeneratedProtoEnum
 sealed class ForeignEnum(open val number: Int) {
     data object FOREIGN_FOO: ForeignEnum(number = 0)
 

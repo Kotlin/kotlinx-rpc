@@ -5,6 +5,8 @@
 package kotlinx.rpc.protobuf
 
 import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Creates a [ProtoConfig] using a DSL-style builder block.
@@ -60,6 +62,7 @@ public fun ProtoConfig(builder: ProtoConfig.Builder.() -> Unit): ProtoConfig {
  * @see GrpcMarshallerConfig
  * @see kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class ProtoConfig internal constructor(
     public val discardUnknownFields: Boolean = false,
     public val recursionLimit: Int = DEFAULT_RECURSION_LIMIT,
@@ -87,6 +90,7 @@ public class ProtoConfig internal constructor(
      * }
      * ```
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
     public class Builder {
         /**
          * When `true`, unknown fields encountered during deserialization

@@ -8,6 +8,7 @@ import compat.patrouille.configureJavaCompatibility
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import util.*
 import util.applyCrashbtShimToNativeTests
+import util.other.isPublicModule
 import util.targets.configureJs
 import util.targets.configureJvm
 import util.targets.configureKotlinExtension
@@ -17,6 +18,15 @@ import util.targets.withKmpConfig
 plugins {
     id("conventions-common")
     id("org.jetbrains.kotlin.multiplatform")
+    id("org.jetbrains.kotlin.library.api-watchdog")
+}
+
+apiWatchdog {
+    enabled = isPublicModule
+    suggestAbiValidation = enableAbiValidation
+    javaInterop {
+        enabled = false
+    }
 }
 
 kotlin {

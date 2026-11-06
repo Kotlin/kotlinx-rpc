@@ -5,6 +5,7 @@ package com.google.protobuf_test_messages.proto2
 
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -228,6 +229,7 @@ interface TestAllTypesProto2 {
         val b: Int
     }
 
+    @GeneratedProtoEnum
     sealed class NestedEnum(open val number: Int) {
         data object FOO: NestedEnum(number = 0)
 
@@ -279,6 +281,7 @@ interface NullHypothesisProto2
 
 @GeneratedProtoMessage
 interface EnumOnlyProto2 {
+    @GeneratedProtoEnum
     sealed class Bool(open val number: Int) {
         data object kFalse: Bool(number = 0)
 
@@ -385,6 +388,7 @@ interface TestAllRequiredTypesProto2 {
         val i: Int
     }
 
+    @GeneratedProtoEnum
     sealed class NestedEnum(open val number: Int) {
         data object FOO: NestedEnum(number = 0)
 
@@ -429,6 +433,7 @@ interface TestLargeOneof {
     interface A5
 }
 
+@GeneratedProtoEnum
 sealed class ForeignEnumProto2(open val number: Int) {
     data object FOREIGN_FOO: ForeignEnumProto2(number = 0)
 

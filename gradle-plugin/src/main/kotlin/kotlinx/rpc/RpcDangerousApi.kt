@@ -4,5 +4,8 @@
 
 package kotlinx.rpc
 
+/**
+ * Usage of API marked with thi annotation that can lead to unexpected results and failures.
+ */
 @RequiresOptIn("This API is dangerous. It is not recommended to use it, unless you know what you are doing.")
 public annotation class RpcDangerousApi

@@ -2,15 +2,19 @@
  * Copyright 2023-2024 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+
 package kotlinx.rpc
 
 import kotlinx.rpc.annotations.Rpc
 import kotlin.reflect.KClass
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * RpcServer is used to accept RPC messages, route them to a specific service, and process given responses.
  * Server may contain multiple services.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface RpcServer {
     /**
      * Registers new service. Server will route all designated messages to it.
