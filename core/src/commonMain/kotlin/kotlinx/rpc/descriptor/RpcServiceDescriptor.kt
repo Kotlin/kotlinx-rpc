@@ -4,7 +4,10 @@
 
 package kotlinx.rpc.descriptor
 
+import kotlinx.coroutines.InternalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.rpc.KrpcProtocol
+import kotlinx.rpc.KrpcService
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.RpcProtocol
 import kotlinx.rpc.RpcService
@@ -44,7 +47,14 @@ public fun <Service : RpcService<*, Service>> serviceDescriptorOf(kClass: KClass
     )
 }
 
+/**
+ * For smart people only
+ */
+@RequiresOptIn
+public annotation class DelicateRpcApi
+
 @ExperimentalRpcApi
+@SubclassOptInRequired(DelicateRpcApi::class)
 public interface RpcServiceDescriptor<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>> {
     public val simpleName: String
 

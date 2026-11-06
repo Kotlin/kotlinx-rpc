@@ -4,79 +4,47 @@
 
 package kotlinx.rpc
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.flow.Flow
-import kotlinx.rpc.internal.rpcInternalKClass
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
+import kotlinx.rpc.descriptor.RpcServiceDescriptor
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.concurrent.atomics.incrementAndFetch
 
-/**
- * [RpcClient] represents an abstraction of an RPC client, that can handle requests from several RPC services,
- * transform them, send to the server and handle responses and errors.
- */
-public abstract class RpcClient<Protocol: RpcProtocol> {
-    /**
-     * This method is used by generated clients to perform a call to the server.
-     *
-     * @param T type of the result
-     * @param call an object that contains all required information about the called method,
-     * that is needed to route it properly to the server.
-     * @return result of the call, for example, data from the server.
-     */
-    public abstract suspend fun <T> call(call: RpcCall): T
+@RequiresOptIn
+public annotation class DelicateRpcApi
 
-    /**
-     * This method is used by generated clients to perform a call to the server
-     * that returns a streaming flow.
-     *
-     * @param T type of the result
-     * @param call an object that contains all required information about the called method,
-     * that is needed to route it properly to the server.
-     * @return result of the call, for example, data from the server
-     */
-    public abstract fun <T> callStreaming(call: RpcCall): Flow<T>
+@OptIn(ExperimentalAtomicApi::class)
+private val SERVICE_ID: AtomicLong = AtomicLong(0)
 
-    /**
-     * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
-     *
-     * @param T the exact type of the service to be created.
-     * @return instance of the generated service.
-     *
-     * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
-     */
-    public inline fun <reified T : RpcService<Protocol, T>> service(): T {
-        return service(T::class)
-    }
+@DelicateRpcApi
+public class RpcNonStreamingCall<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>>(
+    public val descriptor: RpcServiceDescriptor<Protocol, Service>,
+    public val callableName: String,
+    public val arguments: Array<Any?>,
+    public val serviceId: Long,
+)
 
-    /**
-     * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
-     *
-     * @param T the exact type of the service to be created.
-     * @param serviceKType [KType] of the service to be created.
-     * @return instance of the generated service.
-     *
-     * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
-     */
-    public fun <T : RpcService<Protocol, T>> service(serviceKType: KType): T {
-        return service(serviceKType.rpcInternalKClass())
-    }
+public interface RpcStreamingClient<Protocol : RpcProtocol> : RpcClient<Protocol> {
+    @DelicateRpcApi
+    public fun <Service : RpcService<Protocol, Service>, T> callStreaming(call: RpcNonStreamingCall<Protocol, Service>): Flow<T>
+}
 
-    private val SERVICE_ID = atomic(0L)
+@DelicateRpcApi
+public class RpcStreamingCall<Protocol : RpcProtocol, Service : RpcService<Protocol, Service>>(
+    public val descriptor: RpcServiceDescriptor<Protocol, Service>,
+    public val callableName: String,
+    public val arguments: Array<Any?>,
+    public val serviceId: Long,
+)
 
-    /**
-     * Creates an instance of the generated service [T], that is able to communicate with a server using this [RpcClient].
-     *
-     * @param T the exact type of the service to be created.
-     * @param serviceKClass [KClass] of the service to be created.
-     * @return instance of the generated service.
-     *
-     * @see kotlinx.rpc.annotations.CheckedTypeAnnotation
-     */
-    public fun <T : RpcService<Protocol, T>> service(serviceKClass: KClass<T>): T {
-        val descriptor = serviceKClass.descriptor
+public interface RpcSuspendingClient<Protocol : RpcProtocol> : RpcClient<Protocol> {
+    @DelicateRpcApi
+    public suspend fun <Service : RpcService<Protocol, Service>, T> callNonStreaming(call: RpcStreamingCall<Protocol, Service>): T
+}
 
-        val id = SERVICE_ID.incrementAndGet()
-
-        return descriptor.createInstance(id, this)
+public interface RpcClient<Protocol : RpcProtocol> {
+    @OptIn(ExperimentalAtomicApi::class)
+    public fun getServiceId(): Long {
+        return SERVICE_ID.incrementAndFetch()
     }
 }

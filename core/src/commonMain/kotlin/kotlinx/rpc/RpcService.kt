@@ -5,13 +5,45 @@
 package kotlinx.rpc
 
 import kotlinx.rpc.descriptor.RpcServiceDescriptor
-import kotlinx.rpc.descriptor.serviceDescriptorOf
-import kotlin.reflect.KClass
 
 public interface RpcService<Protocol : RpcProtocol, Self : RpcService<Protocol, Self>> {
     public val descriptor: RpcServiceDescriptor<Protocol, Self>
 }
 
-public val <Protocol: RpcProtocol, Service : RpcService<Protocol, Service>> KClass<Service>.descriptor: RpcServiceDescriptor<Protocol, Service>
-    @Suppress("UNCHECKED_CAST")
-    get() = serviceDescriptorOf(this) as RpcServiceDescriptor<Protocol, Service>
+public interface KrpcProtocol : RpcProtocol
+
+public abstract class KrpcClient : RpcStreamingClient<KrpcProtocol>, RpcSuspendingClient<KrpcProtocol>
+
+public typealias KrpcService<T> = RpcService<KrpcProtocol, T>
+
+public interface MyService : RpcService<KrpcProtocol, MyService> {
+    public companion object {
+        public val descriptor: RpcServiceDescriptor<KrpcProtocol, MyService> = TODO()
+
+        public fun on(client: KrpcClient): MyService {
+            val id = client.getServiceId()
+            return descriptor.createInstance(id, client)
+        }
+    }
+}
+
+@OptIn(kotlinx.rpc.DelicateRpcApi::class)
+public suspend fun some(client: KrpcClient) {
+    client.callStreaming<MyService, String>(RpcNonStreamingCall(
+        descriptor = MyService.descriptor,
+        callableName = "",
+        arguments = arrayOf(),
+        serviceId = 1,
+    )).collect {
+
+    }
+
+    client.callNonStreaming<MyService, String>(RpcStreamingCall(
+        descriptor = MyService.descriptor,
+        callableName = "",
+        arguments = arrayOf(),
+        serviceId = 1,
+    ))
+
+    MyService.on(client).descriptor
+}
