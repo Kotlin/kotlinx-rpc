@@ -19,10 +19,12 @@ plugins {
 // Report can normally be found in build/reports/project/dependencies/index.html
 plugins.apply("project-report")
 
-tasks.register<ValidatePublishedArtifactsTask>(ValidatePublishedArtifactsTask.NAME) {
-    // isPublicModule is set from settings (includePublic), not from build script evaluation,
-    // so this filter doesn't force eager configuration of subprojects.
-    dependsOn(subprojects.filter { it.isPublicModule })
+private val validatePublishedArtifacts = tasks.register<ValidatePublishedArtifactsTask>(ValidatePublishedArtifactsTask.NAME)
+
+gradle.projectsEvaluated {
+    validatePublishedArtifacts.configure {
+        collectPublications(subprojects.filter { it.isPublicModule })
+    }
 }
 
 dokka {

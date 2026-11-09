@@ -274,6 +274,10 @@ all included builds (not subprojects) must reflect the change.
 - `checkLegacyAbi` / `updateLegacyAbi` - ABI checks. 
 See https://kotlinlang.org/docs/whatsnew22.html#binary-compatibility-validation-included-in-kotlin-gradle-plugin.
 Former BCV: https://github.com/Kotlin/binary-compatibility-validator
+- `aggregateApiWatchdogReports` - the API watchdog report. The watchdog runs during compilation
+of public modules and fails the build when exposed API violates the rules. Use this task
+to see the collected diagnostics: `build/reports/api-watchdog/aggregate-report.html` (SARIF
+alongside).
 - `kotlinUpgradeYarnLock` / `kotlinWasmUpgradeYarnLock` - update [kotlin-js-store](../kotlin-js-store) contents, 
 usually after Kotlin version update.
 - `updateDocsChangelog` - put modified [CONTRIBUTING.md](../CONTRIBUTING.md) into [topics](pages/kotlinx-rpc/topics)

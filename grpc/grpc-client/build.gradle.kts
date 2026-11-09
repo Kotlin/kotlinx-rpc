@@ -15,8 +15,6 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
-configureSwiftPMXcodeBuildConfiguration()
-
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")

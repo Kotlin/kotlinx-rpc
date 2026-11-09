@@ -10,44 +10,32 @@ import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import org.gradle.kotlin.dsl.assign
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.work.DisableCachingByDefault
-import util.other.maybeNamed
 import java.io.File
 import kotlin.collections.forEach
 import kotlin.collections.ifEmpty
 import kotlin.collections.toSortedSet
 
 /**
- * Task that verifies the list of published artifacts matches the expected artifacts.
- * Should be used together with exactly one publishing task.
+ * Compares configured Maven publication descriptors with `gradle/artifacts/<selection>.txt`.
+ * Set `kotlinx.rpc.artifacts.publicationTask` to one publication task name or absolute task path.
+ * The task doesn't build or publish artifacts.
  *
  * Examples:
  * ```
- * // Validate JS artifacts
- * ./gradlew validatePublishedArtifacts publishJsPublications
- *
- * // Save dump of JVM and common artifacts
- * ./gradlew validatePublishedArtifacts --dump publishJvmAndCommonPublications
- *
- * // Run validation against single project
- * ./gradlew validatePublishedArtifacts :ktor-io:publishJvmAndCommonPublications
+ * ./gradlew validatePublishedArtifacts -Pkotlinx.rpc.artifacts.publicationTask=publishJsPublicationToBuildRepoRepository
+ * ./gradlew validatePublishedArtifacts --dump -Pkotlinx.rpc.artifacts.publicationTask=:core:publishJvmPublicationToBuildRepoRepository
  * ```
- *
- * The expected artifact list is stored in a [artifactsDump], and this task ensures
- * consistency between the expected and the actual artifacts published by the task.
- * `artifactsDump` for the task is located at `<rootProject>/gradle/artifacts/<taskName>.txt`.
- *
- * Initially cherry-picked from ktor build scripts
- * See: https://github.com/ktorio/ktor/blob/main/build-logic/src/main/kotlin/ktorbuild/internal/publish/ValidatePublishedArtifactsTask.kt
  */
 @DisableCachingByDefault(because = "Isn't worth caching")
 internal abstract class ValidatePublishedArtifactsTask : DefaultTask() {
@@ -63,6 +51,7 @@ internal abstract class ValidatePublishedArtifactsTask : DefaultTask() {
     protected abstract val publishTaskName: Property<String>
 
     @get:OutputFile
+    @get:Optional
     protected abstract val artifactsDump: RegularFileProperty
 
     init {
@@ -70,64 +59,51 @@ internal abstract class ValidatePublishedArtifactsTask : DefaultTask() {
         description = "Checks that the list of published artifacts matches the expected one"
 
         dump.convention(false)
+        publishedArtifacts.convention(emptyList())
 
-        val publishTaskNameConfigured = configurePublishTaskName()
-        if (publishTaskNameConfigured) {
-            // Collect artifacts from the all publishing tasks in the task graph
-            project.gradle.taskGraph.whenReady {
-                allTasks.filterIsInstance<PublishToMavenRepository>().forEach { publishTask ->
-                    publishedArtifacts.addAll(publishTask.publication.formatArtifacts())
-                }
-            }
-        }
-
-        onlyIf("Publish task name configured") { publishTaskNameConfigured }
+        publishTaskName.convention(project.providers.gradleProperty(PUBLICATION_TASK_PROPERTY))
+        artifactsDump.convention(project.layout.projectDirectory.file(publishTaskName.map { taskName ->
+            "gradle/artifacts/${taskName.replace(":", "_")}.txt"
+        }))
     }
 
-    private fun configurePublishTaskName(): Boolean {
-        if (!project.gradle.startParameter.taskNames.contains(NAME)) {
-            return false
-        }
-
-        val taskNames = project.gradle.startParameter.taskNames.filterNot { name ->
-            // Filter out the validation task itself and task parameters
-            name == NAME || name.startsWith("-")
-        }
-        if (taskNames.size != 1) {
-            logger.error("Task $NAME should be run together with exactly one publish task, but got: $taskNames")
-            return false
-        }
-
-        publishTaskName = taskNames.single()
-        artifactsDump = publishTaskName.map { taskName ->
-            val sanitizedTaskName = taskName.replace(":", "_")
-            project.rootDir.resolve("gradle/artifacts/${sanitizedTaskName}.txt")
-        }
-        return true
-    }
-
-    fun dependsOn(publishedProjects: List<Project>): Unit = with(project) {
-        // publishTaskName won't be set if the task is used improperly and should be skipped
-        // In this case we can't (and shouldn't) configure the task dependencies
+    fun collectPublications(publishedProjects: List<Project>) {
         val taskName = publishTaskName.orNull ?: return
-
-        // Handle the case when an absolute task path is specified
-        if (taskName.startsWith(":")) {
-            val publishTask = tasks.getByPath(taskName)
-            dependsOn(publishTask)
-            return
+        val publishTasks = if (taskName.startsWith(":")) {
+            listOf(project.tasks.getByPath(taskName))
+        } else {
+            publishedProjects.mapNotNull { it.tasks.findByName(taskName) }
+        }
+        if (publishTasks.isEmpty()) {
+            throw GradleException("No publication tasks match '$taskName'")
         }
 
-        publishedProjects.forEach { project ->
-            val task = project.tasks.maybeNamed(taskName)
-            if (task != null) {
-                dependsOn(task)
+        // Read descriptors during configuration. File providers can carry artifact producer dependencies.
+        val descriptors = publishTasks.flatMap { task ->
+            when (task) {
+                is PublishToMavenRepository -> task.publication.formatArtifacts()
+                is PublicationGroupTask -> {
+                    val publications = task.project.extensions.getByType(PublishingExtension::class.java).publications
+                    task.publicationNames.get().flatMap { name ->
+                        val publication = publications.findByName(name) as? MavenPublication
+                            ?: throw GradleException(
+                                "Publication '$name' selected by '${task.path}' is unavailable on this host. " +
+                                    "Run complete artifact inventory validation on macOS."
+                            )
+                        publication.formatArtifacts()
+                    }
+                }
+                else -> throw GradleException("Task '${task.path}' is not a Maven publication task or publication group")
             }
         }
+        publishedArtifacts.set(descriptors)
     }
 
     @TaskAction
     fun runValidation() {
+        if (!publishTaskName.isPresent) {
+            throw GradleException("Set -P$PUBLICATION_TASK_PROPERTY=<publication task name or absolute task path>")
+        }
         publishedArtifacts.finalizeValue()
 
         val actualArtifacts = publishedArtifacts.get().toSortedSet()
@@ -174,9 +150,10 @@ internal abstract class ValidatePublishedArtifactsTask : DefaultTask() {
 
     companion object {
         const val NAME = "validatePublishedArtifacts"
+        const val PUBLICATION_TASK_PROPERTY = "kotlinx.rpc.artifacts.publicationTask"
 
         private const val DUMP_OPTION = "dump"
-        private const val SOLUTION_DUMP = "To save current list of artifacts as expected, run '$NAME --$DUMP_OPTION'"
+        private const val SOLUTION_DUMP = "To save current list of artifacts as expected, run '$NAME --$DUMP_OPTION -P$PUBLICATION_TASK_PROPERTY=<selection>'"
     }
 }
 

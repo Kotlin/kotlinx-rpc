@@ -8,6 +8,7 @@ import util.other.capitalized
 import util.other.getSensitiveProperty
 import util.other.isPublicModule
 import util.tasks.ValidatePublishedArtifactsTask
+import util.tasks.registerPublicationGroup
 
 val isGradlePlugin = project.name == "gradle-plugin"
 val isProtocGen = project.rootProject.name.startsWith(PROTOC_GEN)
@@ -32,9 +33,7 @@ if (isPublicModule) {
             repositories.all {
                 val publishTaskName = "${publishMavenPublication}To${name.capitalized()}Repository"
                 if (tasks.findByName(publishTaskName) == null) {
-                    tasks.register(publishTaskName) {
-                        group = PublishingPlugin.PUBLISH_TASK_GROUP
-                    }
+                    project.registerPublicationGroup(publishTaskName, name, emptyList())
                 }
             }
         }

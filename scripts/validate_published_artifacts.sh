@@ -6,8 +6,8 @@
 
 # validate_published_artifacts.sh
 #
-# Validates that the set of published artifacts stays consistent by running the
-# `validatePublishedArtifacts` Gradle task for every publication (per KMP target).
+# Compares configured publication descriptors with gradle/artifacts/*.txt.
+# Doesn't build or publish artifacts. Complete validation requires macOS.
 #
 # Usage:
 #   ./scripts/validate_published_artifacts.sh [options]
@@ -94,9 +94,9 @@ failed=()
 
 function validate() {
     if [[ "$verbose" == true && "$silent" != true ]]; then
-        full="$command publish$1ToBuildRepoRepository --info --stacktrace"
+        full="$command -Pkotlinx.rpc.artifacts.publicationTask=publish$1ToBuildRepoRepository --info --stacktrace"
     else
-        full="$command publish$1ToBuildRepoRepository"
+        full="$command -Pkotlinx.rpc.artifacts.publicationTask=publish$1ToBuildRepoRepository"
     fi
 
     if [[ "$silent" == true ]]; then
