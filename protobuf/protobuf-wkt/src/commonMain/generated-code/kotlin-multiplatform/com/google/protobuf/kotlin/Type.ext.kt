@@ -3,6 +3,7 @@
 
 package com.google.protobuf.kotlin
 
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -159,6 +160,7 @@ public val Option.valueOrNull: Any? get() = if (this.presence.hasValue) this.val
  * Interface providing field-presence information for [Type] messages.
  * Retrieve it via the [Type.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface TypePresence {
     public val hasSourceContext: Boolean
 }
@@ -167,6 +169,7 @@ public interface TypePresence {
  * Interface providing field-presence information for [Enum] messages.
  * Retrieve it via the [Enum.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface EnumPresence {
     public val hasSourceContext: Boolean
 }
@@ -175,6 +178,7 @@ public interface EnumPresence {
  * Interface providing field-presence information for [Option] messages.
  * Retrieve it via the [Option.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface OptionPresence {
     public val hasValue: Boolean
 }

@@ -4,6 +4,11 @@
 
 package kotlinx.rpc.internal.utils
 
+import org.jetbrains.kotlinx.library.api.watchdog.InternalAnnotationMarker
+
+/**
+ * Marks API that has no compatibility guarantees.
+ */
 @RequiresOptIn(
     message = "This is internal kotlinx.rpc api that is subject to change and should not be used",
     level = RequiresOptIn.Level.ERROR,
@@ -15,4 +20,5 @@ package kotlinx.rpc.internal.utils
     AnnotationTarget.PROPERTY,
     AnnotationTarget.CONSTRUCTOR,
 )
+@InternalAnnotationMarker
 public annotation class InternalRpcApi

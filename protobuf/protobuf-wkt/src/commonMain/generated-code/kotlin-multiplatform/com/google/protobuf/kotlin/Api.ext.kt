@@ -3,6 +3,7 @@
 
 package com.google.protobuf.kotlin
 
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 /**
@@ -91,6 +92,7 @@ public fun Mixin.copy(body: Mixin.Builder.() -> Unit = {}): Mixin {
  * Interface providing field-presence information for [Api] messages.
  * Retrieve it via the [Api.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ApiPresence {
     public val hasSourceContext: Boolean
 }

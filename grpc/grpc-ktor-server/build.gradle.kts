@@ -17,7 +17,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.grpc.grpcServer)
-                implementation(libs.ktor.server.core)
+                api(libs.ktor.server.core)
             }
         }
 

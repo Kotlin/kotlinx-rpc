@@ -8,6 +8,9 @@ import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.internal.BufferEncodedMessage
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayEncodedMessage
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * An encoded gRPC message whose exact [size] is known before it is written.
@@ -15,6 +18,7 @@ import kotlinx.rpc.internal.utils.ExperimentalRpcApi
  * A message is single-use. [writeTo] may be called once, potentially on a different thread from the one that
  * created the message.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface GrpcEncodedMessage {
     /** The exact number of bytes that [writeTo] writes. */
@@ -34,6 +38,7 @@ public interface GrpcEncodedMessage {
          *
          * The array must not be modified after this call.
          */
+        @IntentionallyMutableCollection(reason = ExemptionReason.TODO, description = "review before 1.0")
         public fun of(bytes: ByteArray): GrpcEncodedMessage = ByteArrayEncodedMessage(bytes)
 
         /**

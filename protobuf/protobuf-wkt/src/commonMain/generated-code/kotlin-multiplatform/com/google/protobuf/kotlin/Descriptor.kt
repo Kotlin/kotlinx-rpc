@@ -5,6 +5,7 @@ package com.google.protobuf.kotlin
 
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoEnum
 import kotlinx.rpc.protobuf.internal.GeneratedProtoMessage
 
 /**
@@ -212,6 +213,7 @@ public interface ExtensionRangeOptions {
     /**
      * The verification state of the extension range.
      */
+    @GeneratedProtoEnum
     public sealed class VerificationState(public open val number: Int) {
         /**
          * All the extensions of the range must be declared.
@@ -306,6 +308,7 @@ public interface FieldDescriptorProto {
      */
     public val proto3Optional: Boolean
 
+    @GeneratedProtoEnum
     public sealed class Type(public open val number: Int) {
         /**
          * 0 is reserved for errors.
@@ -381,6 +384,7 @@ public interface FieldDescriptorProto {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class Label(public open val number: Int) {
         /**
          * 0 is reserved for errors
@@ -693,6 +697,7 @@ public interface FileOptions {
     /**
      * Generated classes can be optimized for speed or code size.
      */
+    @GeneratedProtoEnum
     public sealed class OptimizeMode(public open val number: Int) {
         /**
          * Generate complete code for parsing, serialization,
@@ -964,6 +969,7 @@ public interface FieldOptions {
         public val editionRemoved: Edition
     }
 
+    @GeneratedProtoEnum
     public sealed class CType(public open val number: Int) {
         /**
          * Default mode.
@@ -989,6 +995,7 @@ public interface FieldOptions {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class JSType(public open val number: Int) {
         /**
          * Use the default type.
@@ -1015,6 +1022,7 @@ public interface FieldOptions {
     /**
      * If set to RETENTION_SOURCE, the option will be omitted from the binary.
      */
+    @GeneratedProtoEnum
     public sealed class OptionRetention(public open val number: Int) {
         public data object RETENTION_UNKNOWN: OptionRetention(number = 0)
 
@@ -1034,6 +1042,7 @@ public interface FieldOptions {
      * as an option. If it is unset, then the field may be freely used as an
      * option on any kind of entity.
      */
+    @GeneratedProtoEnum
     public sealed class OptionTargetType(public open val number: Int) {
         public data object TARGET_TYPE_UNKNOWN: OptionTargetType(number = 0)
 
@@ -1219,6 +1228,7 @@ public interface MethodOptions {
      * or neither? HTTP based RPC implementation may choose GET verb for safe
      * methods, and PUT verb for idempotent methods instead of the default POST.
      */
+    @GeneratedProtoEnum
     public sealed class IdempotencyLevel(public open val number: Int) {
         public data object IDEMPOTENCY_UNKNOWN: IdempotencyLevel(number = 0)
 
@@ -1301,6 +1311,7 @@ public interface FeatureSet {
 
     @GeneratedProtoMessage
     public interface VisibilityFeature {
+        @GeneratedProtoEnum
         public sealed class DefaultSymbolVisibility(public open val number: Int) {
             public data object DEFAULT_SYMBOL_VISIBILITY_UNKNOWN: DefaultSymbolVisibility(number = 0)
 
@@ -1334,6 +1345,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class FieldPresence(public open val number: Int) {
         public data object FIELD_PRESENCE_UNKNOWN: FieldPresence(number = 0)
 
@@ -1350,6 +1362,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class EnumType(public open val number: Int) {
         public data object ENUM_TYPE_UNKNOWN: EnumType(number = 0)
 
@@ -1364,6 +1377,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class RepeatedFieldEncoding(public open val number: Int) {
         public data object REPEATED_FIELD_ENCODING_UNKNOWN: RepeatedFieldEncoding(number = 0)
 
@@ -1378,6 +1392,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class Utf8Validation(public open val number: Int) {
         public data object UTF8_VALIDATION_UNKNOWN: Utf8Validation(number = 0)
 
@@ -1392,6 +1407,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class MessageEncoding(public open val number: Int) {
         public data object MESSAGE_ENCODING_UNKNOWN: MessageEncoding(number = 0)
 
@@ -1406,6 +1422,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class JsonFormat(public open val number: Int) {
         public data object JSON_FORMAT_UNKNOWN: JsonFormat(number = 0)
 
@@ -1420,6 +1437,7 @@ public interface FeatureSet {
         }
     }
 
+    @GeneratedProtoEnum
     public sealed class EnforceNamingStyle(public open val number: Int) {
         public data object ENFORCE_NAMING_STYLE_UNKNOWN: EnforceNamingStyle(number = 0)
 
@@ -1672,6 +1690,7 @@ public interface GeneratedCodeInfo {
          * Represents the identified object's effect on the element in the original
          * .proto file.
          */
+        @GeneratedProtoEnum
         public sealed class Semantic(public open val number: Int) {
             /**
              * There is no effect or the effect is indescribable.
@@ -1700,6 +1719,7 @@ public interface GeneratedCodeInfo {
 /**
  * The full set of known editions.
  */
+@GeneratedProtoEnum
 public sealed class Edition(public open val number: Int) {
     /**
      * A placeholder for an unknown edition value.
@@ -1771,6 +1791,7 @@ public sealed class Edition(public open val number: Int) {
  * on `message` and `enum` as they are the only types available to be referenced
  * from other files.
  */
+@GeneratedProtoEnum
 public sealed class SymbolVisibility(public open val number: Int) {
     public data object VISIBILITY_UNSET: SymbolVisibility(number = 0)
 

@@ -102,6 +102,8 @@ pluginManagement {
             maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
             maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
             maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
+            maven("https://packages.jetbrains.team/maven/p/kt-lib/eap")
+            maven("https://packages.jetbrains.team/maven/p/compiler-plugin-dev-kit/eap")
         }
 
         maven("$globalRootDir/lib-kotlin/")
@@ -221,6 +223,8 @@ gradle.rootProject {
                     maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
                     maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
                     maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
+                    maven("https://packages.jetbrains.team/maven/p/kt-lib/eap")
+                    maven("https://packages.jetbrains.team/maven/p/compiler-plugin-dev-kit/eap")
                 }
 
                 maven("$globalRootDir/lib-kotlin/")
@@ -238,6 +242,8 @@ gradle.rootProject {
 
                 maven("https://packages.jetbrains.team/maven/p/kt/dev")
                 maven("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
+                maven("https://packages.jetbrains.team/maven/p/kt-lib/eap")
+                maven("https://packages.jetbrains.team/maven/p/compiler-plugin-dev-kit/eap")
                 maven("https://redirector.kotlinlang.org/maven/ktor-eap")
 
                 maven("https://www.jetbrains.com/intellij-repository/releases")

@@ -69,6 +69,11 @@ abstract class kotlinx.rpc.grpc.server/GrpcHandlerRegistry { // kotlinx.rpc.grpc
 
 abstract class kotlinx.rpc.grpc.server/GrpcServerCredentials // kotlinx.rpc.grpc.server/GrpcServerCredentials|null[0]
 
+final class <#A: kotlin/Any?, #B: kotlin/Any?> kotlinx.rpc.grpc.server.internal/ServerMethodDefinition { // kotlinx.rpc.grpc.server.internal/ServerMethodDefinition|null[0]
+    final fun getMethodDescriptor(): kotlinx.rpc.grpc.descriptor/GrpcMethodDescriptor<#A, #B> // kotlinx.rpc.grpc.server.internal/ServerMethodDefinition.getMethodDescriptor|getMethodDescriptor(){}[0]
+    final fun getServerCallHandler(): kotlinx.rpc.grpc.server.internal/ServerCallHandler<#A, #B> // kotlinx.rpc.grpc.server.internal/ServerMethodDefinition.getServerCallHandler|getServerCallHandler(){}[0]
+}
+
 final class kotlinx.rpc.grpc.server.internal/GrpcContext { // kotlinx.rpc.grpc.server.internal/GrpcContext|null[0]
     constructor <init>() // kotlinx.rpc.grpc.server.internal/GrpcContext.<init>|<init>(){}[0]
 }

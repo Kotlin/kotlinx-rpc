@@ -31,6 +31,8 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.work.DisableCachingByDefault
 import javax.inject.Inject
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * Abstract base class for `buf` tasks.
@@ -39,6 +41,7 @@ import javax.inject.Inject
  * deterministic. Concrete subclasses with deterministic inputs/outputs (e.g. [BufGenerateTask])
  * opt in explicitly via `@CacheableTask`.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @DisableCachingByDefault(because = "Custom buf subclasses must opt in to caching explicitly via @CacheableTask")
 public abstract class BufExecTask @Inject constructor(
     properties: ProtoTask.Properties,

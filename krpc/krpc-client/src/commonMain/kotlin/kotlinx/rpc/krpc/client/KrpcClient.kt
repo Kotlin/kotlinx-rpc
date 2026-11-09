@@ -48,6 +48,9 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlin.collections.first
 import kotlin.concurrent.Volatile
 import kotlin.properties.Delegates
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Represents an initialized [KrpcClient] that wraps a predefined [config] and [transport] parameters.
@@ -57,6 +60,8 @@ import kotlin.properties.Delegates
  * @param transport [KrpcTransport] instance that will be used to send and receive RPC messages.
  * See [KrpcClient.initializeTransport].
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public abstract class InitializedKrpcClient(
     private val config: KrpcConfig.Client,
     private val transport: KrpcTransport,
@@ -76,6 +81,8 @@ public abstract class InitializedKrpcClient(
  * serializing data, tracking streams, processing exceptions, and other protocol responsibilities.
  * Leaves out the delivery of encoded messages to the specific implementations with [KrpcTransport].
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public abstract class KrpcClient : RpcClient, KrpcEndpoint {
     /**
      * Called once to provide [KrpcTransport] for this client.

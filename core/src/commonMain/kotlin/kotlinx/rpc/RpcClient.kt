@@ -5,11 +5,14 @@
 package kotlinx.rpc
 
 import kotlinx.coroutines.flow.Flow
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * [RpcClient] represents an abstraction of an RPC client, that can handle requests from several RPC services,
  * transform them, send to the server and handle responses and errors.
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface RpcClient {
     /**
      * This method is used by generated clients to perform a call to the server.

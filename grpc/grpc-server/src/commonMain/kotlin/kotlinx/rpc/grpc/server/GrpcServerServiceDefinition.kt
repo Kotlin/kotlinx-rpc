@@ -13,6 +13,7 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 /**
  * Definition of a service to be exposed via a Server.
  */
+@InternalRpcApi
 public expect class GrpcServerServiceDefinition {
     public fun getServiceDescriptor(): ServiceDescriptor
     public fun getMethods(): Collection<ServerMethodDefinition<*, *>>

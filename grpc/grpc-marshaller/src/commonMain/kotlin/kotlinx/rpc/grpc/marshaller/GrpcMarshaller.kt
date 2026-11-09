@@ -7,7 +7,10 @@ package kotlinx.rpc.grpc.marshaller
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.reflect.KType
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public fun interface GrpcMarshallerResolver {
     public fun resolveOrNull(kType: KType): GrpcMarshaller<*>?
@@ -55,9 +58,11 @@ public operator fun GrpcMarshallerResolver.plus(other: GrpcMarshallerResolver): 
  * @see GrpcMarshaller
  * @see grpcMarshallerOf
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface GrpcMarshallerConfig
 
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 @ExperimentalRpcApi
 public interface GrpcMarshaller<T> {
     /**

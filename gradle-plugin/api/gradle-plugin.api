@@ -98,8 +98,8 @@ public final class kotlinx/rpc/buf/BufGenerateExtension$ErrorFormat : java/lang/
 }
 
 public class kotlinx/rpc/buf/BufTasksExtension {
-	public final fun registerWorkspaceTask (Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/Action;)Lkotlinx/rpc/protoc/ProtoTasks;
-	public static synthetic fun registerWorkspaceTask$default (Lkotlinx/rpc/buf/BufTasksExtension;Lkotlin/reflect/KClass;Ljava/lang/String;Lorg/gradle/api/Action;ILjava/lang/Object;)Lkotlinx/rpc/protoc/ProtoTasks;
+	public final fun registerWorkspaceTask (Ljava/lang/String;Lkotlin/reflect/KClass;Lorg/gradle/api/Action;)Lkotlinx/rpc/protoc/ProtoTasks;
+	public static synthetic fun registerWorkspaceTask$default (Lkotlinx/rpc/buf/BufTasksExtension;Ljava/lang/String;Lkotlin/reflect/KClass;Lorg/gradle/api/Action;ILjava/lang/Object;)Lkotlinx/rpc/protoc/ProtoTasks;
 }
 
 public final class kotlinx/rpc/buf/ConstsKt {
@@ -237,17 +237,23 @@ public abstract interface class kotlinx/rpc/protoc/ProtoTask : org/gradle/api/Ta
 
 public final class kotlinx/rpc/protoc/ProtoTask$AndroidProperties : kotlinx/rpc/protoc/ProtoTask$Properties {
 	public fun <init> (ZLjava/util/Set;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;ZZ)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBuildType ()Ljava/lang/String;
 	public final fun getFlavors ()Ljava/util/List;
 	public final fun getVariant ()Ljava/lang/String;
+	public fun hashCode ()I
 	public final fun isInstrumentedTest ()Z
 	public final fun isUnitTest ()Z
+	public fun toString ()Ljava/lang/String;
 }
 
 public class kotlinx/rpc/protoc/ProtoTask$Properties {
 	public fun <init> (ZLjava/util/Set;)V
+	public fun equals (Ljava/lang/Object;)Z
 	public final fun getSourceSetNames ()Ljava/util/Set;
+	public fun hashCode ()I
 	public final fun isTest ()Z
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class kotlinx/rpc/protoc/ProtoTasks : org/gradle/api/tasks/TaskCollection {
@@ -299,6 +305,7 @@ public class kotlinx/rpc/protoc/ProtocPlugin {
 	public final fun isKotlin ()Lorg/gradle/api/provider/Property;
 	public final fun local (Lorg/gradle/api/Action;)V
 	public final fun remote (Lorg/gradle/api/Action;)V
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class kotlinx/rpc/protoc/ProtocPlugin$Artifact {

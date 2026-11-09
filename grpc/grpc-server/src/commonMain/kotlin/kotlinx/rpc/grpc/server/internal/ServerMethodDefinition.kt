@@ -13,6 +13,7 @@ public expect class ServerMethodDefinition<Request, Response> {
     public fun getServerCallHandler(): ServerCallHandler<Request, Response>
 }
 
+@InternalRpcApi
 public expect fun <Request, Response> serverMethodDefinition(
     descriptor: GrpcMethodDescriptor<Request, Response>,
     handler: ServerCallHandler<Request, Response>,

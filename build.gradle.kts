@@ -8,7 +8,13 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlinx.rpc) apply false
     alias(libs.plugins.atomicfu) apply false
+    alias(libs.plugins.kotlin.library.api.watchdog) apply false
     alias(libs.plugins.conventions.root)
+    alias(libs.plugins.kotlin.library.api.watchdog.report.aggregation)
+}
+
+dependencies {
+    subprojects.forEach { apiWatchdogReports(project(it.path)) }
 }
 
 val kotlinVersion = rootProject.libs.versions.kotlin.lang.get()

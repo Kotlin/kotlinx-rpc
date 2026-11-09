@@ -3,7 +3,9 @@
 
 package com.google.protobuf.kotlin
 
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
  * Constructs a new message.
@@ -96,6 +98,7 @@ public val Value.kind: ValueKindCase get() = this.asInternal()._kindCase
 /**
  * Exhaustive, typed dispatch on the active case of the `kind` oneof.
  */
+@GeneratedProtoDeclaration
 public inline fun <R> Value.whenKind(
     nullValue: (NullValue) -> R,
     numberValue: (Double) -> R,
@@ -144,6 +147,7 @@ public fun ListValue.copy(body: ListValue.Builder.() -> Unit = {}): ListValue {
  * Interface providing field-presence information for [Value] messages.
  * Retrieve it via the [Value.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface ValuePresence {
     public val hasNullValue: Boolean
 
@@ -163,6 +167,7 @@ public interface ValuePresence {
  * Retrieve the active case via the [Value.kind] extension property.
  * The kind of value.
  */
+@GeneratedProtoDeclaration
 public enum class ValueKindCase {
     /**
      * Represents a null value.

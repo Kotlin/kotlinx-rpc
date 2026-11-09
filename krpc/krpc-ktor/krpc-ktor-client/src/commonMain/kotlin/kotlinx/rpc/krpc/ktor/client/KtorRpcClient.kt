@@ -14,6 +14,8 @@ import kotlinx.rpc.krpc.KrpcTransport
 import kotlinx.rpc.krpc.client.KrpcClient
 import kotlinx.rpc.krpc.ktor.KtorTransport
 import kotlinx.rpc.krpc.rpcClientConfig
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
 /**
  * [RpcClient] implementation for Ktor, containing [webSocketSession] object,
@@ -22,6 +24,7 @@ import kotlinx.rpc.krpc.rpcClientConfig
  * Client is cold, meaning the connection will be established on the first request.
  * [webSocketSession] will be completed when the connection is established.
  */
+@IntentionallyOpen(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public abstract class KtorRpcClient : KrpcClient() {
     /**
      * Cold [WebSocketSession] object. Instantiated when the connection is established on the first request.

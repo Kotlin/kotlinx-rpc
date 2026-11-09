@@ -4,8 +4,10 @@
 package com.google.protobuf_test_messages.edition2023
 
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
+import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
@@ -250,6 +252,7 @@ val TestAllTypesEdition2023.oneofField: TestAllTypesEdition2023OneofFieldCase ge
 /**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> TestAllTypesEdition2023.whenOneofField(
     oneofUint32: (UInt) -> R,
     oneofNestedMessage: (TestAllTypesEdition2023.NestedMessage) -> R,
@@ -438,6 +441,7 @@ val TestAllTypesEdition2023.GroupLikeType.groupUint32OrNull: UInt? get() = if (t
  * Interface providing field-presence information for [ComplexMessage] messages.
  * Retrieve it via the [ComplexMessage.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ComplexMessagePresence {
     val hasD: Boolean
 }
@@ -446,6 +450,7 @@ interface ComplexMessagePresence {
  * Interface providing field-presence information for [TestAllTypesEdition2023] messages.
  * Retrieve it via the [TestAllTypesEdition2023.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface TestAllTypesEdition2023Presence {
     val hasOptionalInt32: Boolean
 
@@ -517,6 +522,7 @@ interface TestAllTypesEdition2023Presence {
      * Interface providing field-presence information for [TestAllTypesEdition2023.NestedMessage] messages.
      * Retrieve it via the [TestAllTypesEdition2023.NestedMessage.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface NestedMessage {
         val hasA: Boolean
 
@@ -527,6 +533,7 @@ interface TestAllTypesEdition2023Presence {
      * Interface providing field-presence information for [TestAllTypesEdition2023.GroupLikeType] messages.
      * Retrieve it via the [TestAllTypesEdition2023.GroupLikeType.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface GroupLikeType {
         val hasGroupInt32: Boolean
 
@@ -538,6 +545,7 @@ interface TestAllTypesEdition2023Presence {
  * Interface providing field-presence information for [ForeignMessageEdition2023] messages.
  * Retrieve it via the [ForeignMessageEdition2023.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ForeignMessageEdition2023Presence {
     val hasC: Boolean
 }
@@ -546,6 +554,7 @@ interface ForeignMessageEdition2023Presence {
  * Interface providing field-presence information for [GroupLikeType] messages.
  * Retrieve it via the [GroupLikeType.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface GroupLikeTypePresence {
     val hasC: Boolean
 }
@@ -554,6 +563,7 @@ interface GroupLikeTypePresence {
  * Cases of the `oneof_field` oneof of [TestAllTypesEdition2023].
  * Retrieve the active case via the [TestAllTypesEdition2023.oneofField] extension property.
  */
+@GeneratedProtoDeclaration
 enum class TestAllTypesEdition2023OneofFieldCase {
     ONEOF_UINT32,
     ONEOF_NESTED_MESSAGE,

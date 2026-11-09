@@ -9,12 +9,17 @@ import kotlinx.serialization.BinaryFormat
 import kotlinx.serialization.SerialFormat
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * [KrpcSerialFormat] interface defines an object which helps kRPC protocol to work with various serialization formats
  *
  * Each serialization that can be used with kRPC protocol should define an object of [KrpcSerialFormat]
  */
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface KrpcSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
     /**
      * Generalization of kotlinx.serialization approach to configure serial formats
@@ -42,6 +47,8 @@ public interface KrpcSerialFormat<Format : SerialFormat, FormatBuilder : Any> {
  * @param from - optional default format instance
  * @param builder - builder function for format configuration
  */
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
 public sealed class KrpcSerialFormatBuilder<Format : SerialFormat, FormatBuilder : Any>(
     rpcSerialFormat: KrpcSerialFormat<Format, FormatBuilder>,
     from: Format? = null,

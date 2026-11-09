@@ -4,11 +4,16 @@
 
 package kotlinx.rpc.krpc.internal
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 
-@InternalRpcApi
+@IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
 public interface KrpcEndpoint {
     @InternalRpcApi
     public val sender: KrpcMessageSender
@@ -68,6 +73,10 @@ public interface KrpcEndpoint {
                 }
             }
         } catch (e: IllegalStateException) {
+            if (e is CancellationException) {
+                currentCoroutineContext().ensureActive()
+            }
+
             val failure = KrpcProtocolMessage.Failure(
                 errorMessage = e.message ?: "Unknown error",
                 connectionId = message.connectionId,

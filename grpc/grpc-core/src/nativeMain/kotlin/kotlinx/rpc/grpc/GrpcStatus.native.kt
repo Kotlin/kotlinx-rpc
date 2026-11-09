@@ -4,6 +4,12 @@
 
 package kotlinx.rpc.grpc
 
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEquals
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutHashCode
+
+@IntentionallyWithoutEquals(reason = ExemptionReason.TODO, description = "review before 1.0")
+@IntentionallyWithoutHashCode(reason = ExemptionReason.TODO, description = "review before 1.0")
 public actual class GrpcStatus internal constructor(
     private val description: String?,
     internal val statusCode: GrpcStatusCode,

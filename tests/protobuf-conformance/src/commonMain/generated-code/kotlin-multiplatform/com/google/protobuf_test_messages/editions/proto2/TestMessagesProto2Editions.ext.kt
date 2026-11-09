@@ -4,8 +4,10 @@
 package com.google.protobuf_test_messages.editions.proto2
 
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoExtensionDescriptor
+import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
 
 /**
@@ -382,6 +384,7 @@ val TestAllTypesProto2.oneofField: TestAllTypesProto2OneofFieldCase get() = this
 /**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> TestAllTypesProto2.whenOneofField(
     oneofUint32: (UInt) -> R,
     oneofNestedMessage: (TestAllTypesProto2.NestedMessage) -> R,
@@ -768,6 +771,7 @@ val TestLargeOneof.largeOneof: TestLargeOneofLargeOneofCase get() = this.asInter
 /**
  * Exhaustive, typed dispatch on the active case of the `large_oneof` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> TestLargeOneof.whenLargeOneof(
     a1: (TestLargeOneof.A1) -> R,
     a2: (TestLargeOneof.A2) -> R,
@@ -1076,6 +1080,7 @@ val TestAllTypesProto2.ExtensionWithOneof.oneofField: TestAllTypesProto2Extensio
 /**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> TestAllTypesProto2.ExtensionWithOneof.whenOneofField(
     a: (Int) -> R,
     b: (Int) -> R,
@@ -1406,6 +1411,7 @@ fun TestLargeOneof.A5.copy(body: TestLargeOneof.A5.Builder.() -> Unit = {}): Tes
  * Interface providing field-presence information for [TestAllTypesProto2] messages.
  * Retrieve it via the [TestAllTypesProto2.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface TestAllTypesProto2Presence {
     val hasOptionalInt32: Boolean
 
@@ -1545,6 +1551,7 @@ interface TestAllTypesProto2Presence {
      * Interface providing field-presence information for [TestAllTypesProto2.NestedMessage] messages.
      * Retrieve it via the [TestAllTypesProto2.NestedMessage.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface NestedMessage {
         val hasA: Boolean
 
@@ -1555,6 +1562,7 @@ interface TestAllTypesProto2Presence {
      * Interface providing field-presence information for [TestAllTypesProto2.Data] messages.
      * Retrieve it via the [TestAllTypesProto2.Data.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface Data {
         val hasGroupInt32: Boolean
 
@@ -1565,18 +1573,21 @@ interface TestAllTypesProto2Presence {
      * Interface providing field-presence information for [TestAllTypesProto2.MultiWordGroupField] messages.
      * Retrieve it via the [TestAllTypesProto2.MultiWordGroupField.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MultiWordGroupField {
         val hasGroupInt32: Boolean
 
         val hasGroupUint32: Boolean
     }
 
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrect
 
     /**
      * Interface providing field-presence information for [TestAllTypesProto2.MessageSetCorrectExtension1] messages.
      * Retrieve it via the [TestAllTypesProto2.MessageSetCorrectExtension1.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrectExtension1 {
         val hasStr: Boolean
     }
@@ -1585,6 +1596,7 @@ interface TestAllTypesProto2Presence {
      * Interface providing field-presence information for [TestAllTypesProto2.MessageSetCorrectExtension2] messages.
      * Retrieve it via the [TestAllTypesProto2.MessageSetCorrectExtension2.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
 
@@ -1595,6 +1607,7 @@ interface TestAllTypesProto2Presence {
      * Interface providing field-presence information for [TestAllTypesProto2.ExtensionWithOneof] messages.
      * Retrieve it via the [TestAllTypesProto2.ExtensionWithOneof.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface ExtensionWithOneof {
         val hasA: Boolean
 
@@ -1606,6 +1619,7 @@ interface TestAllTypesProto2Presence {
  * Interface providing field-presence information for [ForeignMessageProto2] messages.
  * Retrieve it via the [ForeignMessageProto2.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ForeignMessageProto2Presence {
     val hasC: Boolean
 }
@@ -1614,6 +1628,7 @@ interface ForeignMessageProto2Presence {
  * Interface providing field-presence information for [GroupField] messages.
  * Retrieve it via the [GroupField.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface GroupFieldPresence {
     val hasGroupInt32: Boolean
 
@@ -1624,6 +1639,7 @@ interface GroupFieldPresence {
  * Interface providing field-presence information for [UnknownToTestAllTypes] messages.
  * Retrieve it via the [UnknownToTestAllTypes.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface UnknownToTestAllTypesPresence {
     val hasOptionalInt32: Boolean
 
@@ -1639,6 +1655,7 @@ interface UnknownToTestAllTypesPresence {
      * Interface providing field-presence information for [UnknownToTestAllTypes.OptionalGroup] messages.
      * Retrieve it via the [UnknownToTestAllTypes.OptionalGroup.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface OptionalGroup {
         val hasA: Boolean
     }
@@ -1648,6 +1665,7 @@ interface UnknownToTestAllTypesPresence {
  * Interface providing field-presence information for [OneStringProto2] messages.
  * Retrieve it via the [OneStringProto2.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface OneStringProto2Presence {
     val hasData: Boolean
 }
@@ -1656,6 +1674,7 @@ interface OneStringProto2Presence {
  * Interface providing field-presence information for [ProtoWithKeywords] messages.
  * Retrieve it via the [ProtoWithKeywords.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface ProtoWithKeywordsPresence {
     val hasInline: Boolean
 
@@ -1666,6 +1685,7 @@ interface ProtoWithKeywordsPresence {
  * Interface providing field-presence information for [TestAllRequiredTypesProto2] messages.
  * Retrieve it via the [TestAllRequiredTypesProto2.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface TestAllRequiredTypesProto2Presence {
     val hasRequiredInt32: Boolean
 
@@ -1749,6 +1769,7 @@ interface TestAllRequiredTypesProto2Presence {
      * Interface providing field-presence information for [TestAllRequiredTypesProto2.NestedMessage] messages.
      * Retrieve it via the [TestAllRequiredTypesProto2.NestedMessage.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface NestedMessage {
         val hasA: Boolean
 
@@ -1761,18 +1782,21 @@ interface TestAllRequiredTypesProto2Presence {
      * Interface providing field-presence information for [TestAllRequiredTypesProto2.Data] messages.
      * Retrieve it via the [TestAllRequiredTypesProto2.Data.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface Data {
         val hasGroupInt32: Boolean
 
         val hasGroupUint32: Boolean
     }
 
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrect
 
     /**
      * Interface providing field-presence information for [TestAllRequiredTypesProto2.MessageSetCorrectExtension1] messages.
      * Retrieve it via the [TestAllRequiredTypesProto2.MessageSetCorrectExtension1.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrectExtension1 {
         val hasStr: Boolean
     }
@@ -1781,6 +1805,7 @@ interface TestAllRequiredTypesProto2Presence {
      * Interface providing field-presence information for [TestAllRequiredTypesProto2.MessageSetCorrectExtension2] messages.
      * Retrieve it via the [TestAllRequiredTypesProto2.MessageSetCorrectExtension2.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface MessageSetCorrectExtension2 {
         val hasI: Boolean
     }
@@ -1790,6 +1815,7 @@ interface TestAllRequiredTypesProto2Presence {
  * Interface providing field-presence information for [TestLargeOneof] messages.
  * Retrieve it via the [TestLargeOneof.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface TestLargeOneofPresence {
     val hasA1: Boolean
 
@@ -1806,6 +1832,7 @@ interface TestLargeOneofPresence {
  * Cases of the `oneof_field` oneof of [TestAllTypesProto2].
  * Retrieve the active case via the [TestAllTypesProto2.oneofField] extension property.
  */
+@GeneratedProtoDeclaration
 enum class TestAllTypesProto2OneofFieldCase {
     ONEOF_UINT32,
     ONEOF_NESTED_MESSAGE,
@@ -1823,6 +1850,7 @@ enum class TestAllTypesProto2OneofFieldCase {
  * Cases of the `large_oneof` oneof of [TestLargeOneof].
  * Retrieve the active case via the [TestLargeOneof.largeOneof] extension property.
  */
+@GeneratedProtoDeclaration
 enum class TestLargeOneofLargeOneofCase {
     A1,
     A2,
@@ -1836,6 +1864,7 @@ enum class TestLargeOneofLargeOneofCase {
  * Cases of the `oneof_field` oneof of [TestAllTypesProto2.ExtensionWithOneof].
  * Retrieve the active case via the [TestAllTypesProto2.ExtensionWithOneof.oneofField] extension property.
  */
+@GeneratedProtoDeclaration
 enum class TestAllTypesProto2ExtensionWithOneofOneofFieldCase {
     A,
     B,

@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
@@ -12,6 +13,10 @@ plugins {
 
 kotlin {
     explicitApi = ExplicitApiMode.Disabled
+}
+
+apiWatchdog {
+    enabled = false
 }
 
 dependencies {

@@ -14,6 +14,9 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import java.util.function.IntFunction
 import kotlin.reflect.KClass
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 
 /**
  * Returns a collection of all proto tasks registered in the project.
@@ -28,6 +31,7 @@ import kotlin.reflect.KClass
  *     .all { ... }
  * ```
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val Project.protoTasks: ProtoTasks<ProtoTask> get() = ProtoTasksImpl(this)
 
 /**
@@ -43,6 +47,7 @@ public val Project.protoTasks: ProtoTasks<ProtoTask> get() = ProtoTasksImpl(this
  *     .all { ... }
  * ```
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val ProtoTasks<ProtoTask>.buf: ProtoTasks<BufExecTask> get() = matchingType(BufExecTask::class)
 
 /**
@@ -58,6 +63,7 @@ public val ProtoTasks<ProtoTask>.buf: ProtoTasks<BufExecTask> get() = matchingTy
  *     .all { ... }
  * ```
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public val ProtoTasks<BufExecTask>.generate: ProtoTasks<BufGenerateTask> get() = matchingType(BufGenerateTask::class)
 
 /**
@@ -75,6 +81,7 @@ public val ProtoTasks<BufExecTask>.generate: ProtoTasks<BufGenerateTask> get() =
  *     .all { ... }
  * ```
  */
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<ProtoTaskT> {
     /**
      * Filters tasks by type.
@@ -83,6 +90,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingType(BufGenerateTask::class)
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun <ProtoTaskT : ProtoTask> matchingType(kClass: KClass<ProtoTaskT>): ProtoTasks<ProtoTaskT>
 
     /**
@@ -92,6 +100,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingSourceSet("main")
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingSourceSet(sourceSetName: String): ProtoTasks<ProtoTaskT>
 
     /**
@@ -101,6 +110,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingKotlinSourceSet(kotlin.sourceSets.getByName("main"))
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingKotlinSourceSet(sourceSet: KotlinSourceSet): ProtoTasks<ProtoTaskT>
 
     /**
@@ -110,6 +120,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingKotlinSourceSet(kotlin.sourceSets.commonMain)
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingKotlinSourceSet(sourceSet: NamedDomainObjectProvider<KotlinSourceSet>): ProtoTasks<ProtoTaskT>
 
     /**
@@ -119,6 +130,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingSourceSet(sourceSets.getByName("main")
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingSourceSet(sourceSet: SourceSet): ProtoTasks<ProtoTaskT>
 
     /**
@@ -128,6 +140,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingSourceSet(sourceSets.main)
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingSourceSet(sourceSet: NamedDomainObjectProvider<SourceSet>): ProtoTasks<ProtoTaskT>
 
     /**
@@ -137,6 +150,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.testTasks()
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun testTasks(): ProtoTasks<ProtoTaskT>
 
     /**
@@ -146,6 +160,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.nonTestTasks()
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun nonTestTasks(): ProtoTasks<ProtoTaskT>
 
     /**
@@ -161,6 +176,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * }
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun androidTasks(
         predicate: (ProtoTaskT, ProtoTask.AndroidProperties) -> Boolean = { _, _ -> true },
     ): ProtoTasks<ProtoTaskT>
@@ -172,6 +188,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.androidUnitTestTasks()
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun androidUnitTestTasks(): ProtoTasks<ProtoTaskT>
 
     /**
@@ -181,6 +198,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.androidInstrumentedTestTasks()
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun androidInstrumentedTestTasks(): ProtoTasks<ProtoTaskT>
 
     /**
@@ -194,6 +212,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingAndroidFlavor("freeApp")
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingAndroidFlavor(flavor: String?): ProtoTasks<ProtoTaskT>
 
     /**
@@ -205,6 +224,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingAndroidBuildType("debug")
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingAndroidBuildType(buildType: String?): ProtoTasks<ProtoTaskT>
 
     /**
@@ -216,6 +236,7 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
      * protoTasks.matchingAndroidVariant("freeAppDebug")
      * ```
      */
+    @IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
     public fun matchingAndroidVariant(variant: String?): ProtoTasks<ProtoTaskT>
 }
 
@@ -227,9 +248,14 @@ public sealed interface ProtoTasks<ProtoTaskT : ProtoTask> : TaskCollection<Prot
  * protoTasks.matchingType<BufGenerateTask>()
  * ```
  */
+@IntentionallyMutableCollection(reason = ExemptionReason.INTEROP, description = "Gradle API")
 public inline fun <reified ProtoTaskT : ProtoTask> ProtoTasks<*>.matchingType(): ProtoTasks<ProtoTaskT> {
     return matchingType(ProtoTaskT::class)
 }
+
+// ###################
+// ## Internal APIs ##
+// ###################
 
 internal inline fun <reified ProtoTaskT : ProtoTask> ProtoTasksImpl(project: Project): ProtoTasksImpl<ProtoTaskT> {
     return ProtoTasksImpl(project, project.tasks.withType(ProtoTaskT::class), ProtoTaskT::class)

@@ -20,7 +20,9 @@ import com.google.protobuf.kotlin.UInt32Value
 import com.google.protobuf.kotlin.UInt64Value
 import com.google.protobuf.kotlin.Value
 import kotlinx.io.bytestring.ByteString
+import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import kotlinx.rpc.protobuf.internal.GeneratedProtoDeclaration
 
 /**
  * Constructs a new message.
@@ -206,6 +208,7 @@ val TestAllTypesProto3.oneofField: TestAllTypesProto3OneofFieldCase get() = this
 /**
  * Exhaustive, typed dispatch on the active case of the `oneof_field` oneof.
  */
+@GeneratedProtoDeclaration
 inline fun <R> TestAllTypesProto3.whenOneofField(
     oneofUint32: (UInt) -> R,
     oneofNestedMessage: (TestAllTypesProto3.NestedMessage) -> R,
@@ -348,6 +351,7 @@ val TestAllTypesProto3.NestedMessage.corecursiveOrNull: TestAllTypesProto3? get(
  * Interface providing field-presence information for [TestAllTypesProto3] messages.
  * Retrieve it via the [TestAllTypesProto3.presence] extension property.
  */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 interface TestAllTypesProto3Presence {
     val hasOptionalNestedMessage: Boolean
 
@@ -411,6 +415,7 @@ interface TestAllTypesProto3Presence {
      * Interface providing field-presence information for [TestAllTypesProto3.NestedMessage] messages.
      * Retrieve it via the [TestAllTypesProto3.NestedMessage.presence] extension property.
      */
+    @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
     interface NestedMessage {
         val hasCorecursive: Boolean
     }
@@ -420,6 +425,7 @@ interface TestAllTypesProto3Presence {
  * Cases of the `oneof_field` oneof of [TestAllTypesProto3].
  * Retrieve the active case via the [TestAllTypesProto3.oneofField] extension property.
  */
+@GeneratedProtoDeclaration
 enum class TestAllTypesProto3OneofFieldCase {
     ONEOF_UINT32,
     ONEOF_NESTED_MESSAGE,

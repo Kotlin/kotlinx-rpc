@@ -6,6 +6,8 @@ package kotlinx.rpc.grpc.descriptor
 
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyExhaustive
 
 public expect class GrpcMethodDescriptor<Request, Response> {
     public fun getFullMethodName(): String
@@ -18,6 +20,7 @@ public expect class GrpcMethodDescriptor<Request, Response> {
 
 public expect val GrpcMethodDescriptor<*, *>.methodType: GrpcMethodType
 
+@IntentionallyExhaustive(reason = ExemptionReason.API_DESIGN)
 public enum class GrpcMethodType {
     UNARY,
     CLIENT_STREAMING,

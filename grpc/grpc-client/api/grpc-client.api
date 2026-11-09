@@ -10,15 +10,8 @@ public abstract interface class kotlinx/rpc/grpc/client/GrpcCallCredentials {
 
 public final class kotlinx/rpc/grpc/client/GrpcCallCredentials$Context {
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;
-	public static synthetic fun copy$default (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;
-	public fun equals (Ljava/lang/Object;)Z
 	public final fun getAuthority ()Ljava/lang/String;
 	public final fun getMethodName ()Ljava/lang/String;
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcCallCredentials$DefaultImpls {
@@ -136,9 +129,5 @@ public final class kotlinx/rpc/grpc/client/GrpcTlsClientCredentials : kotlinx/rp
 public abstract interface class kotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder {
 	public abstract fun keyManager (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
 	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
-}
-
-public final class kotlinx/rpc/grpc/client/internal/ManagedChannel_jvmKt {
-	public static final fun toKotlin (Lio/grpc/ManagedChannel;)Lkotlinx/rpc/grpc/client/internal/ManagedChannel;
 }
 

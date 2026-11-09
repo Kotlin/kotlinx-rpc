@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+
 package kotlinx.rpc.grpc.client
 
 import kotlinx.coroutines.flow.Flow
@@ -31,12 +32,15 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 private typealias RequestClient = Any
 
 /**
  * GrpcClient manages gRPC communication by providing implementation for making asynchronous RPC calls.
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClient internal constructor(
     internal val channel: ManagedChannel,
     messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver,
@@ -204,6 +208,7 @@ private fun GrpcClient(
  * @see overrideAuthority
  * @see intercept
  */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClientConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
     internal var keepAlive: KeepAlive? = null
@@ -452,6 +457,7 @@ public class GrpcClientConfiguration internal constructor() {
      * of ongoing calls; otherwise, pings are only sent during active RPCs.
      * The default value is `false`.
      */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
     public class KeepAlive internal constructor() {
         public var time: Duration = Duration.INFINITE
             set(value) {
