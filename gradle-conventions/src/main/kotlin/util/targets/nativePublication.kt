@@ -6,13 +6,13 @@ package util.targets
 
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.konan.target.Family
 import util.other.capitalized
 import util.other.isPublicModule
+import util.tasks.registerPublicationGroup
 
 private const val APPLE = "publishApplePublication"
 private const val LINUX = "publishLinuxPublication"
@@ -56,12 +56,10 @@ private fun Project.configureNativePublication(grouped: Map<String?, List<Kotlin
     }
 
     repos.get().forEach { repositoryName ->
-        tasks.register("${groupName}To${repositoryName.capitalized()}Repository").configure {
-            group = PublishingPlugin.PUBLISH_TASK_GROUP
-
-            dependsOn(targets.map {
-                "publish${it.name.capitalized()}PublicationTo${repositoryName.capitalized()}Repository"
-            })
-        }
+        registerPublicationGroup(
+            taskName = "${groupName}To${repositoryName.capitalized()}Repository",
+            repositoryName = repositoryName,
+            publications = targets.map { it.name },
+        )
     }
 }
