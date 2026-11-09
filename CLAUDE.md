@@ -37,6 +37,7 @@ Use the `running_gradle_builds` skill. Example tasks:
 ### Validation
 Use the `running_gradle_builds` skill for these tasks:
 - `checkLegacyAbi` -- Binary compatibility (formerly BCV apiCheck)
+- `aggregateApiWatchdogReports` -- API watchdog report in `build/reports/api-watchdog/`. The watchdog runs during compilation of public modules and fails the build on violations, so run this task only for the report.
 - `detekt` -- Static analysis (does NOT fail build, check console)
 - `:jpms-check:compileJava` -- Java module system check
 - `kotlinUpgradeYarnLock` -- Fix JS dependency locks
