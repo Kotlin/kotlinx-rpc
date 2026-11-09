@@ -5,7 +5,6 @@
 package kotlinx.rpc.grpc.server.internal
 
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
-import kotlinx.rpc.internal.utils.InternalRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 

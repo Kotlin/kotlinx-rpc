@@ -27,7 +27,10 @@ public sealed interface KrpcTransportMessage {
      * A single message of the binary type that can be transferred from one RPC endpoint to another.
      */
     @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
-    public class BinaryMessage(@IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY) public val value: ByteArray) : KrpcTransportMessage
+    public class BinaryMessage(
+        @IntentionallyMutableCollection(reason = ExemptionReason.FOR_BACKWARDS_COMPATIBILITY)
+        public val value: ByteArray,
+    ) : KrpcTransportMessage
 }
 
 /**
