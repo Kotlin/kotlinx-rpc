@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 import util.grpc.withGrpcClientTestServer
+import util.targets.configureNonSwiftSourceSets
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -24,9 +25,9 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    // we must re-apply the default hierarchy template again, because we added custom default source sets below,
-    // otherwise it wouldn't be applied.
-    applyDefaultHierarchyTemplate()
+    // Applies the default hierarchy template, which the custom source sets below disable, and
+    // adds the nonSwift* branches for the targets without the Swift backend.
+    configureNonSwiftSourceSets()
 
     sourceSets {
         commonMain {
@@ -88,7 +89,7 @@ kotlin {
             }
         }
 
-        nativeMain {
+        named("nonSwiftNativeMain") {
             dependencies {
                 // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
                 implementation(projects.protobuf.protobufLite)

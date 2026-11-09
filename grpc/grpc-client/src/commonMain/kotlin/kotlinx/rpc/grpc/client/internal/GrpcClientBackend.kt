@@ -7,6 +7,7 @@ package kotlinx.rpc.grpc.client.internal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.client.GrpcCallCredentials
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 
@@ -46,3 +47,8 @@ internal interface GrpcClientBackend {
         callOptions: GrpcCallOptions,
     ): Flow<GrpcClientCallEvents<Response>>
 }
+
+internal expect fun GrpcClientBackend(
+    channel: ManagedChannel,
+    callCredentials: GrpcCallCredentials,
+): GrpcClientBackend

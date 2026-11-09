@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.rpc.RpcCall
 import kotlinx.rpc.RpcClient
 import kotlinx.rpc.grpc.GrpcMetadata
-import kotlinx.rpc.grpc.client.internal.GrpcJavaApiClientBackend
 import kotlinx.rpc.grpc.client.internal.GrpcClientBackend
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.client.internal.ManagedChannelBuilder
@@ -54,7 +53,7 @@ public class GrpcClient internal constructor(
     private val delegates = RpcInternalConcurrentHashMap<String, GrpcServiceDelegate>()
     private val messageMarshallerResolver = messageMarshallerResolver + ThrowingGrpcMarshallerResolver
 
-    internal val backend: GrpcClientBackend = GrpcJavaApiClientBackend(channel, callCredentials)
+    internal val backend: GrpcClientBackend = GrpcClientBackend(channel, callCredentials)
 
     public fun shutdown() {
         delegates.clear()
@@ -164,30 +163,6 @@ public fun GrpcClient(
     return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
 }
 
-/**
- * Creates and configures a gRPC client instance.
- *
- * This function initializes a new gRPC client with the specified target server
- * and allows optional customization of the client's configuration through a configuration block.
- *
- * @param target The gRPC server endpoint to connect to, typically specified in
- * the format `hostname:port`.
- * @param configure An optional configuration block to customize the [GrpcClientConfiguration].
- * This can include setting up interceptors, specifying credentials, customizing message marshaller
- * resolution, and overriding default authority.
- *
- * @return A new instance of [GrpcClient] configured with the specified target and options.
- *
- * @see GrpcClientConfiguration
- */
-public fun GrpcClient(
-    target: String,
-    configure: GrpcClientConfiguration.() -> Unit = {},
-): GrpcClient {
-    val config = GrpcClientConfiguration().apply(configure)
-    return GrpcClient(ManagedChannelBuilder(target, config.credentials), config)
-}
-
 private fun GrpcClient(
     builder: ManagedChannelBuilder<*>,
     config: GrpcClientConfiguration,
@@ -269,7 +244,8 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
      * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
-     * JVM, or the `grpc-c/<version>` C-core token on native). A full override is not supported by the
+     * JVM, the `kotlinx-rpc-swift/<version>` token on iOS, and the `grpc-c/<version>` C-core
+     * token on other native targets). A full override is not supported by the
      * underlying gRPC implementations.
      *
      * Set this here rather than via request [kotlinx.rpc.grpc.GrpcMetadata]: `user-agent` is a reserved
@@ -290,6 +266,9 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
+     *
+     * iOS currently doesn't support this setting, because of a
+     * [bug in the grpc-swift transport](https://github.com/grpc/grpc-swift-nio-transport/issues/207).
      */
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {

@@ -7,9 +7,7 @@ package kotlinx.rpc.grpc.client
 
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.plus
-import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
-import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyDataClass
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyOpen
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 

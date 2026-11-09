@@ -51,17 +51,6 @@ public actual fun ManagedChannelBuilder(
 }
 
 @InternalRpcApi
-public actual fun ManagedChannelBuilder(
-    target: String,
-    credentials: GrpcClientCredentials?,
-): ManagedChannelBuilder<*> {
-    if (credentials != null) {
-        return Grpc.newChannelBuilder(target, credentials.toJvm())
-    }
-    return io.grpc.ManagedChannelBuilder.forTarget(target)
-}
-
-@InternalRpcApi
 public fun io.grpc.ManagedChannel.toKotlin(): ManagedChannel {
     return JvmManagedChannel(this)
 }

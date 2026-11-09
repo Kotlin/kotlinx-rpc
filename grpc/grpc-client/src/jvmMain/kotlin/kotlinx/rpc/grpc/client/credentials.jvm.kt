@@ -11,11 +11,10 @@ import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.rpc.grpc.GrpcStatus
+import kotlinx.rpc.grpc.client.internal.applyToMetadata
 import kotlinx.rpc.grpc.internal.internalError
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.cancellation.CancellationException
 
 internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
     return when (this) {
@@ -55,29 +54,14 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
             applier: MetadataApplier
         ) {
             CoroutineScope(coroutineContext).launch {
-                if (requiresTransportSecurity && requestInfo.securityLevel == SecurityLevel.NONE) {
-                    applier.fail(GrpcStatus.UNAUTHENTICATED.withDescription(
-                        "Established channel does not have a sufficient security level to transfer call credential."
-                    ))
-                    return@launch
-                }
-
-                try {
-                    val context = GrpcCallCredentials.Context(
-                        requestInfo.authority,
-                        requestInfo.methodDescriptor.fullMethodName,
-                    )
-                    val metadata = context.getRequestMetadata()
+                // INTEGRITY alone doesn't encrypt, so only PRIVACY_AND_INTEGRITY counts as secure.
+                applyToMetadata(
+                    requestInfo.authority,
+                    requestInfo.methodDescriptor.fullMethodName,
+                    isTransportSecure = requestInfo.securityLevel == SecurityLevel.PRIVACY_AND_INTEGRITY,
+                    recordFailure = { applier.fail(it) },
+                ) { metadata ->
                     applier.apply(metadata)
-                } catch (err: Throwable) {
-                    // we are not treating StatusExceptions separately, as currently there is no
-                    // clean way to support the same feature on native. So for the sake of similar behavior,
-                    // we always fail with GrpcStatus.UNAVAILABLE. (KRPC-233)
-                    val description = "Getting metadata from call credentials failed with error: ${err.message}"
-                    applier.fail(GrpcStatus.UNAVAILABLE.withDescription(description).withCause(err))
-                    if (err is CancellationException || err is Error) {
-                        throw err
-                    }
                 }
             }
         }
