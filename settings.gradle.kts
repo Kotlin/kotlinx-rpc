@@ -77,6 +77,7 @@ include(":tests:grpc-test-server")
 include(":tests:grpc-benchmarks")
 include(":tests:grpc-benchmarks:protos")
 include(":tests:grpc-benchmarks:kotlinx-rpc-client")
+include(":tests:protobuf-benchmarks")
 val onWindows = providers.systemProperty("os.name").get().contains("Windows", ignoreCase = true)
 if (!onWindows) {
     // The protobuf-conformance configuration doesn't support windows, so we exclude it on Windows.
