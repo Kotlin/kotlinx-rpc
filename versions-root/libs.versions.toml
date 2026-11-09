@@ -39,6 +39,7 @@ junit6 = "6.1.3"
 kotlinx-browser = "0.5.0"
 kotlinx-io = "0.9.2"
 kotlinx-collections = "0.5.2"
+kotlinx-benchmark = "0.5.0"
 dokka = "2.2.0"
 puppeteer = "25.17.0"
 atomicfu = "0.33.0"
@@ -76,6 +77,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections" }
 
 # serialization
@@ -164,6 +166,7 @@ kotlin-library-api-watchdog = { id = "org.jetbrains.kotlin.library.api-watchdog"
 kotlin-library-api-watchdog-report-aggregation = { id = "org.jetbrains.kotlin.library.api-watchdog-report-aggregation", version.ref = "api-watchdog" }
 
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-lang" }
+kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt-gradle-plugin" }
 atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
