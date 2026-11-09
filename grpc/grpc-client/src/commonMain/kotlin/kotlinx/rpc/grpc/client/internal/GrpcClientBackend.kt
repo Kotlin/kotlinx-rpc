@@ -37,7 +37,7 @@ internal interface GrpcClientBackend {
      * Starts the call of [method] when the caller collects the returned flow.
      *
      * For unary and server-streaming methods, [requests] must emit exactly one request.
-     * The caller checks this before it calls [execute].
+     * The caller must ensure this before calling [execute].
      */
     fun <Request, Response> execute(
         method: GrpcMethodDescriptor<Request, Response>,

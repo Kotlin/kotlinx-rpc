@@ -7,6 +7,12 @@ Structure:
    kotlin code and is not publishing any KLib artifacts, but .zip artifacts that contain `.a` static libraries.
 - `shims/` contains the Kotlin/Native shim build, including the gRPC shim, the protobuf shim, and the shared shim annotations.
 - `bazel-support/` contains shared Bazel and Kotlin/Native toolchain support used by the active native-deps builds.
+- `kotlinx-rpc-grpc-swift/` is a git submodule with the sources of the
+   [kotlinx-rpc-grpc-swift](https://github.com/Kotlin/kotlinx-rpc-grpc-swift) Swift package.
+   The gRPC client imports its `GrpcSwiftBridge` library on iOS. The submodule commit must match the tag
+   of the `grpc-swift-bridge` version in the version catalog. The `verify-grpc-swift-bridge` GitHub
+   workflow enforces this on pull requests. Run `git submodule update --init --recursive` after a clone
+   to read or edit the sources.
 
 Shim model:
 - `shims/grpc/` publishes the gRPC shim artifact and runs cinterop.
@@ -28,3 +34,5 @@ Operational notes:
 2. `shims/annotation` has its own versioning scheme (semver)
 3. `shims/grpc` also has its own versioning scheme: `<grpc-version>-<shim-version>` and is independently published.
 4. `shims/protobuf` also has its own versioning scheme: `<protobuf-version>-<shim-version>` and is independently published.
+5. The `grpc-swift-bridge` version in the version catalog names the tag of the published package that the build resolves.
+   The `kotlinx-rpc-grpc-swift` submodule commit must match that tag.
