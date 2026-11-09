@@ -6,13 +6,21 @@ package kotlinx.rpc.grpc.client
 
 import com.google.protobuf.kotlin.Empty
 import com.google.protobuf.kotlin.invoke
+import io.grpc.testing.integration.PayloadType
+import io.grpc.testing.integration.ResponseParameters
+import io.grpc.testing.integration.SimpleRequest
+import io.grpc.testing.integration.StreamingOutputCallRequest
+import io.grpc.testing.integration.invoke
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.toList
 import kotlinx.io.bytestring.ByteString
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.append
 import kotlinx.rpc.grpc.appendBinary
+import kotlinx.rpc.grpc.client.testing.ExpectedServerEvent
 import kotlinx.rpc.grpc.client.testing.assertGrpcStatus
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
 import kotlinx.rpc.grpc.client.testing.successfulUnaryEvents
@@ -67,7 +75,8 @@ class GrpcClientMetadataAndStatusTest {
                 testService.emptyCall(Empty {})
             }
 
-            // Client callbacks must fire exactly once despite the error.
+            // Client callbacks must retain wire order and fire exactly once despite the error.
+            assertEquals(listOf("headers", "message", "close"), callback.events)
             assertEquals(1, callback.headerCount)
             assertEquals(1, callback.closeCount)
             assertEquals(GrpcStatusCode.DATA_LOSS, callback.status?.statusCode)
@@ -100,6 +109,87 @@ class GrpcClientMetadataAndStatusTest {
                 acceptedMetadata,
             )
             assertServerTrace(successfulUnaryEvents())
+        }
+    }
+
+    @Test
+    fun nonOkStatusAfterResponsesPreservesMessagesThenFails() {
+        val callback = CallbackRecorder()
+        grpcClientTest(
+            clientConfig = { intercept(recordingInterceptor(callback)) },
+            scenario = {
+                // Request three responses but terminate after the second has reached the wire.
+                trailingMetadata = listOf(metadataEntry(FAILURE_POINT_KEY, "two"))
+                terminalBehavior = terminalBehavior(
+                    code = GrpcStatusCode.RESOURCE_EXHAUSTED,
+                    description = "after two responses",
+                    stage = TerminalStage.AFTER_RESPONSE_MESSAGES,
+                    responseCount = 2U,
+                )
+            },
+        ) {
+            val responses = mutableListOf<Int>()
+            val failure = assertGrpcStatus(GrpcStatusCode.RESOURCE_EXHAUSTED, "after two responses") {
+                testService.streamingOutputCall(
+                    StreamingOutputCallRequest {
+                        responseType = PayloadType.COMPRESSABLE
+                        responseParameters = listOf(3, 5, 8).map { size ->
+                            ResponseParameters { this.size = size }
+                        }
+                    }
+                ).onEach { responses += it.payload.body.size }.toList()
+            }
+
+            // Already-delivered messages remain observable before collection fails on close.
+            assertEquals(listOf(3, 5), responses)
+            assertEquals(listOf("headers", "message", "message", "close"), callback.events)
+            assertEquals(1, callback.headerCount)
+            assertEquals(1, callback.closeCount)
+            assertEquals("two", assertNotNull(failure.trailers).getAll(FAILURE_POINT_KEY).single())
+            assertServerTrace(
+                listOf(
+                    ExpectedServerEvent(EventType.CALL_ACCEPTED),
+                    ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED),
+                    ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED),
+                    ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT),
+                    ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT),
+                    ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT, occurrence = 2U),
+                    ExpectedServerEvent(EventType.CALL_CLOSED),
+                )
+            )
+        }
+    }
+
+    @Test
+    fun unaryNonOkStatusAfterResponsePreservesMessageThenFails() {
+        val callback = CallbackRecorder()
+        grpcClientTest(
+            clientConfig = { intercept(recordingInterceptor(callback)) },
+            scenario = {
+                terminalBehavior = terminalBehavior(
+                    code = GrpcStatusCode.RESOURCE_EXHAUSTED,
+                    description = "after the response",
+                    stage = TerminalStage.AFTER_RESPONSE_MESSAGES,
+                    responseCount = 1U,
+                )
+            },
+        ) {
+            assertGrpcStatus(GrpcStatusCode.RESOURCE_EXHAUSTED, "after the response") {
+                testService.unaryCall(SimpleRequest { responseSize = 3 })
+            }
+
+            // The response stays observable to interceptors before the call fails on close.
+            assertEquals(listOf("headers", "message", "close"), callback.events)
+            assertServerTrace(
+                listOf(
+                    ExpectedServerEvent(EventType.CALL_ACCEPTED),
+                    ExpectedServerEvent(EventType.REQUEST_MESSAGE_RECEIVED),
+                    ExpectedServerEvent(EventType.CLIENT_HALF_CLOSED),
+                    ExpectedServerEvent(EventType.INITIAL_HEADERS_SENT),
+                    ExpectedServerEvent(EventType.RESPONSE_MESSAGE_SENT),
+                    ExpectedServerEvent(EventType.CALL_CLOSED),
+                )
+            )
         }
     }
 
@@ -317,6 +407,7 @@ class GrpcClientMetadataAndStatusTest {
         const val RESPONSE_BINARY_KEY: String = "x-response-bin"
         const val TRAILER_ASCII_KEY: String = "x-trailer-value"
         const val TRAILER_BINARY_KEY: String = "x-trailer-bin"
+        const val FAILURE_POINT_KEY: String = "x-failure-point"
         const val STATUS_TRAILER_KEY: String = "x-status-name"
         const val METADATA_FAILURE_DESCRIPTION: String = "metadata terminal status"
 
@@ -335,8 +426,9 @@ class GrpcClientMetadataAndStatusTest {
         }
 
         /**
-         * Returns an interceptor that records the call's `onHeaders` and `onClose` callbacks in [callback], so a test
-         * can check how often they ran and what metadata and status they received.
+         * Returns an interceptor that records the call's `onHeaders` and `onClose` callbacks and its response messages
+         * in [callback], so a test can check their order, how often they ran and what metadata
+         * and status they received.
          *
          * [configure] runs on the call scope before the call proceeds, for example to add request headers.
          */
@@ -351,13 +443,15 @@ class GrpcClientMetadataAndStatusTest {
                 onHeaders { headers ->
                     callback.headerCount++
                     callback.headers = headers
+                    callback.events += "headers"
                 }
                 onClose { status, trailers ->
                     callback.closeCount++
                     callback.status = status
                     callback.trailers = trailers
+                    callback.events += "close"
                 }
-                return proceed(request)
+                return proceed(request).onEach { callback.events += "message" }
             }
         }
 
@@ -392,6 +486,8 @@ class GrpcClientMetadataAndStatusTest {
 
 /** What a [GrpcClientMetadataAndStatusTest] recording interceptor observed in the call's callbacks. */
 private class CallbackRecorder {
+    /** `headers`, `message` and `close` in the order the interceptor observed them. */
+    val events: MutableList<String> = mutableListOf()
     var headerCount: Int = 0
     var closeCount: Int = 0
     var headers: GrpcMetadata? = null

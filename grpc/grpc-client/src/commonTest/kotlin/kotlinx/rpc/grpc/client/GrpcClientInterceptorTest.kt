@@ -37,6 +37,7 @@ import kotlinx.rpc.grpc.client.testing.finiteRequestFlow
 import kotlinx.rpc.grpc.client.testing.grpcClientTest
 import kotlinx.rpc.grpc.client.testing.serverBarrier
 import kotlinx.rpc.grpc.client.testing.successfulServerStreamingEvents
+import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.statusCode
 import kxrpc.testing.BarrierType
 import kxrpc.testing.EventType
@@ -142,6 +143,53 @@ class GrpcClientInterceptorTest {
 
         assertContentEquals(TRANSFORMED_CLIENT_RESPONSE, response.payload.body.toByteArray())
         assertUnaryLifecycle()
+    }
+
+    @Test
+    fun interceptorAddsHeadersAndObservesCallbacksExactlyOnce() {
+        val events = mutableListOf<String>()
+        var headerCount = 0
+        var closeCount = 0
+        grpcClientTest(
+            clientConfig = {
+                // Exercise outbound metadata and both terminal callbacks in one interceptor.
+                intercept(interceptor { request ->
+                    requestHeaders.append(INTERCEPTOR_HEADER, "present")
+                    onHeaders { headers ->
+                        headerCount++
+                        assertEquals("initial", headers.getAll(INITIAL_HEADER).single())
+                        events += "headers"
+                    }
+                    onClose { status, trailers ->
+                        closeCount++
+                        assertEquals(GrpcStatusCode.OK, status.statusCode)
+                        assertEquals("trailing", trailers.getAll(TRAILING_HEADER).single())
+                        events += "close"
+                    }
+                    proceed(request).map {
+                        events += "message"
+                        it
+                    }
+                })
+            },
+            scenario = {
+                initialMetadata = listOf(metadataEntry(INITIAL_HEADER, "initial"))
+                trailingMetadata = listOf(metadataEntry(TRAILING_HEADER, "trailing"))
+            },
+        ) {
+            assertEquals(Empty {}, testService.emptyCall(Empty {}))
+
+            // Callback order and counts must match the single headers/message/close lifecycle.
+            assertEquals(listOf("headers", "message", "close"), events)
+            assertEquals(1, headerCount)
+            assertEquals(1, closeCount)
+            val accepted = serverTrace().events.single { it.type == EventType.CALL_ACCEPTED }
+            assertEquals(
+                listOf(metadataEntry(INTERCEPTOR_HEADER, "present")),
+                accepted.metadata.filter { it.key == INTERCEPTOR_HEADER },
+            )
+            assertUnaryLifecycle()
+        }
     }
 
     @Test
@@ -530,6 +578,9 @@ class GrpcClientInterceptorTest {
     private companion object {
         const val TRANSFORMED_SERVER_RESPONSE_SIZE: Int = 19
         val TRANSFORMED_CLIENT_RESPONSE: ByteArray = byteArrayOf(2, 3, 5, 7, 11)
+        const val INTERCEPTOR_HEADER: String = "x-interceptor-value"
+        const val INITIAL_HEADER: String = "x-interceptor-initial"
+        const val TRAILING_HEADER: String = "x-interceptor-trailing"
 
         /** An ASCII metadata entry as recorded in the server trace, to compare with the headers the server received. */
         fun metadataEntry(key: String, value: String): MetadataEntry = MetadataEntry {

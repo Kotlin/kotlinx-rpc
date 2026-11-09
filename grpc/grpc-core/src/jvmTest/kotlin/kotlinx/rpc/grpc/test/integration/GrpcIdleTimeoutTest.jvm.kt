@@ -23,8 +23,7 @@ internal actual fun GrpcTestBase.testIdleTimeout(timeout: Duration?) {
         it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
 
         val idleTimeout = it.getField<ManagedChannel>("channel")
-            .platformApi
-            .getField<Long>("delegate", "idleTimeoutMillis")
+            .getField<Long>("channel", "delegate", "idleTimeoutMillis")
             .milliseconds
 
         assertEquals(timeout ?: 30.minutes, idleTimeout)
