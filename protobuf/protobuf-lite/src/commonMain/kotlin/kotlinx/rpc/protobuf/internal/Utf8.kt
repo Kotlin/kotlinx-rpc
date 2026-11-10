@@ -35,7 +35,7 @@ internal object Utf8 {
                 length += when {
                     c < '\u0080' -> 1
                     c < '\u0800' -> 2
-                    c.isSurrogate() -> 1
+                    c.isSurrogate() -> 1 // Invalid surrogate -> encoded as `?`.
                     else -> 3
                 }
                 i++
@@ -71,7 +71,13 @@ internal object Utf8 {
         while (charIndex < value.length) {
             val c = value[charIndex]
             if (c.isHighSurrogate() && charIndex + 1 < value.length && value[charIndex + 1].isLowSurrogate()) {
+                // Decode two 16bit UTF-16 code unit character into Unicode code point.
                 val cp = 0x10000 + ((c.code - 0xD800) shl 10) + (value[charIndex + 1].code - 0xDC00)
+                // Encode the code point as UTF-8.
+                // 11110xxx   10xxxxxx   10xxxxxx   10xxxxxx
+                // └─lead───┘ └──cont──┘ └──cont──┘ └──cont──┘
+                //   3 bits      6 bits     6 bits     6 bits
+                //   cp>>18     cp>>12     cp>>6      cp
                 put(i++, (0xF0 or (cp shr 18)).toByte())
                 put(i++, (0x80 or ((cp shr 12) and 0x3F)).toByte())
                 put(i++, (0x80 or ((cp shr 6) and 0x3F)).toByte())
@@ -79,13 +85,17 @@ internal object Utf8 {
                 charIndex += 2
             } else {
                 if (c.isSurrogate()) {
+                    // Can't be valid, as surrogate code units are already covered.
                     put(i++, '?'.code.toByte())
                 } else if (c < '\u0080') {
+                    // Fits in one UTF-8 code bye.
                     put(i++, c.code.toByte())
                 } else if (c < '\u0800') {
+                    // Fits in two UTF-8 code bye.
                     put(i++, (0xC0 or (c.code shr 6)).toByte())
                     put(i++, (0x80 or (c.code and 0x3F)).toByte())
                 } else {
+                    // Fits in three UTF-8 code bye.
                     put(i++, (0xE0 or (c.code shr 12)).toByte())
                     put(i++, (0x80 or ((c.code shr 6) and 0x3F)).toByte())
                     put(i++, (0x80 or (c.code and 0x3F)).toByte())
@@ -102,10 +112,12 @@ internal object Utf8 {
         while (i < count) {
             val b0 = get(i).toInt() and 0xFF
             if (b0 < 0x80) {
+                // Fits in one UTF-8 code bye.
                 chars[charCount++] = b0.toChar()
                 i++
                 continue
             }
+            // Defines number of bytes based on well-formed Table 3-7 of the Unicode standard.
             val length = when (b0) {
                 in 0xC2..0xDF -> 2
                 in 0xE0..0xEF -> 3
@@ -127,6 +139,7 @@ internal object Utf8 {
             if (!secondByteValid) {
                 throw ProtobufDecodingException.invalidUtf8()
             }
+            // Check byte range for bytes 2 and 3.
             for (j in 2 until length) {
                 if ((get(i + j).toInt() and 0xFF) !in 0x80..0xBF) {
                     throw ProtobufDecodingException.invalidUtf8()
@@ -134,17 +147,21 @@ internal object Utf8 {
             }
             when (length) {
                 2 -> {
+                    // 5 LSB of b0 | 6 LSB of b1.
                     chars[charCount++] = (((b0 and 0x1F) shl 6) or (b1 and 0x3F)).toChar()
                 }
                 3 -> {
+                    // 4 LSB of b0 | 6 LSB of b1 | 6 LSB of b2.
                     val b2 = get(i + 2).toInt() and 0xFF
                     chars[charCount++] = (((b0 and 0x0F) shl 12) or ((b1 and 0x3F) shl 6) or (b2 and 0x3F)).toChar()
                 }
                 4 -> {
+                    // 3 LSB of b0 | 6 LSB of b1 | 6 LSB of b2 | 6 LSB of b3.
                     val b2 = get(i + 2).toInt() and 0xFF
                     val b3 = get(i + 3).toInt() and 0xFF
                     val cp = ((b0 and 0x07) shl 18) or ((b1 and 0x3F) shl 12) or
                         ((b2 and 0x3F) shl 6) or (b3 and 0x3F)
+                    // Must be encoded as a UTF-16 surrogate pair.
                     chars[charCount++] = (0xD800 + ((cp - 0x10000) shr 10)).toChar()
                     chars[charCount++] = (0xDC00 + ((cp - 0x10000) and 0x3FF)).toChar()
                 }
