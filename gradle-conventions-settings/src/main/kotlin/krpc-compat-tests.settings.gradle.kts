@@ -5,6 +5,7 @@
 @file:Suppress("LoggingSimilarMessage")
 
 import kotlin.io.path.createDirectories
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
@@ -70,15 +71,9 @@ versionDirs.forEach { (dir, version) ->
 
     """.trimIndent()
     )
-    val propertiesFile = moduleDir.resolve("gradle.properties")
-    propertiesFile.writeTextIfChanged(
-        """
-        # THIS FILE IS AUTO-GENERATED, DO NOT EDIT!
-
-        kotlin.compiler.runViaBuildToolsApi=true
-
-    """.trimIndent()
-    )
+    // Earlier versions of this script generated this file. It sets the deprecated
+    // `kotlin.compiler.runViaBuildToolsApi` property, so remove it from existing checkouts.
+    moduleDir.resolve("gradle.properties").deleteIfExists()
 
     logger.debug("Generating {}", globalRootDir.relativize(buildFile))
     if (isMainBuild) {

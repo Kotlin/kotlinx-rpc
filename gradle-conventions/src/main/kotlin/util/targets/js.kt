@@ -18,7 +18,7 @@ fun KmpConfig.configureJs() {
     }
 
     kmp {
-        js(IR) {
+        js {
             nodejs {
                 testTask {
                     useMocha {

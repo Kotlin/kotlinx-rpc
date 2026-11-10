@@ -130,9 +130,9 @@ val generateConformanceTests = tasks.register<GenerateConformanceTestsTask>("gen
     mainClass.set("kotlinx.rpc.protoc.gen.test.GenerateConformanceTestsKt")
 }
 
-val conformanceTest = properties.getOrDefault("conformance.test", "").toString()
+val conformanceTest = findProperty("conformance.test")?.toString() ?: ""
 val conformanceTestDebug =
-    properties.getOrDefault("conformance.test.debug", "false").toString().toBooleanStrictOrNull() ?: false
+    findProperty("conformance.test.debug")?.toString()?.toBooleanStrictOrNull() ?: false
 
 val generateConformanceFileDescriptorSet = tasks
     .withType<GenerateConformanceFileDescriptorSet>()

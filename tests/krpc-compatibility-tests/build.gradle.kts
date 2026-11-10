@@ -11,17 +11,17 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-val main: SourceSet by sourceSets.getting
-val test: SourceSet by sourceSets.getting
+val main: SourceSet = sourceSets.getByName("main")
+val test: SourceSet = sourceSets.getByName("test")
 
-val oldApi: SourceSet by sourceSets.creating {
+val oldApi: SourceSet = sourceSets.create("oldApi") {
     compileClasspath += main.output
     compileClasspath += test.compileClasspath
     runtimeClasspath += main.output
     runtimeClasspath += test.runtimeClasspath
 }
 
-val newApi: SourceSet by sourceSets.creating {
+val newApi: SourceSet = sourceSets.create("newApi") {
     compileClasspath += main.output
     compileClasspath += test.compileClasspath
     runtimeClasspath += main.output

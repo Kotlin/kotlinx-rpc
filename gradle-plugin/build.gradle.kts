@@ -137,7 +137,7 @@ generateSource(
     chooseSourceSet = { main }
 )
 
-val globalRootDir: String by extra
+val globalRootDir = extra["globalRootDir"] as String
 
 val androidHome = System.getenv("ANDROID_HOME")
     ?: System.getProperty("ANDROID_SDK_HOME")

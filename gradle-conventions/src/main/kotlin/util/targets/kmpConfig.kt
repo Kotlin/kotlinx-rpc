@@ -7,7 +7,6 @@ package util.targets
 import groovy.json.JsonSlurper
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinTarget
 import util.kotlinVersionParsed
@@ -68,7 +67,7 @@ class KmpConfig(
     val kotlinVersion: KotlinVersion,
 ) : Project by project {
     private val targetsLookup by lazy {
-        val globalRootDir: String by extra
+        val globalRootDir = extra["globalRootDir"] as String
         loadTargetsSinceKotlinLookupTable(globalRootDir)
     }
 
@@ -117,7 +116,7 @@ class KmpConfig(
 }
 
 fun Project.withKmpConfig(configure: KmpConfig.() -> Unit) {
-    val kotlinVersion: KotlinVersion by extra
+    val kotlinVersion = extra["kotlinVersion"] as KotlinVersion
 
     KmpConfig(
         project = project,

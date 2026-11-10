@@ -64,12 +64,6 @@ private fun Project.configureJarConfiguration(configurationName: String, pluginA
 
     dependencies.add(
         configurationName,
-        mapOf(
-            "group" to "org.jetbrains.kotlinx",
-            "name" to pluginArtifactName,
-            "version" to LIBRARY_VERSION,
-            "classifier" to "all",
-            "ext" to "jar",
-        ),
+        "org.jetbrains.kotlinx:$pluginArtifactName:$LIBRARY_VERSION:all@jar",
     )
 }

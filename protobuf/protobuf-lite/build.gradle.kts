@@ -14,7 +14,7 @@ plugins {
     alias(libs.plugins.kotlinx.rpc)
 }
 
-val globalRootDir: String by project.extra
+val globalRootDir = project.extra["globalRootDir"] as String
 
 kotlin {
     compilerOptions {

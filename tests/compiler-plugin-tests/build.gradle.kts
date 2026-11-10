@@ -22,11 +22,11 @@ kotlin {
     explicitApi = ExplicitApiMode.Disabled
 }
 
-val testDataClasspath: Configuration by configurations.creating
+val testDataClasspath: Configuration = configurations.create("testDataClasspath")
 
-val globalRootDir: String by extra
+val globalRootDir = extra["globalRootDir"] as String
 
-val testArtifacts: Configuration by configurations.creating
+val testArtifacts: Configuration = configurations.create("testArtifacts")
 
 dependencies {
     implementation(projects.core)

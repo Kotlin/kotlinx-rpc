@@ -6,7 +6,6 @@ package util
 
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.provideDelegate
 import util.other.ActionApplied
 
 fun String.kotlinVersionParsed(): KotlinVersion {
@@ -21,7 +20,7 @@ inline fun ExtensionAware.whenKotlinCompilerIsAtLeast(
     patch: Int = 0,
     action: () -> Unit = {},
 ): ActionApplied {
-    val kotlinCompilerVersion: KotlinVersion by extra
+    val kotlinCompilerVersion = extra["kotlinCompilerVersion"] as KotlinVersion
 
     if (kotlinCompilerVersion.isAtLeast(major, minor, patch)) {
         action()
