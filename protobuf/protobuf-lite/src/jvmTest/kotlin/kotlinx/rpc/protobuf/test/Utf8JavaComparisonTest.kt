@@ -92,10 +92,8 @@ class Utf8JavaComparisonTest {
 
     private fun checkEncode(value: String) {
         val expected = javaEncode(value)
-        val length = Utf8.encodedLength(value)
-        val actual = ByteArray(length)
-        Utf8.encode(value, actual, 0)
-        if (!expected.contentEquals(actual)) {
+        val actual = utf8Bytes(value)
+        if (Utf8.encodedLength(value) != expected.size || !expected.contentEquals(actual)) {
             fail("String ${codeUnits(value)}: protobuf-java gives ${hex(expected)}, Utf8 gives ${hex(actual)}.")
         }
     }

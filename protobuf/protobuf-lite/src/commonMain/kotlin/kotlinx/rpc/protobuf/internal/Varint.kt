@@ -4,16 +4,16 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.rpc.protobuf.ProtobufDecodingException
+
 /**
- * Varint sizes and encoding.
- *
- * The functions have these roles:
+ * Varint sizes, encoding, and decoding. The functions have these roles:
  *
  * - `bits`: the varint bits of a field type. It is the only mapping from a field type to its encoding.
- * - `sizeOf`: one overload for each varint type in `VarintTypes.kt`. No overload takes a plain `Int` or
- *   `Long`, so the caller must name the field type.
- * - `write`: writes [UInt32] or [UInt64] bits from `index` and returns the next index. The caller makes
- *   sure that the window has `sizeOf(value)` free bytes from `index`.
+ * - `sizeOf`: the size in bytes. No overload takes a plain `Int` or `Long`, so the caller must name the field type.
+ * - `encode`: gives the bytes of a [UInt32] or [UInt64] to a function. The caller chooses where the bytes go.
+ * - `decode`: reads a varint of at most [MAX_SIZE_64] bytes from a function. The caller chooses where the bytes
+ *   come from.
  */
 internal object Varint {
     const val MAX_SIZE_32: Int = 5
@@ -39,25 +39,45 @@ internal object Varint {
 
     fun sizeOf(value: SInt64): Int = sizeOf(bits(value))
 
-    fun write(window: ByteWindow, index: Int, value: UInt32): Int {
-        var i = index
+    /** Gives the bytes of the varint of [value] to [put], from the first to the last. */
+    inline fun encode(value: UInt32, put: (Byte) -> Unit) {
         var v = value.value
         while (v and 0x7F.inv() != 0) {
-            window.setByte(i++, ((v and 0x7F) or 0x80).toByte())
+            put(((v and 0x7F) or 0x80).toByte())
             v = v ushr 7
         }
-        window.setByte(i++, v.toByte())
-        return i
+        put(v.toByte())
     }
 
-    fun write(window: ByteWindow, index: Int, value: UInt64): Int {
-        var i = index
+    /** Gives the bytes of the varint of [value] to [put], from the first to the last. */
+    inline fun encode(value: UInt64, put: (Byte) -> Unit) {
         var v = value.value
         while (v and 0x7F.inv() != 0L) {
-            window.setByte(i++, ((v and 0x7FL).toInt() or 0x80).toByte())
+            put(((v and 0x7FL).toInt() or 0x80).toByte())
             v = v ushr 7
         }
-        window.setByte(i++, v.toByte())
-        return i
+        put(v.toByte())
+    }
+
+    /**
+     * Reads a varint from [get] and returns its 64 bits.
+     *
+     * [get] gives each byte one time, from the first to the last. The function calls it at most
+     * [MAX_SIZE_64] times, and throws [ProtobufDecodingException] if the varint is longer.
+     */
+    inline fun decode(get: () -> Byte): Long {
+        var result = 0L
+        var shift = 0
+        while (true) {
+            val b = get()
+            result = result or ((b.toLong() and 0x7F) shl shift)
+            if (b >= 0) {
+                return result
+            }
+            shift += 7
+            if (shift == 7 * MAX_SIZE_64) {
+                throw ProtobufDecodingException.malformedVarint()
+            }
+        }
     }
 }

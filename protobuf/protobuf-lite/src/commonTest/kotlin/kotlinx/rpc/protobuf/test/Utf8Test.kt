@@ -11,6 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 import kotlin.test.fail
 
 class Utf8Test {
@@ -171,21 +172,26 @@ class Utf8Test {
         return result
     }
 
-    /** Checks [Utf8.encodedLength] and both `encode` functions, at index 0 and at index 3. */
+    @Test
+    fun decodeReadsEachByteOnceAndNeverPastCount() {
+        forEachShortSequence { input ->
+            var calls = 0
+            var rejected = false
+            try {
+                // A read past the input fails with an IndexOutOfBoundsException.
+                Utf8.decode(input.size, CharArray(input.size)) { input[calls++].toByte() }
+            } catch (_: ProtobufDecodingException) {
+                rejected = true
+            }
+            assertTrue(calls <= input.size, "Input ${input.toList()}: $calls reads.")
+            assertTrue(rejected || calls == input.size, "Input ${input.toList()}: $calls reads, accepted.")
+        }
+    }
+
+    /** Checks [Utf8.encodedLength] and [Utf8.encode]. */
     private fun checkEncode(value: String, expected: ByteArray) {
         assertEquals(expected.size, Utf8.encodedLength(value))
-        for (start in listOf(0, 3)) {
-            val array = ByteArray(start + expected.size)
-            assertEquals(start + expected.size, Utf8.encode(value, array, start))
-            assertContentEquals(expected, array.copyOfRange(start, array.size))
-
-            // The window starts at array offset 2. It has one byte more, because `attach` needs a non-empty segment.
-            val windowArray = ByteArray(2 + start + expected.size + 1)
-            val window = ByteWindow()
-            window.attach(windowArray, 2)
-            assertEquals(start + expected.size, Utf8.encode(value, window, start))
-            assertContentEquals(expected, windowArray.copyOfRange(2 + start, 2 + start + expected.size))
-        }
+        assertContentEquals(expected, utf8Bytes(value))
     }
 
     /** Checks both `decode` functions, at index 0 and at index 3. */
