@@ -53,11 +53,11 @@ dependencies {
 
     testImplementation(libs.kotlin.gradle.plugin)
     testImplementation(gradleTestKit())
-    testImplementation(platform(libs.junit5.bom))
+    testImplementation(platform(libs.junit6.bom))
     testImplementation(libs.kotlin.test.junit5)
-    testImplementation(libs.junit5.jupiter)
-    testImplementation(libs.junit5.jupiter.api)
-    testRuntimeOnly(libs.junit5.platform.launcher)
+    testImplementation(libs.junit6.jupiter)
+    testImplementation(libs.junit6.jupiter.api)
+    testRuntimeOnly(libs.junit6.platform.launcher)
 
     testImplementation(libs.logback.classic)
 }

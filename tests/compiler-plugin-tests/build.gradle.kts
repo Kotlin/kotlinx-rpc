@@ -61,12 +61,11 @@ dependencies {
 
     testImplementation(libs.junit4)
 
-    testImplementation(platform(libs.junit5.bom))
-    testImplementation(libs.junit5.jupiter)
-    testImplementation(libs.junit5.platform.commons)
-    testImplementation(libs.junit5.platform.launcher)
-    testImplementation(libs.junit5.platform.runner)
-    testImplementation(libs.junit5.platform.suite.api)
+    testImplementation(platform(libs.junit6.bom))
+    testImplementation(libs.junit6.jupiter)
+    testImplementation(libs.junit6.platform.commons)
+    testImplementation(libs.junit6.platform.launcher)
+    testImplementation(libs.junit6.platform.suite.api)
 
     testDataClasspath(projects.utils)
     testDataClasspath(projects.grpc.grpcMarshaller)
