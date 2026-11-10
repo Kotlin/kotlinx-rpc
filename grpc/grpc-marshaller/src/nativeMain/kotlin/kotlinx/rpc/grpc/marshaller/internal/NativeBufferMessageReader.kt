@@ -25,7 +25,7 @@ public abstract class NativeBufferMessageReader(size: Int) : AbstractGrpcMessage
     // Cached copied buffer after first call to [asSource]
     private var source: Buffer? = null
 
-    /** Invokes [block] once with the buffer base address; null is allowed only for an empty message. */
+    /** Calls `block` one time with the buffer base address. The address is null only for an empty message. */
     public abstract fun accessBuffer(block: NativePointerCallback<Unit>)
 
     /** Invalidates this reader and every pointer obtained through it. Repeated calls are safe. */

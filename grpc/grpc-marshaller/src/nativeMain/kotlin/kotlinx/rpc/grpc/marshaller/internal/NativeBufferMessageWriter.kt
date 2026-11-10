@@ -20,7 +20,7 @@ import platform.posix.memcpy
  */
 @InternalRpcApi
 public abstract class NativeBufferMessageWriter(size: Int) : AbstractGrpcMessageWriter(size) {
-    /** Invokes [block] once with the buffer base address; null is allowed only for an empty message. */
+    /** Calls `block` one time with the buffer base address. The address is null only for an empty message. */
     public abstract fun accessBuffer(block: (base: CPointer<ByteVar>?) -> Unit)
 
     override fun writeByte(byte: Byte) {
