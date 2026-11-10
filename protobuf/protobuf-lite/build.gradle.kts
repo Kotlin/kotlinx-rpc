@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:OptIn(InternalRpcApi::class)
@@ -59,6 +59,13 @@ kotlin {
 
         jvmMain {
             dependencies {
+                implementation(libs.protobuf.javalite)
+            }
+        }
+
+        jvmTest {
+            dependencies {
+                // Utf8JavaComparisonTest compares the UTF-8 code with protobuf-java.
                 implementation(libs.protobuf.javalite)
             }
         }
