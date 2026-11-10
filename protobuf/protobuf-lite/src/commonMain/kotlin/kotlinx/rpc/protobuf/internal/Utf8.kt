@@ -49,24 +49,20 @@ internal object Utf8 {
         return length.toInt()
     }
 
-    /** Writes [value] to [window] from [index] and returns the next index. */
-    fun encode(value: String, window: ByteWindow, index: Int): Int =
-        encode(value, index) { i, byte -> window.setByte(i, byte) }
-
-    /** Writes [value] to [destination] from [offset] and returns the next index. */
-    fun encode(value: String, destination: ByteArray, offset: Int): Int =
-        encode(value, offset) { i, byte -> destination[i] = byte }
-
     /** Reads [count] bytes from [window] at [index] into [chars] and returns the char count. */
-    fun decode(window: ByteWindow, index: Int, count: Int, chars: CharArray): Int =
-        decode(count, chars) { i -> window.getByte(index + i) }
+    fun decode(window: ByteWindow, index: Int, count: Int, chars: CharArray): Int {
+        var i = index
+        return decode(count, chars) { window.getByte(i++) }
+    }
 
     /** Reads [count] bytes from [bytes] at [offset] into [chars] and returns the char count. */
-    fun decode(bytes: ByteArray, offset: Int, count: Int, chars: CharArray): Int =
-        decode(count, chars) { i -> bytes[offset + i] }
+    fun decode(bytes: ByteArray, offset: Int, count: Int, chars: CharArray): Int {
+        var i = offset
+        return decode(count, chars) { bytes[i++] }
+    }
 
-    private inline fun encode(value: String, start: Int, put: (index: Int, byte: Byte) -> Unit): Int {
-        var i = start
+    /** Gives the UTF-8 bytes of [value] to [put], from the first to the last. */
+    inline fun encode(value: String, put: (Byte) -> Unit) {
         var charIndex = 0
         while (charIndex < value.length) {
             val c = value[charIndex]
@@ -78,39 +74,45 @@ internal object Utf8 {
                 // └─lead───┘ └──cont──┘ └──cont──┘ └──cont──┘
                 //   3 bits      6 bits     6 bits     6 bits
                 //   cp>>18     cp>>12     cp>>6      cp
-                put(i++, (0xF0 or (cp shr 18)).toByte())
-                put(i++, (0x80 or ((cp shr 12) and 0x3F)).toByte())
-                put(i++, (0x80 or ((cp shr 6) and 0x3F)).toByte())
-                put(i++, (0x80 or (cp and 0x3F)).toByte())
+                put((0xF0 or (cp shr 18)).toByte())
+                put((0x80 or ((cp shr 12) and 0x3F)).toByte())
+                put((0x80 or ((cp shr 6) and 0x3F)).toByte())
+                put((0x80 or (cp and 0x3F)).toByte())
                 charIndex += 2
             } else {
                 if (c.isSurrogate()) {
                     // Can't be valid, as surrogate code units are already covered.
-                    put(i++, '?'.code.toByte())
+                    put('?'.code.toByte())
                 } else if (c < '\u0080') {
                     // Fits in one UTF-8 code bye.
-                    put(i++, c.code.toByte())
+                    put(c.code.toByte())
                 } else if (c < '\u0800') {
                     // Fits in two UTF-8 code bye.
-                    put(i++, (0xC0 or (c.code shr 6)).toByte())
-                    put(i++, (0x80 or (c.code and 0x3F)).toByte())
+                    put((0xC0 or (c.code shr 6)).toByte())
+                    put((0x80 or (c.code and 0x3F)).toByte())
                 } else {
                     // Fits in three UTF-8 code bye.
-                    put(i++, (0xE0 or (c.code shr 12)).toByte())
-                    put(i++, (0x80 or ((c.code shr 6) and 0x3F)).toByte())
-                    put(i++, (0x80 or (c.code and 0x3F)).toByte())
+                    put((0xE0 or (c.code shr 12)).toByte())
+                    put((0x80 or ((c.code shr 6) and 0x3F)).toByte())
+                    put((0x80 or (c.code and 0x3F)).toByte())
                 }
                 charIndex++
             }
         }
-        return i
     }
 
-    private inline fun decode(count: Int, chars: CharArray, get: (index: Int) -> Byte): Int {
+    /**
+     * Reads [count] bytes of UTF-8 from [get] into [chars] and returns the char count.
+     *
+     * [get] gives each byte one time, from the first to the last, and the function never calls it more than
+     * [count] times. [chars] must have at least [count] elements: a UTF-8 sequence gives at most one char for
+     * each byte.
+     */
+    inline fun decode(count: Int, chars: CharArray, get: () -> Byte): Int {
         var i = 0
         var charCount = 0
         while (i < count) {
-            val b0 = get(i).toInt() and 0xFF
+            val b0 = get().toInt() and 0xFF
             if (b0 < 0x80) {
                 // Fits in one UTF-8 code bye.
                 chars[charCount++] = b0.toChar()
@@ -127,7 +129,7 @@ internal object Utf8 {
             if (length > count - i) {
                 throw ProtobufDecodingException.invalidUtf8()
             }
-            val b1 = get(i + 1).toInt() and 0xFF
+            val b1 = get().toInt() and 0xFF
             // The second byte range of Unicode table 3-7 for the lead byte.
             val secondByteValid = when (b0) {
                 0xE0 -> b1 in 0xA0..0xBF
@@ -139,26 +141,23 @@ internal object Utf8 {
             if (!secondByteValid) {
                 throw ProtobufDecodingException.invalidUtf8()
             }
-            // Check byte range for bytes 2 and 3.
-            for (j in 2 until length) {
-                if ((get(i + j).toInt() and 0xFF) !in 0x80..0xBF) {
+            if (length == 2) {
+                // 5 LSB of b0 | 6 LSB of b1.
+                chars[charCount++] = (((b0 and 0x1F) shl 6) or (b1 and 0x3F)).toChar()
+            } else {
+                val b2 = get().toInt() and 0xFF
+                if (b2 !in 0x80..0xBF) {
                     throw ProtobufDecodingException.invalidUtf8()
                 }
-            }
-            when (length) {
-                2 -> {
-                    // 5 LSB of b0 | 6 LSB of b1.
-                    chars[charCount++] = (((b0 and 0x1F) shl 6) or (b1 and 0x3F)).toChar()
-                }
-                3 -> {
+                if (length == 3) {
                     // 4 LSB of b0 | 6 LSB of b1 | 6 LSB of b2.
-                    val b2 = get(i + 2).toInt() and 0xFF
                     chars[charCount++] = (((b0 and 0x0F) shl 12) or ((b1 and 0x3F) shl 6) or (b2 and 0x3F)).toChar()
-                }
-                4 -> {
+                } else {
+                    val b3 = get().toInt() and 0xFF
+                    if (b3 !in 0x80..0xBF) {
+                        throw ProtobufDecodingException.invalidUtf8()
+                    }
                     // 3 LSB of b0 | 6 LSB of b1 | 6 LSB of b2 | 6 LSB of b3.
-                    val b2 = get(i + 2).toInt() and 0xFF
-                    val b3 = get(i + 3).toInt() and 0xFF
                     val cp = ((b0 and 0x07) shl 18) or ((b1 and 0x3F) shl 12) or
                         ((b2 and 0x3F) shl 6) or (b3 and 0x3F)
                     // Must be encoded as a UTF-16 surrogate pair.
