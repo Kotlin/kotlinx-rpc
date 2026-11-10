@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@puppeteer/browsers@3.2.6":
-  version "3.2.6"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/@puppeteer/browsers/-/browsers-3.2.6.tgz#3dc78ed192da721126c46eadc9745efc217059a4"
-  integrity sha512-MJP29gVoHznmqmwhH1tlZqzfeQ3aylTpSSa6WKZXtkwYUH02i9imBmWGTyZrbnAou5paX78SE4jMAUqnEPf8ug==
+"@puppeteer/browsers@3.2.7":
+  version "3.2.7"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/@puppeteer/browsers/-/browsers-3.2.7.tgz#cda371f873fb908eced7ac9b153bef489a921a06"
+  integrity sha512-B3C/v8OEEaJYcN1IzzgbPmt+GbFANr4Mf/NrqNuGk/dIchrv6quNqxgT+A6qE0Ge0MN95NjKUddcR1JMpYRMWA==
   dependencies:
     modern-tar "^0.8.6"
     yargs "^18.0.0"
@@ -37,10 +37,10 @@ cliui@^9.0.1:
     strip-ansi "^7.1.0"
     wrap-ansi "^9.0.0"
 
-devtools-protocol@0.0.1704951:
-  version "0.0.1704951"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/devtools-protocol/-/devtools-protocol-0.0.1704951.tgz#7b3498c215bbaf94b9a042a745bf84894274faf9"
-  integrity sha512-GQhQOs9u/Mvm1zMtJIH872JS4AskuZdUSsPNPk4ChahtWAUqgz6atEtIsMt+nO7MqF1Ic4HxII/k8Cu36JivNg==
+devtools-protocol@0.0.1717327:
+  version "0.0.1717327"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/devtools-protocol/-/devtools-protocol-0.0.1717327.tgz#774afee17221b6f251c24857a53466ec275cf689"
+  integrity sha512-3RDLDzyvv8XAYf1L+TL1og0EEk0eOW1Jn0yi88uG6Bj8fUKO1ZKfgNtwbJkqf5SWdPDS4VGEPxwdUWz78V6Xcg==
 
 emoji-regex@^10.3.0:
   version "10.6.0"
@@ -62,10 +62,10 @@ get-east-asian-width@^1.0.0, get-east-asian-width@^1.5.0:
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/get-east-asian-width/-/get-east-asian-width-1.7.0.tgz#7ee99f0bd5ab7c622002deeabba232923726d1d4"
   integrity sha512-XjH1AECxf0giL2V1aU8vKyRR2ppRUb5c0EvT7zuJTokQ74bNo52zOtghqdWIqrhUD79fo3x0WfKZdOqxF6LG1Q==
 
-lilconfig@^3.1.3:
-  version "3.1.3"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/lilconfig/-/lilconfig-3.1.3.tgz#a1bcfd6257f9585bf5ae14ceeebb7b559025e4c4"
-  integrity sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==
+lilconfig@^3.1.4:
+  version "3.1.5"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/lilconfig/-/lilconfig-3.1.5.tgz#7c9342a74d602bb15c0a1ca67f2c99be056c4656"
+  integrity sha512-aRAOI9Ia43ygL4o1EOmC/sc/0OFxrm7qcQngiIyWaqVnSnz932ybJ07zyCcgMNGSDP8Yxaf88Xj1zHEXmvQ4SA==
 
 mitt@^3.0.1:
   version "3.0.1"
@@ -77,28 +77,28 @@ modern-tar@^0.8.6:
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/modern-tar/-/modern-tar-0.8.6.tgz#dc67de5954b4b679d55ba703d5263dbd328c1e4c"
   integrity sha512-LYSks0tNVqbtez/9OB0YFP6qLRSqkdAxJWOQpVaR67lNTbj2zNLyYpowkRMia5lXLCZKzxwoxkxH2MbbBR2aEg==
 
-puppeteer-core@25.16.0:
-  version "25.16.0"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/puppeteer-core/-/puppeteer-core-25.16.0.tgz#1f5bd85206903e87af8674e8e7b6f7db89b6a7c0"
-  integrity sha512-VA5Pf54N8shfopNkZZXCdiiwfnnY8ZJYAMqFQRhlH5mGUhfwf53Ar770GPtdpTDLUqvQeYpIBtC9/G2Jij2IJw==
+puppeteer-core@25.17.0:
+  version "25.17.0"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/puppeteer-core/-/puppeteer-core-25.17.0.tgz#388eaf302871ee97a1f11d1b4fa19cb2a28f8112"
+  integrity sha512-YAgBitkd+K9gxRt+wzBAFTTkGjkC8aC2o4OxofsU8JUy2nnK/RflTCJ9bRCvCMNbq9TPhqFk4Phz98otN9FrGg==
   dependencies:
-    "@puppeteer/browsers" "3.2.6"
+    "@puppeteer/browsers" "3.2.7"
     chromium-bidi "157.0.8090-0"
-    devtools-protocol "0.0.1704951"
+    devtools-protocol "0.0.1717327"
     typed-query-selector "^2.12.3"
-    webdriver-bidi-protocol "1.0.1"
-    ws "^8.22.0"
+    webdriver-bidi-protocol "1.0.2"
+    ws "^8.22.1"
 
-puppeteer@25.16.0:
-  version "25.16.0"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/puppeteer/-/puppeteer-25.16.0.tgz#d38156e72b5cb590420a25650b607dd0ce65877d"
-  integrity sha512-LOr3reYnxAYYfQkpopz1fQnL0LdvqhpR5U2Fu+QnwzTX2gpVTHsn91UETo5NNC1md2/oC54Zu1ChBXgZDNSP1A==
+puppeteer@25.17.0:
+  version "25.17.0"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/puppeteer/-/puppeteer-25.17.0.tgz#a28f2fe2fe3817d849b3eebd87bf60780a59eff2"
+  integrity sha512-J+OQNlI7I6ZjHhF6Q8M+LgiUGldF7meer5EqMJBZMHgnFN3zcehOhpz/x0bYDEEvbEiXzKzmqSRP3QT+5accjQ==
   dependencies:
-    "@puppeteer/browsers" "3.2.6"
+    "@puppeteer/browsers" "3.2.7"
     chromium-bidi "157.0.8090-0"
-    devtools-protocol "0.0.1704951"
-    lilconfig "^3.1.3"
-    puppeteer-core "25.16.0"
+    devtools-protocol "0.0.1717327"
+    lilconfig "^3.1.4"
+    puppeteer-core "25.17.0"
     typed-query-selector "^2.12.3"
 
 string-width@^7.0.0, string-width@^7.2.0:
@@ -130,10 +130,10 @@ typed-query-selector@^2.12.3:
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/typed-query-selector/-/typed-query-selector-2.12.3.tgz#d7542a829b15bd6246a5c0c03daca41b21e40025"
   integrity sha512-/dtuMZyutHLlrxWhhC1uib00ELUr2dZ8C9B8YzZYsJmeE3V56OxRblrSM2UaF142pcMtak7ehZ6+poWGeehNIg==
 
-webdriver-bidi-protocol@1.0.1:
-  version "1.0.1"
-  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/webdriver-bidi-protocol/-/webdriver-bidi-protocol-1.0.1.tgz#2cbe4d3e410c849932ced3a495ebba1da972fa8e"
-  integrity sha512-WXWs/aXF2a6Al1Z2/V/7Gp2oPZOAAmHjJOTmv4KCXRJ122IMj3tSSMc6a4q3K4QOmhQbse/Ahr+oTVJOU2dUiw==
+webdriver-bidi-protocol@1.0.2:
+  version "1.0.2"
+  resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/webdriver-bidi-protocol/-/webdriver-bidi-protocol-1.0.2.tgz#237f16aa10bd93b22d0dfa32103b4fcc115589d3"
+  integrity sha512-nghazPI+J5RrLZ+qb6vMjC6l1/tnwqr2muVEax4Ufd6eIdcjeqNnhLsAxTG9s+7Zf4umgf0DrEwDC8CoU91nAA==
 
 wrap-ansi@^9.0.0:
   version "9.0.2"
@@ -149,7 +149,7 @@ ws@8.20.1:
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/ws/-/ws-8.20.1.tgz#91a9ae2b312ccf98e0a85ec499b48cef45ab0ddb"
   integrity sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==
 
-ws@^8.22.0:
+ws@^8.22.1:
   version "8.22.2"
   resolved "https://packages.jetbrains.team/npm/p/krpc/build-deps/ws/-/ws-8.22.2.tgz#b1762f4e4ac87ab44aa358f680cdf5d08b166d37"
   integrity sha512-/rEZ2ejown2N5gxVTHUu9bVVC7ttu0/Tgzf5hbTOixR3Fs7mbbXgn2DbdbcKgJOmpQMtrIUWivtYuVMnp/W/yA==
