@@ -38,7 +38,8 @@ internal object Utf8 {
                     c.isSurrogate() -> 1 // Invalid surrogate -> encoded as `?`.
                     else -> 3
                 }
-                i++
+                // Not `i++`: it makes Kotlin/Native allocate a boxed Int, as in `encode`.
+                i += 1
             }
         }
         if (length > Int.MAX_VALUE) {
@@ -96,7 +97,8 @@ internal object Utf8 {
                     put((0x80 or ((c.code shr 6) and 0x3F)).toByte())
                     put((0x80 or (c.code and 0x3F)).toByte())
                 }
-                charIndex++
+                // Not `charIndex++`: as the last expression of the branch, it makes Kotlin/Native allocate a boxed Int.
+                charIndex += 1
             }
         }
     }
