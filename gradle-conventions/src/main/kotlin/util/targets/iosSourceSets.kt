@@ -31,12 +31,6 @@ fun KotlinMultiplatformExtension.configureNonSwiftSourceSets() {
         dependsOn(nonSwiftMain)
     }
 
-    val nativeMain = sourceSets.named("nativeMain")
-    val nonSwiftNativeMain = sourceSets.maybeCreate("nonSwiftNativeMain").apply {
-        dependsOn(nativeMain.get())
-        dependsOn(nonSwiftMain)
-    }
-
     val commonTest = sourceSets.named("commonTest")
     val nonSwiftTest = sourceSets.maybeCreate("nonSwiftTest").apply {
         dependsOn(commonTest.get())
@@ -45,9 +39,17 @@ fun KotlinMultiplatformExtension.configureNonSwiftSourceSets() {
         dependsOn(nonSwiftTest)
     }
 
-    val nativeTest = sourceSets.named("nativeTest")
+    // The template creates the native sets only when the module has Native targets
+    // (the Kotlin Master CI build doesn't configure any). The nonSwiftNative sets must
+    // exist in both cases, because the module build scripts configure them.
+    val nativeMain = sourceSets.findByName("nativeMain")
+    val nativeTest = sourceSets.findByName("nativeTest")
+    val nonSwiftNativeMain = sourceSets.maybeCreate("nonSwiftNativeMain").apply {
+        nativeMain?.let { dependsOn(it) }
+        dependsOn(nonSwiftMain)
+    }
     val nonSwiftNativeTest = sourceSets.maybeCreate("nonSwiftNativeTest").apply {
-        dependsOn(nativeTest.get())
+        nativeTest?.let { dependsOn(it) }
         dependsOn(nonSwiftTest)
     }
 
