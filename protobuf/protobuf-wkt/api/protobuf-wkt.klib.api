@@ -709,6 +709,8 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
         abstract fun <get-defaultSymbolVisibility>(): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.DefaultSymbolVisibility // com.google.protobuf.kotlin/FeatureSet.defaultSymbolVisibility.<get-defaultSymbolVisibility>|<get-defaultSymbolVisibility>(){}[0]
     abstract val enforceNamingStyle // com.google.protobuf.kotlin/FeatureSet.enforceNamingStyle|{}enforceNamingStyle[0]
         abstract fun <get-enforceNamingStyle>(): com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle // com.google.protobuf.kotlin/FeatureSet.enforceNamingStyle.<get-enforceNamingStyle>|<get-enforceNamingStyle>(){}[0]
+    abstract val enforceProtoLimits // com.google.protobuf.kotlin/FeatureSet.enforceProtoLimits|{}enforceProtoLimits[0]
+        abstract fun <get-enforceProtoLimits>(): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits // com.google.protobuf.kotlin/FeatureSet.enforceProtoLimits.<get-enforceProtoLimits>|<get-enforceProtoLimits>(){}[0]
     abstract val enumType // com.google.protobuf.kotlin/FeatureSet.enumType|{}enumType[0]
         abstract fun <get-enumType>(): com.google.protobuf.kotlin/FeatureSet.EnumType // com.google.protobuf.kotlin/FeatureSet.enumType.<get-enumType>|<get-enumType>(){}[0]
     abstract val fieldPresence // com.google.protobuf.kotlin/FeatureSet.fieldPresence|{}fieldPresence[0]
@@ -729,6 +731,9 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
         abstract var enforceNamingStyle // com.google.protobuf.kotlin/FeatureSet.Builder.enforceNamingStyle|{}enforceNamingStyle[0]
             abstract fun <get-enforceNamingStyle>(): com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle // com.google.protobuf.kotlin/FeatureSet.Builder.enforceNamingStyle.<get-enforceNamingStyle>|<get-enforceNamingStyle>(){}[0]
             abstract fun <set-enforceNamingStyle>(com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle) // com.google.protobuf.kotlin/FeatureSet.Builder.enforceNamingStyle.<set-enforceNamingStyle>|<set-enforceNamingStyle>(com.google.protobuf.kotlin.FeatureSet.EnforceNamingStyle){}[0]
+        abstract var enforceProtoLimits // com.google.protobuf.kotlin/FeatureSet.Builder.enforceProtoLimits|{}enforceProtoLimits[0]
+            abstract fun <get-enforceProtoLimits>(): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits // com.google.protobuf.kotlin/FeatureSet.Builder.enforceProtoLimits.<get-enforceProtoLimits>|<get-enforceProtoLimits>(){}[0]
+            abstract fun <set-enforceProtoLimits>(com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits) // com.google.protobuf.kotlin/FeatureSet.Builder.enforceProtoLimits.<set-enforceProtoLimits>|<set-enforceProtoLimits>(com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.EnforceProtoLimits){}[0]
         abstract var enumType // com.google.protobuf.kotlin/FeatureSet.Builder.enumType|{}enumType[0]
             abstract fun <get-enumType>(): com.google.protobuf.kotlin/FeatureSet.EnumType // com.google.protobuf.kotlin/FeatureSet.Builder.enumType.<get-enumType>|<get-enumType>(){}[0]
             abstract fun <set-enumType>(com.google.protobuf.kotlin/FeatureSet.EnumType) // com.google.protobuf.kotlin/FeatureSet.Builder.enumType.<set-enumType>|<set-enumType>(com.google.protobuf.kotlin.FeatureSet.EnumType){}[0]
@@ -750,12 +755,60 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
 
         abstract fun clearDefaultSymbolVisibility() // com.google.protobuf.kotlin/FeatureSet.Builder.clearDefaultSymbolVisibility|clearDefaultSymbolVisibility(){}[0]
         abstract fun clearEnforceNamingStyle() // com.google.protobuf.kotlin/FeatureSet.Builder.clearEnforceNamingStyle|clearEnforceNamingStyle(){}[0]
+        abstract fun clearEnforceProtoLimits() // com.google.protobuf.kotlin/FeatureSet.Builder.clearEnforceProtoLimits|clearEnforceProtoLimits(){}[0]
         abstract fun clearEnumType() // com.google.protobuf.kotlin/FeatureSet.Builder.clearEnumType|clearEnumType(){}[0]
         abstract fun clearFieldPresence() // com.google.protobuf.kotlin/FeatureSet.Builder.clearFieldPresence|clearFieldPresence(){}[0]
         abstract fun clearJsonFormat() // com.google.protobuf.kotlin/FeatureSet.Builder.clearJsonFormat|clearJsonFormat(){}[0]
         abstract fun clearMessageEncoding() // com.google.protobuf.kotlin/FeatureSet.Builder.clearMessageEncoding|clearMessageEncoding(){}[0]
         abstract fun clearRepeatedFieldEncoding() // com.google.protobuf.kotlin/FeatureSet.Builder.clearRepeatedFieldEncoding|clearRepeatedFieldEncoding(){}[0]
         abstract fun clearUtf8Validation() // com.google.protobuf.kotlin/FeatureSet.Builder.clearUtf8Validation|clearUtf8Validation(){}[0]
+    }
+
+    abstract interface ProtoLimitsFeature { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature|null[0]
+        abstract interface Builder : com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder|null[0]
+
+        sealed class EnforceProtoLimits { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits|null[0]
+            open val number // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.number|{}number[0]
+                open fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.number.<get-number>|<get-number>(){}[0]
+
+            final class UNRECOGNIZED : com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED|null[0]
+                constructor <init>(kotlin/Int) // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.<init>|<init>(kotlin.Int){}[0]
+
+                final val number // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.number|{}number[0]
+                    final fun <get-number>(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.number.<get-number>|<get-number>(){}[0]
+
+                final fun component1(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.component1|component1(){}[0]
+                final fun copy(kotlin/Int = ...): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.copy|copy(kotlin.Int){}[0]
+                final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.equals|equals(kotlin.Any?){}[0]
+                final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.hashCode|hashCode(){}[0]
+                final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.UNRECOGNIZED.toString|toString(){}[0]
+            }
+
+            final object Companion { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.Companion|null[0]
+                final val entries // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.Companion.entries|{}entries[0]
+                    final fun <get-entries>(): kotlin.collections/List<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits> // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.Companion.entries.<get-entries>|<get-entries>(){}[0]
+            }
+
+            final object LEGACY_NO_EXPLICIT_LIMITS : com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.LEGACY_NO_EXPLICIT_LIMITS|null[0]
+                final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.LEGACY_NO_EXPLICIT_LIMITS.equals|equals(kotlin.Any?){}[0]
+                final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.LEGACY_NO_EXPLICIT_LIMITS.hashCode|hashCode(){}[0]
+                final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.LEGACY_NO_EXPLICIT_LIMITS.toString|toString(){}[0]
+            }
+
+            final object PROTO_LIMITS2026 : com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS2026|null[0]
+                final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS2026.equals|equals(kotlin.Any?){}[0]
+                final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS2026.hashCode|hashCode(){}[0]
+                final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS2026.toString|toString(){}[0]
+            }
+
+            final object PROTO_LIMITS_UNKNOWN : com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits { // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS_UNKNOWN|null[0]
+                final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS_UNKNOWN.equals|equals(kotlin.Any?){}[0]
+                final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS_UNKNOWN.hashCode|hashCode(){}[0]
+                final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits.PROTO_LIMITS_UNKNOWN.toString|toString(){}[0]
+            }
+        }
+
+        final object Companion // com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion|null[0]
     }
 
     abstract interface VisibilityFeature { // com.google.protobuf.kotlin/FeatureSet.VisibilityFeature|null[0]
@@ -849,6 +902,12 @@ abstract interface com.google.protobuf.kotlin/FeatureSet { // com.google.protobu
             final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2024.equals|equals(kotlin.Any?){}[0]
             final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2024.hashCode|hashCode(){}[0]
             final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2024.toString|toString(){}[0]
+        }
+
+        final object STYLE2026 : com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle { // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2026|null[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2026.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2026.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE2026.toString|toString(){}[0]
         }
 
         final object STYLE_LEGACY : com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle { // com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle.STYLE_LEGACY|null[0]
@@ -1187,6 +1246,8 @@ abstract interface com.google.protobuf.kotlin/FeatureSetPresence { // com.google
         abstract fun <get-hasDefaultSymbolVisibility>(): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSetPresence.hasDefaultSymbolVisibility.<get-hasDefaultSymbolVisibility>|<get-hasDefaultSymbolVisibility>(){}[0]
     abstract val hasEnforceNamingStyle // com.google.protobuf.kotlin/FeatureSetPresence.hasEnforceNamingStyle|{}hasEnforceNamingStyle[0]
         abstract fun <get-hasEnforceNamingStyle>(): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSetPresence.hasEnforceNamingStyle.<get-hasEnforceNamingStyle>|<get-hasEnforceNamingStyle>(){}[0]
+    abstract val hasEnforceProtoLimits // com.google.protobuf.kotlin/FeatureSetPresence.hasEnforceProtoLimits|{}hasEnforceProtoLimits[0]
+        abstract fun <get-hasEnforceProtoLimits>(): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSetPresence.hasEnforceProtoLimits.<get-hasEnforceProtoLimits>|<get-hasEnforceProtoLimits>(){}[0]
     abstract val hasEnumType // com.google.protobuf.kotlin/FeatureSetPresence.hasEnumType|{}hasEnumType[0]
         abstract fun <get-hasEnumType>(): kotlin/Boolean // com.google.protobuf.kotlin/FeatureSetPresence.hasEnumType.<get-hasEnumType>|<get-hasEnumType>(){}[0]
     abstract val hasFieldPresence // com.google.protobuf.kotlin/FeatureSetPresence.hasFieldPresence|{}hasFieldPresence[0]
@@ -1845,6 +1906,8 @@ abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.proto
             abstract fun <get-editionIntroduced>(): com.google.protobuf.kotlin/Edition // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.editionIntroduced.<get-editionIntroduced>|<get-editionIntroduced>(){}[0]
         abstract val editionRemoved // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.editionRemoved|{}editionRemoved[0]
             abstract fun <get-editionRemoved>(): com.google.protobuf.kotlin/Edition // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.editionRemoved.<get-editionRemoved>|<get-editionRemoved>(){}[0]
+        abstract val removalError // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.removalError|{}removalError[0]
+            abstract fun <get-removalError>(): kotlin/String // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.removalError.<get-removalError>|<get-removalError>(){}[0]
 
         abstract interface Builder : com.google.protobuf.kotlin/FieldOptions.FeatureSupport { // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder|null[0]
             abstract var deprecationWarning // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.deprecationWarning|{}deprecationWarning[0]
@@ -1859,11 +1922,15 @@ abstract interface com.google.protobuf.kotlin/FieldOptions { // com.google.proto
             abstract var editionRemoved // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.editionRemoved|{}editionRemoved[0]
                 abstract fun <get-editionRemoved>(): com.google.protobuf.kotlin/Edition // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.editionRemoved.<get-editionRemoved>|<get-editionRemoved>(){}[0]
                 abstract fun <set-editionRemoved>(com.google.protobuf.kotlin/Edition) // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.editionRemoved.<set-editionRemoved>|<set-editionRemoved>(com.google.protobuf.kotlin.Edition){}[0]
+            abstract var removalError // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.removalError|{}removalError[0]
+                abstract fun <get-removalError>(): kotlin/String // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.removalError.<get-removalError>|<get-removalError>(){}[0]
+                abstract fun <set-removalError>(kotlin/String) // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.removalError.<set-removalError>|<set-removalError>(kotlin.String){}[0]
 
             abstract fun clearDeprecationWarning() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearDeprecationWarning|clearDeprecationWarning(){}[0]
             abstract fun clearEditionDeprecated() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearEditionDeprecated|clearEditionDeprecated(){}[0]
             abstract fun clearEditionIntroduced() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearEditionIntroduced|clearEditionIntroduced(){}[0]
             abstract fun clearEditionRemoved() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearEditionRemoved|clearEditionRemoved(){}[0]
+            abstract fun clearRemovalError() // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Builder.clearRemovalError|clearRemovalError(){}[0]
         }
 
         final object Companion // com.google.protobuf.kotlin/FieldOptions.FeatureSupport.Companion|null[0]
@@ -2118,6 +2185,8 @@ abstract interface com.google.protobuf.kotlin/FieldOptionsPresence { // com.goog
             abstract fun <get-hasEditionIntroduced>(): kotlin/Boolean // com.google.protobuf.kotlin/FieldOptionsPresence.FeatureSupport.hasEditionIntroduced.<get-hasEditionIntroduced>|<get-hasEditionIntroduced>(){}[0]
         abstract val hasEditionRemoved // com.google.protobuf.kotlin/FieldOptionsPresence.FeatureSupport.hasEditionRemoved|{}hasEditionRemoved[0]
             abstract fun <get-hasEditionRemoved>(): kotlin/Boolean // com.google.protobuf.kotlin/FieldOptionsPresence.FeatureSupport.hasEditionRemoved.<get-hasEditionRemoved>|<get-hasEditionRemoved>(){}[0]
+        abstract val hasRemovalError // com.google.protobuf.kotlin/FieldOptionsPresence.FeatureSupport.hasRemovalError|{}hasRemovalError[0]
+            abstract fun <get-hasRemovalError>(): kotlin/Boolean // com.google.protobuf.kotlin/FieldOptionsPresence.FeatureSupport.hasRemovalError.<get-hasRemovalError>|<get-hasRemovalError>(){}[0]
     }
 }
 
@@ -3413,6 +3482,12 @@ sealed class com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/
         final fun toString(): kotlin/String // com.google.protobuf.kotlin/Edition.EDITION_2024.toString|toString(){}[0]
     }
 
+    final object EDITION_2026 : com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/Edition.EDITION_2026|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Edition.EDITION_2026.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Edition.EDITION_2026.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.google.protobuf.kotlin/Edition.EDITION_2026.toString|toString(){}[0]
+    }
+
     final object EDITION_2_TEST_ONLY : com.google.protobuf.kotlin/Edition { // com.google.protobuf.kotlin/Edition.EDITION_2_TEST_ONLY|null[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // com.google.protobuf.kotlin/Edition.EDITION_2_TEST_ONLY.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.google.protobuf.kotlin/Edition.EDITION_2_TEST_ONLY.hashCode|hashCode(){}[0]
@@ -3655,6 +3730,8 @@ final val com.google.protobuf.kotlin/endOrNull // com.google.protobuf.kotlin/end
     final fun (com.google.protobuf.kotlin/GeneratedCodeInfo.Annotation).<get-endOrNull>(): kotlin/Int? // com.google.protobuf.kotlin/endOrNull.<get-endOrNull>|<get-endOrNull>@com.google.protobuf.kotlin.GeneratedCodeInfo.Annotation(){}[0]
 final val com.google.protobuf.kotlin/enforceNamingStyleOrNull // com.google.protobuf.kotlin/enforceNamingStyleOrNull|@com.google.protobuf.kotlin.FeatureSet{}enforceNamingStyleOrNull[0]
     final fun (com.google.protobuf.kotlin/FeatureSet).<get-enforceNamingStyleOrNull>(): com.google.protobuf.kotlin/FeatureSet.EnforceNamingStyle? // com.google.protobuf.kotlin/enforceNamingStyleOrNull.<get-enforceNamingStyleOrNull>|<get-enforceNamingStyleOrNull>@com.google.protobuf.kotlin.FeatureSet(){}[0]
+final val com.google.protobuf.kotlin/enforceProtoLimitsOrNull // com.google.protobuf.kotlin/enforceProtoLimitsOrNull|@com.google.protobuf.kotlin.FeatureSet{}enforceProtoLimitsOrNull[0]
+    final fun (com.google.protobuf.kotlin/FeatureSet).<get-enforceProtoLimitsOrNull>(): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.EnforceProtoLimits? // com.google.protobuf.kotlin/enforceProtoLimitsOrNull.<get-enforceProtoLimitsOrNull>|<get-enforceProtoLimitsOrNull>@com.google.protobuf.kotlin.FeatureSet(){}[0]
 final val com.google.protobuf.kotlin/enumTypeOrNull // com.google.protobuf.kotlin/enumTypeOrNull|@com.google.protobuf.kotlin.FeatureSet{}enumTypeOrNull[0]
     final fun (com.google.protobuf.kotlin/FeatureSet).<get-enumTypeOrNull>(): com.google.protobuf.kotlin/FeatureSet.EnumType? // com.google.protobuf.kotlin/enumTypeOrNull.<get-enumTypeOrNull>|<get-enumTypeOrNull>@com.google.protobuf.kotlin.FeatureSet(){}[0]
 final val com.google.protobuf.kotlin/extendeeOrNull // com.google.protobuf.kotlin/extendeeOrNull|@com.google.protobuf.kotlin.FieldDescriptorProto{}extendeeOrNull[0]
@@ -3881,6 +3958,8 @@ final val com.google.protobuf.kotlin/proto3OptionalOrNull // com.google.protobuf
     final fun (com.google.protobuf.kotlin/FieldDescriptorProto).<get-proto3OptionalOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/proto3OptionalOrNull.<get-proto3OptionalOrNull>|<get-proto3OptionalOrNull>@com.google.protobuf.kotlin.FieldDescriptorProto(){}[0]
 final val com.google.protobuf.kotlin/pyGenericServicesOrNull // com.google.protobuf.kotlin/pyGenericServicesOrNull|@com.google.protobuf.kotlin.FileOptions{}pyGenericServicesOrNull[0]
     final fun (com.google.protobuf.kotlin/FileOptions).<get-pyGenericServicesOrNull>(): kotlin/Boolean? // com.google.protobuf.kotlin/pyGenericServicesOrNull.<get-pyGenericServicesOrNull>|<get-pyGenericServicesOrNull>@com.google.protobuf.kotlin.FileOptions(){}[0]
+final val com.google.protobuf.kotlin/removalErrorOrNull // com.google.protobuf.kotlin/removalErrorOrNull|@com.google.protobuf.kotlin.FieldOptions.FeatureSupport{}removalErrorOrNull[0]
+    final fun (com.google.protobuf.kotlin/FieldOptions.FeatureSupport).<get-removalErrorOrNull>(): kotlin/String? // com.google.protobuf.kotlin/removalErrorOrNull.<get-removalErrorOrNull>|<get-removalErrorOrNull>@com.google.protobuf.kotlin.FieldOptions.FeatureSupport(){}[0]
 final val com.google.protobuf.kotlin/repeatedFieldEncodingOrNull // com.google.protobuf.kotlin/repeatedFieldEncodingOrNull|@com.google.protobuf.kotlin.FeatureSet{}repeatedFieldEncodingOrNull[0]
     final fun (com.google.protobuf.kotlin/FeatureSet).<get-repeatedFieldEncodingOrNull>(): com.google.protobuf.kotlin/FeatureSet.RepeatedFieldEncoding? // com.google.protobuf.kotlin/repeatedFieldEncodingOrNull.<get-repeatedFieldEncodingOrNull>|<get-repeatedFieldEncodingOrNull>@com.google.protobuf.kotlin.FeatureSet(){}[0]
 final val com.google.protobuf.kotlin/repeatedOrNull // com.google.protobuf.kotlin/repeatedOrNull|@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration{}repeatedOrNull[0]
@@ -3987,6 +4066,8 @@ final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration).com.goo
 final fun (com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration.Builder, kotlin/Unit>): com.google.protobuf.kotlin/ExtensionRangeOptions.Declaration // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Companion(kotlin.Function1<com.google.protobuf.kotlin.ExtensionRangeOptions.Declaration.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.Builder,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Builder,kotlin.Unit>){}[0]
+final fun (com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.ProtoLimitsFeature // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.ProtoLimitsFeature.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet.VisibilityFeature).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSet.VisibilityFeature(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Companion).com.google.protobuf.kotlin/invoke(kotlin/Function1<com.google.protobuf.kotlin/FeatureSet.VisibilityFeature.Builder, kotlin/Unit>): com.google.protobuf.kotlin/FeatureSet.VisibilityFeature // com.google.protobuf.kotlin/invoke|invoke@com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Companion(kotlin.Function1<com.google.protobuf.kotlin.FeatureSet.VisibilityFeature.Builder,kotlin.Unit>){}[0]
 final fun (com.google.protobuf.kotlin/FeatureSetDefaults).com.google.protobuf.kotlin/copy(kotlin/Function1<com.google.protobuf.kotlin/FeatureSetDefaults.Builder, kotlin/Unit> = ...): com.google.protobuf.kotlin/FeatureSetDefaults // com.google.protobuf.kotlin/copy|copy@com.google.protobuf.kotlin.FeatureSetDefaults(kotlin.Function1<com.google.protobuf.kotlin.FeatureSetDefaults.Builder,kotlin.Unit>){}[0]

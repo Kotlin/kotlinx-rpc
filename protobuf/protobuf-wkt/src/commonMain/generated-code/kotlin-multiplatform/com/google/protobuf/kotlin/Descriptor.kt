@@ -967,6 +967,12 @@ public interface FieldOptions {
          * not be able to override it.
          */
         public val editionRemoved: Edition
+
+        /**
+         * The removal error text if this feature is used after the edition it was
+         * removed in.
+         */
+        public val removalError: String
     }
 
     @GeneratedProtoEnum
@@ -1308,6 +1314,7 @@ public interface FeatureSet {
     public val jsonFormat: JsonFormat
     public val enforceNamingStyle: EnforceNamingStyle
     public val defaultSymbolVisibility: VisibilityFeature.DefaultSymbolVisibility
+    public val enforceProtoLimits: ProtoLimitsFeature.EnforceProtoLimits
 
     @GeneratedProtoMessage
     public interface VisibilityFeature {
@@ -1341,6 +1348,34 @@ public interface FeatureSet {
 
             public companion object {
                 public val entries: List<DefaultSymbolVisibility> by lazy { listOf(DEFAULT_SYMBOL_VISIBILITY_UNKNOWN, EXPORT_ALL, EXPORT_TOP_LEVEL, LOCAL_ALL, STRICT) }
+            }
+        }
+    }
+
+    @GeneratedProtoMessage
+    public interface ProtoLimitsFeature {
+        @GeneratedProtoEnum
+        public sealed class EnforceProtoLimits(public open val number: Int) {
+            public data object PROTO_LIMITS_UNKNOWN: EnforceProtoLimits(number = 0)
+
+            /**
+             * Default pre-EDITION_2026: there are no limit enforcement at the protoc
+             * level. Practical limits still exist, but they will tend to fail while
+             * compiling protoc-generated code, and these limits tend to be language
+             * or toolchain specific.
+             */
+            public data object LEGACY_NO_EXPLICIT_LIMITS: EnforceProtoLimits(number = 1)
+
+            /**
+             * A set of limits enforced by Edition 2026 by default. For a detailed
+             * list of all the limits please consult the Edition 2026 documentation.
+             */
+            public data object PROTO_LIMITS2026: EnforceProtoLimits(number = 2)
+
+            public data class UNRECOGNIZED(override val number: Int): EnforceProtoLimits(number)
+
+            public companion object {
+                public val entries: List<EnforceProtoLimits> by lazy { listOf(PROTO_LIMITS_UNKNOWN, LEGACY_NO_EXPLICIT_LIMITS, PROTO_LIMITS2026) }
             }
         }
     }
@@ -1445,10 +1480,12 @@ public interface FeatureSet {
 
         public data object STYLE_LEGACY: EnforceNamingStyle(number = 2)
 
+        public data object STYLE2026: EnforceNamingStyle(number = 3)
+
         public data class UNRECOGNIZED(override val number: Int): EnforceNamingStyle(number)
 
         public companion object {
-            public val entries: List<EnforceNamingStyle> by lazy { listOf(ENFORCE_NAMING_STYLE_UNKNOWN, STYLE2024, STYLE_LEGACY) }
+            public val entries: List<EnforceNamingStyle> by lazy { listOf(ENFORCE_NAMING_STYLE_UNKNOWN, STYLE2024, STYLE_LEGACY, STYLE2026) }
         }
     }
 }
@@ -1579,6 +1616,23 @@ public interface SourceCodeInfo {
          *   [ 4, 3, 2, 7 ]
          * this path refers to the whole field declaration (from the beginning
          * of the label to the terminating semicolon).
+         * 
+         * For options, the path refers to the interpreted option in the descriptor.
+         * E.g., for a custom option `(my_opt) = "foo"` on a message using extension
+         * number 10101, the path is:
+         *   [ 4, 3, 7, 10101 ]
+         * refers to:
+         *   file.message_type(3)     // 4, 3
+         *       .options()           // 7
+         *       .my_opt()            // 10101
+         * 
+         * Sub-locations corresponding to the interpreted option's corresponding
+         * `UninterpretedOption` are also appended to the interpreted option, which
+         * deviates from the actual FileDescriptorProto path. E.g.:
+         *   [ 4, 3, 7, 10101, 2 ]
+         * refers to the option name `(my_opt)`, and:
+         *   [ 4, 3, 7, 10101, 7 ]
+         * refers to the "foo" string value of the option.
          */
         public val path: List<Int>
 
@@ -1751,6 +1805,8 @@ public sealed class Edition(public open val number: Int) {
 
     public data object EDITION_2024: Edition(number = 1001)
 
+    public data object EDITION_2026: Edition(number = 1002)
+
     /**
      * A placeholder edition for developing and testing unscheduled features.
      */
@@ -1780,7 +1836,7 @@ public sealed class Edition(public open val number: Int) {
     public data class UNRECOGNIZED(override val number: Int): Edition(number)
 
     public companion object {
-        public val entries: List<Edition> by lazy { listOf(EDITION_UNKNOWN, EDITION_1_TEST_ONLY, EDITION_2_TEST_ONLY, EDITION_LEGACY, EDITION_PROTO2, EDITION_PROTO3, EDITION_2023, EDITION_2024, EDITION_UNSTABLE, EDITION_99997_TEST_ONLY, EDITION_99998_TEST_ONLY, EDITION_99999_TEST_ONLY, EDITION_MAX) }
+        public val entries: List<Edition> by lazy { listOf(EDITION_UNKNOWN, EDITION_1_TEST_ONLY, EDITION_2_TEST_ONLY, EDITION_LEGACY, EDITION_PROTO2, EDITION_PROTO3, EDITION_2023, EDITION_2024, EDITION_2026, EDITION_UNSTABLE, EDITION_99997_TEST_ONLY, EDITION_99998_TEST_ONLY, EDITION_99999_TEST_ONLY, EDITION_MAX) }
     }
 }
 

@@ -1161,6 +1161,11 @@ public val FeatureSet.enforceNamingStyleOrNull: FeatureSet.EnforceNamingStyle? g
 public val FeatureSet.defaultSymbolVisibilityOrNull: FeatureSet.VisibilityFeature.DefaultSymbolVisibility? get() = if (this.presence.hasDefaultSymbolVisibility) this.defaultSymbolVisibility else null
 
 /**
+ * Returns the value of the `enforceProtoLimits` field if present, otherwise null.
+ */
+public val FeatureSet.enforceProtoLimitsOrNull: FeatureSet.ProtoLimitsFeature.EnforceProtoLimits? get() = if (this.presence.hasEnforceProtoLimits) this.enforceProtoLimits else null
+
+/**
  * Constructs a new message.
  * ```
  * val message = FeatureSetDefaults {
@@ -1551,6 +1556,11 @@ public val FieldOptions.FeatureSupport.deprecationWarningOrNull: String? get() =
 public val FieldOptions.FeatureSupport.editionRemovedOrNull: Edition? get() = if (this.presence.hasEditionRemoved) this.editionRemoved else null
 
 /**
+ * Returns the value of the `removalError` field if present, otherwise null.
+ */
+public val FieldOptions.FeatureSupport.removalErrorOrNull: String? get() = if (this.presence.hasRemovalError) this.removalError else null
+
+/**
  * Constructs a new message.
  * ```
  * val message = NamePart {
@@ -1604,6 +1614,30 @@ public operator fun FeatureSet.VisibilityFeature.Companion.invoke(
 public fun FeatureSet.VisibilityFeature.copy(
     body: FeatureSet.VisibilityFeature.Builder.() -> Unit = {},
 ): FeatureSet.VisibilityFeature {
+    return this.asInternal().copyInternal(body)
+}
+
+/**
+ * Constructs a new message.
+ * ```
+ * val message = ProtoLimitsFeature { }
+ * ```
+ */
+public operator fun FeatureSet.ProtoLimitsFeature.Companion.invoke(
+    body: FeatureSet.ProtoLimitsFeature.Builder.() -> Unit,
+): FeatureSet.ProtoLimitsFeature {
+    return FeatureSetInternal.ProtoLimitsFeatureInternal().apply(body)
+}
+
+/**
+ * Copies the original message, including unknown fields.
+ * ```
+ * val copy = original.copy()
+ * ```
+ */
+public fun FeatureSet.ProtoLimitsFeature.copy(
+    body: FeatureSet.ProtoLimitsFeature.Builder.() -> Unit = {},
+): FeatureSet.ProtoLimitsFeature {
     return this.asInternal().copyInternal(body)
 }
 
@@ -2063,6 +2097,8 @@ public interface FieldOptionsPresence {
         public val hasDeprecationWarning: Boolean
 
         public val hasEditionRemoved: Boolean
+
+        public val hasRemovalError: Boolean
     }
 }
 
@@ -2180,6 +2216,8 @@ public interface FeatureSetPresence {
     public val hasEnforceNamingStyle: Boolean
 
     public val hasDefaultSymbolVisibility: Boolean
+
+    public val hasEnforceProtoLimits: Boolean
 }
 
 /**
