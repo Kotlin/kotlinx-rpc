@@ -30,13 +30,13 @@ val newApi: SourceSet = sourceSets.create("newApi") {
 
 val compatibilityTestSourcesDir: File = project.layout.buildDirectory.dir("compatibilityTestSources").get().asFile
 
-val copyOldToTestResources by tasks.register<Copy>("copyOldToTestResources") {
+val copyOldToTestResources = tasks.register<Copy>("copyOldToTestResources") {
     dependsOn(oldApi.output)
     from(oldApi.output)
     into(compatibilityTestSourcesDir.resolve("old"))
 }
 
-val copyNewToTestResources by tasks.register<Copy>("copyNewToTestResources") {
+val copyNewToTestResources = tasks.register<Copy>("copyNewToTestResources") {
     dependsOn(newApi.output)
     from(newApi.output)
     into(compatibilityTestSourcesDir.resolve("new"))
