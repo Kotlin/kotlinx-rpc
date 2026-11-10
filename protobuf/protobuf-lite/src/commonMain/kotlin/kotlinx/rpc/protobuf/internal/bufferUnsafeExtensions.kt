@@ -5,7 +5,6 @@
 package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.Buffer
-import kotlinx.io.InternalIoApi
 import kotlinx.io.UnsafeIoApi
 import kotlinx.io.unsafe.UnsafeBufferOperations
 
@@ -23,7 +22,7 @@ import kotlinx.io.unsafe.UnsafeBufferOperations
  * This function performs zero-copy iteration over the buffer's internal
  * segments.
  */
-@OptIn(InternalIoApi::class, UnsafeIoApi::class)
+@OptIn(UnsafeIoApi::class)
 internal inline fun Buffer.readFully(handler: (bytes: ByteArray, startIndex: Int, endIndexExclusive: Int) -> Unit) {
     while (!this.exhausted()) {
         UnsafeBufferOperations.readFromHead(this) { array, start, endIndexExclusive ->
