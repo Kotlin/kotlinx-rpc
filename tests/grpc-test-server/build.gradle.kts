@@ -48,7 +48,7 @@ rpc {
                     // Using the buf.build provider as source might hit buf's rate limit quota.
                     // If this becomes a problem we must provide the java grpc plugin from alternative source.
                     // https://buf.build/docs/bsr/rate-limits/#filedescriptorsetservice
-                    locator = "buf.build/grpc/java:v1.81.0"
+                    locator = "buf.build/grpc/java:v1.85.1"
                 }
             }
         }
