@@ -244,7 +244,7 @@ public class GrpcClientConfiguration internal constructor() {
      *
      * The value is used as a **prefix**: the runtime appends its own token after a single space, so the
      * `User-Agent` on the wire is `"<userAgent> <runtime-token>"` (e.g. `grpc-java-okhttp/<version>` on
-     * JVM, the `kotlinx-rpc-swift/<version>` token on iOS, and the `grpc-c/<version>` C-core
+     * JVM, the `kotlinx-rpc-swift/<version>` token on Apple platforms, and the `grpc-c/<version>` C-core
      * token on other native targets). A full override is not supported by the
      * underlying gRPC implementations.
      *
@@ -267,7 +267,7 @@ public class GrpcClientConfiguration internal constructor() {
      * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      *
-     * iOS currently doesn't support this setting, because of a
+     * Apple platforms currently don't support this setting, because of a
      * [bug in the grpc-swift transport](https://github.com/grpc/grpc-swift-nio-transport/issues/207).
      */
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024

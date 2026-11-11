@@ -14,8 +14,11 @@ internal-native-grpc-shim = "1.81.1-4"
 internal-native-protobuf-shim = "35.1-3"
 # the version numbers for the shim annotation
 internal-native-shim-annotation = "0.1.0"
-# minimal supported iOS version for grpc
+# minimal supported Apple platform versions for grpc
 kxrpx-grpc-min-ios = "18.0"
+kxrpx-grpc-min-macos = "15.0"
+kxrpx-grpc-min-tvos = "18.0"
+kxrpx-grpc-min-watchos = "11.0"
 # the published grpc Swift bridge tag. The native-deps/kotlinx-rpc-grpc-swift submodule must point to its commit
 grpc-swift-bridge = "0.0.2"
 
