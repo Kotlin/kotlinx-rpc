@@ -2,6 +2,7 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
+import com.gradle.develocity.agent.gradle.DevelocityConfiguration
 import java.util.*
 
 plugins {
@@ -50,7 +51,9 @@ develocity {
 }
 
 buildCache {
-    remote(develocity.buildCache) {
+    // With Gradle 9.9, `develocity` resolves to two accessors (overload resolution ambiguity),
+    // so get the extension by its type.
+    remote(the<DevelocityConfiguration>().buildCache) {
         isPush = isCIRun
         isEnabled = true
     }

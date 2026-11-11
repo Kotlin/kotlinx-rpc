@@ -34,13 +34,7 @@ internal fun Project.configureBufExecutable() {
     dependencies {
         add(
             BUF_EXECUTABLE_CONFIGURATION,
-            mapOf(
-                "group" to "build.buf",
-                "name" to "buf",
-                "version" to BUF_TOOL_VERSION,
-                "classifier" to "$osPart-$archPart",
-                "ext" to "exe",
-            ),
+            "build.buf:buf:$BUF_TOOL_VERSION:$osPart-$archPart@exe",
         )
     }
 }

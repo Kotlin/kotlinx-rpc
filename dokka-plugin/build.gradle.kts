@@ -13,7 +13,7 @@ logger.lifecycle("[Dokka Plugin] kotlinx.rpc project version: $version, Kotlin v
 
 val generatedResDir = layout.buildDirectory.dir("generated/rpc-dokka-config")
 
-val generateRpcDokkaConfig by tasks.registering {
+val generateRpcDokkaConfig = tasks.register("generateRpcDokkaConfig") {
     val coreVersion = libs.versions.kotlinx.rpc.get()
     val grpcDevVersion = libs.versions.grpc.dev.get()
     val outputDir = generatedResDir.get().asFile

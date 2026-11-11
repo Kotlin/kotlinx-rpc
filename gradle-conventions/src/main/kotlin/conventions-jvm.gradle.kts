@@ -6,7 +6,9 @@
 
 import compat.patrouille.configureJavaCompatibility
 import compat.patrouille.configureKotlinCompatibility
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import org.jetbrains.kotlinx.library.api.watchdog.WatchdogGradleExtension
 import util.configureAbiFilters
 import util.enableAbiValidation
@@ -25,6 +27,20 @@ java {
 
 if (project.name != "gradle-plugin") {
     configureJavaCompatibility(8)
+
+    tasks.named<JavaCompile>("compileTestJava") {
+        options.release = 17
+    }
+
+    tasks.named<KotlinJvmCompile>("compileTestKotlin") {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            // compat-patrouille adds `-Xjdk-release=8` to the options of all compilations.
+            freeCompilerArgs = kotlin.compilerOptions.freeCompilerArgs.map { args ->
+                args.map { if (it.startsWith("-Xjdk-release=")) "-Xjdk-release=17" else it }
+            }
+        }
+    }
 }
 
 configureKotlinCompatibility("2.2.0")

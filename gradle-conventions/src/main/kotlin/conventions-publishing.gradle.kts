@@ -13,7 +13,7 @@ import util.tasks.registerPublicationGroup
 val isGradlePlugin = project.name == "gradle-plugin"
 val isProtocGen = project.rootProject.name.startsWith(PROTOC_GEN)
 val publishingExtension = project.extensions.findByType<PublishingExtension>()
-val globalRootDir: String by extra
+val globalRootDir = extra["globalRootDir"] as String
 
 if (isPublicModule) {
     if (publishingExtension == null) {
@@ -188,7 +188,7 @@ fun RepositoryHandler.configureNativeDepsBuildRepository() {
 }
 
 fun configureEmptyJavadocArtifact(): TaskProvider<Jar> {
-    val javadocJar by project.tasks.registering(Jar::class) {
+    val javadocJar = project.tasks.register<Jar>("javadocJar") {
         archiveClassifier.set("javadoc")
         // contents are deliberately left empty
         // https://central.sonatype.org/publish/requirements/#supply-javadoc-and-sources

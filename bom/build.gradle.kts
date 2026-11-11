@@ -15,8 +15,8 @@ dependencies {
     constraints {
         rootProject.subprojects.filter {
             it.isPublicModule && it != project
-        }.forEach { project ->
-            api(project)
+        }.forEach { subproject ->
+            api(project(subproject.path))
         }
     }
 }

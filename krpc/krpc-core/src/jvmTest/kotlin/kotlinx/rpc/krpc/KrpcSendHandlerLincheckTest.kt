@@ -46,6 +46,9 @@ class KrpcSendHandlerLincheckTest {
         .actorsAfter(2)
         .iterations(100)
         .invocationsPerIteration(100)
+        // Lincheck 3.6+ reports a hang after `loopBound` iterations of one loop. With the default bound,
+        // it reports the wait loop of a contended `ReentrantLock` in `KrpcSendHandler` as a hang.
+        .loopBound(10_000)
 //        .checkObstructionFreedom(true) // todo we are not lock free
         .minimizeFailedScenario(true)
         .sequentialSpecification(SequentialKrpcSendHandler::class.java)

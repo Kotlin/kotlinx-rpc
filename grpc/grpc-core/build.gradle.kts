@@ -60,7 +60,7 @@ kotlin {
         // An intermediate sourceSet that bundles all desktop targets (JVM, macOS and linux)
         // for testing. This allows us to write unit tests that spin up a gRPC server, which is not
         // possible for native mobile targets.
-        val desktopTest by creating {
+        val desktopTest = create("desktopTest") {
             dependsOn(commonTest.get())
 
             dependencies {
@@ -68,7 +68,7 @@ kotlin {
             }
         }
 
-        val desktopNativeTest by creating {
+        val desktopNativeTest = create("desktopNativeTest") {
             dependsOn(desktopTest)
         }
 

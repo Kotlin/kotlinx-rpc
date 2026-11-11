@@ -27,7 +27,7 @@ kotlin {
             }
         }
 
-        val posixMain by creating {
+        val posixMain = create("posixMain") {
             dependsOn(nativeMain.get())
         }
         matching { it.name in listOf("appleMain", "linuxMain", "androidNativeMain") }.configureEach {

@@ -5,8 +5,7 @@
 package util.other
 
 import org.gradle.api.Project
-import org.gradle.internal.extensions.core.extra
-import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.extra
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.io.path.Path
@@ -18,7 +17,7 @@ private val ref = AtomicReference<Properties>()
 fun Project.localProperties(): Properties {
     if (ref.get() == null) {
         ref.compareAndSet(null, Properties().apply {
-            val globalRootDir: String by extra
+            val globalRootDir = extra["globalRootDir"] as String
 
             val filepath = Path(globalRootDir, "local.properties")
 

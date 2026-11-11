@@ -11,17 +11,17 @@ plugins {
     alias(libs.plugins.atomicfu)
 }
 
-val main: SourceSet by sourceSets.getting
-val test: SourceSet by sourceSets.getting
+val main: SourceSet = sourceSets.getByName("main")
+val test: SourceSet = sourceSets.getByName("test")
 
-val oldApi: SourceSet by sourceSets.creating {
+val oldApi: SourceSet = sourceSets.create("oldApi") {
     compileClasspath += main.output
     compileClasspath += test.compileClasspath
     runtimeClasspath += main.output
     runtimeClasspath += test.runtimeClasspath
 }
 
-val newApi: SourceSet by sourceSets.creating {
+val newApi: SourceSet = sourceSets.create("newApi") {
     compileClasspath += main.output
     compileClasspath += test.compileClasspath
     runtimeClasspath += main.output
@@ -30,13 +30,13 @@ val newApi: SourceSet by sourceSets.creating {
 
 val compatibilityTestSourcesDir: File = project.layout.buildDirectory.dir("compatibilityTestSources").get().asFile
 
-val copyOldToTestResources by tasks.register<Copy>("copyOldToTestResources") {
+val copyOldToTestResources = tasks.register<Copy>("copyOldToTestResources") {
     dependsOn(oldApi.output)
     from(oldApi.output)
     into(compatibilityTestSourcesDir.resolve("old"))
 }
 
-val copyNewToTestResources by tasks.register<Copy>("copyNewToTestResources") {
+val copyNewToTestResources = tasks.register<Copy>("copyNewToTestResources") {
     dependsOn(newApi.output)
     from(newApi.output)
     into(compatibilityTestSourcesDir.resolve("new"))

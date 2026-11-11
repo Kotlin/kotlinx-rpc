@@ -222,6 +222,7 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static final fun copy (Lcom/google/protobuf/kotlin/EnumValueOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/EnumValueOptions;
 	public static final fun copy (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
 	public static final fun copy (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;
 	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
 	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSet;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
 	public static final fun copy (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
@@ -256,6 +257,7 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/EnumValueOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/EnumValueOptions;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/ExtensionRangeOptions;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
@@ -314,6 +316,7 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static final fun getEndOrNull (Lcom/google/protobuf/kotlin/EnumDescriptorProto$EnumReservedRange;)Ljava/lang/Integer;
 	public static final fun getEndOrNull (Lcom/google/protobuf/kotlin/GeneratedCodeInfo$Annotation;)Ljava/lang/Integer;
 	public static final fun getEnforceNamingStyleOrNull (Lcom/google/protobuf/kotlin/FeatureSet;)Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public static final fun getEnforceProtoLimitsOrNull (Lcom/google/protobuf/kotlin/FeatureSet;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits;
 	public static final fun getEnumTypeOrNull (Lcom/google/protobuf/kotlin/FeatureSet;)Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
 	public static final fun getExtendeeOrNull (Lcom/google/protobuf/kotlin/FieldDescriptorProto;)Ljava/lang/String;
 	public static final fun getFeatureSupportOrNull (Lcom/google/protobuf/kotlin/EnumValueOptions;)Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;
@@ -418,6 +421,7 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static final fun getPresence (Lcom/google/protobuf/kotlin/UninterpretedOption;)Lcom/google/protobuf/kotlin/UninterpretedOptionPresence;
 	public static final fun getProto3OptionalOrNull (Lcom/google/protobuf/kotlin/FieldDescriptorProto;)Ljava/lang/Boolean;
 	public static final fun getPyGenericServicesOrNull (Lcom/google/protobuf/kotlin/FileOptions;)Ljava/lang/Boolean;
+	public static final fun getRemovalErrorOrNull (Lcom/google/protobuf/kotlin/FieldOptions$FeatureSupport;)Ljava/lang/String;
 	public static final fun getRepeatedFieldEncodingOrNull (Lcom/google/protobuf/kotlin/FeatureSet;)Lcom/google/protobuf/kotlin/FeatureSet$RepeatedFieldEncoding;
 	public static final fun getRepeatedOrNull (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;)Ljava/lang/Boolean;
 	public static final fun getReservedOrNull (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;)Ljava/lang/Boolean;
@@ -455,6 +459,7 @@ public final class com/google/protobuf/kotlin/Descriptor_extKt {
 	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/ExtensionRangeOptions$Declaration;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet;
+	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults;
 	public static final fun invoke (Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault$Companion;Lkotlin/jvm/functions/Function1;)Lcom/google/protobuf/kotlin/FeatureSetDefaults$FeatureSetEditionDefault;
@@ -546,6 +551,13 @@ public final class com/google/protobuf/kotlin/Edition$EDITION_2023 : com/google/
 
 public final class com/google/protobuf/kotlin/Edition$EDITION_2024 : com/google/protobuf/kotlin/Edition {
 	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_2024;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/Edition$EDITION_2026 : com/google/protobuf/kotlin/Edition {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/Edition$EDITION_2026;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -966,6 +978,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet {
 	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$Companion;
 	public abstract fun getDefaultSymbolVisibility ()Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;
 	public abstract fun getEnforceNamingStyle ()Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public abstract fun getEnforceProtoLimits ()Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits;
 	public abstract fun getEnumType ()Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
 	public abstract fun getFieldPresence ()Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;
 	public abstract fun getJsonFormat ()Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;
@@ -977,6 +990,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet {
 public abstract interface class com/google/protobuf/kotlin/FeatureSet$Builder : com/google/protobuf/kotlin/FeatureSet {
 	public abstract fun clearDefaultSymbolVisibility ()V
 	public abstract fun clearEnforceNamingStyle ()V
+	public abstract fun clearEnforceProtoLimits ()V
 	public abstract fun clearEnumType ()V
 	public abstract fun clearFieldPresence ()V
 	public abstract fun clearJsonFormat ()V
@@ -985,6 +999,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet$Builder : 
 	public abstract fun clearUtf8Validation ()V
 	public abstract fun getDefaultSymbolVisibility ()Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;
 	public abstract fun getEnforceNamingStyle ()Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;
+	public abstract fun getEnforceProtoLimits ()Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits;
 	public abstract fun getEnumType ()Lcom/google/protobuf/kotlin/FeatureSet$EnumType;
 	public abstract fun getFieldPresence ()Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;
 	public abstract fun getJsonFormat ()Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;
@@ -993,6 +1008,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSet$Builder : 
 	public abstract fun getUtf8Validation ()Lcom/google/protobuf/kotlin/FeatureSet$Utf8Validation;
 	public abstract fun setDefaultSymbolVisibility (Lcom/google/protobuf/kotlin/FeatureSet$VisibilityFeature$DefaultSymbolVisibility;)V
 	public abstract fun setEnforceNamingStyle (Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle;)V
+	public abstract fun setEnforceProtoLimits (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits;)V
 	public abstract fun setEnumType (Lcom/google/protobuf/kotlin/FeatureSet$EnumType;)V
 	public abstract fun setFieldPresence (Lcom/google/protobuf/kotlin/FeatureSet$FieldPresence;)V
 	public abstract fun setJsonFormat (Lcom/google/protobuf/kotlin/FeatureSet$JsonFormat;)V
@@ -1023,6 +1039,13 @@ public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$ENFO
 
 public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2024 : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
 	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2024;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2026 : com/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$EnforceNamingStyle$STYLE2026;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1215,6 +1238,58 @@ public final class com/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOG
 	public final fun component1 ()I
 	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;
 	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$MessageEncoding$UNRECOGNIZED;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getNumber ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Companion;
+}
+
+public abstract interface class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Builder : com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature {
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$Companion {
+}
+
+public abstract class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
+	public static final field Companion Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$Companion;
+	public synthetic fun <init> (ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getNumber ()I
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$Companion {
+	public final fun getEntries ()Ljava/util/List;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$LEGACY_NO_EXPLICIT_LIMITS : com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$LEGACY_NO_EXPLICIT_LIMITS;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$PROTO_LIMITS2026 : com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$PROTO_LIMITS2026;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$PROTO_LIMITS_UNKNOWN : com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
+	public static final field INSTANCE Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$PROTO_LIMITS_UNKNOWN;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$UNRECOGNIZED : com/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits {
+	public fun <init> (I)V
+	public final fun component1 ()I
+	public final fun copy (I)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$UNRECOGNIZED;
+	public static synthetic fun copy$default (Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$UNRECOGNIZED;IILjava/lang/Object;)Lcom/google/protobuf/kotlin/FeatureSet$ProtoLimitsFeature$EnforceProtoLimits$UNRECOGNIZED;
 	public fun equals (Ljava/lang/Object;)Z
 	public fun getNumber ()I
 	public fun hashCode ()I
@@ -1428,6 +1503,7 @@ public abstract interface class com/google/protobuf/kotlin/FeatureSetDefaultsPre
 public abstract interface class com/google/protobuf/kotlin/FeatureSetPresence {
 	public abstract fun getHasDefaultSymbolVisibility ()Z
 	public abstract fun getHasEnforceNamingStyle ()Z
+	public abstract fun getHasEnforceProtoLimits ()Z
 	public abstract fun getHasEnumType ()Z
 	public abstract fun getHasFieldPresence ()Z
 	public abstract fun getHasJsonFormat ()Z
@@ -2084,6 +2160,7 @@ public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureS
 	public abstract fun getEditionDeprecated ()Lcom/google/protobuf/kotlin/Edition;
 	public abstract fun getEditionIntroduced ()Lcom/google/protobuf/kotlin/Edition;
 	public abstract fun getEditionRemoved ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getRemovalError ()Ljava/lang/String;
 }
 
 public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Builder : com/google/protobuf/kotlin/FieldOptions$FeatureSupport {
@@ -2091,14 +2168,17 @@ public abstract interface class com/google/protobuf/kotlin/FieldOptions$FeatureS
 	public abstract fun clearEditionDeprecated ()V
 	public abstract fun clearEditionIntroduced ()V
 	public abstract fun clearEditionRemoved ()V
+	public abstract fun clearRemovalError ()V
 	public abstract fun getDeprecationWarning ()Ljava/lang/String;
 	public abstract fun getEditionDeprecated ()Lcom/google/protobuf/kotlin/Edition;
 	public abstract fun getEditionIntroduced ()Lcom/google/protobuf/kotlin/Edition;
 	public abstract fun getEditionRemoved ()Lcom/google/protobuf/kotlin/Edition;
+	public abstract fun getRemovalError ()Ljava/lang/String;
 	public abstract fun setDeprecationWarning (Ljava/lang/String;)V
 	public abstract fun setEditionDeprecated (Lcom/google/protobuf/kotlin/Edition;)V
 	public abstract fun setEditionIntroduced (Lcom/google/protobuf/kotlin/Edition;)V
 	public abstract fun setEditionRemoved (Lcom/google/protobuf/kotlin/Edition;)V
+	public abstract fun setRemovalError (Ljava/lang/String;)V
 }
 
 public final class com/google/protobuf/kotlin/FieldOptions$FeatureSupport$Companion {
@@ -2303,6 +2383,7 @@ public abstract interface class com/google/protobuf/kotlin/FieldOptionsPresence$
 	public abstract fun getHasEditionDeprecated ()Z
 	public abstract fun getHasEditionIntroduced ()Z
 	public abstract fun getHasEditionRemoved ()Z
+	public abstract fun getHasRemovalError ()Z
 }
 
 public abstract interface class com/google/protobuf/kotlin/FileDescriptorProto {

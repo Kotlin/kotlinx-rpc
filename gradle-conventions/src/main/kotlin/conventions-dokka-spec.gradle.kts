@@ -12,7 +12,7 @@ plugins {
 }
 
 dokka {
-    val globalRootDir: String by project.extra
+    val globalRootDir = project.extra["globalRootDir"] as String
 
     pluginsConfiguration {
         html {
@@ -45,8 +45,8 @@ dependencies {
     dokkaPlugin(libs.dokka.rpc.plugin)
 }
 
-val thisProject = project
+val thisProjectPath = project.path
 
 rootProject.configurations.matching { it.name == "dokka" }.all {
-    rootProject.dependencies.dokka(thisProject)
+    rootProject.dependencies.dokka(rootProject.dependencies.project(thisProjectPath))
 }

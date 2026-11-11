@@ -72,7 +72,7 @@ val (generateAppleMinOsDump, checkAppleMinOsDump) = registerAppleMinOsDumpTasks(
 tasks.named("check") { dependsOn(checkAppleMinOsDump) }
 val appleMinOsVerifyTasks = mutableMapOf<String, TaskProvider<*>>()
 
-val grpcHeaders by configurations.creating {
+val grpcHeaders = configurations.create("grpcHeaders") {
     isCanBeConsumed = false
     isCanBeResolved = true
     isTransitive = false

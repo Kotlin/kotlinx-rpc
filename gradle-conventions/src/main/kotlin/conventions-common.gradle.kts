@@ -15,7 +15,7 @@ plugins {
     id("project-report")
 }
 
-val globalRootDir: String by extra
+val globalRootDir = extra["globalRootDir"] as String
 
 val globalDetektDir = "$globalRootDir/detekt"
 

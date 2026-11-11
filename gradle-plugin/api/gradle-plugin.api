@@ -210,6 +210,13 @@ public abstract interface class kotlinx/rpc/protoc/ProtoSourceSet : org/gradle/a
 	public static synthetic fun plugin$default (Lkotlinx/rpc/protoc/ProtoSourceSet;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/Action;ILjava/lang/Object;)V
 }
 
+public final class kotlinx/rpc/protoc/ProtoSourceSet$DefaultImpls {
+	public static synthetic fun plugin$default (Lkotlinx/rpc/protoc/ProtoSourceSet;Lkotlinx/rpc/protoc/ProtocPlugin;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+	public static synthetic fun plugin$default (Lkotlinx/rpc/protoc/ProtoSourceSet;Lorg/gradle/api/Action;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)V
+	public static synthetic fun plugin$default (Lkotlinx/rpc/protoc/ProtoSourceSet;Lorg/gradle/api/NamedDomainObjectProvider;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+	public static synthetic fun plugin$default (Lkotlinx/rpc/protoc/ProtoSourceSet;Lorg/gradle/api/provider/Provider;Lorg/gradle/api/Action;ILjava/lang/Object;)V
+}
+
 public final class kotlinx/rpc/protoc/ProtoSourceSetKt {
 	public static final fun getProto (Lorg/gradle/api/NamedDomainObjectProvider;)Lorg/gradle/api/provider/Provider;
 	public static final fun getProto (Lorg/gradle/api/tasks/SourceSet;)Lkotlinx/rpc/protoc/ProtoSourceSet;
@@ -272,6 +279,10 @@ public abstract interface class kotlinx/rpc/protoc/ProtoTasks : org/gradle/api/t
 	public abstract fun matchingType (Lkotlin/reflect/KClass;)Lkotlinx/rpc/protoc/ProtoTasks;
 	public abstract fun nonTestTasks ()Lkotlinx/rpc/protoc/ProtoTasks;
 	public abstract fun testTasks ()Lkotlinx/rpc/protoc/ProtoTasks;
+}
+
+public final class kotlinx/rpc/protoc/ProtoTasks$DefaultImpls {
+	public static synthetic fun androidTasks$default (Lkotlinx/rpc/protoc/ProtoTasks;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/rpc/protoc/ProtoTasks;
 }
 
 public final class kotlinx/rpc/protoc/ProtoTasksKt {

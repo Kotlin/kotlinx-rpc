@@ -11,14 +11,13 @@ import kotlinx.rpc.protoc.kotlinMultiplatform
 import kotlinx.rpc.protoc.protoTasks
 import kotlinx.rpc.rpcExtension
 import org.gradle.api.Project
-import org.gradle.internal.extensions.core.extra
-import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.extra
 
 @InternalRpcApi
 public fun Project.configureLocalProtocGenDevelopmentDependency(
     vararg sourceSetSuffix: String = arrayOf("Test"),
 ) {
-    val globalRootDir: String by extra
+    val globalRootDir = extra["globalRootDir"] as String
 
     // init
     rpcExtension().protoc {

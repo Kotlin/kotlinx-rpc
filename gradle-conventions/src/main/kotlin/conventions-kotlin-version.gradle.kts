@@ -9,6 +9,12 @@ import util.withKotlinJvmExtension
 import util.withKotlinKmpExtension
 
 fun KotlinProjectExtension.optInForRpcApi() {
+    // The opt-in markers are declared in the `:utils` project. Included builds, such as gradle-plugin,
+    // don't have this project.
+    if (rootProject.findProject(":utils") == null) {
+        return
+    }
+
     sourceSets.all {
         languageSettings.optIn("kotlinx.rpc.internal.utils.InternalRpcApi")
         languageSettings.optIn("kotlinx.rpc.internal.utils.ExperimentalRpcApi")

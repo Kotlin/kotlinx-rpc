@@ -170,27 +170,30 @@ public interface ValuePresence {
 @GeneratedProtoDeclaration
 public enum class ValueKindCase {
     /**
-     * Represents a null value.
+     * Represents a JSON `null`.
      */
     NULL_VALUE,
     /**
-     * Represents a double value.
+     * Represents a JSON number. Must not be `NaN`, `Infinity` or
+     * `-Infinity`, since those are not supported in JSON. This also cannot
+     * represent large Int64 values, since JSON format generally does not
+     * support them in its number type.
      */
     NUMBER_VALUE,
     /**
-     * Represents a string value.
+     * Represents a JSON string.
      */
     STRING_VALUE,
     /**
-     * Represents a boolean value.
+     * Represents a JSON boolean (`true` or `false` literal in JSON).
      */
     BOOL_VALUE,
     /**
-     * Represents a structured value.
+     * Represents a JSON object.
      */
     STRUCT_VALUE,
     /**
-     * Represents a repeated `Value`.
+     * Represents a JSON array.
      */
     LIST_VALUE,
     NOT_SET,

@@ -28,7 +28,7 @@ private fun KotlinMultiplatformExtension.configureTargets(config: KmpConfig): Li
     }
 
     if (config.js) {
-        js(IR) {
+        js {
             nodejs()
             if (!config.kotlinMasterBuild) {
                 browser()

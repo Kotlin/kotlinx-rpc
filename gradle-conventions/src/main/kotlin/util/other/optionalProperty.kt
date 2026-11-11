@@ -5,6 +5,7 @@
 package util.other
 
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.extra
 import kotlin.reflect.KProperty
 import kotlin.text.replaceFirstChar
 
@@ -32,11 +33,19 @@ fun Project.getValue(propertyName: String, subpaths: Array<out String>): Boolean
 
     val fullName = "kotlinx.rpc.$subpathProperty$name"
 
-    return when {
-        hasProperty(fullName) -> (properties[fullName] as? String)?.toBooleanStrictOrNull()
-            ?: error("Invalid value for '$fullName' property: ${properties[fullName]}")
-        else -> false
-    }
+    val value = findPropertyInHierarchy(fullName) ?: return false
+
+    return (value as? String)?.toBooleanStrictOrNull()
+        ?: error("Invalid value for '$fullName' property: $value")
+}
+
+// A property in the gradle.properties file of a parent project, for example `protobuf/gradle.properties`,
+// applies to all child projects. Gradle 9 deprecates the implicit parent lookup of `findProperty`,
+// so this function checks the project and each of its parents explicitly.
+private fun Project.findPropertyInHierarchy(name: String): Any? {
+    val owner = generateSequence(this) { it.parent }.firstOrNull { it.extra.has(name) }
+
+    return owner?.extra?.get(name) ?: providers.gradleProperty(name).orNull
 }
 
 fun Project.optionalProperty(vararg subpaths: String): OptionalProperty {

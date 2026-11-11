@@ -19,6 +19,13 @@ pluginManagement {
             maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
             maven("https://cache-redirector.jetbrains.com/plugins.gradle.org/m2")
         }
+
+        // The published kotlinx-rpc artifacts declare a runtime dependency on the API watchdog annotations.
+        // Only kt-lib/eap has these annotations, so Gradle asks this repository for them and nothing else.
+        exclusiveContent {
+            forRepository { maven("https://packages.jetbrains.team/maven/p/kt-lib/eap") }
+            filter { includeModuleByRegex("org\\.jetbrains\\.kotlinx", "kotlin-library-api-watchdog-plugin-annotations.*") }
+        }
     }
 }
 
@@ -27,5 +34,10 @@ dependencyResolutionManagement {
         maven("https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2")
         maven("<build-repo>")
         maven("https://cache-redirector.jetbrains.com/dl.google.com/dl/android/maven2")
+
+        exclusiveContent {
+            forRepository { maven("https://packages.jetbrains.team/maven/p/kt-lib/eap") }
+            filter { includeModuleByRegex("org\\.jetbrains\\.kotlinx", "kotlin-library-api-watchdog-plugin-annotations.*") }
+        }
     }
 }

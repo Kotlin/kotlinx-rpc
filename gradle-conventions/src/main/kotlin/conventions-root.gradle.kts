@@ -32,7 +32,7 @@ dokka {
 
     moduleVersion.set(libVersion)
 
-    val globalRootDir: String by project.extra
+    val globalRootDir = project.extra["globalRootDir"] as String
 
     val pagesDirectory = java.nio.file.Path.of(globalRootDir)
         .resolve("docs")
@@ -76,7 +76,7 @@ registerChangelogTask()
 registerBuildCrashbtShimTask()
 
 fun Project.forEachIncludedProject(action: (String, Path, Path) -> Unit) {
-    val globalRootDir: String by extra
+    val globalRootDir = extra["globalRootDir"] as String
     val root = Path.of(globalRootDir)
     val rootProperties = root.resolve("gradle.properties").readText()
     root.listDirectoryEntries()

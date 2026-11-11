@@ -27,9 +27,9 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// The reference server uses plain grpc-java, so the upstream Java generators generate the code for
-// the shared test protos, not the kotlinx-rpc generators. The plugin versions must match `protobuf`
-// and `grpc` in libs.versions.toml. protoc 35.x generates code for protobuf-java 4.35.x.
+val protobufReleaseVersion = libs.versions.protobuf.get().substringAfter(".")
+val grpcJavaVersion = libs.versions.grpc.asProvider().get()
+
 rpc {
     protoc {
         plugins {
@@ -39,7 +39,7 @@ rpc {
                     // Using the buf.build provider as locator might hit buf's rate limit quota.
                     // If this becomes a problem we must provide the java protobuf plugin from alternative source.
                     // https://buf.build/docs/bsr/rate-limits/#filedescriptorsetservice
-                    locator = "buf.build/protocolbuffers/java:v35.1"
+                    locator = "buf.build/protocolbuffers/java:v$protobufReleaseVersion"
                 }
             }
             create("grpc-java") {
@@ -48,7 +48,7 @@ rpc {
                     // Using the buf.build provider as source might hit buf's rate limit quota.
                     // If this becomes a problem we must provide the java grpc plugin from alternative source.
                     // https://buf.build/docs/bsr/rate-limits/#filedescriptorsetservice
-                    locator = "buf.build/grpc/java:v1.81.0"
+                    locator = "buf.build/grpc/java:v$grpcJavaVersion"
                 }
             }
         }
