@@ -14,6 +14,7 @@ plugins {
     `kotlin-dsl`
     alias(libs.plugins.kotlin.library.api.watchdog)
     alias(libs.plugins.conventions.jvm)
+    alias(libs.plugins.conventions.devkit.gradle.plugin)
     alias(libs.plugins.conventions.gradle.publish)
     alias(libs.plugins.gradle.plugin.publish)
 }
@@ -26,8 +27,13 @@ kotlin {
 
     jvmToolchain(17)
 
-    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
-    compilerOptions.optIn.add("kotlinx.rpc.internal.InternalForSubclassingRpcApi")
+    // The functional tests don't depend on the main source set, so they don't have the opt-in markers.
+    target.compilations.matching { it.name != "functionalTest" }.configureEach {
+        compileTaskProvider.configure {
+            compilerOptions.optIn.add("kotlinx.rpc.internal.InternalRpcApi")
+            compilerOptions.optIn.add("kotlinx.rpc.internal.InternalForSubclassingRpcApi")
+        }
+    }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -39,6 +45,25 @@ tasks.withType<KotlinCompile>().configureEach {
 
 apiWatchdog {
     enabled = true
+}
+
+pluginDevKit {
+    compilerPlugin("kotlinx-rpc-compiler-plugin")
+
+    // The DevKit runtime library is not on Maven Central, so the published plugin must not depend on it.
+    addRuntimeDependency = false
+}
+
+buildConfig {
+    // The default package is the compiler plugin ID.
+    packageName = "kotlinx.rpc"
+
+    forClass("PluginInfo") {
+        useKotlinOutput {
+            topLevelConstants = false
+            internalVisibility = true
+        }
+    }
 }
 
 dependencies {
@@ -70,10 +95,7 @@ tasks.test {
     dependsOn(protocGen.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
 
     val compilerPlugin = gradle.includedBuild("compiler-plugin")
-    dependsOn(compilerPlugin.task(":compiler-plugin-cli:publishAllPublicationsToBuildRepoRepository"))
-    dependsOn(compilerPlugin.task(":compiler-plugin-k2:publishAllPublicationsToBuildRepoRepository"))
-    dependsOn(compilerPlugin.task(":compiler-plugin-backend:publishAllPublicationsToBuildRepoRepository"))
-    dependsOn(compilerPlugin.task(":compiler-plugin-common:publishAllPublicationsToBuildRepoRepository"))
+    dependsOn(compilerPlugin.task(":publishAllPublicationsToBuildRepoRepository"))
 
     dependsOn(":publishAllPublicationsToBuildRepoRepository")
 }

@@ -97,7 +97,7 @@ The most important modules have brief READMEs in their directories, read when yo
 - `dokka-plugin/` -- Documentation plugin
 
 ### Tests (not published)
-- `:tests:compiler-plugin-tests` -- Compiler plugin box/diagnostic tests (skipped for Kotlin master builds)
+- `:tests:compiler-plugin-test-libs` -- Declarations that the compiler plugin test data uses. The tests are in `compiler-plugin/`
 - `:tests:krpc-compatibility-tests`, `:tests:krpc-protocol-compatibility-tests` -- Protocol compat
 - `:tests:protobuf-conformance` -- Protobuf spec conformance (not on Windows)
 - `:tests:protobuf-unittest`, `:tests:grpc-test-server`, `:tests:test-protos`
@@ -128,10 +128,10 @@ HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`.
 ## Compiler Plugin
 
 ### Module structure
-- `compiler-plugin-common` -- Shared between backend and k2
-- `compiler-plugin-k2` -- FIR frontend: diagnostics, declaration generation
-- `compiler-plugin-backend` -- IR backend: codegen (stub classes, descriptors)
-- `compiler-plugin-cli` -- Entrypoint, combines backend and k2
+One module, `compiler-plugin/`, built with the [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) for many Kotlin versions at once.
+- `src/commonMain` -- Code for all Kotlin versions: FIR frontend (diagnostics, declaration generation) and IR backend (stub classes, descriptors)
+- `src/pre<version>DevMain`, `src/post<version>DevMain` -- `actual` declarations for the compiler API that differs between versions
+- `src/commonTestFixtures`, `src/commonTest/data`, `src/generateTests` -- Box/diagnostic tests. Run them from the root build: `:compiler-plugin:allTests`
 
 ## Conventions
 

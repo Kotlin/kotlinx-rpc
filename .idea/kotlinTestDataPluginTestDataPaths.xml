@@ -3,7 +3,7 @@
   <component name="TestDataPluginSettings">
     <option name="relatedFilesSearchPaths">
       <map>
-        <entry key="$PROJECT_DIR$/tests/compiler-plugin-tests/src/testData/box">
+        <entry key="$PROJECT_DIR$/compiler-plugin/src/commonTest/data/box">
           <value>
             <array />
           </value>
@@ -12,7 +12,7 @@
     </option>
     <option name="testDataFiles">
       <array>
-        <option value="$PROJECT_DIR$/tests/compiler-plugin-tests/src/testData" />
+        <option value="$PROJECT_DIR$/compiler-plugin/src/commonTest/data" />
       </array>
     </option>
   </component>

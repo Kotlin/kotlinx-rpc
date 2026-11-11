@@ -28,6 +28,9 @@ dependencyResolutionManagement {
     includeBuild("dokka-plugin")
     includeBuild("protoc-gen")
     includeBuild("gradle-plugin")
+    // The tests of the compiler plugin depend on projects of this build.
+    // An included build resolves them only when this build includes itself.
+    includeBuild(".")
 }
 
 include(":protobuf")
@@ -86,11 +89,7 @@ if (!onWindows) {
 include(":tests:protobuf-unittest")
 include(":tests:protobuf-playground")
 
-val kotlinMasterBuild = providers.gradleProperty("kotlinx.rpc.kotlinMasterBuild").orNull == "true"
-
-if (!kotlinMasterBuild) {
-    include(":tests:compiler-plugin-tests")
-    include(":tests:compiler-plugin-tests:compiler-plugin-protos")
-}
+include(":tests:compiler-plugin-test-libs")
+include(":tests:compiler-plugin-test-libs:compiler-plugin-protos")
 
 include(":jpms-check")

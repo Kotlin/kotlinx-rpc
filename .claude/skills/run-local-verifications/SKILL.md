@@ -44,8 +44,9 @@ The "Gradle task" column shows the task name to pass to the appropriate Gradle s
 | New/removed modules or KMP target changes                                              | Artifact validation     | Shell: `./scripts/validate_published_artifacts.sh -s`                                               | Ensures the published artifact list stays consistent                               |
 | New/removed modules or KMP target changes                                              | Platform table          | `dumpPlatformTable --no-configuration-cache` then check git status                        | Updates docs/pages platform table                                                  |
 | `gradle.properties` in any module                                                      | Properties sync         | `updateProperties` then check git status                                                  | Keeps all module gradle.properties in sync with root                               |
-| `compiler-plugin/` sources or templates                                                | Compiler plugin tests   | `:tests:compiler-plugin-tests:test` (use `running_gradle_tests`)                          | Validates codegen and diagnostics                                                  |
-| `compiler-plugin/` CSM templates                                                       | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
+| `compiler-plugin/` sources                                                             | Compiler plugin tests   | `:compiler-plugin:allTests` (use `running_gradle_tests`)                                  | Validates codegen and diagnostics on all supported Kotlin versions                 |
+| `compiler-plugin/` sources                                                             | Compiler version compat | Use the `verify-compiler-plugin-compatibility` skill                                      | Ensures all supported Kotlin versions still compile                                |
+| `gradle-plugin/` compiler plugin wiring, `compiler-plugin/` entry points               | Functional tests        | `:gradle-plugin:allVersionedFunctionalTests` (use `running_gradle_tests`)                 | Checks that each Kotlin version loads the compiler plugin from the Gradle plugin   |
 | `protoc-gen/` sources (any change)                                                     | Protobuf conformance    | `tests:protobuf-conformance:bufGenerateCommonMain` then check git status                  | Codegen changes may affect conformance test output                                 |
 | `protoc-gen/` sources (any change)                                                     | Protobuf unit tests     | `:tests:protobuf-unittest:test` (use `running_gradle_tests`)                           | Validates protobuf codegen correctness                                             |
 | `protoc-gen/` sources (any change)                                                     | Well-Known Types        | `:protobuf:protobuf-wkt:bufGenerateCommonMain` then check git status                      | Codegen changes may affect WKT generated code                                      |
@@ -80,8 +81,9 @@ Examples:
 4. Run `:core:jvmTest` via `running_gradle_tests`
 
 ### "I modified the compiler plugin"
-1. Run `:tests:compiler-plugin-tests:test` via `running_gradle_tests`
-2. Use `verify-compiler-plugin-compatibility` skill for multi-version check
+1. Run `:compiler-plugin:allTests` via `running_gradle_tests`
+2. Run `:gradle-plugin:allVersionedFunctionalTests` via `running_gradle_tests`
+3. Use `verify-compiler-plugin-compatibility` skill when a version fails, and for Kotlin Master
 
 ### "I added a new published module"
 1. Run `dumpPlatformTable --no-configuration-cache` via `running_gradle_builds` then commit if changed

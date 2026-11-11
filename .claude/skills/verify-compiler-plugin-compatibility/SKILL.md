@@ -5,103 +5,81 @@ description: >
   Kotlin compiler versions, and fix any incompatibilities found. Use this skill whenever
   the user wants to check compiler plugin compatibility across Kotlin versions, test a
   new Kotlin version, fix compiler plugin build failures after a Kotlin upgrade, ensure
-  the CSM templates produce valid code for all supported versions, or test against Kotlin
-  Master. Trigger on phrases like "verify compiler plugin", "check compatibility", "test
-  Kotlin versions", "compiler plugin broken", "fix for Kotlin X.Y", "support new Kotlin
-  version", or "Kotlin master".
+  the expect/actual version-specific code is valid for all supported versions, or test
+  against Kotlin Master. Trigger on phrases like "verify compiler plugin", "check
+  compatibility", "test Kotlin versions", "compiler plugin broken", "fix for Kotlin X.Y",
+  "support new Kotlin version", or "Kotlin master".
 ---
 
 # Verify Compiler Plugin Compatibility
 
-Systematically build the compiler plugin against each provided Kotlin compiler version,
-identify compilation failures, and fix them.
+The compiler plugin (`compiler-plugin/`) uses the
+[Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit).
+One build compiles the plugin against every supported Kotlin version. Each version is a
+Gradle target.
 
-## Input
+## Versions and targets
 
-The user provides one or more Kotlin versions to verify. If none are given, determine
-the set of versions to test by inspecting the CSM template version ranges in these files:
-- `compiler-plugin/compiler-plugin-backend/src/main/templates/kotlinx/rpc/codegen/VersionSpecificApiImpl.kt`
-- `compiler-plugin/compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/FirVersionSpecificApiImpl.kt`
+`gradle-conventions/src/main/kotlin/util/devkit.kt` declares the supported versions:
 
-Extract the distinct version ranges from `//##csm specific=[...]` directives. For each
-range, pick one **actually published** Kotlin release that falls within it. Also include
-the current default from `versions-root/libs.versions.toml` `kotlin-lang`.
+- `cliVersions(min)`: the Kotlin releases from `min`, and the Beta and RC builds of the
+  next release.
+- `ideaVersions(min)`: the compiler versions of IntelliJ IDEA and Android Studio from
+  the build `min`.
 
-### CSM range boundaries are NOT real Kotlin versions
+The DevKit has a built-in list of Kotlin releases and IDE builds. A new Kotlin release
+becomes a target after an update of the `devkit` version in
+`versions-root/libs.versions.toml`, and of the same version in
+`compiler-plugin/settings.gradle.kts` and `gradle-plugin/settings.gradle.kts`.
 
-CSM range lower bounds (e.g., `2.1.22`, `2.1.11`, `2.4.0`) represent the Kotlin version
-that introduced an API change, but that exact version may never have been published as a
-stable release. Kotlin publishes specific patch versions (like `2.1.0`, `2.1.20`, `2.2.0`,
-`2.2.20`), not every number in sequence. **Never use CSM boundary values directly as build
-versions** — they will fail to resolve from Maven Central.
+The target name is `k` and the version in lower case, without `.` and with `_` for `-`:
 
-### Resolving real versions for each range
+| Version | Target | Compile task | Test task |
+|---|---|---|---|
+| `2.4.20` | `k2420` | `compileKotlinK2420` | `k2420Test` |
+| `2.5.0-RC` | `k250_rc` | `compileKotlinK250_rc` | `k250_rcTest` |
+| `2.4.20-ij262-52` | `k2420_ij262_52` | `compileKotlinK2420_ij262_52` | `k2420_ij262_52Test` |
 
-For each CSM range, find the lowest published Kotlin release that falls within it:
-
-1. Read the range bounds (e.g., `2.1.22...2.3.*`)
-2. Look up actual published Kotlin releases. Use the `managing_gradle_dependencies` skill
-   to query Maven Central for available versions of `org.jetbrains.kotlin:kotlin-stdlib`
-   if you are unsure which versions exist.
-3. Pick the first published version that falls within the range.
-4. If the range's lower bound hasn't been published yet and no published version falls
-   within it, that range covers a future Kotlin version — test it via the **Kotlin Master**
-   workflow (see `references/kotlin-master.md`), not by guessing a version number.
-
-Kotlin publishes in a pattern: `X.Y.0`, then `X.Y.10`, `X.Y.20`, etc. (not sequential
-patches). For example, after `2.1.0` the next release was `2.1.10`, then `2.1.20`,
-then `2.1.21` — there was never a `2.1.1` through `2.1.9` or a `2.1.11` through `2.1.19`.
+To verify one version that is not a target, for example a `-dev-` build, use the Kotlin
+Master mode: `-Pkotlin.compiler=<VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`
+(see `references/kotlin-master.md`).
 
 ## Build Execution: Use Gradle Skills
 
-**All builds MUST go through the `running_gradle_builds` skill.** Do not run `./gradlew`
-directly via shell. The `running_gradle_builds` skill provides background orchestration,
-structured failure analysis via `inspect_build`, and reliable output capture.
+**All builds MUST go through the `running_gradle_builds` and `running_gradle_tests`
+skills.** Do not run `./gradlew` directly via shell.
 
-When invoking builds through the skill, use:
-- `projectRoot`: absolute path to `compiler-plugin/` directory
-- Gradle task: `clean compileKotlin`
-- Additional arguments: `-Pkotlin.compiler=<VERSION>`
-
-Use `inspect_build` to diagnose failures -- it gives structured access to errors,
-task outputs, and build problems rather than raw log parsing.
+Use the repository root as `projectRoot`. The compiler plugin is the included build
+`:compiler-plugin`.
 
 When you need to understand what a Kotlin compiler API looks like in a specific version,
 use the `searching_dependency_sources` skill to search the Kotlin compiler jar for the
-class or method name. This reveals new signatures, package locations, and parameter lists.
+class or method name.
 
 ## Workflow
 
-### Phase 1: Verify Each Version
+### Phase 1: Verify All Versions
 
-For each Kotlin version, build the compiler plugin using the `running_gradle_builds`
-skill with these arguments:
-- Tasks: `clean compileKotlin`
-- Extra args: `-Pkotlin.compiler=<VERSION>`
-- Project root: absolute path to the `compiler-plugin/` directory
+1. Compile all versions: `:compiler-plugin:assemble --continue`.
+2. Run the tests of all versions: `:compiler-plugin:allTests --continue`.
 
-The `-Pkotlin.compiler=<VERSION>` flag overrides the Kotlin compiler version at build
-time. The CSM template processor reads this to select the right code blocks.
+`--continue` gives the failures of all versions in one build.
 
-Record the result for each version: PASS or FAIL with the error summary.
-
-After testing all versions, present a summary table:
+Record the result for each version and present a summary table:
 
 ```
-| Version | Status | Errors |
-|---------|--------|--------|
-| 2.1.0   | PASS   |        |
-| 2.1.20  | PASS   |        |
-| 2.2.0   | FAIL   | 3 errors in FirVersionSpecificApiImpl.kt |
-| 2.3.0   | FAIL   | 5 errors in VersionSpecificApiImpl.kt    |
+| Version | Compile | Tests | Errors |
+|---------|---------|-------|--------|
+| 2.2.20  | PASS    | PASS  |        |
+| 2.4.0   | FAIL    |       | 3 errors in IrCompat.post24Dev.kt |
 ```
 
 If everything passes, report success and stop.
 
 ### Phase 2: Diagnose Failures
 
-For each failing version, use `inspect_build` with `mode="details"` to get structured
-error information. Categorize every compilation error:
+For each failing compile task, get the errors with `query_build` (`kind="PROBLEMS"` or
+`kind="TASKS"` with the task path). Categorize every compilation error:
 
 **Category A -- Import change**: A class/function moved to a different package.
 Symptom: `Unresolved reference` on an import.
@@ -115,58 +93,30 @@ Symptom: `Unresolved reference` on a class or method that no longer exists.
 **Category D -- Structural change**: Property became function, List became MutableList, etc.
 Symptom: `Val cannot be reassigned`, `Type mismatch`.
 
-To understand what the new API looks like, use the `searching_dependency_sources` skill
-to search the Kotlin compiler sources for the class or method name.
-
 ### Phase 3: Fix Incompatibilities
 
-Read `references/csm-fix-patterns.md` for the CSM template system, fix patterns (import
-changes, signature changes, new VS methods, checker signatures), and the template files
-reference table listing all CSM files that may need changes.
-
-The key principle: **`default` blocks hold the latest version's code; `specific` blocks
-hold older versions.**
+Read `references/compat-fix-patterns.md` for the `expect`/`actual` layout and the fix
+patterns.
 
 ### Phase 4: Re-verify
 
-After applying fixes, re-run the build (via the `running_gradle_builds` skill) for every
-version that failed. If new errors appear, go back to Phase 2. Repeat until all versions
-pass.
-
-Then present the final summary:
-
-```
-All versions verified successfully:
-| Version | Status |
-|---------|--------|
-| 2.1.0   | PASS   |
-| 2.1.20  | PASS   |
-| 2.2.0   | PASS   |
-| 2.3.0   | PASS   |
-```
+Repeat Phase 1 until all versions pass. Then present the final summary table.
 
 ## Testing with Kotlin Master
 
 **This is a mandatory test for all changes to the compiler plugin.**
 
-If the user requests Kotlin Master testing, or after fixing incompatibilities for released
-versions, read `references/kotlin-master.md` for the full download, build, and verification
-workflow.
+Read `references/kotlin-master.md`.
 
 ## Updating Golden Test Data
 
-After fixing CSM templates, golden file mismatches may occur in
-`:tests:compiler-plugin-tests`. Read `references/golden-test-data.md` for the
-`scripts/update_test_data.sh` usage and important caveats about passing properties to the test JVM.
+A fix can change the FIR or IR output of the tests. Read `references/golden-test-data.md`.
 
 ## Debugging Tips
 
-- Use `inspect_build` from the `running_gradle_builds` skill to get structured error
-  details instead of parsing raw logs.
-- Inspect generated CSM output in `<module>/build/generated-sources/csm/` after building.
-- CSM logs matched blocks: look for `[CSM] Matched specific` or `[CSM] Matched default`
-  in build output (use `inspect_build` with `consoleTail=true` to find these).
-- If an import section error occurs, check that the `specific` block has ALL needed
-  imports for that version, not just the changed ones.
-- When unsure about new API shape, use the `searching_dependency_sources` skill to search
-  the Kotlin compiler jar for the symbol name.
+- A compile error in `commonMain` for one target only means that the compiler API differs
+  in that version. Move the call behind an `expect` function.
+- `Expected ... has no actual declaration` means that a target is in no group of the
+  split. Check `versionHierarchy` in `compiler-plugin/build.gradle.kts`.
+- An IDE version (`-ij` or `-dev-`) can fail when a `splitDev` boundary doesn't match the
+  build that changed the API. Use `split("<first build with the change>")`.

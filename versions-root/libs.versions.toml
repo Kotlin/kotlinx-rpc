@@ -51,15 +51,9 @@ buf-tool = "1.75.0"
 agp = "8.4.0"
 test-retry = "1.6.6"
 api-watchdog = "0.2.0"
+devkit = "0.0.4-dev-380"
 
 [libraries]
-# kotlinx.rpc – references to the included builds
-# as they're local to the project, kotlinx-rpc- prefix is omitted
-compiler-plugin-cli = { module = "org.jetbrains.kotlinx:compiler-plugin-cli" }
-compiler-plugin-k2 = { module = "org.jetbrains.kotlinx:compiler-plugin-k2" }
-compiler-plugin-backend = { module = "org.jetbrains.kotlinx:compiler-plugin-backend" }
-compiler-plugin-common = { module = "org.jetbrains.kotlinx:compiler-plugin-common" }
-
 # internal standalone publications
 kotlinx-rpc-grpc-core-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-shim", version.ref = "internal-native-grpc-shim" }
 kotlinx-rpc-protobuf-shim = { module = "org.jetbrains.kotlinx:kotlinx-rpc-protobuf-shim", version.ref = "internal-native-protobuf-shim" }
@@ -76,10 +70,6 @@ kotlin-script-runtime = { module = "org.jetbrains.kotlin:kotlin-script-runtime",
 kotlin-annotations-jvm = { module = "org.jetbrains.kotlin:kotlin-annotations-jvm", version.ref = "kotlin-lang" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-lang" }
 
-kotlin-compiler = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin-compiler" }
-kotlin-compiler-test-framework = { module = "org.jetbrains.kotlin:kotlin-compiler-internal-test-framework", version.ref = "kotlin-lang" }
-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serialization-compiler-plugin", version.ref = "kotlin-compiler" }
-serialization-plugin-forIde = { module = "org.jetbrains.kotlin:kotlinx-serialization-compiler-plugin-for-ide", version.ref = "kotlin-compiler" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections" }
@@ -160,6 +150,8 @@ android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref
 android-gradle-plugin-api = { module = "com.android.tools.build:gradle-api", version.ref = "agp" }
 test-retry-gradle-plugin = { module = "org.gradle:test-retry-gradle-plugin", version.ref = "test-retry" }
 kotlin-library-api-watchdog-gradle-plugin = { module = "org.jetbrains.kotlinx:kotlin-library-api-watchdog-gradle-plugin", version.ref = "api-watchdog" }
+devkit-settings = { module = "org.jetbrains.kotlin.compiler.plugin.devkit:settings", version.ref = "devkit" }
+devkit-plugins = { module = "org.jetbrains.kotlin.compiler.plugin.devkit:plugins", version.ref = "devkit" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-lang" }
@@ -187,7 +179,8 @@ conventions-dokka-spec = { id = "conventions-dokka-spec" }
 conventions-dokka-public = { id = "conventions-dokka-public" }
 conventions-no-psi-element = { id = "conventions-no-psi-element" }
 conventions-protoc-gen = { id = "conventions-protoc-gen" }
-compiler-specific-module = { id = "compiler-specific-module" }
+conventions-devkit-compiler-plugin = { id = "conventions-devkit-compiler-plugin" }
+conventions-devkit-gradle-plugin = { id = "conventions-devkit-gradle-plugin" }
 
 # gradle-plugin project
 kotlinx-rpc = { id = "org.jetbrains.kotlinx.rpc.plugin" }

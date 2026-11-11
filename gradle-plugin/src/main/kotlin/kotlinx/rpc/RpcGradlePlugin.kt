@@ -35,10 +35,7 @@ public class RpcGradlePlugin : Plugin<Project> {
     }
 
     private fun applyCompilerPlugin(target: Project) {
-        target.plugins.apply(CompilerPluginK2::class.java)
-        target.plugins.apply(CompilerPluginCommon::class.java)
-        target.plugins.apply(CompilerPluginBackend::class.java)
-        target.plugins.apply(CompilerPluginCli::class.java)
+        target.plugins.apply(RpcCompilerSupportPlugin::class.java)
     }
 }
 

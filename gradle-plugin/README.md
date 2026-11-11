@@ -37,10 +37,14 @@ The plugin uses `buf` CLI tool (not `protoc` directly) for code generation:
 - `BufGenerateTask` — Gradle task wrapping `buf generate`
 - `GenerateBufYaml`/`GenerateBufGenYaml` — tasks that generate `buf.yaml` and `buf.gen.yaml` configuration files from the DSL
 
-### Internal development mode
+### Compiler plugin artifact
 
-When `kotlinx.rpc.plugin.internalDevelopment=true` (set in `gradle.properties`), the compiler plugin artifacts are resolved from local project paths instead of Maven coordinates. 
-This strips the `kotlinx-rpc-` prefix from artifact IDs (`RpcPluginConst.kt`, `KotlinCompilerPluginBuilder.kt`).
+The [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) generates the `PluginInfo` object
+with the compiler plugin ID and the artifact coordinates (`pluginDevKit {}` in `build.gradle.kts`).
+`RpcCompilerSupportPlugin` gives them to the Kotlin Gradle plugin.
+
+The compiler plugin is one artifact for all Kotlin versions: `org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:<library version>`.
+In this repository, the `compiler-plugin` included build replaces the artifact.
 
 ### Generated sources at build time — Do not edit manually
 
