@@ -33,7 +33,6 @@ junit4 = "4.13.2"
 junit5 = "5.14.2"
 kotlinx-browser = "0.5.0"
 kotlinx-io = "0.9.0"
-kotlinx-collections = "0.4.0"
 kotlinx-benchmark = "0.5.0"
 dokka = "2.2.0-Beta"
 puppeteer = "25.1.0"
@@ -84,7 +83,6 @@ serialization-plugin-forIde = { module = "org.jetbrains.kotlin:kotlinx-serializa
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections" }
 
 # serialization
 serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "serialization" }

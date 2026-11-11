@@ -91,8 +91,9 @@ kotlin {
 
         named("nonSwiftNativeMain") {
             dependencies {
-                // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
-                implementation(projects.protobuf.protobufLite)
+                // The gRPC shim leaves out archives that the protobuf shim has (KRPC-540).
+                // TODO: Remove this dependency when the gRPC shim has all its archives (KRPC-540)
+                implementation(libs.kotlinx.rpc.protobuf.shim)
                 implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
         }

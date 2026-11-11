@@ -22,15 +22,6 @@ kotlin {
                 implementation(libs.kotlinx.benchmark.runtime)
             }
         }
-
-        jvmMain {
-            dependencies {
-                // The JMH generator loads the benchmark classes from the compile classpath.
-                // ProtoGrpcMarshaller of protobuf-lite refers to protobuf-javalite types, which protobuf-lite
-                // doesn't expose.
-                compileOnly(libs.protobuf.javalite)
-            }
-        }
     }
 
     explicitApi = ExplicitApiMode.Disabled
