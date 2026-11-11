@@ -72,18 +72,37 @@ internal class BufferInputSegments(
     }
 }
 
-/** The input over a [GrpcMessageReader] that gives no direct memory access, through one scratch array. */
+/**
+ * The input over a [GrpcMessageReader] that gives no direct memory access, through one scratch array.
+ *
+ * The reader can come from outside the gRPC runtime, so each call checks `remaining`. If the reader breaks its
+ * contract, the call throws [IllegalStateException].
+ */
 internal class ReaderInputSegments(private val reader: GrpcMessageReader) : InputSegments {
-    private val scratch = ByteArray(minOf(reader.remaining, CHUNK_SIZE))
+    private val scratch = ByteArray(minOf(checkedRemaining(), CHUNK_SIZE))
 
     override fun next(window: ByteWindow): Int {
-        val count = minOf(reader.remaining, scratch.size)
+        val remaining = checkedRemaining()
+        val count = minOf(remaining, scratch.size)
         if (count == 0) {
             return -1
         }
         reader.readTo(scratch, 0, count)
+        val after = reader.remaining
+        check(after == remaining - count) {
+            "${reader.typeName} reports $after remaining bytes after readTo read $count of $remaining bytes. " +
+                "Make readTo reduce remaining by the number of bytes that it reads."
+        }
         window.attach(scratch, 0)
         return count
+    }
+
+    private fun checkedRemaining(): Int {
+        val remaining = reader.remaining
+        check(remaining >= 0) {
+            "${reader.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+        }
+        return remaining
     }
 }
 
@@ -145,21 +164,47 @@ internal class BufferOutputSegments(
     }
 }
 
-/** The output over a [GrpcMessageWriter] that takes no direct memory access, through one scratch array. */
+/**
+ * The output over a [GrpcMessageWriter] that takes no direct memory access, through one scratch array.
+ *
+ * The writer can come from outside the gRPC runtime, so each call checks `remaining`. If the writer breaks its
+ * contract, the call throws [IllegalStateException].
+ */
 internal class WriterOutputSegments(private val writer: GrpcMessageWriter) : OutputSegments {
-    private val scratch = ByteArray(minOf(writer.remaining, CHUNK_SIZE))
+    private val scratch = ByteArray(minOf(checkedRemaining(), CHUNK_SIZE))
 
     override fun next(window: ByteWindow): Int {
-        if (writer.remaining == 0) {
+        val remaining = checkedRemaining()
+        if (remaining == 0) {
             throw destinationFull(writer.size)
         }
         window.attach(scratch, 0)
-        return minOf(scratch.size, writer.remaining)
+        return minOf(scratch.size, remaining)
     }
 
     override fun commit(count: Int) {
         if (count > 0) {
+            val remaining = checkedRemaining()
             writer.write(scratch, 0, count)
+            val after = writer.remaining
+            check(after == remaining - count) {
+                "${writer.typeName} reports $after remaining bytes after write took $count of $remaining bytes. " +
+                    "Make write reduce remaining by the number of bytes that it writes."
+            }
         }
     }
+
+    private fun checkedRemaining(): Int {
+        val remaining = writer.remaining
+        check(remaining >= 0) {
+            "${writer.typeName} reports $remaining remaining bytes. Make remaining return 0 or more."
+        }
+        return remaining
+    }
 }
+
+private val GrpcMessageReader.typeName: String
+    get() = this::class.simpleName ?: "GrpcMessageReader"
+
+private val GrpcMessageWriter.typeName: String
+    get() = this::class.simpleName ?: "GrpcMessageWriter"
