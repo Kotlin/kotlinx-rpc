@@ -4,7 +4,6 @@
 
 @file:OptIn(InternalRpcApi::class)
 
-import util.ignoreDokkaWarnings
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
 import kotlinx.rpc.protoc.buf
@@ -81,9 +80,3 @@ protoTasks.buf.generate.matchingKotlinSourceSet(kotlin.sourceSets.commonMain).co
 }
 
 configureLocalProtocGenDevelopmentDependency("Main")
-
-// The kotlinx-rpc compiler plugin generates the `Builder` interfaces and the `Companion` objects of messages.
-// Dokka 2.3.0 can't run compiler plugins, so it reports references to these declarations as unresolved.
-ignoreDokkaWarnings(
-    """`[A-Za-z0-9.]+\.(Builder|Companion)` is unresolved in file:.*/protobuf-wkt/src/commonMain/.*\.kt:\d+:\d+""",
-)
