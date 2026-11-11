@@ -15,7 +15,7 @@ import invoke
 import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
-import kotlinx.rpc.protobuf.internal.WireDecoder
+import kotlinx.rpc.protobuf.internal.decodeWire
 import java.lang.management.ManagementFactory
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -85,7 +85,7 @@ class OneOfAllocationTest {
         val oneOfAllocated = allocatedBytes(iterations) {
             val buffer = Buffer()
             buffer.write(oneOfBytes)
-            WireDecoder(buffer).use { decoder ->
+            decodeWire(buffer) { decoder ->
                 val msg = OneOfNumeric32Internal()
                 OneOfNumeric32Internal.decodeWith(msg, decoder, null)
                 sink += msg.i32
@@ -95,7 +95,7 @@ class OneOfAllocationTest {
         val plainAllocated = allocatedBytes(iterations) {
             val buffer = Buffer()
             buffer.write(plainBytes)
-            WireDecoder(buffer).use { decoder ->
+            decodeWire(buffer) { decoder ->
                 val msg = PlainNumericInternal()
                 PlainNumericInternal.decodeWith(msg, decoder, null)
                 sink += msg.i32

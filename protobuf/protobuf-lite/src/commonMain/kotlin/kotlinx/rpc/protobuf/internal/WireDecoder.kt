@@ -1,180 +1,231 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protobuf.internal
 
-import kotlinx.io.Source
 import kotlinx.io.bytestring.ByteString
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
+import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 
-// TODO: Evaluate if this buffer size is suitable for all targets (KRPC-186)
-// maximum buffer size to allocate as contiguous memory in bytes
-internal const val MAX_PACKED_BULK_SIZE: Int = 1_000_000
-
 /**
- * A platform-specific decoder for wire format data.
+ * Decodes protobuf fields in wire format.
  *
- * This decoder is used by first calling [readTag], then looking up the field based on the field number in the returned
- * tag, and then calling the actual `read*()` method to read the value to the corresponding field.
- *
- * All `read*()` methods will throw an exception if the expected value couldn't be decoded.
- * Because of optimization reasons, the exception is platform-dependent. To unify them
- * wrap the decoding in a [checkForPlatformDecodeException] call, which turns platform-specific exceptions
- * into a [ProtobufDecodingException].
- *
- * NOTE: If a call to `read*()` doesn't throw an error, it doesn't mean that the
- * value is correctly decoded. E.g., the following test will pass:
- * ```kt
- * val fieldNr = 1
- * val buffer = Buffer()
- *
- * val encoder = WireEncoder(buffer)
- * encoder.writeInt32(fieldNr, 12312)
- * encoder.flush()
- *
- * checkForPlatformDecodeException {
- *  WireDecoder(buffer).use { decoder ->
- *      decoder.readTag()
- *      decoder.readBool()
- *  }
- * }
- * ```
+ * Call [readTag] for each field, then the `read` function for the field type. [readTag] returns `null` at the
+ * end of the message. A decoder exists only inside [decodeWire] or a marshaller decode.
  */
 @InternalRpcApi
-public interface WireDecoder : AutoCloseable {
-    /**
-     * The current recursion depth during message decoding.
-     */
-    public var recursionDepth: Int
+public class WireDecoder internal constructor(
+    private val input: WireInput,
+    /** The maximum nesting depth of messages and groups. */
+    public val recursionLimit: Int,
+) {
+    private var depth = 0
 
-    /**
-     * The maximum allowed recursion depth during message decoding.
-     * Defaults to [kotlinx.rpc.protobuf.ProtoConfig.DEFAULT_RECURSION_LIMIT].
-     */
-    public var recursionLimit: Int
+    /** Returns the next tag, or `null` at the end of the message. */
+    public fun readTag(): KTag? {
+        check(!input.isClosed) { "The WireDecoder is used after its decoding scope ended." }
+        if (input.isAtLimit) {
+            return null
+        }
+        val raw = input.readTagVarint()
+        if (raw == 0) {
+            throw ProtobufDecodingException.invalidTag(0u)
+        }
+        return KTag.from(raw.toUInt())
+    }
 
-    /**
-     * When the read tag is null, it indicates EOF and the parser may stop at this point.
-     */
-    public fun readTag(): KTag?
-    public fun readBool(): Boolean
-    public fun readInt32(): Int
-    public fun readInt64(): Long
-    public fun readUInt32(): UInt
-    public fun readUInt64(): ULong
-    public fun readSInt32(): Int
-    public fun readSInt64(): Long
-    public fun readFixed32(): UInt
-    public fun readFixed64(): ULong
-    public fun readSFixed32(): Int
-    public fun readSFixed64(): Long
-    public fun readFloat(): Float
-    public fun readDouble(): Double
+    public fun readBool(): Boolean = input.readVarint64() != 0L
 
-    public fun readEnum(): Int
-    public fun readString(): String
-    public fun readBytes(): ByteString
-    public fun readPackedBool(): List<Boolean>
-    public fun readPackedInt32(): List<Int>
-    public fun readPackedInt64(): List<Long>
-    public fun readPackedSInt32(): List<Int>
-    public fun readPackedSInt64(): List<Long>
-    public fun readPackedUInt32(): List<UInt>
-    public fun readPackedUInt64(): List<ULong>
-    public fun readPackedFixed32(): List<UInt>
-    public fun readPackedFixed64(): List<ULong>
-    public fun readPackedSFixed32(): List<Int>
-    public fun readPackedSFixed64(): List<Long>
-    public fun readPackedFloat(): List<Float>
-    public fun readPackedDouble(): List<Double>
-    public fun readPackedEnum(): List<Int>
+    public fun readInt32(): Int = input.readVarint32()
+
+    public fun readInt64(): Long = input.readVarint64()
+
+    public fun readUInt32(): UInt = input.readVarint32().toUInt()
+
+    public fun readUInt64(): ULong = input.readVarint64().toULong()
+
+    public fun readSInt32(): Int = ZigZag.decode(UInt32(input.readVarint32())).value
+
+    public fun readSInt64(): Long = ZigZag.decode(UInt64(input.readVarint64())).value
+
+    public fun readFixed32(): UInt = input.readFixed32().toUInt()
+
+    public fun readFixed64(): ULong = input.readFixed64().toULong()
+
+    public fun readSFixed32(): Int = input.readFixed32()
+
+    public fun readSFixed64(): Long = input.readFixed64()
+
+    public fun readFloat(): Float = Float.fromBits(input.readFixed32())
+
+    public fun readDouble(): Double = Double.fromBits(input.readFixed64())
+
+    public fun readEnum(): Int = readInt32()
+
+    public fun readString(): String = input.readUtf8(readLength())
+
+    @OptIn(UnsafeByteStringApi::class)
+    public fun readBytes(): ByteString {
+        val length = readLength()
+        return if (length == 0) {
+            ByteString()
+        } else {
+            UnsafeByteStringOperations.wrapUnsafe(input.readBytes(length))
+        }
+    }
+
+    public fun readPackedBool(): List<Boolean> = readPackedVarints { readBool() }
+
+    public fun readPackedInt32(): List<Int> = readPackedVarints { readInt32() }
+
+    public fun readPackedInt64(): List<Long> = readPackedVarints { readInt64() }
+
+    public fun readPackedUInt32(): List<UInt> = readPackedVarints { readUInt32() }
+
+    public fun readPackedUInt64(): List<ULong> = readPackedVarints { readUInt64() }
+
+    public fun readPackedSInt32(): List<Int> = readPackedVarints { readSInt32() }
+
+    public fun readPackedSInt64(): List<Long> = readPackedVarints { readSInt64() }
+
+    public fun readPackedEnum(): List<Int> = readPackedVarints { readEnum() }
+
+    public fun readPackedFixed32(): List<UInt> = readPackedFixed(4) { readFixed32() }
+
+    public fun readPackedSFixed32(): List<Int> = readPackedFixed(4) { readSFixed32() }
+
+    public fun readPackedFloat(): List<Float> = readPackedFixed(4) { readFloat() }
+
+    public fun readPackedFixed64(): List<ULong> = readPackedFixed(8) { readFixed64() }
+
+    public fun readPackedSFixed64(): List<Long> = readPackedFixed(8) { readSFixed64() }
+
+    public fun readPackedDouble(): List<Double> = readPackedFixed(8) { readDouble() }
 
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
-        if (recursionDepth >= recursionLimit) {
-            throw ProtobufDecodingException.recursionLimitExceeded(recursionLimit)
-        }
-        recursionDepth++
-        val len = readInt32()
-        if (len < 0) {
-            throw ProtobufDecodingException.negativeSize()
-        }
-        val limit = pushLimit(len)
+        enterNested()
+        val length = readLength()
+        val oldLimit = input.pushLimit(length)
         decoder(msg, this)
-        if (bytesUntilLimit() != 0) {
+        if (!input.isAtLimit) {
             throw ProtobufDecodingException.truncatedMessage()
         }
-        popLimit(limit)
-        recursionDepth--
+        input.popLimit(oldLimit)
+        depth--
     }
 
     public fun <T : InternalMessage> readGroup(msg: T, decoder: (T, WireDecoder) -> Unit) {
-        if (recursionDepth >= recursionLimit) {
-            throw ProtobufDecodingException.recursionLimitExceeded(recursionLimit)
-        }
-        recursionDepth++
+        enterNested()
         decoder(msg, this)
-        recursionDepth--
+        depth--
     }
 
     public fun skipUnknownField(tag: KTag) {
-        return readOrSkipUnknownField(tag, null)
+        readOrSkipUnknownField(tag, null)
     }
 
     public fun readUnknownField(tag: KTag, unknownFieldEncoder: WireEncoder) {
         readOrSkipUnknownField(tag, unknownFieldEncoder)
     }
-}
 
-/**
- * Turns exceptions thrown by different platforms during decoding into [ProtobufDecodingException].
- */
-@InternalRpcApi
-public expect inline fun checkForPlatformDecodeException(block: () -> Unit)
-
-/**
- * Creates a platform-specific [WireDecoder].
- *
- * NOTE: Do not use the [source] while the [WireDecoder] is still open.
- *
- * @param source The Source containing the encoded wire-format data.
- */
-@InternalRpcApi
-public expect fun WireDecoder(source: Source): WireDecoder
-
-
-private fun WireDecoder.readOrSkipUnknownField(tag: KTag, unknownFieldEncoder: WireEncoder?) {
-    when (tag.wireType) {
-        WireType.VARINT -> readInt64().let {
-            unknownFieldEncoder?.writeInt64(tag.fieldNr, it)
+    private fun readLength(): Int {
+        val length = input.readVarint32()
+        if (length < 0) {
+            throw ProtobufDecodingException.negativeSize()
         }
-        WireType.FIXED32 -> readFixed32().let {
-            unknownFieldEncoder?.writeFixed32(tag.fieldNr, it)
+        if (length > input.bytesUntilLimit) {
+            throw ProtobufDecodingException.truncatedMessage()
         }
-        WireType.FIXED64 -> readFixed64().let {
-            unknownFieldEncoder?.writeFixed64(tag.fieldNr, it)
-        }
-        WireType.LENGTH_DELIMITED -> readBytes().let {
-            unknownFieldEncoder?.writeBytes(tag.fieldNr, it)
-        }
-        WireType.START_GROUP -> readOrSkipUnknownGroup(tag, unknownFieldEncoder)
-        WireType.END_GROUP -> throw ProtobufDecodingException("Mismatched END_GROUP tag: ${tag.fieldNr}")
+        return length
     }
-}
 
-private fun WireDecoder.readOrSkipUnknownGroup(tag: KTag, unknownFieldEncoder: WireEncoder?) {
-    unknownFieldEncoder?.writeTag(tag)
-    val startField = tag.fieldNr
-    while (true) {
-        val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
-        if (t.wireType == WireType.END_GROUP) {
-            if (t.fieldNr != startField) {
-                throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want $startField")
-            }
-            unknownFieldEncoder?.writeTag(KTag(startField, WireType.END_GROUP))
-            return
+    private fun enterNested() {
+        if (depth >= recursionLimit) {
+            throw ProtobufDecodingException.recursionLimitExceeded(recursionLimit)
         }
-        readOrSkipUnknownField(t, unknownFieldEncoder)
+        depth++
+    }
+
+    private inline fun <T> readPackedVarints(read: () -> T): List<T> {
+        val length = readLength()
+        if (length == 0) {
+            return emptyList()
+        }
+        val oldLimit = input.pushLimit(length)
+        val result = ArrayList<T>()
+        while (!input.isAtLimit) {
+            result.add(read())
+        }
+        input.popLimit(oldLimit)
+        return result
+    }
+
+    private inline fun <T> readPackedFixed(elementSize: Int, read: () -> T): List<T> {
+        val length = readLength()
+        if (length % elementSize != 0) {
+            throw ProtobufDecodingException("Packed field length $length isn't a multiple of $elementSize.")
+        }
+        val count = length / elementSize
+        val result = ArrayList<T>(count)
+        repeat(count) {
+            result.add(read())
+        }
+        return result
+    }
+
+    private fun readOrSkipUnknownField(tag: KTag, out: WireEncoder?) {
+        when (tag.wireType) {
+            WireType.VARINT -> {
+                val value = input.readVarint64()
+                out?.writeInt64(tag.fieldNr, value)
+            }
+
+            WireType.FIXED32 -> {
+                val value = input.readFixed32()
+                out?.writeFixed32(tag.fieldNr, value.toUInt())
+            }
+
+            WireType.FIXED64 -> {
+                val value = input.readFixed64()
+                out?.writeFixed64(tag.fieldNr, value.toULong())
+            }
+
+            WireType.LENGTH_DELIMITED -> {
+                val length = readLength()
+                if (out == null) {
+                    input.skip(length)
+                } else {
+                    out.writeBytes(tag.fieldNr, input.readBytes(length))
+                }
+            }
+
+            WireType.START_GROUP -> {
+                readOrSkipUnknownGroup(tag, out)
+            }
+
+            WireType.END_GROUP -> {
+                throw ProtobufDecodingException("Mismatched END_GROUP tag: ${tag.fieldNr}")
+            }
+        }
+    }
+
+    private fun readOrSkipUnknownGroup(tag: KTag, out: WireEncoder?) {
+        enterNested()
+        out?.writeTag(tag)
+        while (true) {
+            val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
+            if (t.wireType == WireType.END_GROUP) {
+                if (t.fieldNr != tag.fieldNr) {
+                    throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want ${tag.fieldNr}")
+                }
+                out?.writeTag(t)
+                depth--
+                return
+            }
+            readOrSkipUnknownField(t, out)
+        }
     }
 }

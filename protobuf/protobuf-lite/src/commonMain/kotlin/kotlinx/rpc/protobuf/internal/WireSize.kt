@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 @file:Suppress("UnusedReceiverParameter")
@@ -7,7 +7,6 @@
 package kotlinx.rpc.protobuf.internal
 
 import kotlinx.io.bytestring.ByteString
-import kotlinx.io.bytestring.encodeToByteString
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
@@ -15,25 +14,25 @@ public object WireSize
 
 @InternalRpcApi
 public fun WireSize.tag(fieldNumber: Int, wireType: WireType): Int =
-    uInt32(KTag(fieldNumber, wireType).toRawKTag())
+    Varint.sizeOf(UInt32((fieldNumber shl 3) or wireType.ordinal))
 
 @InternalRpcApi
-public expect fun WireSize.int32(value: Int): Int
+public fun WireSize.int32(value: Int): Int = Varint.sizeOf(Int32(value))
 
 @InternalRpcApi
-public expect fun WireSize.int64(value: Long): Int
+public fun WireSize.int64(value: Long): Int = Varint.sizeOf(Int64(value))
 
 @InternalRpcApi
-public expect fun WireSize.uInt32(value: UInt): Int
+public fun WireSize.uInt32(value: UInt): Int = Varint.sizeOf(UInt32(value.toInt()))
 
 @InternalRpcApi
-public expect fun WireSize.uInt64(value: ULong): Int
+public fun WireSize.uInt64(value: ULong): Int = Varint.sizeOf(UInt64(value.toLong()))
 
 @InternalRpcApi
-public expect fun WireSize.sInt32(value: Int): Int
+public fun WireSize.sInt32(value: Int): Int = Varint.sizeOf(SInt32(value))
 
 @InternalRpcApi
-public expect fun WireSize.sInt64(value: Long): Int
+public fun WireSize.sInt64(value: Long): Int = Varint.sizeOf(SInt64(value))
 
 @InternalRpcApi
 @Suppress("detekt.UnusedParameter")
@@ -60,7 +59,8 @@ public fun WireSize.sFixed32(value: Int): Int = 4
 public fun WireSize.sFixed64(value: Long): Int = 8
 
 @InternalRpcApi
-public fun WireSize.bool(value: Boolean): Int = int32(if (value) { 1 } else { 0 })
+@Suppress("detekt.UnusedParameter")
+public fun WireSize.bool(value: Boolean): Int = 1
 
 @InternalRpcApi
 public fun WireSize.enum(value: Int): Int = int32(value)
@@ -72,7 +72,7 @@ public fun WireSize.bytes(value: ByteArray): Int = value.size
 public fun WireSize.bytes(value: ByteString): Int = value.size
 
 @InternalRpcApi
-public fun WireSize.string(value: String): Int = value.encodeToByteString().size
+public fun WireSize.string(value: String): Int = Utf8.encodedLength(value)
 
 @InternalRpcApi
 public fun WireSize.packedInt32(value: List<Int>): Int = value.sumOf { int32(it) }
@@ -114,4 +114,4 @@ public fun WireSize.packedSFixed32(value: List<Int>): Int = value.size * 4
 public fun WireSize.packedSFixed64(value: List<Long>): Int = value.size * 8
 
 @InternalRpcApi
-public fun WireSize.packedBool(value: List<Boolean>): Int = packedSInt32(value.map { if (it) { 1 } else { 0 } })
+public fun WireSize.packedBool(value: List<Boolean>): Int = value.size

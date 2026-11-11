@@ -9,7 +9,7 @@ import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
-import kotlinx.rpc.protobuf.internal.checkForPlatformDecodeException
+import kotlinx.rpc.protobuf.internal.decodeWire
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -60,14 +60,7 @@ class RecursionLimitTest {
     private fun decodeNested(bytes: ByteArray, recursionLimit: Int): SimpleMsg {
         val buffer = Buffer()
         buffer.write(bytes)
-        WireDecoder(buffer).use { decoder ->
-            decoder.recursionLimit = recursionLimit
-            val msg = SimpleMsg()
-            checkForPlatformDecodeException {
-                decodeWith(msg, decoder)
-            }
-            return msg
-        }
+        return decodeWire(buffer, recursionLimit) { decoder -> SimpleMsg().also { decodeWith(it, decoder) } }
     }
 
     private fun decodeWith(msg: SimpleMsg, decoder: WireDecoder) {
@@ -134,8 +127,7 @@ class RecursionLimitTest {
 
     @Test
     fun testDefaultRecursionLimit() {
-        val buffer = Buffer()
-        WireDecoder(buffer).use { decoder ->
+        decodeWire(Buffer()) { decoder ->
             assertEquals(ProtoConfig.DEFAULT_RECURSION_LIMIT, decoder.recursionLimit)
             assertEquals(100, decoder.recursionLimit)
         }
