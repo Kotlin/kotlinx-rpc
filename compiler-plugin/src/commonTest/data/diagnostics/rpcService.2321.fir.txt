@@ -1,0 +1,44 @@
+FILE: rpcService.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
+        public abstract fun hello(): R|kotlin/Unit|
+
+        public abstract suspend fun <T> generic(a: R|T|): R|kotlin/Unit|
+
+        public abstract suspend fun <T, T2, T3, T4 : R|kotlin/collections/List<T>|> generic2(a: R|T|, b: R|kotlin/Int|, c: R|T4|, t2: R|T2|): R|T3|
+
+        public abstract suspend fun sameName(): R|kotlin/Unit|
+
+        public abstract suspend fun sameName(a: R|kotlin/Int|): R|kotlin/Unit|
+
+        public abstract suspend fun sameName(a: R|kotlin/Int|, b: R|kotlin/Int|): R|kotlin/Unit|
+
+        public abstract suspend fun sameName(a: R|kotlin/Int|, b: R|kotlin/Int|, c: R|kotlin/Int|): R|kotlin/Unit|
+
+        public abstract suspend fun sameName2(): R|kotlin/Unit|
+
+        public abstract suspend fun sameName2(a: R|kotlin/Int|): R|kotlin/Unit|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT<T> : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyServiceT2<T, R, A, B> : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
