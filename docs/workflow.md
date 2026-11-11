@@ -51,8 +51,9 @@ It compiles on all Kotlin versions.
 
 Rules for compiler API breaking changes:
 - Declare the functionality as an `expect` function in `commonMain`
-(see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt)
-and [IrCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrCompat.kt)).
+(see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt),
+[IrCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrCompat.kt)
+and [IrLookupCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrLookupCompat.kt)).
 - Write one `actual` function for the versions before the change and one for the versions from the change.
 They go to the `pre<version>DevMain` and `post<version>DevMain` source sets,
 for example [pre24DevMain](../compiler-plugin/src/pre24DevMain/kotlin) and
@@ -139,6 +140,14 @@ If the project structure behaves funny, or you encounter version mismatch proble
 ### How to work with a filesystem
 
 Always use OS-agnostic paths: `Path.of("a", "b")` and not `Path.of("a/b")`, for example.
+
+### How to build the libraries faster
+
+Each build of the libraries compiles the compiler plugin for all supported Kotlin versions.
+`-Pkotlinx.rpc.compilerPlugin.onlyProjectKotlin=true` compiles it only for the Kotlin version of the project.
+
+Don't use the property when you test or publish the compiler plugin or the Gradle plugin.
+The publish tasks of the compiler plugin fail with it.
 
 ### How to work with Kotlin Master
 

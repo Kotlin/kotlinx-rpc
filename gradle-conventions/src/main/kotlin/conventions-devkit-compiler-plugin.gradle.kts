@@ -4,6 +4,7 @@
 
 import org.jetbrains.kotlin.compiler.plugin.devkit.DevKitCompilerConfigExtension
 import util.configureRpcCompilerPlugin
+import util.onlyProjectKotlin
 
 plugins {
     id("conventions-common")
@@ -17,4 +18,17 @@ apply(plugin = "org.jetbrains.kotlin.compiler.plugin.devkit.compiler-plugin")
 
 configure<DevKitCompilerConfigExtension> {
     configureRpcCompilerPlugin()
+}
+
+// The check includes the build repository, because the release to Maven Central publishes to it.
+if (onlyProjectKotlin) {
+    tasks.withType<AbstractPublishToMaven>().configureEach {
+        doFirst {
+            error(
+                "Can't publish the compiler plugin, " +
+                    "because 'kotlinx.rpc.compilerPlugin.onlyProjectKotlin=true' builds it for one Kotlin version. " +
+                    "Set the property to 'false'."
+            )
+        }
+    }
 }
