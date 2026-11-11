@@ -19,12 +19,6 @@ kotlin {
 
                 implementation(libs.coroutines.core)
                 implementation(libs.kotlin.reflect)
-
-                // `KtorRpcClient` extends `KrpcClient`, so Dokka resolves the private members of `KrpcClient` too.
-                // The types of `KrpcClient.logger` and `KrpcClient.callCounter` come from these libraries.
-                // krpc-client doesn't expose them, so Dokka can't find the types in `commonMain` without these lines.
-                compileOnly(projects.krpc.krpcLogging)
-                compileOnly(libs.atomicfu)
             }
         }
     }

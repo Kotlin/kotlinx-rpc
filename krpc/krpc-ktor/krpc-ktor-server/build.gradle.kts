@@ -19,11 +19,6 @@ kotlin {
 
                 implementation(libs.coroutines.core)
                 implementation(libs.kotlin.reflect)
-
-                // `KtorKrpcServer` extends `KrpcServer`, so Dokka resolves the private members of `KrpcServer` too.
-                // The type of `KrpcServer.logger` comes from krpc-logging, an `implementation` dependency of krpc-server.
-                // Without this line, Dokka can't find the type in `commonMain`.
-                compileOnly(projects.krpc.krpcLogging)
             }
         }
     }
