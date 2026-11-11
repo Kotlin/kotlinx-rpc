@@ -20,7 +20,7 @@ kxrpx-grpc-min-macos = "15.0"
 kxrpx-grpc-min-tvos = "18.0"
 kxrpx-grpc-min-watchos = "11.0"
 # the published grpc Swift bridge tag. The native-deps/kotlinx-rpc-grpc-swift submodule must point to its commit
-grpc-swift-bridge = "0.0.2"
+grpc-swift-bridge = "0.0.3"
 
 # kotlin independent versions
 detekt-analyzer = "1.23.8"
