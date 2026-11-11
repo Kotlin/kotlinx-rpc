@@ -27,6 +27,7 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
     val position: Int get() = bytesBeforeSegment + pos
     val bytesUntilLimit: Int get() = limit - position
     val isAtLimit: Boolean get() = bytesBeforeSegment + pos == limit
+    val isClosed: Boolean get() = closed
 
     /** Limits the input to the next [length] bytes and returns the old limit. */
     fun pushLimit(length: Int): Int {
@@ -59,6 +60,16 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
             return value
         }
         return Varint.decode { readByte() }
+    }
+
+    /**
+     * Reads a varint and keeps its low 32 bits.
+     *
+     * A negative `int32` has 10 bytes on the wire, so this reads up to 10 bytes. The same truncation applies to
+     * lengths: a length of `2^32 + 5` becomes 5, as in protobuf-java.
+     */
+    fun readVarint32(): Int {
+        return readVarint64().toInt()
     }
 
     fun readTagVarint(): Int {
