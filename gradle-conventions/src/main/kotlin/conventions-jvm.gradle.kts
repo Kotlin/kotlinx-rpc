@@ -28,9 +28,6 @@ java {
 if (project.name != "gradle-plugin") {
     configureJavaCompatibility(8)
 
-    // Users run the published artifacts on Java 8. The `test` source set isn't published, so it uses Java 17.
-    // Test libraries, such as JUnit 6, require Java 17.
-    // The `main` code stays on Java 8, because compiler-plugin-tests inlines it into test data compiled for Java 8.
     tasks.named<JavaCompile>("compileTestJava") {
         options.release = 17
     }

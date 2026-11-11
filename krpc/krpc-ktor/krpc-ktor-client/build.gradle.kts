@@ -26,8 +26,9 @@ kotlin {
     }
 }
 
-// Private `KrpcClient` members have types from `implementation` dependencies of krpc-client.
-// Dokka 2.3.0 reports these types as unresolved.
+// `KtorRpcClient` extends `KrpcClient`, so Dokka 2.3.0 resolves the private members of `KrpcClient` too.
+// The types of `KrpcClient.logger` and `KrpcClient.callCounter` come from krpc-logging and atomicfu.
+// krpc-client doesn't expose these libraries to its consumers, so Dokka can't find the types.
 ignoreDokkaWarnings(
     """`(kotlinx\.atomicfu\.AtomicLong|kotlinx\.rpc\.krpc\.internal\.logging\.RpcInternalCommonLogger)` """ +
         """is unresolved in kotlinx\.rpc\.krpc\.client/KrpcClient/.*""",

@@ -27,9 +27,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// The reference server uses plain grpc-java, so the upstream Java generators generate the code for
-// the shared test protos, not the kotlinx-rpc generators. The plugin versions come from `protobuf`
-// and `grpc` in libs.versions.toml. The protobuf release of protobuf-java 4.36.2 is 36.2.
 val protobufReleaseVersion = libs.versions.protobuf.get().substringAfter(".")
 val grpcJavaVersion = libs.versions.grpc.asProvider().get()
 

@@ -26,8 +26,9 @@ kotlin {
     }
 }
 
-// Private `KrpcServer` members have types from `implementation` dependencies of krpc-server.
-// Dokka 2.3.0 reports these types as unresolved.
+// `KtorKrpcServer` extends `KrpcServer`, so Dokka 2.3.0 resolves the private members of `KrpcServer` too.
+// The type of `KrpcServer.logger` comes from krpc-logging, an `implementation` dependency of krpc-server.
+// krpc-logging isn't on the classpath of this module, so Dokka can't find the type.
 ignoreDokkaWarnings(
     """`kotlinx\.rpc\.krpc\.internal\.logging\.RpcInternalCommonLogger` """ +
         """is unresolved in kotlinx\.rpc\.krpc\.server/KrpcServer/.*""",
