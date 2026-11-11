@@ -28,6 +28,7 @@ pluginDevKit {
 
     versionHierarchy {
         splitDev(2, 3)
+        splitDev(2, 3, 20)
         splitDev(2, 4)
         splitDev(2, 4, 20)
         splitDev(2, 5)

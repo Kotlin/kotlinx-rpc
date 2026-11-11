@@ -29,6 +29,12 @@ import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.dump
 import org.jetbrains.kotlin.types.Variance
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
+import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
+import org.jetbrains.kotlin.name.Name
+import kotlin.reflect.KClass
+import kotlin.reflect.safeCast
 
 fun IrClassifierSymbol.typeWith(type: IrType, variance: Variance): IrType {
     return IrSimpleTypeImpl(
@@ -126,3 +132,36 @@ fun IrClass.addDefaultConstructor(pluginContext: IrPluginContext, constructor: I
 
 fun irBuilder(pluginContext: IrPluginContext, symbol: IrSymbol): DeclarationIrBuilder =
     DeclarationIrBuilder(pluginContext, symbol, symbol.owner.startOffset, symbol.owner.endOffset)
+
+fun IrFunction.regularParameters(): List<IrValueParameter> {
+    return parameters.filter { it.kind == IrParameterKind.Regular }
+}
+
+/**
+ * Adds [parameter] to the parameters of the function. A `null` value adds nothing.
+ *
+ * @param parameter the dispatch receiver. Call the function before you add other parameters.
+ */
+fun IrFunction.addDispatchReceiver(parameter: IrValueParameter?) {
+    if (parameter != null) {
+        parameters += parameter
+    }
+}
+
+/**
+ * Returns the argument of the constructor parameter with the name [name], or `null` when the call has no such
+ * parameter or no argument for it.
+ */
+fun IrMemberAccessExpression<*>.valueArgumentByName(name: Name): IrExpression? {
+    val constructorCall = this as IrConstructorCall
+    val parameterIndex = constructorCall.symbol.owner.parameters
+        .firstOrNull { it.name == name }
+        ?.indexInParameters
+        ?: return null
+
+    return constructorCall.arguments.getOrNull(parameterIndex)
+}
+
+fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T? {
+    return (this as? IrConst)?.value?.let { clazz.safeCast(it) }
+}

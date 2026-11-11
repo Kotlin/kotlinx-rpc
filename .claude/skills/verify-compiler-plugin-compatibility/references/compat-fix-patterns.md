@@ -15,6 +15,7 @@
 ```kotlin
 versionHierarchy {
     splitDev(2, 3)      // pre23DevMain, post23DevMain
+    splitDev(2, 3, 20)  // pre2320DevMain, post2320DevMain
     splitDev(2, 4)      // pre24DevMain, post24DevMain
     splitDev(2, 4, 20)  // pre2420DevMain, post2420DevMain
     splitDev(2, 5)      // pre25DevMain, post25DevMain
@@ -29,13 +30,11 @@ The `expect` declarations:
 | File in `commonMain/kotlin/kotlinx/rpc/codegen` | API |
 |---|---|
 | `IrCompat.kt` | IR backend |
+| `IrLookupCompat.kt` | Lookup of classes and functions in the IR backend |
 | `FirCompat.kt` | FIR frontend |
 | `MessageCollectorCompat.kt` | `MessageCollector` configuration key |
 
-The FIR code calls the `expect` functions directly.
-
-`VersionSpecificApiImpl.kt` implements the `VersionSpecificApi` interface for all versions. The IR code calls
-the interface, and the implementation calls the `expect` functions where the API differs.
+The FIR code and the IR code call the `expect` functions directly.
 
 The DevKit runtime library has `expect`/`actual` functions for some changes, for example
 `fakeElementCompat` and `pluginGeneratedSourceElementKind`

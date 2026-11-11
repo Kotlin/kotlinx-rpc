@@ -6,30 +6,12 @@ package kotlinx.rpc.codegen
 
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrDeclaration
-import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrMutableAnnotationContainer
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrAnnotationImpl
 import org.jetbrains.kotlin.ir.expressions.impl.fromSymbolOwner
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
 import org.jetbrains.kotlin.ir.symbols.IrConstructorSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.IrType
-import org.jetbrains.kotlin.name.CallableId
-import org.jetbrains.kotlin.name.ClassId
-
-internal actual fun IrPluginContext.findClassCompat(classId: ClassId, from: IrFile?): IrClassSymbol? {
-    val finder = if (from == null) finderForBuiltins() else finderForSource(from)
-    return finder.findClass(classId)
-}
-
-internal actual fun IrPluginContext.findFunctionsCompat(
-    callableId: CallableId,
-    from: IrFile?,
-): Collection<IrSimpleFunctionSymbol> {
-    val finder = if (from == null) finderForBuiltins() else finderForSource(from)
-    return finder.findFunctions(callableId)
-}
 
 internal actual fun irAnnotationCompat(
     startOffset: Int,

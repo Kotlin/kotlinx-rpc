@@ -44,13 +44,9 @@ private fun computeProtoDeclaration(
 
     val internalFqName = packageFqName.child(Name.identifier(relativeName))
 
-    val internalMessage = context.vsApi {
-        referenceBuiltinClassVS(
-            context = context.pluginContext,
-            packageName = internalFqName.parent().asString(),
-            name = internalFqName.shortName().asString(),
-        )
-    }?.owner ?: error(
+    val internalMessage = context
+        .referenceIrBuiltinClassSymbolOrNull(internalFqName.parent().asString(), internalFqName.shortName().asString())
+        ?.owner ?: error(
         "Unable to find internal message class $internalFqName of ${messageClass.fqNameWhenAvailable}"
     )
 

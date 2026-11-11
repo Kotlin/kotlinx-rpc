@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.codegen.extension
 
-import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -22,6 +21,12 @@ import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
 import org.jetbrains.kotlin.platform.jvm.isJvm
 import org.jetbrains.kotlin.types.Variance
+import kotlinx.rpc.codegen.findClassCompat
+import kotlinx.rpc.codegen.findFunctionsCompat
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 
 /**
  * IMPORTANT!!!
@@ -31,7 +36,6 @@ import org.jetbrains.kotlin.types.Variance
  */
 internal class RpcIrContext(
     val pluginContext: IrPluginContext,
-    val versionSpecificApi: VersionSpecificApi,
 ) {
     val irBuiltIns = pluginContext.irBuiltIns
 
@@ -224,9 +228,7 @@ internal class RpcIrContext(
 
         val mapOf by lazy {
             namedBuiltinFunction("kotlin.collections", "mapOf") {
-                vsApi {
-                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
-                }
+                it.owner.regularParameters().singleOrNull()?.isVararg ?: false
             }
         }
 
@@ -236,9 +238,7 @@ internal class RpcIrContext(
 
         val listOf by lazy {
             namedBuiltinFunction("kotlin.collections", "listOf") {
-                vsApi {
-                    it.owner.valueParametersVS().singleOrNull()?.isVararg ?: false
-                }
+                it.owner.regularParameters().singleOrNull()?.isVararg ?: false
             }
         }
 
@@ -283,7 +283,7 @@ internal class RpcIrContext(
             name: String,
             filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null,
         ): IrSimpleFunctionSymbol {
-            val found = versionSpecificApi.referenceBuiltinFunctionsVS(pluginContext, packageName, name)
+            val found = pluginContext.findFunctionsCompat(CallableId(FqName(packageName), Name.identifier(name)), from = null)
 
             return if (filterOverloads == null) found.first() else found.first(filterOverloads)
         }
@@ -295,7 +295,7 @@ internal class RpcIrContext(
             from: IrFile,
             filterOverloads: ((IrSimpleFunctionSymbol) -> Boolean)? = null,
         ): IrSimpleFunctionSymbol {
-            val found = versionSpecificApi.referenceFunctionsVS(pluginContext, packageName, name, from)
+            val found = pluginContext.findFunctionsCompat(CallableId(FqName(packageName), Name.identifier(name)), from)
 
             return if (filterOverloads == null) found.first() else found.first(filterOverloads)
         }
@@ -343,16 +343,16 @@ internal class RpcIrContext(
         name: String,
         from: IrFile,
     ): IrClassSymbol {
-        return versionSpecificApi.referenceClassVS(pluginContext, packageName, name, from)
+        return pluginContext.findClassCompat(ClassId(FqName(packageName), FqName(name), false), from)
             ?: error("Unable to find symbol. Package: $packageName, name: $name")
     }
 
     fun referenceIrBuiltinClassSymbol(packageName: String, name: String): IrClassSymbol {
-        return versionSpecificApi.referenceBuiltinClassVS(pluginContext, packageName, name)
+        return referenceIrBuiltinClassSymbolOrNull(packageName, name)
             ?: error("Unable to find built-in symbol. Package: $packageName, name: $name")
     }
 
-    fun <T> vsApi(body: VersionSpecificApi.() -> T): T {
-        return versionSpecificApi.run(body)
+    fun referenceIrBuiltinClassSymbolOrNull(packageName: String, name: String): IrClassSymbol? {
+        return pluginContext.findClassCompat(ClassId(FqName(packageName), FqName(name), false), from = null)
     }
 }

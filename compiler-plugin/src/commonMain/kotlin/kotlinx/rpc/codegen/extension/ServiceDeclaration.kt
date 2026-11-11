@@ -45,12 +45,10 @@ internal class ServiceDeclaration(
                 RpcClassId.grpcMethodAnnotation.asSingleFqName(),
             )
 
-            ctx.vsApi {
-                grpcMethodAnnotation?.getValueArgumentVS(Name.identifier("name"))
-                    ?.asConstValueVS(String::class)
-                    ?.takeIf { it.isNotBlank() }
-                    ?: name
-            }
+            grpcMethodAnnotation?.valueArgumentByName(Name.identifier("name"))
+                ?.asConstValue(String::class)
+                ?.takeIf { it.isNotBlank() }
+                ?: name
         }
 
         class Argument(

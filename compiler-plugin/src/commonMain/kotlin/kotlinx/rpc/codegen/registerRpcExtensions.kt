@@ -11,8 +11,6 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 
 fun CompilerPluginRegistrar.ExtensionStorage.registerRpcExtensions(configuration: CompilerConfiguration) {
-    VersionSpecificApi.INSTANCE = VersionSpecificApiImpl
-
     IrGenerationExtension.registerExtension(RpcIrExtension(configuration))
     FirExtensionRegistrarAdapter.registerExtension(FirRpcExtensionRegistrar(configuration))
 }

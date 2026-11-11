@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.codegen.extension
 
-import kotlinx.rpc.codegen.VersionSpecificApi
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.ir.types.IrType
@@ -55,10 +54,34 @@ class IrMemberAccessExpressionBuilder {
     )
 }
 
-inline fun IrMemberAccessExpression<*>.arguments(vsApi: VersionSpecificApi, builder: IrMemberAccessExpressionBuilder.() -> Unit) {
-    IrMemberAccessExpressionBuilder().apply(builder).build().let { data ->
-        with(vsApi) {
-            data.buildForVS(this@arguments)
-        }
+inline fun IrMemberAccessExpression<*>.arguments(builder: IrMemberAccessExpressionBuilder.() -> Unit) {
+    IrMemberAccessExpressionBuilder().apply(builder).build().applyTo(this)
+}
+
+/**
+ * Sets the arguments of [access] in the order of its parameters:
+ * the dispatch receiver, the extension receiver, and then the value arguments.
+ */
+fun IrMemberAccessExpressionData.applyTo(access: IrMemberAccessExpression<*>) {
+    var offset = if (dispatchReceiver != null) {
+        access.arguments[0] = dispatchReceiver
+        1
+    } else {
+        0
+    }
+
+    offset += if (extensionReceiver != null) {
+        access.arguments[offset] = extensionReceiver
+        1
+    } else {
+        0
+    }
+
+    valueArguments.forEachIndexed { index, irExpression ->
+        access.arguments[offset + index] = irExpression
+    }
+
+    typeArguments.forEachIndexed { index, irType ->
+        access.typeArguments[index] = irType
     }
 }
