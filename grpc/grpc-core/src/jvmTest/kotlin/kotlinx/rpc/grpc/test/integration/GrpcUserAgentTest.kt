@@ -4,14 +4,35 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
+import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.grpc.test.invoke
+import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import kotlin.test.Test
 import kotlin.test.assertTrue
 
-actual fun GrpcTestBase.testUserAgent(
+/**
+ * Tests that the client-configured [userAgent] is applied at the channel level and used as a prefix
+ * of the `User-Agent` actually sent on the wire.
+ *
+ * Like [GrpcKeepAliveTest], the check reflects the composed user-agent stored on the channel.
+ */
+class GrpcUserAgentTest : GrpcTestBase() {
+    override fun RpcServer.registerServices() {
+        return registerService<EchoService> { EchoServiceImpl() }
+    }
+
+    @Test
+    fun `test userAgent set - should propagate as prefix to core libraries`() = testUserAgent(
+        userAgent = "MyApp/1.2.3",
+    )
+}
+
+fun GrpcTestBase.testUserAgent(
     userAgent: String,
 ) {
     runGrpcTest(

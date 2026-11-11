@@ -4,9 +4,12 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
@@ -147,13 +150,54 @@ class GrpcKeepAliveTest : GrpcTestBase() {
     }
 }
 
-expect fun GrpcTestBase.testKeepAlive(
+fun GrpcTestBase.testKeepAlive(
     time: Duration,
     timeout: Duration,
     withoutCalls: Boolean,
-)
+) {
+    runGrpcTest(
+        clientConfiguration = {
+            keepAlive {
+                this.time = time
+                this.timeout = timeout
+                this.withoutCalls = withoutCalls
+            }
+        }
+    ) {
+        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+        val nettyClientTransport = it.getField<ManagedChannel>("channel")
+            .getField<HashSet<Any>>("channel", "delegate", "subchannels")
+            .first()
+            .getField<List<Any>>("transports").first()
+            .getField<Any>("delegate", "delegate")
 
-expect fun GrpcTestBase.testServerKeepAlive(
+        val keepAliveTime = nettyClientTransport.getField<Long>("keepAliveTimeNanos").nanoseconds
+        val keepAliveTimeout = nettyClientTransport.getField<Long>("keepAliveTimeoutNanos").nanoseconds
+        val keepAliveWithoutCalls = nettyClientTransport.getField<Boolean>("keepAliveWithoutCalls")
+
+        assertEquals(time, keepAliveTime)
+        assertEquals(timeout, keepAliveTimeout)
+        assertEquals(withoutCalls, keepAliveWithoutCalls)
+    }
+}
+
+fun GrpcTestBase.testServerKeepAlive(
     time: Duration,
     timeout: Duration,
-)
+) = runTest {
+    val server = GrpcServer(0) {
+        keepAlive {
+            this.time = time
+            this.timeout = timeout
+        }
+    }
+
+    try {
+        val builder = server.getField<ServerBuilder<*>>("serverBuilder")
+        assertEquals(time, builder.getField<Long>("keepAliveTimeInNanos").nanoseconds)
+        assertEquals(timeout, builder.getField<Long>("keepAliveTimeoutInNanos").nanoseconds)
+    } finally {
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
+    }
+}

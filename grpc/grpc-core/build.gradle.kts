@@ -57,21 +57,6 @@ kotlin {
             }
         }
 
-        // An intermediate sourceSet that bundles all desktop targets (JVM, macOS and linux)
-        // for testing. This allows us to write unit tests that spin up a gRPC server, which is not
-        // possible for native mobile targets.
-        val desktopTest = create("desktopTest") {
-            dependsOn(commonTest.get())
-
-            dependencies {
-                implementation(projects.grpc.grpcServer)
-            }
-        }
-
-        val desktopNativeTest = create("desktopNativeTest") {
-            dependsOn(desktopTest)
-        }
-
         jvmMain {
             dependencies {
                 api(libs.grpc.api)
@@ -81,9 +66,8 @@ kotlin {
         }
 
         jvmTest {
-            dependsOn(desktopTest)
-
             dependencies {
+                implementation(projects.grpc.grpcServer)
                 implementation(libs.grpc.core)
                 implementation(libs.grpc.netty)
             }
@@ -95,14 +79,6 @@ kotlin {
                 implementation(projects.protobuf.protobufLite)
                 implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
-        }
-
-        macosTest {
-            dependsOn(desktopNativeTest)
-        }
-
-        linuxTest {
-            dependsOn(desktopNativeTest)
         }
     }
 
