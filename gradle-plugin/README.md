@@ -56,6 +56,19 @@ In this repository, the `compiler-plugin` included build replaces the artifact.
 
 Tests run against multiple Gradle/KGP/AGP version combinations (defined in `BaseTest.kt`).
 
+### Functional tests
+
+The tests in `src/functionalTest` check the compiler plugin from the Gradle plugin with each supported Kotlin version.
+Each test project depends on the `kotlinx-rpc-core` library of this repository, and one test runs the generated code.
+
+- Run them from the root build: `:gradle-plugin:allVersionedFunctionalTests`. A build of this directory
+alone doesn't have the libraries, so the test tasks fail in it.
+- `:gradle-plugin:k<version>FunctionalTest` runs one Kotlin version, for example `k2420FunctionalTest` for 2.4.20.
+- The [functional-test-repository](../tests/functional-test-repository/build.gradle.kts) project lists the libraries
+that the root build publishes for the tests.
+- The test that runs the generated code doesn't run on a Kotlin version that can't read the Kotlin standard library
+of the libraries. The compiler reads a standard library that is at most one minor version newer.
+
 ### Test project templates
 
 Each test method has a corresponding directory under `src/test/resources/projects/<TestClassName>/<test_method_name>/` containing a `build.gradle.kts` template and proto source files. 

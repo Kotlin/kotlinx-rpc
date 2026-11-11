@@ -92,4 +92,6 @@ include(":tests:protobuf-playground")
 include(":tests:compiler-plugin-test-libs")
 include(":tests:compiler-plugin-test-libs:compiler-plugin-protos")
 
+include(":tests:functional-test-repository")
+
 include(":jpms-check")

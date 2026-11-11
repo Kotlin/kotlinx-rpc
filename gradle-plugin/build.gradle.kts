@@ -4,6 +4,7 @@
 
 import org.gradle.plugin.compatibility.compatibility
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion
 import util.other.generateSource
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
@@ -52,6 +53,9 @@ pluginDevKit {
 
     // The DevKit runtime library is not on Maven Central, so the published plugin must not depend on it.
     addRuntimeDependency = false
+
+    // The functional tests use the libraries of the root build. See `functionalTestRepository`.
+    companionLibrariesKotlinVersion = KotlinToolingVersion(libs.versions.kotlin.lang.get())
 }
 
 buildConfig {
@@ -98,6 +102,56 @@ tasks.test {
     dependsOn(compilerPlugin.task(":publishAllPublicationsToBuildRepoRepository"))
 
     dependsOn(":publishAllPublicationsToBuildRepoRepository")
+}
+
+// The repository with the kotlinx.rpc libraries for the projects of the functional tests.
+// The artifact is the build repository, and the root build publishes the libraries to resolve it.
+// See tests/functional-test-repository.
+val functionalTestRepository = configurations.dependencyScope("functionalTestRepository")
+
+val functionalTestRepositoryFiles = configurations.resolvable("functionalTestRepositoryFiles") {
+    extendsFrom(functionalTestRepository.get())
+
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named("kotlinx-rpc-functional-test-repository"))
+    }
+}
+
+// A standalone build of this directory doesn't have the projects of the root build.
+val hasRootBuild = gradle.parent != null
+
+if (hasRootBuild) {
+    dependencies {
+        functionalTestRepository("org.jetbrains.kotlinx:functional-test-repository:$version")
+    }
+}
+
+tasks.withType<Test>().matching { it.name.endsWith("FunctionalTest") }.configureEach {
+    if (!hasRootBuild) {
+        val taskName = name
+
+        doFirst {
+            error(
+                "The functional tests need the libraries of the root build. " +
+                    "Run ':gradle-plugin:$taskName' from the root directory."
+            )
+        }
+
+        return@configureEach
+    }
+
+    val repository = files(functionalTestRepositoryFiles)
+
+    dependsOn(repository)
+
+    // The task doesn't track the content of the build repository, and the publish tasks always run.
+    outputs.upToDateWhen { false }
+
+    jvmArgumentProviders.add(
+        CommandLineArgumentProvider {
+            listOf("-Dkotlinx.rpc.functionalTest.repository=${repository.singleFile.absolutePath}")
+        }
+    )
 }
 
 // This block is needed to show plugin tasks on --dry-run

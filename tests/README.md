@@ -9,6 +9,7 @@ None of these modules are published -- they exist solely for verification. All J
 | Module                              | What it tests                                                                         |
 |-------------------------------------|---------------------------------------------------------------------------------------|
 | `compiler-plugin-test-libs`         | Nothing. The test data of the compiler plugin tests compiles against it               |
+| `functional-test-repository`        | Nothing. It publishes the libraries for the functional tests of the Gradle plugin     |
 | `krpc-compatibility-tests`          | kRPC API backward compatibility (old client/new server and vice versa)                |
 | `krpc-protocol-compatibility-tests` | kRPC wire protocol compatibility across released versions (v0.8, v0.9, v0.10, Latest) |
 | `protobuf-conformance`              | Protobuf spec conformance via Google's comformance tests                              |

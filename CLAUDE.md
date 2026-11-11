@@ -98,6 +98,7 @@ The most important modules have brief READMEs in their directories, read when yo
 
 ### Tests (not published)
 - `:tests:compiler-plugin-test-libs` -- Declarations that the compiler plugin test data uses. The tests are in `compiler-plugin/`
+- `:tests:functional-test-repository` -- Publishes the libraries for the functional tests of the Gradle plugin (`:gradle-plugin:allVersionedFunctionalTests`)
 - `:tests:krpc-compatibility-tests`, `:tests:krpc-protocol-compatibility-tests` -- Protocol compat
 - `:tests:protobuf-conformance` -- Protobuf spec conformance (not on Windows)
 - `:tests:protobuf-unittest`, `:tests:grpc-test-server`, `:tests:test-protos`
