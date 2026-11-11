@@ -2,18 +2,14 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
-
 package kotlinx.rpc.protobuf.test
 
-import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.decodeFrom
@@ -244,17 +240,4 @@ class DirectWireDecoderTest {
         val reader = HeapReader(bytes)
         return try { action(reader) } finally { reader.close(); reader.release() }
     }
-}
-
-private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.size) {
-    private val storage = nativeHeap.allocArray<ByteVar>(maxOf(size, 1))
-
-    init { for (index in bytes.indices) storage[index] = bytes[index] }
-
-    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
-        block(if (size == 0) { null } else { storage })
-    }
-
-    fun overwrite() { for (index in 0 until size) storage[index] = 0 }
-    fun release() { nativeHeap.free(storage) }
 }

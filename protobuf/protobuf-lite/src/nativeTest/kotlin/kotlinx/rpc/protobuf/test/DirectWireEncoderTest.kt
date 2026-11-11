@@ -2,20 +2,16 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
-
 package kotlinx.rpc.protobuf.test
 
 import OneOfMsg
 import invoke
-import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeTo
 import test.groups.WithGroups
@@ -229,37 +225,5 @@ class DirectWireEncoderTest {
         } finally {
             writer.release()
         }
-    }
-}
-
-private class HeapMessageWriter(size: Int) : NativeBufferMessageWriter(size) {
-    private val allocation = nativeHeap.allocArray<ByteVar>(size + 2)
-    private var released = false
-    var scopes = 0
-        private set
-
-    init {
-        allocation[0] = 0x5a.toByte()
-        allocation[size + 1] = 0x5a.toByte()
-    }
-
-    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
-        scopes++
-        block(allocation + 1)
-    }
-
-    fun release() {
-        if (!released) {
-            assertGuardsIntact()
-            released = true
-            nativeHeap.free(allocation)
-        }
-    }
-
-    fun snapshot(): ByteArray = ByteArray(size) { allocation[it + 1] }
-
-    fun assertGuardsIntact() {
-        assertEquals(0x5a.toByte(), allocation[0])
-        assertEquals(0x5a.toByte(), allocation[size + 1])
     }
 }
