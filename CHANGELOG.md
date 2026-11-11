@@ -44,6 +44,15 @@ It requires iOS 18 or newer, Swift tools 6.3 or newer, and Xcode linkage setup i
 
 Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html#grpc-ios-xcode
 
+### Protobuf runtime
+
+The protobuf runtime is pure Kotlin on all platforms:
+
+* On the JVM, `protobuf-lite` doesn't depend on `protobuf-javalite`. On native, it doesn't depend on the protobuf native shim.
+* The encoder writes a lone surrogate in a string as `?` on all platforms.
+* The decoder reads the whole input of a message on all platforms.
+* If a custom `GrpcMessageReader` or `GrpcMessageWriter` reports a wrong `remaining` value, the decode or encode fails with `IllegalStateException`.
+
 # 0.11.0-grpc-190
 > Published 17 Sep 2026
 
