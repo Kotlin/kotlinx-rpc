@@ -40,23 +40,10 @@ kotlin {
             }
         }
 
-        jvmMain {
-            dependencies {
-                implementation(libs.protobuf.javalite)
-            }
-        }
-
         jvmTest {
             dependencies {
                 // Utf8JavaComparisonTest compares the UTF-8 code with protobuf-java.
                 implementation(libs.protobuf.javalite)
-            }
-        }
-
-        nativeMain {
-            dependencies {
-                implementation(libs.kotlinx.collections.immutable)
-                implementation(libs.kotlinx.rpc.protobuf.shim)
             }
         }
     }
