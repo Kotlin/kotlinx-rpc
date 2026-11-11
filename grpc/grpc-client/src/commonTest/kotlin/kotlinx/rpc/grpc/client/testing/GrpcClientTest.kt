@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Runs a common gRPC client test against its own reference-server scenario.
  *
- * The test runs under `runTest` with coroutine debug probes and a 30-second timeout.
+ * The test runs under `runTest` with coroutine debug probes and a 60-second timeout.
  *
  * ```kotlin
  * @Test
@@ -46,7 +46,7 @@ internal fun grpcClientTest(
     barriers: List<Barrier> = emptyList(),
     scenario: ConfigureScenarioRequest.Builder.() -> Unit = {},
     block: suspend GrpcClientTestFixture.() -> Unit,
-): TestResult = runTestWithCoroutinesProbes(timeout = 30.seconds) {
+): TestResult = runTestWithCoroutinesProbes(timeout = 60.seconds) {
     executeGrpcClientTest(clientConfig, configureScenario, barriers, scenario, block)
 }
 

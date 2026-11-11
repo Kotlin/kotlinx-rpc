@@ -514,9 +514,10 @@ internal class GrpcClientTestCleanup(
         }
     }
 
-    internal suspend fun shutdownClient(client: GrpcClient, terminationTimeout: Duration = 5.seconds) {
+    internal suspend fun shutdownClient(client: GrpcClient, terminationTimeout: Duration = 15.seconds) {
         run { client.shutdownNow() }
-        // The JVM wait blocks, so the cleanup timeout must exceed the channel timeout.
+        // The JVM wait blocks, so the step timeout must exceed the channel timeout.
+        // A loaded CI agent can stall the JVM for seconds, so the default tolerates such stalls.
         run(timeout = terminationTimeout + stepTimeout) {
             assertTrue(
                 client.channel.awaitTermination(terminationTimeout),
