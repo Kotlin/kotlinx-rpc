@@ -32,9 +32,6 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __fieldsDelegate: MsgFieldDelegate<List<Field>> = MsgFieldDelegate { emptyList() }
@@ -180,9 +177,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __kindDelegate: MsgFieldDelegate<Field.Kind> = MsgFieldDelegate { Field.Kind.TYPE_UNKNOWN }
     public override var kind: Field.Kind by __kindDelegate
@@ -331,9 +325,6 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __enumvalueDelegate: MsgFieldDelegate<List<EnumValue>> = MsgFieldDelegate { emptyList() }
@@ -474,9 +465,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __numberDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
@@ -581,9 +569,6 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
@@ -785,18 +770,11 @@ public fun TypeInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TypeInternal.computeSize(): Int {
@@ -941,18 +919,11 @@ public fun FieldInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FieldInternal.computeSize(): Int {
@@ -1087,18 +1058,11 @@ public fun EnumInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumInternal.computeSize(): Int {
@@ -1190,18 +1154,11 @@ public fun EnumValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumValueInternal.computeSize(): Int {
@@ -1270,18 +1227,11 @@ public fun OptionInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun OptionInternal.computeSize(): Int {

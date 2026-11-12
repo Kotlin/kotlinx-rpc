@@ -38,9 +38,6 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __dDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.d) { 0 }
     override var d: Int by __dDelegate
 
@@ -188,9 +185,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _oneofFieldRef: Any? = null
     private var _oneofFieldNum: Long = 0L
@@ -1357,9 +1351,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
         override fun clearA() {
@@ -1498,9 +1489,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1567,9 +1555,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -1638,9 +1623,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1707,9 +1689,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -1778,9 +1757,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1847,9 +1823,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -1918,9 +1891,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1987,9 +1957,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -2058,9 +2025,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2127,9 +2091,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -2198,9 +2159,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.value) { 0.0f }
@@ -2267,9 +2225,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
@@ -2338,9 +2293,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.key) { false }
         var key: Boolean by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.value) { false }
@@ -2407,9 +2359,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2478,9 +2427,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.value) { ByteString() }
@@ -2547,9 +2493,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2618,9 +2561,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignMessageEdition2023> = MsgFieldDelegate(PresenceIndices.value) { ForeignMessageEdition2023Internal.DEFAULT }
@@ -2687,9 +2627,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2758,9 +2695,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignEnumEdition2023> = MsgFieldDelegate(PresenceIndices.value) { ForeignEnumEdition2023.FOREIGN_FOO }
@@ -2827,9 +2761,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
@@ -2969,9 +2900,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<TestAllTypesEdition2023> = MsgFieldDelegate(PresenceIndices.value) { DEFAULT }
@@ -3075,9 +3003,6 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
     override var c: Int by __cDelegate
@@ -3197,9 +3122,6 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
     override var c: Int by __cDelegate
@@ -3338,18 +3260,11 @@ fun ComplexMessageInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ComplexMessageInternal.computeSize(): Int {
@@ -4676,18 +4591,11 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.computeSize(): Int {
@@ -5265,18 +5173,11 @@ fun ForeignMessageEdition2023Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ForeignMessageEdition2023Internal.computeSize(): Int {
@@ -5329,18 +5230,11 @@ fun GroupLikeTypeInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun GroupLikeTypeInternal.computeSize(): Int {
@@ -5404,18 +5298,11 @@ fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.NestedMessageInternal.computeSize(): Int {
@@ -5482,18 +5369,11 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.computeSize(): Int {
@@ -5560,18 +5440,11 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.computeSize(): Int {
@@ -5638,18 +5511,11 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
@@ -5716,18 +5582,11 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
@@ -5794,18 +5653,11 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
@@ -5872,18 +5724,11 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
@@ -5950,18 +5795,11 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
@@ -6028,18 +5866,11 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
@@ -6106,18 +5937,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
@@ -6184,18 +6008,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
@@ -6262,18 +6079,11 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.computeSize(): Int {
@@ -6340,18 +6150,11 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
@@ -6418,18 +6221,11 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWit
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.computeSize(): Int {
@@ -6496,18 +6292,11 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.computeSize(): Int {
@@ -6574,18 +6363,11 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.computeSize(): Int {
@@ -6653,18 +6435,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companio
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.computeSize(): Int {
@@ -6732,18 +6507,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Compani
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.computeSize(): Int {
@@ -6810,18 +6578,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.computeSize(): Int {
@@ -6888,18 +6649,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.computeSize(): Int {
@@ -6978,11 +6732,7 @@ fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -7054,18 +6804,11 @@ fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWi
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.computeSize(): Int {

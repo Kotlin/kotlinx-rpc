@@ -30,9 +30,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     override var name: String by __nameDelegate
     internal val __failureMessageDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
@@ -133,9 +130,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __testDelegate: MsgFieldDelegate<List<TestStatus>> = MsgFieldDelegate { emptyList() }
     override var test: List<TestStatus> by __testDelegate
 
@@ -233,9 +227,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _payloadRef: Any? = null
 
@@ -484,9 +475,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _resultRef: Any? = null
 
@@ -782,9 +770,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __useJspbArrayAnyFormatDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
     override var useJspbArrayAnyFormat: Boolean by __useJspbArrayAnyFormatDelegate
 
@@ -914,18 +899,11 @@ fun TestStatusInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestStatusInternal.computeSize(): Int {
@@ -991,18 +969,11 @@ fun FailureSetInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FailureSetInternal.computeSize(): Int {
@@ -1112,18 +1083,11 @@ fun ConformanceRequestInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceRequestInternal.computeSize(): Int {
@@ -1264,18 +1228,11 @@ fun ConformanceResponseInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceResponseInternal.computeSize(): Int {
@@ -1360,18 +1317,11 @@ fun JspbEncodingConfigInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun JspbEncodingConfigInternal.computeSize(): Int {

@@ -24,9 +24,6 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     public override fun hashCode(): Int {
         var result = this::class.hashCode()
         return result
@@ -130,18 +127,11 @@ public fun EmptyInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EmptyInternal.computeSize(): Int {

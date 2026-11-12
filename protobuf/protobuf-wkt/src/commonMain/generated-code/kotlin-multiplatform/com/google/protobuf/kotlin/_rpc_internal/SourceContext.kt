@@ -26,9 +26,6 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __fileNameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var fileName: String by __fileNameDelegate
 
@@ -144,18 +141,11 @@ public fun SourceContextInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun SourceContextInternal.computeSize(): Int {

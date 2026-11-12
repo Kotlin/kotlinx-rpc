@@ -28,9 +28,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __fieldsDelegate: MsgFieldDelegate<Map<String, Value>> = MsgFieldDelegate { emptyMap() }
     public override var fields: Map<String, Value> by __fieldsDelegate
 
@@ -85,9 +82,6 @@ public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence 
 
         @InternalRpcApi
         public override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
         public var key: String by __keyDelegate
@@ -193,9 +187,6 @@ public class ValueInternal: Value.Builder, InternalMessage(fieldsWithPresence = 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _kindRef: kotlin.Any? = null
     private var _kindNum: Long = 0L
@@ -430,9 +421,6 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valuesDelegate: MsgFieldDelegate<List<Value>> = MsgFieldDelegate { emptyList() }
     public override var values: List<Value> by __valuesDelegate
 
@@ -560,18 +548,11 @@ public fun StructInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun StructInternal.computeSize(): Int {
@@ -667,18 +648,11 @@ public fun ValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ValueInternal.computeSize(): Int {
@@ -756,18 +730,11 @@ public fun ListValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ListValueInternal.computeSize(): Int {
@@ -831,18 +798,11 @@ public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun StructInternal.FieldsEntryInternal.computeSize(): Int {

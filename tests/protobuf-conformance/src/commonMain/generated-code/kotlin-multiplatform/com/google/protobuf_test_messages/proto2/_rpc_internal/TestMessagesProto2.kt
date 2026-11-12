@@ -110,9 +110,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     private var _oneofFieldRef: Any? = null
     private var _oneofFieldNum: Long = 0L
 
@@ -1962,9 +1959,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
         override fun clearA() {
@@ -2103,9 +2097,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2172,9 +2163,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -2243,9 +2231,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -2312,9 +2297,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -2383,9 +2365,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2452,9 +2431,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -2523,9 +2499,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -2592,9 +2565,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -2663,9 +2633,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2732,9 +2699,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -2803,9 +2767,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.value) { false }
@@ -2872,9 +2833,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
@@ -2943,9 +2901,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate(PresenceIndices.value) { 0.0 }
@@ -3012,9 +2967,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
@@ -3083,9 +3035,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.key) { false }
         var key: Boolean by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.value) { false }
@@ -3152,9 +3101,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -3223,9 +3169,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.value) { ByteString() }
@@ -3292,9 +3235,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -3363,9 +3303,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignMessageProto2> = MsgFieldDelegate(PresenceIndices.value) { ForeignMessageProto2Internal.DEFAULT }
@@ -3432,9 +3369,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -3503,9 +3437,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignEnumProto2> = MsgFieldDelegate(PresenceIndices.value) { ForeignEnumProto2.FOREIGN_FOO }
@@ -3572,9 +3503,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
@@ -3712,9 +3640,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
         override fun clearGroupInt32() {
@@ -3849,9 +3774,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         private val _owner: MessageSetCorrectInternal = this
 
         @InternalRpcApi
@@ -3951,9 +3873,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __strDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.str) { "" }
         override var str: String by __strDelegate
@@ -4074,9 +3993,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __iDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.i) { 0 }
         override var i: Int by __iDelegate
@@ -4218,9 +4134,6 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         private var _oneofFieldNum: Int = 0
 
@@ -4414,9 +4327,6 @@ class ForeignMessageProto2Internal: ForeignMessageProto2.Builder, InternalMessag
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
     override var c: Int by __cDelegate
 
@@ -4532,9 +4442,6 @@ class GroupFieldInternal: GroupField.Builder, InternalMessage(fieldsWithPresence
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
     override var groupInt32: Int by __groupInt32Delegate
@@ -4674,9 +4581,6 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __optionalInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.optionalInt32) { 0 }
     override var optionalInt32: Int by __optionalInt32Delegate
@@ -4843,9 +4747,6 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
 
@@ -4996,9 +4897,6 @@ class NullHypothesisProto2Internal: NullHypothesisProto2.Builder, InternalMessag
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     override fun hashCode(): Int {
         var result = this::class.hashCode()
         return result
@@ -5080,9 +4978,6 @@ class EnumOnlyProto2Internal: EnumOnlyProto2.Builder, InternalMessage(fieldsWith
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     override fun hashCode(): Int {
         var result = this::class.hashCode()
@@ -5170,9 +5065,6 @@ class OneStringProto2Internal: OneStringProto2.Builder, InternalMessage(fieldsWi
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __dataDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.data) { "" }
     override var data: String by __dataDelegate
@@ -5289,9 +5181,6 @@ class ProtoWithKeywordsInternal: ProtoWithKeywords.Builder, InternalMessage(fiel
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __inlineDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.inline) { 0 }
     override var inline: Int by __inlineDelegate
@@ -5475,9 +5364,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __requiredInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.requiredInt32) { 0 }
     override var requiredInt32: Int by __requiredInt32Delegate
@@ -6327,9 +6213,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
         override fun clearA() {
@@ -6492,9 +6375,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
         override fun clearGroupInt32() {
@@ -6629,9 +6509,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         private val _owner: MessageSetCorrectInternal = this
 
         @InternalRpcApi
@@ -6731,9 +6608,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __strDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.str) { "" }
         override var str: String by __strDelegate
@@ -6857,9 +6731,6 @@ class TestAllRequiredTypesProto2Internal: TestAllRequiredTypesProto2.Builder, In
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __iDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.i) { 0 }
         override var i: Int by __iDelegate
@@ -7029,9 +6900,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _largeOneofRef: Any? = null
 
@@ -7205,9 +7073,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         override fun hashCode(): Int {
             var result = this::class.hashCode()
             return result
@@ -7289,9 +7154,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): Int {
             var result = this::class.hashCode()
@@ -7375,9 +7237,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         override fun hashCode(): Int {
             var result = this::class.hashCode()
             return result
@@ -7460,9 +7319,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         override fun hashCode(): Int {
             var result = this::class.hashCode()
             return result
@@ -7544,9 +7400,6 @@ class TestLargeOneofInternal: TestLargeOneof.Builder, InternalMessage(fieldsWith
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         override fun hashCode(): Int {
             var result = this::class.hashCode()
@@ -9257,18 +9110,11 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.computeSize(): Int {
@@ -9992,18 +9838,11 @@ fun ForeignMessageProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ForeignMessageProto2Internal.computeSize(): Int {
@@ -10063,18 +9902,11 @@ fun GroupFieldInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun GroupFieldInternal.computeSize(): Int {
@@ -10176,18 +10008,11 @@ fun UnknownToTestAllTypesInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun UnknownToTestAllTypesInternal.computeSize(): Int {
@@ -10254,18 +10079,11 @@ fun NullHypothesisProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun NullHypothesisProto2Internal.computeSize(): Int {
@@ -10308,18 +10126,11 @@ fun EnumOnlyProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumOnlyProto2Internal.computeSize(): Int {
@@ -10368,18 +10179,11 @@ fun OneStringProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun OneStringProto2Internal.computeSize(): Int {
@@ -10450,18 +10254,11 @@ fun ProtoWithKeywordsInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ProtoWithKeywordsInternal.computeSize(): Int {
@@ -10973,18 +10770,11 @@ fun TestAllRequiredTypesProto2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllRequiredTypesProto2Internal.computeSize(): Int {
@@ -11223,18 +11013,11 @@ fun TestLargeOneofInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.computeSize(): Int {
@@ -11314,18 +11097,11 @@ fun TestAllTypesProto2Internal.NestedMessageInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.NestedMessageInternal.computeSize(): Int {
@@ -11392,18 +11168,11 @@ fun TestAllTypesProto2Internal.MapInt32Int32EntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt32Int32EntryInternal.computeSize(): Int {
@@ -11470,18 +11239,11 @@ fun TestAllTypesProto2Internal.MapInt64Int64EntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt64Int64EntryInternal.computeSize(): Int {
@@ -11548,18 +11310,11 @@ fun TestAllTypesProto2Internal.MapUint32Uint32EntryInternal.Companion.decodeWith
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
@@ -11626,18 +11381,11 @@ fun TestAllTypesProto2Internal.MapUint64Uint64EntryInternal.Companion.decodeWith
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
@@ -11704,18 +11452,11 @@ fun TestAllTypesProto2Internal.MapSint32Sint32EntryInternal.Companion.decodeWith
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
@@ -11782,18 +11523,11 @@ fun TestAllTypesProto2Internal.MapSint64Sint64EntryInternal.Companion.decodeWith
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
@@ -11860,18 +11594,11 @@ fun TestAllTypesProto2Internal.MapFixed32Fixed32EntryInternal.Companion.decodeWi
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
@@ -11938,18 +11665,11 @@ fun TestAllTypesProto2Internal.MapFixed64Fixed64EntryInternal.Companion.decodeWi
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
@@ -12016,18 +11736,11 @@ fun TestAllTypesProto2Internal.MapSfixed32Sfixed32EntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
@@ -12094,18 +11807,11 @@ fun TestAllTypesProto2Internal.MapSfixed64Sfixed64EntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
@@ -12172,18 +11878,11 @@ fun TestAllTypesProto2Internal.MapInt32BoolEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt32BoolEntryInternal.computeSize(): Int {
@@ -12250,18 +11949,11 @@ fun TestAllTypesProto2Internal.MapInt32FloatEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt32FloatEntryInternal.computeSize(): Int {
@@ -12328,18 +12020,11 @@ fun TestAllTypesProto2Internal.MapInt32DoubleEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
@@ -12407,18 +12092,11 @@ fun TestAllTypesProto2Internal.MapInt32NestedMessageEntryInternal.Companion.deco
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapInt32NestedMessageEntryInternal.computeSize(): Int {
@@ -12485,18 +12163,11 @@ fun TestAllTypesProto2Internal.MapBoolBoolEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapBoolBoolEntryInternal.computeSize(): Int {
@@ -12563,18 +12234,11 @@ fun TestAllTypesProto2Internal.MapStringStringEntryInternal.Companion.decodeWith
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringStringEntryInternal.computeSize(): Int {
@@ -12641,18 +12305,11 @@ fun TestAllTypesProto2Internal.MapStringBytesEntryInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringBytesEntryInternal.computeSize(): Int {
@@ -12720,18 +12377,11 @@ fun TestAllTypesProto2Internal.MapStringNestedMessageEntryInternal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringNestedMessageEntryInternal.computeSize(): Int {
@@ -12799,18 +12449,11 @@ fun TestAllTypesProto2Internal.MapStringForeignMessageEntryInternal.Companion.de
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringForeignMessageEntryInternal.computeSize(): Int {
@@ -12877,18 +12520,11 @@ fun TestAllTypesProto2Internal.MapStringNestedEnumEntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringNestedEnumEntryInternal.computeSize(): Int {
@@ -12955,18 +12591,11 @@ fun TestAllTypesProto2Internal.MapStringForeignEnumEntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MapStringForeignEnumEntryInternal.computeSize(): Int {
@@ -13042,11 +12671,7 @@ fun TestAllTypesProto2Internal.DataInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -13129,11 +12754,7 @@ fun TestAllTypesProto2Internal.MultiWordGroupFieldInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -13200,18 +12821,11 @@ fun TestAllTypesProto2Internal.MessageSetCorrectInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectInternal.computeSize(): Int {
@@ -13264,18 +12878,11 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectExtension1Internal.computeSize(): Int {
@@ -13339,18 +12946,11 @@ fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.MessageSetCorrectExtension2Internal.computeSize(): Int {
@@ -13417,18 +13017,11 @@ fun TestAllTypesProto2Internal.ExtensionWithOneofInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesProto2Internal.ExtensionWithOneofInternal.computeSize(): Int {
@@ -13500,11 +13093,7 @@ fun UnknownToTestAllTypesInternal.OptionalGroupInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -13599,18 +13188,11 @@ fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.Companion.decodeWit
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllRequiredTypesProto2Internal.NestedMessageInternal.computeSize(): Int {
@@ -13704,11 +13286,7 @@ fun TestAllRequiredTypesProto2Internal.DataInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -13775,18 +13353,11 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllRequiredTypesProto2Internal.MessageSetCorrectInternal.computeSize(): Int {
@@ -13846,18 +13417,11 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.Compa
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension1Internal.computeSize(): Int {
@@ -13920,18 +13484,11 @@ fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.Compa
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllRequiredTypesProto2Internal.MessageSetCorrectExtension2Internal.computeSize(): Int {
@@ -13978,18 +13535,11 @@ fun TestLargeOneofInternal.A1Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.A1Internal.computeSize(): Int {
@@ -14032,18 +13582,11 @@ fun TestLargeOneofInternal.A2Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.A2Internal.computeSize(): Int {
@@ -14086,18 +13629,11 @@ fun TestLargeOneofInternal.A3Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.A3Internal.computeSize(): Int {
@@ -14140,18 +13676,11 @@ fun TestLargeOneofInternal.A4Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.A4Internal.computeSize(): Int {
@@ -14194,18 +13723,11 @@ fun TestLargeOneofInternal.A5Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestLargeOneofInternal.A5Internal.computeSize(): Int {

@@ -32,9 +32,6 @@ public class ApiInternal: Api.Builder, InternalMessage(fieldsWithPresence = 1) {
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __methodsDelegate: MsgFieldDelegate<List<Method>> = MsgFieldDelegate { emptyList() }
@@ -187,9 +184,6 @@ public class MethodInternal: Method.Builder, InternalMessage(fieldsWithPresence 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __requestTypeUrlDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
@@ -319,9 +313,6 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
@@ -509,18 +500,11 @@ public fun ApiInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ApiInternal.computeSize(): Int {
@@ -655,18 +639,11 @@ public fun MethodInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun MethodInternal.computeSize(): Int {
@@ -754,18 +731,11 @@ public fun MixinInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun MixinInternal.computeSize(): Int {
