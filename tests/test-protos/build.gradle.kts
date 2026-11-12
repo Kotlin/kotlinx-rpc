@@ -6,6 +6,7 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
+import kotlinx.rpc.protoc.proto
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 
 plugins {
@@ -26,3 +27,23 @@ kotlin {
 }
 
 configureLocalProtocGenDevelopmentDependency("Main")
+
+val protoArchive = tasks.register<Zip>("protoArchive") {
+    archiveClassifier.set("proto")
+    from(kotlin.sourceSets.commonMain.get().proto.sourceDirectories)
+}
+
+val importedProtoArchive = tasks.register<Zip>("importedProtoArchive") {
+    archiveClassifier.set("imported-proto")
+    from(kotlin.sourceSets.commonMain.get().proto.sourceDirectories) {
+        include("to_be_imported.proto")
+    }
+}
+
+configurations.consumable("protoElements") {
+    outgoing.artifact(protoArchive)
+}
+
+configurations.consumable("importedProtoElements") {
+    outgoing.artifact(importedProtoArchive)
+}
