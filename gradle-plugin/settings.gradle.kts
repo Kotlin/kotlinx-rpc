@@ -23,7 +23,12 @@ pluginManagement {
 dependencyResolutionManagement {
     // for tests
     includeBuild("../protoc-gen")
-    includeBuild("../compiler-plugin")
+    // Gradle replaces the compiler plugin artifact with the compiler plugin build.
+    // See `pluginDevKit` in build.gradle.kts. The root build includes the compiler plugin build,
+    // so this build includes it only when it is a standalone build.
+    if (gradle.parent == null) {
+        includeBuild("../compiler-plugin")
+    }
     // for Dokka
     includeBuild("../dokka-plugin")
 }

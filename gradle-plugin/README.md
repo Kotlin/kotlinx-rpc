@@ -7,6 +7,13 @@ This is the `gradle-plugin` subproject of kotlinx-rpc — an included Gradle bui
 **Prefer running individual tests** — the full suite is slow (multiple Gradle/KGP/AGP version combinations). 
 Only run all tests when explicitly asked.
 
+Run the tests from the root build: `:gradle-plugin:test` and `:gradle-plugin:allVersionedFunctionalTests`.
+A build of this directory alone (`-p gradle-plugin`) runs `test` too, but not the functional tests:
+they need the libraries of the root build.
+
+This build includes the `compiler-plugin` build only when it is standalone. In the root build, the root includes it.
+A build that includes this build must include `compiler-plugin` too.
+
 ## What the plugin does
 
 1. Verifies Kotlin Gradle Plugin is on the classpath
@@ -44,7 +51,7 @@ with the compiler plugin ID and the artifact coordinates (`pluginDevKit {}` in `
 `RpcCompilerSupportPlugin` gives them to the Kotlin Gradle plugin.
 
 The compiler plugin is one artifact for all Kotlin versions: `org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:<library version>`.
-In this repository, the `compiler-plugin` included build replaces the artifact.
+In the root build of this repository, Gradle replaces the artifact with the `compiler-plugin` included build.
 
 ### Generated sources at build time — Do not edit manually
 
@@ -61,8 +68,6 @@ Tests run against multiple Gradle/KGP/AGP version combinations (defined in `Base
 The tests in `src/functionalTest` check the compiler plugin from the Gradle plugin with each supported Kotlin version.
 Each test project depends on the `kotlinx-rpc-core` library of this repository, and one test runs the generated code.
 
-- Run them from the root build: `:gradle-plugin:allVersionedFunctionalTests`. A build of this directory
-alone doesn't have the libraries, so the test tasks fail in it.
 - `:gradle-plugin:k<version>FunctionalTest` runs one Kotlin version, for example `k2420FunctionalTest` for 2.4.20.
 - The [functional-test-repository](../tests/functional-test-repository/build.gradle.kts) project lists the libraries
 that the root build publishes for the tests.

@@ -48,8 +48,12 @@ apiWatchdog {
     enabled = true
 }
 
+// A standalone build of this directory doesn't have the libraries of the root build.
+val hasRootBuild = gradle.parent != null
+
 pluginDevKit {
-    compilerPlugin("kotlinx-rpc-compiler-plugin")
+    // In the root build, Gradle replaces the artifact with the compiler plugin build.
+    compilerPlugin("org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:$version")
 
     // The DevKit runtime library is not on Maven Central, so the published plugin must not depend on it.
     addRuntimeDependency = false
@@ -98,7 +102,8 @@ tasks.test {
     dependsOn(protocGen.task(":grpc:publishAllPublicationsToBuildRepoRepository"))
     dependsOn(protocGen.task(":protobuf:publishAllPublicationsToBuildRepoRepository"))
 
-    val compilerPlugin = gradle.includedBuild("compiler-plugin")
+    // The build that includes the compiler plugin build: the root build, or this build when it is standalone.
+    val compilerPlugin = (gradle.parent ?: gradle).includedBuild("compiler-plugin")
     dependsOn(compilerPlugin.task(":publishAllPublicationsToBuildRepoRepository"))
 
     dependsOn(":publishAllPublicationsToBuildRepoRepository")
@@ -116,9 +121,6 @@ val functionalTestRepositoryFiles = configurations.resolvable("functionalTestRep
         attribute(Usage.USAGE_ATTRIBUTE, objects.named("kotlinx-rpc-functional-test-repository"))
     }
 }
-
-// A standalone build of this directory doesn't have the projects of the root build.
-val hasRootBuild = gradle.parent != null
 
 if (hasRootBuild) {
     dependencies {
