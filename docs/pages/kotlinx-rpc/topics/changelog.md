@@ -41,10 +41,10 @@ a gRPC runtime. Regenerate protobuf code with the updated protoc plugin.
 * Metadata keys are case-insensitive on the JVM, and empty or bare `-bin` metadata names are rejected.
 * On Kotlin/Native, `onHeaders` is always delivered before the first response message.
 
-#### gRPC client on iOS {id=gRPC_client_on_iOS_Unreleased}
+#### gRPC client on Apple platforms {id=gRPC_client_on_Apple_platforms_Unreleased}
 
-The gRPC client on iOS now uses grpc-swift-2 with Network.framework instead of gRPC Core.
-It requires iOS 18 or newer, Swift tools 6.3 or newer, and Xcode linkage setup in the consuming app.
+The gRPC clients on iOS, macOS, tvOS, and watchOS now use grpc-swift-2 with Network.framework instead of gRPC Core.
+Minimum platform versions: iOS 18, macOS 15, tvOS 18, watchOS 11. They also require Swift tools 6.3 or newer and Xcode linkage setup in the consuming app.
 
 Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-configuration.html#grpc-ios-xcode
 

@@ -18,12 +18,15 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
+private val swiftBackendPlatforms =
+    setOf(TestPlatform.IOS, TestPlatform.MACOS, TestPlatform.TVOS, TestPlatform.WATCHOS)
+
 class GrpcClientMessageSizeTest {
     @Test
     fun responseAboveDefaultLimitFailsTheCall() = grpcClientTest {
         // The serialized response adds overhead to the payload, so it exceeds the default limit.
         // The nio transport of grpc-swift maps the decoder error of an oversized message to INTERNAL,
-        // so iOS fails this test until the transport reports RESOURCE_EXHAUSTED.
+        // so this test fails on Apple platforms until the transport reports RESOURCE_EXHAUSTED.
         assertGrpcStatusCode(GrpcStatusCode.RESOURCE_EXHAUSTED) {
             testService.unaryCall(SimpleRequest { responseSize = DEFAULT_LIMIT_BYTES })
         }
@@ -65,14 +68,14 @@ class GrpcClientMessageSizeTest {
     /**
      * Runs [block] with a configured [GrpcClientConfiguration.maxInboundMessageSize].
      *
-     * iOS can't enforce a configured limit, so client creation with it configured fails there.
+     * Apple platforms can't enforce a configured limit, so client creation with it configured fails there.
      * [block] runs on the platforms that enforce the limit.
      */
     private fun grpcClientTestWithConfiguredLimit(
         limitBytes: Int,
         block: suspend GrpcClientTestFixture.() -> Unit,
     ) {
-        if (currentPlatform == TestPlatform.IOS) {
+        if (currentPlatform in swiftBackendPlatforms) {
             val failure = assertFailsWith<IllegalStateException> {
                 GrpcClient(GrpcClientTestServer.HOST, GrpcClientTestServer.port) {
                     maxInboundMessageSize = limitBytes
