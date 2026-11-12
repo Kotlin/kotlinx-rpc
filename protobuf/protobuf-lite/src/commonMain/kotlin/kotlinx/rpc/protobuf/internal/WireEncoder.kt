@@ -114,9 +114,7 @@ public class WireEncoder internal constructor(private val output: WireOutput) {
 
     public fun writeString(fieldNr: Int, value: String) {
         writeTag(fieldNr, WireType.LENGTH_DELIMITED)
-        val length = Utf8.encodedLength(value)
-        output.writeVarint(UInt32(length))
-        output.writeUtf8(value, length)
+        output.writeStringLengthDelimited(value)
     }
 
     public fun writePackedBool(fieldNr: Int, value: List<Boolean>, fieldSize: Int) {
