@@ -115,10 +115,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-watchossimulatorarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-watchossimulatorarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-watchossimulatorarm64/metadata.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-core-watchossimulatorarm64/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-macosarm64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-macosarm64/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-macosarm64/metadata.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-ktor-server-macosarm64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-iosarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-iosarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-iosarm64/metadata.jar
@@ -191,10 +187,6 @@ org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-watchossimulatorarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-watchossimulatorarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-watchossimulatorarm64/metadata.jar
 org.jetbrains.kotlinx:kotlinx-rpc-grpc-marshaller-watchossimulatorarm64/sources.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-server-macosarm64/.klib
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-server-macosarm64/javadoc.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-server-macosarm64/metadata.jar
-org.jetbrains.kotlinx:kotlinx-rpc-grpc-server-macosarm64/sources.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-iosarm64/.klib
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-iosarm64/javadoc.jar
 org.jetbrains.kotlinx:kotlinx-rpc-krpc-client-iosarm64/metadata.jar
