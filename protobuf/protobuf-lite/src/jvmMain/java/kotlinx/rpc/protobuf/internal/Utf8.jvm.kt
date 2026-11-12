@@ -4,13 +4,18 @@
 
 package kotlinx.rpc.protobuf.internal
 
-internal actual fun Utf8.readUtf8(window: ByteWindow, index: Int, count: Int, chars: CharArray): String {
+internal actual inline fun Utf8.readUtf8(
+    window: ByteWindow,
+    index: Int,
+    count: Int,
+    getCharBuffer: () -> CharArray,
+): String {
     val bytes = window.array
     val start = window.offset + index
     val result = String(bytes, start, count, Charsets.UTF_8)
     // The JDK replaces malformed UTF-8 with U+FFFD. Validate strings that contain it.
     if ('\uFFFD' in result) {
-        Utf8.decode(bytes, start, count, chars)
+        Utf8.decode(bytes, start, count, getCharBuffer())
     }
     return result
 }

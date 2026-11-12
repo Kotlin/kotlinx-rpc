@@ -19,7 +19,7 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
     private var bytesBeforeSegment = 0 // bytes in the segments before the attached one
     private var readEnd = 0            // the fast paths read up to here, capped by the limit
     private var closed = false
-    private var chars = CharArray(0)
+    private var charsBuffer: CharArray? = null // a shared buffer required for UTF-8 decoding
 
     var limit: Int = size
         private set
@@ -138,16 +138,22 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
             return ""
         }
         checkCount(count)
-        if (count > chars.size) {
-            chars = CharArray(count)
-        }
         if (readEnd - pos >= count) {
-            val result = Utf8.readUtf8(window, pos, count, chars)
+            val result = Utf8.readUtf8(window, pos, count) { utf8CharsBuffer(count) }
             pos += count
             return result
         }
+        val chars = utf8CharsBuffer(count)
         val charCount = Utf8.decode(count, chars) { readByte() }
         return chars.concatToString(0, charCount)
+    }
+
+    private fun utf8CharsBuffer(count: Int): CharArray {
+        val current = charsBuffer
+        if (current != null && current.size >= count) {
+            return current
+        }
+        return CharArray(count).also { charsBuffer = it }
     }
 
     fun skip(count: Int) {

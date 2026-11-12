@@ -99,6 +99,22 @@ class WireInputTest {
     }
 
     @Test
+    fun consecutiveUtf8StringsAcrossSegments() {
+        val values = listOf("a", "Grüße, 你好, привет, 🙂".repeat(20), "x", "a\uFFFDb", "tail\uFFFD".repeat(200), "z")
+        val encoded = values.map { it.encodeToByteArray() }
+        val input = encoded.fold(byteArrayOf(1)) { result, bytes -> result + bytes }
+        for (chunk in CHUNK_SIZES) {
+            wireInput(input, chunk) { reader ->
+                assertEquals(1, reader.readByte())
+                for ((index, bytes) in encoded.withIndex()) {
+                    assertEquals(values[index], reader.readUtf8(bytes.size))
+                }
+                assertTrue(reader.isAtLimit)
+            }
+        }
+    }
+
+    @Test
     fun pushAndPopLimit() {
         val input = bytes(1, 2, 3, 4, 5)
         for (chunk in CHUNK_SIZES) {

@@ -185,5 +185,14 @@ internal object Utf8 {
     }
 }
 
-/** Decodes [count] bytes at [index] in [window]. [chars] must have at least [count] elements. */
-internal expect fun Utf8.readUtf8(window: ByteWindow, index: Int, count: Int, chars: CharArray): String
+/**
+ * Decodes [count] bytes at [index] in [window].
+ *
+ * Calls [getCharBuffer] only when the decoder needs scratch space. The array must have at least [count] elements.
+ */
+internal expect inline fun Utf8.readUtf8(
+    window: ByteWindow,
+    index: Int,
+    count: Int,
+    getCharBuffer: () -> CharArray,
+): String
