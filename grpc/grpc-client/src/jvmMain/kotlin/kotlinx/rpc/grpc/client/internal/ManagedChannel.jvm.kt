@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import io.grpc.ClientCall
 import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 @InternalRpcApi
-public actual fun <RequestT, ResponseT> ManagedChannel.createCall(
+public fun <RequestT, ResponseT> ManagedChannel.createCall(
     methodDescriptor: GrpcMethodDescriptor<RequestT, ResponseT>,
     callOptions: GrpcCallOptions,
     coroutineContext: CoroutineContext,

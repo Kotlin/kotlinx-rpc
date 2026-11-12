@@ -11,6 +11,7 @@ package kotlinx.rpc.grpc.client.internal
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.reinterpret
@@ -22,6 +23,7 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcRequestByte
 
 /** Writes an exact-size request into storage that grpc-swift takes without copying. */
 internal class SwiftRequestMessageWriter(size: Int) : NativeBufferMessageWriter(size) {
+    @OptIn(UnsafeNumber::class)
     private val bytes = SwiftGrpcRequestBytes(count = size.convert())
 
     override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
@@ -46,6 +48,7 @@ internal class SwiftResponseMessageReader(bytes: COpaquePointer?, size: Int) : N
 }
 
 /** Copies scoped Swift bytes directly into the ByteArray representation used by metadata. */
+@OptIn(UnsafeNumber::class)
 internal fun copySwiftByteArray(bytes: COpaquePointer?, length: Long): ByteArray {
     require(length == 0L || bytes != null) { "grpc-swift returned a null pointer for non-empty metadata" }
     if (length == 0L) {

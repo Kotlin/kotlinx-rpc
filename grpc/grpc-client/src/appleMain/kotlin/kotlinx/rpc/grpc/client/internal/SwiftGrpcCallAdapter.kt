@@ -8,6 +8,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcCall
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcCallEvent
@@ -58,6 +59,7 @@ internal class SwiftGrpcCallAdapter<Response>(
         }
     }
 
+    @OptIn(UnsafeNumber::class)
     private fun SwiftGrpcMessageEvent.decodeMessage(): Response {
         var result: Result<Response>? = null
         withUnsafeBytes { bytes, length ->

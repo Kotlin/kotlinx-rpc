@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import io.grpc.ClientCall
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineStart
