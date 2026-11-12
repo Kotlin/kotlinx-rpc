@@ -13,9 +13,9 @@ import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
-import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -69,9 +69,8 @@ class CodecErrorTest {
             }
             val value = chars.concatToString()
             val buffer = Buffer()
-            WireEncoder(buffer).apply {
-                writeString(1, value)
-                flush()
+            encodeWire(buffer) { encoder ->
+                encoder.writeString(1, value)
             }
             val length = WireSize.string(value)
             val expected = WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(length) + length

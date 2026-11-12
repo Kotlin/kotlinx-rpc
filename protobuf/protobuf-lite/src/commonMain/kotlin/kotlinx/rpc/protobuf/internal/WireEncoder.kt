@@ -13,13 +13,10 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 /**
  * Encodes protobuf fields in wire format.
  *
- * Writes go to a buffer, so [flush] must be called at the end when the encoder writes to a [Buffer].
+ * An encoder is valid only inside [encodeWire] or a marshaller encode.
  */
 @InternalRpcApi
 public class WireEncoder internal constructor(private val output: WireOutput) {
-    /** Makes an encoder that appends to [buffer] at each [flush]. */
-    public constructor(buffer: Buffer) : this(WireOutput(BufferOutputSegments(buffer, UNKNOWN_SIZE)))
-
     public fun flush() {
         output.flush()
     }

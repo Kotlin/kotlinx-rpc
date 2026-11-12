@@ -5,17 +5,21 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
+import kotlinx.io.readByteArray
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.decodeWire
+import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
 class WireMarshallerTest {
@@ -25,9 +29,9 @@ class WireMarshallerTest {
         val fieldNr = 3
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBool(fieldNr, true)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBool(fieldNr, true)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -48,9 +52,9 @@ class WireMarshallerTest {
         val testValue = 42
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeInt32(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeInt32(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -71,9 +75,9 @@ class WireMarshallerTest {
         val testValue = Long.MAX_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeInt64(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeInt64(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -94,9 +98,9 @@ class WireMarshallerTest {
         val testValue = UInt.MAX_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeUInt32(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeUInt32(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -117,9 +121,9 @@ class WireMarshallerTest {
         val testValue = ULong.MAX_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeUInt64(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeUInt64(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -140,9 +144,9 @@ class WireMarshallerTest {
         val testValue = Int.MIN_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeSInt32(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeSInt32(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -163,9 +167,9 @@ class WireMarshallerTest {
         val testValue = Long.MIN_VALUE // Min long value
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeSInt64(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeSInt64(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -186,9 +190,9 @@ class WireMarshallerTest {
         val testValue = UInt.MAX_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeFixed32(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeFixed32(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -209,9 +213,9 @@ class WireMarshallerTest {
         val testValue = ULong.MAX_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeFixed64(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeFixed64(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -232,9 +236,9 @@ class WireMarshallerTest {
         val testValue = Int.MIN_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeSFixed32(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeSFixed32(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -255,9 +259,9 @@ class WireMarshallerTest {
         val testValue = Long.MIN_VALUE
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeSFixed64(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeSFixed64(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -278,9 +282,9 @@ class WireMarshallerTest {
         val testValue = 42
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeEnum(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeEnum(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -301,9 +305,9 @@ class WireMarshallerTest {
         val testValue = "Hello, World!"
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeString(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeString(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -328,31 +332,91 @@ class WireMarshallerTest {
     }
 
     @Test
-    fun testMissingFlush() {
+    fun testScopeFlushesAutomatically() {
         val fieldNr = 17
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBool(fieldNr, true)
-        // Intentionally not calling flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBool(fieldNr, true)
+        }
 
-        // The data is not being written to the buffer yet
         decodeWire(buffer) { decoder ->
+            assertEquals(fieldNr, decoder.readTag()?.fieldNr)
+            assertTrue(decoder.readBool())
             assertNull(decoder.readTag())
         }
     }
 
     @Test
+    fun testScopeAppendsToBufferAndReturnsResult() {
+        val buffer = Buffer().apply { write(bytes(0x08, 0x01)) }
+
+        val result = encodeWire(buffer) { encoder ->
+            encoder.writeInt32(2, 42)
+            "encoded"
+        }
+
+        assertEquals("encoded", result)
+        assertContentEquals(bytes(0x08, 0x01, 0x10, 0x2A), buffer.readByteArray())
+    }
+
+    @Test
+    fun testEmptyEncodingScope() {
+        val buffer = Buffer().apply { write(bytes(0x08, 0x01)) }
+
+        encodeWire(buffer) { }
+
+        assertContentEquals(bytes(0x08, 0x01), buffer.readByteArray())
+    }
+
+    @Test
+    fun testWriteAfterScope() {
+        val buffer = Buffer()
+        val escaped = encodeWire(buffer) { encoder ->
+            encoder.writeBool(1, true)
+            encoder
+        }
+
+        assertFailsWith<IllegalStateException> { escaped.writeBool(2, true) }
+        assertFailsWith<IllegalStateException> { escaped.flush() }
+        assertFailsWith<IllegalStateException> { escaped.writeRawBytes(Buffer()) }
+        assertContentEquals(bytes(0x08, 0x01), buffer.readByteArray())
+    }
+
+    @Test
+    fun testFailedEncodingClosesScope() {
+        val buffer = Buffer().apply { write(bytes(0x08, 0x01)) }
+        val failure = IllegalArgumentException("encoding failed")
+        var escaped: WireEncoder? = null
+
+        val thrown = assertFailsWith<IllegalArgumentException> {
+            encodeWire(buffer) { encoder ->
+                escaped = encoder
+                encoder.writeInt32(2, 42)
+                encoder.flush()
+                encoder.writeBool(3, true)
+                throw failure
+            }
+        }
+
+        assertSame(failure, thrown)
+        assertFailsWith<IllegalStateException> { escaped!!.writeBool(4, true) }
+        assertFailsWith<IllegalStateException> { escaped!!.flush() }
+        assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(Buffer()) }
+        encodeWire(buffer) { it.writeBool(4, false) }
+        assertContentEquals(bytes(0x08, 0x01, 0x10, 0x2A, 0x20, 0x00), buffer.readByteArray())
+    }
+
+    @Test
     fun testMultipleFieldsEncodeDecode() {
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-
-        // Write multiple fields of different types
-        encoder.writeBool(1, true)
-        encoder.writeInt32(2, 42)
-        encoder.writeString(3, "Hello")
-        encoder.writeFixed64(4, 123456789uL)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            // Write multiple fields of different types
+            encoder.writeBool(1, true)
+            encoder.writeInt32(2, 42)
+            encoder.writeString(3, "Hello")
+            encoder.writeFixed64(4, 123456789uL)
+        }
 
         decodeWire(buffer) { decoder ->
             // Read and verify each field
@@ -399,9 +463,9 @@ class WireMarshallerTest {
         val fieldNr = 19
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBool(fieldNr, true)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBool(fieldNr, true)
+        }
 
         var escaped: WireDecoder? = null
         decodeWire(buffer) { decoder -> escaped = decoder }
@@ -413,13 +477,13 @@ class WireMarshallerTest {
     fun testWriteAfterFlush() {
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBool(1, true)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBool(1, true)
+            encoder.flush()
 
-        // Writing after flush should still work
-        encoder.writeInt32(2, 42)
-        encoder.flush()
+            // Writing after flush should still work
+            encoder.writeInt32(2, 42)
+        }
 
         decodeWire(buffer) { decoder ->
             // Verify both values were written
@@ -446,9 +510,9 @@ class WireMarshallerTest {
         val testValue = "Hello, 世界! 😊"
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeString(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeString(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -468,10 +532,10 @@ class WireMarshallerTest {
         val fieldNr = 1
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBool(fieldNr, true)
-        encoder.writeBool(fieldNr + 1, true)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBool(fieldNr, true)
+            encoder.writeBool(fieldNr + 1, true)
+        }
 
         decodeWire(buffer) { decoder ->
             decoder.readTag()
@@ -489,13 +553,11 @@ class WireMarshallerTest {
 
         val buffer1 = Buffer()
         val buffer2 = Buffer()
-        WireEncoder(buffer1).apply {
-            writeString(field1Nr, field1Str)
-            flush()
+        encodeWire(buffer1) { encoder ->
+            encoder.writeString(field1Nr, field1Str)
         }
-        WireEncoder(buffer2).apply {
-            writeString(field2Nr, field2Str)
-            flush()
+        encodeWire(buffer2) { encoder ->
+            encoder.writeString(field2Nr, field2Str)
         }
 
         decodeWire(buffer1) { decoder ->
@@ -516,9 +578,9 @@ class WireMarshallerTest {
     fun testEmptyString() {
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeString(1, "")
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeString(1, "")
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -536,9 +598,9 @@ class WireMarshallerTest {
     fun testEmptyByteArray() {
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeBytes(1, ByteArray(0))
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(1, ByteArray(0))
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -555,12 +617,11 @@ class WireMarshallerTest {
     @Test
     fun testBytesEncodeDecode() {
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
 
         val bytes = ByteArray(1000000) { it.toByte() }
-
-        encoder.writeBytes(1, bytes)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(1, bytes)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -582,9 +643,9 @@ class WireMarshallerTest {
         val testValue = 3.14159265359
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeDouble(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeDouble(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -605,9 +666,9 @@ class WireMarshallerTest {
         val testValue = 3.14159f
         val buffer = Buffer()
 
-        val encoder = WireEncoder(buffer)
-        encoder.writeFloat(fieldNr, testValue)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeFloat(fieldNr, testValue)
+        }
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
@@ -628,9 +689,8 @@ class WireMarshallerTest {
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
-        with(WireEncoder(buf)) {
-            write(1, list)
-            flush()
+        encodeWire(buf) { encoder ->
+            encoder.write(1, list)
         }
         decodeWire(buf) { dec ->
             dec.readTag()!!.apply {
@@ -692,9 +752,8 @@ class WireMarshallerTest {
         read: WireDecoder.() -> List<T>?,
     ) {
         val buf = Buffer()
-        with(WireEncoder(buf)) {
-            write(1, list, sizeFn(list))
-            flush()
+        encodeWire(buf) { encoder ->
+            encoder.write(1, list, sizeFn(list))
         }
         decodeWire(buf) { dec ->
             dec.readTag()!!.apply {
