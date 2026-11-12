@@ -3,6 +3,7 @@
  */
 package kotlinx.rpc.grpc.client.internal
 
+import io.grpc.ClientCall
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
