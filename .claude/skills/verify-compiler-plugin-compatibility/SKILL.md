@@ -70,7 +70,7 @@ Record the result for each version and present a summary table:
 ```
 | Version | Compile | Tests | Errors |
 |---------|---------|-------|--------|
-| 2.2.20  | PASS    | PASS  |        |
+| 2.3.0   | PASS    | PASS  |        |
 | 2.4.0   | FAIL    |       | 3 errors in IrCompat.post24Dev.kt |
 ```
 

@@ -31,8 +31,8 @@ fun KotlinProjectExtension.optInForRpcApi() {
  * This makes our tests execute against the latest compiler plugin version (for example, with K2 instead of K1).
  */
 fun KotlinCommonCompilerOptions.setProjectLanguageVersion() {
-    languageVersion.set(KotlinVersion.KOTLIN_2_2)
-    apiVersion.set(KotlinVersion.KOTLIN_2_2)
+    languageVersion.set(KotlinVersion.KOTLIN_2_3)
+    apiVersion.set(KotlinVersion.KOTLIN_2_3)
 }
 
 withKotlinJvmExtension {

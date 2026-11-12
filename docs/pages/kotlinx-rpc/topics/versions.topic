@@ -22,7 +22,6 @@
         the following versions of Kotlin are supported:
     </p>
     <list>
-        <li>2.2.20, 2.2.21</li>
         <li>2.3.0, 2.3.10, 2.3.20, 2.3.21</li>
         <li>2.4.0, 2.4.10, 2.4.20</li>
     </list>
