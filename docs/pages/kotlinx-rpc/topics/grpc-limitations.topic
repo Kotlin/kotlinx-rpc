@@ -23,7 +23,7 @@
             <li>Kotlin/Wasm (both WasmJs and WasmWasi)</li>
         </list>
         <p>
-            gRPC support is available for JVM, Android, Apple, and Linux targets.
+            gRPC support is available for JVM, Android, and Apple targets.
             See <a href="platforms.topic"/> for the full per-artifact matrix.
         </p>
     </chapter>
