@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package kotlinx.rpc.grpc.test;
 
-import "all_primitives_grpc.proto";
-import "reference_package_grpc.proto";
+import "all_primitives.proto";
+import "reference_package.proto";
 
 message OneOf {
   oneof primitives {

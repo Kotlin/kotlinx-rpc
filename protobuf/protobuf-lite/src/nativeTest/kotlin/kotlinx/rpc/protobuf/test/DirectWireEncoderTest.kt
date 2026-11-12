@@ -7,6 +7,8 @@
 package kotlinx.rpc.protobuf.test
 
 import OneOfMsg
+import Other
+import References
 import invoke
 import kotlinx.cinterop.*
 import kotlinx.io.Buffer
@@ -103,17 +105,16 @@ class DirectWireEncoderTest {
             grpcMarshallerOf<AllPrimitives>())
     }
 
-    // Every generated message in tests:test-protos is checked at its default wire state.
-    // The populated cases above exercise the field shapes. Two messages have required fields.
+    // Every generated message in tests:test-protos is checked at its default wire state,
+    // plus the WKT Empty for the field-less message shape.
+    // The populated cases above exercise the field shapes. One message has a required field.
     @Test
     fun everyTestProtoMessageMatchesBufferEncoding() {
-        compareDefault(grpcMarshallerOf<hello.HelloRequest>())
+        compareDefault(grpcMarshallerOf<Other>())
+        compareDefault(grpcMarshallerOf<References>())
+        compareDefault(grpcMarshallerOf<com.google.protobuf.kotlin.Empty>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.AllPrimitives>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.EchoRequest>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.EchoResponse>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.HelloReply>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.HelloRequest>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Message>())
+        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.MixedPresence>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested.Inner1>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested.Inner1.Inner11>())
@@ -130,12 +131,7 @@ class DirectWireEncoderTest {
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UnknownFieldsAll>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UnknownFieldsSubset>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UsingEnum>())
-        compareDefault(grpcMarshallerOf<some.Some>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested.Nested>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested.Nested.Nested>())
         compareRequiredString(grpcMarshallerOf<to.be.imported.IWantToBeImported>(), "hello")
-        compareRequiredString(grpcMarshallerOf<hello.HelloResponse>(), "reply")
     }
 
     private fun <M : Any> compareDefault(marshaller: GrpcMarshaller<M>) {

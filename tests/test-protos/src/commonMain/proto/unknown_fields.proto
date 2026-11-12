@@ -1,9 +1,9 @@
 syntax = "proto3";
 
-import "all_primitives_grpc.proto";
-import "enum_grpc.proto";
-import "repeated_grpc.proto";
-import "test_map_grpc.proto";
+import "all_primitives.proto";
+import "enum.proto";
+import "repeated.proto";
+import "test_map.proto";
 
 package kotlinx.rpc.grpc.test;
 

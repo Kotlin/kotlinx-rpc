@@ -98,7 +98,7 @@ The most important modules have brief READMEs in their directories, read when yo
 - `:tests:compiler-plugin-tests` -- Compiler plugin box/diagnostic tests (skipped for Kotlin master builds)
 - `:tests:krpc-compatibility-tests`, `:tests:krpc-protocol-compatibility-tests` -- Protocol compat
 - `:tests:protobuf-conformance` -- Protobuf spec conformance (not on Windows)
-- `:tests:protobuf-unittest`, `:tests:grpc-test-server`, `:tests:test-protos`
+- `:tests:protobuf-unittest`, `:tests:grpc-test-server`, `:tests:test-protos`, `:tests:test-grpc-protos`
 
 ## Architecture
 

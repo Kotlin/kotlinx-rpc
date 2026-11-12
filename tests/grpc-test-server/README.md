@@ -48,7 +48,7 @@ The tests of the server itself run with `./gradlew :tests:grpc-test-server:test`
 
 ## Services
 
-The client tests and the server share all protos in `tests/test-protos/src/commonMain/proto`.
+The client tests and the server share the gRPC service protos in `tests/test-grpc-protos/src/commonMain/proto`.
 
 Most tests use the gRPC **interop** service. The gRPC
 [interoperability tests](https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md) define a
