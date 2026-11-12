@@ -63,10 +63,10 @@ private val DEFAULT_TEST_TIMEOUT: Duration = Duration.ofMinutes(5)
 
 private val GradleVersions = listOf(
     VersionsEnv("9.5.1", "2.4.20", "9.1.1"),
-    VersionsEnv("9.3.1", "2.2.21", "9.1.1"),
-    VersionsEnv("9.2.1", "2.2.21", "8.13.1"),
-    VersionsEnv("8.14.1", "2.2.0", "8.10.0"),
-    VersionsEnv("8.8", "2.2.0", "8.4.0"),
+    VersionsEnv("9.3.1", "2.3.21", "9.1.1"),
+    VersionsEnv("9.2.1", "2.3.21", "8.13.1"),
+    VersionsEnv("8.14.1", "2.3.0", "8.10.0"),
+    VersionsEnv("8.8", "2.3.0", "8.4.0"),
 )
 
 internal fun BaseTest.runWithGradleVersions(

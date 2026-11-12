@@ -42,17 +42,9 @@ or want full coverage before merge.
 
 | What changed | Build ID | What it covers |
 |---|---|---|
-| `compiler-plugin/` (any source or template) | `Build_kRPC_Plugins<V>_KotlinVersion_` | Single Kotlin version (fastest feedback) |
-| `compiler-plugin/` (any source or template) | `Build_kRPC_All_Compiler_Plugins` | All 11 Kotlin versions (use after single-version passes) |
-| `compiler-plugin/` (any source or template) | `Build_kRPC_Plugins_Kotlin_Master` | Compiler plugin against Kotlin Master |
-
-**Version ID pattern**: dots replaced by underscores, e.g.:
-- Kotlin 2.3.20 -> `Build_kRPC_Plugins2_3_20_KotlinVersion_`
-- Kotlin 2.1.0  -> `Build_kRPC_Plugins2_1_0_KotlinVersion_`
-
-**Tip**: Start with the current project Kotlin version build. If it passes and the change
-doesn't touch CSM templates, skip the `_All` composite. If CSM templates changed,
-`Build_kRPC_All_Compiler_Plugins` is required.
+| `compiler-plugin/` (any source) | `Build_kRPC_Compiler_Plugin` | Compilation and tests on all supported Kotlin and IDE versions |
+| `compiler-plugin/` (any source) | `Build_kRPC_Gradle_Plugin_Test` | Functional tests: each Kotlin version loads the plugin from the Gradle plugin |
+| `compiler-plugin/` (any source) | `Build_kRPC_Plugins_Kotlin_Master` | Compiler plugin against Kotlin Master |
 
 **Kotlin Master**: `Build_kRPC_Plugins_Kotlin_Master` downloads the latest Kotlin master
 artifacts and builds only the compiler plugin against them. Use this to verify forward
@@ -87,9 +79,7 @@ Build_kRPC_StressTests               # if concurrency-related
 
 ### "I changed the compiler plugin IR backend"
 ```
-Build_kRPC_Plugins2_3_20_KotlinVersion_   # current version first
-# if passes and CSM templates changed:
-Build_kRPC_All_Compiler_Plugins            # all versions
+Build_kRPC_Compiler_Plugin                 # all Kotlin and IDE versions
 ```
 
 ### "I added a new published module"
@@ -117,7 +107,7 @@ Build_kRPC_Gradle_Plugin_CheckApi    # if public API changed
 
 ### "I updated the Kotlin version"
 ```
-Build_kRPC_All_Compiler_Plugins      # all compiler plugin versions
+Build_kRPC_Compiler_Plugin           # compiler plugin on all Kotlin and IDE versions
 Build_kRPC_Java_JS_WASM_and_Linux    # runtime compilation
 Build_kRPC_Apple                     # native compilation
 Build_kRPC_Windows                   # mingw compilation
@@ -147,5 +137,5 @@ Prefer targeted builds above for faster feedback.
 | `Build_kRPC_All` | Everything: all code, checks, compiler plugins, gradle plugin |
 | `Build_Code_All` | All platform code builds (Java/JS/WASM/Linux + Apple + Windows + StressTests) |
 | `Build_Checks_All` | All quality checks (ABI + Detekt + JPMS + Artifacts + Changelog) |
-| `Build_kRPC_All_Compiler_Plugins` | Compiler plugin for all 11 Kotlin versions |
+| `Build_kRPC_All_Compiler_Plugins` | Compiler plugin for all supported Kotlin and IDE versions |
 | `Build_kRPC_All_Gradle_Plugin` | Gradle plugin build + test + ABI + Detekt |

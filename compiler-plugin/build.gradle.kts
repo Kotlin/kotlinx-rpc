@@ -2,32 +2,36 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import util.whenForIde
+import util.enableContextParameters
 
 plugins {
-    id("empty") // resolve conventions classpath
+    alias(libs.plugins.conventions.devkit.compiler.plugin)
+    alias(libs.plugins.conventions.no.psi.element)
 }
 
-val rpcVersion: String = libs.versions.kotlinx.rpc.get()
-val kotlinCompilerVersion = libs.versions.kotlin.compiler.get()
-val kotlinLangVersion = libs.versions.kotlin.lang.get()
+group = "org.jetbrains.kotlinx"
+version = libs.versions.kotlinx.rpc.get()
 
-allprojects {
-    group = "org.jetbrains.kotlinx"
+logger.lifecycle("[Compiler Plugin] kotlinx.rpc project version: $version")
 
-    version = if (kotlinCompilerVersion != kotlinLangVersion) {
-        "$kotlinCompilerVersion-$rpcVersion"
-    } else {
-        "$kotlinLangVersion-$rpcVersion"
+pluginDevKit {
+    componentRegistrar = "kotlinx.rpc.codegen.RpcCompilerPlugin"
+    commandLineProcessor = "kotlinx.rpc.codegen.RpcCommandLineProcessor"
+    generateTestsClass = "kotlinx.rpc.codegen.test.GenerateTestsKt"
+
+    testDataLibraries {
+        // The project is in the root build. See tests/compiler-plugin-test-libs.
+        register("rpcRuntime", isTransitive = true) {
+            jvm("org.jetbrains.kotlinx:compiler-plugin-test-libs:$version")
+        }
+    }
+
+    versionHierarchy {
+        splitDev(2, 3, 20)
+        splitDev(2, 4)
+        splitDev(2, 4, 20)
+        splitDev(2, 5)
     }
 }
 
-logger.lifecycle(
-    "[Compiler Plugin] kotlinx.rpc project version: $version, " +
-            "Kotlin version: $kotlinLangVersion, " +
-            "Compiler version: $kotlinCompilerVersion"
-)
-
-whenForIde {
-    logger.lifecycle("[Compiler Plugin] For-ide project mode enabled")
-}
+enableContextParameters()

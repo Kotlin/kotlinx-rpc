@@ -1,0 +1,147 @@
+FILE: b.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    public final data class InnerFlow : R|kotlin/Any| {
+        public constructor(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|InnerFlow| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component1(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final fun copy(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/InnerFlow|.R|/InnerFlow.flow|): R|InnerFlow|
+
+    }
+    public final data class Wrapper<T> : R|kotlin/Any| {
+        public constructor<T>(inner: R|T|): R|Wrapper<T>| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val inner: R|T| = R|<local>/inner|
+            public get(): R|T|
+
+        public final operator fun component1(): R|T|
+
+        public final fun copy(inner: R|T| = this@R|/Wrapper|.R|/Wrapper.inner|): R|Wrapper<T>|
+
+    }
+    public final data class MultiFlow : R|kotlin/Any| {
+        public constructor(flow1: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|MultiFlow| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val flow1: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow1|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final val flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow2|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final val flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = R|<local>/flow3|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component1(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component2(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final operator fun component3(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public final fun copy(flow1: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow1|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow2|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>| = this@R|/MultiFlow|.R|/MultiFlow.flow3|): R|MultiFlow|
+
+    }
+    public final data class ComplexFilter : R|kotlin/Any| {
+        public constructor(a: R|SimpleFilter?|, b: R|ComplexFilter?|): R|ComplexFilter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val a: R|SimpleFilter?| = R|<local>/a|
+            public get(): R|SimpleFilter?|
+
+        public final val b: R|ComplexFilter?| = R|<local>/b|
+            public get(): R|ComplexFilter?|
+
+        public final operator fun component1(): R|SimpleFilter?|
+
+        public final operator fun component2(): R|ComplexFilter?|
+
+        public final fun copy(a: R|SimpleFilter?| = this@R|/ComplexFilter|.R|/ComplexFilter.a|, b: R|ComplexFilter?| = this@R|/ComplexFilter|.R|/ComplexFilter.b|): R|ComplexFilter|
+
+    }
+    public final data class SimpleFilter : R|kotlin/Any| {
+        public constructor(text: R|kotlin/String|): R|SimpleFilter| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final val text: R|kotlin/String| = R|<local>/text|
+            public get(): R|kotlin/String|
+
+        public final operator fun component1(): R|kotlin/String|
+
+        public final fun copy(text: R|kotlin/String| = this@R|/SimpleFilter|.R|/SimpleFilter.text|): R|SimpleFilter|
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
+        public abstract val flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract val stateFlow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+        public abstract val sharedFlow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+            public get(): R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+
+        public abstract suspend fun state(flow: R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|): R|kotlinx/coroutines/flow/StateFlow<kotlin/Int>|
+
+        public abstract suspend fun shared(flow: R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|): R|kotlinx/coroutines/flow/SharedFlow<kotlin/Int>|
+
+        public abstract suspend fun deepState(flow: R|Wrapper<kotlinx/coroutines/flow/StateFlow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun deepShared(flow: R|Wrapper<kotlinx/coroutines/flow/SharedFlow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun flowOk(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|kotlin/Int|
+
+        public abstract fun serverFlowOk(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract suspend fun serverFlowFail(): R|kotlinx/coroutines/flow/Flow<kotlin/Int>|
+
+        public abstract fun notTopLevelServerFlow(): R|InnerFlow|
+
+        public abstract fun wrappedNotTopLevelServerFlow(): R|Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+
+        public abstract suspend fun wrappedALot(): R|Wrapper<Wrapper<Wrapper<Wrapper<kotlin/Int>>>>|
+
+        public abstract fun wrappedALotFlow(): R|Wrapper<Wrapper<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|
+
+        public abstract suspend fun notTopLevelClientFlow(flow: R|InnerFlow|): R|kotlin/Unit|
+
+        public abstract fun nestedServerFlow(): R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|
+
+        public abstract fun nestedServerTrickyFlow(): R|kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>|
+
+        public abstract fun serverMultiFlow(): R|MultiFlow|
+
+        public abstract suspend fun clientMultiFlow(flow: R|MultiFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientMultiFlowMany(flow: R|MultiFlow|, flow2: R|MultiFlow|, flow3: R|MultiFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientMultiFlowPlain(flow: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow2: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|, flow3: R|kotlinx/coroutines/flow/Flow<kotlin/Int>|): R|kotlin/Unit|
+
+        public abstract suspend fun clientInnerFlow(inner: R|InnerFlow|): R|kotlin/Unit|
+
+        public abstract suspend fun clientNestedFlow(inner: R|kotlinx/coroutines/flow/Flow<kotlinx/coroutines/flow/Flow<kotlin/Int>>|): R|kotlin/Unit|
+
+        public abstract suspend fun clientNestedTrickyFlow(inner: R|Wrapper<kotlinx/coroutines/flow/Flow<Wrapper<kotlinx/coroutines/flow/Flow<kotlin/Int>>>>|): R|kotlin/Unit|
+
+        public abstract fun nonSuspendNoFlow(): R|kotlin/Unit|
+
+        public abstract fun nonSuspendNoFlowString(): R|kotlin/String|
+
+        public abstract suspend fun complex(filter: R|ComplexFilter|): R|kotlin/String|
+
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }

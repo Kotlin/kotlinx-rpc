@@ -9,7 +9,7 @@ Full catalog of build configuration IDs for the kotlinx-rpc project.
 | `Build_kRPC_All`                  | Everything below                              |
 | `Build_Code_All`                  | All platform code builds                      |
 | `Build_Checks_All`                | ABI check, Detekt, JPMS, Artifacts, Changelog |
-| `Build_kRPC_All_Compiler_Plugins` | Compiler plugin for all Kotlin versions       |
+| `Build_kRPC_All_Compiler_Plugins` | `Build_kRPC_Compiler_Plugin`                  |
 | `Build_kRPC_All_Gradle_Plugin`    | Gradle plugin build + tests                   |
 
 ## Platform-Specific Code Builds
@@ -38,12 +38,10 @@ Full catalog of build configuration IDs for the kotlinx-rpc project.
 
 ## Compiler Plugin Builds
 
-Build IDs follow the pattern `Build_kRPC_Plugins_<version>_KotlinVersion_` where
-`<version>` is the Kotlin version with dots replaced by underscores.
+`Build_kRPC_Compiler_Plugin` compiles the compiler plugin for all supported Kotlin and IDE
+versions in one build, and runs its tests on each of them (`:compiler-plugin:allTests`).
 
-Example: Kotlin 2.3.20 -> `Build_kRPC_Plugins2_3_20_KotlinVersion_`
-
-Check TeamCity for currently supported Kotlin versions.
+`gradle-conventions/src/main/kotlin/util/devkit.kt` in the repository declares the supported versions.
 
 ### Kotlin Master
 

@@ -105,14 +105,16 @@ reflects the actual KMP target configuration.
 
 ## 7. Compiler Plugin Tests
 
-**Task**: `:tests:compiler-plugin-tests:test` (use `running_gradle_tests`)
+**Task**: `:compiler-plugin:allTests` (use `running_gradle_tests`).
+`:compiler-plugin:k2420Test` runs the tests of one Kotlin version, here 2.4.20.
 
-**When**: Any change to `compiler-plugin/` code, CSM templates, or code generation logic.
+**When**: Any change to `compiler-plugin/` code or code generation logic.
 
 **What it checks**: Box tests verify generated code compiles and runs correctly.
 Diagnostic tests verify the compiler plugin reports errors/warnings correctly.
+Each supported Kotlin and IDE compiler version runs all tests.
 
-**Test data**: `tests/compiler-plugin-tests/src/testData/box/` and `.../diagnostics/`
+**Test data**: `compiler-plugin/src/commonTest/data/box/` and `.../diagnostics/`
 
 **Updating golden files**: Use the `scripts/update_test_data.sh` script:
 ```bash
@@ -121,15 +123,13 @@ Diagnostic tests verify the compiler plugin reports errors/warnings correctly.
 ./scripts/update_test_data.sh BoxTest testName  # update a single test's golden file
 ```
 
-The script passes `-Pkotlin.test.update.test.data=true` to Gradle. The build script at
-`tests/compiler-plugin-tests/build.gradle.kts` reads this Gradle project property and
-forwards it to the test JVM via `systemProperty()`. The test framework then overwrites
-golden files (`.fir.txt`, `.fir.ir.txt`) with actual output instead of asserting.
+The script passes `-PupdateTestData` to Gradle. The test framework then overwrites
+golden files (`.fir.txt`, `.ir.txt`) with actual output instead of asserting.
+`compiler-plugin/README.md` describes the golden files for different Kotlin versions.
 
 **Do NOT use the Gradle MCP's `additionalSystemProps`** to pass this property -- that
 sets properties on the Gradle daemon process, not on the forked test JVM, so it has no
-effect. The property must be passed as a `-P` Gradle project property (either via the
-shell script or by adding `-Pkotlin.test.update.test.data=true` to the Gradle arguments
+effect. Pass `-PupdateTestData` as a Gradle argument (either via the shell script or
 when using the `running_gradle_tests` skill).
 
 After updating, review diffs with `git diff` to confirm changes match expectations.

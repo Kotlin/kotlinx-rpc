@@ -29,83 +29,41 @@ See the [section](#tasks-to-know-about) below.
 
 ### How to work with the compiler plugin
 
-There are four modules there:
-- [compiler-plugin-common](../compiler-plugin/compiler-plugin-common) - common for `backend` and `k2`
-- [compiler-plugin-backend](../compiler-plugin/compiler-plugin-backend) - IR backend code. 
-Here goes all heavy lifting codegen
-- [compiler-plugin-cli](../compiler-plugin/compiler-plugin-cli) - FIR frontend code. This is the fancy part.
-- [compiler-plugin-k2](../compiler-plugin/compiler-plugin-k2) - Entrypoint for the plugin, combines `backend` and `k2`.
+The plugin is one module: [compiler-plugin](../compiler-plugin). Its packages:
+- `kotlinx.rpc.codegen` - the entry points and the FIR frontend code. This is the fancy part.
+- `kotlinx.rpc.codegen.checkers` - FIR checkers and diagnostics.
+- `kotlinx.rpc.codegen.extension` - IR backend code. Here goes all heavy lifting codegen.
+- `kotlinx.rpc.codegen.common` - names that the frontend and the backend share.
 
-#### Compiler Specific Modules
+#### Kotlin versions
 
-We have a problem when developing a Kotlin compiler plugin:
-Compiler API is not stable (not won't be for a while). So how can one develop a plugin that works stably?
+The compiler API is not stable, so one build of the plugin can't work with all Kotlin versions.
+The [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) solves this:
+- It compiles the same sources against each supported Kotlin version. Each version is a Gradle target,
+for example `k2420` for Kotlin 2.4.20.
+- It puts the classes of all versions into one jar. The jar selects the classes for the compiler that loads it.
+- It builds for the compiler versions of IntelliJ IDEA and Android Studio too.
 
-We compile for multiple Kotlin versions at once!
+[devkit.kt](../gradle-conventions/src/main/kotlin/util/devkit.kt) declares the supported Kotlin and IDE versions.
 
-We use an in-house ✨technology✨ for this: CSM or Compiler Specific Modules.
-This is a templating engine, which resolution is based on the current kotlin compiler version
-(`kotlin-compiler` in [libs.versions.toml](../versions-root/libs.versions.toml)).
+The [commonMain](../compiler-plugin/src/commonMain/kotlin) source set has the majority of the code.
+It compiles on all Kotlin versions.
 
-There is always a core source set (like this: [kotlin](../compiler-plugin/compiler-plugin-k2/src/main/kotlin)) 
-that compiles nicely on all Kotlin versions. It is the majority of the code.
-And then we have a template set, which is processed before compilation for a specific version. 
-([templates](../compiler-plugin/compiler-plugin-k2/src/main/templates)).
-
-The code that swaps them is in [template.kt](../gradle-conventions/src/main/kotlin/util/csm/template.kt).
-
-The rules are the following:
-- We enclose code dependent on a version in `##csm` tags.
-- Every such block must:
-  - Start with `//##csm <block_name>`
-  - End with `//##csm /<block_name>`
-  - Specify inside zero of more of the code blocks:
-    - `//##csm default` + `//##csm /default`
-    - `//##csm specific=[<version_patten>]` + `//##csm /specific`
-
-Example code:
-```kotlin
-fun functionAvailableInAllVersions() {
-    
-}
-fun csmFunction() {
-    //##csm my-block
-    //##csm default
-    return 1
-    //##csm /default
-    //##csm specific=[2.0.0...2.1.0, 2.1.0-ij-*]
-    return 2
-    //##csm /specific
-    //##csm /my-block
-}
-```
-
-Templates matches `specific` versions greedy, so with multiple `specific` blocks - first one matched will be chosen, 
-or `default` if none, or nothing if there is no `default`.
-
-`<version_pattern>` works like this:
-- It's a comma-separated array of versions matchers
-- Version matcher is either:
-  - Range — consists of `from` and `to` version separated by `...`. 
-  `From` must be an exact version without a suffix.
-  `To` must be a version without a suffix, where `*` can be used for any part: `2.2.*`, `2.*` but not `2.2.2*`.
-  - Prefix matcher — matches a version by prefix: `2.2.0-*`, `2.2.2*`, `2.3.0-dev-*`
-
-This allows us to support some past and future Kotlin versions 
-(including versions for IDE, which are not in the stable list nor generally public) simultaneously.
-
-Rules for complier API breaking changes:
-- If some function or property changed signature or was replaced by another - 
-use `VersionSpecificApi` interface in core to declare functionality  
-(see [FirVersionSpecificApi.kt](../compiler-plugin/compiler-plugin-k2/src/main/kotlin/kotlinx/rpc/codegen/FirVersionSpecificApi.kt)
-and [VersionSpecificApi.kt](../compiler-plugin/compiler-plugin-backend/src/main/kotlin/kotlinx/rpc/codegen/VersionSpecificApi.kt)).
-- If some class differs in signature, 
-write a proxy in core and implementation in the template. 
-FQ name must match exactly.
-(see [FirRpcCheckersVS.kt](../compiler-plugin/compiler-plugin-k2/src/main/templates/kotlinx/rpc/codegen/checkers/FirRpcCheckersVS.kt)
-as an example)
-
-TeamCity is set up to work with multiple Kotlin versions for testing and releases.
+Rules for compiler API breaking changes:
+- Declare the functionality as an `expect` function in `commonMain`
+(see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt),
+[IrCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrCompat.kt)
+and [IrLookupCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrLookupCompat.kt)).
+- Write one `actual` function for the versions before the change and one for the versions from the change.
+They go to the `pre<version>DevMain` and `post<version>DevMain` source sets,
+for example [pre24DevMain](../compiler-plugin/src/pre24DevMain/kotlin) and
+[post24DevMain](../compiler-plugin/src/post24DevMain/kotlin) for a change in Kotlin 2.4.0.
+- If no source set exists for the version of the change, add the version to `versionHierarchy`
+in [build.gradle.kts](../compiler-plugin/build.gradle.kts).
+- `splitDev(2, 4)` puts all builds of 2.4.0, including the `-dev-` and IDE builds, into the `post` group.
+If the change is in the middle of the `-dev-` builds, use `split("2.4.0-dev-1234")` with the first build that has the change.
+- The DevKit has functions for some changes, for example `fakeElementCompat`. Check its
+[DevKitCompat.kt](https://github.com/Kotlin/compiler-plugin-dev-kit/blob/main/compiler-plugin-runtime/src/commonMain/kotlin/org/jetbrains/kotlin/compiler/plugin/devkit/DevKitCompat.kt) first.
 
 #### Frontend FIR
 
@@ -130,28 +88,34 @@ Check previous code and [official plugins](https://github.com/JetBrains/kotlin/t
 
 #### Compiler Tests
 
-Tests are located in the [tests/compiler-plugin-tests](../tests/compiler-plugin-tests) directory.
+Tests are in the compiler plugin module: [compiler-plugin/src](../compiler-plugin/src).
+Run them from the repository root, because the test data compiles against the projects of the root build:
+- `./gradlew :compiler-plugin:allTests` - all Kotlin versions.
+- `./gradlew :compiler-plugin:k2420Test` - one Kotlin version.
 
 `Kotlin Compiler DevKit` IDE plugin is for this (though it might not work and not that necessary).
 
 We use Kotlin's test framework, and I don't think there docs for it, so we navigate on pure luck and might.
 
-Put new test data into the [testData](../tests/compiler-plugin-tests/src/testData) directory:
+Put new test data into the [data](../compiler-plugin/src/commonTest/data) directory:
 - Use `box` subdirectory for Box tests:
 They are compiled by all staged and then the `box` function is executed. 
 It must return `"OK"` if test passes and error message otherwise.
 - Use `diagnostic` for diagnostic tests. These only run frontend and check if your custom diagnostics work.
 - Only add `.kt` files. Others will be generated.
-- After adding new `.kt` file, run `./gradlew generateTests`.
+- The test tasks generate the test classes for new `.kt` files. They are in `compiler-plugin/build/test-gen`.
 - In `.kt` files place code to compile and directives (like `// RUN_PIPELINE_TILL: BACKEND`)
 - Other files will be generated and test run
   - If a file didn't exist or content changed — the test will fail and tell about content mismatch
   - To update use `./scripts/update_test_data.sh <test-class-name> <?optional-test-name>` script. 
-For example, run `./scripts/update_test_data.sh DiagnosticTest` 
-to update tests in [DiagnosticTestGenerated.java](../tests/compiler-plugin-tests/src/test-gen/kotlinx/rpc/codegen/test/runners/DiagnosticTestGenerated.java).
+For example, run `./scripts/update_test_data.sh DiagnosticTest` to update all diagnostic tests.
 Or `./scripts/update_test_data.sh DiagnosticTest testCheckedAnnotation` to update specific test.
   - Check logs and git to distinguish between content update fails and compilation/other problems.
-  - ALWAYS check new content `.fir.txt` and `.fir.ir.txt` files to see if the changes adhere to what you expected to see there.
+  - ALWAYS check new content `.fir.txt` and `.ir.txt` files to see if the changes adhere to what you expected to see there.
+- The output can differ between Kotlin versions:
+  - A file without a version, for example `simple.ir.txt`, is the output of the highest supported Kotlin version.
+  - A file with a version, for example `simple.2321.ir.txt`, is the output of that version and of the lower versions,
+down to the next file with a version.
 
 #### Debug
 
@@ -176,6 +140,14 @@ If the project structure behaves funny, or you encounter version mismatch proble
 ### How to work with a filesystem
 
 Always use OS-agnostic paths: `Path.of("a", "b")` and not `Path.of("a/b")`, for example.
+
+### How to build the libraries faster
+
+Each build of the libraries compiles the compiler plugin for all supported Kotlin versions.
+`-Pkotlinx.rpc.compilerPlugin.onlyProjectKotlin=true` compiles it only for the Kotlin version of the project.
+
+Don't use the property when you test or publish the compiler plugin or the Gradle plugin.
+The publish tasks of the compiler plugin fail with it.
 
 ### How to work with Kotlin Master
 

@@ -43,7 +43,7 @@ if (project.name != "gradle-plugin") {
     }
 }
 
-configureKotlinCompatibility("2.2.0")
+configureKotlinCompatibility("2.3.0")
 
 // The watchdog plugin adds its annotations artifact to every compilation, even when `enabled` is false.
 // The artifact targets the Kotlin version of the plugin, so an older `compilerVersion` can't read it.
