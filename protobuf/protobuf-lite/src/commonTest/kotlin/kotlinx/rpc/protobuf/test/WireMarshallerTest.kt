@@ -11,13 +11,6 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.decodeWire
-import kotlinx.rpc.protobuf.internal.packedEnum
-import kotlinx.rpc.protobuf.internal.packedInt32
-import kotlinx.rpc.protobuf.internal.packedInt64
-import kotlinx.rpc.protobuf.internal.packedSInt32
-import kotlinx.rpc.protobuf.internal.packedSInt64
-import kotlinx.rpc.protobuf.internal.packedUInt32
-import kotlinx.rpc.protobuf.internal.packedUInt64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

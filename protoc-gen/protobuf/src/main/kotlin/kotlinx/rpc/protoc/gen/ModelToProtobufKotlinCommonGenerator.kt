@@ -2095,7 +2095,6 @@ class ModelToProtobufKotlinCommonGenerator(
         isPacked: Boolean = false,
     ): ScopedFormattedString {
         val sizeFuncName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
-        val sizeFuncFqName = sizeFuncName?.let { FqName.RpcClasses.WireSize.topLevelFP(it) }
 
         val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
             variable.wrapIn { variable -> "$variable.map { it.number }" }
@@ -2104,7 +2103,7 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         fun sizeFunc() = FqName.RpcClasses.WireSize.scoped()
-            .merge(sizeFuncFqName!!.scoped(), convertedVariable) { wireSize, sizeFuncName, convertedVariable ->
+            .merge(convertedVariable) { wireSize, convertedVariable ->
                 "$wireSize.$sizeFuncName($convertedVariable)"
             }
 
@@ -2153,7 +2152,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Enum -> {
                 FqName.RpcClasses.WireSize.scoped()
-                    .merge(sizeFuncFqName!!.scoped(), variable) { wireSize, sizeFuncName, variable ->
+                    .merge(variable) { wireSize, variable ->
                         "$wireSize.$sizeFuncName($variable.number)"
                     }
             }
@@ -2169,9 +2168,8 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun tagSizeCall(number: Int, wireType: WireType): ScopedFormattedString {
-        return "%T.%F($number, %T)".scoped(
+        return "%T.tag($number, %T)".scoped(
             FqName.RpcClasses.WireSize,
-            FqName.RpcClasses.WireSize.topLevelFP("tag"),
             FqName.RpcClasses.WireType.nested(wireType.name)
         )
     }
@@ -2179,11 +2177,8 @@ class ModelToProtobufKotlinCommonGenerator(
     @Suppress("SameParameterValue")
     private fun int32SizeCall(number: ScopedFormattedString): ScopedFormattedString {
         return FqName.RpcClasses.WireSize.scoped()
-            .merge(
-                other = FqName.RpcClasses.WireSize.topLevelFP("int32").scoped(),
-                another = number,
-            ) { wireSize, int32, number ->
-                "$wireSize.$int32($number)"
+            .merge(number) { wireSize, number ->
+                "$wireSize.int32($number)"
             }
     }
 
