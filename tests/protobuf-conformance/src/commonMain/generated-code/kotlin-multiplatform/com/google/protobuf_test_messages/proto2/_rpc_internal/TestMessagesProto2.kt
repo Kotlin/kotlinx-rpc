@@ -24,38 +24,7 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.fixed32
-import kotlinx.rpc.protobuf.internal.fixed64
-import kotlinx.rpc.protobuf.internal.float
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
-import kotlinx.rpc.protobuf.internal.packedBool
-import kotlinx.rpc.protobuf.internal.packedDouble
-import kotlinx.rpc.protobuf.internal.packedEnum
-import kotlinx.rpc.protobuf.internal.packedFixed32
-import kotlinx.rpc.protobuf.internal.packedFixed64
-import kotlinx.rpc.protobuf.internal.packedFloat
-import kotlinx.rpc.protobuf.internal.packedInt32
-import kotlinx.rpc.protobuf.internal.packedInt64
-import kotlinx.rpc.protobuf.internal.packedSFixed32
-import kotlinx.rpc.protobuf.internal.packedSFixed64
-import kotlinx.rpc.protobuf.internal.packedSInt32
-import kotlinx.rpc.protobuf.internal.packedSInt64
-import kotlinx.rpc.protobuf.internal.packedUInt32
-import kotlinx.rpc.protobuf.internal.packedUInt64
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.sFixed32
-import kotlinx.rpc.protobuf.internal.sFixed64
-import kotlinx.rpc.protobuf.internal.sInt32
-import kotlinx.rpc.protobuf.internal.sInt64
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
 @GeneratedProtoOneOfs(names = ["oneofField"])

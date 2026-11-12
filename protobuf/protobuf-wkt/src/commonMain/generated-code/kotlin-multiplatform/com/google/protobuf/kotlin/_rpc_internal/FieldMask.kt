@@ -17,9 +17,6 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPresence = 0) {

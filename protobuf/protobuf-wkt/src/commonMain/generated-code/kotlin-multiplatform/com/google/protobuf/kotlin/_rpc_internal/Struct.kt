@@ -19,12 +19,6 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 public class StructInternal: Struct.Builder, InternalMessage(fieldsWithPresence = 0) {

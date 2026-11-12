@@ -19,17 +19,7 @@ import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.float
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
 public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWithPresence = 0) {
