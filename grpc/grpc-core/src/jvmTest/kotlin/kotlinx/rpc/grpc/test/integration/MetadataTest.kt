@@ -97,10 +97,18 @@ class MetadataTest : GrpcTestBase() {
             // if user-agent is set, we expect 4 keys, otherwise 3 keys
             var expectedSize = 4
             // calculate expected size based on potentially present default headers
-            if ("user-agent" in this) expectedSize++
-            if ("content-type" in this) expectedSize++
-            if ("grpc-accept-encoding" in this) expectedSize++
-            if ("grpc-encoding" in this) expectedSize++
+            if ("user-agent" in this) {
+                expectedSize++
+            }
+            if ("content-type" in this) {
+                expectedSize++
+            }
+            if ("grpc-accept-encoding" in this) {
+                expectedSize++
+            }
+            if ("grpc-encoding" in this) {
+                expectedSize++
+            }
             assertEquals(expectedSize, keys().size)
             assertTrue { contains("my-key") }
             assertTrue { contains("my-key-bin") }
@@ -442,18 +450,18 @@ class MetadataTest : GrpcTestBase() {
     @OptIn(ExperimentalRpcApi::class)
     private object TestUserAsciiMarshaller : GrpcMarshaller<TestUser> {
         override fun prepare(value: TestUser, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-            GrpcEncodedMessage.of(encodeBuffer(value, config))
+            GrpcEncodedMessage.of(encodeBuffer(value))
 
-        private fun encodeBuffer(value: TestUser, config: GrpcMarshallerConfig?): Buffer {
+        private fun encodeBuffer(value: TestUser): Buffer {
             // Encode as ASCII string in format "name:age"
             val asciiString = "${value.name}:${value.age}"
             return Buffer().apply { writeString(asciiString) }
         }
 
         override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): TestUser =
-            decodeSource(reader.asSource(), config)
+            decodeSource(reader.asSource())
 
-        private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): TestUser {
+        private fun decodeSource(source: Source): TestUser {
             // Decode from ASCII string
             val asciiString = Buffer().apply { transferFrom(source) }.readString()
             val parts = asciiString.split(":")

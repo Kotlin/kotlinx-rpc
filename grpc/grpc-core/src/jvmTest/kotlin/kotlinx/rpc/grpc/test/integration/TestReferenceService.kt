@@ -35,7 +35,6 @@ import kotlinx.rpc.grpc.test.referenceOrNull
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -81,7 +80,7 @@ class TestReferenceService : GrpcTestBase() {
     }
 
     @Test
-    fun testReferenceService() = runGrpcTest { grpcClient ->
+    fun testReferences() = runGrpcTest { grpcClient ->
         val service = grpcClient.withService<ReferenceTestService>()
         val arg = References {
             other = Other {

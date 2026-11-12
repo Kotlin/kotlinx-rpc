@@ -44,7 +44,7 @@ class ServerInterceptorTest : GrpcTestBase() {
             val interceptor = interceptor {
                 onClose { status, _ -> cause = status.getCause() }
                 // this exception is not propagated to the client (only as UNKNOWN status code)
-                throw IllegalStateException("Failing in interceptor")
+                error("Failing in interceptor")
             }
             runGrpcTest(serverInterceptors = interceptor, test = ::unaryCall)
         }

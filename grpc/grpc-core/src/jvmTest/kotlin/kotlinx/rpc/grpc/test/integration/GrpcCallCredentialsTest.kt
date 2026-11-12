@@ -85,7 +85,9 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     @Test
     fun `test combine three or more call credentials at config and interceptor time - should succeed`() {
         var grpcMetadata: GrpcMetadata? = null
-        val configCallCreds = (NoTLSBearerTokenCredentials("token-1") + NoTLSBearerTokenCredentials("token-2") + NoTLSBearerTokenCredentials("token-3"))
+        val configCallCreds = NoTLSBearerTokenCredentials("token-1") +
+            NoTLSBearerTokenCredentials("token-2") +
+            NoTLSBearerTokenCredentials("token-3")
         runGrpcTest(
             clientConfiguration = {
                 credentials = plaintext() + configCallCreds
@@ -107,7 +109,10 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test plaintext call credentials - should fail`() {
-        assertGrpcFailure(GrpcStatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
+        assertGrpcFailure(
+            GrpcStatusCode.UNAUTHENTICATED,
+            "Established channel does not have a sufficient security level to transfer call credential."
+        ) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + TlsBearerTokenCredentials()
@@ -157,7 +162,9 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
         assertGrpcFailure(GrpcStatusCode.UNAVAILABLE, "This is my custom exception") {
             runGrpcTest(
                 clientConfiguration = {
-                    credentials = plaintext() + ThrowingCallCredentials(IllegalStateException("This is my custom exception"))
+                    credentials = plaintext() + ThrowingCallCredentials(
+                        IllegalStateException("This is my custom exception")
+                    )
                 },
                 test = ::unaryCall
             )
@@ -184,14 +191,18 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test interceptor call credentials without TLS - should fail`() {
-        assertGrpcFailure(GrpcStatusCode.UNAUTHENTICATED, "Established channel does not have a sufficient security level to transfer call credential.") {
-        runGrpcTest(
-            clientInterceptors = clientInterceptor {
-                callOptions.callCredentials += TlsBearerTokenCredentials()
-                proceed(it)
-            },
-            test = ::unaryCall
-        )}
+        assertGrpcFailure(
+            GrpcStatusCode.UNAUTHENTICATED,
+            "Established channel does not have a sufficient security level to transfer call credential."
+        ) {
+            runGrpcTest(
+                clientInterceptors = clientInterceptor {
+                    callOptions.callCredentials += TlsBearerTokenCredentials()
+                    proceed(it)
+                },
+                test = ::unaryCall
+            )
+        }
     }
 
     @Test

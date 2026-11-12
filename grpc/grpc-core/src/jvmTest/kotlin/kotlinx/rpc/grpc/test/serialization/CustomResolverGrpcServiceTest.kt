@@ -27,16 +27,16 @@ import kotlin.test.assertEquals
 class CustomResolverMessage(val value: String) {
     companion object Companion : GrpcMarshaller<CustomResolverMessage> {
         override fun prepare(value: CustomResolverMessage, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-            GrpcEncodedMessage.of(encodeBuffer(value, config))
+            GrpcEncodedMessage.of(encodeBuffer(value))
 
-        private fun encodeBuffer(value: CustomResolverMessage, config: GrpcMarshallerConfig?): Buffer {
+        private fun encodeBuffer(value: CustomResolverMessage): Buffer {
             return Buffer().apply { writeString(value.value) }
         }
 
         override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): CustomResolverMessage =
-            decodeSource(reader.asSource(), config)
+            decodeSource(reader.asSource())
 
-        private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): CustomResolverMessage {
+        private fun decodeSource(source: Source): CustomResolverMessage {
             return CustomResolverMessage(source.readString())
         }
     }
@@ -147,33 +147,29 @@ class CustomResolverGrpcServiceTest : BaseGrpcServiceTest() {
 
         val stringMarshaller = object : GrpcMarshaller<String> {
             override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-                GrpcEncodedMessage.of(encodeBuffer(value, config))
+                GrpcEncodedMessage.of(encodeBuffer(value))
 
-            private fun encodeBuffer(value: String, config: GrpcMarshallerConfig?): Buffer {
+            private fun encodeBuffer(value: String): Buffer {
                 return Buffer().apply { writeString(value) }
             }
 
             override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
-                decodeSource(reader.asSource(), config)
+                decodeSource(reader.asSource())
 
-            private fun decodeSource(source: Source, config: GrpcMarshallerConfig?): String {
+            private fun decodeSource(source: Source): String {
                 return source.readString()
             }
         }
 
         val unitMarshaller = object : GrpcMarshaller<Unit> {
             override fun prepare(value: Unit, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-                GrpcEncodedMessage.of(encodeBuffer(value, config))
-
-            private fun encodeBuffer(value: Unit, config: GrpcMarshallerConfig?): Buffer {
-                return Buffer()
-            }
+                GrpcEncodedMessage.of(Buffer())
 
             override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?) {
-                decodeSource(reader.asSource(), config)
+                decodeSource(reader.asSource())
             }
 
-            private fun decodeSource(source: Source, config: GrpcMarshallerConfig?) {
+            private fun decodeSource(source: Source) {
                 check(source.exhausted())
             }
         }
