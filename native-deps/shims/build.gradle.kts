@@ -3,9 +3,8 @@
  */
 
 // All real logic lives in subprojects:
-// - :kotlinx-rpc-grpc-core-shim publishes the gRPC native shim
 // - :kotlinx-rpc-protobuf-shim publishes the protobuf native shim
-// - :kotlinx-rpc-native-shims-annotation publishes the shared opt-in markers used by both shims
+// - :kotlinx-rpc-native-shims-annotation publishes the shared opt-in markers used by the shim builds
 plugins {
     base
     alias(libs.plugins.kotlin.multiplatform) apply false

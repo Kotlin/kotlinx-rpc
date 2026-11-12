@@ -49,7 +49,6 @@ autoresearch-runs/
 # krpc compat tests
 tests/krpc-protocol-compatibility-tests/v*
 gradle-conventions/src/main/kotlin/util/krpc_compat/versions.kt
-/native-deps/shims/grpc/.clwb/**
 
 
 # Local Agentic context
