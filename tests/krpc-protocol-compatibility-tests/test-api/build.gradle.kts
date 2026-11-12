@@ -7,6 +7,7 @@
 import org.jetbrains.kotlin.buildtools.api.ExperimentalBuildToolsApi
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.conventions.jvm)
@@ -26,6 +27,13 @@ kotlin {
     // END
 
     explicitApi = ExplicitApiMode.Disabled
+
+    // The Kotlin 2.2.0 compiler marks its output as pre-release for a language version above 2.2,
+    // and the old library versions can't read such classes.
+    compilerOptions {
+        languageVersion = KotlinVersion.KOTLIN_2_2
+        apiVersion = KotlinVersion.KOTLIN_2_2
+    }
 }
 
 tasks.test {
