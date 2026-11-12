@@ -36,5 +36,5 @@ fun DevKitPropertiesDsl<*>.configureRpcCompilerPlugin() {
     }
 
     cliVersions(min = "2.3.0")
-    ideaVersions(min = "252", includeRc = true, includeEap = true)
+    ideaVersions(min = "253", includeRc = true, includeEap = true)
 }

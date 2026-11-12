@@ -14,7 +14,6 @@
 
 ```kotlin
 versionHierarchy {
-    splitDev(2, 3)      // pre23DevMain, post23DevMain
     splitDev(2, 3, 20)  // pre2320DevMain, post2320DevMain
     splitDev(2, 4)      // pre24DevMain, post24DevMain
     splitDev(2, 4, 20)  // pre2420DevMain, post2420DevMain

@@ -21,15 +21,16 @@ import org.jetbrains.kotlin.fir.deserialization.registeredInSerializationPluginM
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.scopes.processAllProperties
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.utils.addIfNotNull
-import kotlinx.rpc.codegen.toRegularClassSymbolCompat
 
 internal val FirSession.serializablePropertiesProvider: FirSerializablePropertiesProvider by FirSession.sessionComponentAccessor()
 
@@ -111,9 +112,9 @@ private fun FirClassSymbol<*>.superClassOrAny(session: FirSession): FirRegularCl
     return resolvedSuperTypes.firstNotNullOfOrNull { superType ->
         superType
             .fullyExpandedType(session)
-            .toRegularClassSymbolCompat(session)
+            .toRegularClassSymbol(session)
             ?.takeIf { it.classKind == ClassKind.CLASS }
     }
-        ?: session.builtinTypes.anyType.toRegularClassSymbolCompat(session)
+        ?: session.builtinTypes.anyType.toRegularClassSymbol(session)
         ?: error("Symbol for kotlin/Any not found")
 }
