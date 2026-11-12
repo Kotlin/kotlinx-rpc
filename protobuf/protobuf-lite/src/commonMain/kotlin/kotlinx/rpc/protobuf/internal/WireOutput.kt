@@ -114,7 +114,52 @@ internal class WireOutput(private val segments: OutputSegments) : AutoCloseable 
         }
     }
 
-    /** Writes [value], which has [length] bytes in UTF-8. The caller has the length from [Utf8.encodedLength]. */
+    /**
+     * Writes a UTF-8 string with its byte length as a varint.
+     *
+     * When both bounds need the same varint width, reserves the prefix and fills it after encoding.
+     * This avoids a separate length scan. The worst-case output must fit in one segment so the prefix stays writable.
+     */
+    fun writeStringLengthDelimited(value: String) {
+        val upperBound = Utf8.maxEncodedLength(value)
+        if (upperBound <= Int.MAX_VALUE) {
+            val minLength = Utf8.minEncodedLength(value)
+            val maxLength = upperBound.toInt()
+
+            val lengthDelimSize = Varint.sizeOf(UInt32(minLength))
+            val boundsHaveTheSameEncodedWidth = lengthDelimSize == Varint.sizeOf(UInt32(maxLength))
+            val fitsIntoSegment = end - pos - lengthDelimSize >= maxLength
+            if (boundsHaveTheSameEncodedWidth && fitsIntoSegment) {
+                // Encoding the min and max length would result in the same varint length delimiter width.
+                // And the segment has enough space for the encoded length delimiter + the string content.
+                // This means we can write the string directly into the segment and fill the
+                // length delimiter after encoding the string. This avoids a separate string length scan.
+                val lengthDelimPosition = pos
+                pos += lengthDelimSize
+                val contentStart = pos
+                writeUtf8(value, maxLength)
+                if (lengthDelimSize == 1) {
+                    // Fast path for length delimiter size that fits in one byte -> trivial encoding .toByte().
+                    val contentLength = pos - contentStart
+                    window.setByte(lengthDelimPosition, contentLength.toByte())
+                } else {
+                    val contentEnd = pos
+                    pos = lengthDelimPosition
+                    writeVarint(UInt32(contentEnd - contentStart))
+                    // Restore content end position.
+                    pos = contentEnd
+                }
+                return
+            }
+        }
+
+        // Fallback to normal encoding with additional length scan.
+        val length = Utf8.encodedLength(value)
+        writeVarint(UInt32(length))
+        writeUtf8(value, length)
+    }
+
+    /** Writes [value] as UTF-8. [length] is an upper bound on its encoded byte count. */
     fun writeUtf8(value: String, length: Int) {
         if (end - pos >= length) {
             var p = pos

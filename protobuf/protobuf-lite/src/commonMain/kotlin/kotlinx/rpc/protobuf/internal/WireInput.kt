@@ -141,13 +141,12 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
         if (count > chars.size) {
             chars = CharArray(count)
         }
-        val charCount: Int
         if (readEnd - pos >= count) {
-            charCount = Utf8.decode(window, pos, count, chars)
+            val result = Utf8.readUtf8(window, pos, count, chars)
             pos += count
-        } else {
-            charCount = Utf8.decode(count, chars) { readByte() }
+            return result
         }
+        val charCount = Utf8.decode(count, chars) { readByte() }
         return chars.concatToString(0, charCount)
     }
 

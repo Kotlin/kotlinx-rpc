@@ -17,6 +17,18 @@ import kotlinx.rpc.protobuf.ProtobufEncodingException
  * most one char for each byte.
  */
 internal object Utf8 {
+
+    /** A lower bound on the UTF-8 byte count: at least one byte per UTF-16 code unit. */
+    fun minEncodedLength(value: String): Int = value.length
+
+    /**
+     * An upper bound on the UTF-8 byte count, as a [Long] to avoid overflow.
+     *
+     * Non-surrogate code units need at most 3 bytes. A surrogate pair needs 4 bytes for 2 units,
+     * so `value.length * 3` bounds every string.
+     */
+    fun maxEncodedLength(value: String): Long = value.length.toLong() * 3
+
     /**
      * The number of bytes that [value] needs in UTF-8.
      *
@@ -172,3 +184,6 @@ internal object Utf8 {
         return charCount
     }
 }
+
+/** Decodes [count] bytes at [index] in [window]. [chars] must have at least [count] elements. */
+internal expect fun Utf8.readUtf8(window: ByteWindow, index: Int, count: Int, chars: CharArray): String
