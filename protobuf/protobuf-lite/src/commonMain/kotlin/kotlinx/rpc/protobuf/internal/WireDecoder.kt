@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.Buffer
 import kotlinx.io.bytestring.ByteString
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringApi
 import kotlinx.io.bytestring.unsafe.UnsafeByteStringOperations
@@ -129,12 +130,18 @@ public class WireDecoder internal constructor(
         readOrSkipUnknownField(tag, null)
     }
 
-    public fun readUnknownField(tag: KTag, unknownFieldEncoder: WireEncoder) {
-        readOrSkipUnknownField(tag, unknownFieldEncoder)
+    /**
+     * Appends the original bytes of [tag] and its value to [unknownFields].
+     */
+    public fun readUnknownField(tag: KTag, unknownFields: Buffer) {
+        readOrSkipUnknownField(tag, unknownFields)
     }
 
     private fun readLength(): Int {
-        val length = input.readVarint32()
+        return checkedLength(input.readVarint32())
+    }
+
+    private fun checkedLength(length: Int): Int {
         if (length < 0) {
             throw ProtobufDecodingException.negativeSize()
         }
@@ -178,30 +185,24 @@ public class WireDecoder internal constructor(
         return result
     }
 
-    private fun readOrSkipUnknownField(tag: KTag, out: WireEncoder?) {
+    private fun readOrSkipUnknownField(tag: KTag, out: Buffer?) {
+        writeUnknownTag(tag, out)
         when (tag.wireType) {
             WireType.VARINT -> {
-                val value = input.readVarint64()
-                out?.writeInt64(tag.fieldNr, value)
+                readUnknownVarint(out)
             }
 
             WireType.FIXED32 -> {
-                val value = input.readFixed32()
-                out?.writeFixed32(tag.fieldNr, value.toUInt())
+                copyOrSkip(out, 4)
             }
 
             WireType.FIXED64 -> {
-                val value = input.readFixed64()
-                out?.writeFixed64(tag.fieldNr, value.toULong())
+                copyOrSkip(out, 8)
             }
 
             WireType.LENGTH_DELIMITED -> {
-                val length = readLength()
-                if (out == null) {
-                    input.skip(length)
-                } else {
-                    out.writeBytes(tag.fieldNr, input.readBytes(length))
-                }
+                val length = checkedLength(readUnknownVarint(out).toInt())
+                copyOrSkip(out, length)
             }
 
             WireType.START_GROUP -> {
@@ -214,16 +215,37 @@ public class WireDecoder internal constructor(
         }
     }
 
-    private fun readOrSkipUnknownGroup(tag: KTag, out: WireEncoder?) {
+    private fun readUnknownVarint(out: Buffer?): Long {
+        if (out == null) {
+            return input.readVarint64()
+        }
+        return Varint.decode { input.readByte().also { out.writeByte(it) } }
+    }
+
+    private fun copyOrSkip(out: Buffer?, count: Int) {
+        if (out == null) {
+            input.skip(count)
+        } else {
+            input.readBytesInto(out, count)
+        }
+    }
+
+    private fun writeUnknownTag(tag: KTag, out: Buffer?) {
+        if (out != null) {
+            // readTag accepts only minimal tag encodings, so these are the original tag bytes.
+            Varint.encode(UInt32(tag.toRawKTag().toInt())) { out.writeByte(it) }
+        }
+    }
+
+    private fun readOrSkipUnknownGroup(tag: KTag, out: Buffer?) {
         enterNested()
-        out?.writeTag(tag)
         while (true) {
             val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
             if (t.wireType == WireType.END_GROUP) {
                 if (t.fieldNr != tag.fieldNr) {
                     throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want ${tag.fieldNr}")
                 }
-                out?.writeTag(t)
+                writeUnknownTag(t, out)
                 depth--
                 return
             }

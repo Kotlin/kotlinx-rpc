@@ -218,27 +218,12 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "lazy { computeSize() }".scoped(),
             )
 
-            // unknown fields are currently not stored in a map like structure, but directly in binary form
-            // within a buffer.
-            // creating a Buffer object is inexpensive as there is no dynamic allocation involved.
             property(
                 name = "_unknownFields",
                 modifiers = "override",
                 annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
                 type = FqName.KotlinLibs.Buffer.scoped(),
                 value = "%T()".scoped(FqName.KotlinLibs.Buffer),
-            )
-
-            // by setting the encoder to null, we avoid unnecessary creation of the WireEncoder
-            // if there is no unknown field. by checking if it is null, we can also check if there
-            // was any unknown field after decoding (for flushing).
-            property(
-                name = "_unknownFieldsEncoder",
-                modifiers = "internal",
-                isVar = true,
-                annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-                type = "%T?".scoped(FqName.RpcClasses.WireEncoder),
-                value = "null".scoped(),
             )
 
             declaration.oneOfDeclarations.forEach { oneOf ->
@@ -1478,24 +1463,10 @@ class ModelToProtobufKotlinCommonGenerator(
                             // discard unknown fields if set in the config
                             code("decoder.skipUnknownField(tag)".scoped())
                         }, elseBlock = {
-                            // we the config is not set, or discardUnknownFields is set to false,
-                            // we will read and store all unknown fields
-                            ifBranch(condition = "msg._unknownFieldsEncoder == null".scoped(), ifBlock = {
-                                code(
-                                    "msg._unknownFieldsEncoder = %T(msg._unknownFields)"
-                                        .scoped(FqName.RpcClasses.WireEncoder)
-                                )
-                            })
-                            code("decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)".scoped())
+                            code("decoder.readUnknownField(tag, msg._unknownFields)".scoped())
                         })
                     }
                 }
-            }
-
-            if (!declaration.isGroup) {
-                // we must flush the encoder and "delete" it
-                code("msg._unknownFieldsEncoder?.flush()".scoped())
-                code("msg._unknownFieldsEncoder = null".scoped())
             }
 
             // TODO: Make lists and maps immutable (KRPC-190)
