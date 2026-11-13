@@ -26,6 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class DirectWireDecoderTest {
     private fun <M : Any> compare(message: M, marshaller: GrpcMarshaller<M>) {
@@ -211,7 +212,7 @@ class DirectWireDecoderTest {
         withReader(byteArrayOf(0x08, 0x01)) { reader ->
             decodeFrom(reader, ProtoConfig.DEFAULT_RECURSION_LIMIT) {
                 escaped = it
-                assertNotNull(it.readTag())
+                assertTrue(!it.readTag().isEnd)
             }
             assertFailsWith<ProtobufDecodingException> { escaped!!.readTag() }
         }
@@ -226,7 +227,7 @@ class DirectWireDecoderTest {
     @Test
     fun consumesWholeInput() = withReader(byteArrayOf(0x08, 0x01, 0x10, 0x02)) { reader ->
         decodeFrom(reader, ProtoConfig.DEFAULT_RECURSION_LIMIT) { decoder ->
-            assertNotNull(decoder.readTag())
+            assertTrue(!decoder.readTag().isEnd)
             assertEquals(1, decoder.readInt32())
         }
         assertEquals(0, reader.remaining)

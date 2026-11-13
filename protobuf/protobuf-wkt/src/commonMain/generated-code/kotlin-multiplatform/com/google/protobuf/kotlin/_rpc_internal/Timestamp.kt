@@ -16,6 +16,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 
 @InternalRpcApi
@@ -112,6 +113,11 @@ public class TimestampInternal: Timestamp.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+private object TimestampInternalTags {
+    const val SECONDS: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val NANOS: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
 @InternalRpcApi
 public fun TimestampInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.seconds != 0L) {
@@ -138,12 +144,16 @@ public fun TimestampInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TimestampInternalTags.SECONDS -> {
                 msg.seconds = decoder.readInt64()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TimestampInternalTags.NANOS -> {
                 msg.nanos = decoder.readInt32()
             }
             else -> {

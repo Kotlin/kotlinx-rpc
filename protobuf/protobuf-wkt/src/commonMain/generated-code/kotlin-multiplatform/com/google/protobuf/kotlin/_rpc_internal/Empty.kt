@@ -98,6 +98,8 @@ public class EmptyInternal: Empty.Builder, InternalMessage(fieldsWithPresence = 
     }
 }
 
+private object EmptyInternalTags
+
 @InternalRpcApi
 public fun EmptyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     // no fields to encode
@@ -117,8 +119,12 @@ public fun EmptyInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
                     throw ProtobufDecodingException("Unexpected END_GROUP tag.")

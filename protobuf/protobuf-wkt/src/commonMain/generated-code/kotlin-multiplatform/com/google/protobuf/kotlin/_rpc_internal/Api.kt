@@ -17,6 +17,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 
 @InternalRpcApi
@@ -400,6 +401,33 @@ public class MixinInternal: Mixin.Builder, InternalMessage(fieldsWithPresence = 
     }
 }
 
+private object ApiInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val METHODS: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONS: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val VERSION: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SOURCE_CONTEXT: Int = (5 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MIXINS: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SYNTAX: Int = (7 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val EDITION: Int = (8 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object MethodInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REQUEST_TYPE_URL: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REQUEST_STREAMING: Int = (3 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val RESPONSE_TYPE_URL: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val RESPONSE_STREAMING: Int = (5 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONS: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SYNTAX: Int = (7 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val EDITION: Int = (8 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object MixinInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ROOT: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun ApiInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
@@ -456,40 +484,44 @@ public fun ApiInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ApiInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.METHODS -> {
                 val target = msg.__methodsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = MethodInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> MethodInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.VERSION -> {
                 msg.version = decoder.readString()
             }
-            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.SOURCE_CONTEXT -> {
                 val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) }
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.MIXINS -> {
                 val target = msg.__mixinsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = MixinInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> MixinInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            7 if tag.wireType == WireType.VARINT -> {
+            ApiInternalTags.SYNTAX -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ApiInternalTags.EDITION -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -602,33 +634,37 @@ public fun MethodInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            MethodInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            MethodInternalTags.REQUEST_TYPE_URL -> {
                 msg.requestTypeUrl = decoder.readString()
             }
-            3 if tag.wireType == WireType.VARINT -> {
+            MethodInternalTags.REQUEST_STREAMING -> {
                 msg.requestStreaming = decoder.readBool()
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            MethodInternalTags.RESPONSE_TYPE_URL -> {
                 msg.responseTypeUrl = decoder.readString()
             }
-            5 if tag.wireType == WireType.VARINT -> {
+            MethodInternalTags.RESPONSE_STREAMING -> {
                 msg.responseStreaming = decoder.readBool()
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            MethodInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            7 if tag.wireType == WireType.VARINT -> {
+            MethodInternalTags.SYNTAX -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            MethodInternalTags.EDITION -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -715,12 +751,16 @@ public fun MixinInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            MixinInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            MixinInternalTags.ROOT -> {
                 msg.root = decoder.readString()
             }
             else -> {

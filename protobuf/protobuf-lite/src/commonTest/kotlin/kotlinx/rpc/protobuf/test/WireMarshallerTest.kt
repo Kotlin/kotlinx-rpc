@@ -18,7 +18,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
 
@@ -35,7 +34,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -58,7 +57,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -81,7 +80,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -104,7 +103,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -127,7 +126,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -150,7 +149,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -173,7 +172,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -196,7 +195,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED32, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -219,7 +218,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED64, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -242,7 +241,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED32, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -265,7 +264,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED64, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -288,7 +287,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.VARINT, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -311,7 +310,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -327,7 +326,7 @@ class WireMarshallerTest {
         val buffer = Buffer()
 
         decodeWire(buffer) { decoder ->
-            assertNull(decoder.readTag())
+            assertTrue(decoder.readTag().isEnd)
         }
     }
 
@@ -341,9 +340,9 @@ class WireMarshallerTest {
         }
 
         decodeWire(buffer) { decoder ->
-            assertEquals(fieldNr, decoder.readTag()?.fieldNr)
+            assertEquals(fieldNr, decoder.readTag().fieldNr)
             assertTrue(decoder.readBool())
-            assertNull(decoder.readTag())
+            assertTrue(decoder.readTag().isEnd)
         }
     }
 
@@ -421,7 +420,7 @@ class WireMarshallerTest {
         decodeWire(buffer) { decoder ->
             // Read and verify each field
             val tag1 = decoder.readTag()
-            assertNotNull(tag1)
+            assertTrue(!tag1.isEnd)
             assertEquals(1, tag1.fieldNr)
             assertEquals(WireType.VARINT, tag1.wireType)
             val bool = decoder.readBool()
@@ -429,7 +428,7 @@ class WireMarshallerTest {
             assertTrue(bool)
 
             val tag2 = decoder.readTag()
-            assertNotNull(tag2)
+            assertTrue(!tag2.isEnd)
             assertEquals(2, tag2.fieldNr)
             assertEquals(WireType.VARINT, tag2.wireType)
             val int32 = decoder.readInt32()
@@ -437,7 +436,7 @@ class WireMarshallerTest {
             assertEquals(42, int32)
 
             val tag3 = decoder.readTag()
-            assertNotNull(tag3)
+            assertTrue(!tag3.isEnd)
             assertEquals(3, tag3.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag3.wireType)
             val string = decoder.readString()
@@ -445,7 +444,7 @@ class WireMarshallerTest {
             assertEquals("Hello", string)
 
             val tag4 = decoder.readTag()
-            assertNotNull(tag4)
+            assertTrue(!tag4.isEnd)
             assertEquals(4, tag4.fieldNr)
             assertEquals(WireType.FIXED64, tag4.wireType)
             val fixed64 = decoder.readFixed64()
@@ -453,7 +452,7 @@ class WireMarshallerTest {
             assertEquals(123456789uL, fixed64)
 
             // No more tags
-            assertNull(decoder.readTag())
+            assertTrue(decoder.readTag().isEnd)
         }
         assertTrue(buffer.exhausted())
     }
@@ -488,14 +487,14 @@ class WireMarshallerTest {
         decodeWire(buffer) { decoder ->
             // Verify both values were written
             val tag1 = decoder.readTag()
-            assertNotNull(tag1)
+            assertTrue(!tag1.isEnd)
             assertEquals(1, tag1.fieldNr)
             val bool = decoder.readBool()
             assertNotNull(bool)
             assertTrue(bool)
 
             val tag2 = decoder.readTag()
-            assertNotNull(tag2)
+            assertTrue(!tag2.isEnd)
             assertEquals(2, tag2.fieldNr)
             val int32 = decoder.readInt32()
             assertNotNull(int32)
@@ -516,7 +515,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -562,12 +561,12 @@ class WireMarshallerTest {
 
         decodeWire(buffer1) { decoder ->
             val tag = decoder.readTag()
-            assertEquals(field1Nr, tag?.fieldNr)
+            assertEquals(field1Nr, tag.fieldNr)
             assertEquals(field1Str, decoder.readString())
         }
         decodeWire(buffer2) { decoder ->
             val tag = decoder.readTag()
-            assertEquals(field2Nr, tag?.fieldNr)
+            assertEquals(field2Nr, tag.fieldNr)
             assertEquals(field2Str, decoder.readString())
         }
         assertTrue(buffer1.exhausted())
@@ -584,7 +583,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -604,7 +603,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -625,7 +624,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -649,7 +648,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED64, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -672,7 +671,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(WireType.FIXED32, tag.wireType)
             assertEquals(fieldNr, tag.fieldNr)
 
@@ -693,7 +692,7 @@ class WireMarshallerTest {
             encoder.write(1, list)
         }
         decodeWire(buf) { dec ->
-            dec.readTag()!!.apply {
+            dec.readTag().apply {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
@@ -756,7 +755,7 @@ class WireMarshallerTest {
             encoder.write(1, list, sizeFn(list))
         }
         decodeWire(buf) { dec ->
-            dec.readTag()!!.apply {
+            dec.readTag().apply {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
@@ -890,7 +889,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -908,7 +907,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -926,7 +925,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -944,7 +943,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 
@@ -966,7 +965,7 @@ class WireMarshallerTest {
 
         decodeWire(buffer) { decoder ->
             val tag = decoder.readTag()
-            assertNotNull(tag)
+            assertTrue(!tag.isEnd)
             assertEquals(1, tag.fieldNr)
             assertEquals(WireType.LENGTH_DELIMITED, tag.wireType)
 

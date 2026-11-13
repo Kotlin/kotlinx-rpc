@@ -21,8 +21,8 @@ public class WireEncoder internal constructor(private val output: WireOutput) {
         output.flush()
     }
 
-    public fun writeTag(tag: KTag) {
-        output.writeVarint(UInt32(tag.toRawKTag().toInt()))
+    public fun writeTag(tag: WireTag) {
+        output.writeVarint(UInt32(tag.raw))
     }
 
     public fun writeBool(fieldNr: Int, value: Boolean) {
@@ -215,8 +215,8 @@ public class WireEncoder internal constructor(private val output: WireOutput) {
             0
         }
 
-    private fun writeTag(fieldNr: Int, wireType: WireType) {
-        output.writeVarint(UInt32((fieldNr shl 3) or wireType.ordinal))
+    private fun writeTag(fieldNr: Int, wireType: Int) {
+        writeTag(WireTag(fieldNr, wireType))
     }
 
     private fun writePackedHeader(fieldNr: Int, fieldSize: Int) {

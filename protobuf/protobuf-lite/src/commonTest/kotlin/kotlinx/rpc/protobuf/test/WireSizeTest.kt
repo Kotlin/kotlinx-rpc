@@ -27,8 +27,8 @@ class WireSizeTest {
             536_870_911 to 5,
         )
         for ((fieldNumber, expectedSize) in cases) {
-            for (wireType in WireType.entries) {
-                val tag = WireTag((fieldNumber shl 3) or wireType.ordinal)
+            for (wireType in WireType.VARINT..WireType.FIXED32) {
+                val tag = WireTag((fieldNumber shl 3) or wireType)
                 assertEquals(expectedSize, WireSize.tag(tag), "$fieldNumber, $wireType")
                 assertEquals(expectedSize, WireSize.tag(fieldNumber, wireType), "$fieldNumber, $wireType")
             }

@@ -14,7 +14,7 @@ import kotlinx.rpc.protobuf.ProtobufDecodingException
 /**
  * Decodes protobuf fields in wire format.
  *
- * Call [readTag] for each field, then the `read` function for the field type. [readTag] returns `null` at the
+ * Call [readTag] for each field, then the `read` function for the field type. [readTag] returns an end marker at the
  * end of the message. A decoder exists only inside [decodeWire] or a marshaller decode.
  */
 @InternalRpcApi
@@ -25,19 +25,24 @@ public class WireDecoder internal constructor(
 ) {
     private var depth = 0
 
-    /** Returns the next tag, or `null` at the end of the message. */
-    public fun readTag(): KTag? {
+    /** Returns the next tag, or a tag with [WireTag.isEnd] at the end of the message. */
+    public fun readTag(): WireTag {
         if (input.isClosed) {
             throw ProtobufDecodingException("The WireDecoder is used after its decoding scope ended.")
         }
         if (input.isAtLimit) {
-            return null
+            return WireTag.END
         }
         val raw = input.readTagVarint()
-        if (raw == 0) {
-            throw ProtobufDecodingException.invalidTag(0u)
+        val tag = WireTag(raw)
+        if (tag.fieldNr == 0) {
+            throw ProtobufDecodingException.invalidTag(raw.toUInt())
         }
-        return KTag.from(raw.toUInt())
+        val type = raw and WireTag.TYPE_MASK
+        if (type > WireType.FIXED32) {
+            throw ProtobufDecodingException("Invalid wire type: $type")
+        }
+        return tag
     }
 
     public fun readBool(): Boolean = input.readVarint64() != 0L
@@ -126,14 +131,14 @@ public class WireDecoder internal constructor(
         depth--
     }
 
-    public fun skipUnknownField(tag: KTag) {
+    public fun skipUnknownField(tag: WireTag) {
         readOrSkipUnknownField(tag, null)
     }
 
     /**
      * Appends the original bytes of [tag] and its value to [unknownFields].
      */
-    public fun readUnknownField(tag: KTag, unknownFields: Buffer) {
+    public fun readUnknownField(tag: WireTag, unknownFields: Buffer) {
         readOrSkipUnknownField(tag, unknownFields)
     }
 
@@ -185,7 +190,7 @@ public class WireDecoder internal constructor(
         return result
     }
 
-    private fun readOrSkipUnknownField(tag: KTag, out: Buffer?) {
+    private fun readOrSkipUnknownField(tag: WireTag, out: Buffer?) {
         writeUnknownTag(tag, out)
         when (tag.wireType) {
             WireType.VARINT -> {
@@ -230,17 +235,20 @@ public class WireDecoder internal constructor(
         }
     }
 
-    private fun writeUnknownTag(tag: KTag, out: Buffer?) {
+    private fun writeUnknownTag(tag: WireTag, out: Buffer?) {
         if (out != null) {
             // readTag accepts only minimal tag encodings, so these are the original tag bytes.
-            Varint.encode(UInt32(tag.toRawKTag().toInt())) { out.writeByte(it) }
+            Varint.encode(UInt32(tag.raw)) { out.writeByte(it) }
         }
     }
 
-    private fun readOrSkipUnknownGroup(tag: KTag, out: Buffer?) {
+    private fun readOrSkipUnknownGroup(tag: WireTag, out: Buffer?) {
         enterNested()
         while (true) {
-            val t = readTag() ?: throw ProtobufDecodingException.truncatedMessage()
+            val t = readTag()
+            if (t.isEnd) {
+                throw ProtobufDecodingException.truncatedMessage()
+            }
             if (t.wireType == WireType.END_GROUP) {
                 if (t.fieldNr != tag.fieldNr) {
                     throw ProtobufDecodingException("Mismatched END_GROUP: got ${t.fieldNr}, want ${tag.fieldNr}")

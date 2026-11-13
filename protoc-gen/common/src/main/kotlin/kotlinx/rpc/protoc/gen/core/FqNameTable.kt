@@ -31,7 +31,7 @@ enum class Platform {
 
 /**
  * A table that tracks registered [FqName]s for name resolution across all packages.
- * This class handles the registration phase - collecting all names that are visible in the namespace.
+ * This class collects all names that are visible in the namespace.
  *
  * To resolve names, create a [ScopedFqNameTable] from this table for a specific package.
  */
@@ -102,6 +102,23 @@ class FqNameTable(
         fqNames.forEach { register(it) }
     }
 
+    /** Registers [name], with trailing underscores if the name is already registered. */
+    fun registerUnique(name: FqName.Declaration): FqName.Declaration {
+        registerLazyNames()
+        var candidate = name
+        while (candidate in registeredNames) {
+            candidate = candidate.copy(simpleName = candidate.simpleName + "_")
+        }
+        register(candidate)
+        return candidate
+    }
+
+    private fun registerLazyNames() {
+        val currentLazyNames = lazyNames.toList()
+        lazyNames.clear()
+        currentLazyNames.forEach { getter -> register(getter()) }
+    }
+
     /**
      * Creates a [ScopedFqNameTable] for resolving names at package level in the specified package.
      *
@@ -109,9 +126,7 @@ class FqNameTable(
      * @return A scoped table for name resolution in the given package.
      */
     fun scoped(currentPackage: FqName.Package, importsContainer: MutableSet<String>): ScopedFqNameTable {
-        val currentLazyNames = this.lazyNames.toList()
-        lazyNames.clear()
-        currentLazyNames.forEach { getter -> register(getter()) }
+        registerLazyNames()
 
         return ScopedFqNameTable(this, currentPackage, emptyList(), importsContainer)
     }

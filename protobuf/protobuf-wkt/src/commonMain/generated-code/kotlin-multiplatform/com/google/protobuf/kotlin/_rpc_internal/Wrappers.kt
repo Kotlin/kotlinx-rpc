@@ -18,6 +18,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 import kotlinx.rpc.protobuf.internal.protoToString
 
@@ -813,6 +814,42 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     }
 }
 
+private object DoubleValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED64
+}
+
+private object FloatValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED32
+}
+
+private object Int64ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object UInt64ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object Int32ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object UInt32ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object BoolValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object StringValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object BytesValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.value != 0.0) {
@@ -835,9 +872,13 @@ public fun DoubleValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED64 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            DoubleValueInternalTags.VALUE -> {
                 msg.value = decoder.readDouble()
             }
             else -> {
@@ -892,9 +933,13 @@ public fun FloatValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED32 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FloatValueInternalTags.VALUE -> {
                 msg.value = decoder.readFloat()
             }
             else -> {
@@ -949,9 +994,13 @@ public fun Int64ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            Int64ValueInternalTags.VALUE -> {
                 msg.value = decoder.readInt64()
             }
             else -> {
@@ -1006,9 +1055,13 @@ public fun UInt64ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            UInt64ValueInternalTags.VALUE -> {
                 msg.value = decoder.readUInt64()
             }
             else -> {
@@ -1063,9 +1116,13 @@ public fun Int32ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            Int32ValueInternalTags.VALUE -> {
                 msg.value = decoder.readInt32()
             }
             else -> {
@@ -1120,9 +1177,13 @@ public fun UInt32ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            UInt32ValueInternalTags.VALUE -> {
                 msg.value = decoder.readUInt32()
             }
             else -> {
@@ -1177,9 +1238,13 @@ public fun BoolValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            BoolValueInternalTags.VALUE -> {
                 msg.value = decoder.readBool()
             }
             else -> {
@@ -1234,9 +1299,13 @@ public fun StringValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            StringValueInternalTags.VALUE -> {
                 msg.value = decoder.readString()
             }
             else -> {
@@ -1291,9 +1360,13 @@ public fun BytesValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            BytesValueInternalTags.VALUE -> {
                 msg.value = decoder.readBytes()
             }
             else -> {

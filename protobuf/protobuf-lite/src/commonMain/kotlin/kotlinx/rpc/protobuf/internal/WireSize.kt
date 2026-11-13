@@ -12,8 +12,8 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 public object WireSize {
     public fun tag(tag: WireTag): Int = Varint.sizeOf(UInt32(tag.raw))
 
-    public fun tag(fieldNumber: Int, wireType: WireType): Int =
-        tag(WireTag((fieldNumber shl 3) or wireType.ordinal))
+    public fun tag(fieldNumber: Int, wireType: Int): Int =
+        tag(WireTag(fieldNumber, wireType))
 
     public fun int32(value: Int): Int = Varint.sizeOf(Int32(value))
 

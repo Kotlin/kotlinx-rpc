@@ -16,6 +16,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 
 @InternalRpcApi
@@ -106,6 +107,10 @@ public class SourceContextInternal: SourceContext.Builder, InternalMessage(field
     }
 }
 
+private object SourceContextInternalTags {
+    const val FILE_NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun SourceContextInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.fileName.isNotEmpty()) {
@@ -128,9 +133,13 @@ public fun SourceContextInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            SourceContextInternalTags.FILE_NAME -> {
                 msg.fileName = decoder.readString()
             }
             else -> {

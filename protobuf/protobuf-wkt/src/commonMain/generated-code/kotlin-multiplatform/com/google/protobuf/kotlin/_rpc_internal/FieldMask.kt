@@ -16,6 +16,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 
 @InternalRpcApi
@@ -106,6 +107,10 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+private object FieldMaskInternalTags {
+    const val PATHS: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.paths.isNotEmpty()) {
@@ -130,9 +135,13 @@ public fun FieldMaskInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FieldMaskInternalTags.PATHS -> {
                 val target = msg.__pathsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)

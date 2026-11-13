@@ -27,9 +27,9 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     /** Human-readable extension name used in debug/string rendering. */
     public val name: String,
     /** Canonical wire type for non-packed encoding. */
-    public val wireType: WireType,
+    public val wireType: Int,
     /** Accepted wire types during decode (supports packed/unpacked compatibility). */
-    public val acceptedWireTypes: Set<WireType> = setOf(wireType),
+    public val acceptedWireTypes: Set<Int> = setOf(wireType),
     /** Lazy default value returned by generated extension getters when unset. */
     public val defaultValue: Lazy<V>,
     /** Computes encoded size of the stored extension value, including the tag and potentially length */
@@ -525,7 +525,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             default: () -> V,
             asInternal: (V) -> InternalMessage,
             encodeWith: (V, WireEncoder, ProtoConfig?) -> Unit,
-            decodeWith: (V, WireDecoder, ProtoConfig?, KTag?) -> Unit,
+            decodeWith: (V, WireDecoder, ProtoConfig?, WireTag?) -> Unit,
         ): InternalExtensionDescriptor<T, V> {
             val sharedDefault = lazy(default)
             return InternalExtensionDescriptor(
@@ -552,7 +552,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                         asInternal(sharedDefault.value).copyInternal() as V
                     }
                     val internal = asInternal(msg)
-                    val startGroup = KTag(fieldNumber, WireType.START_GROUP)
+                    val startGroup = WireTag(fieldNumber, WireType.START_GROUP)
                     dec.readGroup(internal) { _, decoder ->
                         decodeWith(msg, decoder, config, startGroup)
                     }

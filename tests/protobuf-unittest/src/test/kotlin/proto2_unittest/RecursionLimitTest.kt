@@ -65,7 +65,10 @@ class RecursionLimitTest {
 
     private fun decodeWith(msg: SimpleMsg, decoder: WireDecoder) {
         while (true) {
-            val tag = decoder.readTag() ?: break
+            val tag = decoder.readTag()
+            if (tag.isEnd) {
+                break
+            }
             when (tag.fieldNr) {
                 1 -> {
                     if (msg.nested == null) {

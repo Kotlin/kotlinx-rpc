@@ -18,6 +18,7 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
 
 @InternalRpcApi
@@ -501,6 +502,27 @@ public class ListValueInternal: ListValue.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+private object StructInternalTags {
+    const val FIELDS: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    object FieldsEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+}
+
+private object ValueInternalTags {
+    const val NULL_VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val NUMBER_VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val STRING_VALUE: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val BOOL_VALUE: Int = (4 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val STRUCT_VALUE: Int = (5 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val LIST_VALUE: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object ListValueInternalTags {
+    const val VALUES: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun StructInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.fields.isNotEmpty()) {
@@ -531,9 +553,13 @@ public fun StructInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            StructInternalTags.FIELDS -> {
                 val target = msg.__fieldsDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(StructInternal.FieldsEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> StructInternal.FieldsEntryInternal.decodeWith(msg, decoder, config) }
@@ -618,25 +644,29 @@ public fun ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ValueInternalTags.NULL_VALUE -> {
                 msg.nullValue = NullValue.fromNumber(decoder.readEnum())
             }
-            2 if tag.wireType == WireType.FIXED64 -> {
+            ValueInternalTags.NUMBER_VALUE -> {
                 msg.numberValue = decoder.readDouble()
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ValueInternalTags.STRING_VALUE -> {
                 msg.stringValue = decoder.readString()
             }
-            4 if tag.wireType == WireType.VARINT -> {
+            ValueInternalTags.BOOL_VALUE -> {
                 msg.boolValue = decoder.readBool()
             }
-            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ValueInternalTags.STRUCT_VALUE -> {
                 val target = if (msg.presenceMask[ValueInternal.PresenceIndices.structValue]) msg.structValue.asInternal() else StructInternal().also { msg.structValue = it }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> StructInternal.decodeWith(msg, decoder, config) }
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ValueInternalTags.LIST_VALUE -> {
                 val target = if (msg.presenceMask[ValueInternal.PresenceIndices.listValue]) msg.listValue.asInternal() else ListValueInternal().also { msg.listValue = it }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> ListValueInternal.decodeWith(msg, decoder, config) }
             }
@@ -714,9 +744,13 @@ public fun ListValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ListValueInternalTags.VALUES -> {
                 val target = msg.__valuesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ValueInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
@@ -781,12 +815,16 @@ public fun StructInternal.FieldsEntryInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            StructInternalTags.FieldsEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            StructInternalTags.FieldsEntryInternalTags.VALUE -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { ValueInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> ValueInternal.decodeWith(msg, decoder, config) }
             }
