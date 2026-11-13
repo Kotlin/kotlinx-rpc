@@ -4,4 +4,4 @@
 
 package kotlinx.rpc.test
 
-internal const val CI_LOAD_RUN: String = "load-05"
+internal const val CI_LOAD_RUN: String = "load-06"
