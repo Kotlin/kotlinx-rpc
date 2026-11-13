@@ -125,6 +125,7 @@ class GrpcClientCancellationTest {
             // stops before its request is ready doesn't reach the server.
             configureScenario = false,
         ) {
+            diagnosticTestName = "GrpcClientCancellationTest.callerCancellationStopsBlockedUnaryRequest"
             coroutineScope {
                 val call = async { testService.emptyCall(Empty {}) }
                 requests.awaitCollectionStarted()

@@ -17,6 +17,7 @@ import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
@@ -64,9 +65,28 @@ private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedCh
         get() = channel.isTerminated
 
     override suspend fun awaitTermination(duration: Duration): Boolean {
+        val dispatchStart = System.nanoTime()
+        diagnostic("await-dispatch", "timeout_ns=${duration.inWholeNanoseconds}")
         return withContext(Dispatchers.IO) {
-            channel.awaitTermination(duration.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+            diagnostic("await-enter", "dispatch_ns=${System.nanoTime() - dispatchStart} timeout_ns=${duration.inWholeNanoseconds}")
+            val start = System.nanoTime()
+            try {
+                val completed = channel.awaitTermination(duration.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+                diagnostic("await-exit", "elapsed_ns=${System.nanoTime() - start} completed=$completed")
+                completed
+            } catch (error: Throwable) {
+                diagnostic("await-exception", "elapsed_ns=${System.nanoTime() - start} exception=$error")
+                throw error
+            }
         }
+    }
+
+    private fun diagnostic(event: String, detail: String = "") {
+        println(
+            "CI_CHANNEL_JVM utc=${Instant.now()} epoch_ms=${System.currentTimeMillis()} " +
+                "mono_ns=${System.nanoTime()} channel=${hashCode()} event=$event " +
+                "shutdown=${channel.isShutdown} terminated=${channel.isTerminated} $detail"
+        )
     }
 
     override fun shutdown(): ManagedChannel {
@@ -75,7 +95,15 @@ private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedCh
     }
 
     override fun shutdownNow(): ManagedChannel {
-        channel.shutdownNow()
+        val start = System.nanoTime()
+        diagnostic("shutdown-enter")
+        try {
+            channel.shutdownNow()
+            diagnostic("shutdown-exit", "elapsed_ns=${System.nanoTime() - start}")
+        } catch (error: Throwable) {
+            diagnostic("shutdown-exception", "elapsed_ns=${System.nanoTime() - start} exception=$error")
+            throw error
+        }
         return this
     }
 }

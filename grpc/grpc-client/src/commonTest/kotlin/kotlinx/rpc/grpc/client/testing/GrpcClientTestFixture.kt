@@ -67,6 +67,8 @@ internal class GrpcClientTestFixture(
      */
     internal val callId: String = newCallId()
 
+    internal var diagnosticTestName: String = "other"
+
     private val dataClient: GrpcClient = createDataClient(GrpcClientTestServer.port)
     private val controlClient: GrpcClient = GrpcClient(GrpcClientTestServer.HOST, GrpcClientTestServer.port) {
         credentials = plaintext()
@@ -424,6 +426,15 @@ internal class GrpcClientTestFixture(
             }
         }
 
+        fun identifyChannel(channel: ManagedChannel, role: String) {
+            println(
+                "CI_CHANNEL test=$diagnosticTestName call_id=$callId role=$role " +
+                    "channel=${channel.hashCode()}"
+            )
+        }
+        identifyChannel(dataClient.channel, "data")
+        identifyChannel(controlClient.channel, "control")
+        disposableDataClient?.let { identifyChannel(it.channel, "disposable-data") }
         cleanup.shutdownChannel(dataClient.channel)
         disposableDataClient?.let { cleanup.shutdownChannel(it.channel) }
         cleanup.shutdownChannel(controlClient.channel)
