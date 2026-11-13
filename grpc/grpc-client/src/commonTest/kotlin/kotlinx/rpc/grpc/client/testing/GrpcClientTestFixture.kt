@@ -526,7 +526,7 @@ internal class GrpcClientTestCleanup(
         }
     }
 
-    internal suspend fun shutdownChannel(channel: ManagedChannel, terminationTimeout: Duration = 60.seconds) {
+    internal suspend fun shutdownChannel(channel: ManagedChannel, terminationTimeout: Duration = 15.seconds) {
         run { channel.shutdownNow() }
         // The JVM wait blocks, so the step timeout must exceed the channel timeout.
         // A loaded CI agent can stall the JVM for seconds, so the default tolerates such stalls.
