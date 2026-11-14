@@ -147,7 +147,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
 
     @Test
     fun `test throw status exception - should fail with status`() {
-        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE, "This is my custom exception") {
+        assertGrpcFailure(GrpcStatusCode.UNIMPLEMENTED, "This is my custom exception") {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials()
@@ -299,7 +299,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
                 return GrpcMetadata { }
             }
         }
-        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
+        assertGrpcFailure(GrpcStatusCode.UNIMPLEMENTED) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + someCredentials + ThrowingCallCredentials()
@@ -321,7 +321,7 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
                 return GrpcMetadata { }
             }
         }
-        assertGrpcFailure(GrpcStatusCode.UNAVAILABLE) {
+        assertGrpcFailure(GrpcStatusCode.UNIMPLEMENTED) {
             runGrpcTest(
                 clientConfiguration = {
                     credentials = plaintext() + ThrowingCallCredentials() + someCredentials
