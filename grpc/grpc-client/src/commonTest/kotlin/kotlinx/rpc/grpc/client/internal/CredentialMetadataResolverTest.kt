@@ -67,7 +67,7 @@ class CredentialMetadataResolverTest {
     }
 
     @Test
-    fun mapsProviderStatusExceptionToUnavailable() = runTest {
+    fun propagatesProviderStatusExceptionUnchanged() = runTest {
         val cause = GrpcStatusCode.PERMISSION_DENIED.asException("provider status")
         val credentials = TestCredentials { throw cause }
 
@@ -75,8 +75,8 @@ class CredentialMetadataResolverTest {
             credentials.resolveRequestMetadata("localhost", "example.Service/Call", false)
         }
 
-        assertEquals(GrpcStatusCode.UNAVAILABLE, failure.status.statusCode)
-        assertSame(cause, failure.cause)
+        assertEquals(GrpcStatusCode.PERMISSION_DENIED, failure.status.statusCode)
+        assertSame(cause, failure)
     }
 
     @Test
