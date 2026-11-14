@@ -66,6 +66,44 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
     }
 
     /**
+     * Fast-path for reading a varint into a buffer without decoding it.
+     */
+    @OptIn(UnsafeIoApi::class)
+    fun readVarint64Into(buffer: Buffer) {
+        var left = Varint.MAX_SIZE_64
+        while (true) {
+            if (pos == readEnd) {
+                refill()
+            }
+            val available = minOf(readEnd - pos, left)
+            var terminated = false
+            val copied = UnsafeBufferOperations.writeToTail(buffer, available) { bytes, start, _ ->
+                var count = 0
+                while (count < available) {
+                    val byte = window.getByte(pos + count)
+                    bytes[start + count] = byte
+                    count++
+                    if (byte >= 0) {
+                        // If byte is positive, MSB is 0, which means it's a terminal byte
+                        terminated = true
+                        break
+                    }
+                }
+                count
+            }
+            pos += copied
+            if (terminated) {
+                return
+            }
+            left -= copied
+            if (left == 0) {
+                // If we reached the max number of bytes without reading a terminal byte, it's malformed
+                throw ProtobufDecodingException.malformedVarint()
+            }
+        }
+    }
+
+    /**
      * Reads a varint and keeps its low 32 bits.
      *
      * A negative `int32` has 10 bytes on the wire, so this reads up to 10 bytes. The same truncation applies to

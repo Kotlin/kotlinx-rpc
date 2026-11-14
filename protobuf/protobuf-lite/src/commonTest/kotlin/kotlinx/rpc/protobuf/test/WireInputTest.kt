@@ -51,6 +51,61 @@ class WireInputTest {
     }
 
     @Test
+    fun copyVarintsPreservesBytesAndStopsAtTheTerminator() {
+        for (chunk in CHUNK_SIZES) {
+            for (length in 1..10) {
+                for (last in listOf(0x00, 0x01, 0x7F)) {
+                    val encoded = ByteArray(length - 1) { 0xFF.toByte() } + last.toByte()
+                    for (offset in 0..10) {
+                        val prefix = ByteArray(8192 - offset) { 42 }
+                        val destination = Buffer().apply { write(prefix) }
+                        val input = ByteArray(offset) + encoded + bytes(123)
+                        wireInput(input, chunk) { reader ->
+                            reader.skip(offset)
+                            reader.readVarint64Into(destination)
+                            assertContentEquals(prefix + encoded, destination.readByteArray())
+                            assertEquals(123, reader.readByte())
+                            assertTrue(reader.isAtLimit)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun copyVarintsRejectsTruncationAndMoreThanTenBytes() {
+        for (chunk in CHUNK_SIZES) {
+            for (length in 0..10) {
+                val input = ByteArray(length) { 0x80.toByte() }
+                val expected = if (length == 10) {
+                    ProtobufDecodingException.malformedVarint()
+                } else {
+                    ProtobufDecodingException.truncatedMessage()
+                }
+                wireInput(input + bytes(0), chunk) { reader ->
+                    val oldLimit = reader.pushLimit(length)
+                    val failure = assertFailsWith<ProtobufDecodingException> { reader.readVarint64Into(Buffer()) }
+                    assertEquals(expected.message, failure.message)
+                    assertEquals(length, reader.position)
+                    reader.popLimit(oldLimit)
+                    assertEquals(0, reader.readByte())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun copyVarintsRespectsNestedLimits() {
+        for (length in 1..10) {
+            val input = ByteArray(length - 1) { 0x80.toByte() } + bytes(0)
+            for (limit in 0 until length) {
+                assertTruncatedAtLimit(input, limit) { it.readVarint64Into(Buffer()) }
+            }
+        }
+    }
+
+    @Test
     fun tagVarints() {
         for (chunk in CHUNK_SIZES) {
             wireInput(bytes(0x08), chunk) {

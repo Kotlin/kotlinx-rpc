@@ -194,7 +194,11 @@ public class WireDecoder internal constructor(
         writeUnknownTag(tag, out)
         when (tag.wireType) {
             WireType.VARINT -> {
-                readUnknownVarint(out)
+                if (out == null) {
+                    input.readVarint64()
+                } else {
+                    input.readVarint64Into(out)
+                }
             }
 
             WireType.FIXED32 -> {
