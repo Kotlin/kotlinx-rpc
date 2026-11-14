@@ -55,20 +55,11 @@ internal class SwiftGrpcClientBackend(
             // Add client level call credentials to call specific call credentials
             callOptions.callCredentials += clientCallCredentials
 
-            var credentialHeaders: GrpcMetadata? = null
-            var failure: GrpcStatus? = null
-            callOptions.callCredentials.applyToMetadata(
+            val credentialHeaders = callOptions.callCredentials.resolveRequestMetadata(
                 requestAuthority = channel.authority,
                 requestMethodFullName = method.getFullMethodName(),
                 isTransportSecure = channel.secure,
-                recordFailure = { failure = it },
-                applyCallCredentials = { credentialHeaders = it },
             )
-
-            // If metadata application fails, we abort the RPC call early
-            failure?.let { throw it.asException() }
-            // If there was no failure, the credential headers must not be null
-            check(credentialHeaders != null)
 
             // Copy headers to avoid leaking the credentials into the user-owned headers
             val callHeaders = headers.copy().apply {
