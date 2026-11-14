@@ -8,7 +8,6 @@ Currently contains:
 - `tools/collect_headers.bzl`
 
 Used by:
-- `native-deps/grpc-c-prebuilt`
 - `native-deps/shims`
 
 Kotlin/Native toolchain notes:

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+import "all_primitives.proto";
+
+service PrimitiveService {
+  rpc Echo(AllPrimitives) returns (AllPrimitives);
+}

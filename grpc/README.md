@@ -2,9 +2,8 @@
 
 This module implements gRPC protocol support. 
 It provides Kotlin Multiplatform gRPC clients and servers. JVM and Android use gRPC Java.
-iOS clients use grpc-swift-2 with Apple's Network.framework through the
-[Swift bridge](https://github.com/Kotlin/kotlinx-rpc-grpc-swift). Other supported Native clients,
-including macOS and Linux, and Native servers use C interop with gRPC Core.
+Apple clients (iOS, macOS, tvOS, and watchOS) use grpc-swift-2 with Apple's Network.framework through the
+[Swift bridge](https://github.com/Kotlin/kotlinx-rpc-grpc-swift). The gRPC server supports the JVM only.
 WASM, JS, and MinGW are not supported yet.
 
 ## Module Dependency Graph
@@ -16,7 +15,7 @@ grpc-ktor-server --> grpc-server --\
                      
 grpc-marshaller-kotlinx-serialization --> grpc-marshaller
 
-grpc-client (iosMain) --> kotlinx-rpc-grpc-swift (SwiftPM) --> grpc-swift-2 + grpc-swift-nio-transport
+grpc-client (appleMain) --> kotlinx-rpc-grpc-swift (SwiftPM) --> grpc-swift-2 + grpc-swift-nio-transport
 ```
 
 Generated Kotlin services, protobuf messages,

@@ -26,7 +26,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-
 @Grpc(protoServiceName = "Service")
 private interface ClientTestService {
     suspend fun serverTest(message: UnknownFieldsAll): UnknownFieldsAll

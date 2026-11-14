@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "reference.proto";
+import "reference_package.proto";
+import "enum.proto";
+import "optional.proto";
+import "repeated.proto";
+import "nested.proto";
+import "test_map.proto";
+import "one_of.proto";
+
+service ReferenceTestService {
+  rpc Get(References) returns (kotlinx.rpc.grpc.test.References);
+
+  rpc Enum(kotlinx.rpc.grpc.test.UsingEnum) returns (kotlinx.rpc.grpc.test.UsingEnum);
+
+  rpc Optional(kotlinx.rpc.grpc.test.OptionalTypes) returns (kotlinx.rpc.grpc.test.OptionalTypes);
+
+  rpc Repeated(kotlinx.rpc.grpc.test.Repeated) returns (kotlinx.rpc.grpc.test.Repeated);
+
+  rpc Nested(kotlinx.rpc.grpc.test.Nested) returns (kotlinx.rpc.grpc.test.Nested);
+
+  rpc Map(kotlinx.rpc.grpc.test.TestMap) returns (kotlinx.rpc.grpc.test.TestMap);
+
+  rpc OneOf(kotlinx.rpc.grpc.test.OneOf) returns (kotlinx.rpc.grpc.test.OneOf);
+}

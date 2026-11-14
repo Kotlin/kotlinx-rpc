@@ -43,7 +43,6 @@ All Develocity configuration lives in a single convention plugin:
 | `gradle-plugin/`                     | No               |
 | `protoc-gen/`                        | No               |
 | `native-deps/shims/`                 | No (hard opt-out)|
-| `native-deps/grpc-c-prebuilt/`       | No (hard opt-out)|
 
 ### Build cache
 

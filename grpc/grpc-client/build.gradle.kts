@@ -7,7 +7,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import util.grpc.withGrpcClientTestServer
 import util.other.localProperties
-import util.targets.configureNonSwiftSourceSets
 import util.targets.configureSwiftPMXcodeBuildConfiguration
 
 plugins {
@@ -20,10 +19,6 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    // Applies the default hierarchy template, which the custom source sets below disable, and
-    // adds the nonSwift* branches for the targets without the Swift backend.
-    configureNonSwiftSourceSets()
-
     sourceSets {
         commonMain {
             dependencies {
@@ -35,7 +30,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
-                implementation(projects.tests.testProtos)
+                implementation(projects.tests.testGrpcProtos)
                 implementation(projects.tests.testUtils)
             }
         }
@@ -50,12 +45,6 @@ kotlin {
             dependencies {
                 implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
                 implementation(libs.serialization.json)
-            }
-        }
-
-        named("nonSwiftNativeMain") {
-            dependencies {
-                implementation(libs.atomicfu)
             }
         }
 

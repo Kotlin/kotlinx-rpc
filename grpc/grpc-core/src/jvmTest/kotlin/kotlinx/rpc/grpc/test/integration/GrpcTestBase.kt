@@ -48,7 +48,9 @@ abstract class GrpcTestBase {
 
             val grpcClient = GrpcClient("localhost", grpcServer.port) {
                 credentials = clientCreds ?: plaintext()
-                if (overrideAuthority != null) this.overrideAuthority = overrideAuthority
+                if (overrideAuthority != null) {
+                    this.overrideAuthority = overrideAuthority
+                }
                 clientInterceptors.forEach { intercept(it) }
                 clientConfiguration()
             }

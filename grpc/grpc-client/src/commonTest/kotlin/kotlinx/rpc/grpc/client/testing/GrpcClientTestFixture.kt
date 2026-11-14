@@ -15,6 +15,7 @@ import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.withService
 import kxrpc.testing.AllowInboundReadsRequest
 import kxrpc.testing.AwaitEventRequest
@@ -423,9 +424,9 @@ internal class GrpcClientTestFixture(
             }
         }
 
-        cleanup.shutdownClient(dataClient)
-        disposableDataClient?.let { cleanup.shutdownClient(it) }
-        cleanup.shutdownClient(controlClient)
+        cleanup.shutdownChannel(dataClient.channel)
+        disposableDataClient?.let { cleanup.shutdownChannel(it.channel) }
+        cleanup.shutdownChannel(controlClient.channel)
 
         return cleanup.failure()
     }
@@ -488,7 +489,7 @@ private class CallIdInterceptor(
  *
  * ```kotlin
  * val cleanup = GrpcClientTestCleanup()
- * cleanup.shutdownClient(client)
+ * cleanup.shutdownChannel(client.channel)
  * cleanup.failure()?.let { throw it }
  * ```
  *
@@ -514,14 +515,14 @@ internal class GrpcClientTestCleanup(
         }
     }
 
-    internal suspend fun shutdownClient(client: GrpcClient, terminationTimeout: Duration = 15.seconds) {
-        run { client.shutdownNow() }
+    internal suspend fun shutdownChannel(channel: ManagedChannel, terminationTimeout: Duration = 15.seconds) {
+        run { channel.shutdownNow() }
         // The JVM wait blocks, so the step timeout must exceed the channel timeout.
         // A loaded CI agent can stall the JVM for seconds, so the default tolerates such stalls.
         run(timeout = terminationTimeout + stepTimeout) {
             assertTrue(
-                client.channel.awaitTermination(terminationTimeout),
-                "The gRPC client did not terminate within $terminationTimeout",
+                channel.awaitTermination(terminationTimeout),
+                "The gRPC channel did not terminate within $terminationTimeout",
             )
         }
     }

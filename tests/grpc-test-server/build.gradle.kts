@@ -57,7 +57,7 @@ rpc {
 
 sourceSets.main {
     proto {
-        srcDir(project(":tests:test-protos").layout.projectDirectory.dir("src/commonMain/proto"))
+        srcDir(project(":tests:test-grpc-protos").layout.projectDirectory.dir("src/commonMain/proto"))
         include("echo_grpc.proto")
         include("helloworld_grpc.proto")
         include("kxrpc/testing/client_control.proto")

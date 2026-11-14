@@ -20,6 +20,7 @@ private val excludedProjects = setOf(
     "protobuf-playground",
     "grpc-test-server",
     "test-protos",
+    "test-grpc-protos",
     "test-utils",
     "grpc-benchmarks",
     "protos",

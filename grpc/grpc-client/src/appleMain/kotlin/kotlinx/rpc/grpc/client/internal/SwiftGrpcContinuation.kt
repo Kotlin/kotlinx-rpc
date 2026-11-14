@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.grpc.client.internal
 
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSError
 import kotlin.coroutines.resume
@@ -16,6 +17,7 @@ internal class SwiftGrpcInteropException(
     val error: NSError,
 ) : RuntimeException(error.localizedDescription)
 
+@OptIn(UnsafeNumber::class)
 internal fun swiftGrpcError(description: String): NSError = NSError(
     domain = "kotlinx.rpc.grpc.swift",
     code = 1,
