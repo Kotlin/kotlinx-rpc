@@ -83,4 +83,31 @@ public object WireSize {
     public fun packedSFixed64(value: List<Long>): Int = value.size * 8
 
     public fun packedBool(value: List<Boolean>): Int = value.size
+
+    /** The `packed*` overloads for the primitive array lists, see [IntArrayList]. */
+    public fun packedInt32(value: IntArrayList): Int = value.sumOfInt { int32(it) }
+
+    public fun packedInt64(value: LongArrayList): Int = value.sumOfLong { int64(it) }
+
+    public fun packedUInt32(value: UIntArrayList): Int = value.sumOfUInt { uInt32(it) }
+
+    public fun packedUInt64(value: ULongArrayList): Int = value.sumOfULong { uInt64(it) }
+
+    public fun packedSInt32(value: IntArrayList): Int = value.sumOfInt { sInt32(it) }
+
+    public fun packedSInt64(value: LongArrayList): Int = value.sumOfLong { sInt64(it) }
+
+    public fun packedFloat(value: FloatArrayList): Int = value.size * 4
+
+    public fun packedDouble(value: DoubleArrayList): Int = value.size * 8
+
+    public fun packedFixed32(value: UIntArrayList): Int = value.size * 4
+
+    public fun packedFixed64(value: ULongArrayList): Int = value.size * 8
+
+    public fun packedSFixed32(value: IntArrayList): Int = value.size * 4
+
+    public fun packedSFixed64(value: LongArrayList): Int = value.size * 8
+
+    public fun packedBool(value: BooleanArrayList): Int = value.size
 }

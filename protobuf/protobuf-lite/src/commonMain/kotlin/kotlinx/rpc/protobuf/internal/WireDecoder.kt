@@ -144,6 +144,74 @@ public class WireDecoder internal constructor(
         readPackedFixed(destination, 8) { readDouble() }
     }
 
+    /**
+     * The `readPacked*` overloads for the primitive array lists, see [IntArrayList]. Each occurrence of a field
+     * appends to the same destination.
+     */
+    public fun readPackedInt32(destination: IntArrayList) {
+        readPackedVarints { destination.addInt(readInt32()) }
+    }
+
+    public fun readPackedInt64(destination: LongArrayList) {
+        readPackedVarints { destination.addLong(readInt64()) }
+    }
+
+    public fun readPackedUInt32(destination: UIntArrayList) {
+        readPackedVarints { destination.addUInt(readUInt32()) }
+    }
+
+    public fun readPackedUInt64(destination: ULongArrayList) {
+        readPackedVarints { destination.addULong(readUInt64()) }
+    }
+
+    public fun readPackedSInt32(destination: IntArrayList) {
+        readPackedVarints { destination.addInt(readSInt32()) }
+    }
+
+    public fun readPackedSInt64(destination: LongArrayList) {
+        readPackedVarints { destination.addLong(readSInt64()) }
+    }
+
+    public fun readPackedBool(destination: BooleanArrayList) {
+        readPackedVarints { destination.addBoolean(readBool()) }
+    }
+
+    public fun readPackedFixed32(destination: UIntArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addUInt(readFixed32()) }
+    }
+
+    public fun readPackedSFixed32(destination: IntArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addInt(readSFixed32()) }
+    }
+
+    public fun readPackedFloat(destination: FloatArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addFloat(readFloat()) }
+    }
+
+    public fun readPackedFixed64(destination: ULongArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addULong(readFixed64()) }
+    }
+
+    public fun readPackedSFixed64(destination: LongArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addLong(readSFixed64()) }
+    }
+
+    public fun readPackedDouble(destination: DoubleArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addDouble(readDouble()) }
+    }
+
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
         enterNested()
         val length = readLength()
@@ -195,26 +263,34 @@ public class WireDecoder internal constructor(
     }
 
     private inline fun <T> readPackedVarints(destination: MutableList<T>, read: () -> T) {
+        readPackedVarints { destination.add(read()) }
+    }
+
+    private inline fun readPackedVarints(readElement: () -> Unit) {
         val length = readLength()
         if (length == 0) {
             return
         }
         val oldLimit = input.pushLimit(length)
         while (!input.isAtLimit) {
-            destination.add(read())
+            readElement()
         }
         input.popLimit(oldLimit)
     }
 
     private inline fun <T> readPackedFixed(destination: MutableList<T>, elementSize: Int, read: () -> T) {
+        repeat(readPackedFixedCount(elementSize)) {
+            destination.add(read())
+        }
+    }
+
+    /** Reads the length of a packed fixed-width field and returns its element count. */
+    private fun readPackedFixedCount(elementSize: Int): Int {
         val length = readLength()
         if (length % elementSize != 0) {
             throw ProtobufDecodingException("Packed field length $length isn't a multiple of $elementSize.")
         }
-        val count = length / elementSize
-        repeat(count) {
-            destination.add(read())
-        }
+        return length / elementSize
     }
 
     private fun readOrSkipUnknownField(tag: WireTag, out: Buffer?) {

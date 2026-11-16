@@ -302,15 +302,32 @@ class ModelToProtobufKotlinCommonGenerator(
             needsNewLineAfterDeclaration = false
         )
 
-        property(
-            name = field.name,
-            modifiers = override,
-            value = field.internalDelegateName.scoped(),
-            isVar = true,
-            type = field.typeFqName(),
-            propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
-            needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
-        )
+        val listClass = field.primitiveArrayListClass
+        if (listClass == null) {
+            property(
+                name = field.name,
+                modifiers = override,
+                value = field.internalDelegateName.scoped(),
+                isVar = true,
+                type = field.typeFqName(),
+                propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
+                needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
+            )
+        } else {
+            // the setter copies every assigned list into the primitive array list, so the codec finds it there
+            property(
+                name = field.name,
+                modifiers = override,
+                isVar = true,
+                type = field.typeFqName(),
+                propertyInitializer = CodeGenerator.PropertyInitializer.GETTER,
+                value = field.safeDefaultValue(msg).wrapIn { default ->
+                    "${field.internalDelegateName}.getOrNull(this) ?: $default"
+                },
+                setter = "${field.internalDelegateName}.set(this, %T.copyOf(value))".scoped(listClass),
+                needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
+            )
+        }
 
         // the payload size of a packed varint field needs a list scan, so it is cached after the first scan
         if (field.needsPackedSizeCache) {
@@ -952,8 +969,13 @@ class ModelToProtobufKotlinCommonGenerator(
         return when (this) {
             is FieldType.IntegralType -> varName
             is FieldType.Enum -> varName
-            is FieldType.List -> varName.merge(value.copyCall("it".scoped())) { varName, copyCall ->
-                "$varName.map { $copyCall }"
+            is FieldType.List -> if (value.primitiveArrayListClass != null) {
+                // the setter of the copy converts and deep-copies the assigned list
+                varName
+            } else {
+                varName.merge(value.copyCall("it".scoped())) { varName, copyCall ->
+                    "$varName.map { $copyCall }"
+                }
             }
 
             is FieldType.Map -> varName.merge(entry.value.copyCall("it.value".scoped())) { varName, copyCall ->
@@ -1552,10 +1574,18 @@ class ModelToProtobufKotlinCommonGenerator(
         val lvalue = "msg.${field.name}".scoped()
 
         fun CodeGenerator.repeatedDecodeTarget(): ScopedFormattedString {
-            code(
-                "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { mutableListOf() } as %T"
-                    .scoped(FqName.Implicits.MutableList)
-            )
+            val listClass = field.primitiveArrayListClass
+            if (listClass == null) {
+                code(
+                    "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { mutableListOf() } as %T"
+                        .scoped(FqName.Implicits.MutableList)
+                )
+            } else {
+                code(
+                    "val target = msg.${field.internalDelegateName}.getOrCreate(msg) { %T() } as %T"
+                        .scoped(listClass, listClass)
+                )
+            }
             return "target".scoped()
         }
 
@@ -1690,7 +1720,8 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     else -> generateDecodeFieldValue(fieldType.value, "val elem".scoped())
                 }
-                code(lvalue.wrapIn { target -> "$target.add(elem)" })
+                val addMethod = "add${fieldType.value.primitiveListSuffix.orEmpty()}"
+                code(lvalue.wrapIn { target -> "$target.$addMethod(elem)" })
             }
 
             is FieldType.Enum -> {
@@ -1783,8 +1814,11 @@ class ModelToProtobufKotlinCommonGenerator(
         field: FieldDeclaration,
         valueVar: ScopedFormattedString,
     ) {
+        val castVar = field.primitiveArrayListClass?.let { listClass ->
+            valueVar.merge(listClass.scoped()) { value, cls -> "$value as $cls" }
+        } ?: valueVar
         generateEncodeFieldValue(
-            valueVar = valueVar,
+            valueVar = castVar,
             type = field.type,
             number = field.number,
             isPacked = field.dec.isPacked,
@@ -1866,7 +1900,11 @@ class ModelToProtobufKotlinCommonGenerator(
 
                     else -> {
                         require(encFunc != null) { "No encode function for list type: $type" }
-                        scope(valueVar.wrapIn { valueVar -> "$valueVar.forEach" }) {
+                        // a primitive array list arrives as a cast, so it needs parentheses before the call
+                        val forEach = innerType.primitiveListSuffix
+                            ?.let { suffix -> valueVar.wrapIn { valueVar -> "($valueVar).forEach$suffix" } }
+                            ?: valueVar.wrapIn { valueVar -> "$valueVar.forEach" }
+                        scope(forEach) {
                             val enumSuffix = if (type.value is FieldType.Enum) ".number" else ""
                             code("encoder.write${encFunc}($number, it$enumSuffix)".scoped())
                         }
@@ -2064,6 +2102,9 @@ class ModelToProtobufKotlinCommonGenerator(
         variable: ScopedFormattedString,
         noResultUpdate: Boolean,
     ) {
+        val variable = field.primitiveArrayListClass?.let { listClass ->
+            variable.merge(listClass.scoped()) { variable, cls -> "$variable as $cls" }
+        } ?: variable
         val resultPrefix = if (noResultUpdate) "" else "__result += "
         val valueSize by lazy { field.type.valueSizeCall(variable, field.number, field.dec.isPacked) }
         val tagSize = tagSizeCall(field.number, field.type.wireType)
@@ -2218,8 +2259,14 @@ class ModelToProtobufKotlinCommonGenerator(
                         }
                     }
 
+                    val primitiveSuffix = value.primitiveListSuffix
                     variable.merge(elementSize) { variable, elementSize ->
-                        "$variable.sumOf { element -> $elementSize }"
+                        if (primitiveSuffix == null) {
+                            "$variable.sumOf { element -> $elementSize }"
+                        } else {
+                            // a primitive array list arrives as a cast, so it needs parentheses before the call
+                            "($variable).sumOf$primitiveSuffix { element -> $elementSize }"
+                        }
                     }
                 }
             }
@@ -2744,6 +2791,37 @@ private fun FieldDeclaration.baseExtensionDescriptorArgs(): List<Pair<String, Sc
 private val FieldDeclaration.internalDelegateName: String get() = "__${rawName}Delegate"
 
 private val FieldDeclaration.packedSizeFieldName: String get() = "__${rawName}PackedSize"
+
+/** The primitive array list class of a list element type, or null when the list stays a plain list. */
+private val FieldType.primitiveArrayListClass: FqName.Declaration?
+    get() = when (this) {
+        FieldType.IntegralType.BOOL -> FqName.RpcClasses.BooleanArrayList
+        FieldType.IntegralType.INT32,
+        FieldType.IntegralType.SINT32,
+        FieldType.IntegralType.SFIXED32 -> FqName.RpcClasses.IntArrayList
+
+        FieldType.IntegralType.INT64,
+        FieldType.IntegralType.SINT64,
+        FieldType.IntegralType.SFIXED64 -> FqName.RpcClasses.LongArrayList
+
+        FieldType.IntegralType.UINT32,
+        FieldType.IntegralType.FIXED32 -> FqName.RpcClasses.UIntArrayList
+
+        FieldType.IntegralType.UINT64,
+        FieldType.IntegralType.FIXED64 -> FqName.RpcClasses.ULongArrayList
+
+        FieldType.IntegralType.FLOAT -> FqName.RpcClasses.FloatArrayList
+        FieldType.IntegralType.DOUBLE -> FqName.RpcClasses.DoubleArrayList
+        else -> null
+    }
+
+/** The name part of the unboxed members of the primitive array list, for example `Int` in `addInt`. */
+private val FieldType.primitiveListSuffix: String?
+    get() = primitiveArrayListClass?.simpleName?.removeSuffix("ArrayList")
+
+/** The primitive array list class of a repeated field, or null when the field stays a plain list. */
+private val FieldDeclaration.primitiveArrayListClass: FqName.Declaration?
+    get() = (type as? FieldType.List)?.value?.primitiveArrayListClass
 
 private fun EnumDeclaration.generatedValueName(descriptor: Descriptors.EnumValueDescriptor): FqName {
     originalEntries.firstOrNull { it.dec == descriptor }?.let { return it.name }
