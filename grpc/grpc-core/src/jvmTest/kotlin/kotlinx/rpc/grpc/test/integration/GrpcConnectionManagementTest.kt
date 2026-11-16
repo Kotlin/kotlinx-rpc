@@ -4,16 +4,20 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.internal.ServerBuilder
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
 import kotlinx.rpc.registerService
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcConnectionManagementTest : GrpcTestBase() {
@@ -68,8 +72,24 @@ class GrpcConnectionManagementTest : GrpcTestBase() {
     }
 }
 
-internal expect fun GrpcTestBase.testConnectionManagement(
+internal fun GrpcTestBase.testConnectionManagement(
     maxIdle: Duration,
     maxAge: Duration,
     maxAgeGrace: Duration,
-)
+) = runBlocking {
+    val server = GrpcServer(0) {
+        maxConnectionIdle = maxIdle
+        maxConnectionAge = maxAge
+        maxConnectionAgeGrace = maxAgeGrace
+    }
+
+    try {
+        val builder = server.getField<ServerBuilder<*>>("serverBuilder")
+        assertEquals(maxIdle, builder.getField<Long>("maxConnectionIdleInNanos").nanoseconds)
+        assertEquals(maxAge, builder.getField<Long>("maxConnectionAgeInNanos").nanoseconds)
+        assertEquals(maxAgeGrace, builder.getField<Long>("maxConnectionAgeGraceInNanos").nanoseconds)
+    } finally {
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
+    }
+}

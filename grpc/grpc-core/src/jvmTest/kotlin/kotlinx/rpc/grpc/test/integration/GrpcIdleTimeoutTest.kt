@@ -7,13 +7,19 @@ package kotlinx.rpc.grpc.test.integration
 import kotlinx.coroutines.runBlocking
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
+import kotlinx.rpc.grpc.client.internal.ManagedChannel
+import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
+import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
+import kotlinx.rpc.withService
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcIdleTimeoutTest : GrpcTestBase() {
@@ -55,4 +61,18 @@ class GrpcIdleTimeoutTest : GrpcTestBase() {
     }
 }
 
-internal expect fun GrpcTestBase.testIdleTimeout(timeout: Duration?)
+internal fun GrpcTestBase.testIdleTimeout(timeout: Duration?) {
+    runGrpcTest(clientConfiguration = {
+        if (timeout != null) {
+            idleTimeout = timeout
+        }
+    }) {
+        it.withService<EchoService>().unaryEcho(EchoRequest { message = "Hello" })
+
+        val idleTimeout = it.getField<ManagedChannel>("channel")
+            .getField<Long>("channel", "delegate", "idleTimeoutMillis")
+            .milliseconds
+
+        assertEquals(timeout ?: 30.minutes, idleTimeout)
+    }
+}

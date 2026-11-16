@@ -30,12 +30,6 @@ kotlin {
             }
         }
 
-        nativeMain {
-            dependencies {
-                implementation(libs.kotlinx.io.core)
-            }
-        }
-
         jvmTest {
             dependencies {
                 implementation(libs.grpc.netty)
