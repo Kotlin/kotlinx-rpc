@@ -262,6 +262,13 @@ data class FieldDeclaration(
 ) {
     val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
 
+    /**
+     * True for a packed field with varint elements other than bool. The payload size needs a list scan,
+     * so the generated class caches it between the size computation and the encode.
+     */
+    val needsPackedSizeCache: Boolean
+        get() = dec.isPacked && !packedFixedSize && (type as? FieldType.List)?.value != FieldType.IntegralType.BOOL
+
     val isPartOfOneof: Boolean = dec.realContainingOneof != null
 
     val isPartOfMapEntry = dec.containingType.options.mapEntry

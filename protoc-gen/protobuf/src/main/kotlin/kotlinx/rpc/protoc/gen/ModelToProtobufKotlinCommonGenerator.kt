@@ -311,6 +311,18 @@ class ModelToProtobufKotlinCommonGenerator(
             propertyInitializer = CodeGenerator.PropertyInitializer.DELEGATE,
             needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
         )
+
+        // the payload size of a packed varint field needs a list scan, so it is cached after the first scan
+        if (field.needsPackedSizeCache) {
+            property(
+                name = field.packedSizeFieldName,
+                modifiers = "internal",
+                type = FqName.Implicits.Int.scoped(),
+                value = "-1".scoped(),
+                isVar = true,
+                needsNewLineAfterDeclaration = index == msg.actualFields.lastIndex,
+            )
+        }
     }
 
     /**
@@ -1776,7 +1788,8 @@ class ModelToProtobufKotlinCommonGenerator(
             type = field.type,
             number = field.number,
             isPacked = field.dec.isPacked,
-            packedWithFixedSize = field.packedFixedSize
+            packedWithFixedSize = field.packedFixedSize,
+            packedSizeField = field.packedSizeFieldName.takeIf { field.needsPackedSizeCache },
         )
     }
 
@@ -1786,6 +1799,7 @@ class ModelToProtobufKotlinCommonGenerator(
         number: Int,
         isPacked: Boolean,
         packedWithFixedSize: Boolean,
+        packedSizeField: String? = null,
     ) {
         var encFunc = type.decodeEncodeFuncName()
         when (type) {
@@ -1812,17 +1826,32 @@ class ModelToProtobufKotlinCommonGenerator(
                     }
 
                     isPacked && !packedWithFixedSize -> {
-                        code(
-                            packedValueVar.merge(
-                                other = type.valueSizeCall(
-                                    variable = valueVar,
-                                    number = number,
-                                    isPacked = true,
-                                ),
-                            ) { packedValueVar, valueSizeCall ->
-                                "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar, fieldSize = $valueSizeCall)"
-                            }
-                        )
+                        if (packedSizeField == null) {
+                            code(
+                                packedValueVar.merge(
+                                    other = type.valueSizeCall(
+                                        variable = valueVar,
+                                        number = number,
+                                        isPacked = true,
+                                    ),
+                                ) { packedValueVar, valueSizeCall ->
+                                    "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar, fieldSize = $valueSizeCall)"
+                                }
+                            )
+                        } else {
+                            // the size computation fills the cache; the direct-encode path fills it on first use
+                            val valueSize = type.valueSizeCall(variable = valueVar, number = number, isPacked = true)
+                            code(
+                                valueSize.wrapIn { valueSize ->
+                                    "if ($packedSizeField < 0) { $packedSizeField = $valueSize }"
+                                }
+                            )
+                            code(
+                                packedValueVar.wrapIn { packedValueVar ->
+                                    "encoder.writePacked${encFunc!!}(fieldNr = $number, value = $packedValueVar, fieldSize = $packedSizeField)"
+                                }
+                            )
+                        }
                     }
 
                     innerType is FieldType.Message -> scope(valueVar.wrapIn { valueVar -> "$valueVar.forEach" }) {
@@ -2043,11 +2072,20 @@ class ModelToProtobufKotlinCommonGenerator(
             is FieldType.List -> when {
                 // packed fields also have the tag + len
                 field.dec.isPacked -> {
-                    code(
-                        valueSize.merge(tagSize, int32SizeCall("it".scoped())) { valueSize, tagSize, int32SizeCall ->
-                            "$resultPrefix$valueSize.let { $tagSize + $int32SizeCall + it }"
-                        }
-                    )
+                    if (field.needsPackedSizeCache) {
+                        code(valueSize.wrapIn { valueSize -> "${field.packedSizeFieldName} = $valueSize" })
+                        code(
+                            tagSize.merge(int32SizeCall("it".scoped())) { tagSize, int32SizeCall ->
+                                "$resultPrefix${field.packedSizeFieldName}.let { $tagSize + $int32SizeCall + it }"
+                            }
+                        )
+                    } else {
+                        code(
+                            valueSize.merge(tagSize, int32SizeCall("it".scoped())) { valueSize, tagSize, int32SizeCall ->
+                                "$resultPrefix$valueSize.let { $tagSize + $int32SizeCall + it }"
+                            }
+                        )
+                    }
                 }
 
                 else -> {
@@ -2704,6 +2742,8 @@ private fun FieldDeclaration.baseExtensionDescriptorArgs(): List<Pair<String, Sc
 
 // we use double "__" to avoid conflicts with internal names that start with "_"
 private val FieldDeclaration.internalDelegateName: String get() = "__${rawName}Delegate"
+
+private val FieldDeclaration.packedSizeFieldName: String get() = "__${rawName}PackedSize"
 
 private fun EnumDeclaration.generatedValueName(descriptor: Descriptors.EnumValueDescriptor): FqName {
     originalEntries.firstOrNull { it.dec == descriptor }?.let { return it.name }

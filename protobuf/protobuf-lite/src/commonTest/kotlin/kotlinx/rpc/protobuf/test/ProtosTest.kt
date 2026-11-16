@@ -175,6 +175,20 @@ class ProtosTest {
     }
 
     @Test
+    fun testRepeatedEncodeWithoutSizeComputation() {
+        // The direct encode doesn't read _size first, so the packed size caches are empty and the encode fills them.
+        val msg = Repeated {
+            listInt32Packed = listOf(1, 2, 3)
+            listFixed32Packed = listOf(4u, 5u)
+        }
+        val bytes = encodeToBytes { encoder -> msg.asInternal().encodeWith(encoder, null) }
+        val decoded = grpcMarshallerOf<Repeated>().decode(ByteArrayMessageReader(bytes))
+
+        assertEquals(listOf(1, 2, 3), decoded.listInt32Packed)
+        assertEquals(listOf(4u, 5u), decoded.listFixed32Packed)
+    }
+
+    @Test
     fun testRepeatedWithRequiredSubField() {
         assertFailsWith<ProtobufException> {
             RepeatedWithRequired {
