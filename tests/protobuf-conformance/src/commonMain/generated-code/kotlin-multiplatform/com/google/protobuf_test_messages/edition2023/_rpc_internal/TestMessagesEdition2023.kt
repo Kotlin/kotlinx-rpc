@@ -4259,7 +4259,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_INT32_PACKED -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_INT32 -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4268,7 +4268,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_INT64_PACKED -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_INT64 -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4277,7 +4277,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_UINT32_PACKED -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_UINT32 -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4286,7 +4286,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_UINT64_PACKED -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_UINT64 -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4295,7 +4295,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SINT32_PACKED -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SINT32 -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4304,7 +4304,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SINT64_PACKED -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SINT64 -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4313,7 +4313,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FIXED32_PACKED -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FIXED32 -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4322,7 +4322,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FIXED64_PACKED -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FIXED64 -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4331,7 +4331,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SFIXED32_PACKED -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SFIXED32 -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4340,7 +4340,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SFIXED64_PACKED -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_SFIXED64 -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4349,7 +4349,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FLOAT_PACKED -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FLOAT -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4358,7 +4358,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_DOUBLE_PACKED -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_DOUBLE -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4367,7 +4367,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_BOOL_PACKED -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesEdition2023InternalTags.REPEATED_BOOL -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4398,7 +4398,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_NESTED_ENUM_PACKED -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesEdition2023.NestedEnum.fromNumber(it) }
             }
             TestAllTypesEdition2023InternalTags.REPEATED_NESTED_ENUM -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4407,7 +4407,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FOREIGN_ENUM_PACKED -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { ForeignEnumEdition2023.fromNumber(it) })
+                decoder.readPackedEnum(target) { ForeignEnumEdition2023.fromNumber(it) }
             }
             TestAllTypesEdition2023InternalTags.REPEATED_FOREIGN_ENUM -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4426,7 +4426,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_INT32_PACKED -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_INT32 -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4435,7 +4435,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_INT64_PACKED -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_INT64 -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4444,7 +4444,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_UINT32_PACKED -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_UINT32 -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4453,7 +4453,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_UINT64_PACKED -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_UINT64 -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4462,7 +4462,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_SINT32_PACKED -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_SINT32 -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4471,7 +4471,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_SINT64_PACKED -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_SINT64 -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4480,7 +4480,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_FIXED32_PACKED -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_FIXED32 -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4489,7 +4489,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_FIXED64_PACKED -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_FIXED64 -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4498,7 +4498,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_SFIXED32_PACKED -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_SFIXED32 -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4507,7 +4507,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_SFIXED64_PACKED -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_SFIXED64 -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4516,7 +4516,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_FLOAT_PACKED -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_FLOAT -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4525,7 +4525,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_DOUBLE_PACKED -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_DOUBLE -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4534,7 +4534,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_BOOL_PACKED -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesEdition2023InternalTags.PACKED_BOOL -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4543,7 +4543,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.PACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesEdition2023.NestedEnum.fromNumber(it) }
             }
             TestAllTypesEdition2023InternalTags.PACKED_NESTED_ENUM -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4552,7 +4552,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_INT32_PACKED -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt32())
+                decoder.readPackedInt32(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_INT32 -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4561,7 +4561,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_INT64_PACKED -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedInt64())
+                decoder.readPackedInt64(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_INT64 -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4570,7 +4570,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_UINT32_PACKED -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt32())
+                decoder.readPackedUInt32(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_UINT32 -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4579,7 +4579,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_UINT64_PACKED -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedUInt64())
+                decoder.readPackedUInt64(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_UINT64 -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4588,7 +4588,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SINT32_PACKED -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt32())
+                decoder.readPackedSInt32(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SINT32 -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4597,7 +4597,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SINT64_PACKED -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSInt64())
+                decoder.readPackedSInt64(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SINT64 -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4606,7 +4606,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FIXED32_PACKED -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed32())
+                decoder.readPackedFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FIXED32 -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4615,7 +4615,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FIXED64_PACKED -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFixed64())
+                decoder.readPackedFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FIXED64 -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4624,7 +4624,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED32_PACKED -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed32())
+                decoder.readPackedSFixed32(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED32 -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4633,7 +4633,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED64_PACKED -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedSFixed64())
+                decoder.readPackedSFixed64(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED64 -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4642,7 +4642,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FLOAT_PACKED -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedFloat())
+                decoder.readPackedFloat(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_FLOAT -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4651,7 +4651,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_DOUBLE_PACKED -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedDouble())
+                decoder.readPackedDouble(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_DOUBLE -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4660,7 +4660,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_BOOL_PACKED -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedBool())
+                decoder.readPackedBool(target)
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_BOOL -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -4669,7 +4669,7 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
-                target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
+                decoder.readPackedEnum(target) { TestAllTypesEdition2023.NestedEnum.fromNumber(it) }
             }
             TestAllTypesEdition2023InternalTags.UNPACKED_NESTED_ENUM -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
