@@ -51,6 +51,30 @@ class WireInputTest {
     }
 
     @Test
+    fun varints32() {
+        val values = listOf(0L, 1L, 127L, 128L, 300L, 0xFFFFFFFFL, -1L, Long.MIN_VALUE)
+        val input = varintBytes(values)
+        for (chunk in CHUNK_SIZES) {
+            wireInput(input, chunk) {
+                for (value in values) {
+                    assertEquals(value.toInt(), it.readVarint32())
+                }
+                assertTrue(it.isAtLimit)
+            }
+        }
+    }
+
+    @Test
+    fun malformedVarint32Throws() {
+        val input = ByteArray(10) { 0x80.toByte() } + byteArrayOf(0x01)
+        for (chunk in CHUNK_SIZES) {
+            wireInput(input, chunk) {
+                assertFailsWith<ProtobufDecodingException> { it.readVarint32() }
+            }
+        }
+    }
+
+    @Test
     fun copyVarintsPreservesBytesAndStopsAtTheTerminator() {
         for (chunk in CHUNK_SIZES) {
             for (length in 1..10) {

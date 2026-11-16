@@ -110,7 +110,13 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
      * lengths: a length of `2^32 + 5` becomes 5, as in protobuf-java.
      */
     fun readVarint32(): Int {
-        return readVarint64().toInt()
+        if (readEnd - pos >= Varint.MAX_SIZE_64) {
+            var p = pos
+            val value = Varint.decode32 { window.getByte(p++) }
+            pos = p
+            return value
+        }
+        return Varint.decode32 { readByte() }
     }
 
     fun readTagVarint(): Int {
