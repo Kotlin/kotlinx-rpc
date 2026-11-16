@@ -46,6 +46,7 @@ const val UNKNOWN_FIELDS = "unknownFields"
 const val STRINGS = "strings"
 const val BLOB = "blob"
 const val PACKED = "packed"
+const val PACKED_BOOLS = "packedBools"
 const val TREE = "tree"
 const val LARGE = "large"
 
@@ -55,6 +56,7 @@ fun benchmarkCase(name: String): BenchmarkCase<*> = when (name) {
     STRINGS -> BenchmarkCase(grpcMarshallerOf<Strings>(), strings())
     BLOB -> BenchmarkCase(grpcMarshallerOf<Blob>(), Blob { payload = byteString(64 * 1024) })
     PACKED -> BenchmarkCase(grpcMarshallerOf<Packed>(), packed(1_000))
+    PACKED_BOOLS -> BenchmarkCase(grpcMarshallerOf<PackedBools>(), packedBools())
     TREE -> BenchmarkCase(grpcMarshallerOf<Tree>(), tree(depth = 5, width = 3))
     LARGE -> BenchmarkCase(grpcMarshallerOf<Large>(), large())
     else -> error("Unknown benchmark case: $name")
@@ -93,6 +95,11 @@ private fun packed(count: Int): Packed = Packed {
     zigzags = List(count) { index -> -index * 1_000_000L }
     fixeds = List(count) { index -> index.toUInt() * 7u }
     doubles = List(count) { index -> index * 0.25 }
+}
+
+private fun packedBools(): PackedBools = PackedBools {
+    flags = List(1_000) { index -> index % 2 == 0 }
+    moreFlags = List(1_000) { index -> index % 3 == 0 }
 }
 
 private fun tree(depth: Int, width: Int): Tree = Tree {

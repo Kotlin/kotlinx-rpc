@@ -260,14 +260,19 @@ data class FieldDeclaration(
     // the oneof this field is a member of (null for regular fields and synthetic proto3 optional oneofs)
     val containingOneOf: Lazy<OneOfDeclaration?> = lazyOf(null),
 ) {
-    val packedFixedSize by lazy { type.wireType == WireType.FIXED64 || type.wireType == WireType.FIXED32 }
+    /** True for a list field whose elements each have a constant wire size: fixed-width numbers and bools. */
+    val packedFixedSize by lazy {
+        type.wireType == WireType.FIXED64 ||
+            type.wireType == WireType.FIXED32 ||
+            (type as? FieldType.List)?.value == FieldType.IntegralType.BOOL
+    }
 
     /**
      * True for a packed field with varint elements other than bool. The payload size needs a list scan,
      * so the generated class caches it between the size computation and the encode.
      */
     val needsPackedSizeCache: Boolean
-        get() = dec.isPacked && !packedFixedSize && (type as? FieldType.List)?.value != FieldType.IntegralType.BOOL
+        get() = dec.isPacked && !packedFixedSize
 
     val isPartOfOneof: Boolean = dec.realContainingOneof != null
 

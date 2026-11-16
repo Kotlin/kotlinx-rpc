@@ -706,6 +706,13 @@ class WireMarshallerTest {
     )
 
     @Test
+    fun testPackedBool() = runPackedFixedTest(
+        List(1_000_000) { it % 2 == 0 },
+        WireEncoder::writePackedBool,
+        WireDecoder::readPackedBool
+    )
+
+    @Test
     fun testPackedFixed64() = runPackedFixedTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toULong() },
         WireEncoder::writePackedFixed64,

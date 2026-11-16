@@ -76,10 +76,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readBool() },
             copy = { it as Boolean },
-            encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::bool)
-                enc.writePackedBool(fieldNr, value, fieldSize)
-            },
+            encodePacked = { enc, fieldNr, value -> enc.writePackedBool(fieldNr, value) },
             decodePackedValues = { dec, destination -> dec.readPackedBool(destination) },
         )
 
