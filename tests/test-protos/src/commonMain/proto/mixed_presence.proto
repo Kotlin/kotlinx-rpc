@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package kotlinx.rpc.grpc.test;
+
+message MixedPresence {
+  string name = 1;
+  optional uint32 timeout = 2;
+}

@@ -53,6 +53,11 @@ Read more in the docs: https://kotlin.github.io/kotlinx-rpc/grpc-configuration.h
 The gRPC server supports the JVM only. The `kotlinx-rpc-grpc-server` and
 `kotlinx-rpc-grpc-ktor-server` modules no longer publish Kotlin/Native artifacts.
 
+#### gRPC client on Linux {id=gRPC_client_on_Linux_Unreleased}
+
+The Linux targets `linuxX64` and `linuxArm64` are removed from the `kotlinx-rpc-grpc-core`,
+`kotlinx-rpc-grpc-client`, and `kotlinx-rpc-grpc-marshaller-kotlinx-serialization` modules.
+
 ## 0.11.0-grpc-190
 > Published 17 Sep 2026
 

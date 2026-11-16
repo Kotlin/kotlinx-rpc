@@ -6,6 +6,8 @@
 
 package kotlinx.rpc.protobuf.test
 
+import Other
+import References
 import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
@@ -96,13 +98,11 @@ class DirectWireDecoderTest {
 
     @Test
     fun everyTestProtoMessageMatchesBufferDecoding() {
-        compareDefault(grpcMarshallerOf<hello.HelloRequest>())
+        compareDefault(grpcMarshallerOf<Other>())
+        compareDefault(grpcMarshallerOf<References>())
+        compareDefault(grpcMarshallerOf<com.google.protobuf.kotlin.Empty>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.AllPrimitives>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.EchoRequest>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.EchoResponse>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.HelloReply>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.HelloRequest>())
-        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Message>())
+        compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.MixedPresence>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested.Inner1>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.Nested.Inner1.Inner11>())
@@ -119,12 +119,7 @@ class DirectWireDecoderTest {
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UnknownFieldsAll>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UnknownFieldsSubset>())
         compareDefault(grpcMarshallerOf<kotlinx.rpc.grpc.test.UsingEnum>())
-        compareDefault(grpcMarshallerOf<some.Some>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested.Nested>())
-        compareDefault(grpcMarshallerOf<some.Some.Nested.Nested.Nested>())
         compareRequiredString(grpcMarshallerOf<to.be.imported.IWantToBeImported>(), "hello")
-        compareRequiredString(grpcMarshallerOf<hello.HelloResponse>(), "reply")
     }
 
     private fun <M : Any> compareDefault(marshaller: GrpcMarshaller<M>) {

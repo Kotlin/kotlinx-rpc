@@ -11,10 +11,7 @@ import kotlinx.rpc.grpc.GrpcStatus
 import kotlinx.rpc.internal.utils.InternalRpcApi
 
 @InternalRpcApi
-public actual typealias ClientCall<Request, Response> = ClientCall<Request, Response>
-
-@InternalRpcApi
-public actual inline fun <Message> clientCallListener(
+public inline fun <Message> clientCallListener(
     crossinline onHeaders: (headers: GrpcMetadata) -> Unit,
     crossinline onMessage: (message: Message) -> Unit,
     crossinline onClose: (status: GrpcStatus, trailers: GrpcMetadata) -> Unit,

@@ -45,7 +45,7 @@ class RunBatchExceptionTest : GrpcTestBase() {
         val throwingDecodeMarshaller = object : GrpcMarshaller<String> by stringMarshaller {
             override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String {
                 decodeAttempted.complete(Unit)
-                throw RuntimeException("Simulated decode failure")
+                error("Simulated decode failure")
             }
         }
 
@@ -70,7 +70,11 @@ class RunBatchExceptionTest : GrpcTestBase() {
 
     companion object {
         private fun stringResolver(marshaller: GrpcMarshaller<String>) = GrpcMarshallerResolver { type ->
-            if (type.classifier == String::class) marshaller else null
+            if (type.classifier == String::class) {
+                marshaller
+            } else {
+                null
+            }
         }
 
         private val stringMarshaller = object : GrpcMarshaller<String> {

@@ -18,9 +18,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-includePublic(":kotlinx-rpc-grpc-core-shim")
-project(":kotlinx-rpc-grpc-core-shim").projectDir = file("./grpc")
-
 includePublic(":kotlinx-rpc-protobuf-shim")
 project(":kotlinx-rpc-protobuf-shim").projectDir = file("./protobuf")
 

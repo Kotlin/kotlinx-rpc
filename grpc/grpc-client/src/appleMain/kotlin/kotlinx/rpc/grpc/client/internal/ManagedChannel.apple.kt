@@ -11,6 +11,7 @@ import kotlinx.atomicfu.atomic
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCObjectVar
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.memScoped
@@ -84,6 +85,7 @@ internal class SwiftManagedChannel(
         return this
     }
 
+    @OptIn(UnsafeNumber::class)
     fun <Request, Response> startCall(
         method: GrpcMethodDescriptor<Request, Response>,
         headers: GrpcMetadata,
@@ -133,6 +135,7 @@ private class SwiftManagedChannelBuilder(
     private val port: Int,
     private val credentials: GrpcClientCredentials?,
 ) : ManagedChannelBuilder<SwiftManagedChannelBuilder>() {
+    @OptIn(UnsafeNumber::class)
     fun buildChannel(config: GrpcClientConfiguration): SwiftManagedChannel {
         if (config.isMaxInboundMessageSizeExplicitlySet) {
             error(

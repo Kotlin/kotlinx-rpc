@@ -12,8 +12,6 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.test.TestResult
-import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.client.GrpcEmptyCallCredentials
 import kotlinx.rpc.grpc.client.internal.ManagedChannel
 import kotlinx.rpc.test.runTestWithCoroutinesProbes
 import kxrpc.testing.BarrierType
@@ -69,7 +67,7 @@ class GrpcClientTestCleanupTest {
         val channel = CleanupTestChannel(terminates = true)
         val cleanup = GrpcClientTestCleanup(stepTimeout = 50.milliseconds)
 
-        cleanup.shutdownClient(channel.client(), terminationTimeout = 1.seconds)
+        cleanup.shutdownChannel(channel, terminationTimeout = 1.seconds)
 
         assertTrue(channel.forceShutdown)
         assertTrue(channel.isTerminated)
@@ -83,7 +81,7 @@ class GrpcClientTestCleanupTest {
         val cleanup = GrpcClientTestCleanup()
         var followingStepCompleted = false
 
-        cleanup.shutdownClient(channel.client(), terminationTimeout = 1.seconds)
+        cleanup.shutdownChannel(channel, terminationTimeout = 1.seconds)
         cleanup.run { followingStepCompleted = true }
 
         assertTrue(channel.forceShutdown)
@@ -150,11 +148,4 @@ private class CleanupTestChannel(private val terminates: Boolean) : ManagedChann
         isTerminated = forceShutdown && terminates
         return isTerminated
     }
-
-    fun client(): GrpcClient = GrpcClient(
-        channel = this,
-        interceptors = emptyList(),
-        callCredentials = GrpcEmptyCallCredentials,
-        marshallerConfig = null,
-    )
 }

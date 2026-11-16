@@ -91,13 +91,7 @@
                         where the transport is, for example, <code>netty</code> or <code>okhttp</code>.
                     </li>
                     <li>
-                        Non-iOS Native (gRPC Core):
-                        <code>grpc-c/&lt;grpc-core-version&gt; (&lt;platform&gt;; &lt;transport&gt;)</code>,
-                        where the platform is, for example, <code>osx</code> or <code>linux</code>,
-                        and the HTTP/2 transport is <code>chttp2</code>.
-                    </li>
-                    <li>
-                        iOS (grpc-swift): <code>kotlinx-rpc-swift/&lt;kotlinx-rpc-version&gt;</code>.
+                        Apple (grpc-swift): <code>kotlinx-rpc-swift/&lt;kotlinx-rpc-version&gt;</code>.
                     </li>
                 </list>
                 <p>

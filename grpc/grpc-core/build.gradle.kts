@@ -2,7 +2,6 @@
  * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 import util.grpc.withGrpcClientTestServer
-import util.targets.configureNonSwiftSourceSets
 
 plugins {
     alias(libs.plugins.conventions.kmp)
@@ -25,10 +24,6 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
-
-    // Applies the default hierarchy template, which the custom source sets below disable, and
-    // adds the nonSwift* branches for the targets without the Swift backend.
-    configureNonSwiftSourceSets()
 
     sourceSets {
         commonMain {
@@ -53,7 +48,7 @@ kotlin {
                 implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
                 implementation(projects.protobuf.protobufLite)
                 implementation(projects.grpc.grpcClient)
-                implementation(projects.tests.testProtos)
+                implementation(projects.tests.testGrpcProtos)
                 implementation(projects.tests.testUtils)
             }
         }
@@ -71,14 +66,6 @@ kotlin {
                 implementation(projects.grpc.grpcServer)
                 implementation(libs.grpc.core)
                 implementation(libs.grpc.netty)
-            }
-        }
-
-        named("nonSwiftNativeMain") {
-            dependencies {
-                // TODO: Remove this dependency once we remove the protobuf-shim dependency (KRPC-540)
-                implementation(projects.protobuf.protobufLite)
-                implementation(libs.kotlinx.rpc.grpc.core.shim)
             }
         }
     }

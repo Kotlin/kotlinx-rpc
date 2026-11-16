@@ -222,10 +222,10 @@
                         <p>Run from the Gradle project root:</p>
                         <code-block lang="Shell">
                             XCODEPROJ_PATH='path/iosApp/iosApp.xcodeproj' \
-                                ./gradlew :<module>:integrateLinkagePackage
+                                ./gradlew :&lt;module&gt;:integrateLinkagePackage
                         </code-block>
                         <p>
-                            Replace <code><module></code> with the module that produces the Kotlin framework,
+                            Replace <code>&lt;module&gt;</code> with the module that produces the Kotlin framework,
                             and supply the path to your <path>.xcodeproj</path> bundle.
                             The task adds a <path>KotlinMultiplatformLinkedPackage</path> directory next to the
                             Xcode project and links it into the app target.
@@ -238,8 +238,8 @@
                             </p>
                             <code-block lang="Shell">
                                 XCODEPROJ_PATH='path/iosApp/iosApp.xcodeproj' \
-                                GRADLE_PROJECT_PATH=':<module>' \
-                                    ./gradlew :<module>:integrateEmbedAndSign :<module>:integrateLinkagePackage
+                                GRADLE_PROJECT_PATH=':&lt;module&gt;' \
+                                    ./gradlew :&lt;module&gt;:integrateEmbedAndSign :&lt;module&gt;:integrateLinkagePackage
                             </code-block>
                         </tip>
                     </tab>
@@ -343,7 +343,6 @@
             <li>JVM</li>
             <li>Android</li>
             <li>Apple</li>
-            <li>Linux</li>
         </list>
         <p>
             The full per-artifact matrix is listed on <a href="platforms.topic"/>.

@@ -25,9 +25,13 @@ class GrpcClientMessageSizeTest {
     @Test
     fun responseAboveDefaultLimitFailsTheCall() = grpcClientTest {
         // The serialized response adds overhead to the payload, so it exceeds the default limit.
-        // The nio transport of grpc-swift maps the decoder error of an oversized message to INTERNAL,
-        // so this test fails on Apple platforms until the transport reports RESOURCE_EXHAUSTED.
-        assertGrpcStatusCode(GrpcStatusCode.RESOURCE_EXHAUSTED) {
+        // grpc-swift NIO reports the decoder error for an oversized message as INTERNAL.
+        val expectedStatus = if (currentPlatform in swiftBackendPlatforms) {
+            GrpcStatusCode.INTERNAL
+        } else {
+            GrpcStatusCode.RESOURCE_EXHAUSTED
+        }
+        assertGrpcStatusCode(expectedStatus) {
             testService.unaryCall(SimpleRequest { responseSize = DEFAULT_LIMIT_BYTES })
         }
     }

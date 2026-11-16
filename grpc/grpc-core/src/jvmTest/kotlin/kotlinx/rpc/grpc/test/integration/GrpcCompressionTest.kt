@@ -153,7 +153,9 @@ class GrpcCompressionTest : GrpcTestBase() {
         return keys().mapNotNull { key ->
             if (!key.endsWith("-bin")) {
                 key to this@toMap[key]!!
-            } else null
+            } else {
+                null
+            }
         }.toMap()
     }
 

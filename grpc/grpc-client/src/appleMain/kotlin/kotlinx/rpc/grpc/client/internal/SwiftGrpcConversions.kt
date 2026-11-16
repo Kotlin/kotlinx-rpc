@@ -7,6 +7,7 @@
 package kotlinx.rpc.grpc.client.internal
 
 import kotlinx.cinterop.COpaquePointer
+import kotlinx.cinterop.UnsafeNumber
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
@@ -31,6 +32,7 @@ import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcMethodTypeS
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcMethodTypeUnary
 import swiftPMImport.org.jetbrains.kotlinx.grpc.grpc.client.SwiftGrpcStatus
 
+@OptIn(UnsafeNumber::class)
 internal fun GrpcMetadata.toSwift(): SwiftGrpcMetadata = SwiftGrpcMetadata().also { result ->
     visitEntries(
         onString = { key, value -> result.addStringValue(value, forKey = key) },

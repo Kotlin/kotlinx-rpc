@@ -6,15 +6,12 @@
 
 import kotlinx.rpc.internal.InternalRpcApi
 import kotlinx.rpc.internal.configureLocalProtocGenDevelopmentDependency
-import kotlinx.rpc.protoc.proto
-import java.nio.file.Path as JavaPath
+import kotlinx.rpc.protoc.protoImport
 
 plugins {
     alias(libs.plugins.conventions.kmp)
     alias(libs.plugins.kotlinx.rpc)
 }
-
-val globalRootDir = project.extra["globalRootDir"] as String
 
 kotlin {
     compilerOptions {
@@ -39,21 +36,7 @@ kotlin {
                 implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
                 implementation(projects.tests.testProtos)
-            }
-
-            proto {
-                // hack until proper imports are done: KRPC-238
-                fileImports.from(
-                    JavaPath.of(
-                        globalRootDir,
-                        "tests",
-                        "test-protos",
-                        "src",
-                        "commonMain",
-                        "proto",
-                        "to_be_imported.proto",
-                    )
-                )
+                protoImport(project(path = projects.tests.testProtos.path, configuration = "importedProtoElements"))
             }
         }
 

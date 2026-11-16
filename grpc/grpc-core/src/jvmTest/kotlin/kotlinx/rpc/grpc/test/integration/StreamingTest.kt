@@ -77,8 +77,8 @@ class StreamingTest : GrpcTestBase() {
                     }
                 })
             }
-        }).collectIndexed { i, it ->
-            assertEquals(42 + i, it.other.field)
+        }).collectIndexed { i, response ->
+            assertEquals(42 + i, response.other.field)
         }
     }
 }
