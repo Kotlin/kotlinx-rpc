@@ -309,16 +309,22 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var repeatedCord: List<String> by __repeatedCordDelegate
     internal val __packedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var packedInt32: List<Int> by __packedInt32Delegate
+    internal var __packedInt32PackedSize: Int = -1
     internal val __packedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var packedInt64: List<Long> by __packedInt64Delegate
+    internal var __packedInt64PackedSize: Int = -1
     internal val __packedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var packedUint32: List<UInt> by __packedUint32Delegate
+    internal var __packedUint32PackedSize: Int = -1
     internal val __packedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
     override var packedUint64: List<ULong> by __packedUint64Delegate
+    internal var __packedUint64PackedSize: Int = -1
     internal val __packedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var packedSint32: List<Int> by __packedSint32Delegate
+    internal var __packedSint32PackedSize: Int = -1
     internal val __packedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
     override var packedSint64: List<Long> by __packedSint64Delegate
+    internal var __packedSint64PackedSize: Int = -1
     internal val __packedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
     override var packedFixed32: List<UInt> by __packedFixed32Delegate
     internal val __packedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
@@ -335,6 +341,7 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     override var packedBool: List<Boolean> by __packedBoolDelegate
     internal val __packedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto2.NestedEnum>> = MsgFieldDelegate { emptyList() }
     override var packedNestedEnum: List<TestAllTypesProto2.NestedEnum> by __packedNestedEnumDelegate
+    internal var __packedNestedEnumPackedSize: Int = -1
     internal val __unpackedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
     override var unpackedInt32: List<Int> by __unpackedInt32Delegate
     internal val __unpackedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
@@ -8163,27 +8170,33 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = WireSize.packedInt32(this.packedInt32))
+        if (__packedInt32PackedSize < 0) { __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32) }
+        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = __packedInt32PackedSize)
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = WireSize.packedInt64(this.packedInt64))
+        if (__packedInt64PackedSize < 0) { __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64) }
+        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = __packedInt64PackedSize)
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = WireSize.packedUInt32(this.packedUint32))
+        if (__packedUint32PackedSize < 0) { __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32) }
+        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = __packedUint32PackedSize)
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = WireSize.packedUInt64(this.packedUint64))
+        if (__packedUint64PackedSize < 0) { __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64) }
+        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = __packedUint64PackedSize)
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = WireSize.packedSInt32(this.packedSint32))
+        if (__packedSint32PackedSize < 0) { __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32) }
+        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = __packedSint32PackedSize)
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = WireSize.packedSInt64(this.packedSint64))
+        if (__packedSint64PackedSize < 0) { __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64) }
+        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = __packedSint64PackedSize)
     }
 
     if (this.packedFixed32.isNotEmpty()) {
@@ -8215,7 +8228,8 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }))
+        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }) }
+        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = __packedNestedEnumPackedSize)
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
@@ -9729,27 +9743,33 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        __result += WireSize.packedInt32(this.packedInt32).let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32)
+        __result += __packedInt32PackedSize.let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        __result += WireSize.packedInt64(this.packedInt64).let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64)
+        __result += __packedInt64PackedSize.let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        __result += WireSize.packedUInt32(this.packedUint32).let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32)
+        __result += __packedUint32PackedSize.let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        __result += WireSize.packedUInt64(this.packedUint64).let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64)
+        __result += __packedUint64PackedSize.let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        __result += WireSize.packedSInt32(this.packedSint32).let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32)
+        __result += __packedSint32PackedSize.let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        __result += WireSize.packedSInt64(this.packedSint64).let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64)
+        __result += __packedSint64PackedSize.let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedFixed32.isNotEmpty()) {
@@ -9781,7 +9801,8 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        __result += WireSize.packedEnum(this.packedNestedEnum.map { it.number }).let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
+        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number })
+        __result += __packedNestedEnumPackedSize.let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
