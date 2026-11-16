@@ -31,6 +31,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.mapToIntArrayList
 import kotlinx.rpc.protobuf.internal.protoToString
 
 @InternalRpcApi
@@ -8354,8 +8355,8 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }) }
-        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = __packedNestedEnumPackedSize)
+        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.mapToIntArrayList { it.number }) }
+        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.mapToIntArrayList { it.number }, fieldSize = __packedNestedEnumPackedSize)
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
@@ -9927,7 +9928,7 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number })
+        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.mapToIntArrayList { it.number })
         __result += __packedNestedEnumPackedSize.let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
     }
 

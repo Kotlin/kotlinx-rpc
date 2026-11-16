@@ -30,6 +30,7 @@ import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
+import kotlinx.rpc.protobuf.internal.mapToIntArrayList
 import kotlinx.rpc.protobuf.internal.protoToString
 
 @InternalRpcApi
@@ -3867,13 +3868,13 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
     }
 
     if (this.repeatedNestedEnum.isNotEmpty()) {
-        if (__repeatedNestedEnumPackedSize < 0) { __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number }) }
-        encoder.writePackedEnum(fieldNr = 51, value = this.repeatedNestedEnum.map { it.number }, fieldSize = __repeatedNestedEnumPackedSize)
+        if (__repeatedNestedEnumPackedSize < 0) { __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.mapToIntArrayList { it.number }) }
+        encoder.writePackedEnum(fieldNr = 51, value = this.repeatedNestedEnum.mapToIntArrayList { it.number }, fieldSize = __repeatedNestedEnumPackedSize)
     }
 
     if (this.repeatedForeignEnum.isNotEmpty()) {
-        if (__repeatedForeignEnumPackedSize < 0) { __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number }) }
-        encoder.writePackedEnum(fieldNr = 52, value = this.repeatedForeignEnum.map { it.number }, fieldSize = __repeatedForeignEnumPackedSize)
+        if (__repeatedForeignEnumPackedSize < 0) { __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.mapToIntArrayList { it.number }) }
+        encoder.writePackedEnum(fieldNr = 52, value = this.repeatedForeignEnum.mapToIntArrayList { it.number }, fieldSize = __repeatedForeignEnumPackedSize)
     }
 
     if (this.repeatedStringPiece.isNotEmpty()) {
@@ -3947,8 +3948,8 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number }) }
-        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.map { it.number }, fieldSize = __packedNestedEnumPackedSize)
+        if (__packedNestedEnumPackedSize < 0) { __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.mapToIntArrayList { it.number }) }
+        encoder.writePackedEnum(fieldNr = 88, value = this.packedNestedEnum.mapToIntArrayList { it.number }, fieldSize = __packedNestedEnumPackedSize)
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
@@ -5194,12 +5195,12 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
     }
 
     if (this.repeatedNestedEnum.isNotEmpty()) {
-        __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.map { it.number })
+        __repeatedNestedEnumPackedSize = WireSize.packedEnum(this.repeatedNestedEnum.mapToIntArrayList { it.number })
         __result += __repeatedNestedEnumPackedSize.let { WireSize.tag(51, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.repeatedForeignEnum.isNotEmpty()) {
-        __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.map { it.number })
+        __repeatedForeignEnumPackedSize = WireSize.packedEnum(this.repeatedForeignEnum.mapToIntArrayList { it.number })
         __result += __repeatedForeignEnumPackedSize.let { WireSize.tag(52, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
@@ -5270,7 +5271,7 @@ private fun TestAllTypesEdition2023Internal.computeSize(): Int {
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
-        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.map { it.number })
+        __packedNestedEnumPackedSize = WireSize.packedEnum(this.packedNestedEnum.mapToIntArrayList { it.number })
         __result += __packedNestedEnumPackedSize.let { WireSize.tag(88, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
