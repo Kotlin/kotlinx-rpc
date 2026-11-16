@@ -11,14 +11,21 @@ import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.ProtobufException
+import kotlinx.rpc.protobuf.internal.BooleanArrayList
+import kotlinx.rpc.protobuf.internal.DoubleArrayList
 import kotlinx.rpc.protobuf.internal.ExtensionValue
+import kotlinx.rpc.protobuf.internal.FloatArrayList
 import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
+import kotlinx.rpc.protobuf.internal.IntArrayList
 import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
+import kotlinx.rpc.protobuf.internal.LongArrayList
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
+import kotlinx.rpc.protobuf.internal.UIntArrayList
+import kotlinx.rpc.protobuf.internal.ULongArrayList
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
@@ -266,31 +273,70 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     }
 
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var repeatedInt32: List<Int> by __repeatedInt32Delegate
+    override var repeatedInt32: List<Int>
+        get() = __repeatedInt32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedInt32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __repeatedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var repeatedInt64: List<Long> by __repeatedInt64Delegate
+    override var repeatedInt64: List<Long>
+        get() = __repeatedInt64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedInt64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __repeatedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var repeatedUint32: List<UInt> by __repeatedUint32Delegate
+    override var repeatedUint32: List<UInt>
+        get() = __repeatedUint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedUint32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal val __repeatedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var repeatedUint64: List<ULong> by __repeatedUint64Delegate
+    override var repeatedUint64: List<ULong>
+        get() = __repeatedUint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedUint64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal val __repeatedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var repeatedSint32: List<Int> by __repeatedSint32Delegate
+    override var repeatedSint32: List<Int>
+        get() = __repeatedSint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedSint32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __repeatedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var repeatedSint64: List<Long> by __repeatedSint64Delegate
+    override var repeatedSint64: List<Long>
+        get() = __repeatedSint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedSint64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __repeatedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var repeatedFixed32: List<UInt> by __repeatedFixed32Delegate
+    override var repeatedFixed32: List<UInt>
+        get() = __repeatedFixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedFixed32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal val __repeatedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var repeatedFixed64: List<ULong> by __repeatedFixed64Delegate
+    override var repeatedFixed64: List<ULong>
+        get() = __repeatedFixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedFixed64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal val __repeatedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var repeatedSfixed32: List<Int> by __repeatedSfixed32Delegate
+    override var repeatedSfixed32: List<Int>
+        get() = __repeatedSfixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedSfixed32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __repeatedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var repeatedSfixed64: List<Long> by __repeatedSfixed64Delegate
+    override var repeatedSfixed64: List<Long>
+        get() = __repeatedSfixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedSfixed64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __repeatedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
-    override var repeatedFloat: List<Float> by __repeatedFloatDelegate
+    override var repeatedFloat: List<Float>
+        get() = __repeatedFloatDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedFloatDelegate.set(this, FloatArrayList.copyOf(value)) }
+
     internal val __repeatedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
-    override var repeatedDouble: List<Double> by __repeatedDoubleDelegate
+    override var repeatedDouble: List<Double>
+        get() = __repeatedDoubleDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedDoubleDelegate.set(this, DoubleArrayList.copyOf(value)) }
+
     internal val __repeatedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
-    override var repeatedBool: List<Boolean> by __repeatedBoolDelegate
+    override var repeatedBool: List<Boolean>
+        get() = __repeatedBoolDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedBoolDelegate.set(this, BooleanArrayList.copyOf(value)) }
+
     internal val __repeatedStringDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     override var repeatedString: List<String> by __repeatedStringDelegate
     internal val __repeatedBytesDelegate: MsgFieldDelegate<List<ByteString>> = MsgFieldDelegate { emptyList() }
@@ -308,66 +354,144 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
     internal val __repeatedCordDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     override var repeatedCord: List<String> by __repeatedCordDelegate
     internal val __packedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var packedInt32: List<Int> by __packedInt32Delegate
+    override var packedInt32: List<Int>
+        get() = __packedInt32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedInt32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal var __packedInt32PackedSize: Int = -1
     internal val __packedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var packedInt64: List<Long> by __packedInt64Delegate
+    override var packedInt64: List<Long>
+        get() = __packedInt64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedInt64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal var __packedInt64PackedSize: Int = -1
     internal val __packedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var packedUint32: List<UInt> by __packedUint32Delegate
+    override var packedUint32: List<UInt>
+        get() = __packedUint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedUint32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal var __packedUint32PackedSize: Int = -1
     internal val __packedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var packedUint64: List<ULong> by __packedUint64Delegate
+    override var packedUint64: List<ULong>
+        get() = __packedUint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedUint64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal var __packedUint64PackedSize: Int = -1
     internal val __packedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var packedSint32: List<Int> by __packedSint32Delegate
+    override var packedSint32: List<Int>
+        get() = __packedSint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedSint32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal var __packedSint32PackedSize: Int = -1
     internal val __packedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var packedSint64: List<Long> by __packedSint64Delegate
+    override var packedSint64: List<Long>
+        get() = __packedSint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedSint64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal var __packedSint64PackedSize: Int = -1
     internal val __packedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var packedFixed32: List<UInt> by __packedFixed32Delegate
+    override var packedFixed32: List<UInt>
+        get() = __packedFixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedFixed32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal val __packedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var packedFixed64: List<ULong> by __packedFixed64Delegate
+    override var packedFixed64: List<ULong>
+        get() = __packedFixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedFixed64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal val __packedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var packedSfixed32: List<Int> by __packedSfixed32Delegate
+    override var packedSfixed32: List<Int>
+        get() = __packedSfixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedSfixed32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __packedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var packedSfixed64: List<Long> by __packedSfixed64Delegate
+    override var packedSfixed64: List<Long>
+        get() = __packedSfixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedSfixed64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __packedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
-    override var packedFloat: List<Float> by __packedFloatDelegate
+    override var packedFloat: List<Float>
+        get() = __packedFloatDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedFloatDelegate.set(this, FloatArrayList.copyOf(value)) }
+
     internal val __packedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
-    override var packedDouble: List<Double> by __packedDoubleDelegate
+    override var packedDouble: List<Double>
+        get() = __packedDoubleDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedDoubleDelegate.set(this, DoubleArrayList.copyOf(value)) }
+
     internal val __packedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
-    override var packedBool: List<Boolean> by __packedBoolDelegate
+    override var packedBool: List<Boolean>
+        get() = __packedBoolDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __packedBoolDelegate.set(this, BooleanArrayList.copyOf(value)) }
+
     internal val __packedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto2.NestedEnum>> = MsgFieldDelegate { emptyList() }
     override var packedNestedEnum: List<TestAllTypesProto2.NestedEnum> by __packedNestedEnumDelegate
     internal var __packedNestedEnumPackedSize: Int = -1
     internal val __unpackedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var unpackedInt32: List<Int> by __unpackedInt32Delegate
+    override var unpackedInt32: List<Int>
+        get() = __unpackedInt32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedInt32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __unpackedInt64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var unpackedInt64: List<Long> by __unpackedInt64Delegate
+    override var unpackedInt64: List<Long>
+        get() = __unpackedInt64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedInt64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __unpackedUint32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var unpackedUint32: List<UInt> by __unpackedUint32Delegate
+    override var unpackedUint32: List<UInt>
+        get() = __unpackedUint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedUint32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal val __unpackedUint64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var unpackedUint64: List<ULong> by __unpackedUint64Delegate
+    override var unpackedUint64: List<ULong>
+        get() = __unpackedUint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedUint64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal val __unpackedSint32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var unpackedSint32: List<Int> by __unpackedSint32Delegate
+    override var unpackedSint32: List<Int>
+        get() = __unpackedSint32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedSint32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __unpackedSint64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var unpackedSint64: List<Long> by __unpackedSint64Delegate
+    override var unpackedSint64: List<Long>
+        get() = __unpackedSint64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedSint64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __unpackedFixed32Delegate: MsgFieldDelegate<List<UInt>> = MsgFieldDelegate { emptyList() }
-    override var unpackedFixed32: List<UInt> by __unpackedFixed32Delegate
+    override var unpackedFixed32: List<UInt>
+        get() = __unpackedFixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedFixed32Delegate.set(this, UIntArrayList.copyOf(value)) }
+
     internal val __unpackedFixed64Delegate: MsgFieldDelegate<List<ULong>> = MsgFieldDelegate { emptyList() }
-    override var unpackedFixed64: List<ULong> by __unpackedFixed64Delegate
+    override var unpackedFixed64: List<ULong>
+        get() = __unpackedFixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedFixed64Delegate.set(this, ULongArrayList.copyOf(value)) }
+
     internal val __unpackedSfixed32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var unpackedSfixed32: List<Int> by __unpackedSfixed32Delegate
+    override var unpackedSfixed32: List<Int>
+        get() = __unpackedSfixed32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedSfixed32Delegate.set(this, IntArrayList.copyOf(value)) }
+
     internal val __unpackedSfixed64Delegate: MsgFieldDelegate<List<Long>> = MsgFieldDelegate { emptyList() }
-    override var unpackedSfixed64: List<Long> by __unpackedSfixed64Delegate
+    override var unpackedSfixed64: List<Long>
+        get() = __unpackedSfixed64Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedSfixed64Delegate.set(this, LongArrayList.copyOf(value)) }
+
     internal val __unpackedFloatDelegate: MsgFieldDelegate<List<Float>> = MsgFieldDelegate { emptyList() }
-    override var unpackedFloat: List<Float> by __unpackedFloatDelegate
+    override var unpackedFloat: List<Float>
+        get() = __unpackedFloatDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedFloatDelegate.set(this, FloatArrayList.copyOf(value)) }
+
     internal val __unpackedDoubleDelegate: MsgFieldDelegate<List<Double>> = MsgFieldDelegate { emptyList() }
-    override var unpackedDouble: List<Double> by __unpackedDoubleDelegate
+    override var unpackedDouble: List<Double>
+        get() = __unpackedDoubleDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedDoubleDelegate.set(this, DoubleArrayList.copyOf(value)) }
+
     internal val __unpackedBoolDelegate: MsgFieldDelegate<List<Boolean>> = MsgFieldDelegate { emptyList() }
-    override var unpackedBool: List<Boolean> by __unpackedBoolDelegate
+    override var unpackedBool: List<Boolean>
+        get() = __unpackedBoolDelegate.getOrNull(this) ?: emptyList()
+        set(value) { __unpackedBoolDelegate.set(this, BooleanArrayList.copyOf(value)) }
+
     internal val __unpackedNestedEnumDelegate: MsgFieldDelegate<List<TestAllTypesProto2.NestedEnum>> = MsgFieldDelegate { emptyList() }
     override var unpackedNestedEnum: List<TestAllTypesProto2.NestedEnum> by __unpackedNestedEnumDelegate
     internal val __mapInt32Int32Delegate: MsgFieldDelegate<Map<Int, Int>> = MsgFieldDelegate { emptyMap() }
@@ -1696,19 +1820,19 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
             copy.recursiveMessage = this.recursiveMessage.copy()
         }
 
-        copy.repeatedInt32 = this.repeatedInt32.map { it }
-        copy.repeatedInt64 = this.repeatedInt64.map { it }
-        copy.repeatedUint32 = this.repeatedUint32.map { it }
-        copy.repeatedUint64 = this.repeatedUint64.map { it }
-        copy.repeatedSint32 = this.repeatedSint32.map { it }
-        copy.repeatedSint64 = this.repeatedSint64.map { it }
-        copy.repeatedFixed32 = this.repeatedFixed32.map { it }
-        copy.repeatedFixed64 = this.repeatedFixed64.map { it }
-        copy.repeatedSfixed32 = this.repeatedSfixed32.map { it }
-        copy.repeatedSfixed64 = this.repeatedSfixed64.map { it }
-        copy.repeatedFloat = this.repeatedFloat.map { it }
-        copy.repeatedDouble = this.repeatedDouble.map { it }
-        copy.repeatedBool = this.repeatedBool.map { it }
+        copy.repeatedInt32 = this.repeatedInt32
+        copy.repeatedInt64 = this.repeatedInt64
+        copy.repeatedUint32 = this.repeatedUint32
+        copy.repeatedUint64 = this.repeatedUint64
+        copy.repeatedSint32 = this.repeatedSint32
+        copy.repeatedSint64 = this.repeatedSint64
+        copy.repeatedFixed32 = this.repeatedFixed32
+        copy.repeatedFixed64 = this.repeatedFixed64
+        copy.repeatedSfixed32 = this.repeatedSfixed32
+        copy.repeatedSfixed64 = this.repeatedSfixed64
+        copy.repeatedFloat = this.repeatedFloat
+        copy.repeatedDouble = this.repeatedDouble
+        copy.repeatedBool = this.repeatedBool
         copy.repeatedString = this.repeatedString.map { it }
         copy.repeatedBytes = this.repeatedBytes.map { it }
         copy.repeatedNestedMessage = this.repeatedNestedMessage.map { it.copy() }
@@ -1717,33 +1841,33 @@ class TestAllTypesProto2Internal: TestAllTypesProto2.Builder, InternalMessage(fi
         copy.repeatedForeignEnum = this.repeatedForeignEnum.map { it }
         copy.repeatedStringPiece = this.repeatedStringPiece.map { it }
         copy.repeatedCord = this.repeatedCord.map { it }
-        copy.packedInt32 = this.packedInt32.map { it }
-        copy.packedInt64 = this.packedInt64.map { it }
-        copy.packedUint32 = this.packedUint32.map { it }
-        copy.packedUint64 = this.packedUint64.map { it }
-        copy.packedSint32 = this.packedSint32.map { it }
-        copy.packedSint64 = this.packedSint64.map { it }
-        copy.packedFixed32 = this.packedFixed32.map { it }
-        copy.packedFixed64 = this.packedFixed64.map { it }
-        copy.packedSfixed32 = this.packedSfixed32.map { it }
-        copy.packedSfixed64 = this.packedSfixed64.map { it }
-        copy.packedFloat = this.packedFloat.map { it }
-        copy.packedDouble = this.packedDouble.map { it }
-        copy.packedBool = this.packedBool.map { it }
+        copy.packedInt32 = this.packedInt32
+        copy.packedInt64 = this.packedInt64
+        copy.packedUint32 = this.packedUint32
+        copy.packedUint64 = this.packedUint64
+        copy.packedSint32 = this.packedSint32
+        copy.packedSint64 = this.packedSint64
+        copy.packedFixed32 = this.packedFixed32
+        copy.packedFixed64 = this.packedFixed64
+        copy.packedSfixed32 = this.packedSfixed32
+        copy.packedSfixed64 = this.packedSfixed64
+        copy.packedFloat = this.packedFloat
+        copy.packedDouble = this.packedDouble
+        copy.packedBool = this.packedBool
         copy.packedNestedEnum = this.packedNestedEnum.map { it }
-        copy.unpackedInt32 = this.unpackedInt32.map { it }
-        copy.unpackedInt64 = this.unpackedInt64.map { it }
-        copy.unpackedUint32 = this.unpackedUint32.map { it }
-        copy.unpackedUint64 = this.unpackedUint64.map { it }
-        copy.unpackedSint32 = this.unpackedSint32.map { it }
-        copy.unpackedSint64 = this.unpackedSint64.map { it }
-        copy.unpackedFixed32 = this.unpackedFixed32.map { it }
-        copy.unpackedFixed64 = this.unpackedFixed64.map { it }
-        copy.unpackedSfixed32 = this.unpackedSfixed32.map { it }
-        copy.unpackedSfixed64 = this.unpackedSfixed64.map { it }
-        copy.unpackedFloat = this.unpackedFloat.map { it }
-        copy.unpackedDouble = this.unpackedDouble.map { it }
-        copy.unpackedBool = this.unpackedBool.map { it }
+        copy.unpackedInt32 = this.unpackedInt32
+        copy.unpackedInt64 = this.unpackedInt64
+        copy.unpackedUint32 = this.unpackedUint32
+        copy.unpackedUint64 = this.unpackedUint64
+        copy.unpackedSint32 = this.unpackedSint32
+        copy.unpackedSint64 = this.unpackedSint64
+        copy.unpackedFixed32 = this.unpackedFixed32
+        copy.unpackedFixed64 = this.unpackedFixed64
+        copy.unpackedSfixed32 = this.unpackedSfixed32
+        copy.unpackedSfixed64 = this.unpackedSfixed64
+        copy.unpackedFloat = this.unpackedFloat
+        copy.unpackedDouble = this.unpackedDouble
+        copy.unpackedBool = this.unpackedBool
         copy.unpackedNestedEnum = this.unpackedNestedEnum.map { it }
         copy.mapInt32Int32 = this.mapInt32Int32.mapValues { it.value }
         copy.mapInt64Int64 = this.mapInt64Int64.mapValues { it.value }
@@ -4620,7 +4744,9 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
     }
 
     internal val __repeatedInt32Delegate: MsgFieldDelegate<List<Int>> = MsgFieldDelegate { emptyList() }
-    override var repeatedInt32: List<Int> by __repeatedInt32Delegate
+    override var repeatedInt32: List<Int>
+        get() = __repeatedInt32Delegate.getOrNull(this) ?: emptyList()
+        set(value) { __repeatedInt32Delegate.set(this, IntArrayList.copyOf(value)) }
 
     private val _owner: UnknownToTestAllTypesInternal = this
 
@@ -4735,7 +4861,7 @@ class UnknownToTestAllTypesInternal: UnknownToTestAllTypes.Builder, InternalMess
             copy.optionalBool = this.optionalBool
         }
 
-        copy.repeatedInt32 = this.repeatedInt32.map { it }
+        copy.repeatedInt32 = this.repeatedInt32
         copy.apply(body)
         this._unknownFields.copyTo(copy._unknownFields)
         return copy
@@ -8044,79 +8170,79 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        this.repeatedInt32.forEach {
+        (this.repeatedInt32 as IntArrayList).forEachInt {
             encoder.writeInt32(31, it)
         }
     }
 
     if (this.repeatedInt64.isNotEmpty()) {
-        this.repeatedInt64.forEach {
+        (this.repeatedInt64 as LongArrayList).forEachLong {
             encoder.writeInt64(32, it)
         }
     }
 
     if (this.repeatedUint32.isNotEmpty()) {
-        this.repeatedUint32.forEach {
+        (this.repeatedUint32 as UIntArrayList).forEachUInt {
             encoder.writeUInt32(33, it)
         }
     }
 
     if (this.repeatedUint64.isNotEmpty()) {
-        this.repeatedUint64.forEach {
+        (this.repeatedUint64 as ULongArrayList).forEachULong {
             encoder.writeUInt64(34, it)
         }
     }
 
     if (this.repeatedSint32.isNotEmpty()) {
-        this.repeatedSint32.forEach {
+        (this.repeatedSint32 as IntArrayList).forEachInt {
             encoder.writeSInt32(35, it)
         }
     }
 
     if (this.repeatedSint64.isNotEmpty()) {
-        this.repeatedSint64.forEach {
+        (this.repeatedSint64 as LongArrayList).forEachLong {
             encoder.writeSInt64(36, it)
         }
     }
 
     if (this.repeatedFixed32.isNotEmpty()) {
-        this.repeatedFixed32.forEach {
+        (this.repeatedFixed32 as UIntArrayList).forEachUInt {
             encoder.writeFixed32(37, it)
         }
     }
 
     if (this.repeatedFixed64.isNotEmpty()) {
-        this.repeatedFixed64.forEach {
+        (this.repeatedFixed64 as ULongArrayList).forEachULong {
             encoder.writeFixed64(38, it)
         }
     }
 
     if (this.repeatedSfixed32.isNotEmpty()) {
-        this.repeatedSfixed32.forEach {
+        (this.repeatedSfixed32 as IntArrayList).forEachInt {
             encoder.writeSFixed32(39, it)
         }
     }
 
     if (this.repeatedSfixed64.isNotEmpty()) {
-        this.repeatedSfixed64.forEach {
+        (this.repeatedSfixed64 as LongArrayList).forEachLong {
             encoder.writeSFixed64(40, it)
         }
     }
 
     if (this.repeatedFloat.isNotEmpty()) {
-        this.repeatedFloat.forEach {
+        (this.repeatedFloat as FloatArrayList).forEachFloat {
             encoder.writeFloat(41, it)
         }
     }
 
     if (this.repeatedDouble.isNotEmpty()) {
-        this.repeatedDouble.forEach {
+        (this.repeatedDouble as DoubleArrayList).forEachDouble {
             encoder.writeDouble(42, it)
         }
     }
 
     if (this.repeatedBool.isNotEmpty()) {
-        this.repeatedBool.forEach {
+        (this.repeatedBool as BooleanArrayList).forEachBoolean {
             encoder.writeBool(43, it)
         }
     }
@@ -8170,61 +8296,61 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        if (__packedInt32PackedSize < 0) { __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32) }
-        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32, fieldSize = __packedInt32PackedSize)
+        if (__packedInt32PackedSize < 0) { __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32 as IntArrayList) }
+        encoder.writePackedInt32(fieldNr = 75, value = this.packedInt32 as IntArrayList, fieldSize = __packedInt32PackedSize)
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        if (__packedInt64PackedSize < 0) { __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64) }
-        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64, fieldSize = __packedInt64PackedSize)
+        if (__packedInt64PackedSize < 0) { __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64 as LongArrayList) }
+        encoder.writePackedInt64(fieldNr = 76, value = this.packedInt64 as LongArrayList, fieldSize = __packedInt64PackedSize)
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        if (__packedUint32PackedSize < 0) { __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32) }
-        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32, fieldSize = __packedUint32PackedSize)
+        if (__packedUint32PackedSize < 0) { __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32 as UIntArrayList) }
+        encoder.writePackedUInt32(fieldNr = 77, value = this.packedUint32 as UIntArrayList, fieldSize = __packedUint32PackedSize)
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        if (__packedUint64PackedSize < 0) { __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64) }
-        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64, fieldSize = __packedUint64PackedSize)
+        if (__packedUint64PackedSize < 0) { __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64 as ULongArrayList) }
+        encoder.writePackedUInt64(fieldNr = 78, value = this.packedUint64 as ULongArrayList, fieldSize = __packedUint64PackedSize)
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        if (__packedSint32PackedSize < 0) { __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32) }
-        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32, fieldSize = __packedSint32PackedSize)
+        if (__packedSint32PackedSize < 0) { __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32 as IntArrayList) }
+        encoder.writePackedSInt32(fieldNr = 79, value = this.packedSint32 as IntArrayList, fieldSize = __packedSint32PackedSize)
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        if (__packedSint64PackedSize < 0) { __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64) }
-        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64, fieldSize = __packedSint64PackedSize)
+        if (__packedSint64PackedSize < 0) { __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64 as LongArrayList) }
+        encoder.writePackedSInt64(fieldNr = 80, value = this.packedSint64 as LongArrayList, fieldSize = __packedSint64PackedSize)
     }
 
     if (this.packedFixed32.isNotEmpty()) {
-        encoder.writePackedFixed32(fieldNr = 81, value = this.packedFixed32)
+        encoder.writePackedFixed32(fieldNr = 81, value = this.packedFixed32 as UIntArrayList)
     }
 
     if (this.packedFixed64.isNotEmpty()) {
-        encoder.writePackedFixed64(fieldNr = 82, value = this.packedFixed64)
+        encoder.writePackedFixed64(fieldNr = 82, value = this.packedFixed64 as ULongArrayList)
     }
 
     if (this.packedSfixed32.isNotEmpty()) {
-        encoder.writePackedSFixed32(fieldNr = 83, value = this.packedSfixed32)
+        encoder.writePackedSFixed32(fieldNr = 83, value = this.packedSfixed32 as IntArrayList)
     }
 
     if (this.packedSfixed64.isNotEmpty()) {
-        encoder.writePackedSFixed64(fieldNr = 84, value = this.packedSfixed64)
+        encoder.writePackedSFixed64(fieldNr = 84, value = this.packedSfixed64 as LongArrayList)
     }
 
     if (this.packedFloat.isNotEmpty()) {
-        encoder.writePackedFloat(fieldNr = 85, value = this.packedFloat)
+        encoder.writePackedFloat(fieldNr = 85, value = this.packedFloat as FloatArrayList)
     }
 
     if (this.packedDouble.isNotEmpty()) {
-        encoder.writePackedDouble(fieldNr = 86, value = this.packedDouble)
+        encoder.writePackedDouble(fieldNr = 86, value = this.packedDouble as DoubleArrayList)
     }
 
     if (this.packedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 87, value = this.packedBool)
+        encoder.writePackedBool(fieldNr = 87, value = this.packedBool as BooleanArrayList)
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
@@ -8233,79 +8359,79 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
-        this.unpackedInt32.forEach {
+        (this.unpackedInt32 as IntArrayList).forEachInt {
             encoder.writeInt32(89, it)
         }
     }
 
     if (this.unpackedInt64.isNotEmpty()) {
-        this.unpackedInt64.forEach {
+        (this.unpackedInt64 as LongArrayList).forEachLong {
             encoder.writeInt64(90, it)
         }
     }
 
     if (this.unpackedUint32.isNotEmpty()) {
-        this.unpackedUint32.forEach {
+        (this.unpackedUint32 as UIntArrayList).forEachUInt {
             encoder.writeUInt32(91, it)
         }
     }
 
     if (this.unpackedUint64.isNotEmpty()) {
-        this.unpackedUint64.forEach {
+        (this.unpackedUint64 as ULongArrayList).forEachULong {
             encoder.writeUInt64(92, it)
         }
     }
 
     if (this.unpackedSint32.isNotEmpty()) {
-        this.unpackedSint32.forEach {
+        (this.unpackedSint32 as IntArrayList).forEachInt {
             encoder.writeSInt32(93, it)
         }
     }
 
     if (this.unpackedSint64.isNotEmpty()) {
-        this.unpackedSint64.forEach {
+        (this.unpackedSint64 as LongArrayList).forEachLong {
             encoder.writeSInt64(94, it)
         }
     }
 
     if (this.unpackedFixed32.isNotEmpty()) {
-        this.unpackedFixed32.forEach {
+        (this.unpackedFixed32 as UIntArrayList).forEachUInt {
             encoder.writeFixed32(95, it)
         }
     }
 
     if (this.unpackedFixed64.isNotEmpty()) {
-        this.unpackedFixed64.forEach {
+        (this.unpackedFixed64 as ULongArrayList).forEachULong {
             encoder.writeFixed64(96, it)
         }
     }
 
     if (this.unpackedSfixed32.isNotEmpty()) {
-        this.unpackedSfixed32.forEach {
+        (this.unpackedSfixed32 as IntArrayList).forEachInt {
             encoder.writeSFixed32(97, it)
         }
     }
 
     if (this.unpackedSfixed64.isNotEmpty()) {
-        this.unpackedSfixed64.forEach {
+        (this.unpackedSfixed64 as LongArrayList).forEachLong {
             encoder.writeSFixed64(98, it)
         }
     }
 
     if (this.unpackedFloat.isNotEmpty()) {
-        this.unpackedFloat.forEach {
+        (this.unpackedFloat as FloatArrayList).forEachFloat {
             encoder.writeFloat(99, it)
         }
     }
 
     if (this.unpackedDouble.isNotEmpty()) {
-        this.unpackedDouble.forEach {
+        (this.unpackedDouble as DoubleArrayList).forEachDouble {
             encoder.writeDouble(100, it)
         }
     }
 
     if (this.unpackedBool.isNotEmpty()) {
-        this.unpackedBool.forEach {
+        (this.unpackedBool as BooleanArrayList).forEachBoolean {
             encoder.writeBool(101, it)
         }
     }
@@ -8841,121 +8967,121 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesProto2Internal.decodeWith(msg, decoder, config) }
             }
             TestAllTypesProto2InternalTags.REPEATED_INT32_PACKED -> {
-                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedInt32(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_INT32 -> {
-                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_INT64_PACKED -> {
-                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedInt64(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_INT64 -> {
-                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_UINT32_PACKED -> {
-                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedUInt32(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_UINT32 -> {
-                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readUInt32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_UINT64_PACKED -> {
-                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedUInt64(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_UINT64 -> {
-                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readUInt64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_SINT32_PACKED -> {
-                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSInt32(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_SINT32 -> {
-                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_SINT64_PACKED -> {
-                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSInt64(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_SINT64 -> {
-                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_FIXED32_PACKED -> {
-                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedFixed32(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_FIXED32 -> {
-                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readFixed32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_FIXED64_PACKED -> {
-                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedFixed64(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_FIXED64 -> {
-                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readFixed64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_SFIXED32_PACKED -> {
-                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_SFIXED32 -> {
-                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSFixed32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_SFIXED64_PACKED -> {
-                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_SFIXED64 -> {
-                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSFixed64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_FLOAT_PACKED -> {
-                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 decoder.readPackedFloat(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_FLOAT -> {
-                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 val elem = decoder.readFloat()
-                target.add(elem)
+                target.addFloat(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_DOUBLE_PACKED -> {
-                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 decoder.readPackedDouble(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_DOUBLE -> {
-                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 val elem = decoder.readDouble()
-                target.add(elem)
+                target.addDouble(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_BOOL_PACKED -> {
-                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 decoder.readPackedBool(target)
             }
             TestAllTypesProto2InternalTags.REPEATED_BOOL -> {
-                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 val elem = decoder.readBool()
-                target.add(elem)
+                target.addBoolean(elem)
             }
             TestAllTypesProto2InternalTags.REPEATED_STRING -> {
                 val target = msg.__repeatedStringDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -9008,121 +9134,121 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(
                 target.add(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_INT32_PACKED -> {
-                val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedInt32(target)
             }
             TestAllTypesProto2InternalTags.PACKED_INT32 -> {
-                val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_INT64_PACKED -> {
-                val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedInt64(target)
             }
             TestAllTypesProto2InternalTags.PACKED_INT64 -> {
-                val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_UINT32_PACKED -> {
-                val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedUInt32(target)
             }
             TestAllTypesProto2InternalTags.PACKED_UINT32 -> {
-                val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readUInt32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_UINT64_PACKED -> {
-                val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedUInt64(target)
             }
             TestAllTypesProto2InternalTags.PACKED_UINT64 -> {
-                val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readUInt64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_SINT32_PACKED -> {
-                val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSInt32(target)
             }
             TestAllTypesProto2InternalTags.PACKED_SINT32 -> {
-                val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_SINT64_PACKED -> {
-                val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSInt64(target)
             }
             TestAllTypesProto2InternalTags.PACKED_SINT64 -> {
-                val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_FIXED32_PACKED -> {
-                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedFixed32(target)
             }
             TestAllTypesProto2InternalTags.PACKED_FIXED32 -> {
-                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readFixed32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_FIXED64_PACKED -> {
-                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedFixed64(target)
             }
             TestAllTypesProto2InternalTags.PACKED_FIXED64 -> {
-                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readFixed64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_SFIXED32_PACKED -> {
-                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto2InternalTags.PACKED_SFIXED32 -> {
-                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSFixed32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_SFIXED64_PACKED -> {
-                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto2InternalTags.PACKED_SFIXED64 -> {
-                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSFixed64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_FLOAT_PACKED -> {
-                val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 decoder.readPackedFloat(target)
             }
             TestAllTypesProto2InternalTags.PACKED_FLOAT -> {
-                val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 val elem = decoder.readFloat()
-                target.add(elem)
+                target.addFloat(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_DOUBLE_PACKED -> {
-                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 decoder.readPackedDouble(target)
             }
             TestAllTypesProto2InternalTags.PACKED_DOUBLE -> {
-                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 val elem = decoder.readDouble()
-                target.add(elem)
+                target.addDouble(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_BOOL_PACKED -> {
-                val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 decoder.readPackedBool(target)
             }
             TestAllTypesProto2InternalTags.PACKED_BOOL -> {
-                val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__packedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 val elem = decoder.readBool()
-                target.add(elem)
+                target.addBoolean(elem)
             }
             TestAllTypesProto2InternalTags.PACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -9134,121 +9260,121 @@ fun TestAllTypesProto2Internal.Companion.decodeWith(
                 target.add(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_INT32_PACKED -> {
-                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedInt32(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_INT32 -> {
-                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_INT64_PACKED -> {
-                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedInt64(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_INT64 -> {
-                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_UINT32_PACKED -> {
-                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedUInt32(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_UINT32 -> {
-                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readUInt32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_UINT64_PACKED -> {
-                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedUInt64(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_UINT64 -> {
-                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readUInt64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SINT32_PACKED -> {
-                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSInt32(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SINT32 -> {
-                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SINT64_PACKED -> {
-                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSInt64(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SINT64 -> {
-                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSInt64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FIXED32_PACKED -> {
-                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 decoder.readPackedFixed32(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FIXED32 -> {
-                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { UIntArrayList() } as UIntArrayList
                 val elem = decoder.readFixed32()
-                target.add(elem)
+                target.addUInt(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FIXED64_PACKED -> {
-                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 decoder.readPackedFixed64(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FIXED64 -> {
-                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { ULongArrayList() } as ULongArrayList
                 val elem = decoder.readFixed64()
-                target.add(elem)
+                target.addULong(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SFIXED32_PACKED -> {
-                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedSFixed32(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SFIXED32 -> {
-                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readSFixed32()
-                target.add(elem)
+                target.addInt(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SFIXED64_PACKED -> {
-                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 decoder.readPackedSFixed64(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_SFIXED64 -> {
-                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { LongArrayList() } as LongArrayList
                 val elem = decoder.readSFixed64()
-                target.add(elem)
+                target.addLong(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FLOAT_PACKED -> {
-                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 decoder.readPackedFloat(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_FLOAT -> {
-                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { FloatArrayList() } as FloatArrayList
                 val elem = decoder.readFloat()
-                target.add(elem)
+                target.addFloat(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_DOUBLE_PACKED -> {
-                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 decoder.readPackedDouble(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_DOUBLE -> {
-                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { DoubleArrayList() } as DoubleArrayList
                 val elem = decoder.readDouble()
-                target.add(elem)
+                target.addDouble(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_BOOL_PACKED -> {
-                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 decoder.readPackedBool(target)
             }
             TestAllTypesProto2InternalTags.UNPACKED_BOOL -> {
-                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { BooleanArrayList() } as BooleanArrayList
                 val elem = decoder.readBool()
-                target.add(elem)
+                target.addBoolean(elem)
             }
             TestAllTypesProto2InternalTags.UNPACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
@@ -9659,55 +9785,55 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        __result += this.repeatedInt32.sumOf { element -> WireSize.tag(31, WireType.VARINT) + WireSize.int32(element) }
+        __result += (this.repeatedInt32 as IntArrayList).sumOfInt { element -> WireSize.tag(31, WireType.VARINT) + WireSize.int32(element) }
     }
 
     if (this.repeatedInt64.isNotEmpty()) {
-        __result += this.repeatedInt64.sumOf { element -> WireSize.tag(32, WireType.VARINT) + WireSize.int64(element) }
+        __result += (this.repeatedInt64 as LongArrayList).sumOfLong { element -> WireSize.tag(32, WireType.VARINT) + WireSize.int64(element) }
     }
 
     if (this.repeatedUint32.isNotEmpty()) {
-        __result += this.repeatedUint32.sumOf { element -> WireSize.tag(33, WireType.VARINT) + WireSize.uInt32(element) }
+        __result += (this.repeatedUint32 as UIntArrayList).sumOfUInt { element -> WireSize.tag(33, WireType.VARINT) + WireSize.uInt32(element) }
     }
 
     if (this.repeatedUint64.isNotEmpty()) {
-        __result += this.repeatedUint64.sumOf { element -> WireSize.tag(34, WireType.VARINT) + WireSize.uInt64(element) }
+        __result += (this.repeatedUint64 as ULongArrayList).sumOfULong { element -> WireSize.tag(34, WireType.VARINT) + WireSize.uInt64(element) }
     }
 
     if (this.repeatedSint32.isNotEmpty()) {
-        __result += this.repeatedSint32.sumOf { element -> WireSize.tag(35, WireType.VARINT) + WireSize.sInt32(element) }
+        __result += (this.repeatedSint32 as IntArrayList).sumOfInt { element -> WireSize.tag(35, WireType.VARINT) + WireSize.sInt32(element) }
     }
 
     if (this.repeatedSint64.isNotEmpty()) {
-        __result += this.repeatedSint64.sumOf { element -> WireSize.tag(36, WireType.VARINT) + WireSize.sInt64(element) }
+        __result += (this.repeatedSint64 as LongArrayList).sumOfLong { element -> WireSize.tag(36, WireType.VARINT) + WireSize.sInt64(element) }
     }
 
     if (this.repeatedFixed32.isNotEmpty()) {
-        __result += this.repeatedFixed32.sumOf { element -> WireSize.tag(37, WireType.FIXED32) + WireSize.fixed32(element) }
+        __result += (this.repeatedFixed32 as UIntArrayList).sumOfUInt { element -> WireSize.tag(37, WireType.FIXED32) + WireSize.fixed32(element) }
     }
 
     if (this.repeatedFixed64.isNotEmpty()) {
-        __result += this.repeatedFixed64.sumOf { element -> WireSize.tag(38, WireType.FIXED64) + WireSize.fixed64(element) }
+        __result += (this.repeatedFixed64 as ULongArrayList).sumOfULong { element -> WireSize.tag(38, WireType.FIXED64) + WireSize.fixed64(element) }
     }
 
     if (this.repeatedSfixed32.isNotEmpty()) {
-        __result += this.repeatedSfixed32.sumOf { element -> WireSize.tag(39, WireType.FIXED32) + WireSize.sFixed32(element) }
+        __result += (this.repeatedSfixed32 as IntArrayList).sumOfInt { element -> WireSize.tag(39, WireType.FIXED32) + WireSize.sFixed32(element) }
     }
 
     if (this.repeatedSfixed64.isNotEmpty()) {
-        __result += this.repeatedSfixed64.sumOf { element -> WireSize.tag(40, WireType.FIXED64) + WireSize.sFixed64(element) }
+        __result += (this.repeatedSfixed64 as LongArrayList).sumOfLong { element -> WireSize.tag(40, WireType.FIXED64) + WireSize.sFixed64(element) }
     }
 
     if (this.repeatedFloat.isNotEmpty()) {
-        __result += this.repeatedFloat.sumOf { element -> WireSize.tag(41, WireType.FIXED32) + WireSize.float(element) }
+        __result += (this.repeatedFloat as FloatArrayList).sumOfFloat { element -> WireSize.tag(41, WireType.FIXED32) + WireSize.float(element) }
     }
 
     if (this.repeatedDouble.isNotEmpty()) {
-        __result += this.repeatedDouble.sumOf { element -> WireSize.tag(42, WireType.FIXED64) + WireSize.double(element) }
+        __result += (this.repeatedDouble as DoubleArrayList).sumOfDouble { element -> WireSize.tag(42, WireType.FIXED64) + WireSize.double(element) }
     }
 
     if (this.repeatedBool.isNotEmpty()) {
-        __result += this.repeatedBool.sumOf { element -> WireSize.tag(43, WireType.VARINT) + WireSize.bool(element) }
+        __result += (this.repeatedBool as BooleanArrayList).sumOfBoolean { element -> WireSize.tag(43, WireType.VARINT) + WireSize.bool(element) }
     }
 
     if (this.repeatedString.isNotEmpty()) {
@@ -9743,61 +9869,61 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.packedInt32.isNotEmpty()) {
-        __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32)
+        __packedInt32PackedSize = WireSize.packedInt32(this.packedInt32 as IntArrayList)
         __result += __packedInt32PackedSize.let { WireSize.tag(75, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedInt64.isNotEmpty()) {
-        __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64)
+        __packedInt64PackedSize = WireSize.packedInt64(this.packedInt64 as LongArrayList)
         __result += __packedInt64PackedSize.let { WireSize.tag(76, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint32.isNotEmpty()) {
-        __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32)
+        __packedUint32PackedSize = WireSize.packedUInt32(this.packedUint32 as UIntArrayList)
         __result += __packedUint32PackedSize.let { WireSize.tag(77, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedUint64.isNotEmpty()) {
-        __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64)
+        __packedUint64PackedSize = WireSize.packedUInt64(this.packedUint64 as ULongArrayList)
         __result += __packedUint64PackedSize.let { WireSize.tag(78, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint32.isNotEmpty()) {
-        __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32)
+        __packedSint32PackedSize = WireSize.packedSInt32(this.packedSint32 as IntArrayList)
         __result += __packedSint32PackedSize.let { WireSize.tag(79, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedSint64.isNotEmpty()) {
-        __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64)
+        __packedSint64PackedSize = WireSize.packedSInt64(this.packedSint64 as LongArrayList)
         __result += __packedSint64PackedSize.let { WireSize.tag(80, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedFixed32.isNotEmpty()) {
-        __result += WireSize.packedFixed32(this.packedFixed32).let { WireSize.tag(81, WireType.FIXED32) + WireSize.int32(it) + it }
+        __result += WireSize.packedFixed32(this.packedFixed32 as UIntArrayList).let { WireSize.tag(81, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
     if (this.packedFixed64.isNotEmpty()) {
-        __result += WireSize.packedFixed64(this.packedFixed64).let { WireSize.tag(82, WireType.FIXED64) + WireSize.int32(it) + it }
+        __result += WireSize.packedFixed64(this.packedFixed64 as ULongArrayList).let { WireSize.tag(82, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
     if (this.packedSfixed32.isNotEmpty()) {
-        __result += WireSize.packedSFixed32(this.packedSfixed32).let { WireSize.tag(83, WireType.FIXED32) + WireSize.int32(it) + it }
+        __result += WireSize.packedSFixed32(this.packedSfixed32 as IntArrayList).let { WireSize.tag(83, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
     if (this.packedSfixed64.isNotEmpty()) {
-        __result += WireSize.packedSFixed64(this.packedSfixed64).let { WireSize.tag(84, WireType.FIXED64) + WireSize.int32(it) + it }
+        __result += WireSize.packedSFixed64(this.packedSfixed64 as LongArrayList).let { WireSize.tag(84, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
     if (this.packedFloat.isNotEmpty()) {
-        __result += WireSize.packedFloat(this.packedFloat).let { WireSize.tag(85, WireType.FIXED32) + WireSize.int32(it) + it }
+        __result += WireSize.packedFloat(this.packedFloat as FloatArrayList).let { WireSize.tag(85, WireType.FIXED32) + WireSize.int32(it) + it }
     }
 
     if (this.packedDouble.isNotEmpty()) {
-        __result += WireSize.packedDouble(this.packedDouble).let { WireSize.tag(86, WireType.FIXED64) + WireSize.int32(it) + it }
+        __result += WireSize.packedDouble(this.packedDouble as DoubleArrayList).let { WireSize.tag(86, WireType.FIXED64) + WireSize.int32(it) + it }
     }
 
     if (this.packedBool.isNotEmpty()) {
-        __result += WireSize.packedBool(this.packedBool).let { WireSize.tag(87, WireType.VARINT) + WireSize.int32(it) + it }
+        __result += WireSize.packedBool(this.packedBool as BooleanArrayList).let { WireSize.tag(87, WireType.VARINT) + WireSize.int32(it) + it }
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
@@ -9806,55 +9932,55 @@ private fun TestAllTypesProto2Internal.computeSize(): Int {
     }
 
     if (this.unpackedInt32.isNotEmpty()) {
-        __result += this.unpackedInt32.sumOf { element -> WireSize.tag(89, WireType.VARINT) + WireSize.int32(element) }
+        __result += (this.unpackedInt32 as IntArrayList).sumOfInt { element -> WireSize.tag(89, WireType.VARINT) + WireSize.int32(element) }
     }
 
     if (this.unpackedInt64.isNotEmpty()) {
-        __result += this.unpackedInt64.sumOf { element -> WireSize.tag(90, WireType.VARINT) + WireSize.int64(element) }
+        __result += (this.unpackedInt64 as LongArrayList).sumOfLong { element -> WireSize.tag(90, WireType.VARINT) + WireSize.int64(element) }
     }
 
     if (this.unpackedUint32.isNotEmpty()) {
-        __result += this.unpackedUint32.sumOf { element -> WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(element) }
+        __result += (this.unpackedUint32 as UIntArrayList).sumOfUInt { element -> WireSize.tag(91, WireType.VARINT) + WireSize.uInt32(element) }
     }
 
     if (this.unpackedUint64.isNotEmpty()) {
-        __result += this.unpackedUint64.sumOf { element -> WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(element) }
+        __result += (this.unpackedUint64 as ULongArrayList).sumOfULong { element -> WireSize.tag(92, WireType.VARINT) + WireSize.uInt64(element) }
     }
 
     if (this.unpackedSint32.isNotEmpty()) {
-        __result += this.unpackedSint32.sumOf { element -> WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(element) }
+        __result += (this.unpackedSint32 as IntArrayList).sumOfInt { element -> WireSize.tag(93, WireType.VARINT) + WireSize.sInt32(element) }
     }
 
     if (this.unpackedSint64.isNotEmpty()) {
-        __result += this.unpackedSint64.sumOf { element -> WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(element) }
+        __result += (this.unpackedSint64 as LongArrayList).sumOfLong { element -> WireSize.tag(94, WireType.VARINT) + WireSize.sInt64(element) }
     }
 
     if (this.unpackedFixed32.isNotEmpty()) {
-        __result += this.unpackedFixed32.sumOf { element -> WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(element) }
+        __result += (this.unpackedFixed32 as UIntArrayList).sumOfUInt { element -> WireSize.tag(95, WireType.FIXED32) + WireSize.fixed32(element) }
     }
 
     if (this.unpackedFixed64.isNotEmpty()) {
-        __result += this.unpackedFixed64.sumOf { element -> WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(element) }
+        __result += (this.unpackedFixed64 as ULongArrayList).sumOfULong { element -> WireSize.tag(96, WireType.FIXED64) + WireSize.fixed64(element) }
     }
 
     if (this.unpackedSfixed32.isNotEmpty()) {
-        __result += this.unpackedSfixed32.sumOf { element -> WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(element) }
+        __result += (this.unpackedSfixed32 as IntArrayList).sumOfInt { element -> WireSize.tag(97, WireType.FIXED32) + WireSize.sFixed32(element) }
     }
 
     if (this.unpackedSfixed64.isNotEmpty()) {
-        __result += this.unpackedSfixed64.sumOf { element -> WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(element) }
+        __result += (this.unpackedSfixed64 as LongArrayList).sumOfLong { element -> WireSize.tag(98, WireType.FIXED64) + WireSize.sFixed64(element) }
     }
 
     if (this.unpackedFloat.isNotEmpty()) {
-        __result += this.unpackedFloat.sumOf { element -> WireSize.tag(99, WireType.FIXED32) + WireSize.float(element) }
+        __result += (this.unpackedFloat as FloatArrayList).sumOfFloat { element -> WireSize.tag(99, WireType.FIXED32) + WireSize.float(element) }
     }
 
     if (this.unpackedDouble.isNotEmpty()) {
-        __result += this.unpackedDouble.sumOf { element -> WireSize.tag(100, WireType.FIXED64) + WireSize.double(element) }
+        __result += (this.unpackedDouble as DoubleArrayList).sumOfDouble { element -> WireSize.tag(100, WireType.FIXED64) + WireSize.double(element) }
     }
 
     if (this.unpackedBool.isNotEmpty()) {
-        __result += this.unpackedBool.sumOf { element -> WireSize.tag(101, WireType.VARINT) + WireSize.bool(element) }
+        __result += (this.unpackedBool as BooleanArrayList).sumOfBoolean { element -> WireSize.tag(101, WireType.VARINT) + WireSize.bool(element) }
     }
 
     if (this.unpackedNestedEnum.isNotEmpty()) {
@@ -10417,7 +10543,7 @@ fun UnknownToTestAllTypesInternal.encodeWith(encoder: WireEncoder, config: Proto
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        this.repeatedInt32.forEach {
+        (this.repeatedInt32 as IntArrayList).forEachInt {
             encoder.writeInt32(1011, it)
         }
     }
@@ -10462,13 +10588,13 @@ fun UnknownToTestAllTypesInternal.Companion.decodeWith(
                 msg.optionalBool = decoder.readBool()
             }
             UnknownToTestAllTypesInternalTags.REPEATED_INT32_PACKED -> {
-                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 decoder.readPackedInt32(target)
             }
             UnknownToTestAllTypesInternalTags.REPEATED_INT32 -> {
-                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
+                val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { IntArrayList() } as IntArrayList
                 val elem = decoder.readInt32()
-                target.add(elem)
+                target.addInt(elem)
             }
             else -> {
                 if (tag.wireType == WireType.END_GROUP) {
@@ -10508,7 +10634,7 @@ private fun UnknownToTestAllTypesInternal.computeSize(): Int {
     }
 
     if (this.repeatedInt32.isNotEmpty()) {
-        __result += this.repeatedInt32.sumOf { element -> WireSize.tag(1011, WireType.VARINT) + WireSize.int32(element) }
+        __result += (this.repeatedInt32 as IntArrayList).sumOfInt { element -> WireSize.tag(1011, WireType.VARINT) + WireSize.int32(element) }
     }
 
     __result += _unknownFields.size.toInt()
