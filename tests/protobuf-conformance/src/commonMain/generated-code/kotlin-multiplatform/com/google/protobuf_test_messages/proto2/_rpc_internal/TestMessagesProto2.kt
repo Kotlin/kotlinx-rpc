@@ -8224,7 +8224,7 @@ fun TestAllTypesProto2Internal.encodeWith(encoder: WireEncoder, config: ProtoCon
     }
 
     if (this.packedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 87, value = this.packedBool, fieldSize = WireSize.packedBool(this.packedBool))
+        encoder.writePackedBool(fieldNr = 87, value = this.packedBool)
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {

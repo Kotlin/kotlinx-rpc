@@ -3715,7 +3715,7 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
     }
 
     if (this.repeatedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 43, value = this.repeatedBool, fieldSize = WireSize.packedBool(this.repeatedBool))
+        encoder.writePackedBool(fieldNr = 43, value = this.repeatedBool)
     }
 
     if (this.repeatedString.isNotEmpty()) {
@@ -3819,7 +3819,7 @@ fun TestAllTypesEdition2023Internal.encodeWith(encoder: WireEncoder, config: Pro
     }
 
     if (this.packedBool.isNotEmpty()) {
-        encoder.writePackedBool(fieldNr = 87, value = this.packedBool, fieldSize = WireSize.packedBool(this.packedBool))
+        encoder.writePackedBool(fieldNr = 87, value = this.packedBool)
     }
 
     if (this.packedNestedEnum.isNotEmpty()) {
