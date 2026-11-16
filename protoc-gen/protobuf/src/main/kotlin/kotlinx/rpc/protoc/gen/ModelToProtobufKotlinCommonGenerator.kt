@@ -1843,7 +1843,9 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.List -> {
                 val packedValueVar = if (type.value is FieldType.Enum) {
-                    valueVar.wrapIn { valueVar -> "$valueVar.map { it.number }" }
+                    valueVar.merge("%F".scoped(FqName.TopLevelFP.mapToIntArrayList)) { valueVar, mapToIntArrayList ->
+                        "$valueVar.$mapToIntArrayList { it.number }"
+                    }
                 } else {
                     valueVar
                 }
@@ -2212,7 +2214,9 @@ class ModelToProtobufKotlinCommonGenerator(
         val sizeFuncName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
 
         val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
-            variable.wrapIn { variable -> "$variable.map { it.number }" }
+            variable.merge("%F".scoped(FqName.TopLevelFP.mapToIntArrayList)) { variable, mapToIntArrayList ->
+                "$variable.$mapToIntArrayList { it.number }"
+            }
         } else {
             variable
         }

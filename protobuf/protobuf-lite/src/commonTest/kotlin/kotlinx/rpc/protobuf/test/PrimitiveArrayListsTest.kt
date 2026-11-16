@@ -19,7 +19,6 @@ import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.decodeWire
 import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
@@ -189,119 +188,99 @@ class PrimitiveArrayListsTest {
     }
 
     @Test
-    fun packedVarintCodecMatchesTheListOverloads() {
+    fun packedVarintFieldsRoundTrip() {
         val ints = listOf(0, 1, -1, 300, Int.MIN_VALUE, Int.MAX_VALUE)
         val longs = listOf(0L, 1L, -1L, 300L, Long.MIN_VALUE, Long.MAX_VALUE)
         checkPacked(
             ints, { IntArrayList.copyOf(it) }, { IntArrayList() },
-            { writePackedInt32(1, it, WireSize.packedInt32(it)) },
             { writePackedInt32(1, it, WireSize.packedInt32(it)) },
             { readPackedInt32(it) },
         )
         checkPacked(
             ints, { IntArrayList.copyOf(it) }, { IntArrayList() },
             { writePackedSInt32(1, it, WireSize.packedSInt32(it)) },
-            { writePackedSInt32(1, it, WireSize.packedSInt32(it)) },
             { readPackedSInt32(it) },
         )
         checkPacked(
             longs, { LongArrayList.copyOf(it) }, { LongArrayList() },
-            { writePackedInt64(1, it, WireSize.packedInt64(it)) },
             { writePackedInt64(1, it, WireSize.packedInt64(it)) },
             { readPackedInt64(it) },
         )
         checkPacked(
             longs, { LongArrayList.copyOf(it) }, { LongArrayList() },
             { writePackedSInt64(1, it, WireSize.packedSInt64(it)) },
-            { writePackedSInt64(1, it, WireSize.packedSInt64(it)) },
             { readPackedSInt64(it) },
         )
         checkPacked(
             ints.map { it.toUInt() }, { UIntArrayList.copyOf(it) }, { UIntArrayList() },
-            { writePackedUInt32(1, it, WireSize.packedUInt32(it)) },
             { writePackedUInt32(1, it, WireSize.packedUInt32(it)) },
             { readPackedUInt32(it) },
         )
         checkPacked(
             longs.map { it.toULong() }, { ULongArrayList.copyOf(it) }, { ULongArrayList() },
             { writePackedUInt64(1, it, WireSize.packedUInt64(it)) },
-            { writePackedUInt64(1, it, WireSize.packedUInt64(it)) },
             { readPackedUInt64(it) },
         )
         checkPacked(
             listOf(true, false, true), { BooleanArrayList.copyOf(it) }, { BooleanArrayList() },
-            { writePackedBool(1, it) },
             { writePackedBool(1, it) },
             { readPackedBool(it) },
         )
     }
 
     @Test
-    fun packedFixedCodecMatchesTheListOverloads() {
+    fun packedFixedFieldsRoundTrip() {
         val ints = listOf(0, 1, -1, Int.MIN_VALUE, Int.MAX_VALUE)
         val longs = listOf(0L, 1L, -1L, Long.MIN_VALUE, Long.MAX_VALUE)
         checkPacked(
             ints.map { it.toUInt() }, { UIntArrayList.copyOf(it) }, { UIntArrayList() },
-            { writePackedFixed32(1, it) },
             { writePackedFixed32(1, it) },
             { readPackedFixed32(it) },
         )
         checkPacked(
             ints, { IntArrayList.copyOf(it) }, { IntArrayList() },
             { writePackedSFixed32(1, it) },
-            { writePackedSFixed32(1, it) },
             { readPackedSFixed32(it) },
         )
         checkPacked(
             longs.map { it.toULong() }, { ULongArrayList.copyOf(it) }, { ULongArrayList() },
-            { writePackedFixed64(1, it) },
             { writePackedFixed64(1, it) },
             { readPackedFixed64(it) },
         )
         checkPacked(
             longs, { LongArrayList.copyOf(it) }, { LongArrayList() },
             { writePackedSFixed64(1, it) },
-            { writePackedSFixed64(1, it) },
             { readPackedSFixed64(it) },
         )
         checkPacked(
             listOf(0.0f, -0.0f, Float.NaN, Float.MAX_VALUE), { FloatArrayList.copyOf(it) }, { FloatArrayList() },
-            { writePackedFloat(1, it) },
             { writePackedFloat(1, it) },
             { readPackedFloat(it) },
         )
         checkPacked(
             listOf(0.0, -0.0, Double.NaN, Double.MAX_VALUE), { DoubleArrayList.copyOf(it) }, { DoubleArrayList() },
             { writePackedDouble(1, it) },
-            { writePackedDouble(1, it) },
             { readPackedDouble(it) },
         )
     }
 
-    /**
-     * Checks that the primitive overloads write the same bytes as the `List` overloads, and that two occurrences
-     * of the field decode into one destination.
-     */
+    /** Checks that two occurrences of a packed field decode into one destination. */
     private fun <T, L : MutableList<T>> checkPacked(
         values: List<T>,
         copyOf: (List<T>) -> L,
         empty: () -> L,
-        writeList: WireEncoder.(List<T>) -> Unit,
-        writePrimitive: WireEncoder.(L) -> Unit,
-        readPrimitive: WireDecoder.(L) -> Unit,
+        write: WireEncoder.(L) -> Unit,
+        read: WireDecoder.(L) -> Unit,
     ) {
-        val expected = encode { it.writeList(values) }
-        val actual = encode { it.writePrimitive(copyOf(values)) }
-        assertContentEquals(expected, actual)
-
+        val bytes = encode { it.write(copyOf(values)) }
         val buffer = Buffer()
-        buffer.write(actual)
-        buffer.write(actual)
+        buffer.write(bytes)
+        buffer.write(bytes)
         val destination = empty()
         decodeWire(buffer) { decoder ->
             repeat(2) {
                 decoder.readTag()
-                decoder.readPrimitive(destination)
+                decoder.read(destination)
             }
             assertTrue(decoder.readTag().isEnd)
         }

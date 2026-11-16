@@ -56,35 +56,7 @@ public object WireSize {
 
     public fun string(value: String): Int = Utf8.encodedLength(value)
 
-    public fun packedInt32(value: List<Int>): Int = value.sumOf { int32(it) }
-
-    public fun packedInt64(value: List<Long>): Int = value.sumOf { int64(it) }
-
-    public fun packedUInt32(value: List<UInt>): Int = value.sumOf { uInt32(it) }
-
-    public fun packedUInt64(value: List<ULong>): Int = value.sumOf { uInt64(it) }
-
-    public fun packedSInt32(value: List<Int>): Int = value.sumOf { sInt32(it) }
-
-    public fun packedSInt64(value: List<Long>): Int = value.sumOf { sInt64(it) }
-
-    public fun packedEnum(value: List<Int>): Int = value.sumOf { enum(it) }
-
-    public fun packedFloat(value: List<Float>): Int = value.size * 4
-
-    public fun packedDouble(value: List<Double>): Int = value.size * 8
-
-    public fun packedFixed32(value: List<UInt>): Int = value.size * 4
-
-    public fun packedFixed64(value: List<ULong>): Int = value.size * 8
-
-    public fun packedSFixed32(value: List<Int>): Int = value.size * 4
-
-    public fun packedSFixed64(value: List<Long>): Int = value.size * 8
-
-    public fun packedBool(value: List<Boolean>): Int = value.size
-
-    /** The `packed*` overloads for the primitive array lists, see [IntArrayList]. */
+    /** The payload sizes of packed fields, over the primitive array list of each field type, see [IntArrayList]. */
     public fun packedInt32(value: IntArrayList): Int = value.sumOfInt { int32(it) }
 
     public fun packedInt64(value: LongArrayList): Int = value.sumOfLong { int64(it) }
@@ -96,6 +68,9 @@ public object WireSize {
     public fun packedSInt32(value: IntArrayList): Int = value.sumOfInt { sInt32(it) }
 
     public fun packedSInt64(value: LongArrayList): Int = value.sumOfLong { sInt64(it) }
+
+    /** The payload size of a packed enum field over the enum numbers. */
+    public fun packedEnum(value: IntArrayList): Int = value.sumOfInt { enum(it) }
 
     public fun packedFloat(value: FloatArrayList): Int = value.size * 4
 

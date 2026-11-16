@@ -23,6 +23,7 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
+import kotlinx.rpc.protobuf.internal.IntArrayList
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeWire
 import test.groups.WithGroups
@@ -164,10 +165,10 @@ class ProtosTest {
     fun testRepeatedPackedOccurrencesConcatenate() {
         // Field 4 of Repeated: packed [1, 2], unpacked 3, packed [4, 5], packed empty.
         val bytes = encodeToBytes { encoder ->
-            encoder.writePackedInt32(fieldNr = 4, value = listOf(1, 2), fieldSize = 2)
+            encoder.writePackedInt32(fieldNr = 4, value = IntArrayList.copyOf(listOf(1, 2)), fieldSize = 2)
             encoder.writeInt32(fieldNr = 4, value = 3)
-            encoder.writePackedInt32(fieldNr = 4, value = listOf(4, 5), fieldSize = 2)
-            encoder.writePackedInt32(fieldNr = 4, value = emptyList(), fieldSize = 0)
+            encoder.writePackedInt32(fieldNr = 4, value = IntArrayList.copyOf(listOf(4, 5)), fieldSize = 2)
+            encoder.writePackedInt32(fieldNr = 4, value = IntArrayList(), fieldSize = 0)
         }
         val decoded = grpcMarshallerOf<Repeated>().decode(ByteArrayMessageReader(bytes))
 

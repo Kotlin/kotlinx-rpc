@@ -7,6 +7,13 @@ package kotlinx.rpc.protobuf.test
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.protobuf.ProtobufDecodingException
+import kotlinx.rpc.protobuf.internal.BooleanArrayList
+import kotlinx.rpc.protobuf.internal.DoubleArrayList
+import kotlinx.rpc.protobuf.internal.FloatArrayList
+import kotlinx.rpc.protobuf.internal.IntArrayList
+import kotlinx.rpc.protobuf.internal.LongArrayList
+import kotlinx.rpc.protobuf.internal.UIntArrayList
+import kotlinx.rpc.protobuf.internal.ULongArrayList
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
@@ -677,21 +684,22 @@ class WireMarshallerTest {
         assertTrue(buffer.exhausted())
     }
 
-    private fun <T> runPackedFixedTest(
+    private fun <T, L : MutableList<T>> runPackedFixedTest(
         list: List<T>,
-        write: WireEncoder.(Int, List<T>) -> Unit,
-        read: WireDecoder.(MutableList<T>) -> Unit,
+        copyOf: (List<T>) -> L,
+        write: WireEncoder.(Int, L) -> Unit,
+        read: WireDecoder.(L) -> Unit,
     ) {
         val buf = Buffer()
         encodeWire(buf) { encoder ->
-            encoder.write(1, list)
+            encoder.write(1, copyOf(list))
         }
         decodeWire(buf) { dec ->
             dec.readTag().apply {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
-            val test = ArrayList<T>()
+            val test = copyOf(emptyList())
             dec.read(test)
             assertEquals(list, test)
         }
@@ -701,6 +709,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedFixed32() = runPackedFixedTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
+        { UIntArrayList.copyOf(it) },
         WireEncoder::writePackedFixed32,
         WireDecoder::readPackedFixed32
     )
@@ -708,6 +717,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedBool() = runPackedFixedTest(
         List(1_000_000) { it % 2 == 0 },
+        { BooleanArrayList.copyOf(it) },
         WireEncoder::writePackedBool,
         WireDecoder::readPackedBool
     )
@@ -715,6 +725,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedFixed64() = runPackedFixedTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toULong() },
+        { ULongArrayList.copyOf(it) },
         WireEncoder::writePackedFixed64,
         WireDecoder::readPackedFixed64,
     )
@@ -722,6 +733,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedSFixed32() = runPackedFixedTest(
         List(1_000_000) { Int.MAX_VALUE + it },
+        { IntArrayList.copyOf(it) },
         WireEncoder::writePackedSFixed32,
         WireDecoder::readPackedSFixed32
     )
@@ -729,6 +741,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedSFixed64() = runPackedFixedTest(
         List(1_000_000) { Long.MAX_VALUE + it },
+        { LongArrayList.copyOf(it) },
         WireEncoder::writePackedSFixed64,
         WireDecoder::readPackedSFixed64
     )
@@ -736,6 +749,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedFloat() = runPackedFixedTest(
         List(1_000_000) { it.toFloat() / 3.3f * ((it and 1) * 2 - 1) },
+        { FloatArrayList.copyOf(it) },
         WireEncoder::writePackedFloat,
         WireDecoder::readPackedFloat,
     )
@@ -743,26 +757,29 @@ class WireMarshallerTest {
     @Test
     fun testPackedDouble() = runPackedFixedTest(
         List(1_000_000) { it.toDouble() / 3.3 * ((it and 1) * 2 - 1) },
+        { DoubleArrayList.copyOf(it) },
         WireEncoder::writePackedDouble,
         WireDecoder::readPackedDouble,
     )
 
-    private fun <T> runPackedVarTest(
+    private fun <T, L : MutableList<T>> runPackedVarTest(
         list: List<T>,
-        sizeFn: (List<T>) -> Int,
-        write: WireEncoder.(Int, List<T>, Int) -> Unit,
-        read: WireDecoder.(MutableList<T>) -> Unit,
+        copyOf: (List<T>) -> L,
+        sizeFn: (L) -> Int,
+        write: WireEncoder.(Int, L, Int) -> Unit,
+        read: WireDecoder.(L) -> Unit,
     ) {
         val buf = Buffer()
+        val primitive = copyOf(list)
         encodeWire(buf) { encoder ->
-            encoder.write(1, list, sizeFn(list))
+            encoder.write(1, primitive, sizeFn(primitive))
         }
         decodeWire(buf) { dec ->
             dec.readTag().apply {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
-            val test = ArrayList<T>()
+            val test = copyOf(emptyList())
             dec.read(test)
             assertEquals(list, test)
         }
@@ -772,6 +789,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedInt32() = runPackedVarTest(
         List(1_000_000) { Int.MAX_VALUE + it },
+        { IntArrayList.copyOf(it) },
         WireSize::packedInt32,
         WireEncoder::writePackedInt32,
         WireDecoder::readPackedInt32
@@ -780,6 +798,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedInt64() = runPackedVarTest(
         List(1_000_000) { Long.MAX_VALUE + it.toLong() },
+        { LongArrayList.copyOf(it) },
         WireSize::packedInt64,
         WireEncoder::writePackedInt64,
         WireDecoder::readPackedInt64
@@ -788,6 +807,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedUInt32() = runPackedVarTest(
         List(1_000_000) { UInt.MAX_VALUE + it.toUInt() },
+        { UIntArrayList.copyOf(it) },
         WireSize::packedUInt32,
         WireEncoder::writePackedUInt32,
         WireDecoder::readPackedUInt32
@@ -796,6 +816,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedUInt64() = runPackedVarTest(
         List(1_000_000) { ULong.MAX_VALUE + it.toULong() },
+        { ULongArrayList.copyOf(it) },
         WireSize::packedUInt64,
         WireEncoder::writePackedUInt64,
         WireDecoder::readPackedUInt64
@@ -804,6 +825,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedSInt32() = runPackedVarTest(
         List(1_000_000) { Int.MAX_VALUE + it },
+        { IntArrayList.copyOf(it) },
         WireSize::packedSInt32,
         WireEncoder::writePackedSInt32,
         WireDecoder::readPackedSInt32
@@ -812,6 +834,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedSInt64() = runPackedVarTest(
         List(1_000_000) { Long.MAX_VALUE + it.toLong() },
+        { LongArrayList.copyOf(it) },
         WireSize::packedSInt64,
         WireEncoder::writePackedSInt64,
         WireDecoder::readPackedSInt64
@@ -820,6 +843,7 @@ class WireMarshallerTest {
     @Test
     fun testPackedEnum() = runPackedVarTest(
         List(1_000_000) { it },
+        { IntArrayList.copyOf(it) },
         WireSize::packedEnum,
         WireEncoder::writePackedEnum,
         { destination -> readPackedEnum(destination) { number -> number } }
@@ -829,12 +853,12 @@ class WireMarshallerTest {
     fun testPackedEmptyPayloadAppendsNothing() {
         val buf = Buffer()
         encodeWire(buf) { encoder ->
-            encoder.writePackedInt32(fieldNr = 1, value = listOf(1, 2), fieldSize = 2)
-            encoder.writePackedInt32(fieldNr = 1, value = emptyList(), fieldSize = 0)
+            encoder.writePackedInt32(fieldNr = 1, value = IntArrayList.copyOf(listOf(1, 2)), fieldSize = 2)
+            encoder.writePackedInt32(fieldNr = 1, value = IntArrayList(), fieldSize = 0)
         }
         decodeWire(buf) { dec ->
             dec.readTag()
-            val test = ArrayList(listOf(9))
+            val test = IntArrayList.copyOf(listOf(9))
             dec.readPackedInt32(test)
             dec.readTag()
             dec.readPackedInt32(test)
@@ -847,12 +871,12 @@ class WireMarshallerTest {
     fun testPackedFixedEmptyPayloadAppendsNothing() {
         val buf = Buffer()
         encodeWire(buf) { encoder ->
-            encoder.writePackedFixed32(fieldNr = 1, value = listOf(7u))
-            encoder.writePackedFixed32(fieldNr = 1, value = emptyList())
+            encoder.writePackedFixed32(fieldNr = 1, value = UIntArrayList.copyOf(listOf(7u)))
+            encoder.writePackedFixed32(fieldNr = 1, value = UIntArrayList())
         }
         decodeWire(buf) { dec ->
             dec.readTag()
-            val test = ArrayList(listOf(9u))
+            val test = UIntArrayList.copyOf(listOf(9u))
             dec.readPackedFixed32(test)
             dec.readTag()
             dec.readPackedFixed32(test)
@@ -869,7 +893,7 @@ class WireMarshallerTest {
         assertFailsWith<ProtobufDecodingException> {
             decodeWire(buffer) {
                 it.readTag()
-                it.readPackedFixed32(ArrayList())
+                it.readPackedFixed32(UIntArrayList())
             }
         }
     }
@@ -882,7 +906,7 @@ class WireMarshallerTest {
         assertFailsWith<ProtobufDecodingException> {
             decodeWire(buffer) {
                 it.readTag()
-                it.readPackedInt32(ArrayList())
+                it.readPackedInt32(IntArrayList())
             }
         }
     }
@@ -895,7 +919,7 @@ class WireMarshallerTest {
         assertFailsWith<ProtobufDecodingException> {
             decodeWire(buffer) {
                 it.readTag()
-                it.readPackedInt32(ArrayList())
+                it.readPackedInt32(IntArrayList())
             }
         }
     }

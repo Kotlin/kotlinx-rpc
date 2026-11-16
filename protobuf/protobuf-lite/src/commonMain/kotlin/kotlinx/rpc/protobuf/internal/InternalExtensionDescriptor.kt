@@ -48,8 +48,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     public val copy: (value: Any) -> V,
     /** Packed payload encoder used by `packedRepeated(...)` element descriptors. */
     private val encodePacked: ((encoder: WireEncoder, fieldNumber: Int, value: List<V>) -> Unit)? = null,
-    /** Packed payload decoder used by `packedRepeated(...)` element descriptors. It appends to the destination. */
-    private val decodePackedValues: ((decoder: WireDecoder, destination: MutableList<V>) -> Unit)? = null,
+    /**
+     * Packed payload decoder used by `packedRepeated(...)` element descriptors. Returns `current` with the decoded
+     * elements added. It changes `current` in place when `current` is already the list type of the element, so
+     * `current` must not be a shared default.
+     */
+    private val decodePackedValues: ((decoder: WireDecoder, current: List<V>) -> List<V>)? = null,
 ): ProtoExtensionDescriptor<T, V> {
     // Packed-ness is fully determined by whether a packed decoder exists.
     public val isPacked: Boolean get() = decodePacked != null
@@ -76,8 +80,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readBool() },
             copy = { it as Boolean },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedBool(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedBool(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedBool(fieldNr, value.asPrimitiveList { BooleanArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { BooleanArrayList.copyOf(it) }.also { dec.readPackedBool(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> int32(
@@ -101,10 +109,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readInt32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::int32)
-                enc.writePackedInt32(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { IntArrayList.copyOf(it) }
+                enc.writePackedInt32(fieldNr, list, WireSize.packedInt32(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedInt32(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { IntArrayList.copyOf(it) }.also { dec.readPackedInt32(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> int64(
@@ -128,10 +138,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readInt64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::int64)
-                enc.writePackedInt64(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { LongArrayList.copyOf(it) }
+                enc.writePackedInt64(fieldNr, list, WireSize.packedInt64(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedInt64(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { LongArrayList.copyOf(it) }.also { dec.readPackedInt64(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> uint32(
@@ -155,10 +167,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readUInt32() },
             copy = { it as UInt },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::uInt32)
-                enc.writePackedUInt32(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { UIntArrayList.copyOf(it) }
+                enc.writePackedUInt32(fieldNr, list, WireSize.packedUInt32(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedUInt32(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { UIntArrayList.copyOf(it) }.also { dec.readPackedUInt32(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> uint64(
@@ -182,10 +196,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readUInt64() },
             copy = { it as ULong },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::uInt64)
-                enc.writePackedUInt64(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { ULongArrayList.copyOf(it) }
+                enc.writePackedUInt64(fieldNr, list, WireSize.packedUInt64(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedUInt64(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { ULongArrayList.copyOf(it) }.also { dec.readPackedUInt64(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sint32(
@@ -209,10 +225,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readSInt32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::sInt32)
-                enc.writePackedSInt32(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { IntArrayList.copyOf(it) }
+                enc.writePackedSInt32(fieldNr, list, WireSize.packedSInt32(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedSInt32(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { IntArrayList.copyOf(it) }.also { dec.readPackedSInt32(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sint64(
@@ -236,10 +254,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readSInt64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf(WireSize::sInt64)
-                enc.writePackedSInt64(fieldNr, value, fieldSize)
+                val list = value.asPrimitiveList { LongArrayList.copyOf(it) }
+                enc.writePackedSInt64(fieldNr, list, WireSize.packedSInt64(list))
             },
-            decodePackedValues = { dec, destination -> dec.readPackedSInt64(destination) },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { LongArrayList.copyOf(it) }.also { dec.readPackedSInt64(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> fixed32(
@@ -262,8 +282,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readFixed32() },
             copy = { it as UInt },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedFixed32(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedFixed32(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedFixed32(fieldNr, value.asPrimitiveList { UIntArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { UIntArrayList.copyOf(it) }.also { dec.readPackedFixed32(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> fixed64(
@@ -286,8 +310,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readFixed64() },
             copy = { it as ULong },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedFixed64(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedFixed64(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedFixed64(fieldNr, value.asPrimitiveList { ULongArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { ULongArrayList.copyOf(it) }.also { dec.readPackedFixed64(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sfixed32(
@@ -310,8 +338,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readSFixed32() },
             copy = { it as Int },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed32(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedSFixed32(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedSFixed32(fieldNr, value.asPrimitiveList { IntArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { IntArrayList.copyOf(it) }.also { dec.readPackedSFixed32(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sfixed64(
@@ -334,8 +366,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readSFixed64() },
             copy = { it as Long },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed64(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedSFixed64(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedSFixed64(fieldNr, value.asPrimitiveList { LongArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { LongArrayList.copyOf(it) }.also { dec.readPackedSFixed64(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> float(
@@ -358,8 +394,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readFloat() },
             copy = { it as Float },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedFloat(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedFloat(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedFloat(fieldNr, value.asPrimitiveList { FloatArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { FloatArrayList.copyOf(it) }.also { dec.readPackedFloat(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> double(
@@ -382,8 +422,12 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             },
             decode = { _, dec, _ -> dec.readDouble() },
             copy = { it as Double },
-            encodePacked = { enc, fieldNr, value -> enc.writePackedDouble(fieldNr, value) },
-            decodePackedValues = { dec, destination -> dec.readPackedDouble(destination) },
+            encodePacked = { enc, fieldNr, value ->
+                enc.writePackedDouble(fieldNr, value.asPrimitiveList { DoubleArrayList.copyOf(it) })
+            },
+            decodePackedValues = { dec, current ->
+                current.asPrimitiveList { DoubleArrayList.copyOf(it) }.also { dec.readPackedDouble(it) }
+            },
         )
 
         public fun <@GeneratedProtoMessage T : Any> bytes(
@@ -457,15 +501,14 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> decodeValue(dec.readEnum()) },
             copy = { valueType.cast(it) },
             encodePacked = { enc, fieldNr, value ->
-                val fieldSize = value.sumOf { enumValue -> WireSize.enum(encodeValue(enumValue)) }
-                enc.writePackedEnum(
-                    fieldNr = fieldNr,
-                    value = value.map(encodeValue),
-                    fieldSize = fieldSize,
-                )
+                val numbers = value.mapToIntArrayList(encodeValue)
+                enc.writePackedEnum(fieldNr, numbers, WireSize.packedEnum(numbers))
             },
-            decodePackedValues = { dec, destination ->
+            decodePackedValues = { dec, current ->
+                @Suppress("UNCHECKED_CAST")
+                val destination = current as? ArrayList<V> ?: ArrayList(current)
                 dec.readPackedEnum(destination, decodeValue)
+                destination
             },
         )
 
@@ -656,11 +699,9 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     result
                 },
                 decodePacked = { currentValue, dec, _ ->
-                    val result = currentValue
-                        ?.let { listType.cast(it) as MutableList }
-                        ?: sharedDefault.value.toMutableList()
-                    decodePackedValues(dec, result)
-                    result
+                    // toList() copies the shared default, so the decoder never changes it
+                    val current = currentValue?.let { listType.cast(it) } ?: sharedDefault.value.toList()
+                    decodePackedValues(dec, current)
                 },
                 copy = { value ->
                     listType.cast(value).map { rawElement ->
@@ -681,3 +722,6 @@ private fun <T : Any> Any.encodingCast(valueType: KClass<T>): T {
         "Extension expected value of type ${valueType.simpleName}, got ${this::class.simpleName}"
     )
 }
+
+/** Returns this list when it is already an [L], or a copy that [copyOf] makes. */
+private inline fun <V, reified L : List<V>> List<V>.asPrimitiveList(copyOf: (List<V>) -> L): L = this as? L ?: copyOf(this)

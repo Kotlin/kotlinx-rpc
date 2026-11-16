@@ -20,6 +20,16 @@ private fun checkPositionIndex(index: Int, size: Int) {
     }
 }
 
+/** Returns the [transform] results of all elements, for example the numbers of a packed enum list. */
+@InternalRpcApi
+public inline fun <E> List<E>.mapToIntArrayList(transform: (E) -> Int): IntArrayList {
+    val result = IntArrayList(size)
+    for (element in this) {
+        result.addInt(transform(element))
+    }
+    return result
+}
+
 /**
  * The storage of a repeated `int32`, `sint32`, or `sfixed32` field: a [MutableList] over an [IntArray].
  *

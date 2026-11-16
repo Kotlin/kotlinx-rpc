@@ -217,6 +217,7 @@ sealed interface FqName {
 
     object TopLevelFP {
         val protoToString = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "protoToString")
+        val mapToIntArrayList = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "mapToIntArrayList")
         val checkForPlatformEncodeException = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "checkForPlatformEncodeException")
         val checkForPlatformDecodeException = fqFuncOrProp("kotlinx.rpc.protobuf.internal", "checkForPlatformDecodeException")
         val byteStringIsNotEmpty = fqFuncOrProp("kotlinx.io.bytestring", "isNotEmpty")

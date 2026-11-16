@@ -88,65 +88,13 @@ public class WireDecoder internal constructor(
         }
     }
 
-    public fun readPackedBool(destination: MutableList<Boolean>) {
-        readPackedVarints(destination) { readBool() }
-    }
-
-    public fun readPackedInt32(destination: MutableList<Int>) {
-        readPackedVarints(destination) { readInt32() }
-    }
-
-    public fun readPackedInt64(destination: MutableList<Long>) {
-        readPackedVarints(destination) { readInt64() }
-    }
-
-    public fun readPackedUInt32(destination: MutableList<UInt>) {
-        readPackedVarints(destination) { readUInt32() }
-    }
-
-    public fun readPackedUInt64(destination: MutableList<ULong>) {
-        readPackedVarints(destination) { readUInt64() }
-    }
-
-    public fun readPackedSInt32(destination: MutableList<Int>) {
-        readPackedVarints(destination) { readSInt32() }
-    }
-
-    public fun readPackedSInt64(destination: MutableList<Long>) {
-        readPackedVarints(destination) { readSInt64() }
-    }
-
     public fun <T> readPackedEnum(destination: MutableList<T>, fromNumber: (Int) -> T) {
-        readPackedVarints(destination) { fromNumber(readEnum()) }
-    }
-
-    public fun readPackedFixed32(destination: MutableList<UInt>) {
-        readPackedFixed(destination, 4) { readFixed32() }
-    }
-
-    public fun readPackedSFixed32(destination: MutableList<Int>) {
-        readPackedFixed(destination, 4) { readSFixed32() }
-    }
-
-    public fun readPackedFloat(destination: MutableList<Float>) {
-        readPackedFixed(destination, 4) { readFloat() }
-    }
-
-    public fun readPackedFixed64(destination: MutableList<ULong>) {
-        readPackedFixed(destination, 8) { readFixed64() }
-    }
-
-    public fun readPackedSFixed64(destination: MutableList<Long>) {
-        readPackedFixed(destination, 8) { readSFixed64() }
-    }
-
-    public fun readPackedDouble(destination: MutableList<Double>) {
-        readPackedFixed(destination, 8) { readDouble() }
+        readPackedVarints { destination.add(fromNumber(readEnum())) }
     }
 
     /**
-     * The `readPacked*` overloads for the primitive array lists, see [IntArrayList]. Each occurrence of a field
-     * appends to the same destination.
+     * The packed readers. Each `destination` is the primitive array list of the field type, see [IntArrayList].
+     * Each occurrence of a field appends to the same destination.
      */
     public fun readPackedInt32(destination: IntArrayList) {
         readPackedVarints { destination.addInt(readInt32()) }
@@ -262,10 +210,6 @@ public class WireDecoder internal constructor(
         depth++
     }
 
-    private inline fun <T> readPackedVarints(destination: MutableList<T>, read: () -> T) {
-        readPackedVarints { destination.add(read()) }
-    }
-
     private inline fun readPackedVarints(readElement: () -> Unit) {
         val length = readLength()
         if (length == 0) {
@@ -276,12 +220,6 @@ public class WireDecoder internal constructor(
             readElement()
         }
         input.popLimit(oldLimit)
-    }
-
-    private inline fun <T> readPackedFixed(destination: MutableList<T>, elementSize: Int, read: () -> T) {
-        repeat(readPackedFixedCount(elementSize)) {
-            destination.add(read())
-        }
     }
 
     /** Reads the length of a packed fixed-width field and returns its element count. */
