@@ -46,7 +46,7 @@ kotlin {
             }
         }
 
-        iosTest {
+        appleTest {
             dependencies {
                 implementation(projects.grpc.grpcMarshallerKotlinxSerialization)
                 implementation(libs.serialization.json)
@@ -59,7 +59,7 @@ kotlin {
             }
         }
 
-        iosMain {
+        appleMain {
             dependencies {
                 implementation(libs.atomicfu)
             }
@@ -68,8 +68,13 @@ kotlin {
 
     swiftPMDependencies {
         iosMinimumDeploymentTarget.set(libs.versions.kxrpx.grpc.min.ios)
+        macosMinimumDeploymentTarget.set(libs.versions.kxrpx.grpc.min.macos)
+        tvosMinimumDeploymentTarget.set(libs.versions.kxrpx.grpc.min.tvos)
+        watchosMinimumDeploymentTarget.set(libs.versions.kxrpx.grpc.min.watchos)
         discoverClangModulesImplicitly.set(false)
-        val products = listOf(product("GrpcSwiftBridge", platforms = setOf(iOS())))
+        val products = listOf(
+            product("GrpcSwiftBridge", platforms = setOf(iOS(), macOS(), tvOS(), watchOS())),
+        )
 
         val packagePath = project.localProperties.getProperty("kotlinx.rpc.grpc.swift.packagePath")
             ?.takeIf { it.isNotBlank() }

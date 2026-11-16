@@ -11,13 +11,14 @@ plugins {
     alias(libs.plugins.serialization) // for tests
 }
 
-// KXRPC-677: SwiftPM metadata from a test dependency is not discovered through Apple main compilations.
-val iosTestSwiftPMMetadata = configurations.dependencyScope("iosTestSwiftPMMetadata")
+// KXRPC-677: SwiftPM metadata from the grpc-client test dependency (via commonTest) is not discovered
+// through Apple main compilations, so every Apple target's test compilation needs this manual wiring.
+val appleTestSwiftPMMetadata = configurations.dependencyScope("appleTestSwiftPMMetadata")
 dependencies {
-    iosTestSwiftPMMetadata(projects.grpc.grpcClient)
+    appleTestSwiftPMMetadata(projects.grpc.grpcClient)
 }
 configurations.matching { it.name == "swiftPMDependenciesMetadataClasspath" }.configureEach {
-    extendsFrom(iosTestSwiftPMMetadata)
+    extendsFrom(appleTestSwiftPMMetadata)
 }
 
 kotlin {
