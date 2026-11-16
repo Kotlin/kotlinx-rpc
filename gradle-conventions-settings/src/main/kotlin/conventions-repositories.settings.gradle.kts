@@ -196,7 +196,6 @@ fun RepositoryHandler.jbTeamPackages(repoName: String) {
 fun RepositoryHandler.buildDeps() = jbTeamPackages(repoName = "build-deps")
 fun RepositoryHandler.buildDepsEap() = jbTeamPackages(repoName = "build-deps-eap")
 fun RepositoryHandler.buildDepsEapForIde() = jbTeamPackages(repoName = "build-deps-eap-for-ide")
-fun RepositoryHandler.grpc() = jbTeamPackages(repoName = "grpc")
 
 val globalRootDir = findGlobalRootDirPath()
 
@@ -248,14 +247,6 @@ gradle.rootProject {
 
                 maven("https://www.jetbrains.com/intellij-repository/releases")
             }
-
-            // Internal standalone shim artifacts are published here and can be resolved
-            // from any consumer project in this composite build.
-            // Remove it once we release them to maven central. (KRPC-539)
-            grpc()
-            // Local development repository for native-deps shim artifacts.
-            // Shims are published here via publishAllPublicationsToNativeDepsBuildRepoRepository.
-            maven("$globalRootDir/native-deps/build/repo")
             maven("$globalRootDir/lib-kotlin/")
         }
     }

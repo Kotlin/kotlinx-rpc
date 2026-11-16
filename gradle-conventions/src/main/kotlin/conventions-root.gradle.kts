@@ -100,8 +100,4 @@ val updateProperties = tasks.register("updateProperties") {
     }
 }
 
-tasks.register<CheckExecutableTask>("checkBazel") {
-    exec = "bazel"
-    helpMessage = "Install Bazel: https://bazel.build/"
-}
 

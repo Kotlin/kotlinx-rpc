@@ -42,7 +42,6 @@ All Develocity configuration lives in a single convention plugin:
 | `dokka-plugin/`                      | Yes              |
 | `gradle-plugin/`                     | No               |
 | `protoc-gen/`                        | No               |
-| `native-deps/shims/`                 | No (hard opt-out)|
 
 ### Build cache
 
