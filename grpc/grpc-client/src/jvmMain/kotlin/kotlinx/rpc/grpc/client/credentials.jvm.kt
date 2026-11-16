@@ -10,11 +10,17 @@ import io.grpc.InsecureChannelCredentials
 import io.grpc.SecurityLevel
 import io.grpc.TlsChannelCredentials
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.rpc.grpc.client.internal.applyToMetadata
+import kotlinx.rpc.grpc.GrpcStatusException
+import kotlinx.rpc.grpc.client.internal.credentialMetadataFailure
+import kotlinx.rpc.grpc.client.internal.resolveRequestMetadata
 import kotlinx.rpc.grpc.internal.internalError
+import kotlinx.rpc.grpc.status
 import java.util.concurrent.Executor
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.cancellation.CancellationException
 
 internal fun GrpcClientCredentials.toJvm(): ChannelCredentials {
     return when (this) {
@@ -46,6 +52,7 @@ private class JvmTlsCLientCredentialBuilder : GrpcTlsClientCredentialsBuilder {
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): CallCredentials {
     return object : CallCredentials() {
         override fun applyRequestMetadata(
@@ -53,16 +60,31 @@ internal fun GrpcCallCredentials.toJvm(coroutineContext: CoroutineContext): Call
             appExecutor: Executor,
             applier: MetadataApplier
         ) {
-            CoroutineScope(coroutineContext).launch {
-                // INTEGRITY alone doesn't encrypt, so only PRIVACY_AND_INTEGRITY counts as secure.
-                applyToMetadata(
-                    requestInfo.authority,
-                    requestInfo.methodDescriptor.fullMethodName,
-                    isTransportSecure = requestInfo.securityLevel == SecurityLevel.PRIVACY_AND_INTEGRITY,
-                    recordFailure = { applier.fail(it) },
-                ) { metadata ->
-                    applier.apply(metadata)
+            // grpc-java waits for the applier before transport shutdown, even if this call is cancelled.
+            // Therefore, we must start the launch in ATOMIC mode to ensure it is still
+            // executed (until the next cancellation checkpoint), even on cancellation.
+            CoroutineScope(coroutineContext).launch(start = CoroutineStart.ATOMIC) {
+                val metadata = try {
+                    // INTEGRITY alone doesn't encrypt, so only PRIVACY_AND_INTEGRITY counts as secure.
+                    resolveRequestMetadata(
+                        requestInfo.authority,
+                        requestInfo.methodDescriptor.fullMethodName,
+                        isTransportSecure = requestInfo.securityLevel == SecurityLevel.PRIVACY_AND_INTEGRITY,
+                    )
+                } catch (error: Throwable) {
+                    // We must always call applier.fail(), otherwise we leak during client shutdown.
+                    val status = when (error) {
+                        is GrpcStatusException -> error.status
+                        else -> credentialMetadataFailure(error)
+                    }
+                    applier.fail(status)
+                    if (error is CancellationException || error is Error) {
+                        throw error
+                    }
+                    return@launch
                 }
+                // Call it outside the try/catch to not call applier.fail() in case of `applier.apply()` failure.
+                applier.apply(metadata)
             }
         }
     }

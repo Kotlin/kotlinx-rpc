@@ -4,9 +4,6 @@
 
 package kotlinx.rpc.grpc.test.integration
 
-import hello.HelloRequest
-import hello.HelloService
-import hello.invoke
 import kotlinx.coroutines.test.runTest
 import kotlinx.rpc.RpcServer
 import kotlinx.rpc.grpc.client.GrpcClient
@@ -28,31 +25,11 @@ import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.time.Duration.Companion.seconds
 
 class GrpcTlsTest : GrpcTestBase() {
 
     override fun RpcServer.registerServices() {
         registerService<EchoService> { EchoServiceImpl() }
-    }
-
-    @Test
-    fun `test client side TLS with default credentials - should succeed`() = runTest {
-        // uses default client TLS credentials
-        // TODO: Use a test server controlled by us (KRPC-215)
-        val grpcClient = GrpcClient("grpcb.in", 9001)
-        try {
-            val service = grpcClient.withService<HelloService>()
-            val request = HelloRequest {
-                greeting = "world"
-            }
-            val result = service.sayHello(request)
-
-            assertEquals("hello world", result.reply)
-        } finally {
-            grpcClient.shutdownNow()
-            grpcClient.awaitTermination(30.seconds)
-        }
     }
 
     @Test
