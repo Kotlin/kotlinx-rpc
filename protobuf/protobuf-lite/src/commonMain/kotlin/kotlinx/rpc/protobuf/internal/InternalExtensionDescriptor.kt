@@ -48,8 +48,8 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
     public val copy: (value: Any) -> V,
     /** Packed payload encoder used by `packedRepeated(...)` element descriptors. */
     private val encodePacked: ((encoder: WireEncoder, fieldNumber: Int, value: List<V>) -> Unit)? = null,
-    /** Packed payload decoder used by `packedRepeated(...)` element descriptors. */
-    private val decodePackedValues: ((decoder: WireDecoder) -> List<V>)? = null,
+    /** Packed payload decoder used by `packedRepeated(...)` element descriptors. It appends to the destination. */
+    private val decodePackedValues: ((decoder: WireDecoder, destination: MutableList<V>) -> Unit)? = null,
 ): ProtoExtensionDescriptor<T, V> {
     // Packed-ness is fully determined by whether a packed decoder exists.
     public val isPacked: Boolean get() = decodePacked != null
@@ -80,7 +80,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::bool)
                 enc.writePackedBool(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedBool() },
+            decodePackedValues = { dec, destination -> dec.readPackedBool(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> int32(
@@ -107,7 +107,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::int32)
                 enc.writePackedInt32(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedInt32() },
+            decodePackedValues = { dec, destination -> dec.readPackedInt32(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> int64(
@@ -134,7 +134,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::int64)
                 enc.writePackedInt64(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedInt64() },
+            decodePackedValues = { dec, destination -> dec.readPackedInt64(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> uint32(
@@ -161,7 +161,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::uInt32)
                 enc.writePackedUInt32(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedUInt32() },
+            decodePackedValues = { dec, destination -> dec.readPackedUInt32(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> uint64(
@@ -188,7 +188,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::uInt64)
                 enc.writePackedUInt64(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedUInt64() },
+            decodePackedValues = { dec, destination -> dec.readPackedUInt64(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sint32(
@@ -215,7 +215,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::sInt32)
                 enc.writePackedSInt32(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedSInt32() },
+            decodePackedValues = { dec, destination -> dec.readPackedSInt32(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sint64(
@@ -242,7 +242,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                 val fieldSize = value.sumOf(WireSize::sInt64)
                 enc.writePackedSInt64(fieldNr, value, fieldSize)
             },
-            decodePackedValues = { dec -> dec.readPackedSInt64() },
+            decodePackedValues = { dec, destination -> dec.readPackedSInt64(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> fixed32(
@@ -266,7 +266,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readFixed32() },
             copy = { it as UInt },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFixed32(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedFixed32() },
+            decodePackedValues = { dec, destination -> dec.readPackedFixed32(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> fixed64(
@@ -290,7 +290,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readFixed64() },
             copy = { it as ULong },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFixed64(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedFixed64() },
+            decodePackedValues = { dec, destination -> dec.readPackedFixed64(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sfixed32(
@@ -314,7 +314,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readSFixed32() },
             copy = { it as Int },
             encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed32(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedSFixed32() },
+            decodePackedValues = { dec, destination -> dec.readPackedSFixed32(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> sfixed64(
@@ -338,7 +338,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readSFixed64() },
             copy = { it as Long },
             encodePacked = { enc, fieldNr, value -> enc.writePackedSFixed64(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedSFixed64() },
+            decodePackedValues = { dec, destination -> dec.readPackedSFixed64(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> float(
@@ -362,7 +362,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readFloat() },
             copy = { it as Float },
             encodePacked = { enc, fieldNr, value -> enc.writePackedFloat(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedFloat() },
+            decodePackedValues = { dec, destination -> dec.readPackedFloat(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> double(
@@ -386,7 +386,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
             decode = { _, dec, _ -> dec.readDouble() },
             copy = { it as Double },
             encodePacked = { enc, fieldNr, value -> enc.writePackedDouble(fieldNr, value) },
-            decodePackedValues = { dec -> dec.readPackedDouble() },
+            decodePackedValues = { dec, destination -> dec.readPackedDouble(destination) },
         )
 
         public fun <@GeneratedProtoMessage T : Any> bytes(
@@ -467,8 +467,8 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     fieldSize = fieldSize,
                 )
             },
-            decodePackedValues = { dec ->
-                dec.readPackedEnum().map(decodeValue)
+            decodePackedValues = { dec, destination ->
+                dec.readPackedEnum(destination, decodeValue)
             },
         )
 
@@ -662,7 +662,7 @@ public class InternalExtensionDescriptor<@GeneratedProtoMessage T : Any, V : Any
                     val result = currentValue
                         ?.let { listType.cast(it) as MutableList }
                         ?: sharedDefault.value.toMutableList()
-                    result += decodePackedValues(dec)
+                    decodePackedValues(dec, result)
                     result
                 },
                 copy = { value ->

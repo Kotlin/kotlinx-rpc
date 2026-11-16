@@ -1646,21 +1646,29 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.List -> if (isPacked) {
                 val elementType = fieldType.value
-                val conversion = if (elementType is FieldType.Enum) {
-                    ".map { %T.%F(it) }".scoped(elementType.dec.value.name, elementType.dec.value.name.topLevelFP("fromNumber"))
-                } else {
-                    "".scoped()
-                }
 
                 // Note that although there’s usually no reason
                 // to encode more than one key-value pair for a packed repeated field,
                 // parsers must be prepared to accept multiple key-value pairs.
                 // In this case, the payloads should be concatenated.
-                code(
-                    lvalue.merge(conversion) { target, packedConversion ->
-                        "$target.addAll(decoder.readPacked${elementType.decodeEncodeFuncName()}()$packedConversion)"
-                    }
-                )
+                if (elementType is FieldType.Enum) {
+                    code(
+                        lvalue.merge(
+                            "%T.%F(it)".scoped(
+                                elementType.dec.value.name,
+                                elementType.dec.value.name.topLevelFP("fromNumber"),
+                            )
+                        ) { target, conversion ->
+                            "decoder.readPackedEnum($target) { $conversion }"
+                        }
+                    )
+                } else {
+                    code(
+                        lvalue.wrapIn { target ->
+                            "decoder.readPacked${elementType.decodeEncodeFuncName()}($target)"
+                        }
+                    )
+                }
             } else {
                 when (val elemType = fieldType.value) {
                     is FieldType.Message -> {

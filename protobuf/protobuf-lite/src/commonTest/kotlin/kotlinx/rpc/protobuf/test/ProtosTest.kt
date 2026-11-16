@@ -161,6 +161,20 @@ class ProtosTest {
     }
 
     @Test
+    fun testRepeatedPackedOccurrencesConcatenate() {
+        // Field 4 of Repeated: packed [1, 2], unpacked 3, packed [4, 5], packed empty.
+        val bytes = encodeToBytes { encoder ->
+            encoder.writePackedInt32(fieldNr = 4, value = listOf(1, 2), fieldSize = 2)
+            encoder.writeInt32(fieldNr = 4, value = 3)
+            encoder.writePackedInt32(fieldNr = 4, value = listOf(4, 5), fieldSize = 2)
+            encoder.writePackedInt32(fieldNr = 4, value = emptyList(), fieldSize = 0)
+        }
+        val decoded = grpcMarshallerOf<Repeated>().decode(ByteArrayMessageReader(bytes))
+
+        assertEquals(listOf(1, 2, 3, 4, 5), decoded.listInt32Packed)
+    }
+
+    @Test
     fun testRepeatedWithRequiredSubField() {
         assertFailsWith<ProtobufException> {
             RepeatedWithRequired {

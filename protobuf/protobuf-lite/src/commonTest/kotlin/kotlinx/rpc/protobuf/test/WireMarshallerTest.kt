@@ -680,7 +680,7 @@ class WireMarshallerTest {
     private fun <T> runPackedFixedTest(
         list: List<T>,
         write: WireEncoder.(Int, List<T>) -> Unit,
-        read: WireDecoder.() -> List<T>?,
+        read: WireDecoder.(MutableList<T>) -> Unit,
     ) {
         val buf = Buffer()
         encodeWire(buf) { encoder ->
@@ -691,7 +691,8 @@ class WireMarshallerTest {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
-            val test = dec.read()
+            val test = ArrayList<T>()
+            dec.read(test)
             assertEquals(list, test)
         }
         assertTrue(buf.exhausted())
@@ -743,7 +744,7 @@ class WireMarshallerTest {
         list: List<T>,
         sizeFn: (List<T>) -> Int,
         write: WireEncoder.(Int, List<T>, Int) -> Unit,
-        read: WireDecoder.() -> List<T>?,
+        read: WireDecoder.(MutableList<T>) -> Unit,
     ) {
         val buf = Buffer()
         encodeWire(buf) { encoder ->
@@ -754,7 +755,8 @@ class WireMarshallerTest {
                 assertEquals(1, fieldNr)
                 assertEquals(WireType.LENGTH_DELIMITED, wireType)
             }
-            val test = dec.read()
+            val test = ArrayList<T>()
+            dec.read(test)
             assertEquals(list, test)
         }
         assertTrue(buf.exhausted())
@@ -813,8 +815,83 @@ class WireMarshallerTest {
         List(1_000_000) { it },
         WireSize::packedEnum,
         WireEncoder::writePackedEnum,
-        WireDecoder::readPackedEnum
+        { destination -> readPackedEnum(destination) { number -> number } }
     )
+
+    @Test
+    fun testPackedEmptyPayloadAppendsNothing() {
+        val buf = Buffer()
+        encodeWire(buf) { encoder ->
+            encoder.writePackedInt32(fieldNr = 1, value = listOf(1, 2), fieldSize = 2)
+            encoder.writePackedInt32(fieldNr = 1, value = emptyList(), fieldSize = 0)
+        }
+        decodeWire(buf) { dec ->
+            dec.readTag()
+            val test = ArrayList(listOf(9))
+            dec.readPackedInt32(test)
+            dec.readTag()
+            dec.readPackedInt32(test)
+            assertEquals(listOf(9, 1, 2), test)
+        }
+        assertTrue(buf.exhausted())
+    }
+
+    @Test
+    fun testPackedFixedEmptyPayloadAppendsNothing() {
+        val buf = Buffer()
+        encodeWire(buf) { encoder ->
+            encoder.writePackedFixed32(fieldNr = 1, value = listOf(7u))
+            encoder.writePackedFixed32(fieldNr = 1, value = emptyList())
+        }
+        decodeWire(buf) { dec ->
+            dec.readTag()
+            val test = ArrayList(listOf(9u))
+            dec.readPackedFixed32(test)
+            dec.readTag()
+            dec.readPackedFixed32(test)
+            assertEquals(listOf(9u, 7u), test)
+        }
+        assertTrue(buf.exhausted())
+    }
+
+    @Test
+    fun testPackedFixedLengthNotMultipleOfElementSize() {
+        val buffer = Buffer()
+        // Tag 0x0A: field 1, wire type 2. Length 3 is not a multiple of the 4-byte element.
+        buffer.write(byteArrayOf(0x0A, 3, 1, 2, 3))
+        assertFailsWith<ProtobufDecodingException> {
+            decodeWire(buffer) {
+                it.readTag()
+                it.readPackedFixed32(ArrayList())
+            }
+        }
+    }
+
+    @Test
+    fun testPackedVarintTruncated() {
+        val buffer = Buffer()
+        // Tag 0x0A: field 1, wire type 2. The 2-byte payload has no terminal varint byte.
+        buffer.write(byteArrayOf(0x0A, 2, 0x80.toByte(), 0x80.toByte()))
+        assertFailsWith<ProtobufDecodingException> {
+            decodeWire(buffer) {
+                it.readTag()
+                it.readPackedInt32(ArrayList())
+            }
+        }
+    }
+
+    @Test
+    fun testPackedLengthBeyondInput() {
+        val buffer = Buffer()
+        // Tag 0x0A: field 1, wire type 2. Length 10, but only 2 payload bytes follow.
+        buffer.write(byteArrayOf(0x0A, 10, 1, 2))
+        assertFailsWith<ProtobufDecodingException> {
+            decodeWire(buffer) {
+                it.readTag()
+                it.readPackedInt32(ArrayList())
+            }
+        }
+    }
 
 
     @Test

@@ -16,6 +16,9 @@ import kotlinx.rpc.protobuf.ProtobufDecodingException
  *
  * Call [readTag] for each field, then the `read` function for the field type. [readTag] returns an end marker at the
  * end of the message. A decoder exists only inside [decodeWire] or a marshaller decode.
+ *
+ * The `readPacked*` functions append their elements to the destination list. An empty payload appends nothing, so
+ * several occurrences of one field concatenate.
  */
 @InternalRpcApi
 public class WireDecoder internal constructor(
@@ -85,33 +88,61 @@ public class WireDecoder internal constructor(
         }
     }
 
-    public fun readPackedBool(): List<Boolean> = readPackedVarints { readBool() }
+    public fun readPackedBool(destination: MutableList<Boolean>) {
+        readPackedVarints(destination) { readBool() }
+    }
 
-    public fun readPackedInt32(): List<Int> = readPackedVarints { readInt32() }
+    public fun readPackedInt32(destination: MutableList<Int>) {
+        readPackedVarints(destination) { readInt32() }
+    }
 
-    public fun readPackedInt64(): List<Long> = readPackedVarints { readInt64() }
+    public fun readPackedInt64(destination: MutableList<Long>) {
+        readPackedVarints(destination) { readInt64() }
+    }
 
-    public fun readPackedUInt32(): List<UInt> = readPackedVarints { readUInt32() }
+    public fun readPackedUInt32(destination: MutableList<UInt>) {
+        readPackedVarints(destination) { readUInt32() }
+    }
 
-    public fun readPackedUInt64(): List<ULong> = readPackedVarints { readUInt64() }
+    public fun readPackedUInt64(destination: MutableList<ULong>) {
+        readPackedVarints(destination) { readUInt64() }
+    }
 
-    public fun readPackedSInt32(): List<Int> = readPackedVarints { readSInt32() }
+    public fun readPackedSInt32(destination: MutableList<Int>) {
+        readPackedVarints(destination) { readSInt32() }
+    }
 
-    public fun readPackedSInt64(): List<Long> = readPackedVarints { readSInt64() }
+    public fun readPackedSInt64(destination: MutableList<Long>) {
+        readPackedVarints(destination) { readSInt64() }
+    }
 
-    public fun readPackedEnum(): List<Int> = readPackedVarints { readEnum() }
+    public fun <T> readPackedEnum(destination: MutableList<T>, fromNumber: (Int) -> T) {
+        readPackedVarints(destination) { fromNumber(readEnum()) }
+    }
 
-    public fun readPackedFixed32(): List<UInt> = readPackedFixed(4) { readFixed32() }
+    public fun readPackedFixed32(destination: MutableList<UInt>) {
+        readPackedFixed(destination, 4) { readFixed32() }
+    }
 
-    public fun readPackedSFixed32(): List<Int> = readPackedFixed(4) { readSFixed32() }
+    public fun readPackedSFixed32(destination: MutableList<Int>) {
+        readPackedFixed(destination, 4) { readSFixed32() }
+    }
 
-    public fun readPackedFloat(): List<Float> = readPackedFixed(4) { readFloat() }
+    public fun readPackedFloat(destination: MutableList<Float>) {
+        readPackedFixed(destination, 4) { readFloat() }
+    }
 
-    public fun readPackedFixed64(): List<ULong> = readPackedFixed(8) { readFixed64() }
+    public fun readPackedFixed64(destination: MutableList<ULong>) {
+        readPackedFixed(destination, 8) { readFixed64() }
+    }
 
-    public fun readPackedSFixed64(): List<Long> = readPackedFixed(8) { readSFixed64() }
+    public fun readPackedSFixed64(destination: MutableList<Long>) {
+        readPackedFixed(destination, 8) { readSFixed64() }
+    }
 
-    public fun readPackedDouble(): List<Double> = readPackedFixed(8) { readDouble() }
+    public fun readPackedDouble(destination: MutableList<Double>) {
+        readPackedFixed(destination, 8) { readDouble() }
+    }
 
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
         enterNested()
@@ -163,31 +194,27 @@ public class WireDecoder internal constructor(
         depth++
     }
 
-    private inline fun <T> readPackedVarints(read: () -> T): List<T> {
+    private inline fun <T> readPackedVarints(destination: MutableList<T>, read: () -> T) {
         val length = readLength()
         if (length == 0) {
-            return emptyList()
+            return
         }
         val oldLimit = input.pushLimit(length)
-        val result = ArrayList<T>()
         while (!input.isAtLimit) {
-            result.add(read())
+            destination.add(read())
         }
         input.popLimit(oldLimit)
-        return result
     }
 
-    private inline fun <T> readPackedFixed(elementSize: Int, read: () -> T): List<T> {
+    private inline fun <T> readPackedFixed(destination: MutableList<T>, elementSize: Int, read: () -> T) {
         val length = readLength()
         if (length % elementSize != 0) {
             throw ProtobufDecodingException("Packed field length $length isn't a multiple of $elementSize.")
         }
         val count = length / elementSize
-        val result = ArrayList<T>(count)
         repeat(count) {
-            result.add(read())
+            destination.add(read())
         }
-        return result
     }
 
     private fun readOrSkipUnknownField(tag: WireTag, out: Buffer?) {
