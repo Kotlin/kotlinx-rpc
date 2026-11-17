@@ -27,6 +27,7 @@ kotlin {
                 implementation(libs.coroutines.test)
                 implementation(projects.grpc.grpcClient)
                 implementation(projects.tests.testUtils)
+                implementation(projects.tests.testGrpcProtos)
             }
         }
 
@@ -35,5 +36,12 @@ kotlin {
                 implementation(libs.grpc.netty)
             }
         }
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    // Allows stress-testing the grpc-server implementation.
+    providers.gradleProperty("kotlinx.rpc.grpc.server.testRepeats").orNull?.let {
+        environment("GRPC_SERVER_TEST_REPEATS", it)
     }
 }
