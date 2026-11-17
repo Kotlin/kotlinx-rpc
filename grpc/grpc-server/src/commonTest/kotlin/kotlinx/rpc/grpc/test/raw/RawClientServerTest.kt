@@ -11,19 +11,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
-import kotlinx.io.Buffer
-import kotlinx.io.readString
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.io.writeString
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.internal.bidirectionalStreamingRpc
 import kotlinx.rpc.grpc.client.internal.clientStreamingRpc
 import kotlinx.rpc.grpc.client.internal.serverStreamingRpc
 import kotlinx.rpc.grpc.client.internal.unaryRpc
-import kotlinx.rpc.grpc.marshaller.GrpcEncodedMessage
-import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
-import kotlinx.rpc.grpc.marshaller.GrpcMarshallerConfig
-import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
 import kotlinx.rpc.grpc.descriptor.methodDescriptor
@@ -38,9 +30,11 @@ import kotlinx.rpc.grpc.server.internal.clientStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.serverStreamingServerMethodDefinition
 import kotlinx.rpc.grpc.server.internal.unaryServerMethodDefinition
 import kotlinx.rpc.grpc.server.serverServiceDefinition
+import kotlinx.rpc.grpc.server.testing.stringMarshaller
 import kotlin.reflect.typeOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration.Companion.seconds
 
 class RawClientServerTest {
     @Test
@@ -116,8 +110,8 @@ class RawClientServerTest {
 
         val descriptor = methodDescriptor(
             fullMethodName = "${SERVICE_NAME}/$methodName",
-            requestMarshaller = simpleMarshaller,
-            responseMarshaller = simpleMarshaller,
+            requestMarshaller = stringMarshaller,
+            responseMarshaller = stringMarshaller,
             type = type,
             schemaDescriptor = Unit,
             idempotent = true,
@@ -159,13 +153,5 @@ class RawClientServerTest {
 
     companion object {
         private const val SERVICE_NAME = "TestService"
-
-        private val simpleMarshaller = object : GrpcMarshaller<String> {
-            override fun prepare(value: String, config: GrpcMarshallerConfig?): GrpcEncodedMessage =
-                GrpcEncodedMessage.of(Buffer().apply { writeString(value) })
-
-            override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): String =
-                reader.asSource().readString()
-        }
     }
 }

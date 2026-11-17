@@ -21,6 +21,12 @@ kotlin {
             }
         }
 
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
+        }
+
         jvmMain {
             dependencies {
                 implementation(libs.coroutines.debug)
