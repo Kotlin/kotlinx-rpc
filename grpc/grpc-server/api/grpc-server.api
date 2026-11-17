@@ -77,6 +77,11 @@ public final class kotlinx/rpc/grpc/server/GrpcServerKt {
 	public static synthetic fun GrpcServer$default (ILkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/server/GrpcServer;
 }
 
+public final class kotlinx/rpc/grpc/server/GrpcServer_jvmKt {
+	public static final fun GrpcServer (Lio/grpc/ServerBuilder;Lkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/server/GrpcServer;
+	public static synthetic fun GrpcServer$default (Lio/grpc/ServerBuilder;Lkotlin/coroutines/CoroutineContext;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/rpc/grpc/server/GrpcServer;
+}
+
 public final class kotlinx/rpc/grpc/server/GrpcTlsClientAuth : java/lang/Enum {
 	public static final field NONE Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
 	public static final field OPTIONAL Lkotlinx/rpc/grpc/server/GrpcTlsClientAuth;
