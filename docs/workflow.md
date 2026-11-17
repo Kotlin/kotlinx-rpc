@@ -18,7 +18,7 @@ Add YouTrack issue code or GitHub issue number when possible.
 Before pushing, run (maybe separately):
 
 ```Bash
-./gradlew checkLegacyAbi test allTests detekt :jpms-check:compileJava
+./gradlew checkLegacyAbi test allTests :compiler-plugin:allTests :gradle-plugin:allVersionedFunctionalTests detekt :jpms-check:compileJava
 ```
 
 Beware, that `detekt` doesn't fail the build, but outputs messages into the console.
@@ -119,7 +119,7 @@ Or `./scripts/update_test_data.sh DiagnosticTest testCheckedAnnotation` to updat
   - ALWAYS check new content `.fir.txt` and `.ir.txt` files to see if the changes adhere to what you expected to see there.
 - The output can differ between Kotlin versions:
   - A file without a version, for example `simple.ir.txt`, is the output of the highest supported Kotlin version.
-  - A file with a version, for example `simple.2321.ir.txt`, is the output of that version and of the lower versions,
+  - A file with a version, for example `simple.240_dev_2631.ir.txt`, is the output of that version and of the lower versions,
 down to the next file with a version.
 
 #### Debug
@@ -260,7 +260,6 @@ usually after Kotlin version update.
 - `updateDocsChangelog` - put modified [CONTRIBUTING.md](../CONTRIBUTING.md) into [topics](pages/kotlinx-rpc/topics)
 - `detekt` - run detekt checks.
 - `dumpPlatformTable` - Update [platforms.topic](pages/kotlinx-rpc/topics/platforms.topic)
-- `generateTests` - see [complier plugin tests](#compiler-tests)
 - `clean` / `cleanTest` / `cleanAllTests` - clean tasks.
   - `clean` - everything
   - `cleanTest` - JVM test results

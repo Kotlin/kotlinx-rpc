@@ -23,8 +23,8 @@ daemon, NOT on the forked test JVM. Pass `-PupdateTestData` as a Gradle argument
 ## Files for different Kotlin versions
 
 - `simple.ir.txt` is the output of the highest supported Kotlin version.
-- `simple.2321.ir.txt` is the output of Kotlin 2.3.21, and of the lower versions down to
-  the next file with a version.
+- `simple.240_dev_2631.ir.txt` is the output of the compiler 2.4.0-dev-2631, and of the lower
+  versions down to the next file with a version. `grpc.2321.fir.txt` is the same for Kotlin 2.3.21.
 - A test fails with `No need for a separate dump file` when a file with a version is the
   same as the file of the next higher version. Delete the file.
 

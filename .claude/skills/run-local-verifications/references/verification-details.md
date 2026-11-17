@@ -134,8 +134,6 @@ when using the `running_gradle_tests` skill).
 
 After updating, review diffs with `git diff` to confirm changes match expectations.
 
-**Note**: These tests are skipped for Kotlin master builds.
-
 ## 8. Generated File Checks (implicit imports, conformance, WKT)
 
 Several checks follow the same pattern: run a generation task, then verify no files

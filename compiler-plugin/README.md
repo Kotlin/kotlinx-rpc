@@ -32,7 +32,7 @@ The test data compiles against the `:tests:compiler-plugin-test-libs` project of
 
 A file without a version, for example `simple.ir.txt`, is the output of the highest supported Kotlin version.
 A lower version uses the file of the nearest higher version that has one.
-When the output of a version is different, the version has its own file, for example `simple.2321.ir.txt`.
+When the output of a version is different, the version has its own file, for example `simple.240_dev_2631.ir.txt`.
 A test fails when a file with a version is the same as the file it replaces.
 
 ## Source sets
@@ -58,8 +58,8 @@ Protocol-specific codegen and diagnostics details live alongside each protocol m
 
 ## Generated test runners — Do not edit manually
 
-The `generateTests` task writes the JUnit test classes (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`)
-to `build/test-gen/`, one set for each Kotlin version. The test tasks run it first.
+The `generateTests*` tasks write the JUnit test classes (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`)
+to `build/test-gen/`, one set for each Kotlin version. The test tasks run them first.
 
 ## Version Compatibility
 

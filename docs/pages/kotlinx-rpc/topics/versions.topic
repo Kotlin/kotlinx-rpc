@@ -16,14 +16,14 @@
     </p>
     <p>
         We provide core version updates for all stable versions of
-        <control>the last three</control>
+        <control>up to the last three</control>
         major Kotlin releases.
         So if the last stable Kotlin version is <code>%kotlin-version%</code>, as at the time of writing this guide,
         the following versions of Kotlin are supported:
     </p>
     <list>
         <li>2.3.0, 2.3.10, 2.3.20, 2.3.21</li>
-        <li>2.4.0, 2.4.10, 2.4.20</li>
+        <li>2.4.0, 2.4.10, 2.4.20, 2.4.21</li>
     </list>
     <p>
         Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code
@@ -80,5 +80,16 @@
             org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:%kotlinx-rpc-version%
         </code-block>
         This dependency is managed automatically, and should not be used explicitly.
+        <note>
+            <p>
+                Only Gradle resolves the compiler plugin by this name.
+                The JAR is in the artifact with a Kotlin version suffix, for example
+                <code>org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2420:%kotlinx-rpc-version%</code>.
+                The suffix is the Kotlin version that the release was built with, so it can change with each release.
+            </p>
+            <p>
+                With Maven, Bazel, or the <code>-Xplugin</code> compiler argument, use the artifact with the suffix.
+            </p>
+        </note>
     </chapter>
 </topic>

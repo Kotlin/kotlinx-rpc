@@ -80,6 +80,8 @@ Build_kRPC_StressTests               # if concurrency-related
 ### "I changed the compiler plugin IR backend"
 ```
 Build_kRPC_Compiler_Plugin                 # all Kotlin and IDE versions
+Build_kRPC_Gradle_Plugin_Test              # functional tests on each Kotlin version
+Build_kRPC_Plugins_Kotlin_Master           # Kotlin Master
 ```
 
 ### "I added a new published module"
