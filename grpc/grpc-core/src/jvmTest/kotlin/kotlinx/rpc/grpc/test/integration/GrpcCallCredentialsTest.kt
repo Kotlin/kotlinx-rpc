@@ -65,6 +65,41 @@ class GrpcCallCredentialsTest : GrpcTestBase() {
     }
 
     @Test
+    fun `test callCredentials setting - should succeed`() {
+        var grpcMetadata: GrpcMetadata? = null
+        runGrpcTest(
+            clientConfiguration = {
+                callCredentials = NoTLSBearerTokenCredentials()
+            },
+            serverInterceptors = serverInterceptor {
+                grpcMetadata = requestHeaders
+                proceed(it)
+            },
+            test = ::unaryCall
+        )
+
+        assertAuthorizationHeaders(grpcMetadata, "Bearer token")
+    }
+
+    @Test
+    fun `test callCredentials setting with combined client credentials - should send both in order`() {
+        var grpcMetadata: GrpcMetadata? = null
+        runGrpcTest(
+            clientConfiguration = {
+                credentials = plaintext() + NoTLSBearerTokenCredentials("token-1")
+                callCredentials = NoTLSBearerTokenCredentials("token-2")
+            },
+            serverInterceptors = serverInterceptor {
+                grpcMetadata = requestHeaders
+                proceed(it)
+            },
+            test = ::unaryCall
+        )
+
+        assertAuthorizationHeaders(grpcMetadata, "Bearer token-1", "Bearer token-2")
+    }
+
+    @Test
     fun `test combine multiple call credentials - should succeed`() {
         var grpcMetadata: GrpcMetadata? = null
         val callCreds = (NoTLSBearerTokenCredentials("token-1") + NoTLSBearerTokenCredentials("token-2"))
