@@ -21,9 +21,7 @@ pluginDevKit {
 
     testDataLibraries {
         // The project is in the root build. See tests/compiler-plugin-test-libs.
-        register("rpcRuntime") {
-            jvm("org.jetbrains.kotlinx:compiler-plugin-test-libs:$version")
-        }
+        jvm("org.jetbrains.kotlinx:compiler-plugin-test-libs:$version")
     }
 
     versionHierarchy {
