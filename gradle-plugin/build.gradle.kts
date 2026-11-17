@@ -128,32 +128,32 @@ if (hasRootBuild) {
     }
 }
 
-tasks.withType<Test>().matching { it.name.endsWith("FunctionalTest") }.configureEach {
-    if (!hasRootBuild) {
-        val taskName = name
+pluginDevKit.testAgainst.configureEach {
+    testTask {
+        if (!hasRootBuild) {
+            val taskName = name
 
-        doFirst {
-            error(
-                "The functional tests need the libraries of the root build. " +
-                    "Run ':gradle-plugin:$taskName' from the root directory."
+            doFirst {
+                error(
+                    "The functional tests need the libraries of the root build. " +
+                        "Run ':gradle-plugin:$taskName' from the root directory."
+                )
+            }
+        } else {
+            val repository = files(functionalTestRepositoryFiles)
+
+            dependsOn(repository)
+
+            // The task doesn't track the content of the build repository, and the publish tasks always run.
+            outputs.upToDateWhen { false }
+
+            jvmArgumentProviders.add(
+                CommandLineArgumentProvider {
+                    listOf("-Dkotlinx.rpc.functionalTest.repository=${repository.singleFile.absolutePath}")
+                }
             )
         }
-
-        return@configureEach
     }
-
-    val repository = files(functionalTestRepositoryFiles)
-
-    dependsOn(repository)
-
-    // The task doesn't track the content of the build repository, and the publish tasks always run.
-    outputs.upToDateWhen { false }
-
-    jvmArgumentProviders.add(
-        CommandLineArgumentProvider {
-            listOf("-Dkotlinx.rpc.functionalTest.repository=${repository.singleFile.absolutePath}")
-        }
-    )
 }
 
 // This block is needed to show plugin tasks on --dry-run
