@@ -12,11 +12,6 @@ public final class kotlinx/rpc/grpc/GrpcCompression$None : kotlinx/rpc/grpc/Grpc
 	public fun getName ()Ljava/lang/String;
 }
 
-public class kotlinx/rpc/grpc/GrpcConfigurationException : java/lang/RuntimeException {
-	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-}
-
 public final class kotlinx/rpc/grpc/GrpcMetadataKey {
 	public fun <init> (Ljava/lang/String;Lkotlinx/rpc/grpc/marshaller/GrpcMarshaller;)V
 }
@@ -99,7 +94,7 @@ public final class kotlinx/rpc/grpc/GrpcStatus_jvmKt {
 	public static final fun getStatusCode (Lio/grpc/Status;)Lkotlinx/rpc/grpc/GrpcStatusCode;
 }
 
-public final class kotlinx/rpc/grpc/GrpcUnsupportedSettingException : kotlinx/rpc/grpc/GrpcConfigurationException {
+public final class kotlinx/rpc/grpc/GrpcUnsupportedSettingException : java/lang/RuntimeException {
 	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
