@@ -4,9 +4,9 @@
 
 package kotlinx.rpc.codegen.test.runners
 
-import kotlinx.rpc.codegen.TestDataLibraries
 import kotlinx.rpc.codegen.test.services.ExtensionRegistrarConfigurator
 import org.jetbrains.kotlin.compiler.plugin.devkit.services.configureTestDataLibrary
+import org.jetbrains.kotlinx.rpc.TestDataLibraries
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
 import org.jetbrains.kotlin.test.directives.CodegenTestDirectives
 import org.jetbrains.kotlin.test.directives.FirDiagnosticsDirectives

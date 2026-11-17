@@ -28,7 +28,8 @@ val Project.onlyProjectKotlin: Boolean get() = optionalPropertyValue("onlyProjec
  */
 fun DevKitPropertiesDsl<*>.configureRpcCompilerPlugin() {
     // The DevKit uses the value as the compiler plugin ID and as the package of the classes that it generates.
-    pluginPackage.set("kotlinx.rpc.codegen")
+    // The DevKit has no separate setting for the ID, so the generated classes are not in `kotlinx.rpc.codegen`.
+    pluginPackage.set("org.jetbrains.kotlinx.rpc")
 
     if (project.optionalPropertyValue("kotlinMasterBuild") || project.onlyProjectKotlin) {
         testAgainst(project.libs.versions.kotlin.compiler.get(), forIde = false)
