@@ -21,8 +21,11 @@ configure<DevKitCompilerConfigExtension> {
 }
 
 // The check includes the build repository, because the release to Maven Central publishes to it.
+// The functional tests of the Gradle plugin use the functional test repository, so the check doesn't include it.
 if (onlyProjectKotlin) {
-    tasks.withType<AbstractPublishToMaven>().configureEach {
+    tasks.withType<AbstractPublishToMaven>().matching {
+        !it.name.endsWith("ToFunctionalTestRepository")
+    }.configureEach {
         doFirst {
             error(
                 "Can't publish the compiler plugin, " +
