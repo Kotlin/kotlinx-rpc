@@ -168,7 +168,7 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.buildChannel(config)
-    val callCredentials = config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials
+    val callCredentials = (config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials) + config.callCredentials
     return GrpcClient(
         channel = channel,
         messageMarshallerResolver = config.messageMarshallerResolver,
@@ -208,6 +208,25 @@ public open class GrpcClientBaseConfiguration internal constructor() {
     public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
     public var marshallerConfig: GrpcMarshallerConfig? = null
+
+    /**
+     * The call credentials that the client sends with every call.
+     *
+     * The default is [GrpcEmptyCallCredentials], which doesn't send anything.
+     * To send more than one, combine them with `+`.
+     *
+     * ```
+     * GrpcClient("example.com", 443) {
+     *     callCredentials = BearerTokenCredentials(token)
+     * }
+     * ```
+     *
+     * If [GrpcClientConfiguration.credentials] also has call credentials, the client sends them first.
+     * To set call credentials for one call, use [GrpcCallOptions.callCredentials].
+     *
+     * @see GrpcCallCredentials
+     */
+    public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 
     /**
      * Overrides the authority used with TLS and HTTP virtual hosting.

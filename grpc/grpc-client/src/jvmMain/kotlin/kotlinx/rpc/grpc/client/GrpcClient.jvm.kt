@@ -27,8 +27,6 @@ import kotlinx.rpc.grpc.client.internal.toKotlin
  * - A setting that [configure] doesn't set has the value from [builder],
  *   not the default of [GrpcClientBaseConfiguration].
  * - [configure] has no transport credentials. Set them on [builder].
- *   To send call credentials with every call, add them to [GrpcCallOptions.callCredentials]
- *   in a [GrpcClientInterceptor].
  * - If [builder] doesn't support a setting from [configure], the function throws
  *   [GrpcUnsupportedSettingException].
  *
@@ -45,7 +43,7 @@ public fun GrpcClient(
         channel = builder.applyConfig(config, explicitOnly = true).build().toKotlin(),
         messageMarshallerResolver = config.messageMarshallerResolver,
         interceptors = config.interceptors,
-        callCredentials = GrpcEmptyCallCredentials,
+        callCredentials = config.callCredentials,
         marshallerConfig = config.marshallerConfig,
     )
 }

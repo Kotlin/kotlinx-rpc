@@ -17,10 +17,7 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
-import kotlinx.rpc.grpc.client.GrpcClientInterceptor
-import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
@@ -119,7 +116,7 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
-    fun `call credentials from a client interceptor - should reach the server`() {
+    fun `call credentials from the configuration - should reach the server`() {
         var serverHeaders: GrpcMetadata? = null
         val name = InProcessServerBuilder.generateName()
         runBuilderTest(
@@ -136,14 +133,7 @@ class GrpcJavaBuilderTest {
                 })
             },
             clientConfiguration = {
-                intercept(object : GrpcClientInterceptor {
-                    override fun <Req, Resp> GrpcClientCallScope<Req, Resp>.intercept(
-                        request: Flow<Req>,
-                    ): Flow<Resp> {
-                        callOptions.callCredentials += NoTLSBearerTokenCredentials()
-                        return proceed(request)
-                    }
-                })
+                callCredentials = NoTLSBearerTokenCredentials()
             },
         ) { _, client ->
             client.echo("Echo")
