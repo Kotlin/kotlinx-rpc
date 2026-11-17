@@ -82,8 +82,15 @@ internal fun ServerBuilder<*>.applyConfig(
     return this
 }
 
+internal interface JvmPlatformServer : PlatformServer {
+    val server: io.grpc.Server
+}
+
 private fun io.grpc.Server.toKotlin(): PlatformServer {
-    return object : PlatformServer {
+    return object : JvmPlatformServer {
+        override val server: io.grpc.Server
+            get() = this@toKotlin
+
         override val port: Int
             get() = this@toKotlin.port
 

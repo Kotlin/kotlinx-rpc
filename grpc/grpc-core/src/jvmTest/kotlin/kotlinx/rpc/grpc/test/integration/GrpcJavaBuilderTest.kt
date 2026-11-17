@@ -9,6 +9,7 @@ import io.grpc.ManagedChannelBuilder
 import io.grpc.ServerBuilder
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
+import io.grpc.inprocess.InProcessSocketAddress
 import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCallScope
 import kotlinx.rpc.grpc.server.GrpcServerInterceptor
+import kotlinx.rpc.grpc.server.listenAddresses
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
 import kotlinx.rpc.grpc.test.EchoServiceImpl
@@ -30,6 +32,7 @@ import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -49,6 +52,39 @@ class GrpcJavaBuilderTest {
             assertEquals(-1, server.port)
             assertEquals("Echo", client.echo("Echo"))
         }
+    }
+
+    @Test
+    fun `listenAddresses of an in-process server - should have the in-process address`() {
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = InProcessServerBuilder.forName(name),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+        ) { server, _ ->
+            val address = assertIs<InProcessSocketAddress>(server.listenAddresses.single())
+            assertEquals(name, address.name)
+        }
+    }
+
+    @Test
+    fun `listenAddresses of a server on a port - should have the port`() {
+        runBuilderTest { server, _ ->
+            val address = assertIs<InetSocketAddress>(server.listenAddresses.single())
+            assertEquals(server.port, address.port)
+        }
+    }
+
+    @Test
+    fun `listenAddresses before start and after termination - should be empty`() = runBlocking {
+        val server = GrpcServer(InProcessServerBuilder.forName(InProcessServerBuilder.generateName()))
+        assertEquals(emptyList(), server.listenAddresses)
+
+        server.start()
+        assertEquals(1, server.listenAddresses.size)
+
+        server.shutdownNow()
+        server.awaitTermination(30.seconds)
+        assertEquals(emptyList(), server.listenAddresses)
     }
 
     @Test
