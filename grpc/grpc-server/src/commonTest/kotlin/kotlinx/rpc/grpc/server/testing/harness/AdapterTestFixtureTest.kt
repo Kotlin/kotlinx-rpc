@@ -4,21 +4,16 @@
 
 package kotlinx.rpc.grpc.server.testing.harness
 
-import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.rpc.grpc.descriptor.GrpcMethodType
-import kotlinx.rpc.grpc.server.testing.AdapterHarness
+import kotlinx.rpc.grpc.server.testing.adapterTest
+import kotlinx.rpc.grpc.server.testing.assertMessages
 import kotlinx.rpc.grpc.server.testing.FakeServerCall
-import kotlinx.rpc.grpc.server.testing.ServerCallEvent
-import kotlinx.rpc.grpc.server.testing.assertNoViolations
 import kotlinx.rpc.grpc.server.testing.rawMethod
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 
-class AdapterHarnessTest {
+class AdapterTestFixtureTest {
     @Test
     fun sendMessageBeforeHeadersRecordsAViolationAndThrows() {
         val call = FakeServerCall(rawMethod("harness.Test/Unary", GrpcMethodType.UNARY))
@@ -30,20 +25,15 @@ class AdapterHarnessTest {
     }
 
     @Test
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun unaryCallSendsHeadersResponseAndOkClose() = runTest {
-        val harness = AdapterHarness(this)
-        val session = harness.unary { "$it-response" }
+    fun unaryCallSendsHeadersResponseAndOkClose() = adapterTest { fixture ->
+        val session = fixture.unary { "$it-response" }
 
-        session.listener.onMessage("request")
+        fixture.runAdapterTasks()
+        session.deliverRequest("request")
         session.listener.onHalfClose()
-        runCurrent()
+        fixture.runAdapterTasks()
 
         assertEquals(listOf("sendHeaders", "sendMessage", "close(OK)"), session.call.outbound())
-        val response = session.call.events.filterIsInstance<ServerCallEvent.MessageSent>().single()
-        assertEquals("request-response", response.message)
-        assertTrue(harness.isIdle())
-        session.call.assertNoViolations()
-        assertEquals(emptyList(), harness.uncaught)
+        session.call.assertMessages("request-response")
     }
 }

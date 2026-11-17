@@ -19,3 +19,26 @@ internal suspend fun assertGrpcStatus(code: GrpcStatusCode, block: suspend () ->
 internal fun FakeServerCall<*, *>.assertNoViolations() {
     assertEquals(emptyList(), violations())
 }
+
+internal fun FakeServerCall<*, *>.assertClosedWith(code: GrpcStatusCode): ServerCallEvent.Closed {
+    val close = events.filterIsInstance<ServerCallEvent.Closed>().single()
+    assertEquals(code, close.status.statusCode)
+    return close
+}
+
+internal fun FakeServerCall<*, *>.assertNoMessages() {
+    assertMessages()
+}
+
+internal fun <Response> FakeServerCall<*, Response>.assertMessages(vararg expected: Response) {
+    assertMessages(expected.toList())
+}
+
+internal fun <Response> FakeServerCall<*, Response>.assertMessages(expected: List<Response>) {
+    val messages = events.filterIsInstance<ServerCallEvent.MessageSent>().map { it.message }
+    assertEquals(expected, messages)
+}
+
+internal fun FakeServerCall<*, *>.assertNotClosed() {
+    assertEquals(emptyList(), events.filterIsInstance<ServerCallEvent.Closed>())
+}
