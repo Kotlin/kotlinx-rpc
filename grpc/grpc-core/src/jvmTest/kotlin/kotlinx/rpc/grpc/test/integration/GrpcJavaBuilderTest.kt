@@ -13,20 +13,18 @@ import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
-import kotlinx.rpc.grpc.GrpcConfigurationException
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
-import kotlinx.rpc.grpc.client.GrpcClientConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientInterceptor
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
-import kotlinx.rpc.grpc.server.GrpcInsecureServerCredentials
 import kotlinx.rpc.grpc.server.GrpcServer
+import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCallScope
-import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 import kotlinx.rpc.grpc.test.EchoRequest
 import kotlinx.rpc.grpc.test.EchoService
@@ -99,26 +97,6 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
-    fun `client credentials in the configuration - should fail`() {
-        val error = assertFailsWith<GrpcConfigurationException> {
-            GrpcClient(InProcessChannelBuilder.forName("unused")) {
-                credentials = plaintext()
-            }
-        }
-        assertContains(error.message.orEmpty(), "`credentials`")
-    }
-
-    @Test
-    fun `server credentials in the configuration - should fail`() {
-        val error = assertFailsWith<GrpcConfigurationException> {
-            GrpcServer(InProcessServerBuilder.forName("unused")) {
-                credentials = GrpcInsecureServerCredentials.create()
-            }
-        }
-        assertContains(error.message.orEmpty(), "`credentials`")
-    }
-
-    @Test
     fun `client setting that the builder does not support - should fail`() {
         val error = assertFailsWith<GrpcUnsupportedSettingException> {
             GrpcClient(NoKeepAliveChannelBuilder(InProcessChannelBuilder.forName("unused"))) {
@@ -177,8 +155,8 @@ class GrpcJavaBuilderTest {
     private fun runBuilderTest(
         serverBuilder: ServerBuilder<*> = NettyServerBuilder.forPort(0),
         clientBuilder: (GrpcServer) -> ManagedChannelBuilder<*> = ::nettyChannelBuilder,
-        serverConfiguration: GrpcServerConfiguration.() -> Unit = {},
-        clientConfiguration: GrpcClientConfiguration.() -> Unit = {},
+        serverConfiguration: GrpcServerBaseConfiguration.() -> Unit = {},
+        clientConfiguration: GrpcClientBaseConfiguration.() -> Unit = {},
         test: suspend (GrpcServer, GrpcClient) -> Unit,
     ) = runBlocking {
         val server = GrpcServer(serverBuilder) {
