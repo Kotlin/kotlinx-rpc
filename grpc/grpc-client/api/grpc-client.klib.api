@@ -105,6 +105,9 @@ final class kotlinx.rpc.grpc.client/GrpcTlsClientCredentials : kotlinx.rpc.grpc.
 }
 
 open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration|null[0]
+    final var callCredentials // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.callCredentials|{}callCredentials[0]
+        final fun <get-callCredentials>(): kotlinx.rpc.grpc.client/GrpcCallCredentials // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.callCredentials.<get-callCredentials>|<get-callCredentials>(){}[0]
+        final fun <set-callCredentials>(kotlinx.rpc.grpc.client/GrpcCallCredentials) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.callCredentials.<set-callCredentials>|<set-callCredentials>(kotlinx.rpc.grpc.client.GrpcCallCredentials){}[0]
     final var idleTimeout // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout|{}idleTimeout[0]
         final fun <get-idleTimeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout.<get-idleTimeout>|<get-idleTimeout>(){}[0]
         final fun <set-idleTimeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.idleTimeout.<set-idleTimeout>|<set-idleTimeout>(kotlin.time.Duration){}[0]
