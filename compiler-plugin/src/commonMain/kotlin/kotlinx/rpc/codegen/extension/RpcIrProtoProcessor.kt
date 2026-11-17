@@ -7,12 +7,14 @@ package kotlinx.rpc.codegen.extension
 import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.irAttribute
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.isInterface
+import org.jetbrains.kotlin.ir.visitors.IrTransformer
 import org.jetbrains.kotlin.name.Name
 
 internal fun computeProtoDeclarationIfNeeded(messageClass: IrClass, context: RpcIrContext): ProtoDeclaration? {
@@ -73,10 +75,12 @@ private fun computeProtoDeclaration(
 internal class RpcIrProtoProcessor(
     @Suppress("unused")
     private val logger: MessageCollector,
-) {
-    fun visitClass(declaration: IrClass, data: RpcIrContext) {
+) : IrTransformer<RpcIrContext>() {
+    override fun visitClass(declaration: IrClass, data: RpcIrContext): IrStatement {
         computeProtoDeclarationIfNeeded(declaration, data)?.let {
             ProtoDescriptorGenerator(it, data, logger).generate()
         }
+
+        return super.visitClass(declaration, data)
     }
 }

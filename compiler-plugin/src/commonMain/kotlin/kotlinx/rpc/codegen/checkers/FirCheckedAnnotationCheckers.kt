@@ -10,13 +10,20 @@ import kotlinx.rpc.codegen.checkers.FirCheckedAnnotationHelper.checkTypeArgument
 import kotlinx.rpc.codegen.checkers.diagnostics.FirRpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
 import kotlinx.rpc.codegen.common.RpcNames
+import kotlinx.rpc.codegen.getKClassArgumentCompat
+import kotlinx.rpc.codegen.typeParameterSymbolCompat
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.FirTypeRefSource
+import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirTypeParameterChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.extractArgumentsTypeRefAndSource
 import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.FirClass
@@ -28,22 +35,24 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.defaultType
+import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
-import kotlinx.rpc.codegen.getKClassArgumentCompat
-import kotlinx.rpc.codegen.typeParameterSymbolCompat
-import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 
-object FirCheckedAnnotationFunctionCallChecker {
-    fun check(
-        ctx: FirCheckersContext,
-        expression: FirFunctionCall,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirCheckedAnnotationFunctionCallChecker(
+    private val ctx: FirCheckersContext,
+) : FirFunctionCallChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(expression: FirFunctionCall) {
+        check(expression, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(expression: FirFunctionCall, context: CheckerContext, reporter: DiagnosticReporter) {
         checkTypeArguments(
             context = context,
             reporter = reporter,
@@ -59,13 +68,17 @@ object FirCheckedAnnotationFunctionCallChecker {
     }
 }
 
-object FirCheckedAnnotationTypeParameterChecker {
-    fun check(
-        ctx: FirCheckersContext,
-        declaration: FirTypeParameter,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirCheckedAnnotationTypeParameterChecker(
+    private val ctx: FirCheckersContext,
+) : FirTypeParameterChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirTypeParameter) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirTypeParameter, context: CheckerContext, reporter: DiagnosticReporter) {
         @Suppress("DuplicatedCode")
         declaration.bounds.forEach { bound ->
             checkTypeArguments(
@@ -84,13 +97,17 @@ object FirCheckedAnnotationTypeParameterChecker {
     }
 }
 
-object FirCheckedAnnotationFirClassChecker {
-    fun check(
-        ctx: FirCheckersContext,
-        declaration: FirClass,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirCheckedAnnotationFirClassChecker(
+    private val ctx: FirCheckersContext,
+) : FirClassChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirClass) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirClass, context: CheckerContext, reporter: DiagnosticReporter) {
         @Suppress("DuplicatedCode")
         declaration.superTypeRefs.forEach { superType ->
             checkTypeArguments(
@@ -109,13 +126,17 @@ object FirCheckedAnnotationFirClassChecker {
     }
 }
 
-object FirCheckedAnnotationFirFunctionChecker {
-    fun check(
-        ctx: FirCheckersContext,
-        declaration: FirFunction,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirCheckedAnnotationFirFunctionChecker(
+    private val ctx: FirCheckersContext,
+) : FirFunctionChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirFunction) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirFunction, context: CheckerContext, reporter: DiagnosticReporter) {
         declaration.valueParameters.forEach { valueParameter ->
             checkTypeArguments(
                 context = context,

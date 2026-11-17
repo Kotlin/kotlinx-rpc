@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen.checkers
 
 import kotlinx.rpc.codegen.FirRpcPredicates
+import kotlinx.rpc.codegen.allDeclarations
 import kotlinx.rpc.codegen.checkers.diagnostics.FirProtoDiagnostics
 import kotlinx.rpc.codegen.common.ProtoClassId
 import kotlinx.rpc.codegen.common.ProtoNames
@@ -15,26 +16,30 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.parentDeclarationSequence
 import org.jetbrains.kotlin.fir.resolve.getSuperTypes
+import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
-import kotlinx.rpc.codegen.allDeclarations
-import org.jetbrains.kotlin.fir.resolve.providers.getRegularClassSymbolByClassId
 
-object FirProtoMessageAnnotationChecker {
-    fun check(
-        declaration: FirRegularClass,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirProtoMessageAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         // check if the class is actually annotated with @GeneratedProtoMessage
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.generatedProtoMessage, declaration)) {
             return

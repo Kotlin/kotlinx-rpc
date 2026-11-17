@@ -15,6 +15,8 @@ import org.jetbrains.kotlin.ir.builders.declarations.buildField
 import org.jetbrains.kotlin.ir.builders.irBlockBody
 import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
 import org.jetbrains.kotlin.ir.declarations.*
+import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
@@ -28,11 +30,8 @@ import org.jetbrains.kotlin.ir.types.impl.IrSimpleTypeImpl
 import org.jetbrains.kotlin.ir.types.impl.makeTypeProjection
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.dump
-import org.jetbrains.kotlin.types.Variance
-import org.jetbrains.kotlin.ir.expressions.IrConst
-import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
-import org.jetbrains.kotlin.ir.expressions.IrMemberAccessExpression
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.Variance
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 
@@ -152,14 +151,13 @@ fun IrFunction.addDispatchReceiver(parameter: IrValueParameter?) {
  * Returns the argument of the constructor parameter with the name [name], or `null` when the call has no such
  * parameter or no argument for it.
  */
-fun IrMemberAccessExpression<*>.valueArgumentByName(name: Name): IrExpression? {
-    val constructorCall = this as IrConstructorCall
-    val parameterIndex = constructorCall.symbol.owner.parameters
+fun IrConstructorCall.valueArgumentByName(name: Name): IrExpression? {
+    val parameterIndex = symbol.owner.parameters
         .firstOrNull { it.name == name }
         ?.indexInParameters
         ?: return null
 
-    return constructorCall.arguments.getOrNull(parameterIndex)
+    return arguments.getOrNull(parameterIndex)
 }
 
 fun <T : Any> IrExpression.asConstValue(clazz: KClass<T>): T? {

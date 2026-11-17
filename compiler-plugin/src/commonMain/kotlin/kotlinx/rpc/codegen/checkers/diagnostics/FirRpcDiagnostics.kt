@@ -6,6 +6,7 @@
 
 package kotlinx.rpc.codegen.checkers.diagnostics
 
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.error1
@@ -24,7 +25,7 @@ import org.jetbrains.kotlin.psi.KtElement
 // # Instead use KtElement, otherwise problems in IDE and in tests may arise #
 // ###########################################################################
 
-object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
+object FirRpcDiagnostics : KtDiagnosticsContainer() {
     val WRONG_RPC_ANNOTATION_TARGET by error1<KtElement, ConeKotlinType>()
     val CHECKED_ANNOTATION_VIOLATION by error3<KtElement, Int, ConeKotlinType, FirBasedSymbol<*>>()
     val NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE by error0<KtElement>()
@@ -32,12 +33,12 @@ object FirRpcDiagnostics : RpcKtDiagnosticsContainer() {
     val TYPE_PARAMETERS_IN_RPC_FUNCTION by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
     val TYPE_PARAMETERS_IN_RPC_INTERFACE by error0<KtElement>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
 
-    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+    override fun getRendererFactory(): BaseDiagnosticRendererFactory {
         return RpcDiagnosticRendererFactory
     }
 }
 
-object FirRpcStrictModeDiagnostics : RpcKtDiagnosticsContainer() {
+object FirRpcStrictModeDiagnostics : KtDiagnosticsContainer() {
     val STATE_FLOW_IN_RPC_SERVICE by error0<KtElement>()
     val SHARED_FLOW_IN_RPC_SERVICE by error0<KtElement>()
     val NESTED_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
@@ -45,12 +46,12 @@ object FirRpcStrictModeDiagnostics : RpcKtDiagnosticsContainer() {
     val NON_TOP_LEVEL_SERVER_STREAMING_IN_RPC_SERVICE by error0<KtElement>()
     val FIELD_IN_RPC_SERVICE by error0<KtElement>()
 
-    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+    override fun getRendererFactory(): BaseDiagnosticRendererFactory {
         return RpcStrictModeDiagnosticRendererFactory
     }
 }
 
-object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
+object FirGrpcDiagnostics : KtDiagnosticsContainer() {
     val WRONG_PROTO_PACKAGE_VALUE by error0<KtElement>()
     val WRONG_PROTO_METHOD_NAME_VALUE by error0<KtElement>()
     val WRONG_SAFE_IDEMPOTENT_COMBINATION by error0<KtElement>()
@@ -61,15 +62,15 @@ object FirGrpcDiagnostics : RpcKtDiagnosticsContainer() {
     val NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION by error0<KtElement>()
     val MARSHALLER_TYPE_MISMATCH by error2<KtElement, ConeClassLikeType, ConeKotlinType>()
 
-    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+    override fun getRendererFactory(): BaseDiagnosticRendererFactory {
         return GrpcDiagnosticRendererFactory
     }
 }
 
-object FirProtoDiagnostics : RpcKtDiagnosticsContainer() {
+object FirProtoDiagnostics : KtDiagnosticsContainer() {
     val PROTO_MESSAGE_IS_GENERATED_ONLY by error0<KtElement>()
 
-    override fun getRendererFactoryVs(): BaseDiagnosticRendererFactory {
+    override fun getRendererFactory(): BaseDiagnosticRendererFactory {
         return ProtoDiagnosticRendererFactory
     }
 

@@ -12,18 +12,23 @@ import kotlinx.rpc.codegen.rpcAnnotationSource
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.types.resolvedType
 
-object FirRpcAnnotationChecker {
-    fun check(
-        declaration: FirRegularClass,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS

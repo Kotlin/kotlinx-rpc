@@ -5,12 +5,13 @@
 package kotlinx.rpc.codegen.checkers.diagnostics
 
 import kotlinx.rpc.codegen.checkers.IdentifierRegexes
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 
 object RpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
-    override val MAP by RpcKtDiagnosticFactoryToRendererMap("Rpc") { map ->
+    override val MAP by KtDiagnosticFactoryToRendererMap("Rpc") { map ->
         map.put(
             factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
             message = "@{0} annotation is only applicable to interfaces and annotation classes.",
@@ -64,7 +65,7 @@ private fun Int.indexPositionSpelled(): String {
 }
 
 object RpcStrictModeDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
-    override val MAP by RpcKtDiagnosticFactoryToRendererMap("RpcStrictMode") { map ->
+    override val MAP by KtDiagnosticFactoryToRendererMap("RpcStrictMode") { map ->
         map.put(
             factory = FirRpcStrictModeDiagnostics.STATE_FLOW_IN_RPC_SERVICE,
             message = message("StateFlow")
@@ -102,7 +103,7 @@ object RpcStrictModeDiagnosticRendererFactory : BaseDiagnosticRendererFactory() 
 }
 
 object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
-    override val MAP by RpcKtDiagnosticFactoryToRendererMap("Grpc") { map ->
+    override val MAP by KtDiagnosticFactoryToRendererMap("Grpc") { map ->
         map.put(
             factory = FirGrpcDiagnostics.WRONG_PROTO_PACKAGE_VALUE,
             message = "'protoPackage' parameter value must be a valid package name (${IdentifierRegexes.packageIdentifierRegex.pattern}) or empty",
@@ -154,7 +155,7 @@ object GrpcDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
 }
 
 object ProtoDiagnosticRendererFactory : BaseDiagnosticRendererFactory() {
-    override val MAP by RpcKtDiagnosticFactoryToRendererMap("Proto") { map ->
+    override val MAP by KtDiagnosticFactoryToRendererMap("Proto") { map ->
         map.put(
             factory = FirProtoDiagnostics.PROTO_MESSAGE_IS_GENERATED_ONLY,
             message = "@GeneratedProtoMessage annotation can only be applied to generated message classes.",

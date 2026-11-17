@@ -7,31 +7,36 @@ package kotlinx.rpc.codegen.checkers
 import kotlinx.rpc.codegen.FirRpcPredicates
 import kotlinx.rpc.codegen.checkers.diagnostics.FirGrpcDiagnostics
 import kotlinx.rpc.codegen.common.RpcClassId
+import kotlinx.rpc.codegen.getKClassArgumentCompat
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.findArgumentByName
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.getSuperTypes
+import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.type
 import org.jetbrains.kotlin.name.Name
-import kotlinx.rpc.codegen.getKClassArgumentCompat
-import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 
-object FirWithGrpcMarshallerDeclarationChecker {
-    fun check(
-        declaration: FirRegularClass,
-        context: CheckerContext,
-        reporter: DiagnosticReporter,
-    ) {
+class FirWithGrpcMarshallerDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirRegularClass) {
+        check(declaration, context, reporter)
+    }
+
+    // The code is in a function without context parameters, because a `CheckerContext` in the context
+    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
+    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.withMarshaller, declaration)) {
             return
         }

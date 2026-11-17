@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.codegen.extension
 
+import kotlinx.rpc.codegen.findClassCompat
+import kotlinx.rpc.codegen.findFunctionsCompat
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrEnumEntry
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -19,14 +21,12 @@ import org.jetbrains.kotlin.ir.util.functions
 import org.jetbrains.kotlin.ir.util.isVararg
 import org.jetbrains.kotlin.ir.util.nestedClasses
 import org.jetbrains.kotlin.ir.util.properties
-import org.jetbrains.kotlin.platform.jvm.isJvm
-import org.jetbrains.kotlin.types.Variance
-import kotlinx.rpc.codegen.findClassCompat
-import kotlinx.rpc.codegen.findFunctionsCompat
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.platform.jvm.isJvm
+import org.jetbrains.kotlin.types.Variance
 
 /**
  * IMPORTANT!!!

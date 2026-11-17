@@ -4,14 +4,12 @@
 
 package kotlinx.rpc.codegen.extension
 
-import kotlinx.rpc.codegen.RpcIrProtoProcessorDelegate
-import kotlinx.rpc.codegen.RpcIrServiceProcessorDelegate
+import kotlinx.rpc.codegen.messageCollectorKeyCompat
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
-import kotlinx.rpc.codegen.messageCollectorKeyCompat
 
 class RpcIrExtension(configuration: CompilerConfiguration) : IrGenerationExtension {
     private val logger = configuration.get(messageCollectorKeyCompat, MessageCollector.NONE)
@@ -22,10 +20,10 @@ class RpcIrExtension(configuration: CompilerConfiguration) : IrGenerationExtensi
     ) {
         val context = RpcIrContext(pluginContext)
 
-        val serviceProcessor = RpcIrServiceProcessorDelegate(RpcIrServiceProcessor(logger))
+        val serviceProcessor = RpcIrServiceProcessor(logger)
         moduleFragment.transform(serviceProcessor, context)
 
-        val protoProcessor = RpcIrProtoProcessorDelegate(RpcIrProtoProcessor(logger))
+        val protoProcessor = RpcIrProtoProcessor(logger)
         moduleFragment.transform(protoProcessor, context)
     }
 }
