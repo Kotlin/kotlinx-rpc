@@ -14,7 +14,7 @@ import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
-import kotlinx.rpc.grpc.client.GrpcClientCredentials
+import kotlinx.rpc.grpc.client.GrpcTransportCredentials
 import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
 import kotlinx.rpc.grpc.internal.applySetting
@@ -46,7 +46,7 @@ public actual typealias ManagedChannelBuilder<T> = io.grpc.ManagedChannelBuilder
 public actual fun ManagedChannelBuilder(
     hostname: String,
     port: Int,
-    credentials: GrpcClientCredentials?,
+    credentials: GrpcTransportCredentials?,
 ): ManagedChannelBuilder<*> {
     if (credentials != null) {
         return Grpc.newChannelBuilderForAddress(hostname, port, credentials.toJvm())

@@ -160,7 +160,7 @@ public fun GrpcClient(
     configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
     val config = GrpcClientConfiguration().apply(configure)
-    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials), config)
+    return GrpcClient(ManagedChannelBuilder(hostname, port, config.credentials?.transportCredentials), config)
 }
 
 private fun GrpcClient(
@@ -168,7 +168,7 @@ private fun GrpcClient(
     config: GrpcClientConfiguration,
 ): GrpcClient {
     val channel = builder.buildChannel(config)
-    val callCredentials = (config.credentials?.realCallCredentials ?: GrpcEmptyCallCredentials) + config.callCredentials
+    val callCredentials = config.credentials?.callCredentials ?: GrpcEmptyCallCredentials
     return GrpcClient(
         channel = channel,
         messageMarshallerResolver = config.messageMarshallerResolver,
@@ -181,8 +181,7 @@ private fun GrpcClient(
 /**
  * The gRPC client settings that every `GrpcClient` factory accepts.
  *
- * A factory that takes a ready channel builder accepts only these settings,
- * because the builder already has the transport credentials.
+ * The credentials aren't among them. Each subclass adds the credentials that its factory accepts.
  *
  * @see GrpcClientConfiguration
  */
@@ -208,25 +207,6 @@ public open class GrpcClientBaseConfiguration internal constructor() {
     public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
     public var marshallerConfig: GrpcMarshallerConfig? = null
-
-    /**
-     * The call credentials that the client sends with every call.
-     *
-     * The default is [GrpcEmptyCallCredentials], which doesn't send anything.
-     * To send more than one, combine them with `+`.
-     *
-     * ```
-     * GrpcClient("example.com", 443) {
-     *     callCredentials = BearerTokenCredentials(token)
-     * }
-     * ```
-     *
-     * If [GrpcClientConfiguration.credentials] also has call credentials, the client sends them first.
-     * To set call credentials for one call, use [GrpcCallOptions.callCredentials].
-     *
-     * @see GrpcCallCredentials
-     */
-    public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 
     /**
      * Overrides the authority used with TLS and HTTP virtual hosting.
@@ -410,8 +390,22 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      * }
      * ```
      *
+     * To send call credentials with every call, add them with `+`, or set them alone.
+     * Call credentials alone use the default TLS credentials for the connection.
+     *
+     * ```
+     * GrpcClient("example.com", 443) {
+     *     credentials = tls { trustManager(rootCertsPem) } + BearerTokenCredentials(token)
+     * }
+     *
+     * GrpcClient("example.com", 443) {
+     *     credentials = BearerTokenCredentials(token)
+     * }
+     * ```
+     *
      * @see tls
      * @see plaintext
+     * @see GrpcCallCredentials
      */
     public var credentials: GrpcClientCredentials? = null
 
@@ -421,9 +415,9 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      * Typically, this would be used for local development, testing, or other
      * environments where security is not a concern.
      *
-     * @return An insecure [GrpcClientCredentials] instance that must be passed to [credentials].
+     * @return An insecure [GrpcTransportCredentials] instance that must be passed to [credentials].
      */
-    public fun plaintext(): GrpcClientCredentials = GrpcInsecureClientCredentials()
+    public fun plaintext(): GrpcTransportCredentials = GrpcInsecureClientCredentials()
 
     /**
      * Configures and creates secure client credentials for the gRPC client.
@@ -438,11 +432,11 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      *
      * @param configure A configuration block that allows setting up the TLS parameters
      * using the [GrpcTlsClientCredentialsBuilder].
-     * @return A secure [GrpcClientCredentials] instance that must be passed to [credentials].
+     * @return A secure [GrpcTransportCredentials] instance that must be passed to [credentials].
      *
      * @see credentials
      */
-    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcClientCredentials =
+    public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcTransportCredentials =
         GrpcTlsClientCredentials(configure)
 
     /**
