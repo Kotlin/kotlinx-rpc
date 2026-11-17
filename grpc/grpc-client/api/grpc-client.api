@@ -46,6 +46,28 @@ public final class kotlinx/rpc/grpc/client/GrpcClient : kotlinx/rpc/RpcClient {
 	public final fun shutdownNow ()V
 }
 
+public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
+	public final fun clearIdleTimeout ()V
+	public final fun clearMaxInboundMessageSize ()V
+	public final fun clearMaxInboundMetadataSize ()V
+	public final fun getIdleTimeout-UwyO8pc ()J
+	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
+	public final fun getMaxInboundMessageSize ()I
+	public final fun getMaxInboundMetadataSize ()I
+	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
+	public final fun getOverrideAuthority ()Ljava/lang/String;
+	public final fun getUserAgent ()Ljava/lang/String;
+	public final fun intercept ([Lkotlinx/rpc/grpc/client/GrpcClientInterceptor;)V
+	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
+	public final fun setIdleTimeout-LRDsOJo (J)V
+	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
+	public final fun setMaxInboundMessageSize (I)V
+	public final fun setMaxInboundMetadataSize (I)V
+	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
+	public final fun setOverrideAuthority (Ljava/lang/String;)V
+	public final fun setUserAgent (Ljava/lang/String;)V
+}
+
 public abstract interface class kotlinx/rpc/grpc/client/GrpcClientCallScope {
 	public abstract fun cancel (Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Void;
 	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/GrpcClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
@@ -61,29 +83,10 @@ public final class kotlinx/rpc/grpc/client/GrpcClientCallScope$DefaultImpls {
 	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/GrpcClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
 }
 
-public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration {
-	public final fun clearIdleTimeout ()V
-	public final fun clearMaxInboundMessageSize ()V
-	public final fun clearMaxInboundMetadataSize ()V
+public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration : kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun getCredentials ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
-	public final fun getIdleTimeout-UwyO8pc ()J
-	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
-	public final fun getMaxInboundMessageSize ()I
-	public final fun getMaxInboundMetadataSize ()I
-	public final fun getMessageMarshallerResolver ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;
-	public final fun getOverrideAuthority ()Ljava/lang/String;
-	public final fun getUserAgent ()Ljava/lang/String;
-	public final fun intercept ([Lkotlinx/rpc/grpc/client/GrpcClientInterceptor;)V
-	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
 	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
 	public final fun setCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)V
-	public final fun setIdleTimeout-LRDsOJo (J)V
-	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
-	public final fun setMaxInboundMessageSize (I)V
-	public final fun setMaxInboundMetadataSize (I)V
-	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
-	public final fun setOverrideAuthority (Ljava/lang/String;)V
-	public final fun setUserAgent (Ljava/lang/String;)V
 	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
 }
 
