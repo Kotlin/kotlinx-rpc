@@ -36,6 +36,6 @@ fun DevKitPropertiesDsl<*>.configureRpcCompilerPlugin() {
         return
     }
 
-    cliVersions(min = "2.3.0")
-    ideaVersions(min = "253", includeRc = true, includeEap = true)
+    cliVersions(min = project.libs.versions.kotlin.min.get())
+    ideaVersions(min = project.libs.versions.idea.min.get(), includeRc = true, includeEap = true)
 }

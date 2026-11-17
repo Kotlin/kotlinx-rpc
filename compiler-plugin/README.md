@@ -47,6 +47,7 @@ A test fails when a file with a version is the same as the file it replaces.
 
 `versionHierarchy` in `build.gradle.kts` declares the version groups.
 `gradle-conventions/src/main/kotlin/util/devkit.kt` declares the supported Kotlin and IDE versions.
+The minimal versions are `kotlin-min` and `idea-min` in `versions-root/libs.versions.toml`.
 
 ## Generation References (detailed)
 

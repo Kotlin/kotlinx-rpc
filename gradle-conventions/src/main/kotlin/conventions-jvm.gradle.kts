@@ -13,6 +13,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.WatchdogGradleExtension
 import util.configureAbiFilters
 import util.enableAbiValidation
 import util.other.isPublicModule
+import util.other.libs
 import util.other.optionalProperty
 import util.targets.configureJvm
 
@@ -43,7 +44,7 @@ if (project.name != "gradle-plugin") {
     }
 }
 
-configureKotlinCompatibility("2.3.0")
+configureKotlinCompatibility(libs.versions.kotlin.min.get())
 
 // The watchdog plugin adds its annotations artifact to every compilation, even when `enabled` is false.
 // The artifact targets the Kotlin version of the plugin, so an older `compilerVersion` can't read it.

@@ -45,6 +45,7 @@ for example `k2420` for Kotlin 2.4.20.
 - It builds for the compiler versions of IntelliJ IDEA and Android Studio too.
 
 [devkit.kt](../gradle-conventions/src/main/kotlin/util/devkit.kt) declares the supported Kotlin and IDE versions.
+The minimal versions are `kotlin-min` and `idea-min` in [libs.versions.toml](../versions-root/libs.versions.toml).
 
 The [commonMain](../compiler-plugin/src/commonMain/kotlin) source set has the majority of the code.
 It compiles on all Kotlin versions.

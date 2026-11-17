@@ -27,6 +27,8 @@ Gradle target.
 - `ideaVersions(min)`: the compiler versions of IntelliJ IDEA and Android Studio from
   the build `min`.
 
+The two `min` values are `kotlin-min` and `idea-min` in `versions-root/libs.versions.toml`.
+
 The DevKit has a built-in list of Kotlin releases and IDE builds. A new Kotlin release
 becomes a target after an update of the `devkit` version in
 `versions-root/libs.versions.toml`, and of the same version in
