@@ -125,6 +125,7 @@ grpc-core = { module = "io.grpc:grpc-core", version.ref = "grpc" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 grpc-util = { module = "io.grpc:grpc-util", version.ref = "grpc" }
 grpc-netty = { module = "io.grpc:grpc-netty", version.ref = "grpc" }
+grpc-inprocess = { module = "io.grpc:grpc-inprocess", version.ref = "grpc" }
 grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 grpc-protobuf-lite = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpc" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpc-kotlin" }

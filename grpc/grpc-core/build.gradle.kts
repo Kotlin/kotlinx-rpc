@@ -66,6 +66,7 @@ kotlin {
                 implementation(projects.grpc.grpcServer)
                 implementation(libs.grpc.core)
                 implementation(libs.grpc.netty)
+                implementation(libs.grpc.inprocess)
             }
         }
     }

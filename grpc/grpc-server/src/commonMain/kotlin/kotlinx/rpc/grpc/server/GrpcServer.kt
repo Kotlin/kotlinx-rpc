@@ -134,10 +134,20 @@ public fun GrpcServer(
     configure: GrpcServerConfiguration.() -> Unit = {},
 ): GrpcServer {
     val config = GrpcServerConfiguration().apply(configure)
-    val serverBuilder = ServerBuilder(port, config.credentials).apply {
-        config.fallbackHandlerRegistry?.let { fallbackHandlerRegistry(it) }
-        applyConfig(config)
-    }
+    val serverBuilder = ServerBuilder(port, config.credentials).applyConfig(config)
+
+    return buildGrpcServer(serverBuilder, config, parentContext)
+}
+
+/**
+ * Builds the server from [serverBuilder], which already has the transport settings of [config].
+ */
+internal fun buildGrpcServer(
+    serverBuilder: ServerBuilder<*>,
+    config: GrpcServerConfiguration,
+    parentContext: CoroutineContext,
+): GrpcServer {
+    config.fallbackHandlerRegistry?.let { serverBuilder.fallbackHandlerRegistry(it) }
 
     return GrpcServerImpl(
         serverBuilder = serverBuilder,
@@ -161,6 +171,11 @@ public class GrpcServerConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
     internal var keepAlive: KeepAlive? = null
+    internal var isMaxInboundMessageSizeExplicitlySet = false
+    internal var isMaxInboundMetadataSizeExplicitlySet = false
+    internal var isMaxConnectionIdleExplicitlySet = false
+    internal var isMaxConnectionAgeExplicitlySet = false
+    internal var isMaxConnectionAgeGraceExplicitlySet = false
 
     /**
      * Sets the credentials to be used by the gRPC server for secure communication.
@@ -195,6 +210,7 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
             require(value >= 0) { "maxInboundMessageSize must be >= 0" }
+            isMaxInboundMessageSizeExplicitlySet = true
             field = value
         }
 
@@ -207,6 +223,7 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxInboundMetadataSize: Int = 8 * 1024
         set(value) {
             require(value > 0) { "maxInboundMetadataSize must be > 0" }
+            isMaxInboundMetadataSizeExplicitlySet = true
             field = value
         }
 
@@ -223,6 +240,7 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionIdle: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionIdle", 1.seconds)
+            isMaxConnectionIdleExplicitlySet = true
             field = value
         }
 
@@ -238,6 +256,7 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionAge: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAge", 1.seconds)
+            isMaxConnectionAgeExplicitlySet = true
             field = value
         }
 
@@ -255,6 +274,7 @@ public class GrpcServerConfiguration internal constructor() {
     public var maxConnectionAgeGrace: Duration = Duration.INFINITE
         set(value) {
             value.validateConnectionDuration("maxConnectionAgeGrace", Duration.ZERO)
+            isMaxConnectionAgeGraceExplicitlySet = true
             field = value
         }
 

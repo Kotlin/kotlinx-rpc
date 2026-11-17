@@ -81,6 +81,17 @@ private class JvmManagedChannel(val channel: io.grpc.ManagedChannel) : ManagedCh
 }
 
 internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConfiguration): ManagedChannel {
+    return applyConfig(config, explicitOnly = false).build().toKotlin()
+}
+
+/**
+ * @param explicitOnly When `true`, a size limit or the idle timeout that [config] doesn't set
+ * explicitly stays as the builder has it.
+ */
+internal fun ManagedChannelBuilder<*>.applyConfig(
+    config: GrpcClientConfiguration,
+    explicitOnly: Boolean,
+): ManagedChannelBuilder<*> {
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
@@ -89,12 +100,18 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
 
     config.overrideAuthority?.let { overrideAuthority(it) }
     config.userAgent?.let { userAgent(it) }
-    maxInboundMessageSize(config.maxInboundMessageSize)
-    maxInboundMetadataSize(config.maxInboundMetadataSize)
-    idleTimeout(
-        config.idleTimeout.inWholeMilliseconds,
-        TimeUnit.MILLISECONDS,
-    )
+    if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
+        maxInboundMessageSize(config.maxInboundMessageSize)
+    }
+    if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
+        maxInboundMetadataSize(config.maxInboundMetadataSize)
+    }
+    if (!explicitOnly || config.isIdleTimeoutExplicitlySet) {
+        idleTimeout(
+            config.idleTimeout.inWholeMilliseconds,
+            TimeUnit.MILLISECONDS,
+        )
+    }
 
-    return build().toKotlin()
+    return this
 }

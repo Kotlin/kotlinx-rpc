@@ -33,15 +33,36 @@ public actual fun PlatformServer(builder: ServerBuilder<*>): PlatformServer {
 }
 
 internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration): ServerBuilder<*> {
-    maxInboundMessageSize(config.maxInboundMessageSize)
-    maxInboundMetadataSize(config.maxInboundMetadataSize)
+    return applyConfig(config, explicitOnly = false)
+}
+
+/**
+ * @param explicitOnly When `true`, a size limit or a connection limit that [config] doesn't set
+ * explicitly stays as the builder has it.
+ */
+internal fun ServerBuilder<*>.applyConfig(
+    config: GrpcServerConfiguration,
+    explicitOnly: Boolean,
+): ServerBuilder<*> {
+    if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
+        maxInboundMessageSize(config.maxInboundMessageSize)
+    }
+    if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
+        maxInboundMetadataSize(config.maxInboundMetadataSize)
+    }
     config.keepAlive?.let {
         keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
     }
-    maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
-    maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
-    maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    if (!explicitOnly || config.isMaxConnectionIdleExplicitlySet) {
+        maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    }
+    if (!explicitOnly || config.isMaxConnectionAgeExplicitlySet) {
+        maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    }
+    if (!explicitOnly || config.isMaxConnectionAgeGraceExplicitlySet) {
+        maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
+    }
     return this
 }
 
