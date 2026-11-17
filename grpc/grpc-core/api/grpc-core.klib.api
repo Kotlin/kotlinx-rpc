@@ -131,6 +131,14 @@ final class kotlinx.rpc.grpc/GrpcStatusException : kotlin/Exception { // kotlinx
     constructor <init>(kotlinx.rpc.grpc/GrpcStatus, kotlinx.rpc.grpc/GrpcMetadata?) // kotlinx.rpc.grpc/GrpcStatusException.<init>|<init>(kotlinx.rpc.grpc.GrpcStatus;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
 }
 
+final class kotlinx.rpc.grpc/GrpcUnsupportedSettingException : kotlinx.rpc.grpc/GrpcConfigurationException { // kotlinx.rpc.grpc/GrpcUnsupportedSettingException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.grpc/GrpcUnsupportedSettingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
+open class kotlinx.rpc.grpc/GrpcConfigurationException : kotlin/RuntimeException { // kotlinx.rpc.grpc/GrpcConfigurationException|null[0]
+    constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.grpc/GrpcConfigurationException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
+}
+
 final val kotlinx.rpc.grpc.descriptor/methodType // kotlinx.rpc.grpc.descriptor/methodType|@kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor<*,*>{}methodType[0]
     final fun (kotlinx.rpc.grpc.descriptor/GrpcMethodDescriptor<*, *>).<get-methodType>(): kotlinx.rpc.grpc.descriptor/GrpcMethodType // kotlinx.rpc.grpc.descriptor/methodType.<get-methodType>|<get-methodType>@kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor<*,*>(){}[0]
 final val kotlinx.rpc.grpc/description // kotlinx.rpc.grpc/description|@kotlinx.rpc.grpc.GrpcStatus{}description[0]
