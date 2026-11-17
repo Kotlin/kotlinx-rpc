@@ -37,7 +37,7 @@ plugins {
     id("conventions-repositories")
     id("conventions-version-resolution")
     // Keep the version in sync with `devkit` in libs.versions.toml
-    kotlin("compiler.plugin.devkit") version "0.0.4-dev-380"
+    kotlin("compiler.plugin.devkit") version "0.0.4-dev-398"
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
