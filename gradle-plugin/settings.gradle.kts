@@ -10,14 +10,8 @@ pluginManagement {
     includeBuild("../gradle-conventions")
     includeBuild("../gradle-conventions-settings")
 
-    repositories {
-        gradlePluginPortal()
-        maven("https://packages.jetbrains.team/maven/p/compiler-plugin-dev-kit/eap") {
-            content {
-                includeGroupAndSubgroups("org.jetbrains.kotlin.compiler.plugin.devkit")
-            }
-        }
-    }
+    // The repositories for the settings plugins. They follow `kotlinx.rpc.useProxyRepositories`.
+    apply(from = "../gradle-conventions-settings/src/main/kotlin/conventions-repositories.settings.gradle.kts")
 
     // Gradle resolves the settings plugins before it creates the version catalog,
     // so this block reads the DevKit version from the file.
