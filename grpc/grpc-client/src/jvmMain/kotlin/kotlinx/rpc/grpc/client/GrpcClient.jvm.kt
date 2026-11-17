@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.client
 
-import kotlinx.rpc.grpc.GrpcConfigurationException
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.toKotlin
@@ -25,11 +24,9 @@ import kotlinx.rpc.grpc.client.internal.toKotlin
  * The function applies [configure] to [builder] and then builds the channel:
  *
  * - A setting from [configure] replaces the value that [builder] has.
- * - When [configure] doesn't set [GrpcClientConfiguration.maxInboundMessageSize],
- *   [GrpcClientConfiguration.maxInboundMetadataSize] or [GrpcClientConfiguration.idleTimeout],
- *   the setting has the value from [builder].
- * - [GrpcClientConfiguration.credentials] must stay `null`, or the function throws
- *   [GrpcConfigurationException]. Set the transport credentials on [builder].
+ * - A setting that [configure] doesn't set has the value from [builder],
+ *   not the default of [GrpcClientBaseConfiguration].
+ * - [configure] has no transport credentials. Set them on [builder].
  *   To send call credentials with every call, add them to [GrpcCallOptions.callCredentials]
  *   in a [GrpcClientInterceptor].
  * - If [builder] doesn't support a setting from [configure], the function throws
@@ -40,15 +37,9 @@ import kotlinx.rpc.grpc.client.internal.toKotlin
  */
 public fun GrpcClient(
     builder: io.grpc.ManagedChannelBuilder<*>,
-    configure: GrpcClientConfiguration.() -> Unit = {},
+    configure: GrpcClientBaseConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val config = GrpcClientConfiguration().apply(configure)
-    if (config.credentials != null) {
-        throw GrpcConfigurationException(
-            "A client from a grpc-java `ManagedChannelBuilder` doesn't accept `credentials`. " +
-                "Set the credentials on the builder."
-        )
-    }
+    val config = GrpcClientBaseConfiguration().apply(configure)
 
     return GrpcClient(
         channel = builder.applyConfig(config, explicitOnly = true).build().toKotlin(),

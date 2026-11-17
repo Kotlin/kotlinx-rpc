@@ -144,7 +144,7 @@ public fun GrpcServer(
  */
 internal fun buildGrpcServer(
     serverBuilder: ServerBuilder<*>,
-    config: GrpcServerConfiguration,
+    config: GrpcServerBaseConfiguration,
     parentContext: CoroutineContext,
 ): GrpcServer {
     config.fallbackHandlerRegistry?.let { serverBuilder.fallbackHandlerRegistry(it) }
@@ -161,33 +161,23 @@ internal fun buildGrpcServer(
 }
 
 /**
- * A configuration class for setting up a gRPC server.
+ * The gRPC server settings that every `GrpcServer` factory accepts.
  *
- * This class provides an API to configure various server parameters, such as message marshallers,
- * security credentials, server-side interceptors, and service registration.
+ * A factory that takes a ready server builder accepts only these settings,
+ * because the builder already has the credentials.
+ *
+ * @see GrpcServerConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-public class GrpcServerConfiguration internal constructor() {
+public open class GrpcServerBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
-    internal var keepAlive: KeepAlive? = null
+    internal var keepAlive: GrpcServerConfiguration.KeepAlive? = null
     internal var isMaxInboundMessageSizeExplicitlySet = false
     internal var isMaxInboundMetadataSizeExplicitlySet = false
     internal var isMaxConnectionIdleExplicitlySet = false
     internal var isMaxConnectionAgeExplicitlySet = false
     internal var isMaxConnectionAgeGraceExplicitlySet = false
-
-    /**
-     * Sets the credentials to be used by the gRPC server for secure communication.
-     *
-     * By default, the server does not have any credentials configured and the communication is plaintext.
-     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
-     * [tls] function.
-     *
-     * @see GrpcTlsServerCredentials
-     * @see tls
-     */
-    public var credentials: GrpcServerCredentials? = null
 
     /**
      * Sets a custom [GrpcMarshallerResolver] to be used by the gRPC server for resolving the appropriate
@@ -323,9 +313,50 @@ public class GrpcServerConfiguration internal constructor() {
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
-    public fun keepAlive(configure: KeepAlive.() -> Unit) {
-        keepAlive = KeepAlive().apply(configure)
+    public fun keepAlive(configure: GrpcServerConfiguration.KeepAlive.() -> Unit) {
+        keepAlive = GrpcServerConfiguration.KeepAlive().apply(configure)
     }
+
+    /**
+     * Configures the gRPC server to register services.
+     *
+     * This method allows defining a block of logic to configure an [RpcServer] instance,
+     * where multiple services can be registered:
+     * ```kt
+     * GrpcServer(port) {
+     *     services {
+     *         registerService<MyService> { MyServiceImpl() }
+     *         registerService<MyOtherService> { MyOtherServiceImpl() }
+     *     }
+     * }
+     * ```
+     *
+     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
+     */
+    public fun services(block: RpcServer.() -> Unit) {
+        serviceBuilder = block
+    }
+}
+
+/**
+ * A configuration class for setting up a gRPC server.
+ *
+ * This class provides an API to configure various server parameters, such as message marshallers,
+ * security credentials, server-side interceptors, and service registration.
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
+    /**
+     * Sets the credentials to be used by the gRPC server for secure communication.
+     *
+     * By default, the server does not have any credentials configured and the communication is plaintext.
+     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
+     * [tls] function.
+     *
+     * @see GrpcTlsServerCredentials
+     * @see tls
+     */
+    public var credentials: GrpcServerCredentials? = null
 
     /**
      * Server-side keepalive settings.
@@ -349,26 +380,6 @@ public class GrpcServerConfiguration internal constructor() {
                 value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
                 field = value
             }
-    }
-
-    /**
-     * Configures the gRPC server to register services.
-     *
-     * This method allows defining a block of logic to configure an [RpcServer] instance,
-     * where multiple services can be registered:
-     * ```kt
-     * GrpcServer(port) {
-     *     services {
-     *         registerService<MyService> { MyServiceImpl() }
-     *         registerService<MyOtherService> { MyOtherServiceImpl() }
-     *     }
-     * }
-     * ```
-     *
-     * @param block A lambda with [RpcServer] as its receiver, allowing service registration.
-     */
-    public fun services(block: RpcServer.() -> Unit) {
-        serviceBuilder = block
     }
 
     /**

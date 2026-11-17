@@ -12,10 +12,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
+import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcClientCredentials
 import kotlinx.rpc.grpc.client.toJvm
 import kotlinx.rpc.grpc.descriptor.GrpcMethodDescriptor
+import kotlinx.rpc.grpc.internal.applySetting
 import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import java.util.concurrent.TimeUnit
@@ -91,45 +93,34 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
  * - A setting that the builder doesn't support fails with [GrpcUnsupportedSettingException].
  */
 internal fun ManagedChannelBuilder<*>.applyConfig(
-    config: GrpcClientConfiguration,
+    config: GrpcClientBaseConfiguration,
     explicitOnly: Boolean,
 ): ManagedChannelBuilder<*> {
     config.keepAlive?.let {
-        setting("keepAlive", explicitOnly) {
+        applySetting(this, "keepAlive", explicitOnly) {
             keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             keepAliveWithoutCalls(it.withoutCalls)
         }
     }
 
-    config.overrideAuthority?.let { setting("overrideAuthority", explicitOnly) { overrideAuthority(it) } }
-    config.userAgent?.let { setting("userAgent", explicitOnly) { userAgent(it) } }
+    config.overrideAuthority?.let { applySetting(this, "overrideAuthority", explicitOnly) { overrideAuthority(it) } }
+    config.userAgent?.let { applySetting(this, "userAgent", explicitOnly) { userAgent(it) } }
     if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
-        setting("maxInboundMessageSize", explicitOnly) { maxInboundMessageSize(config.maxInboundMessageSize) }
+        applySetting(this, "maxInboundMessageSize", explicitOnly) {
+            maxInboundMessageSize(config.maxInboundMessageSize)
+        }
     }
     if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
-        setting("maxInboundMetadataSize", explicitOnly) { maxInboundMetadataSize(config.maxInboundMetadataSize) }
+        applySetting(this, "maxInboundMetadataSize", explicitOnly) {
+            maxInboundMetadataSize(config.maxInboundMetadataSize)
+        }
     }
     if (!explicitOnly || config.isIdleTimeoutExplicitlySet) {
-        setting("idleTimeout", explicitOnly) {
+        applySetting(this, "idleTimeout", explicitOnly) {
             idleTimeout(config.idleTimeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         }
     }
 
     return this
-}
-
-private inline fun ManagedChannelBuilder<*>.setting(name: String, wrapUnsupported: Boolean, set: () -> Unit) {
-    try {
-        set()
-    } catch (e: UnsupportedOperationException) {
-        if (!wrapUnsupported) {
-            throw e
-        }
-        throw GrpcUnsupportedSettingException(
-            "The grpc-java builder `${this::class.java.name}` doesn't support `$name`. " +
-                "Remove `$name` from the configuration block.",
-            e,
-        )
-    }
 }

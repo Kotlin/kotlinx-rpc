@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.internal
 
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlin.time.Duration
 
@@ -14,6 +15,28 @@ public fun internalError(message: String): Nothing {
             "Please, report the issue here: " +
             "https://github.com/Kotlin/kotlinx-rpc/issues/new?template=bug_report.md"
     )
+}
+
+/**
+ * Runs [set], which applies the setting [name] of a configuration to [builder].
+ *
+ * @param wrapUnsupported When `true`, an [UnsupportedOperationException] from [set] becomes
+ * a [GrpcUnsupportedSettingException] that names the setting.
+ */
+@InternalRpcApi
+public inline fun applySetting(builder: Any, name: String, wrapUnsupported: Boolean, set: () -> Unit) {
+    try {
+        set()
+    } catch (e: UnsupportedOperationException) {
+        if (!wrapUnsupported) {
+            throw e
+        }
+        throw GrpcUnsupportedSettingException(
+            "The builder `${builder::class.simpleName}` doesn't support `$name`. " +
+                "Remove `$name` from the configuration block.",
+            e,
+        )
+    }
 }
 
 /**

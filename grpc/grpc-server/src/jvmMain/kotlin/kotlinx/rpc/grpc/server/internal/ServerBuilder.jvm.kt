@@ -8,6 +8,8 @@ import io.grpc.Grpc
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
+import kotlinx.rpc.grpc.internal.applySetting
+import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCredentials
 import kotlinx.rpc.internal.utils.InternalRpcApi
@@ -43,52 +45,41 @@ internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration
  * - A setting that the builder doesn't support fails with [GrpcUnsupportedSettingException].
  */
 internal fun ServerBuilder<*>.applyConfig(
-    config: GrpcServerConfiguration,
+    config: GrpcServerBaseConfiguration,
     explicitOnly: Boolean,
 ): ServerBuilder<*> {
     if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
-        setting("maxInboundMessageSize", explicitOnly) { maxInboundMessageSize(config.maxInboundMessageSize) }
+        applySetting(this, "maxInboundMessageSize", explicitOnly) {
+            maxInboundMessageSize(config.maxInboundMessageSize)
+        }
     }
     if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
-        setting("maxInboundMetadataSize", explicitOnly) { maxInboundMetadataSize(config.maxInboundMetadataSize) }
+        applySetting(this, "maxInboundMetadataSize", explicitOnly) {
+            maxInboundMetadataSize(config.maxInboundMetadataSize)
+        }
     }
     config.keepAlive?.let {
-        setting("keepAlive", explicitOnly) {
+        applySetting(this, "keepAlive", explicitOnly) {
             keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
             keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionIdleExplicitlySet) {
-        setting("maxConnectionIdle", explicitOnly) {
+        applySetting(this, "maxConnectionIdle", explicitOnly) {
             maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionAgeExplicitlySet) {
-        setting("maxConnectionAge", explicitOnly) {
+        applySetting(this, "maxConnectionAge", explicitOnly) {
             maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionAgeGraceExplicitlySet) {
-        setting("maxConnectionAgeGrace", explicitOnly) {
+        applySetting(this, "maxConnectionAgeGrace", explicitOnly) {
             maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     return this
-}
-
-private inline fun ServerBuilder<*>.setting(name: String, wrapUnsupported: Boolean, set: () -> Unit) {
-    try {
-        set()
-    } catch (e: UnsupportedOperationException) {
-        if (!wrapUnsupported) {
-            throw e
-        }
-        throw GrpcUnsupportedSettingException(
-            "The grpc-java builder `${this::class.java.name}` doesn't support `$name`. " +
-                "Remove `$name` from the configuration block.",
-            e,
-        )
-    }
 }
 
 private fun io.grpc.Server.toKotlin(): PlatformServer {

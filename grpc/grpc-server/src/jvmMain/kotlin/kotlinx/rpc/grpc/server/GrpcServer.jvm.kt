@@ -4,7 +4,6 @@
 
 package kotlinx.rpc.grpc.server
 
-import kotlinx.rpc.grpc.GrpcConfigurationException
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.server.internal.applyConfig
 import kotlin.coroutines.CoroutineContext
@@ -28,12 +27,9 @@ import kotlin.coroutines.EmptyCoroutineContext
  * The function applies [configure] to [builder] and then builds the server:
  *
  * - A setting from [configure] replaces the value that [builder] has.
- * - When [configure] doesn't set a size limit or a connection limit, the limit has the value
- *   from [builder]. The limits are [GrpcServerConfiguration.maxInboundMessageSize],
- *   [GrpcServerConfiguration.maxInboundMetadataSize], [GrpcServerConfiguration.maxConnectionIdle],
- *   [GrpcServerConfiguration.maxConnectionAge] and [GrpcServerConfiguration.maxConnectionAgeGrace].
- * - [GrpcServerConfiguration.credentials] must stay `null`, or the function throws
- *   [GrpcConfigurationException]. Set the credentials on [builder].
+ * - A setting that [configure] doesn't set has the value from [builder],
+ *   not the default of [GrpcServerBaseConfiguration].
+ * - [configure] has no credentials. Set them on [builder].
  * - If [builder] doesn't support a setting from [configure], the function throws
  *   [GrpcUnsupportedSettingException].
  *
@@ -46,15 +42,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 public fun GrpcServer(
     builder: io.grpc.ServerBuilder<*>,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: GrpcServerConfiguration.() -> Unit = {},
+    configure: GrpcServerBaseConfiguration.() -> Unit = {},
 ): GrpcServer {
-    val config = GrpcServerConfiguration().apply(configure)
-    if (config.credentials != null) {
-        throw GrpcConfigurationException(
-            "A server from a grpc-java `ServerBuilder` doesn't accept `credentials`. " +
-                "Set the credentials on the builder."
-        )
-    }
+    val config = GrpcServerBaseConfiguration().apply(configure)
 
     return buildGrpcServer(builder.applyConfig(config, explicitOnly = true), config, parentContext)
 }

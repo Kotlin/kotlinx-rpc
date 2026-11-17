@@ -179,18 +179,17 @@ private fun GrpcClient(
 }
 
 /**
- * Configuration class for a gRPC client, providing customization options
- * for client behavior, including interceptors, credentials, marshaller resolution,
- * and authority overrides.
+ * The gRPC client settings that every `GrpcClient` factory accepts.
  *
- * @see credentials
- * @see overrideAuthority
- * @see intercept
+ * A factory that takes a ready channel builder accepts only these settings,
+ * because the builder already has the transport credentials.
+ *
+ * @see GrpcClientConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-public class GrpcClientConfiguration internal constructor() {
+public open class GrpcClientBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
-    internal var keepAlive: KeepAlive? = null
+    internal var keepAlive: GrpcClientConfiguration.KeepAlive? = null
     internal var isMaxInboundMessageSizeExplicitlySet = false
     internal var isMaxInboundMetadataSizeExplicitlySet = false
     internal var isIdleTimeoutExplicitlySet = false
@@ -209,28 +208,6 @@ public class GrpcClientConfiguration internal constructor() {
     public var messageMarshallerResolver: GrpcMarshallerResolver = GrpcEmptyMarshallerResolver
 
     public var marshallerConfig: GrpcMarshallerConfig? = null
-
-    /**
-     * Configures the client credentials used for secure gRPC requests made by the client.
-     *
-     * By default, the client uses default TLS credentials.
-     * To use custom TLS credentials, use the [tls] constructor function which returns a
-     * [GrpcTlsClientCredentials] instance.
-     *
-     * To use plaintext communication, use the [plaintext] constructor function.
-     * Should only be used for testing or for APIs where the use of such API or
-     * the data exchanged is not sensitive.
-     *
-     * ```
-     * GrpcClient("localhost", 50051) {
-     *     credentials = plaintext() // for testing purposes only!
-     * }
-     * ```
-     *
-     * @see tls
-     * @see plaintext
-     */
-    public var credentials: GrpcClientCredentials? = null
 
     /**
      * Overrides the authority used with TLS and HTTP virtual hosting.
@@ -350,6 +327,76 @@ public class GrpcClientConfiguration internal constructor() {
     }
 
     /**
+     * Configures keep-alive settings for the gRPC client.
+     *
+     * Keep-alive allows you to fine-tune the behavior of the client to ensure the connection
+     * between the client and server remains active according to specific parameters.
+     *
+     * By default, keep-alive is disabled.
+     *
+     * ```
+     * GrpcClient("localhost", 50051) {
+     *     keepAlive {
+     *          time = 10.seconds
+     *          timeout = 20.seconds
+     *          withoutCalls = false
+     *     }
+     * }
+     * ```
+     *
+     * @param configure A lambda to apply custom configurations to the [GrpcClientConfiguration.KeepAlive] instance.
+     * The [GrpcClientConfiguration.KeepAlive] settings include:
+     * - `time`: The maximum amount of time that the channel can be idle before a keep-alive
+     *   ping is sent.
+     * - `timeout`: The time allowed for a keep-alive ping to complete.
+     * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
+     *   RPCs on the connection.
+     *
+     * Finite keep-alive intervals must be at least 10 seconds, and finite response timeouts
+     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
+     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
+     *
+     * @see GrpcClientConfiguration.KeepAlive
+     */
+    public fun keepAlive(configure: GrpcClientConfiguration.KeepAlive.() -> Unit) {
+        keepAlive = GrpcClientConfiguration.KeepAlive().apply(configure)
+    }
+}
+
+/**
+ * Configuration class for a gRPC client, providing customization options
+ * for client behavior, including interceptors, credentials, marshaller resolution,
+ * and authority overrides.
+ *
+ * @see credentials
+ * @see overrideAuthority
+ * @see intercept
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConfiguration() {
+    /**
+     * Configures the client credentials used for secure gRPC requests made by the client.
+     *
+     * By default, the client uses default TLS credentials.
+     * To use custom TLS credentials, use the [tls] constructor function which returns a
+     * [GrpcTlsClientCredentials] instance.
+     *
+     * To use plaintext communication, use the [plaintext] constructor function.
+     * Should only be used for testing or for APIs where the use of such API or
+     * the data exchanged is not sensitive.
+     *
+     * ```
+     * GrpcClient("localhost", 50051) {
+     *     credentials = plaintext() // for testing purposes only!
+     * }
+     * ```
+     *
+     * @see tls
+     * @see plaintext
+     */
+    public var credentials: GrpcClientCredentials? = null
+
+    /**
      * Provides insecure client credentials for the gRPC client configuration.
      *
      * Typically, this would be used for local development, testing, or other
@@ -378,42 +425,6 @@ public class GrpcClientConfiguration internal constructor() {
      */
     public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcClientCredentials =
         GrpcTlsClientCredentials(configure)
-
-    /**
-     * Configures keep-alive settings for the gRPC client.
-     *
-     * Keep-alive allows you to fine-tune the behavior of the client to ensure the connection
-     * between the client and server remains active according to specific parameters.
-     *
-     * By default, keep-alive is disabled.
-     *
-     * ```
-     * GrpcClient("localhost", 50051) {
-     *     keepAlive {
-     *          time = 10.seconds
-     *          timeout = 20.seconds
-     *          withoutCalls = false
-     *     }
-     * }
-     * ```
-     *
-     * @param configure A lambda to apply custom configurations to the [KeepAlive] instance.
-     * The [KeepAlive] settings include:
-     * - `time`: The maximum amount of time that the channel can be idle before a keep-alive
-     *   ping is sent.
-     * - `timeout`: The time allowed for a keep-alive ping to complete.
-     * - `withoutCalls`: Whether to send keep-alive pings even when there are no outstanding
-     *   RPCs on the connection.
-     *
-     * Finite keep-alive intervals must be at least 10 seconds, and finite response timeouts
-     * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
-     * milliseconds. [Duration.INFINITE] is also accepted for either duration.
-     *
-     * @see KeepAlive
-     */
-    public fun keepAlive(configure: KeepAlive.() -> Unit) {
-        keepAlive = KeepAlive().apply(configure)
-    }
 
     /**
      * Represents keep-alive settings for a gRPC client connection.
