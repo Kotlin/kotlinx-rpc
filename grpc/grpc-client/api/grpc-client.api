@@ -50,6 +50,7 @@ public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun clearIdleTimeout ()V
 	public final fun clearMaxInboundMessageSize ()V
 	public final fun clearMaxInboundMetadataSize ()V
+	public final fun getCallCredentials ()Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
 	public final fun getIdleTimeout-UwyO8pc ()J
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
 	public final fun getMaxInboundMessageSize ()I
@@ -59,6 +60,7 @@ public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun getUserAgent ()Ljava/lang/String;
 	public final fun intercept ([Lkotlinx/rpc/grpc/client/GrpcClientInterceptor;)V
 	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
+	public final fun setCallCredentials (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)V
 	public final fun setIdleTimeout-LRDsOJo (J)V
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
 	public final fun setMaxInboundMessageSize (I)V
