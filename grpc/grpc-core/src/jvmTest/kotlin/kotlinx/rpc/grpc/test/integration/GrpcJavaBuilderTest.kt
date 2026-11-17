@@ -4,6 +4,7 @@
 
 package kotlinx.rpc.grpc.test.integration
 
+import io.grpc.ForwardingChannelBuilder2
 import io.grpc.ManagedChannelBuilder
 import io.grpc.ServerBuilder
 import io.grpc.inprocess.InProcessChannelBuilder
@@ -12,8 +13,10 @@ import io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.NettyServerBuilder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.rpc.grpc.GrpcConfigurationException
 import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcClient
 import kotlinx.rpc.grpc.client.GrpcClientCallScope
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
@@ -32,9 +35,12 @@ import kotlinx.rpc.grpc.test.assertGrpcFailure
 import kotlinx.rpc.grpc.test.invoke
 import kotlinx.rpc.registerService
 import kotlinx.rpc.withService
+import java.util.concurrent.TimeUnit
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.seconds
 
 class GrpcJavaBuilderTest {
@@ -94,20 +100,44 @@ class GrpcJavaBuilderTest {
 
     @Test
     fun `client credentials in the configuration - should fail`() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<GrpcConfigurationException> {
             GrpcClient(InProcessChannelBuilder.forName("unused")) {
                 credentials = plaintext()
             }
         }
+        assertContains(error.message.orEmpty(), "`credentials`")
     }
 
     @Test
     fun `server credentials in the configuration - should fail`() {
-        assertFailsWith<IllegalArgumentException> {
+        val error = assertFailsWith<GrpcConfigurationException> {
             GrpcServer(InProcessServerBuilder.forName("unused")) {
                 credentials = GrpcInsecureServerCredentials.create()
             }
         }
+        assertContains(error.message.orEmpty(), "`credentials`")
+    }
+
+    @Test
+    fun `client setting that the builder does not support - should fail`() {
+        val error = assertFailsWith<GrpcUnsupportedSettingException> {
+            GrpcClient(NoKeepAliveChannelBuilder(InProcessChannelBuilder.forName("unused"))) {
+                keepAlive { time = 10.seconds }
+            }
+        }
+        assertContains(error.message.orEmpty(), "`keepAlive`")
+        assertIs<UnsupportedOperationException>(error.cause)
+    }
+
+    @Test
+    fun `server setting that the builder does not support - should fail`() {
+        val error = assertFailsWith<GrpcUnsupportedSettingException> {
+            GrpcServer(InProcessServerBuilder.forName("unused")) {
+                maxConnectionIdle = 10.seconds
+            }
+        }
+        assertContains(error.message.orEmpty(), "`maxConnectionIdle`")
+        assertIs<UnsupportedOperationException>(error.cause)
     }
 
     @Test
@@ -169,6 +199,15 @@ class GrpcJavaBuilderTest {
 
     private suspend fun GrpcClient.echo(message: String): String =
         withService<EchoService>().unaryEcho(EchoRequest { this.message = message }).message
+
+    private class NoKeepAliveChannelBuilder(
+        private val delegate: ManagedChannelBuilder<*>,
+    ) : ForwardingChannelBuilder2<NoKeepAliveChannelBuilder>() {
+        override fun delegate(): ManagedChannelBuilder<*> = delegate
+
+        override fun keepAliveTime(keepAliveTime: Long, timeUnit: TimeUnit): NoKeepAliveChannelBuilder =
+            throw UnsupportedOperationException()
+    }
 
     companion object {
         private const val SMALL_LIMIT = 128

@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.client
 
+import kotlinx.rpc.grpc.GrpcConfigurationException
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.toKotlin
 
@@ -27,11 +29,11 @@ import kotlinx.rpc.grpc.client.internal.toKotlin
  *   [GrpcClientConfiguration.maxInboundMetadataSize] or [GrpcClientConfiguration.idleTimeout],
  *   the setting has the value from [builder].
  * - [GrpcClientConfiguration.credentials] must stay `null`, or the function throws
- *   [IllegalArgumentException]. Set the transport credentials on [builder].
+ *   [GrpcConfigurationException]. Set the transport credentials on [builder].
  *   To send call credentials with every call, add them to [GrpcCallOptions.callCredentials]
  *   in a [GrpcClientInterceptor].
- * - If [builder] doesn't support a setting from [configure], [builder] throws
- *   [UnsupportedOperationException].
+ * - If [builder] doesn't support a setting from [configure], the function throws
+ *   [GrpcUnsupportedSettingException].
  *
  * [GrpcClient.shutdown] shuts down the channel.
  * An executor or an event loop group that the caller gave to [builder] stays open.
@@ -41,9 +43,11 @@ public fun GrpcClient(
     configure: GrpcClientConfiguration.() -> Unit = {},
 ): GrpcClient {
     val config = GrpcClientConfiguration().apply(configure)
-    require(config.credentials == null) {
-        "A client from a grpc-java `ManagedChannelBuilder` doesn't accept `credentials`. " +
-            "Set the credentials on the builder."
+    if (config.credentials != null) {
+        throw GrpcConfigurationException(
+            "A client from a grpc-java `ManagedChannelBuilder` doesn't accept `credentials`. " +
+                "Set the credentials on the builder."
+        )
     }
 
     return GrpcClient(

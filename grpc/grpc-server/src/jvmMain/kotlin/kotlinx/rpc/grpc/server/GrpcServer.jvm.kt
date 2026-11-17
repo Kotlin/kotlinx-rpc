@@ -4,6 +4,8 @@
 
 package kotlinx.rpc.grpc.server
 
+import kotlinx.rpc.grpc.GrpcConfigurationException
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.server.internal.applyConfig
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -31,9 +33,9 @@ import kotlin.coroutines.EmptyCoroutineContext
  *   [GrpcServerConfiguration.maxInboundMetadataSize], [GrpcServerConfiguration.maxConnectionIdle],
  *   [GrpcServerConfiguration.maxConnectionAge] and [GrpcServerConfiguration.maxConnectionAgeGrace].
  * - [GrpcServerConfiguration.credentials] must stay `null`, or the function throws
- *   [IllegalArgumentException]. Set the credentials on [builder].
- * - If [builder] doesn't support a setting from [configure], [builder] throws
- *   [UnsupportedOperationException].
+ *   [GrpcConfigurationException]. Set the credentials on [builder].
+ * - If [builder] doesn't support a setting from [configure], the function throws
+ *   [GrpcUnsupportedSettingException].
  *
  * To start the server, call [GrpcServer.start].
  * [GrpcServer.shutdown] shuts down the server.
@@ -47,9 +49,11 @@ public fun GrpcServer(
     configure: GrpcServerConfiguration.() -> Unit = {},
 ): GrpcServer {
     val config = GrpcServerConfiguration().apply(configure)
-    require(config.credentials == null) {
-        "A server from a grpc-java `ServerBuilder` doesn't accept `credentials`. " +
-            "Set the credentials on the builder."
+    if (config.credentials != null) {
+        throw GrpcConfigurationException(
+            "A server from a grpc-java `ServerBuilder` doesn't accept `credentials`. " +
+                "Set the credentials on the builder."
+        )
     }
 
     return buildGrpcServer(builder.applyConfig(config, explicitOnly = true), config, parentContext)
