@@ -1,9 +1,10 @@
 public final class kotlinx/rpc/grpc/client/CredentialsKt {
 	public static final fun combine (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public static final fun getCallCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
 	public static final fun plus (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
 }
 
-public abstract interface class kotlinx/rpc/grpc/client/GrpcCallCredentials {
+public abstract interface class kotlinx/rpc/grpc/client/GrpcCallCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
 	public abstract fun getRequestMetadata (Lkotlinx/rpc/grpc/client/GrpcCallCredentials$Context;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public fun getRequiresTransportSecurity ()Z
 }
@@ -50,7 +51,6 @@ public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun clearIdleTimeout ()V
 	public final fun clearMaxInboundMessageSize ()V
 	public final fun clearMaxInboundMetadataSize ()V
-	public final fun getCallCredentials ()Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
 	public final fun getIdleTimeout-UwyO8pc ()J
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
 	public final fun getMaxInboundMessageSize ()I
@@ -60,7 +60,6 @@ public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun getUserAgent ()Ljava/lang/String;
 	public final fun intercept ([Lkotlinx/rpc/grpc/client/GrpcClientInterceptor;)V
 	public final fun keepAlive (Lkotlin/jvm/functions/Function1;)V
-	public final fun setCallCredentials (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)V
 	public final fun setIdleTimeout-LRDsOJo (J)V
 	public final fun setMarshallerConfig (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;)V
 	public final fun setMaxInboundMessageSize (I)V
@@ -85,11 +84,16 @@ public final class kotlinx/rpc/grpc/client/GrpcClientCallScope$DefaultImpls {
 	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/GrpcClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
 }
 
+public final class kotlinx/rpc/grpc/client/GrpcClientChannelBuilderConfiguration : kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
+	public final fun getCallCredentials ()Lkotlinx/rpc/grpc/client/GrpcCallCredentials;
+	public final fun setCallCredentials (Lkotlinx/rpc/grpc/client/GrpcCallCredentials;)V
+}
+
 public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration : kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun getCredentials ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
-	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcTransportCredentials;
 	public final fun setCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)V
-	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcClientCredentials;
+	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcTransportCredentials;
 }
 
 public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration$KeepAlive {
@@ -124,11 +128,11 @@ public final class kotlinx/rpc/grpc/client/GrpcEmptyCallCredentials : kotlinx/rp
 	public fun getRequiresTransportSecurity ()Z
 }
 
-public final class kotlinx/rpc/grpc/client/GrpcInsecureClientCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
+public final class kotlinx/rpc/grpc/client/GrpcInsecureClientCredentials : kotlinx/rpc/grpc/client/GrpcTransportCredentials {
 	public fun <init> ()V
 }
 
-public final class kotlinx/rpc/grpc/client/GrpcTlsClientCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
+public final class kotlinx/rpc/grpc/client/GrpcTlsClientCredentials : kotlinx/rpc/grpc/client/GrpcTransportCredentials {
 	public fun <init> ()V
 	public fun <init> (Lkotlin/jvm/functions/Function1;)V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
@@ -137,5 +141,8 @@ public final class kotlinx/rpc/grpc/client/GrpcTlsClientCredentials : kotlinx/rp
 public abstract interface class kotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder {
 	public abstract fun keyManager (Ljava/lang/String;Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
 	public abstract fun trustManager (Ljava/lang/String;)Lkotlinx/rpc/grpc/client/GrpcTlsClientCredentialsBuilder;
+}
+
+public abstract interface class kotlinx/rpc/grpc/client/GrpcTransportCredentials : kotlinx/rpc/grpc/client/GrpcClientCredentials {
 }
 
