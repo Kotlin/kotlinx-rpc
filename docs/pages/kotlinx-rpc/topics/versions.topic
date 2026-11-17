@@ -86,6 +86,8 @@
                 The JAR is in the artifact with a Kotlin version suffix, for example
                 <code>org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2420:%kotlinx-rpc-version%</code>.
                 The suffix is the Kotlin version that the release was built with, so it can change with each release.
+                <a href="https://github.com/Kotlin/compiler-plugin-dev-kit/issues/100">This issue</a>
+                of the Kotlin Compiler Plugin DevKit tracks the removal of the suffix.
             </p>
             <p>
                 With Maven, Bazel, or the <code>-Xplugin</code> compiler argument, use the artifact with the suffix.
