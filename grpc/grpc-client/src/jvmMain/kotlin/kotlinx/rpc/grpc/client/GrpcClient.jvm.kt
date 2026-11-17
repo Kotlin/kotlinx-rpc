@@ -7,6 +7,8 @@ package kotlinx.rpc.grpc.client
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.internal.applyConfig
 import kotlinx.rpc.grpc.client.internal.toKotlin
+import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
+import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
  * Creates a gRPC client on the channel that [builder] builds.
@@ -35,9 +37,9 @@ import kotlinx.rpc.grpc.client.internal.toKotlin
  */
 public fun GrpcClient(
     builder: io.grpc.ManagedChannelBuilder<*>,
-    configure: GrpcClientBaseConfiguration.() -> Unit = {},
+    configure: GrpcClientChannelBuilderConfiguration.() -> Unit = {},
 ): GrpcClient {
-    val config = GrpcClientBaseConfiguration().apply(configure)
+    val config = GrpcClientChannelBuilderConfiguration().apply(configure)
 
     return GrpcClient(
         channel = builder.applyConfig(config, explicitOnly = true).build().toKotlin(),
@@ -46,4 +48,30 @@ public fun GrpcClient(
         callCredentials = config.callCredentials,
         marshallerConfig = config.marshallerConfig,
     )
+}
+
+/**
+ * The settings of a `GrpcClient` that gets its channel from a grpc-java `ManagedChannelBuilder`.
+ *
+ * The builder already has the transport credentials, so this configuration has only [callCredentials].
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcClientChannelBuilderConfiguration internal constructor() : GrpcClientBaseConfiguration() {
+    /**
+     * The call credentials that the client sends with every call.
+     *
+     * The default is [GrpcEmptyCallCredentials], which doesn't send anything.
+     * To send more than one, combine them with `+`.
+     * To use the call credentials of a value that also has transport credentials,
+     * read its [GrpcClientCredentials.callCredentials].
+     *
+     * ```kotlin
+     * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
+     *
+     * GrpcClient(channelBuilder) {
+     *     callCredentials = credentials.callCredentials
+     * }
+     * ```
+     */
+    public var callCredentials: GrpcCallCredentials = GrpcEmptyCallCredentials
 }

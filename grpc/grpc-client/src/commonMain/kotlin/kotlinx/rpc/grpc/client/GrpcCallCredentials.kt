@@ -73,7 +73,7 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * @see combine
  */
 @IntentionallyOpen(reason = ExemptionReason.API_DESIGN)
-public interface GrpcCallCredentials {
+public interface GrpcCallCredentials : GrpcClientCredentials {
     /**
      * Retrieves authentication metadata for the gRPC call.
      *

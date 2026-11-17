@@ -4,40 +4,44 @@
 
 package kotlinx.rpc.grpc.client
 
+import kotlinx.rpc.grpc.internal.internalError
 import kotlinx.rpc.internal.utils.InternalForSubclassingRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHashCodeOrToString
 
 /**
- * Base class for client channel credentials.
+ * The credentials of a gRPC client.
  *
- * Client credentials define the security mechanism used to establish a connection to the gRPC server.
- * Unlike [GrpcCallCredentials] which operate at the application layer for per-call authentication,
- * client credentials establish the transport layer security.
+ * The credentials have two parts, and a value has one of them or both:
  *
- * ## Types of Credentials
+ * - [GrpcTransportCredentials]: the security of the connection, plaintext or TLS.
+ * - [GrpcCallCredentials]: the authentication data that the client sends with each call.
  *
- * - **[GrpcInsecureClientCredentials]**: No transport security (plaintext)
- * - **[GrpcTlsClientCredentials]**: TLS/SSL transport security with optional mutual TLS (mTLS)
- *
- * Client credentials can be combined with call credentials using the [plus] operator:
+ * To make a value with both parts, combine them with the [plus] operator:
  * ```kotlin
  * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
  * ```
  *
- * @see GrpcTlsClientCredentials
- * @see GrpcInsecureClientCredentials
- * @see GrpcCallCredentials
+ * @see GrpcClientConfiguration.credentials
+ * @see callCredentials
  */
 @SubclassOptInRequired(InternalForSubclassingRpcApi::class)
 public interface GrpcClientCredentials
 
 /**
- * Combines client credentials with call credentials.
+ * The credentials that set the security of the connection to the gRPC server.
  *
- * This operator allows attaching per-call authentication credentials to a client credential,
- * enabling both transport security (via [GrpcClientCredentials]) and application-layer authentication
- * (via [GrpcCallCredentials]) to be used together for all requests of the client.
+ * - [GrpcInsecureClientCredentials]: no transport security (plaintext).
+ * - [GrpcTlsClientCredentials]: TLS, with optional mutual TLS (mTLS).
+ */
+@SubclassOptInRequired(InternalForSubclassingRpcApi::class)
+public interface GrpcTransportCredentials : GrpcClientCredentials
+
+/**
+ * Adds call credentials to these credentials.
+ *
+ * The result has the transport credentials of the receiver, and the call credentials of
+ * the receiver followed by [other].
  *
  * ## Example
  *
@@ -53,23 +57,48 @@ public interface GrpcClientCredentials
  * }
  * ```
  *
- * @param other The call credentials to combine with this client credential.
- * @return A new credential that includes both client and call credentials.
  * @see combine
  * @see GrpcCallCredentials
  */
 public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): GrpcClientCredentials {
-    return GrpcCombinedClientCredentials.create(this, other)
+    val transport = transportCredentials ?: return callCredentials + other
+    return GrpcCombinedClientCredentials(transport, callCredentials + other)
 }
 
 /**
- * Combines client credentials with call credentials.
+ * The call credentials of these credentials.
  *
- * This is an alias for the [plus] operator, providing a more explicit method name
- * for combining credentials.
+ * Use this property to give the call credentials of a combined value to a client that
+ * doesn't take transport credentials.
+ * Returns [GrpcEmptyCallCredentials] when the credentials have only transport credentials.
  *
- * @param other The call credentials to combine with this client credential.
- * @return A new credential that includes both client and call credentials.
+ * ```kotlin
+ * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
+ * val bearerToken = credentials.callCredentials
+ * ```
+ */
+public val GrpcClientCredentials.callCredentials: GrpcCallCredentials
+    get() = when (this) {
+        is GrpcCombinedClientCredentials -> call
+        is GrpcCallCredentials -> this
+        is GrpcTransportCredentials -> GrpcEmptyCallCredentials
+        else -> internalError("Unknown client credentials type: $this")
+    }
+
+/**
+ * The transport credentials of these credentials, or `null` when they have only call credentials.
+ */
+internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredentials?
+    get() = when (this) {
+        is GrpcCombinedClientCredentials -> transport
+        is GrpcTransportCredentials -> this
+        is GrpcCallCredentials -> null
+        else -> internalError("Unknown client credentials type: $this")
+    }
+
+/**
+ * Adds call credentials to these credentials. The same as the [plus] operator.
+ *
  * @see plus
  */
 public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClientCredentials = this + other
@@ -94,7 +123,7 @@ public fun GrpcClientCredentials.combine(other: GrpcCallCredentials): GrpcClient
  *
  * @see GrpcTlsClientCredentials
  */
-public class GrpcInsecureClientCredentials : GrpcClientCredentials
+public class GrpcInsecureClientCredentials : GrpcTransportCredentials
 
 /**
  * TLS/SSL credentials for secure transport.
@@ -145,7 +174,7 @@ public class GrpcInsecureClientCredentials : GrpcClientCredentials
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.API_DESIGN)
 public class GrpcTlsClientCredentials(
     internal val configure: GrpcTlsClientCredentialsBuilder.() -> Unit = {}
-) : GrpcClientCredentials
+) : GrpcTransportCredentials
 
 /**
  * Builder for configuring [GrpcTlsClientCredentials].
@@ -220,36 +249,10 @@ public interface GrpcTlsClientCredentialsBuilder {
 }
 
 /**
- * Returns the unflattened [GrpcClientCredentials] in case of a [GrpcCombinedClientCredentials].
+ * Transport credentials together with call credentials. The official gRPC libraries have the same
+ * combination.
  */
-internal val GrpcClientCredentials.realClientCredentials
-    get() = if (this is GrpcCombinedClientCredentials) { clientCredentials } else { this }
-
-/**
- * Returns the potential [GrpcCallCredentials] in case of a [GrpcCombinedClientCredentials].
- */
-internal val GrpcClientCredentials.realCallCredentials
-    get() = if (this is GrpcCombinedClientCredentials) { callCredentials } else { GrpcEmptyCallCredentials }
-
-/**
- * Combines a [GrpcClientCredentials] with a [GrpcCallCredentials], which can be expected by the
- * [GrpcClient] at configuration. This matches the API semantics of the official gRPC libraries.
- */
-internal class GrpcCombinedClientCredentials private constructor(
-    internal val clientCredentials: GrpcClientCredentials,
-    internal val callCredentials: GrpcCallCredentials,
-) : GrpcClientCredentials {
-
-    companion object {
-        internal fun create(
-            clientCredentials: GrpcClientCredentials,
-            callCredentials: GrpcCallCredentials
-        ): GrpcCombinedClientCredentials {
-            // flat nested combined credentials
-            return GrpcCombinedClientCredentials(
-                clientCredentials.realClientCredentials,
-                clientCredentials.realCallCredentials.combine(callCredentials)
-            )
-        }
-    }
-}
+internal class GrpcCombinedClientCredentials(
+    val transport: GrpcTransportCredentials,
+    val call: GrpcCallCredentials,
+) : GrpcClientCredentials

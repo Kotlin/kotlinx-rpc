@@ -18,7 +18,10 @@ import kotlinx.rpc.grpc.GrpcMetadata
 import kotlinx.rpc.grpc.GrpcStatusCode
 import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcClient
-import kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration
+import kotlinx.rpc.grpc.client.GrpcClientChannelBuilderConfiguration
+import kotlinx.rpc.grpc.client.GrpcTlsClientCredentials
+import kotlinx.rpc.grpc.client.callCredentials
+import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.server.GrpcServer
 import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
@@ -152,7 +155,8 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
-    fun `call credentials from the configuration - should reach the server`() {
+    fun `call credentials of a combined value - should reach the server`() {
+        val shared = GrpcTlsClientCredentials() + NoTLSBearerTokenCredentials()
         var serverHeaders: GrpcMetadata? = null
         val name = InProcessServerBuilder.generateName()
         runBuilderTest(
@@ -169,7 +173,7 @@ class GrpcJavaBuilderTest {
                 })
             },
             clientConfiguration = {
-                callCredentials = NoTLSBearerTokenCredentials()
+                callCredentials = shared.callCredentials
             },
         ) { _, client ->
             client.echo("Echo")
@@ -182,7 +186,7 @@ class GrpcJavaBuilderTest {
         serverBuilder: ServerBuilder<*> = NettyServerBuilder.forPort(0),
         clientBuilder: (GrpcServer) -> ManagedChannelBuilder<*> = ::nettyChannelBuilder,
         serverConfiguration: GrpcServerBaseConfiguration.() -> Unit = {},
-        clientConfiguration: GrpcClientBaseConfiguration.() -> Unit = {},
+        clientConfiguration: GrpcClientChannelBuilderConfiguration.() -> Unit = {},
         test: suspend (GrpcServer, GrpcClient) -> Unit,
     ) = runBlocking {
         val server = GrpcServer(serverBuilder) {
