@@ -50,9 +50,15 @@ The [commonMain](../compiler-plugin/src/commonMain/kotlin) source set has the ma
 It compiles on all Kotlin versions.
 
 Rules for compiler API breaking changes:
-- Declare the functionality as an `expect` function in `commonMain`
-(see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt),
-[IrCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrCompat.kt)
+- Check the DevKit runtime library first. It covers some changes in two ways:
+  - Functions with the `Compat` suffix, for example `fakeElementCompat`. See
+  [DevKitCompat.kt](https://github.com/Kotlin/compiler-plugin-dev-kit/blob/main/compiler-plugin-runtime/src/commonMain/kotlin/org/jetbrains/kotlin/compiler/plugin/devkit/DevKitCompat.kt).
+  - Backports. The library declares a new compiler API, with the same package and name, for the Kotlin versions
+  that don't have it. For example, it declares `IrAnnotation` and `irAnnotation` for the versions before 2.3.20.
+  `commonMain` calls the new API on all versions. The backports are in the `pre<version>DevMain` source sets of
+  [compiler-plugin-runtime](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime/src).
+- If the DevKit doesn't cover the change, declare the functionality as an `expect` function in `commonMain`
+(see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt)
 and [IrLookupCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrLookupCompat.kt)).
 - Write one `actual` function for the versions before the change and one for the versions from the change.
 They go to the `pre<version>DevMain` and `post<version>DevMain` source sets,
@@ -62,8 +68,6 @@ for example [pre24DevMain](../compiler-plugin/src/pre24DevMain/kotlin) and
 in [build.gradle.kts](../compiler-plugin/build.gradle.kts).
 - `splitDev(2, 4)` puts all builds of 2.4.0, including the `-dev-` and IDE builds, into the `post` group.
 If the change is in the middle of the `-dev-` builds, use `split("2.4.0-dev-1234")` with the first build that has the change.
-- The DevKit has functions for some changes, for example `fakeElementCompat`. Check its
-[DevKitCompat.kt](https://github.com/Kotlin/compiler-plugin-dev-kit/blob/main/compiler-plugin-runtime/src/commonMain/kotlin/org/jetbrains/kotlin/compiler/plugin/devkit/DevKitCompat.kt) first.
 
 #### Frontend FIR
 

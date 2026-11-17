@@ -28,16 +28,22 @@ The `expect` declarations:
 
 | File in `commonMain/kotlin/kotlinx/rpc/codegen` | API |
 |---|---|
-| `IrCompat.kt` | IR backend |
 | `IrLookupCompat.kt` | Lookup of classes and functions in the IR backend |
 | `FirCompat.kt` | FIR frontend |
 | `MessageCollectorCompat.kt` | `MessageCollector` configuration key |
 
 The FIR code and the IR code call the `expect` functions directly.
 
-The DevKit runtime library has `expect`/`actual` functions for some changes, for example
-`fakeElementCompat` and `pluginGeneratedSourceElementKind`
-(package `org.jetbrains.kotlin.compiler.plugin.devkit`). Use them when they fit.
+The DevKit runtime library covers some changes. Check it before you add an `expect` declaration:
+
+- Functions for an API that differs, for example `fakeElementCompat` and `pluginGeneratedSourceElementKind`
+  (package `org.jetbrains.kotlin.compiler.plugin.devkit`).
+- Backports of a new compiler API to the Kotlin versions that don't have it. A backport has the package and
+  the name of the compiler declaration, so `commonMain` calls the new API on all versions.
+  For example, `IrAnnotation` and `IrBuilder.irAnnotation` exist from Kotlin 2.3.20, and the library declares
+  them for the versions before 2.3.20. The `pre<V>DevMain` source sets of
+  [compiler-plugin-runtime](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime/src)
+  have the backports.
 
 ## Pattern: a new Kotlin version changes an API
 

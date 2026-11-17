@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.ir.builders.declarations.addFunction
 import org.jetbrains.kotlin.ir.builders.declarations.addProperty
 import org.jetbrains.kotlin.ir.builders.declarations.addValueParameter
 import org.jetbrains.kotlin.ir.builders.declarations.buildFun
+import org.jetbrains.kotlin.ir.builders.irAnnotation
 import org.jetbrains.kotlin.ir.builders.irAs
 import org.jetbrains.kotlin.ir.builders.irBlock
 import org.jetbrains.kotlin.ir.builders.irBlockBody
@@ -89,8 +90,6 @@ import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import kotlin.properties.Delegates
-import kotlinx.rpc.codegen.addAnnotationCompat
-import kotlinx.rpc.codegen.irAnnotationCompat
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.ir.util.isNullable
 
@@ -1353,29 +1352,24 @@ internal class RpcStubGenerator(
     private fun addWithServiceDescriptorAnnotation() {
         val service = declaration.service
 
-        val annotation = irAnnotationCompat(
-            startOffset = service.startOffset,
-            endOffset = service.endOffset,
-            type = ctx.withServiceDescriptor.defaultType,
-            symbol = ctx.withServiceDescriptor.constructors.single(),
-            typeArgumentsCount = 0,
-            constructorTypeArgumentsCount = 0,
-        ).apply {
-            val companionObjectType = stubCompanionObject.defaultType
-            arguments {
-                values {
-                    +IrClassReferenceImpl(
-                        startOffset = startOffset,
-                        endOffset = endOffset,
-                        type = ctx.irBuiltIns.kClassClass.typeWith(companionObjectType),
-                        symbol = stubCompanionObject,
-                        classType = companionObjectType,
-                    )
+        val annotation = irBuilder(ctx.pluginContext, service.symbol)
+            .irAnnotation(ctx.withServiceDescriptor.constructors.single())
+            .apply {
+                val companionObjectType = stubCompanionObject.defaultType
+                arguments {
+                    values {
+                        +IrClassReferenceImpl(
+                            startOffset = startOffset,
+                            endOffset = endOffset,
+                            type = ctx.irBuiltIns.kClassClass.typeWith(companionObjectType),
+                            symbol = stubCompanionObject,
+                            classType = companionObjectType,
+                        )
+                    }
                 }
             }
-        }
 
-        service.addAnnotationCompat(annotation)
+        service.annotations += annotation
     }
 
     /**

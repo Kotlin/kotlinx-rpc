@@ -5,6 +5,7 @@
 package kotlinx.rpc.codegen.extension
 
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.ir.builders.irAnnotation
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.expressions.impl.IrClassReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
@@ -14,9 +15,6 @@ import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.ir.util.companionObject
 import org.jetbrains.kotlin.ir.util.constructors
 import org.jetbrains.kotlin.ir.util.defaultType
-import kotlinx.rpc.codegen.addAnnotationCompat
-import kotlinx.rpc.codegen.addMetadataVisibleAnnotationCompat
-import kotlinx.rpc.codegen.irAnnotationCompat
 
 internal class ProtoDeclaration(
     val message: IrClass,
@@ -92,39 +90,37 @@ internal class ProtoDescriptorGenerator(
         val annotationSymbol = ctx.subclassOptInRequired
         val markerClass = ctx.protobufMessagesInheritance
 
-        val annotation = irAnnotationCompat(
-            startOffset = message.startOffset,
-            endOffset = message.endOffset,
-            type = annotationSymbol.defaultType,
-            symbol = annotationSymbol.constructors.single(),
-            typeArgumentsCount = 0,
-            constructorTypeArgumentsCount = 0,
-        ).apply {
-            val markerType = markerClass.defaultType
-            arguments {
-                values {
-                    +IrVarargImpl(
-                        startOffset = message.startOffset,
-                        endOffset = message.endOffset,
-                        type = ctx.irBuiltIns.arrayClass.typeWith(
-                            ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType)
-                        ),
-                        varargElementType = ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType),
-                        elements = listOf(
-                            IrClassReferenceImpl(
-                                startOffset = message.startOffset,
-                                endOffset = message.endOffset,
-                                type = ctx.irBuiltIns.kClassClass.typeWith(markerType),
-                                symbol = markerClass,
-                                classType = markerType,
-                            )
-                        ),
-                    )
+        val annotation = irBuilder(ctx.pluginContext, message.symbol)
+            .irAnnotation(annotationSymbol.constructors.single())
+            .apply {
+                val markerType = markerClass.defaultType
+                arguments {
+                    values {
+                        +IrVarargImpl(
+                            startOffset = message.startOffset,
+                            endOffset = message.endOffset,
+                            type = ctx.irBuiltIns.arrayClass.typeWith(
+                                ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType)
+                            ),
+                            varargElementType = ctx.irBuiltIns.kClassClass.typeWith(ctx.irBuiltIns.annotationType),
+                            elements = listOf(
+                                IrClassReferenceImpl(
+                                    startOffset = message.startOffset,
+                                    endOffset = message.endOffset,
+                                    type = ctx.irBuiltIns.kClassClass.typeWith(markerType),
+                                    symbol = markerClass,
+                                    classType = markerType,
+                                )
+                            ),
+                        )
+                    }
                 }
             }
-        }
 
-        ctx.pluginContext.addMetadataVisibleAnnotationCompat(declaration = message, annotation = annotation)
+        ctx.pluginContext.metadataDeclarationRegistrar.addMetadataVisibleAnnotationsToElement(
+            declaration = message,
+            annotations = listOf(annotation),
+        )
     }
 
     /**
@@ -141,29 +137,24 @@ internal class ProtoDescriptorGenerator(
     ) {
         val message = declaration.message
 
-        val annotation = irAnnotationCompat(
-            startOffset = message.startOffset,
-            endOffset = message.endOffset,
-            type = withSomethingAnnotation.defaultType,
-            symbol = withSomethingAnnotation.constructors.single(),
-            typeArgumentsCount = 0,
-            constructorTypeArgumentsCount = 0,
-        ).apply {
-            val clazz = declaration.somethingClass()
-            val descriptorObjectType = clazz.defaultType
-            arguments {
-                values {
-                    +IrClassReferenceImpl(
-                        startOffset = startOffset,
-                        endOffset = endOffset,
-                        type = ctx.irBuiltIns.kClassClass.typeWith(descriptorObjectType),
-                        symbol = clazz.symbol,
-                        classType = descriptorObjectType,
-                    )
+        val annotation = irBuilder(ctx.pluginContext, message.symbol)
+            .irAnnotation(withSomethingAnnotation.constructors.single())
+            .apply {
+                val clazz = declaration.somethingClass()
+                val descriptorObjectType = clazz.defaultType
+                arguments {
+                    values {
+                        +IrClassReferenceImpl(
+                            startOffset = startOffset,
+                            endOffset = endOffset,
+                            type = ctx.irBuiltIns.kClassClass.typeWith(descriptorObjectType),
+                            symbol = clazz.symbol,
+                            classType = descriptorObjectType,
+                        )
+                    }
                 }
             }
-        }
 
-        message.addAnnotationCompat(annotation)
+        message.annotations += annotation
     }
 }

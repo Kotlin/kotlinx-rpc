@@ -71,7 +71,7 @@ Record the result for each version and present a summary table:
 | Version | Compile | Tests | Errors |
 |---------|---------|-------|--------|
 | 2.3.0   | PASS    | PASS  |        |
-| 2.4.0   | FAIL    |       | 3 errors in IrCompat.post24Dev.kt |
+| 2.4.0   | FAIL    |       | 3 errors in FirCompat.post24Dev.kt |
 ```
 
 If everything passes, report success and stop.
