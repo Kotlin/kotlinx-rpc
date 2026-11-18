@@ -6,10 +6,11 @@ package kotlinx.rpc.grpc.marshaller
 
 import kotlinx.io.Buffer
 import kotlinx.io.Source
-import kotlinx.io.readByteArray
+import kotlinx.rpc.grpc.marshaller.internal.AbstractGrpcMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
+import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.internal.utils.ExperimentalRpcApi
 import org.jetbrains.kotlinx.library.api.watchdog.ExemptionReason
 import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
@@ -20,7 +21,18 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyMutableCollection
 public fun <T> GrpcMarshaller<T>.encodeToByteArray(
     value: T,
     config: GrpcMarshallerConfig? = null,
-): ByteArray = encodeToBuffer(value, config).readByteArray()
+): ByteArray {
+    val message = prepare(value, config)
+    val size = message.size
+    require(size >= 0) {
+        "GrpcEncodedMessage.size must be non-negative, but marshaller $this returned $size."
+    }
+    val bytes = ByteArray(size)
+    val writer = ByteArrayMessageWriter(bytes)
+    message.writeTo(writer)
+    checkMessageWritten(writer)
+    return bytes
+}
 
 /** Encodes [value] into a [Buffer]. */
 @ExperimentalRpcApi
@@ -32,13 +44,17 @@ public fun <T> GrpcMarshaller<T>.encodeToBuffer(
     val buffer = Buffer()
     val writer = BufferMessageWriter(buffer, message.size)
     message.writeTo(writer)
+    checkMessageWritten(writer)
+    return buffer
+}
+
+private fun GrpcMarshaller<*>.checkMessageWritten(writer: AbstractGrpcMessageWriter) {
     check(writer.isComplete) {
         "GrpcEncodedMessage.writeTo for marshaller $this wrote ${writer.written} bytes, " +
             "but declared ${writer.size} bytes (writer failed: ${writer.isFailed}). " +
             "Ensure the message returned by GrpcMarshaller.prepare declares the exact number of bytes " +
             "written by writeTo, and do not catch and ignore write failures."
     }
-    return buffer
 }
 
 /** Decodes a value from [bytes]. */

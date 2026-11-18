@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2023-2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.rpc.protobuf
@@ -46,6 +46,8 @@ public class ProtobufDecodingException : ProtobufException {
                     + "input has been truncated or that an embedded message "
                     + "misreported its own length.")
         )
+
+        internal fun malformedVarint() = ProtobufDecodingException("Decoder encountered a malformed varint.")
 
         internal fun genericParsingError() = ProtobufDecodingException("Failed to parse the message.")
 

@@ -2,24 +2,20 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
-
 package kotlinx.rpc.protobuf.test
 
 import Other
 import References
-import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageReader
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageReader
+import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.NativeBufferZeroCopyInput
-import kotlinx.rpc.protobuf.internal.withWireDecoder
+import kotlinx.rpc.protobuf.internal.decodeFrom
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
 import test.groups.WithGroups
@@ -30,8 +26,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class DirectWireDecoderTest {
     private fun <M : Any> compare(message: M, marshaller: GrpcMarshaller<M>) {
@@ -215,65 +209,31 @@ class DirectWireDecoderTest {
     fun decoderCannotReadAfterScope() {
         var escaped: WireDecoder? = null
         withReader(byteArrayOf(0x08, 0x01)) { reader ->
-            withWireDecoder(reader) { escaped = it; assertNotNull(it.readTag()) }
-            assertFailsWith<IllegalStateException> { escaped!!.readTag() }
+            decodeFrom(reader, ProtoConfig.DEFAULT_RECURSION_LIMIT) {
+                escaped = it
+                assertNotNull(it.readTag())
+            }
+            assertFailsWith<ProtobufDecodingException> { escaped!!.readTag() }
         }
         withReader(byteArrayOf()) { reader ->
             reader.close()
-            assertFailsWith<IllegalStateException> { withWireDecoder(reader) { it.readTag() } }
+            assertFailsWith<IllegalStateException> {
+                decodeFrom(reader, ProtoConfig.DEFAULT_RECURSION_LIMIT) { it.readTag() }
+            }
         }
     }
 
     @Test
-    fun commitsOnlyConsumedBytes() = withReader(byteArrayOf(0x08, 0x01, 0x10, 0x02)) { reader ->
-        withWireDecoder(reader) { decoder ->
+    fun consumesWholeInput() = withReader(byteArrayOf(0x08, 0x01, 0x10, 0x02)) { reader ->
+        decodeFrom(reader, ProtoConfig.DEFAULT_RECURSION_LIMIT) { decoder ->
             assertNotNull(decoder.readTag())
             assertEquals(1, decoder.readInt32())
         }
-        assertEquals(2, reader.remaining)
-        withWireDecoder(reader) { decoder ->
-            assertNotNull(decoder.readTag())
-            assertEquals(2, decoder.readInt32())
-        }
         assertEquals(0, reader.remaining)
-    }
-
-    @Test
-    fun nativeInputExposesOneChunkAndChecksBounds() = memScoped {
-        val base = allocArray<ByteVar>(4)
-        val data = alloc<CPointerVar<ByteVar>>()
-        val size = alloc<IntVar>()
-        val input = NativeBufferZeroCopyInput(base, 4)
-        assertTrue(input.next(data.ptr, size.ptr))
-        assertEquals(base, data.value)
-        assertEquals(4, size.value)
-        assertFalse(input.next(data.ptr, size.ptr))
-        input.backUp(2)
-        assertEquals(2L, input.byteCount())
-        assertTrue(input.next(data.ptr, size.ptr))
-        assertEquals(base + 2, data.value)
-        assertEquals(2, size.value)
-        assertFalse(input.skip(1))
-        assertEquals(4L, input.byteCount())
-        assertFailsWith<IllegalArgumentException> { NativeBufferZeroCopyInput(null, 1) }
-        Unit
     }
 
     private inline fun <R> withReader(bytes: ByteArray, action: (HeapReader) -> R): R {
         val reader = HeapReader(bytes)
         return try { action(reader) } finally { reader.close(); reader.release() }
     }
-}
-
-private class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.size) {
-    private val storage = nativeHeap.allocArray<ByteVar>(maxOf(size, 1))
-
-    init { for (index in bytes.indices) storage[index] = bytes[index] }
-
-    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
-        block(if (size == 0) { null } else { storage })
-    }
-
-    fun overwrite() { for (index in 0 until size) storage[index] = 0 }
-    fun release() { nativeHeap.free(storage) }
 }

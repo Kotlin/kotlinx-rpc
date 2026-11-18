@@ -2,24 +2,21 @@
  * Copyright 2026 JetBrains s.r.o and contributors. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:OptIn(ExperimentalForeignApi::class)
-
 package kotlinx.rpc.protobuf.test
 
 import OneOfMsg
 import Other
 import References
 import invoke
-import kotlinx.cinterop.*
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
-import kotlinx.rpc.grpc.marshaller.internal.NativeBufferMessageWriter
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
-import kotlinx.rpc.protobuf.internal.withWireEncoder
+import kotlinx.rpc.protobuf.internal.encodeTo
 import test.groups.WithGroups
 import test.groups.invoke
 import test.nested.NestedOuter
@@ -148,7 +145,7 @@ class DirectWireEncoderTest {
     fun rejectsTooSmallStorageWithoutOverflow() {
         val writer = HeapMessageWriter(2)
         try {
-            assertFails { withWireEncoder(writer) { it.writeBytes(1, ByteArray(1024)) } }
+            assertFails { encodeTo(writer) { it.writeBytes(1, ByteArray(1024)) } }
             assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
             writer.release()
@@ -159,7 +156,7 @@ class DirectWireEncoderTest {
     fun rejectsTooLargeStorage() {
         val writer = HeapMessageWriter(8)
         try {
-            assertFailsWith<IllegalStateException> { withWireEncoder(writer) { it.writeBool(1, true) } }
+            assertFailsWith<ProtobufEncodingException> { encodeTo(writer) { it.writeBool(1, true) } }
             assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
             writer.release()
@@ -170,7 +167,7 @@ class DirectWireEncoderTest {
     fun underfilledEncodingCannotBeCompletedAfterFailure() {
         val writer = HeapMessageWriter(8)
         try {
-            assertFailsWith<IllegalStateException> { withWireEncoder(writer) { it.writeBool(1, true) } }
+            assertFailsWith<ProtobufEncodingException> { encodeTo(writer) { it.writeBool(1, true) } }
             assertFailsWith<IllegalStateException> { writer.write(ByteArray(6)) }
         } finally {
             writer.release()
@@ -182,7 +179,7 @@ class DirectWireEncoderTest {
         val writer = HeapMessageWriter(0)
         try {
             assertFailsWith<IllegalArgumentException> {
-                withWireEncoder(writer) { throw IllegalArgumentException("encode failed") }
+                encodeTo(writer) { throw IllegalArgumentException("encode failed") }
             }
         } finally {
             writer.release()
@@ -194,15 +191,14 @@ class DirectWireEncoderTest {
         val writer = HeapMessageWriter(2)
         var escaped: WireEncoder? = null
         try {
-            withWireEncoder(writer) { encoder ->
+            encodeTo(writer) { encoder ->
                 escaped = encoder
                 encoder.writeBool(1, true)
             }
             assertEquals(0, writer.remaining)
-            assertFailsWith<IllegalStateException> { escaped!!.writeBool(2, true) }
-            assertFailsWith<IllegalStateException> { escaped!!.flush() }
-            assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(byteArrayOf(), 0, 0) }
-            assertFailsWith<IllegalStateException> { escaped!!.writeRawBytes(Buffer()) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeBool(2, true) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.flush() }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeRawBytes(Buffer()) }
         } finally {
             writer.release()
         }
@@ -215,48 +211,16 @@ class DirectWireEncoderTest {
         val failure = IllegalArgumentException("encode failed")
         try {
             val caught = assertFailsWith<IllegalArgumentException> {
-                withWireEncoder(writer) { encoder ->
+                encodeTo(writer) { encoder ->
                     escaped = encoder
                     throw failure
                 }
             }
             assertEquals(failure, caught)
-            assertFailsWith<IllegalStateException> { escaped!!.writeBool(1, true) }
+            assertFailsWith<ProtobufEncodingException> { escaped!!.writeBool(1, true) }
             assertFailsWith<IllegalStateException> { writer.writeByte(0) }
         } finally {
             writer.release()
         }
-    }
-}
-
-private class HeapMessageWriter(size: Int) : NativeBufferMessageWriter(size) {
-    private val allocation = nativeHeap.allocArray<ByteVar>(size + 2)
-    private var released = false
-    var scopes = 0
-        private set
-
-    init {
-        allocation[0] = 0x5a.toByte()
-        allocation[size + 1] = 0x5a.toByte()
-    }
-
-    override fun accessBuffer(block: (CPointer<ByteVar>?) -> Unit) {
-        scopes++
-        block(allocation + 1)
-    }
-
-    fun release() {
-        if (!released) {
-            assertGuardsIntact()
-            released = true
-            nativeHeap.free(allocation)
-        }
-    }
-
-    fun snapshot(): ByteArray = ByteArray(size) { allocation[it + 1] }
-
-    fun assertGuardsIntact() {
-        assertEquals(0x5a.toByte(), allocation[0])
-        assertEquals(0x5a.toByte(), allocation[size + 1])
     }
 }

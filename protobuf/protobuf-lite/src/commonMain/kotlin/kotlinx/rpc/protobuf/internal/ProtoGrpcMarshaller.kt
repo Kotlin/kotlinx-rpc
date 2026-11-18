@@ -11,6 +11,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMessageReader
 import kotlinx.rpc.grpc.marshaller.GrpcMessageWriter
 import kotlinx.rpc.internal.utils.InternalRpcApi
 import kotlinx.rpc.protobuf.ProtoConfig
+import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /** Size-first gRPC marshaller shared by generated protobuf message marshallers. */
 @InternalRpcApi
@@ -32,22 +33,15 @@ public abstract class ProtoGrpcMarshaller<T : Any, I : InternalMessage> : GrpcMa
         val message = asInternal(value)
         val protoConfig = config as? ProtoConfig
         return ProtoEncodedMessage(message._size) { writer ->
-            checkForPlatformEncodeException {
-                withWireEncoder(writer) { encoder ->
-                    encodeWith(message, encoder, protoConfig)
-                }
-            }
+            encodeTo(writer) { encoder -> encodeWith(message, encoder, protoConfig) }
         }
     }
 
     final override fun decode(reader: GrpcMessageReader, config: GrpcMarshallerConfig?): T {
         val message = newInternal()
         val protoConfig = config as? ProtoConfig
-        withWireDecoder(reader) { decoder ->
-            protoConfig?.let { decoder.recursionLimit = it.recursionLimit }
-            checkForPlatformDecodeException {
-                decodeWith(message, decoder, protoConfig)
-            }
+        decodeFrom(reader, protoConfig?.recursionLimit ?: ProtoConfig.DEFAULT_RECURSION_LIMIT) { decoder ->
+            decodeWith(message, decoder, protoConfig)
         }
         @Suppress("UNCHECKED_CAST")
         return message as T
@@ -61,29 +55,19 @@ private class ProtoEncodedMessage(
     private var used: Boolean = false
 
     override fun writeTo(writer: GrpcMessageWriter) {
-        check(!used) {
-            "GrpcEncodedMessage.writeTo was called more than once on the same protobuf message. " +
-                "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call; " +
-                "do not cache or reuse encoded messages."
+        if (used) {
+            throw ProtobufEncodingException(
+                "GrpcEncodedMessage.writeTo was called more than once on the same protobuf message. " +
+                    "GrpcMarshaller.prepare must return a fresh GrpcEncodedMessage for each call. " +
+                    "Do not cache or reuse encoded messages."
+            )
         }
         used = true
-        require(writer.remaining == size) {
-            "The writer has ${writer.remaining} bytes remaining, but the protobuf message size is $size"
+        if (writer.remaining != size) {
+            throw ProtobufEncodingException(
+                "The writer has ${writer.remaining} bytes remaining, but the protobuf message size is $size."
+            )
         }
         encode(writer)
     }
 }
-
-/** Runs [block] with a platform wire encoder that writes to [writer]. */
-@InternalRpcApi
-public expect inline fun withWireEncoder(
-    writer: GrpcMessageWriter,
-    crossinline block: (WireEncoder) -> Unit,
-)
-
-/** Runs [block] with a platform wire decoder that reads from [reader]. */
-@InternalRpcApi
-public expect inline fun <R> withWireDecoder(
-    reader: GrpcMessageReader,
-    crossinline block: (WireDecoder) -> R,
-): R

@@ -134,6 +134,7 @@ HTTP/2 + Protocol Buffers. Code generated from `.proto` files via `protoc-gen/`.
 
 ## Conventions
 
+- Use library exception types for library failures, including invalid arguments and invalid state. Never introduce `IllegalStateException`, `error()`, `check()`, or `require()` for these failures.
 - All published modules require **explicit return types and visibility**
 - All public types require **KDoc**
 - Internal APIs shared across modules: annotate with `@InternalRpcApi`
