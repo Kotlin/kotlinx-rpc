@@ -20,6 +20,27 @@ configure<DevKitCompilerConfigExtension> {
     configureRpcCompilerPlugin()
 }
 
+// The POM of `kotlin-compiler-tests-for-ide` lists dependencies that aren't published.
+// The exclusion in DevKit doesn't apply to the detached configurations of the IDE import,
+// so each sync requests them from each repository.
+// https://github.com/Kotlin/compiler-plugin-dev-kit/issues/121
+dependencies.components.withModule("org.jetbrains.kotlin:kotlin-compiler-tests-for-ide") {
+    val unpublishedModules = setOf(
+        "tests-spec",
+        "tests-compiler-utils",
+        "test-infrastructure",
+        "test-infrastructure-utils",
+        "test-infrastructure-utils.common",
+        "tests-common-new",
+    )
+
+    allVariants {
+        withDependencies {
+            removeAll { it.group == "org.jetbrains.kotlin" && it.name in unpublishedModules }
+        }
+    }
+}
+
 // The check includes the build repository, because the release to Maven Central publishes to it.
 // The functional tests of the Gradle plugin use the functional test repository, so the check doesn't include it.
 if (onlyProjectKotlin) {

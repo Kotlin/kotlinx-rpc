@@ -12,11 +12,12 @@ pluginManagement {
 
     includeBuild("gradle-plugin")
 
+    // The repositories for the settings plugins and for the projects. They follow `kotlinx.rpc.useProxyRepositories`.
+    // The `conventions-repositories` plugin runs the same script, so the `plugins` block doesn't apply it.
     apply(from = "gradle-conventions-settings/src/main/kotlin/conventions-repositories.settings.gradle.kts")
 }
 
 plugins {
-    id("conventions-repositories")
     id("conventions-version-resolution")
     id("conventions-develocity")
     id("krpc-compat-tests")
