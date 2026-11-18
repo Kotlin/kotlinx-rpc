@@ -1,0 +1,82 @@
+FILE: rpcChecked.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    @R|kotlinx/rpc/annotations/Rpc|() public abstract interface MyService : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    public final class NotAService : R|kotlin/Any| {
+        public constructor(): R|NotAService| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class MyServiceImpl : R|MyService| {
+        public constructor(): R|MyServiceImpl| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final inline suspend fun <@R|kotlinx/rpc/annotations/Rpc|() reified T : R|kotlin/Any|> ok(client: R|kotlinx/rpc/RpcClient|, server: R|kotlinx/rpc/RpcServer|, impl: R|T|, myServiceImpl: R|MyService|): R|kotlin/Unit| {
+        R|<local>/client|.R|kotlinx/rpc/withService|<R|MyService|>()
+        R|<local>/client|.R|kotlinx/rpc/withService|<R|T|>()
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyService|>(<L> = registerService@fun <anonymous>(): R|MyService| <inline=NoInline>  {
+            ^ R|/MyServiceImpl.MyServiceImpl|()
+        }
+        )
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(): R|T| <inline=NoInline>  {
+            ^ R|<local>/impl|
+        }
+        )
+        R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|MyService|>()
+        R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|T|>()
+    }
+    public final inline suspend fun <reified T : R|kotlin/Any|> fail(client: R|kotlinx/rpc/RpcClient|, server: R|kotlinx/rpc/RpcServer|, impl: R|T|, myServiceImpl: R|MyServiceImpl|, notAServiceImpl: R|NotAService|): R|kotlin/Unit| {
+        R|<local>/client|.R|kotlinx/rpc/withService|<R|MyServiceImpl|>()
+        R|<local>/client|.R|kotlinx/rpc/withService|<R|NotAService|>()
+        R|<local>/client|.R|kotlinx/rpc/withService|<R|T|>()
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|MyServiceImpl|>(<L> = registerService@fun <anonymous>(): R|MyServiceImpl| <inline=NoInline>  {
+            ^ R|/MyServiceImpl.MyServiceImpl|()
+        }
+        )
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|NotAService|>(<L> = registerService@fun <anonymous>(): R|NotAService| <inline=NoInline>  {
+            ^ R|/NotAService.NotAService|()
+        }
+        )
+        R|<local>/server|.R|kotlinx/rpc/registerService|<R|T|>(<L> = registerService@fun <anonymous>(): R|T| <inline=NoInline>  {
+            ^ R|<local>/impl|
+        }
+        )
+        R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|MyServiceImpl|>()
+        R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|NotAService|>()
+        R|kotlinx/rpc/descriptor/serviceDescriptorOf|<R|T|>()
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public final annotation class Grpc : R|kotlin/Annotation| {
+        public constructor(): R|Grpc| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|Grpc|() public abstract interface MyGrpcService : R|kotlin/Any| {
+        @R|kotlin/Deprecated|(message = String(This synthesized declaration should not be used directly), level = Q|kotlin/DeprecationLevel|.R|kotlin/DeprecationLevel.HIDDEN|) public final class $rpcServiceStub : R|kotlin/Any| {
+            public final companion object Companion : R|kotlin/Any| {
+            }
+
+        }
+
+    }
+    @R|Grpc|() public final class WrongGrpcTarget : R|kotlin/Any| {
+        public constructor(): R|WrongGrpcTarget| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    @R|kotlinx/rpc/annotations/Rpc|() public final class WrongRpcTarget : R|kotlin/Any| {
+        public constructor(): R|WrongRpcTarget| {
+            super<R|kotlin/Any|>()
+        }
+
+    }

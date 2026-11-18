@@ -4,41 +4,12 @@
 
 package kotlinx.rpc
 
-import kotlinx.rpc.RpcPluginConst.INTERNAL_DEVELOPMENT_PROPERTY
 import kotlinx.rpc.RpcPluginConst.PROTOC_ENABLED_PROPERTY
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
-import org.jetbrains.kotlin.gradle.utils.loadPropertyFromResources
 
 internal object RpcPluginConst {
-    const val GROUP_ID = "org.jetbrains.kotlinx"
-    const val PLUGIN_ID = "org.jetbrains.kotlinx.rpc"
-    const val COMPILER_PLUGIN_ARTIFACT_ID = "kotlinx-rpc-compiler-plugin"
-
-    const val INTERNAL_DEVELOPMENT_PROPERTY = "kotlinx.rpc.plugin.internalDevelopment"
     const val PROTOC_ENABLED_PROPERTY = "kotlinx.rpc.protoc"
-
-    private val kotlinVersion by lazy { loadKotlinVersion() }
-
-    val libraryKotlinPrefixedVersion by lazy {
-        "$kotlinVersion-$LIBRARY_VERSION"
-    }
-
-    /**
-     * Same as [getKotlinPluginVersion] but without logger
-     */
-    private fun loadKotlinVersion(): String {
-        return object {}
-            .loadPropertyFromResources("project.properties", "project.version")
-    }
 }
-
-internal val Project.isInternalDevelopment: Boolean
-    get() {
-        return providers.gradleProperty(INTERNAL_DEVELOPMENT_PROPERTY)
-            .map(String::toBoolean)
-            .getOrElse(false)
-    }
 
 internal val Project.isProtocEnabled: Boolean
     get() {

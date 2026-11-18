@@ -18,11 +18,11 @@ native binary too.
 
 ## Compiler plugin changes
 
-If your change touches **any** file under `compiler-plugin/` (sources, templates,
-CSM blocks, or build scripts), invoke the `verify-compiler-plugin-compatibility`
+If your change touches **any** file under `compiler-plugin/` (sources or build
+scripts), invoke the `verify-compiler-plugin-compatibility`
 skill. This is not optional and cannot be skipped regardless of how small the
 change appears.
 
 The compiler plugin must compile against all supported Kotlin versions and Kotlin
-Master. A single-version local build is not sufficient — CSM template interactions
-across versions are the most common source of regressions.
+Master. A single-version local build is not sufficient — compiler API differences
+between versions are the most common source of regressions.

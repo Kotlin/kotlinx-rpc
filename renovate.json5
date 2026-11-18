@@ -79,7 +79,6 @@
       "description": "Ignore conventions plugins",
       "matchDepNames": [
         "/^conventions.*/",
-        "/^compiler-specific-module.*/",
       ],
       "enabled": false,
     },

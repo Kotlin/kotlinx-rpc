@@ -25,8 +25,9 @@ Note this version -- it is the value to pass as `-Pkotlin.compiler=<VERSION>`.
 Set the Gradle property `kotlinx.rpc.kotlinMasterBuild=true`. This does two things:
 - Adds the `lib-kotlin/` directory as a Maven repository so Gradle resolves the
   downloaded artifacts
-- **Skips** `:tests:compiler-plugin-tests` (box/diagnostic tests), which typically do not
-  compile against unreleased Kotlin versions
+- Replaces the supported Kotlin versions of the compiler plugin with one version: the
+  value of `-Pkotlin.compiler`. The DevKit also keeps the target of the Kotlin Gradle
+  plugin version, for example `k2420`.
 
 You can set this property via:
 - Command-line: `-Pkotlinx.rpc.kotlinMasterBuild=true`
@@ -39,22 +40,27 @@ You can set this property via:
 
 Use the `running_gradle_builds` skill to build the compiler plugin with the master
 version:
-- Tasks: `clean compileKotlin`
+- Tasks: `:compiler-plugin:assemble --continue`
 - Extra args: `-Pkotlin.compiler=<MASTER_VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`
+
+The compile task of the master version is `compileKotlinK<version>`, for example
+`compileKotlinK2520_dev_4223` for `2.5.20-dev-4223`.
+
+To run the tests on the master version, use the same arguments with
+`:compiler-plugin:allTests`.
 
 ## Step 4: Fix and Re-verify
 
-Follow the same Phase 2-4 workflow as for released versions. When adding CSM blocks for
-Kotlin Master, the new code goes in `default` (since Master represents the future), and
-the previous release's code moves into a `specific` block with a bounded range.
+Follow the same Phase 2-4 workflow as for released versions. The new API goes into the
+`post` source set of a new split, and the previous API goes into the `pre` source set.
+Use `split("<MASTER_VERSION>")` when the base version of the master build already has
+`-dev-` or IDE targets with the old API.
 
 ## Caveats
 
-- Master versions have dev suffixes like `2.4.0-dev-12345` for builds, but for the aftifacts it is now `2.4.20-public` (stable suffix). 
-  Exact prefix matches work fine (e.g., `2.4.0-dev-*`, `2.4.20-public`), but version ranges strip the suffix before comparison, so
-  a range like `2.4.0...2.4.*` will match `2.4.0-dev-12345` as `2.4.0`. Non-stable
-  suffixes are not allowed inside range bounds -- use prefix patterns instead for dev
-  versions.
+- The Kotlin Gradle plugin of the project compiles the plugin against the master compiler.
+  The compiler reads the metadata of one newer minor version. When the master version is
+  further ahead, build the whole project with the master version as `-Pkotlin.lang` too.
 - Kotlin Master APIs may change again before release. Fixes for Master should be
   considered provisional until the Kotlin version is released.
 - Remember to clean up: when done, you can remove the `lib-kotlin/` directory and

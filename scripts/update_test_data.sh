@@ -6,8 +6,8 @@
 
 # update_test_data.sh
 #
-# Regenerates golden test data for the compiler-plugin box/diagnostic tests by running
-# :tests:compiler-plugin-tests with -Pkotlin.test.update.test.data=true.
+# Regenerates golden test data for the compiler-plugin box/diagnostic tests. Runs the
+# tests of all supported Kotlin versions (:compiler-plugin:allTests) with -PupdateTestData.
 #
 # Usage:
 #   ./scripts/update_test_data.sh <TestRunner> [testMethod]
@@ -18,6 +18,10 @@
 #
 # Pass the test class name without its package and without the "Generated" suffix.
 # Run from the repository root.
+#
+# The test tasks of the Kotlin versions run in parallel, so one run can write a file for a
+# version that a higher version makes redundant. After the update, run
+# ./gradlew :compiler-plugin:allTests and delete the files that the tests report.
 
 set -euo pipefail
 
@@ -36,9 +40,11 @@ fi;
 
 set -o xtrace
 
+# `defaultTest --tests` sets the filter for the test tasks of all Kotlin versions.
 ./gradlew \
-    :tests:compiler-plugin-tests:test \
-    --tests "kotlinx.rpc.codegen.test.runners.$1Generated$TEST_NAME" \
+    :compiler-plugin:defaultTest \
+    --tests "*.$1Generated$TEST_NAME" \
+    :compiler-plugin:allTests \
     --continue \
     --stacktrace \
-    -Pkotlin.test.update.test.data=true
+    -PupdateTestData

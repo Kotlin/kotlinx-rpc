@@ -4,29 +4,7 @@
 
 package util
 
-import org.gradle.api.plugins.ExtensionAware
-import org.gradle.kotlin.dsl.extra
-import util.other.ActionApplied
-
 fun String.kotlinVersionParsed(): KotlinVersion {
     val (major, minor, patch) = substringBefore('-').split(".").map { it.toInt() }
     return KotlinVersion(major, minor, patch)
-}
-
-@Suppress("unused")
-inline fun ExtensionAware.whenKotlinCompilerIsAtLeast(
-    major: Int,
-    minor: Int,
-    patch: Int = 0,
-    action: () -> Unit = {},
-): ActionApplied {
-    val kotlinCompilerVersion = extra["kotlinCompilerVersion"] as KotlinVersion
-
-    if (kotlinCompilerVersion.isAtLeast(major, minor, patch)) {
-        action()
-
-        return ActionApplied.Applied
-    }
-
-    return ActionApplied.NotApplied
 }

@@ -12,19 +12,18 @@
         As <code>kotlinx.rpc</code> uses Kotlin compiler plugin,
         we rely on internal functionality that may change over time with any new Kotlin version.
         To prevent the library from breaking with an incompatible Kotlin version,
-        we use version prefix for artifacts with code generating functionality.
+        the code generation artifact has a separate build of its code for each supported Kotlin version.
     </p>
     <p>
         We provide core version updates for all stable versions of
-        <control>the last three</control>
+        <control>up to the last three</control>
         major Kotlin releases.
         So if the last stable Kotlin version is <code>%kotlin-version%</code>, as at the time of writing this guide,
         the following versions of Kotlin are supported:
     </p>
     <list>
-        <li>2.2.0, 2.2.10, 2.2.20, 2.2.21</li>
         <li>2.3.0, 2.3.10, 2.3.20, 2.3.21</li>
-        <li>2.4.0, 2.4.10, 2.4.20</li>
+        <li>2.4.0, 2.4.10, 2.4.20, 2.4.21</li>
     </list>
     <p>
         Our code generation will support these versions (See more on <a anchor="code-generation-artifacts">code
@@ -67,8 +66,8 @@
         </code-block>
     </chapter>
     <chapter title="Code generation artifacts" id="code-generation-artifacts">
-        To ensure everything works as intended for all supported Kotlin versions,
-        we provide a separate code-generation artifact for each Kotlin version.
+        The compiler plugin is one artifact for all supported Kotlin versions.
+        It selects the code for the Kotlin version of the project.
         For example, if a project has this setup:
         <code-block lang="kotlin">
         plugins {
@@ -76,13 +75,23 @@
             id(&quot;org.jetbrains.kotlinx.rpc.plugin&quot;) version &quot;%kotlinx-rpc-version%&quot;
         }
         </code-block>
-        Our Gradle plugin will add these dependencies to all applicable configurations:
+        Our Gradle plugin will add this dependency to all applicable configurations:
         <code-block>
-            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-cli:%kotlin-version%-%kotlinx-rpc-version%
-            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-common:%kotlin-version%-%kotlinx-rpc-version%
-            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2:%kotlin-version%-%kotlinx-rpc-version%
-            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-backend:%kotlin-version%-%kotlinx-rpc-version%
+            org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin:%kotlinx-rpc-version%
         </code-block>
-        These dependencies are managed automatically, and should not be used explicitly.
+        This dependency is managed automatically, and should not be used explicitly.
+        <note>
+            <p>
+                Only Gradle resolves the compiler plugin by this name.
+                The JAR is in the artifact with a Kotlin version suffix, for example
+                <code>org.jetbrains.kotlinx:kotlinx-rpc-compiler-plugin-k2420:%kotlinx-rpc-version%</code>.
+                The suffix is the Kotlin version that the release was built with, so it can change with each release.
+                <a href="https://github.com/Kotlin/compiler-plugin-dev-kit/issues/100">This issue</a>
+                of the Kotlin Compiler Plugin DevKit tracks the removal of the suffix.
+            </p>
+            <p>
+                With Maven, Bazel, or the <code>-Xplugin</code> compiler argument, use the artifact with the suffix.
+            </p>
+        </note>
     </chapter>
 </topic>

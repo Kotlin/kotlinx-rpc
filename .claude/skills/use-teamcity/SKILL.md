@@ -77,7 +77,7 @@ immediately after queuing.
 To trigger with custom parameters (e.g., override Kotlin version):
 
 ```bash
-teamcity run start Build_kRPC_All --branch main -E KOTLIN_COMPILER_VERSION_ENV=2.3.20
+teamcity run start Build_kRPC_All --branch main -E KOTLIN_VERSION=2.3.20
 ```
 
 ### Check recent build status

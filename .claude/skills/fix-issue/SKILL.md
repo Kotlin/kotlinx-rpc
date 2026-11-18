@@ -155,7 +155,7 @@ even for included builds (`compiler-plugin/`, `gradle-plugin/`, `protoc-gen/`,
 `dokka-plugin/`). The Gradle MCP rejects included build subdirectories because
 they have no Gradle wrapper. Address included build tasks from the root using
 the composite prefix: `:protoc-gen:common:test`,
-`:compiler-plugin:compiler-plugin-backend:build`, `:dokka-plugin:build`.
+`:compiler-plugin:assemble`, `:dokka-plugin:build`.
 
 All subsequent operations — exploration, builds, tests — use the worktree path.
 

@@ -247,12 +247,6 @@ gradle.rootProject {
                 maven("https://redirector.kotlinlang.org/maven/ktor-eap")
 
                 maven("https://www.jetbrains.com/intellij-repository/releases")
-
-                // legacy
-                maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-ide-plugin-dependencies")
-                maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/bootstrap")
-                maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/dev")
-                maven("https://maven.pkg.jetbrains.space/public/p/ktor/eap")
             }
 
             // Internal standalone shim artifacts are published here and can be resolved

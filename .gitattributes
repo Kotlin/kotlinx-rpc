@@ -76,9 +76,6 @@ gradlew     text eol=lf
 # Generated protobuf code (well-known types and conformance suite)
 **/generated-code/**    linguist-generated
 
-# Generated compiler-plugin test runners
-tests/compiler-plugin-tests/src/test-gen/**             linguist-generated
-
 # Implicit import lists — `scripts/update_implicit_types.sh`
 protoc-gen/common/src/main/resources/implicit-imports/*.txt linguist-generated
 

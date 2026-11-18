@@ -1,0 +1,140 @@
+FILE: module_main_protoMessage.kt
+    @FILE:R|kotlin/OptIn|(markerClass = vararg(<getClass>(Q|kotlinx/rpc/internal/utils/InternalRpcApi|), <getClass>(Q|kotlinx/rpc/internal/utils/ExperimentalRpcApi|)))
+    package test.my_message
+
+    @R|kotlinx/rpc/protobuf/internal/GeneratedProtoMessage|() public abstract interface MyMessage : R|kotlin/Any| {
+        public abstract val field: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
+        public abstract val optionalField: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
+        public abstract val text: R|kotlin/String|
+            public get(): R|kotlin/String|
+
+        public abstract val code: R|kotlin/Int|
+            public get(): R|kotlin/Int|
+
+        public final companion object Companion : R|kotlin/Any| {
+        }
+
+        public abstract interface Builder : R|test/my_message/MyMessage| {
+            public abstract override var field: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+            public abstract override var optionalField: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+            public abstract override var text: R|kotlin/String|
+                public get(): R|kotlin/String|
+                public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+            public abstract override var code: R|kotlin/Int|
+                public get(): R|kotlin/Int|
+                public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+            public abstract fun clearOptionalField(): R|kotlin/Unit|
+
+            public abstract fun clearText(): R|kotlin/Unit|
+
+            public abstract fun clearCode(): R|kotlin/Unit|
+
+            public abstract fun clearPayload(): R|kotlin/Unit|
+
+        }
+
+    }
+    public abstract interface MyMessagePresence : R|kotlin/Any| {
+        public abstract val hasOptionalField: R|kotlin/Boolean|
+            public get(): R|kotlin/Boolean|
+
+        public abstract val hasText: R|kotlin/Boolean|
+            public get(): R|kotlin/Boolean|
+
+        public abstract val hasCode: R|kotlin/Boolean|
+            public get(): R|kotlin/Boolean|
+
+    }
+    @R|kotlinx/rpc/protobuf/internal/GeneratedProtoOneOfs|(names = <implicitArrayOf>(String(payload))) public final class MyMessageInternal : R|test/my_message/MyMessage.Builder| {
+        public constructor(): R|test/my_message/MyMessageInternal| {
+            super<R|kotlin/Any|>()
+        }
+
+        public open override var field: R|kotlin/Int| = Int(1)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public open override var optionalField: R|kotlin/Int| = Int(2)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public open override var text: R|kotlin/String| = String()
+            public get(): R|kotlin/String|
+            public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        public open override var code: R|kotlin/Int| = Int(0)
+            public get(): R|kotlin/Int|
+            public set(value: R|kotlin/Int|): R|kotlin/Unit|
+
+        public open override fun clearOptionalField(): R|kotlin/Unit| {
+        }
+
+        public open override fun clearText(): R|kotlin/Unit| {
+        }
+
+        public open override fun clearCode(): R|kotlin/Unit| {
+        }
+
+        public open override fun clearPayload(): R|kotlin/Unit| {
+        }
+
+        private final object PresenceIndices : R|kotlin/Any| {
+            private constructor(): R|test/my_message/MyMessageInternal.PresenceIndices| {
+                super<R|kotlin/Any|>()
+            }
+
+            public final const val optionalField: R|kotlin/Int| = Int(0)
+                public get(): R|kotlin/Int|
+
+            public final const val text: R|kotlin/Int| = Int(1)
+                public get(): R|kotlin/Int|
+
+            public final const val code: R|kotlin/Int| = Int(2)
+                public get(): R|kotlin/Int|
+
+        }
+
+        public final object DESCRIPTOR : R|kotlinx/rpc/protobuf/internal/ProtoDescriptor<test/my_message/MyMessage>| {
+            private constructor(): R|test/my_message/MyMessageInternal.DESCRIPTOR| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override val fullName: R|kotlin/String| = String(fullName)
+                public get(): R|kotlin/String|
+
+        }
+
+        public final object MARSHALLER : R|kotlinx/rpc/grpc/marshaller/GrpcMarshaller<test/my_message/MyMessage>| {
+            private constructor(): R|test/my_message/MyMessageInternal.MARSHALLER| {
+                super<R|kotlin/Any|>()
+            }
+
+            public open override fun prepare(value: R|test/my_message/MyMessage|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|kotlinx/rpc/grpc/marshaller/GrpcEncodedMessage| {
+                R|kotlin/TODO|()
+            }
+
+            public open override fun decode(reader: R|kotlinx/rpc/grpc/marshaller/GrpcMessageReader|, config: R|kotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig?|): R|test/my_message/MyMessage| {
+                R|kotlin/TODO|()
+            }
+
+        }
+
+    }
+    public final fun box(): R|kotlin/String| {
+        lval builder: R|test/my_message/MyMessage.Builder| = R|test/my_message/MyMessageInternal.MyMessageInternal|()
+        R|<local>/builder|.R|test/my_message/MyMessage.Builder.clearOptionalField|()
+        R|<local>/builder|.R|test/my_message/MyMessage.Builder.clearPayload|()
+        ^box String(OK)
+    }
