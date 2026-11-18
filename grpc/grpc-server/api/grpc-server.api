@@ -19,6 +19,11 @@ public final class kotlinx/rpc/grpc/server/GrpcServer$DefaultImpls {
 }
 
 public class kotlinx/rpc/grpc/server/GrpcServerBaseConfiguration {
+	public final fun clearMaxConnectionAge ()V
+	public final fun clearMaxConnectionAgeGrace ()V
+	public final fun clearMaxConnectionIdle ()V
+	public final fun clearMaxInboundMessageSize ()V
+	public final fun clearMaxInboundMetadataSize ()V
 	public final fun getFallbackHandlerRegistry ()Lio/grpc/HandlerRegistry;
 	public final fun getMarshallerConfig ()Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerConfig;
 	public final fun getMaxConnectionAge-UwyO8pc ()J
@@ -38,6 +43,16 @@ public class kotlinx/rpc/grpc/server/GrpcServerBaseConfiguration {
 	public final fun setMaxInboundMessageSize (I)V
 	public final fun setMaxInboundMetadataSize (I)V
 	public final fun setMessageMarshallerResolver (Lkotlinx/rpc/grpc/marshaller/GrpcMarshallerResolver;)V
+}
+
+public final class kotlinx/rpc/grpc/server/GrpcServerBaseConfiguration$KeepAlive {
+	public final fun getTime-UwyO8pc ()J
+	public final fun getTimeout-UwyO8pc ()J
+	public final fun setTime-LRDsOJo (J)V
+	public final fun setTimeout-LRDsOJo (J)V
+}
+
+public final class kotlinx/rpc/grpc/server/GrpcServerBuilderConfiguration : kotlinx/rpc/grpc/server/GrpcServerBaseConfiguration {
 }
 
 public abstract interface class kotlinx/rpc/grpc/server/GrpcServerCallScope {
@@ -62,13 +77,6 @@ public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration : kotlinx/rpc
 	public final fun getCredentials ()Lio/grpc/ServerCredentials;
 	public final fun setCredentials (Lio/grpc/ServerCredentials;)V
 	public final fun tls (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Lio/grpc/ServerCredentials;
-}
-
-public final class kotlinx/rpc/grpc/server/GrpcServerConfiguration$KeepAlive {
-	public final fun getTime-UwyO8pc ()J
-	public final fun getTimeout-UwyO8pc ()J
-	public final fun setTime-LRDsOJo (J)V
-	public final fun setTimeout-LRDsOJo (J)V
 }
 
 public abstract interface class kotlinx/rpc/grpc/server/GrpcServerInterceptor {
