@@ -34,8 +34,10 @@ import kotlin.coroutines.EmptyCoroutineContext
  * - A setting that [configure] doesn't set has the value from [builder],
  *   not the default of [GrpcServerBaseConfiguration].
  * - [configure] has no credentials. Set them on [builder].
- * - If [builder] doesn't support a setting from [configure], the function throws
- *   [GrpcUnsupportedSettingException].
+ * - If [builder] rejects a setting from [configure] with [UnsupportedOperationException],
+ *   the function throws [GrpcUnsupportedSettingException].
+ *   [builder] can then have a part of the settings, so make a new builder for the next call.
+ * - A builder can ignore a setting that it doesn't support. The function doesn't report such a setting.
  *
  * To start the server, call [GrpcServer.start].
  * [GrpcServer.shutdown] shuts down the server.
@@ -46,12 +48,22 @@ import kotlin.coroutines.EmptyCoroutineContext
 public fun GrpcServer(
     builder: io.grpc.ServerBuilder<*>,
     parentContext: CoroutineContext = EmptyCoroutineContext,
-    configure: GrpcServerBaseConfiguration.() -> Unit = {},
+    configure: GrpcServerBuilderConfiguration.() -> Unit = {},
 ): GrpcServer {
-    val config = GrpcServerBaseConfiguration().apply(configure)
+    val config = GrpcServerBuilderConfiguration().apply(configure)
 
     return buildGrpcServer(builder.applyConfig(config, explicitOnly = true), config, parentContext)
 }
+
+/**
+ * The settings of a `GrpcServer` that a grpc-java `ServerBuilder` builds.
+ *
+ * The builder already has the credentials, so this configuration has none.
+ *
+ * A setting that the block doesn't set has the value of the builder,
+ * not the default that the property docs of [GrpcServerBaseConfiguration] give.
+ */
+public class GrpcServerBuilderConfiguration internal constructor() : GrpcServerBaseConfiguration()
 
 /**
  * The addresses that the server listens on.
@@ -60,7 +72,11 @@ public fun GrpcServer(
  * The type of an address depends on the transport of the server.
  * For a TCP port, the address is a [java.net.InetSocketAddress].
  *
- * The list is empty before [GrpcServer.start] and after the server terminates.
+ * The list is empty in these cases:
+ *
+ * - Before [GrpcServer.start].
+ * - After the server terminates.
+ * - The grpc-java server doesn't report its addresses.
  */
 public val GrpcServer.listenAddresses: List<SocketAddress>
     get() {
@@ -71,6 +87,9 @@ public val GrpcServer.listenAddresses: List<SocketAddress>
             platformServer.server.listenSockets
         } catch (_: IllegalStateException) {
             // grpc-java has no other way to check that the server is started and not terminated.
+            emptyList()
+        } catch (_: UnsupportedOperationException) {
+            // The default of `io.grpc.Server.getListenSockets`, for a server class that doesn't override it.
             emptyList()
         }
     }

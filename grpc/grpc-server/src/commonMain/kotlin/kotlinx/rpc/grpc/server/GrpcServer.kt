@@ -163,8 +163,11 @@ internal fun buildGrpcServer(
 /**
  * The gRPC server settings that every `GrpcServer` factory accepts.
  *
- * A factory that takes a ready server builder accepts only these settings,
- * because the builder already has the credentials.
+ * The credentials aren't among them. [GrpcServerConfiguration] adds them.
+ *
+ * The property docs give the defaults of the factory that takes a port.
+ * The factory that takes a grpc-java server builder has other defaults:
+ * a setting that the block doesn't set has the value of the builder.
  *
  * @see GrpcServerConfiguration
  */
@@ -172,7 +175,7 @@ internal fun buildGrpcServer(
 public open class GrpcServerBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcServerInterceptor> = mutableListOf()
     internal var serviceBuilder: RpcServer.() -> Unit = { }
-    internal var keepAlive: GrpcServerConfiguration.KeepAlive? = null
+    internal var keepAlive: KeepAlive? = null
     internal var isMaxInboundMessageSizeExplicitlySet = false
     internal var isMaxInboundMetadataSizeExplicitlySet = false
     internal var isMaxConnectionIdleExplicitlySet = false
@@ -205,6 +208,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
         }
 
     /**
+     * Restores the default value of [maxInboundMessageSize].
+     */
+    public fun clearMaxInboundMessageSize() {
+        maxInboundMessageSize = 4 * 1024 * 1024
+        isMaxInboundMessageSizeExplicitlySet = false
+    }
+
+    /**
      * The maximum size, in bytes, of inbound metadata.
      *
      * The default limit is 8 KiB (8,192 bytes).
@@ -216,6 +227,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
             isMaxInboundMetadataSizeExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxInboundMetadataSize].
+     */
+    public fun clearMaxInboundMetadataSize() {
+        maxInboundMetadataSize = 8 * 1024
+        isMaxInboundMetadataSizeExplicitlySet = false
+    }
 
     /**
      * *Sets the maximum connection idle time.
@@ -235,6 +254,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
         }
 
     /**
+     * Restores the default value of [maxConnectionIdle].
+     */
+    public fun clearMaxConnectionIdle() {
+        maxConnectionIdle = Duration.INFINITE
+        isMaxConnectionIdleExplicitlySet = false
+    }
+
+    /**
      * Sets the maximum connection age. When a connection reaches this age, the server begins to close it gracefully.
      *
      * The default is [Duration.INFINITE] (no limit).
@@ -249,6 +276,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
             isMaxConnectionAgeExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxConnectionAge].
+     */
+    public fun clearMaxConnectionAge() {
+        maxConnectionAge = Duration.INFINITE
+        isMaxConnectionAgeExplicitlySet = false
+    }
 
     /**
      * Sets the grace time for the graceful connection termination.
@@ -267,6 +302,14 @@ public open class GrpcServerBaseConfiguration internal constructor() {
             isMaxConnectionAgeGraceExplicitlySet = true
             field = value
         }
+
+    /**
+     * Restores the default value of [maxConnectionAgeGrace].
+     */
+    public fun clearMaxConnectionAgeGrace() {
+        maxConnectionAgeGrace = Duration.INFINITE
+        isMaxConnectionAgeGraceExplicitlySet = false
+    }
 
     /**
      * Sets a custom [GrpcHandlerRegistry] to be used by the gRPC server for resolving service implementations
@@ -313,8 +356,8 @@ public open class GrpcServerBaseConfiguration internal constructor() {
      * On the JVM, the server provider must support this option, otherwise it will fail at runtime.
      * Netty supports this option.
      */
-    public fun keepAlive(configure: GrpcServerConfiguration.KeepAlive.() -> Unit) {
-        keepAlive = GrpcServerConfiguration.KeepAlive().apply(configure)
+    public fun keepAlive(configure: KeepAlive.() -> Unit) {
+        keepAlive = KeepAlive().apply(configure)
     }
 
     /**
@@ -336,27 +379,6 @@ public open class GrpcServerBaseConfiguration internal constructor() {
     public fun services(block: RpcServer.() -> Unit) {
         serviceBuilder = block
     }
-}
-
-/**
- * A configuration class for setting up a gRPC server.
- *
- * This class provides an API to configure various server parameters, such as message marshallers,
- * security credentials, server-side interceptors, and service registration.
- */
-@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
-    /**
-     * Sets the credentials to be used by the gRPC server for secure communication.
-     *
-     * By default, the server does not have any credentials configured and the communication is plaintext.
-     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
-     * [tls] function.
-     *
-     * @see GrpcTlsServerCredentials
-     * @see tls
-     */
-    public var credentials: GrpcServerCredentials? = null
 
     /**
      * Server-side keepalive settings.
@@ -381,6 +403,27 @@ public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConf
                 field = value
             }
     }
+}
+
+/**
+ * A configuration class for setting up a gRPC server.
+ *
+ * This class provides an API to configure various server parameters, such as message marshallers,
+ * security credentials, server-side interceptors, and service registration.
+ */
+@IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+public class GrpcServerConfiguration internal constructor() : GrpcServerBaseConfiguration() {
+    /**
+     * Sets the credentials to be used by the gRPC server for secure communication.
+     *
+     * By default, the server does not have any credentials configured and the communication is plaintext.
+     * To set up transport-layer security provide a [GrpcTlsServerCredentials] by constructing it with the
+     * [tls] function.
+     *
+     * @see GrpcTlsServerCredentials
+     * @see tls
+     */
+    public var credentials: GrpcServerCredentials? = null
 
     /**
      * Configures and creates TLS (Transport Layer Security) credentials for the gRPC server.
