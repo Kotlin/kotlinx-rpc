@@ -1,6 +1,6 @@
 # Overview
 
-The `tests/` directory contains integration, compatibility, and conformance tests for kotlinx-rpc.
+The `tests/` directory has integration, compatibility, and conformance tests for kotlinx-rpc.
 This directory is intended to store tests that require a more complex setup than a simple unit test.
 None of these modules are published -- they exist solely for verification. All JVM test modules use JUnit 5 with `useJUnitPlatform()`.
 
@@ -8,7 +8,7 @@ None of these modules are published -- they exist solely for verification. All J
 
 | Module                              | What it tests                                                                         |
 |-------------------------------------|---------------------------------------------------------------------------------------|
-| `compiler-plugin-test-libs`         | Nothing. The test data of the compiler plugin tests compiles against it               |
+| `compiler-plugin-test-libs`         | Nothing. It has the declarations that the compiler plugin test data uses              |
 | `functional-test-repository`        | Nothing. It publishes the libraries for the functional tests of the Gradle plugin     |
 | `krpc-compatibility-tests`          | kRPC API backward compatibility (old client/new server and vice versa)                |
 | `krpc-protocol-compatibility-tests` | kRPC wire protocol compatibility across released versions (v0.8, v0.9, v0.10, Latest) |
@@ -22,7 +22,6 @@ None of these modules are published -- they exist solely for verification. All J
 ## Compiler Plugin Tests
 
 The compiler plugin tests are in the [compiler-plugin](../compiler-plugin/README.md) module.
-`compiler-plugin-test-libs` has the declarations that their test data uses, for example `TestRpcClient`.
 
 ## Generated code — Do not edit manually
 

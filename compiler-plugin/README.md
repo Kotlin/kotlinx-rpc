@@ -5,49 +5,56 @@ It runs in two phases: FIR (frontend diagnostics + declaration generation, uses 
 
 ## Build & Test
 
-The module uses the [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit).
-The DevKit compiles the same sources against each supported Kotlin version and puts all of them into one jar.
+The [Kotlin Compiler Plugin DevKit](https://github.com/Kotlin/compiler-plugin-dev-kit) compiles the same sources
+against each supported Kotlin version and puts the classes of all versions into one JAR.
 
-Each Kotlin version is a Gradle target. The target name is `k` and the version without dots,
-for example `k2420` for Kotlin 2.4.20 and `k2420_ij262_52` for an IDE version.
+Each Kotlin version is a Gradle target: `k2420` for Kotlin 2.4.20, `k2420_ij262_52` for an IDE version.
 
-Run the tasks from the repository root. The tests need projects of the root build.
-Use the `running_gradle_builds` and `running_gradle_tests` skills:
-- Build the plugin jar for all versions: `:compiler-plugin:assemble`
-- All tests on all versions: `:compiler-plugin:allTests`
-- All tests on one version: `:compiler-plugin:k2420Test`
-- Single box test (codegen): `:compiler-plugin:k2420Test --tests "*BoxTestGenerated.testSimple"`
-- Single diagnostic test: `:compiler-plugin:k2420Test --tests "*DiagnosticTestGenerated.testRpcService"`
-- Update expected `.fir.txt` / `.ir.txt` outputs after a codegen change: `:compiler-plugin:allTests -PupdateTestData`
+Run the tasks from the repository root, because the tests need projects of the root build.
+Use the `running_gradle_builds` and `running_gradle_tests` skills.
+
+| Task | Effect |
+|---|---|
+| `:compiler-plugin:assemble` | Builds the plugin JAR for all versions |
+| `:compiler-plugin:allTests` | Runs all tests on all versions |
+| `:compiler-plugin:k2420Test` | Runs all tests on one version |
+| `:compiler-plugin:k2420Test --tests "*BoxTestGenerated.testSimple"` | Runs one box test (codegen) |
+| `:compiler-plugin:k2420Test --tests "*DiagnosticTestGenerated.testRpcService"` | Runs one diagnostic test |
+| `:compiler-plugin:allTests -PupdateTestData` | Updates the expected `.fir.txt` and `.ir.txt` outputs |
 
 Test data is in `src/commonTest/data/`:
-- `box/*.kt` -- Black-box codegen tests. Must define `fun box(): String` returning `"OK"`. Paired with `.fir.txt` and `.ir.txt` expected outputs.
-- `diagnostics/*.kt` -- FIR diagnostic tests. Use `<!DIAGNOSTIC_NAME!>code<!>` markers for expected errors. Paired with `.fir.txt` expected output.
 
-Directives: `// RUN_PIPELINE_TILL: BACKEND` (full pipeline) or `// RUN_PIPELINE_TILL: FRONTEND` (FIR only).
+| Files | Tests | Content | Expected outputs |
+|---|---|---|---|
+| `box/*.kt` | Codegen | `// RUN_PIPELINE_TILL: BACKEND`, and `fun box(): String` that returns `"OK"` | `.fir.txt`, `.ir.txt` |
+| `diagnostics/*.kt` | FIR diagnostics | `// RUN_PIPELINE_TILL: FRONTEND`, and `<!DIAGNOSTIC_NAME!>code<!>` for each expected diagnostic | `.fir.txt` |
 
 The test data compiles against the `:tests:compiler-plugin-test-libs` project of the root build and its `api` dependencies.
 
 ### Expected outputs for different Kotlin versions
 
-A file without a version, for example `simple.ir.txt`, is the output of the highest supported Kotlin version.
-A lower version uses the file of the nearest higher version that has one.
-When the output of a version is different, the version has its own file, for example `simple.240_dev_2631.ir.txt`.
-A test fails when a file with a version is the same as the file it replaces.
+| File | Output of |
+|---|---|
+| Without a version: `simple.ir.txt` | The highest supported Kotlin version |
+| With a version: `simple.240_dev_2631.ir.txt`, `grpc.2321.fir.txt` | That version, and the lower versions down to the next file with a version |
+
+A test fails when a file with a version is the same as the file of the next higher version.
 
 ## Source sets
 
 | Directory | Content |
 |---|---|
-| `src/commonMain` | Plugin code for all Kotlin versions, and `expect` declarations for the compiler API that differs between versions. |
-| `src/pre<version>DevMain`, `src/post<version>DevMain` | `actual` declarations for the Kotlin versions before and from `<version>`. |
-| `src/commonTestFixtures` | Test runners and their configuration. |
-| `src/commonTest/data` | Test data. |
-| `src/generateTests` | The test generator. |
+| `src/commonMain` | Plugin code for all Kotlin versions, and `expect` declarations for the compiler API that differs between versions |
+| `src/pre<version>DevMain`, `src/post<version>DevMain` | `actual` declarations for the Kotlin versions before and from `<version>` |
+| `src/commonTestFixtures` | Test runners and their configuration |
+| `src/commonTest/data` | Test data |
+| `src/generateTests` | The test generator |
 
-`versionHierarchy` in `build.gradle.kts` declares the version groups.
-`gradle-conventions/src/main/kotlin/util/devkit.kt` declares the supported Kotlin and IDE versions.
-The minimal versions are `kotlin-min` and `idea-min` in `versions-root/libs.versions.toml`.
+| Setting | Location |
+|---|---|
+| Version groups | `versionHierarchy` in `build.gradle.kts` |
+| Supported Kotlin and IDE versions | `gradle-conventions/src/main/kotlin/util/devkit.kt` |
+| Minimal versions | `kotlin-min` and `idea-min` in `versions-root/libs.versions.toml` |
 
 ## Generation References (detailed)
 
@@ -56,10 +63,10 @@ Protocol-specific codegen and diagnostics details live alongside each protocol m
 - [gRPC codegen](../grpc/codegen.md) -- gRPC-specific additions: `delegate()`, `MethodDescriptor`, streaming types
 - [Protobuf codegen](../protobuf/codegen.md) -- `Builder` interface, `@WithProtoDescriptor`/`@WithGrpcMarshaller` annotations
 
-## Generated test runners — Do not edit manually
+## Generated test runners
 
-The `generateTests*` tasks write the JUnit test classes (`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`)
-to `build/test-gen/`, one set for each Kotlin version. The test tasks run them first.
+The test tasks run the `generateTests*` tasks first. These tasks write the JUnit test classes
+(`BoxTestGenerated.java`, `DiagnosticTestGenerated.java`) to `build/test-gen/`, one set for each Kotlin version.
 
 ## Version Compatibility
 

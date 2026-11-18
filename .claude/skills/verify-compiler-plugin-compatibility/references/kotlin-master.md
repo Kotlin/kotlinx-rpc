@@ -1,74 +1,63 @@
-# Testing with Kotlin Master
+# Test with Kotlin Master
 
-Kotlin Master is the latest dev/nightly build from the Kotlin team. It is used to catch
-incompatibilities before a Kotlin version is officially released.
+Kotlin Master is the latest dev build of the Kotlin compiler. The test finds
+incompatibilities before the release of a Kotlin version.
 
-## Step 1: Download Kotlin Master Artifacts
-
-Run the `scripts/download_kotlin_master.sh` script in the project root:
+## 1. Download the artifacts
 
 ```bash
 ./scripts/download_kotlin_master.sh
 ```
 
-This requires a `BUILD_SERVER_TOKEN` -- either as an environment variable or in
-`~/.gradle/gradle.properties` as `buildserver.token=<token>`. The script:
-1. Queries JetBrains TeamCity for the latest successful `Kotlin_KotlinPublic_Artifacts_aggregate` build
-2. Downloads the Maven artifacts archive
-3. Extracts them into a `lib-kotlin/` directory at the project root
+The script needs a token: the `BUILD_SERVER_TOKEN` environment variable, or
+`buildserver.token=<token>` in `~/.gradle/gradle.properties`.
 
-The script prints the build ID and the Kotlin version number (e.g., `2.4.0-dev-12345`).
-Note this version -- it is the value to pass as `-Pkotlin.compiler=<VERSION>`.
+The script gets the Maven artifacts of the latest successful
+`Kotlin_KotlinPublic_Artifacts_aggregate` build from the JetBrains TeamCity. It puts them
+into the `lib-kotlin/` directory in the project root, and prints the Kotlin version, for
+example `2.4.0-dev-12345`. This version is `<VERSION>` in the next steps.
 
-## Step 2: Enable Kotlin Master Mode
+## 2. Build and test
 
-Set the Gradle property `kotlinx.rpc.kotlinMasterBuild=true`. This does two things:
-- Adds the `lib-kotlin/` directory as a Maven repository so Gradle resolves the
-  downloaded artifacts
-- Replaces the supported Kotlin versions of the compiler plugin with one version: the
-  value of `-Pkotlin.compiler`. The DevKit also keeps the target of the Kotlin Gradle
-  plugin version, for example `k2420`. The DevKit adds this target when no version is
-  registered at the time it reads its Gradle properties, and the build script registers
-  the version later.
+Use the `running_gradle_builds` and `running_gradle_tests` skills:
 
-  `-Pkotlin.compiler.plugin.devkit.testAgainst=<VERSION>` registers the version earlier, and
-  the DevKit then doesn't add that target. Don't use it for a `dev` version: the DevKit
-  registers a `dev` version from this property as an IDE version, and the build script
-  can't change that.
+- Tasks: `:compiler-plugin:assemble --continue`, then `:compiler-plugin:allTests --continue`.
+- Arguments: `-Pkotlin.compiler=<VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`.
 
-You can set this property via:
-- Command-line: `-Pkotlinx.rpc.kotlinMasterBuild=true`
-- Or uncomment the line in `gradle.properties`:
-  ```properties
-  kotlinx.rpc.kotlinMasterBuild=true
-  ```
+`kotlinx.rpc.kotlinMasterBuild=true` has two effects:
 
-## Step 3: Build
+- Gradle resolves the artifacts in `lib-kotlin/`.
+- The compiler plugin has only `<VERSION>`, not the supported Kotlin versions.
 
-Use the `running_gradle_builds` skill to build the compiler plugin with the master
-version:
-- Tasks: `:compiler-plugin:assemble --continue`
-- Extra args: `-Pkotlin.compiler=<MASTER_VERSION> -Pkotlinx.rpc.kotlinMasterBuild=true`
+You can also set the property in `gradle.properties`: uncomment the
+`kotlinx.rpc.kotlinMasterBuild=true` line.
 
 The compile task of the master version is `compileKotlinK<version>`, for example
 `compileKotlinK2520_dev_4223` for `2.5.20-dev-4223`.
 
-To run the tests on the master version, use the same arguments with
-`:compiler-plugin:allTests`.
+The build also has the target of the Kotlin Gradle plugin version, for example `k2420`.
+The DevKit adds this target because the build script registers `<VERSION>` after the
+DevKit reads its Gradle properties.
+`-Pkotlin.compiler.plugin.devkit.testAgainst=<VERSION>` removes the target. Don't use
+it for a `dev` version, because the DevKit then registers `<VERSION>` as an IDE version.
 
-## Step 4: Fix and Re-verify
+## 3. Fix
 
-Follow the same Phase 2-4 workflow as for released versions. The new API goes into the
-`post` source set of a new split, and the previous API goes into the `pre` source set.
-Use `split("<MASTER_VERSION>")` when the base version of the master build already has
-`-dev-` or IDE targets with the old API.
+Fix the failures in the same way as for a released version
+(`compat-fix-patterns.md`):
 
-## Caveats
+- The new API goes into the `post` source set of a new split. The previous API goes
+  into the `pre` source set.
+- When the base version of the master build already has `-dev-` or IDE targets with the
+  old API, use `split("<VERSION>")`.
 
-- The Kotlin Gradle plugin of the project compiles the plugin against the master compiler.
-  The compiler reads the metadata of one newer minor version. When the master version is
-  further ahead, build the whole project with the master version as `-Pkotlin.lang` too.
-- Kotlin Master APIs may change again before release. Fixes for Master should be
-  considered provisional until the Kotlin version is released.
-- Remember to clean up: when done, you can remove the `lib-kotlin/` directory and
-  re-comment `kotlinx.rpc.kotlinMasterBuild` in `gradle.properties`.
+## Limits
+
+- The Kotlin compiler of the project compiles the plugin against the master compiler. It
+  can read the metadata of a compiler that is at most one minor version newer. When the
+  master version is newer than that, also build the whole project with
+  `-Pkotlin.lang=<VERSION>`.
+- A Kotlin Master API can change again before the release. A fix for Kotlin Master is
+  provisional until then.
+- After the test, delete the `lib-kotlin/` directory. If you changed `gradle.properties`,
+  comment out `kotlinx.rpc.kotlinMasterBuild` again.
