@@ -22,12 +22,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 class FirRpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)) {
             return
         }
@@ -36,7 +30,6 @@ class FirRpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Co
             reporter.reportOn(
                 source = declaration.source,
                 factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_INTERFACE,
-                context = context,
             )
         }
 
@@ -48,18 +41,16 @@ class FirRpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Co
                 reporter.reportOn(
                     source = function.source,
                     factory = FirRpcDiagnostics.TYPE_PARAMETERS_IN_RPC_FUNCTION,
-                    context = context,
                 )
             }
 
-            val returnType = function.resolvedReturnTypeRef.coneType.toClassSymbol(context.session)
+            val returnType = function.resolvedReturnTypeRef.coneType.toClassSymbol()
                 ?: return@onEach
 
             if (returnType.classId != RpcClassId.flow && !function.isSuspend) {
                 reporter.reportOn(
                     source = function.source,
                     factory = FirRpcDiagnostics.NON_SUSPENDING_REQUEST_WITHOUT_STREAMING_RETURN_TYPE,
-                    context = context,
                 )
             }
         }
@@ -72,7 +63,6 @@ class FirRpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Co
                         factory = FirRpcDiagnostics.AD_HOC_POLYMORPHISM_IN_RPC_SERVICE,
                         a = functions.size,
                         b = name,
-                        context = context,
                     )
                 }
             }

@@ -34,12 +34,6 @@ import org.jetbrains.kotlin.name.Name
 class FirProtoMessageAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         // check if the class is actually annotated with @GeneratedProtoMessage
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.generatedProtoMessage, declaration)) {
             return
@@ -52,7 +46,6 @@ class FirProtoMessageAnnotationChecker : FirRegularClassChecker(MppCheckerKind.C
             reporter.reportOn(
                 source = annotation.source,
                 factory = FirProtoDiagnostics.PROTO_MESSAGE_IS_GENERATED_ONLY,
-                context = context,
             )
         }
 

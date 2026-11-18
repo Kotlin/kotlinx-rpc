@@ -23,12 +23,6 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 class FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         val rpcMetaAnnotated = context.session.predicateBasedProvider.matches(FirRpcPredicates.rpc, declaration)
 
         val isMetaAnnotated = declaration.classKind != ClassKind.ANNOTATION_CLASS
@@ -41,7 +35,6 @@ class FirRpcAnnotationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
                     classId = RpcClassId.rpcAnnotation,
                 ),
                 factory = FirRpcDiagnostics.WRONG_RPC_ANNOTATION_TARGET,
-                context = context,
                 a = declaration.symbol.rpcAnnotation(
                     session = context.session,
                     predicate = FirRpcPredicates.rpc,

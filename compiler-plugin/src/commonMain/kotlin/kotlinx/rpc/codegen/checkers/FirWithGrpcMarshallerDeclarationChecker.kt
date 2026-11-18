@@ -31,12 +31,6 @@ import org.jetbrains.kotlin.name.Name
 class FirWithGrpcMarshallerDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.withMarshaller, declaration)) {
             return
         }
@@ -52,7 +46,7 @@ class FirWithGrpcMarshallerDeclarationChecker : FirRegularClassChecker(MppChecke
                     "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
         )
 
-        val marshallerClassSymbol = kClassValue.toClassSymbol(context.session)
+        val marshallerClassSymbol = kClassValue.toClassSymbol()
             ?: error(
                 "'marshaller' argument type for @WithGrpcMarshaller annotation is not a class " +
                         "for declaration: ${declaration.symbol.classId.asSingleFqName()}"
@@ -66,7 +60,6 @@ class FirWithGrpcMarshallerDeclarationChecker : FirRegularClassChecker(MppChecke
                 factory = FirGrpcDiagnostics.MARSHALLER_TYPE_MISMATCH,
                 a = declaration.symbol.defaultType(),
                 b = marshallerTargetClass,
-                context = context,
             )
         }
 
@@ -74,7 +67,6 @@ class FirWithGrpcMarshallerDeclarationChecker : FirRegularClassChecker(MppChecke
             reporter.reportOn(
                 source = withMarshaller.findArgumentByName(MARSHALLER_ARGUMENT_NAME)?.source,
                 factory = FirGrpcDiagnostics.NOT_AN_OBJECT_REFERENCE_IN_WITH_MARSHALLER_ANNOTATION,
-                context = context,
             )
         }
     }

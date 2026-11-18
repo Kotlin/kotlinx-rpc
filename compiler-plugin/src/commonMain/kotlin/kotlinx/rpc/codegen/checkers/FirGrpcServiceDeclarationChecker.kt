@@ -30,12 +30,6 @@ import org.jetbrains.kotlin.name.Name
 class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirRegularClass, context: CheckerContext, reporter: DiagnosticReporter) {
         if (!context.session.predicateBasedProvider.matches(FirRpcPredicates.grpc, declaration)) {
             return
         }
@@ -55,7 +49,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                 reporter.reportOn(
                     source = annotation.argumentMapping.mapping[protoPackageName]!!.source,
                     factory = FirGrpcDiagnostics.WRONG_PROTO_PACKAGE_VALUE,
-                    context = context,
                 )
             }
         }
@@ -68,7 +61,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                 reporter.reportOn(
                     source = function.source,
                     factory = FirGrpcDiagnostics.MULTIPLE_PARAMETERS_IN_GRPC_SERVICE,
-                    context = context,
                 )
             }
 
@@ -78,7 +70,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                     reporter.reportOn(
                         source = parameterSymbol.source,
                         factory = FirGrpcDiagnostics.NULLABLE_PARAMETER_IN_GRPC_SERVICE,
-                        context = context,
                     )
                 }
 
@@ -90,7 +81,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                         reporter.reportOn(
                             source = source,
                             factory = FirGrpcDiagnostics.NON_TOP_LEVEL_CLIENT_STREAMING_IN_RPC_SERVICE,
-                            context = context,
                         )
                     }
                 }
@@ -100,7 +90,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                 reporter.reportOn(
                     source = function.resolvedReturnTypeRef.source,
                     factory = FirGrpcDiagnostics.NULLABLE_RETURN_TYPE_IN_GRPC_SERVICE,
-                    context = context,
                 )
             }
 
@@ -116,7 +105,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                         reporter.reportOn(
                             source = grpcMethodAnnotation.argumentMapping.mapping[grpcMethodNameName]!!.source,
                             factory = FirGrpcDiagnostics.WRONG_PROTO_METHOD_NAME_VALUE,
-                            context = context,
                         )
                     }
                 }
@@ -134,7 +122,6 @@ class FirGrpcServiceDeclarationChecker : FirRegularClassChecker(MppCheckerKind.C
                     reporter.reportOn(
                         source = grpcMethodAnnotation.source,
                         factory = FirGrpcDiagnostics.WRONG_SAFE_IDEMPOTENT_COMBINATION,
-                        context = context,
                         positioningStrategy = SourceElementPositioningStrategies.VALUE_ARGUMENTS_LIST,
                     )
                 }

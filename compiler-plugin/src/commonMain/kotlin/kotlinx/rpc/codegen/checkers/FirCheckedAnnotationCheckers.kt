@@ -47,12 +47,6 @@ class FirCheckedAnnotationFunctionCallChecker(
 ) : FirFunctionCallChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirFunctionCall) {
-        check(expression, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(expression: FirFunctionCall, context: CheckerContext, reporter: DiagnosticReporter) {
         checkTypeArguments(
             context = context,
             reporter = reporter,
@@ -73,12 +67,6 @@ class FirCheckedAnnotationTypeParameterChecker(
 ) : FirTypeParameterChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirTypeParameter) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirTypeParameter, context: CheckerContext, reporter: DiagnosticReporter) {
         @Suppress("DuplicatedCode")
         declaration.bounds.forEach { bound ->
             checkTypeArguments(
@@ -87,7 +75,7 @@ class FirCheckedAnnotationTypeParameterChecker(
                 ctx = ctx,
                 origin = bound,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { it.toClassSymbol() },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -102,12 +90,6 @@ class FirCheckedAnnotationFirClassChecker(
 ) : FirClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirClass) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirClass, context: CheckerContext, reporter: DiagnosticReporter) {
         @Suppress("DuplicatedCode")
         declaration.superTypeRefs.forEach { superType ->
             checkTypeArguments(
@@ -116,7 +98,7 @@ class FirCheckedAnnotationFirClassChecker(
                 ctx = ctx,
                 origin = superType,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { it.toClassSymbol() },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
@@ -131,12 +113,6 @@ class FirCheckedAnnotationFirFunctionChecker(
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
-        check(declaration, context, reporter)
-    }
-
-    // The code is in a function without context parameters, because a `CheckerContext` in the context
-    // makes calls of the compiler API ambiguous before Kotlin 2.3.20.
-    private fun check(declaration: FirFunction, context: CheckerContext, reporter: DiagnosticReporter) {
         declaration.valueParameters.forEach { valueParameter ->
             checkTypeArguments(
                 context = context,
@@ -144,7 +120,7 @@ class FirCheckedAnnotationFirFunctionChecker(
                 ctx = ctx,
                 origin = valueParameter.returnTypeRef,
                 originMapper = { it.coneType },
-                symbolProvider = { it.toClassSymbol(context.session) },
+                symbolProvider = { it.toClassSymbol() },
                 typeParameterSymbolsProvider = { it.typeParameterSymbols },
                 typeArgumentsProvider = { it.typeArguments.toList() },
                 typeArgumentsMapper = { it },
