@@ -169,6 +169,9 @@ internal fun buildGrpcServer(
  * The factory that takes a grpc-java server builder has other defaults:
  * a setting that the block doesn't set has the value of the builder.
  *
+ * On the JVM, a server provider other than Netty can lack support for a setting.
+ * A setting that the block doesn't set then has the value of that provider, not the default.
+ *
  * @see GrpcServerConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")

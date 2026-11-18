@@ -89,7 +89,9 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
 
 /**
  * Applies [config] to the builder.
- * A setting that the builder rejects fails with [GrpcUnsupportedSettingException].
+ * When the builder rejects a setting that [config] sets explicitly,
+ * the function throws [GrpcUnsupportedSettingException].
+ * When the builder rejects a default, the builder has its own value for that setting.
  *
  * @param explicitOnly When `true`, a size limit or the idle timeout that [config] doesn't set
  * explicitly stays as the builder has it.

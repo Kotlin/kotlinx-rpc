@@ -189,24 +189,35 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
-    fun `port factory default that the server provider does not support - should fail`() {
-        val provider = object : ServerProvider() {
-            override fun isAvailable(): Boolean = true
+    fun `port factory default that the server provider does not support - should be skipped`() = runBlocking {
+        val name = InProcessServerBuilder.generateName()
+        // `InProcessServerBuilder` rejects `maxConnectionIdle`, and the port factory applies its default.
+        withInProcessServerProvider(name) {
+            val server = GrpcServer(0) {
+                services { registerService<EchoService> { EchoServiceImpl() } }
+            }.start()
+            var client: GrpcClient? = null
 
-            // Above the priority of the Netty provider.
-            override fun priority(): Int = 10
-
-            override fun builderForPort(port: Int): ServerBuilder<*> = InProcessServerBuilder.forName("unused")
+            try {
+                client = GrpcClient(InProcessChannelBuilder.forName(name))
+                assertEquals("Echo", client.echo("Echo"))
+            } finally {
+                client?.shutdownNow()
+                server.shutdownNow()
+                server.awaitTermination(30.seconds)
+                client?.awaitTermination(30.seconds)
+            }
         }
-        val registry = ServerRegistry.getDefaultRegistry()
-        registry.register(provider)
+    }
 
-        try {
-            val error = assertFailsWith<UnsupportedOperationException> { GrpcServer(0) }
+    @Test
+    fun `port factory setting that the server provider does not support - should fail`() {
+        withInProcessServerProvider("unused") {
+            val error = assertFailsWith<UnsupportedOperationException> {
+                GrpcServer(0) { maxConnectionIdle = 10.seconds }
+            }
             assertIs<GrpcUnsupportedSettingException>(error)
-            assertContains(error.message.orEmpty(), "applies the default of `maxConnectionIdle`")
-        } finally {
-            registry.deregister(provider)
+            assertContains(error.message.orEmpty(), "Remove `maxConnectionIdle`")
         }
     }
 
@@ -275,6 +286,28 @@ class GrpcJavaBuilderTest {
 
     private suspend fun GrpcClient.echo(message: String): String =
         withService<EchoService>().unaryEcho(EchoRequest { this.message = message }).message
+
+    /**
+     * Runs [block] while grpc-java makes an in-process builder with the name [name] for every port.
+     */
+    private inline fun withInProcessServerProvider(name: String, block: () -> Unit) {
+        val provider = object : ServerProvider() {
+            override fun isAvailable(): Boolean = true
+
+            // Above the priority of the Netty provider.
+            override fun priority(): Int = 10
+
+            override fun builderForPort(port: Int): ServerBuilder<*> = InProcessServerBuilder.forName(name)
+        }
+        val registry = ServerRegistry.getDefaultRegistry()
+        registry.register(provider)
+
+        try {
+            block()
+        } finally {
+            registry.deregister(provider)
+        }
+    }
 
     private class NoKeepAliveChannelBuilder(
         private val delegate: ManagedChannelBuilder<*>,
