@@ -27,7 +27,14 @@ Set the Gradle property `kotlinx.rpc.kotlinMasterBuild=true`. This does two thin
   downloaded artifacts
 - Replaces the supported Kotlin versions of the compiler plugin with one version: the
   value of `-Pkotlin.compiler`. The DevKit also keeps the target of the Kotlin Gradle
-  plugin version, for example `k2420`.
+  plugin version, for example `k2420`. The DevKit adds this target when no version is
+  registered at the time it reads its Gradle properties, and the build script registers
+  the version later.
+
+  `-Pkotlin.compiler.plugin.devkit.testAgainst=<VERSION>` registers the version earlier, and
+  the DevKit then doesn't add that target. Don't use it for a `dev` version: the DevKit
+  registers a `dev` version from this property as an IDE version, and the build script
+  can't change that.
 
 You can set this property via:
 - Command-line: `-Pkotlinx.rpc.kotlinMasterBuild=true`

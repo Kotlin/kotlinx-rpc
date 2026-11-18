@@ -57,7 +57,7 @@ Rules for compiler API breaking changes:
   - Backports. The library declares a new compiler API, with the same package and name, for the Kotlin versions
   that don't have it. For example, it declares `IrAnnotation` and `irAnnotation` for the versions before 2.3.20.
   `commonMain` calls the new API on all versions. The backports are in the `pre<version>DevMain` source sets of
-  [compiler-plugin-runtime](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime/src).
+  [compiler-plugin-runtime-compat](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime-compat/src).
 - If the DevKit doesn't cover the change, declare the functionality as an `expect` function in `commonMain`
 (see [FirCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/FirCompat.kt)
 and [IrLookupCompat.kt](../compiler-plugin/src/commonMain/kotlin/kotlinx/rpc/codegen/IrLookupCompat.kt)).

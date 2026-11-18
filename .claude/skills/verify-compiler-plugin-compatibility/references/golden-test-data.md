@@ -26,11 +26,12 @@ daemon, NOT on the forked test JVM. Pass `-PupdateTestData` as a Gradle argument
 - `simple.240_dev_2631.ir.txt` is the output of the compiler 2.4.0-dev-2631, and of the lower
   versions down to the next file with a version. `grpc.2321.fir.txt` is the same for Kotlin 2.3.21.
 - A test fails with `No need for a separate dump file` when a file with a version is the
-  same as the file of the next higher version. Delete the file.
+  same as the file of the next higher version. The test deletes the file before it fails,
+  so the next run passes. On TeamCity the test doesn't delete the file.
 
 The test tasks of the versions run in parallel, so one update run can write a file with a
 version that a higher version makes redundant. Run the tests again without
-`-PupdateTestData` and delete the files that the tests report.
+`-PupdateTestData`. The tests that report such a file delete it. Then run the tests one more time.
 
 After the update, review the diffs with `git diff` to confirm that the changes match your
 expectations.

@@ -42,7 +42,7 @@ The DevKit runtime library covers some changes. Check it before you add an `expe
   the name of the compiler declaration, so `commonMain` calls the new API on all versions.
   For example, `IrAnnotation` and `IrBuilder.irAnnotation` exist from Kotlin 2.3.20, and the library declares
   them for the versions before 2.3.20. The `pre<V>DevMain` source sets of
-  [compiler-plugin-runtime](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime/src)
+  [compiler-plugin-runtime-compat](https://github.com/Kotlin/compiler-plugin-dev-kit/tree/main/compiler-plugin-runtime-compat/src)
   have the backports.
 
 ## Pattern: a new Kotlin version changes an API
@@ -89,9 +89,57 @@ build with the change. The source sets are then `pre2420Dev<N>Main` and
 ## Pattern: a class signature differs
 
 A base class can change the signature of a function that the plugin overrides.
+There are two ways to handle it.
 
-1. Keep the logic in an object in `commonMain`.
-2. Declare the subclass in both source sets of the split. Each subclass calls the object.
+### An interface with all signatures
 
-`checkers/FirRpcCheckersVS.kt` has such subclasses for the checkers. The checker API is
-the same in all supported versions, so the file is in `commonMain`.
+Use it when one class can declare the function with each signature.
+
+1. Declare an interface in `commonMain` that has the function with each signature.
+2. The subclass extends the base class, implements the interface, and overrides each function.
+
+```kotlin
+// Before 2.4.0: abstract class Foo { abstract fun foo(i: Int) }
+// From 2.4.0:   abstract class Foo { abstract fun foo(s: String) }
+
+interface FooCompat {
+    fun foo(i: Int)
+    fun foo(s: String)
+}
+
+class FooImpl : Foo(), FooCompat {
+    override fun foo(i: Int) { /* ... */ }
+    override fun foo(s: String) { /* ... */ }
+}
+```
+
+On each Kotlin version, one function overrides the base class and the other overrides only the interface.
+When the function of the base class is abstract, the compiler reports a wrong signature.
+
+### A subclass for each version
+
+Use it when one class can't declare all signatures, for example when only the return type differs.
+
+1. Keep the logic in a class or an object in `commonMain`.
+2. Declare the subclass in both source sets of the split. Each subclass calls the shared code.
+
+## Pattern: a call is ambiguous in a function with context parameters
+
+Before Kotlin 2.3.20, and in the IDE compilers of the 253 branch, the compiler has additional overloads that make a call with an explicit
+`FirSession` or `DiagnosticContext` ambiguous when the context has a `SessionHolder` or a `DiagnosticContext`.
+A `CheckerContext` is both. The error is `Overload resolution ambiguity`, for example between these candidates:
+
+```
+fun ConeKotlinType.toClassSymbol(session: FirSession): FirClassSymbol<*>?
+context(sessionHolder: SessionHolder) fun ConeKotlinType.toClassSymbol(s: FirSession): FirClassSymbol<*>?
+```
+
+The ambiguity is intentional. Call the overload that takes the value from the context:
+
+| Ambiguous call                                         | Correct call                         |
+|--------------------------------------------------------|--------------------------------------|
+| `type.toClassSymbol(context.session)`                  | `type.toClassSymbol()`               |
+| `reporter.reportOn(source, factory, context = context)` | `reporter.reportOn(source, factory)` |
+
+The checkers in `checkers/` use these calls. A function without context parameters still passes the
+session and the context explicitly.
