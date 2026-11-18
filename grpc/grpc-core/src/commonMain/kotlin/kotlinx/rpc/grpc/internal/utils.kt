@@ -19,24 +19,37 @@ public fun internalError(message: String): Nothing {
 
 /**
  * Runs [set], which applies the setting [name] of a configuration to [builder].
+ * An [UnsupportedOperationException] from [set] becomes a [GrpcUnsupportedSettingException]
+ * that names the setting.
  *
- * @param wrapUnsupported When `true`, an [UnsupportedOperationException] from [set] becomes
- * a [GrpcUnsupportedSettingException] that names the setting.
+ * @param isSet `true` when the configuration block set the setting.
+ * `false` when [set] applies the default of the setting.
  */
 @InternalRpcApi
-public inline fun applySetting(builder: Any, name: String, wrapUnsupported: Boolean, set: () -> Unit) {
+public inline fun applySetting(builder: Any, name: String, isSet: Boolean, set: () -> Unit) {
     try {
         set()
     } catch (e: UnsupportedOperationException) {
-        if (!wrapUnsupported) {
-            throw e
-        }
-        throw GrpcUnsupportedSettingException(
-            "The builder `${builder::class.simpleName}` doesn't support `$name`. " +
-                "Remove `$name` from the configuration block.",
-            e,
-        )
+        throw unsupportedSetting(builder, name, isSet, e)
     }
+}
+
+@PublishedApi
+internal fun unsupportedSetting(
+    builder: Any,
+    name: String,
+    isSet: Boolean,
+    cause: UnsupportedOperationException,
+): GrpcUnsupportedSettingException {
+    val fix = if (isSet) {
+        "Remove `$name` from the configuration block."
+    } else {
+        "This factory applies the default of `$name`. Use the factory that takes a grpc-java builder."
+    }
+    return GrpcUnsupportedSettingException(
+        "The builder `${builder::class.simpleName}` doesn't support `$name`. $fix",
+        cause,
+    )
 }
 
 /**

@@ -20,6 +20,7 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.rpc.grpc.GrpcMetadata
+import kotlinx.rpc.grpc.GrpcUnsupportedSettingException
 import kotlinx.rpc.grpc.client.GrpcCallOptions
 import kotlinx.rpc.grpc.client.GrpcClientConfiguration
 import kotlinx.rpc.grpc.client.GrpcTransportCredentials
@@ -137,8 +138,9 @@ private class SwiftManagedChannelBuilder(
     @OptIn(UnsafeNumber::class)
     fun buildChannel(config: GrpcClientConfiguration): SwiftManagedChannel {
         if (config.isMaxInboundMessageSizeExplicitlySet) {
-            error(
-                "maxInboundMessageSize is not supported by the grpc-swift transport. " +
+            throw GrpcUnsupportedSettingException(
+                "The grpc-swift transport doesn't support `maxInboundMessageSize`. " +
+                    "Remove `maxInboundMessageSize` from the configuration block. " +
                     "See https://github.com/grpc/grpc-swift-nio-transport/issues/207"
             )
         }

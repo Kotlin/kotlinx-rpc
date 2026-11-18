@@ -183,12 +183,16 @@ private fun GrpcClient(
  *
  * The credentials aren't among them. Each subclass adds the credentials that its factory accepts.
  *
+ * The property docs give the defaults of the factory that takes a hostname and a port.
+ * The factory that takes a grpc-java channel builder has other defaults:
+ * a setting that the block doesn't set has the value of the builder.
+ *
  * @see GrpcClientConfiguration
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public open class GrpcClientBaseConfiguration internal constructor() {
     internal val interceptors: MutableList<GrpcClientInterceptor> = mutableListOf()
-    internal var keepAlive: GrpcClientConfiguration.KeepAlive? = null
+    internal var keepAlive: KeepAlive? = null
     internal var isMaxInboundMessageSizeExplicitlySet = false
     internal var isMaxInboundMetadataSizeExplicitlySet = false
     internal var isIdleTimeoutExplicitlySet = false
@@ -343,8 +347,8 @@ public open class GrpcClientBaseConfiguration internal constructor() {
      * }
      * ```
      *
-     * @param configure A lambda to apply custom configurations to the [GrpcClientConfiguration.KeepAlive] instance.
-     * The [GrpcClientConfiguration.KeepAlive] settings include:
+     * @param configure A lambda to apply custom configurations to the [KeepAlive] instance.
+     * The [KeepAlive] settings include:
      * - `time`: The maximum amount of time that the channel can be idle before a keep-alive
      *   ping is sent.
      * - `timeout`: The time allowed for a keep-alive ping to complete.
@@ -355,10 +359,50 @@ public open class GrpcClientBaseConfiguration internal constructor() {
      * must be at least 10 milliseconds. Finite values must be less than `Int.MAX_VALUE`
      * milliseconds. [Duration.INFINITE] is also accepted for either duration.
      *
-     * @see GrpcClientConfiguration.KeepAlive
+     * @see KeepAlive
      */
-    public fun keepAlive(configure: GrpcClientConfiguration.KeepAlive.() -> Unit) {
-        keepAlive = GrpcClientConfiguration.KeepAlive().apply(configure)
+    public fun keepAlive(configure: KeepAlive.() -> Unit) {
+        keepAlive = KeepAlive().apply(configure)
+    }
+
+    /**
+     * Represents keep-alive settings for a gRPC client connection.
+     *
+     * Keep-alive ensures that the connection between the client and the server remains active.
+     * It helps detect connection issues proactively before a request is made and facilitates
+     * maintaining long-lived idle connections.
+     *
+     * Client authors must coordinate with service owners for whether a particular client-side
+     * setting is acceptable.
+     *
+     * @property time Specifies the maximum amount of time the channel can remain idle before a
+     * keep-alive ping is sent to the server to check the connection state.
+     * The default value is `Duration.INFINITE`, which disables keep-alive pings.
+     * Finite values must be at least 10 seconds.
+     *
+     * @property timeout Sets the amount of time to wait for a keep-alive ping response.
+     * If the server does not respond within this timeout, the connection will be considered broken.
+     * The default value is 20 seconds. With `Duration.INFINITE`, the client waits without limit.
+     * Finite values must be at least 10 milliseconds.
+     *
+     * @property withoutCalls Defines whether keep-alive pings will be sent even when there
+     * are no active RPCs on the connection. If set to `true`, pings will be sent regardless
+     * of ongoing calls; otherwise, pings are only sent during active RPCs.
+     * The default value is `false`.
+     */
+    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
+    public class KeepAlive internal constructor() {
+        public var time: Duration = Duration.INFINITE
+            set(value) {
+                value.validateConnectionDuration("keepalive time", 10.seconds)
+                field = value
+            }
+        public var timeout: Duration = 20.seconds
+            set(value) {
+                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
+                field = value
+            }
+        public var withoutCalls: Boolean = false
     }
 }
 
@@ -438,44 +482,4 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      */
     public fun tls(configure: GrpcTlsClientCredentialsBuilder.() -> Unit): GrpcTransportCredentials =
         GrpcTlsClientCredentials(configure)
-
-    /**
-     * Represents keep-alive settings for a gRPC client connection.
-     *
-     * Keep-alive ensures that the connection between the client and the server remains active.
-     * It helps detect connection issues proactively before a request is made and facilitates
-     * maintaining long-lived idle connections.
-     *
-     * Client authors must coordinate with service owners for whether a particular client-side
-     * setting is acceptable.
-     *
-     * @property time Specifies the maximum amount of time the channel can remain idle before a
-     * keep-alive ping is sent to the server to check the connection state.
-     * The default value is `Duration.INFINITE`, which disables keep-alive pings.
-     * Finite values must be at least 10 seconds.
-     *
-     * @property timeout Sets the amount of time to wait for a keep-alive ping response.
-     * If the server does not respond within this timeout, the connection will be considered broken.
-     * The default value is 20 seconds. With `Duration.INFINITE`, the client waits without limit.
-     * Finite values must be at least 10 milliseconds.
-     *
-     * @property withoutCalls Defines whether keep-alive pings will be sent even when there
-     * are no active RPCs on the connection. If set to `true`, pings will be sent regardless
-     * of ongoing calls; otherwise, pings are only sent during active RPCs.
-     * The default value is `false`.
-     */
-    @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
-    public class KeepAlive internal constructor() {
-        public var time: Duration = Duration.INFINITE
-            set(value) {
-                value.validateConnectionDuration("keepalive time", 10.seconds)
-                field = value
-            }
-        public var timeout: Duration = 20.seconds
-            set(value) {
-                value.validateConnectionDuration("keepalive timeout", 10.milliseconds)
-                field = value
-            }
-        public var withoutCalls: Boolean = false
-    }
 }

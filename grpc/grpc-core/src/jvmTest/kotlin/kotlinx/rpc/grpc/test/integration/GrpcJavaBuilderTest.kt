@@ -5,8 +5,12 @@
 package kotlinx.rpc.grpc.test.integration
 
 import io.grpc.ForwardingChannelBuilder2
+import io.grpc.ForwardingServerBuilder
 import io.grpc.ManagedChannelBuilder
+import io.grpc.Server
 import io.grpc.ServerBuilder
+import io.grpc.ServerProvider
+import io.grpc.ServerRegistry
 import io.grpc.inprocess.InProcessChannelBuilder
 import io.grpc.inprocess.InProcessServerBuilder
 import io.grpc.inprocess.InProcessSocketAddress
@@ -24,7 +28,7 @@ import kotlinx.rpc.grpc.client.callCredentials
 import kotlinx.rpc.grpc.client.plus
 import kotlinx.rpc.grpc.getAll
 import kotlinx.rpc.grpc.server.GrpcServer
-import kotlinx.rpc.grpc.server.GrpcServerBaseConfiguration
+import kotlinx.rpc.grpc.server.GrpcServerBuilderConfiguration
 import kotlinx.rpc.grpc.server.GrpcServerCallScope
 import kotlinx.rpc.grpc.server.GrpcServerInterceptor
 import kotlinx.rpc.grpc.server.listenAddresses
@@ -91,6 +95,18 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
+    fun `listenAddresses of a server that does not report them - should be empty`() {
+        val name = InProcessServerBuilder.generateName()
+        runBuilderTest(
+            serverBuilder = NoListenSocketsServerBuilder(InProcessServerBuilder.forName(name)),
+            clientBuilder = { InProcessChannelBuilder.forName(name) },
+        ) { server, client ->
+            assertEquals(emptyList(), server.listenAddresses)
+            assertEquals("Echo", client.echo("Echo"))
+        }
+    }
+
+    @Test
     fun `client builder limit without a configured limit - should stay`() {
         runBuilderTest(
             clientBuilder = { nettyChannelBuilder(it).maxInboundMessageSize(SMALL_LIMIT) },
@@ -133,13 +149,31 @@ class GrpcJavaBuilderTest {
     }
 
     @Test
+    fun `server builder limit with a cleared limit - should stay`() {
+        runBuilderTest(
+            serverBuilder = NettyServerBuilder.forPort(0).maxInboundMessageSize(SMALL_LIMIT),
+            serverConfiguration = {
+                maxInboundMessageSize = 4 * 1024 * 1024
+                clearMaxInboundMessageSize()
+            },
+        ) { _, client ->
+            assertGrpcFailure(GrpcStatusCode.RESOURCE_EXHAUSTED) {
+                runBlocking { client.echo(LARGE_MESSAGE) }
+            }
+        }
+    }
+
+    @Test
     fun `client setting that the builder does not support - should fail`() {
-        val error = assertFailsWith<GrpcUnsupportedSettingException> {
+        // The exception is also an UnsupportedOperationException, the type that the builder throws.
+        val error = assertFailsWith<UnsupportedOperationException> {
             GrpcClient(NoKeepAliveChannelBuilder(InProcessChannelBuilder.forName("unused"))) {
                 keepAlive { time = 10.seconds }
             }
         }
+        assertIs<GrpcUnsupportedSettingException>(error)
         assertContains(error.message.orEmpty(), "`keepAlive`")
+        assertContains(error.message.orEmpty(), "Remove `keepAlive`")
         assertIs<UnsupportedOperationException>(error.cause)
     }
 
@@ -150,8 +184,41 @@ class GrpcJavaBuilderTest {
                 maxConnectionIdle = 10.seconds
             }
         }
-        assertContains(error.message.orEmpty(), "`maxConnectionIdle`")
+        assertContains(error.message.orEmpty(), "Remove `maxConnectionIdle`")
         assertIs<UnsupportedOperationException>(error.cause)
+    }
+
+    @Test
+    fun `port factory default that the server provider does not support - should fail`() {
+        val provider = object : ServerProvider() {
+            override fun isAvailable(): Boolean = true
+
+            // Above the priority of the Netty provider.
+            override fun priority(): Int = 10
+
+            override fun builderForPort(port: Int): ServerBuilder<*> = InProcessServerBuilder.forName("unused")
+        }
+        val registry = ServerRegistry.getDefaultRegistry()
+        registry.register(provider)
+
+        try {
+            val error = assertFailsWith<UnsupportedOperationException> { GrpcServer(0) }
+            assertIs<GrpcUnsupportedSettingException>(error)
+            assertContains(error.message.orEmpty(), "applies the default of `maxConnectionIdle`")
+        } finally {
+            registry.deregister(provider)
+        }
+    }
+
+    @Test
+    fun `call credentials that require transport security on a plaintext channel - should fail`() {
+        runBuilderTest(
+            clientConfiguration = { callCredentials = TlsBearerTokenCredentials() },
+        ) { _, client ->
+            assertGrpcFailure(GrpcStatusCode.UNAUTHENTICATED) {
+                runBlocking { client.echo("Echo") }
+            }
+        }
     }
 
     @Test
@@ -185,7 +252,7 @@ class GrpcJavaBuilderTest {
     private fun runBuilderTest(
         serverBuilder: ServerBuilder<*> = NettyServerBuilder.forPort(0),
         clientBuilder: (GrpcServer) -> ManagedChannelBuilder<*> = ::nettyChannelBuilder,
-        serverConfiguration: GrpcServerBaseConfiguration.() -> Unit = {},
+        serverConfiguration: GrpcServerBuilderConfiguration.() -> Unit = {},
         clientConfiguration: GrpcClientChannelBuilderConfiguration.() -> Unit = {},
         test: suspend (GrpcServer, GrpcClient) -> Unit,
     ) = runBlocking {
@@ -193,15 +260,16 @@ class GrpcJavaBuilderTest {
             services { registerService<EchoService> { EchoServiceImpl() } }
             serverConfiguration()
         }.start()
-        val client = GrpcClient(clientBuilder(server), clientConfiguration)
+        var client: GrpcClient? = null
 
         try {
+            client = GrpcClient(clientBuilder(server), clientConfiguration)
             test(server, client)
         } finally {
-            client.shutdownNow()
+            client?.shutdownNow()
             server.shutdownNow()
             server.awaitTermination(30.seconds)
-            client.awaitTermination(30.seconds)
+            client?.awaitTermination(30.seconds)
         }
     }
 
@@ -215,6 +283,27 @@ class GrpcJavaBuilderTest {
 
         override fun keepAliveTime(keepAliveTime: Long, timeUnit: TimeUnit): NoKeepAliveChannelBuilder =
             throw UnsupportedOperationException()
+    }
+
+    private class NoListenSocketsServerBuilder(
+        private val delegate: ServerBuilder<*>,
+    ) : ForwardingServerBuilder<NoListenSocketsServerBuilder>() {
+        override fun delegate(): ServerBuilder<*> = delegate
+
+        override fun build(): Server = NoListenSocketsServer(delegate.build())
+    }
+
+    /**
+     * Keeps the default `getListenSockets` of [Server], which throws [UnsupportedOperationException].
+     */
+    private class NoListenSocketsServer(private val delegate: Server) : Server() {
+        override fun start(): Server = apply { delegate.start() }
+        override fun shutdown(): Server = apply { delegate.shutdown() }
+        override fun shutdownNow(): Server = apply { delegate.shutdownNow() }
+        override fun isShutdown(): Boolean = delegate.isShutdown
+        override fun isTerminated(): Boolean = delegate.isTerminated
+        override fun awaitTermination(timeout: Long, unit: TimeUnit): Boolean = delegate.awaitTermination(timeout, unit)
+        override fun awaitTermination() = delegate.awaitTermination()
     }
 
     companion object {

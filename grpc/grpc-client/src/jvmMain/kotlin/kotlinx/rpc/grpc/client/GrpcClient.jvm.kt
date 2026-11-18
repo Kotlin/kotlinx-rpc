@@ -29,8 +29,10 @@ import org.jetbrains.kotlinx.library.api.watchdog.IntentionallyWithoutEqualsHash
  * - A setting that [configure] doesn't set has the value from [builder],
  *   not the default of [GrpcClientBaseConfiguration].
  * - [configure] has no transport credentials. Set them on [builder].
- * - If [builder] doesn't support a setting from [configure], the function throws
- *   [GrpcUnsupportedSettingException].
+ * - If [builder] rejects a setting from [configure] with [UnsupportedOperationException],
+ *   the function throws [GrpcUnsupportedSettingException].
+ *   [builder] can then have a part of the settings, so make a new builder for the next call.
+ * - A builder can ignore a setting that it doesn't support. The function doesn't report such a setting.
  *
  * [GrpcClient.shutdown] shuts down the channel.
  * An executor or an event loop group that the caller gave to [builder] stays open.
@@ -54,6 +56,9 @@ public fun GrpcClient(
  * The settings of a `GrpcClient` that gets its channel from a grpc-java `ManagedChannelBuilder`.
  *
  * The builder already has the transport credentials, so this configuration has only [callCredentials].
+ *
+ * A setting that the block doesn't set has the value of the builder,
+ * not the default that the property docs of [GrpcClientBaseConfiguration] give.
  */
 @IntentionallyWithoutEqualsHashCodeOrToString(reason = ExemptionReason.TODO, description = "review before 1.0")
 public class GrpcClientChannelBuilderConfiguration internal constructor() : GrpcClientBaseConfiguration() {
@@ -64,6 +69,12 @@ public class GrpcClientChannelBuilderConfiguration internal constructor() : Grpc
      * To send more than one, combine them with `+`.
      * To use the call credentials of a value that also has transport credentials,
      * read its [GrpcClientCredentials.callCredentials].
+     *
+     * Call credentials with [GrpcCallCredentials.requiresTransportSecurity] `true`, which is the default,
+     * need a channel that reports the security level `PRIVACY_AND_INTEGRITY`.
+     * On another channel, each call fails with `UNAUTHENTICATED`.
+     * A plaintext channel doesn't report this level, and a custom transport reports it only
+     * when its code sets it.
      *
      * ```kotlin
      * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)

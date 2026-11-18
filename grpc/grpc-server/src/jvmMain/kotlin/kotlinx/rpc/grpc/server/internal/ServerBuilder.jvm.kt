@@ -40,42 +40,44 @@ internal actual fun ServerBuilder<*>.applyConfig(config: GrpcServerConfiguration
 }
 
 /**
- * @param explicitOnly When `true`:
- * - A size limit or a connection limit that [config] doesn't set explicitly stays as the builder has it.
- * - A setting that the builder doesn't support fails with [GrpcUnsupportedSettingException].
+ * Applies [config] to the builder.
+ * A setting that the builder rejects fails with [GrpcUnsupportedSettingException].
+ *
+ * @param explicitOnly When `true`, a size limit or a connection limit that [config] doesn't set
+ * explicitly stays as the builder has it.
  */
 internal fun ServerBuilder<*>.applyConfig(
     config: GrpcServerBaseConfiguration,
     explicitOnly: Boolean,
 ): ServerBuilder<*> {
     if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
-        applySetting(this, "maxInboundMessageSize", explicitOnly) {
+        applySetting(this, "maxInboundMessageSize", config.isMaxInboundMessageSizeExplicitlySet) {
             maxInboundMessageSize(config.maxInboundMessageSize)
         }
     }
     if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
-        applySetting(this, "maxInboundMetadataSize", explicitOnly) {
+        applySetting(this, "maxInboundMetadataSize", config.isMaxInboundMetadataSizeExplicitlySet) {
             maxInboundMetadataSize(config.maxInboundMetadataSize)
         }
     }
     config.keepAlive?.let {
-        applySetting(this, "keepAlive", explicitOnly) {
+        applySetting(this, "keepAlive", isSet = true) {
             keepAliveTime(it.time.inWholeNanoseconds, TimeUnit.NANOSECONDS)
             keepAliveTimeout(it.timeout.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionIdleExplicitlySet) {
-        applySetting(this, "maxConnectionIdle", explicitOnly) {
+        applySetting(this, "maxConnectionIdle", config.isMaxConnectionIdleExplicitlySet) {
             maxConnectionIdle(config.maxConnectionIdle.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionAgeExplicitlySet) {
-        applySetting(this, "maxConnectionAge", explicitOnly) {
+        applySetting(this, "maxConnectionAge", config.isMaxConnectionAgeExplicitlySet) {
             maxConnectionAge(config.maxConnectionAge.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }
     if (!explicitOnly || config.isMaxConnectionAgeGraceExplicitlySet) {
-        applySetting(this, "maxConnectionAgeGrace", explicitOnly) {
+        applySetting(this, "maxConnectionAgeGrace", config.isMaxConnectionAgeGraceExplicitlySet) {
             maxConnectionAgeGrace(config.maxConnectionAgeGrace.inWholeNanoseconds, TimeUnit.NANOSECONDS)
         }
     }

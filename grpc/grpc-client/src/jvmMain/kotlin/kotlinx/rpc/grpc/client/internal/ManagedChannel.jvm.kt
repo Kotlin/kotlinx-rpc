@@ -88,36 +88,38 @@ internal actual fun ManagedChannelBuilder<*>.buildChannel(config: GrpcClientConf
 }
 
 /**
- * @param explicitOnly When `true`:
- * - A size limit or the idle timeout that [config] doesn't set explicitly stays as the builder has it.
- * - A setting that the builder doesn't support fails with [GrpcUnsupportedSettingException].
+ * Applies [config] to the builder.
+ * A setting that the builder rejects fails with [GrpcUnsupportedSettingException].
+ *
+ * @param explicitOnly When `true`, a size limit or the idle timeout that [config] doesn't set
+ * explicitly stays as the builder has it.
  */
 internal fun ManagedChannelBuilder<*>.applyConfig(
     config: GrpcClientBaseConfiguration,
     explicitOnly: Boolean,
 ): ManagedChannelBuilder<*> {
     config.keepAlive?.let {
-        applySetting(this, "keepAlive", explicitOnly) {
+        applySetting(this, "keepAlive", isSet = true) {
             keepAliveTime(it.time.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             keepAliveTimeout(it.timeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
             keepAliveWithoutCalls(it.withoutCalls)
         }
     }
 
-    config.overrideAuthority?.let { applySetting(this, "overrideAuthority", explicitOnly) { overrideAuthority(it) } }
-    config.userAgent?.let { applySetting(this, "userAgent", explicitOnly) { userAgent(it) } }
+    config.overrideAuthority?.let { applySetting(this, "overrideAuthority", isSet = true) { overrideAuthority(it) } }
+    config.userAgent?.let { applySetting(this, "userAgent", isSet = true) { userAgent(it) } }
     if (!explicitOnly || config.isMaxInboundMessageSizeExplicitlySet) {
-        applySetting(this, "maxInboundMessageSize", explicitOnly) {
+        applySetting(this, "maxInboundMessageSize", config.isMaxInboundMessageSizeExplicitlySet) {
             maxInboundMessageSize(config.maxInboundMessageSize)
         }
     }
     if (!explicitOnly || config.isMaxInboundMetadataSizeExplicitlySet) {
-        applySetting(this, "maxInboundMetadataSize", explicitOnly) {
+        applySetting(this, "maxInboundMetadataSize", config.isMaxInboundMetadataSizeExplicitlySet) {
             maxInboundMetadataSize(config.maxInboundMetadataSize)
         }
     }
     if (!explicitOnly || config.isIdleTimeoutExplicitlySet) {
-        applySetting(this, "idleTimeout", explicitOnly) {
+        applySetting(this, "idleTimeout", config.isIdleTimeoutExplicitlySet) {
             idleTimeout(config.idleTimeout.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         }
     }
