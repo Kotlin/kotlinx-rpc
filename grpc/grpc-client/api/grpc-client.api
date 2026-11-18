@@ -69,6 +69,15 @@ public class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration {
 	public final fun setUserAgent (Ljava/lang/String;)V
 }
 
+public final class kotlinx/rpc/grpc/client/GrpcClientBaseConfiguration$KeepAlive {
+	public final fun getTime-UwyO8pc ()J
+	public final fun getTimeout-UwyO8pc ()J
+	public final fun getWithoutCalls ()Z
+	public final fun setTime-LRDsOJo (J)V
+	public final fun setTimeout-LRDsOJo (J)V
+	public final fun setWithoutCalls (Z)V
+}
+
 public abstract interface class kotlinx/rpc/grpc/client/GrpcClientCallScope {
 	public abstract fun cancel (Ljava/lang/String;Ljava/lang/Throwable;)Ljava/lang/Void;
 	public static synthetic fun cancel$default (Lkotlinx/rpc/grpc/client/GrpcClientCallScope;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Ljava/lang/Void;
@@ -94,15 +103,6 @@ public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration : kotlinx/rpc
 	public final fun plaintext ()Lkotlinx/rpc/grpc/client/GrpcTransportCredentials;
 	public final fun setCredentials (Lkotlinx/rpc/grpc/client/GrpcClientCredentials;)V
 	public final fun tls (Lkotlin/jvm/functions/Function1;)Lkotlinx/rpc/grpc/client/GrpcTransportCredentials;
-}
-
-public final class kotlinx/rpc/grpc/client/GrpcClientConfiguration$KeepAlive {
-	public final fun getTime-UwyO8pc ()J
-	public final fun getTimeout-UwyO8pc ()J
-	public final fun getWithoutCalls ()Z
-	public final fun setTime-LRDsOJo (J)V
-	public final fun setTimeout-LRDsOJo (J)V
-	public final fun setWithoutCalls (Z)V
 }
 
 public abstract interface class kotlinx/rpc/grpc/client/GrpcClientCredentials {

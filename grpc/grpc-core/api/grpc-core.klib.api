@@ -131,7 +131,7 @@ final class kotlinx.rpc.grpc/GrpcStatusException : kotlin/Exception { // kotlinx
     constructor <init>(kotlinx.rpc.grpc/GrpcStatus, kotlinx.rpc.grpc/GrpcMetadata?) // kotlinx.rpc.grpc/GrpcStatusException.<init>|<init>(kotlinx.rpc.grpc.GrpcStatus;kotlinx.rpc.grpc.GrpcMetadata?){}[0]
 }
 
-final class kotlinx.rpc.grpc/GrpcUnsupportedSettingException : kotlin/RuntimeException { // kotlinx.rpc.grpc/GrpcUnsupportedSettingException|null[0]
+final class kotlinx.rpc.grpc/GrpcUnsupportedSettingException : kotlin/UnsupportedOperationException { // kotlinx.rpc.grpc/GrpcUnsupportedSettingException|null[0]
     constructor <init>(kotlin/String, kotlin/Throwable? = ...) // kotlinx.rpc.grpc/GrpcUnsupportedSettingException.<init>|<init>(kotlin.String;kotlin.Throwable?){}[0]
 }
 

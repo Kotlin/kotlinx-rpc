@@ -84,18 +84,6 @@ final class kotlinx.rpc.grpc.client/GrpcClientConfiguration : kotlinx.rpc.grpc.c
 
     final fun plaintext(): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.plaintext|plaintext(){}[0]
     final fun tls(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcTlsClientCredentialsBuilder, kotlin/Unit>): kotlinx.rpc.grpc.client/GrpcTransportCredentials // kotlinx.rpc.grpc.client/GrpcClientConfiguration.tls|tls(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcTlsClientCredentialsBuilder,kotlin.Unit>){}[0]
-
-    final class KeepAlive { // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive|null[0]
-        final var time // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time|{}time[0]
-            final fun <get-time>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time.<get-time>|<get-time>(){}[0]
-            final fun <set-time>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.time.<set-time>|<set-time>(kotlin.time.Duration){}[0]
-        final var timeout // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout|{}timeout[0]
-            final fun <get-timeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout.<get-timeout>|<get-timeout>(){}[0]
-            final fun <set-timeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.timeout.<set-timeout>|<set-timeout>(kotlin.time.Duration){}[0]
-        final var withoutCalls // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls|{}withoutCalls[0]
-            final fun <get-withoutCalls>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls.<get-withoutCalls>|<get-withoutCalls>(){}[0]
-            final fun <set-withoutCalls>(kotlin/Boolean) // kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive.withoutCalls.<set-withoutCalls>|<set-withoutCalls>(kotlin.Boolean){}[0]
-    }
 }
 
 final class kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials : kotlinx.rpc.grpc.client/GrpcTransportCredentials { // kotlinx.rpc.grpc.client/GrpcInsecureClientCredentials|null[0]
@@ -133,7 +121,19 @@ open class kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration { // kotlinx.rpc.
     final fun clearMaxInboundMessageSize() // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.clearMaxInboundMessageSize|clearMaxInboundMessageSize(){}[0]
     final fun clearMaxInboundMetadataSize() // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.clearMaxInboundMetadataSize|clearMaxInboundMetadataSize(){}[0]
     final fun intercept(kotlin/Array<out kotlinx.rpc.grpc.client/GrpcClientInterceptor>...) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.intercept|intercept(kotlin.Array<out|kotlinx.rpc.grpc.client.GrpcClientInterceptor>...){}[0]
-    final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientConfiguration.KeepAlive,kotlin.Unit>){}[0]
+    final fun keepAlive(kotlin/Function1<kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive, kotlin/Unit>) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.keepAlive|keepAlive(kotlin.Function1<kotlinx.rpc.grpc.client.GrpcClientBaseConfiguration.KeepAlive,kotlin.Unit>){}[0]
+
+    final class KeepAlive { // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive|null[0]
+        final var time // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time|{}time[0]
+            final fun <get-time>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time.<get-time>|<get-time>(){}[0]
+            final fun <set-time>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.time.<set-time>|<set-time>(kotlin.time.Duration){}[0]
+        final var timeout // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout|{}timeout[0]
+            final fun <get-timeout>(): kotlin.time/Duration // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout.<get-timeout>|<get-timeout>(){}[0]
+            final fun <set-timeout>(kotlin.time/Duration) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.timeout.<set-timeout>|<set-timeout>(kotlin.time.Duration){}[0]
+        final var withoutCalls // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls|{}withoutCalls[0]
+            final fun <get-withoutCalls>(): kotlin/Boolean // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<get-withoutCalls>|<get-withoutCalls>(){}[0]
+            final fun <set-withoutCalls>(kotlin/Boolean) // kotlinx.rpc.grpc.client/GrpcClientBaseConfiguration.KeepAlive.withoutCalls.<set-withoutCalls>|<set-withoutCalls>(kotlin.Boolean){}[0]
+    }
 }
 
 final object kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials : kotlinx.rpc.grpc.client/GrpcCallCredentials { // kotlinx.rpc.grpc.client/GrpcEmptyCallCredentials|null[0]
