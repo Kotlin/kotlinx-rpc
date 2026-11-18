@@ -190,6 +190,10 @@ class GrpcClientConcurrencyTest {
             }
             assertTrue(closeEvents.tryReceive().isFailure, "connection loss emitted a duplicate close callback")
 
+            // The server records each cancellation only after it processes the TCP reset, so the client
+            // can fail all calls before the trace has the events.
+            awaitServerEvent(EventType.CLIENT_CANCELLED, CONNECTION_LOSS_CALL_COUNT.toUInt())
+
             val trace = serverTrace()
             val terminalCount = trace.events.count {
                 it.type == EventType.CALL_CLOSED || it.type == EventType.CLIENT_CANCELLED
