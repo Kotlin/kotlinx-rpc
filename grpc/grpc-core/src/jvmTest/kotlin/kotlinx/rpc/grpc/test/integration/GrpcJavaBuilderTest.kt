@@ -327,7 +327,7 @@ class GrpcJavaBuilderTest {
     }
 
     /**
-     * Keeps the default `getListenSockets` of [Server], which throws [UnsupportedOperationException].
+     * Doesn't override `getListenSockets` of [Server]. The default throws [UnsupportedOperationException].
      */
     private class NoListenSocketsServer(private val delegate: Server) : Server() {
         override fun start(): Server = apply { delegate.start() }

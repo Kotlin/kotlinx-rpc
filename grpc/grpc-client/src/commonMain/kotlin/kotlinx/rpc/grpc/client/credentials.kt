@@ -31,6 +31,8 @@ public interface GrpcClientCredentials
 /**
  * The credentials that set the security of the connection to the gRPC server.
  *
+ * The library has two implementations:
+ *
  * - [GrpcInsecureClientCredentials]: no transport security (plaintext).
  * - [GrpcTlsClientCredentials]: TLS, with optional mutual TLS (mTLS).
  */
@@ -68,9 +70,9 @@ public operator fun GrpcClientCredentials.plus(other: GrpcCallCredentials): Grpc
 /**
  * The call credentials of these credentials.
  *
- * Use this property to give the call credentials of a combined value to a client that
- * doesn't take transport credentials.
- * Returns [GrpcEmptyCallCredentials] when the credentials have only transport credentials.
+ * Use this property when a `GrpcClient` factory takes only call credentials,
+ * and the value also has transport credentials.
+ * The value is [GrpcEmptyCallCredentials] when the credentials have only transport credentials.
  *
  * ```kotlin
  * val credentials = GrpcTlsClientCredentials { ... } + BearerTokenCredentials(token)
@@ -85,9 +87,6 @@ public val GrpcClientCredentials.callCredentials: GrpcCallCredentials
         else -> internalError("Unknown client credentials type: $this")
     }
 
-/**
- * The transport credentials of these credentials, or `null` when they have only call credentials.
- */
 internal val GrpcClientCredentials.transportCredentials: GrpcTransportCredentials?
     get() = when (this) {
         is GrpcCombinedClientCredentials -> transport
@@ -248,10 +247,6 @@ public interface GrpcTlsClientCredentialsBuilder {
     public fun keyManager(certChainPem: String, privateKeyPem: String): GrpcTlsClientCredentialsBuilder
 }
 
-/**
- * Transport credentials together with call credentials. The official gRPC libraries have the same
- * combination.
- */
 internal class GrpcCombinedClientCredentials(
     val transport: GrpcTransportCredentials,
     val call: GrpcCallCredentials,

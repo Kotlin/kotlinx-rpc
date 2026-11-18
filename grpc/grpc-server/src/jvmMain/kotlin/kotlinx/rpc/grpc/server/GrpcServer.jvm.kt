@@ -40,8 +40,7 @@ import kotlin.coroutines.EmptyCoroutineContext
  * - A builder can ignore a setting that it doesn't support. The function doesn't report such a setting.
  *
  * To start the server, call [GrpcServer.start].
- * [GrpcServer.shutdown] shuts down the server.
- * An executor or an event loop group that the caller gave to [builder] stays open.
+ * The server doesn't shut down an executor or an event loop group that the caller gave to [builder].
  *
  * @param parentContext The parent coroutine context of the service calls.
  */
@@ -60,7 +59,7 @@ public fun GrpcServer(
  *
  * The builder already has the credentials, so this configuration has none.
  *
- * A setting that the block doesn't set has the value of the builder,
+ * A setting that the configuration block doesn't set has the value of the builder,
  * not the default that the property docs of [GrpcServerBaseConfiguration] give.
  */
 public class GrpcServerBuilderConfiguration internal constructor() : GrpcServerBaseConfiguration()
@@ -76,7 +75,7 @@ public class GrpcServerBuilderConfiguration internal constructor() : GrpcServerB
  *
  * - Before [GrpcServer.start].
  * - After the server terminates.
- * - The grpc-java server doesn't report its addresses.
+ * - For a grpc-java server that doesn't report its addresses.
  */
 public val GrpcServer.listenAddresses: List<SocketAddress>
     get() {
@@ -89,7 +88,7 @@ public val GrpcServer.listenAddresses: List<SocketAddress>
             // grpc-java has no other way to check that the server is started and not terminated.
             emptyList()
         } catch (_: UnsupportedOperationException) {
-            // The default of `io.grpc.Server.getListenSockets`, for a server class that doesn't override it.
+            // `io.grpc.Server.getListenSockets` throws this exception unless the server class overrides it.
             emptyList()
         }
     }

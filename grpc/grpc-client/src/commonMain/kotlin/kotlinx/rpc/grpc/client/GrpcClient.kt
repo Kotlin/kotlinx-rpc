@@ -184,8 +184,8 @@ private fun GrpcClient(
  * The credentials aren't among them. Each subclass adds the credentials that its factory accepts.
  *
  * The property docs give the defaults of the factory that takes a hostname and a port.
- * The factory that takes a grpc-java channel builder has other defaults:
- * a setting that the block doesn't set has the value of the builder.
+ * On the JVM, the factory that takes a grpc-java `ManagedChannelBuilder` has other defaults:
+ * a setting that the configuration block doesn't set has the value of the builder.
  *
  * @see GrpcClientConfiguration
  */
@@ -247,8 +247,10 @@ public open class GrpcClientBaseConfiguration internal constructor() {
      * The default limit is 4 MiB (4,194,304 bytes).
      * Values can't be negative. A larger message fails the call with `RESOURCE_EXHAUSTED`.
      *
-     * Apple platforms currently don't support this setting, because of a
+     * Apple platforms don't support this setting, because of a
      * [bug in the grpc-swift transport](https://github.com/grpc/grpc-swift-nio-transport/issues/207).
+     * When the configuration block sets it there, the factory throws
+     * [kotlinx.rpc.grpc.GrpcUnsupportedSettingException].
      */
     public var maxInboundMessageSize: Int = 4 * 1024 * 1024
         set(value) {
@@ -435,7 +437,7 @@ public class GrpcClientConfiguration internal constructor() : GrpcClientBaseConf
      * ```
      *
      * To send call credentials with every call, add them with `+`, or set them alone.
-     * Call credentials alone use the default TLS credentials for the connection.
+     * With call credentials alone, the client uses the default TLS credentials for the connection.
      *
      * ```
      * GrpcClient("example.com", 443) {

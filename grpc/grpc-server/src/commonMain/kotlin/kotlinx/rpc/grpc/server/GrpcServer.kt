@@ -166,11 +166,12 @@ internal fun buildGrpcServer(
  * The credentials aren't among them. [GrpcServerConfiguration] adds them.
  *
  * The property docs give the defaults of the factory that takes a port.
- * The factory that takes a grpc-java server builder has other defaults:
- * a setting that the block doesn't set has the value of the builder.
+ * On the JVM, the factory that takes a grpc-java `ServerBuilder` has other defaults:
+ * a setting that the configuration block doesn't set has the value of the builder.
  *
- * On the JVM, a server provider other than Netty can lack support for a setting.
- * A setting that the block doesn't set then has the value of that provider, not the default.
+ * On the JVM, a custom `io.grpc.ServerProvider` can give the factory that takes a port
+ * a builder without support for a setting.
+ * A setting that the configuration block doesn't set then has the value of that builder, not the default.
  *
  * @see GrpcServerConfiguration
  */

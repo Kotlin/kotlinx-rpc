@@ -5,9 +5,10 @@
 package kotlinx.rpc.grpc
 
 /**
- * Thrown when the transport of a gRPC client or a gRPC server rejects a setting of the configuration.
+ * The exception that a `GrpcClient` or `GrpcServer` factory throws when the transport rejects
+ * a setting of the configuration block. The message names the setting.
  *
- * A transport can also ignore a setting that it doesn't support. Then nothing is thrown.
+ * A transport can also ignore a setting that it doesn't support. The factory then doesn't throw.
  */
 public class GrpcUnsupportedSettingException(
     message: String,
