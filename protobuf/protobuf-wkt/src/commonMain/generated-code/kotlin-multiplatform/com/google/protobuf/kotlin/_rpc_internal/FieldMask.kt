@@ -16,10 +16,8 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -28,9 +26,6 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __pathsDelegate: MsgFieldDelegate<List<String>> = MsgFieldDelegate { emptyList() }
     public override var paths: List<String> by __pathsDelegate
@@ -112,6 +107,10 @@ public class FieldMaskInternal: FieldMask.Builder, InternalMessage(fieldsWithPre
     }
 }
 
+private object FieldMaskInternalTags {
+    const val PATHS: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun FieldMaskInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.paths.isNotEmpty()) {
@@ -136,9 +135,13 @@ public fun FieldMaskInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FieldMaskInternalTags.PATHS -> {
                 val target = msg.__pathsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
@@ -151,18 +154,11 @@ public fun FieldMaskInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FieldMaskInternal.computeSize(): Int {

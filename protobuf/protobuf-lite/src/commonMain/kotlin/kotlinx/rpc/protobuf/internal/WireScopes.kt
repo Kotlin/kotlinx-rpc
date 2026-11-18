@@ -21,6 +21,21 @@ import kotlinx.rpc.protobuf.ProtobufDecodingException
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 
 /**
+ * Appends the bytes encoded by [block] to [buffer].
+ */
+@InternalRpcApi
+public fun <R> encodeWire(buffer: Buffer, block: (WireEncoder) -> R): R {
+    val output = WireOutput(BufferOutputSegments(buffer, UNKNOWN_SIZE))
+    try {
+        val result = block(WireEncoder(output))
+        output.flush()
+        return result
+    } finally {
+        output.close()
+    }
+}
+
+/**
  * Runs [block] with a decoder over all bytes of [buffer], and then removes these bytes from [buffer].
  *
  * The decoder is valid only inside [block].

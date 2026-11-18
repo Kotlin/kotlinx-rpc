@@ -22,7 +22,7 @@ import kotlinx.rpc.grpc.marshaller.GrpcMarshaller
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.encodeToBuffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
-import kotlinx.rpc.protobuf.internal.WireEncoder
+import kotlinx.rpc.protobuf.internal.encodeWire
 import num
 import presence
 import ref
@@ -268,9 +268,9 @@ class OneOfTest {
 
         // decoding an unknown number directly from the wire
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeEnum(8, 1234)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeEnum(8, 1234)
+        }
         val fromWire = grpcMarshallerOf<OneOfNumeric32>().decodeFromSource(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(1234), fromWire.enum)
         val reEncoded = encodeDecode(fromWire, grpcMarshallerOf<OneOfNumeric32>())

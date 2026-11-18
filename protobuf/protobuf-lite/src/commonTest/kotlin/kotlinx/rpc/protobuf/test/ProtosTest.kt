@@ -24,6 +24,7 @@ import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageWriter
 import kotlinx.rpc.protobuf.ProtobufException
 import kotlinx.rpc.protobuf.internal.WireEncoder
+import kotlinx.rpc.protobuf.internal.encodeWire
 import test.groups.WithGroups
 import test.groups.WithGroupsOneOfWithGroupCase
 import test.groups.invoke
@@ -59,9 +60,7 @@ class ProtosTest {
 
     private fun encodeToBytes(block: (WireEncoder) -> Unit): ByteArray {
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        block(encoder)
-        encoder.flush()
+        encodeWire(buffer, block)
         return buffer.readByteArray()
     }
 
@@ -74,14 +73,14 @@ class ProtosTest {
     @Test
     fun testUnknownFieldsDontCrash() {
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        // optional sint32 sint32 = 7
-        encoder.writeSInt32(7, 12)
-        // optional sint64 sint64 = 8; (unknown as wrong wire-type)
-        encoder.writeFloat(8, 2f)
-        // optional fixed32 fixed32 = 9;
-        encoder.writeFixed32(9, 1234u)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            // optional sint32 sint32 = 7
+            encoder.writeSInt32(7, 12)
+            // optional sint64 sint64 = 8; (unknown as wrong wire-type)
+            encoder.writeFloat(8, 2f)
+            // optional fixed32 fixed32 = 9;
+            encoder.writeFixed32(9, 1234u)
+        }
 
         val decoded = grpcMarshallerOf<AllPrimitives>().decodeFromSource(buffer)
         assertEquals(12, decoded.sint32)
@@ -180,10 +179,10 @@ class ProtosTest {
         }
 
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeBytes(1, validElement)
-        encoder.writeBytes(1, presenceCheckMissingRequired())
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(1, validElement)
+            encoder.writeBytes(1, presenceCheckMissingRequired())
+        }
 
         assertFailsWith<ProtobufException> {
             grpcMarshallerOf<RepeatedWithRequired>().decodeFromSource(buffer)
@@ -199,9 +198,9 @@ class ProtosTest {
 
         // Test missing field during decoding of an encoded message
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeFloat(2, 1f)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeFloat(2, 1f)
+        }
 
         assertFailsWith<ProtobufException> {
             grpcMarshallerOf<PresenceCheck>().decodeFromSource(buffer)
@@ -212,9 +211,9 @@ class ProtosTest {
     fun testEnumUnrecognized() {
         // write unknown enum value
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeEnum(1, 50)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeEnum(1, 50)
+        }
 
         val decodedMsg = grpcMarshallerOf<UsingEnum>().decodeFromSource(buffer)
         assertEquals(MyEnum.UNRECOGNIZED(50), decodedMsg.enum)
@@ -298,10 +297,10 @@ class ProtosTest {
         }
 
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        part1.asInternal().encodeWith(encoder, null)
-        part2.asInternal().encodeWith(encoder, null)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            part1.asInternal().encodeWith(encoder, null)
+            part2.asInternal().encodeWith(encoder, null)
+        }
 
 
         val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
@@ -317,10 +316,10 @@ class ProtosTest {
         // write two values on the oneOf field.
         // the second value must be the one stored during decoding.
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeInt32(2, 99)
-        encoder.writeFixed64(3, 123u)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeInt32(2, 99)
+            encoder.writeFixed64(3, 123u)
+        }
 
         val decoded = grpcMarshallerOf<OneOfMsg>().decodeFromSource(buffer)
         assertEquals(OneOfMsgFieldCase.FIXED, decoded.field)
@@ -343,9 +342,9 @@ class ProtosTest {
         // A oneof message branch whose message is missing
         // its required field during decoding (msg = 2).
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeBytes(2, presenceCheckMissingRequired())
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(2, presenceCheckMissingRequired())
+        }
 
         assertFailsWith<ProtobufException> {
             grpcMarshallerOf<OneOfWithRequired>().decodeFromSource(buffer)
@@ -378,9 +377,9 @@ class ProtosTest {
         // The `inner` submessage is present on the wire (field 1)
         // but is missing its required `field` during decoding.
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeBytes(1, ByteArray(0))
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(1, ByteArray(0))
+        }
 
         assertFailsWith<ProtobufException> {
             grpcMarshallerOf<Outer>().decodeFromSource(buffer)
@@ -463,7 +462,6 @@ class ProtosTest {
     fun testMessageMerging() {
 
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
 
         val firstPart = Other {
             arg1 = "first"
@@ -474,10 +472,11 @@ class ProtosTest {
             arg3 = "fourth"
         }
 
-        encoder.writeMessage(1, firstPart as OtherInternal) { encodeWith(encoder, null) }
-        encoder.flush()
-        encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeMessage(1, firstPart as OtherInternal) { encodeWith(encoder, null) }
+            encoder.flush()
+            encoder.writeMessage(1, secondPart as OtherInternal) { encodeWith(encoder, null) }
+        }
 
         val decoded = grpcMarshallerOf<Reference>().decodeFromSource(buffer)
         assertEquals("first", decoded.other.arg1)
@@ -576,9 +575,9 @@ class ProtosTest {
         }
 
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
-        encoder.writeBytes(2, mapEntry)
-        encoder.flush()
+        encodeWire(buffer) { encoder ->
+            encoder.writeBytes(2, mapEntry)
+        }
 
         assertFailsWith<ProtobufException> {
             grpcMarshallerOf<TestMap>().decodeFromSource(buffer)

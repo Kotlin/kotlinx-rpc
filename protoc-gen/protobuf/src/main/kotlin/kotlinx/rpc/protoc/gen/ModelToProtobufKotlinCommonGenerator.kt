@@ -32,6 +32,7 @@ import kotlinx.rpc.protoc.gen.core.model.hasRequiredFields
 import kotlinx.rpc.protoc.gen.core.model.isOneOfReferenceType
 import kotlinx.rpc.protoc.gen.core.model.nested
 import kotlinx.rpc.protoc.gen.core.model.scalarDefaultSuffix
+import kotlinx.rpc.protoc.gen.core.model.suffixed
 import kotlinx.rpc.protoc.gen.core.model.topLevelFP
 import kotlinx.rpc.protoc.gen.core.scoped
 import kotlinx.rpc.protoc.gen.core.scopedAnnotation
@@ -43,6 +44,12 @@ class ModelToProtobufKotlinCommonGenerator(
     model: Model,
     conflictCollector: NameConflictCollector = NameConflictCollector(),
 ) : AModelToKotlinCommonGenerator(config, generatedMetadata, model, conflictCollector) {
+    private val tagObjectNames: Map<FqName, FqName.Declaration> = model.files
+        .flatMap { it.messageDeclarations }
+        .associate { message ->
+            message.name to model.nameTable.registerUnique(message.internalClassName.suffixed("Tags"))
+        }
+
     override val publicGeneratedNames: Set<String> = setOf(
         // Nested types generated per message
         "Builder", "Companion", "MARSHALLER", "DESCRIPTOR", "PresenceIndices", "BytesDefaults",
@@ -104,12 +111,16 @@ class ModelToProtobufKotlinCommonGenerator(
 
         // emit all required functions in the outer scope
         val allMessages = messages + messages.flatMap(MessageDeclaration::allNestedRecursively)
+        val tagNames = mutableMapOf<FqName, Map<Pair<Int, Boolean>, ScopedFormattedString>>()
+        messages.forEach { message ->
+            generateMessageTagConstants(message, tagObjectNames.getValue(message.name), tagNames)
+        }
         allMessages.forEach { message ->
             if (message.hasRequiredFieldsRecursively) {
                 generateRequiredCheck(message)
             }
             generateMessageEncoder(message)
-            generateMessageDecoder(message)
+            generateMessageDecoder(message, tagNames.getValue(message.name))
             generateInternalComputeSize(message)
             generateInternalCastExtension(message)
         }
@@ -218,27 +229,12 @@ class ModelToProtobufKotlinCommonGenerator(
                 value = "lazy { computeSize() }".scoped(),
             )
 
-            // unknown fields are currently not stored in a map like structure, but directly in binary form
-            // within a buffer.
-            // creating a Buffer object is inexpensive as there is no dynamic allocation involved.
             property(
                 name = "_unknownFields",
                 modifiers = "override",
                 annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
                 type = FqName.KotlinLibs.Buffer.scoped(),
                 value = "%T()".scoped(FqName.KotlinLibs.Buffer),
-            )
-
-            // by setting the encoder to null, we avoid unnecessary creation of the WireEncoder
-            // if there is no unknown field. by checking if it is null, we can also check if there
-            // was any unknown field after decoding (for flushing).
-            property(
-                name = "_unknownFieldsEncoder",
-                modifiers = "internal",
-                isVar = true,
-                annotations = listOf(FqName.Annotations.InternalRpcApi.scopedAnnotation()),
-                type = "%T?".scoped(FqName.RpcClasses.WireEncoder),
-                value = "null".scoped(),
             )
 
             declaration.oneOfDeclarations.forEach { oneOf ->
@@ -1386,18 +1382,67 @@ class ModelToProtobufKotlinCommonGenerator(
         }
     }
 
-    private fun CodeGenerator.generateMessageDecoder(declaration: MessageDeclaration) {
+    private fun CodeGenerator.generateMessageTagConstants(
+        declaration: MessageDeclaration,
+        objectName: FqName.Declaration,
+        tagNames: MutableMap<FqName, Map<Pair<Int, Boolean>, ScopedFormattedString>>,
+        nested: Boolean = false,
+    ) {
+        val names = mutableMapOf<Pair<Int, Boolean>, ScopedFormattedString>()
+        tagNames[declaration.name] = names
+        clazz(
+            name = objectName.simpleName,
+            modifiers = if (nested) "" else "private",
+            declarationType = CodeGenerator.DeclarationType.Object,
+        ) {
+            val usedNames = mutableSetOf<String>()
+            fun register(field: FieldDeclaration, packed: Boolean) {
+                var name = field.dec.name.uppercase().takeUnless { it.all { char -> char == '_' } } ?: "FIELD"
+                if (packed) name += "_PACKED"
+                while (!usedNames.add(name)) {
+                    name += "_"
+                }
+                names[field.number to packed] = "%T.$name".scoped(objectName)
+                val wireType = if (packed) WireType.LENGTH_DELIMITED else field.type.wireType
+                property(
+                    name = name,
+                    modifiers = "const",
+                    type = FqName.Implicits.Int.scoped(),
+                    value = "(${field.number} shl %T.TYPE_BITS) or %T.${wireType.name}"
+                        .scoped(FqName.RpcClasses.WireTag, FqName.RpcClasses.WireType),
+                    needsNewLineAfterDeclaration = false,
+                )
+            }
+            declaration.actualFields.forEach { field ->
+                register(field, packed = false)
+                val fieldType = field.type
+                if (fieldType is FieldType.List && fieldType.value.isPackable) {
+                    register(field, packed = true)
+                }
+            }
+            declaration.nestedDeclarations.forEach { message ->
+                generateMessageTagConstants(
+                    message,
+                    model.nameTable.registerUnique(objectName.nested("${message.internalClassName.simpleName}Tags")),
+                    tagNames,
+                    nested = true,
+                )
+            }
+        }
+    }
+
+    private fun CodeGenerator.generateMessageDecoder(
+        declaration: MessageDeclaration,
+        tagNames: Map<Pair<Int, Boolean>, ScopedFormattedString>,
+    ) {
         val args = buildList {
             add("msg: %T".scoped(declaration.internalClassName))
             add("decoder: %T".scoped(FqName.RpcClasses.WireDecoder))
             add("config: %T?".scoped(FqName.RpcClasses.ProtoConfig))
 
             if (declaration.isGroup) {
-                // if the message is a group message, the decoder accepts an optional startGroup tag, which indicates
-                // that the decoding of the message must end with an END_GROUP tag of the same fieldNr.
-                // if the startGroup tag is null, we treat it like a normal message.
-                // the argument is not default null, to avoid that we forget to set it when changing the generator.
-                add("startGroup: %T?".scoped(FqName.RpcClasses.KTag))
+                // A null startGroup decodes the group as a standalone message.
+                add("startGroup: %T?".scoped(FqName.RpcClasses.WireTag))
             }
         }
 
@@ -1416,19 +1461,16 @@ class ModelToProtobufKotlinCommonGenerator(
             }
             whileBlock("true".scoped()) {
                 if (declaration.isGroup) {
-                    scope("val tag = decoder.readTag() ?: run".scoped()) {
-                        // if the startGroup tag is set, we decode the message as an inline group message,
-                        // so in case of the tag being null, we know that the payload is malformed
+                    code("val tag = decoder.readTag()".scoped())
+                    ifBranch(condition = "tag.isEnd".scoped(), ifBlock = {
                         scope("startGroup?.let".scoped()) {
                             code(
                                 $$"throw %T(\"Missing END_GROUP tag for field: ${startGroup.fieldNr}.\")"
                                     .scoped(FqName.RpcClasses.ProtobufDecodingException)
                             )
                         }
-                        // if the startGroup is null, we decode the message like a normal non-group message,
-                        // so we stop when the tag is null
                         code("return".scoped())
-                    }
+                    })
                     ifBranch(condition = "tag.wireType == %T".scoped(FqName.RpcClasses.WireType_END_GROUP), ifBlock = {
                         ifBranch(condition = "tag.fieldNr != startGroup?.fieldNr".scoped(), ifBlock = {
                             code(
@@ -1439,11 +1481,14 @@ class ModelToProtobufKotlinCommonGenerator(
                         code("return".scoped())
                     })
                 } else {
-                    code("val tag = decoder.readTag() ?: break // EOF, we read the whole message".scoped())
+                    code("val tag = decoder.readTag()".scoped())
+                    ifBranch(condition = "tag.isEnd".scoped(), ifBlock = {
+                        code("break".scoped())
+                    })
                 }
 
-                whenBlock("tag.fieldNr".scoped()) {
-                    declaration.actualFields.forEach { field -> readMatchCase(field) }
+                whenBlock("tag.raw".scoped()) {
+                    declaration.actualFields.forEach { field -> readMatchCase(field, tagNames) }
                     whenCase("else".scoped()) {
                         // check if it is an extension
                         if (declaration.hasExtensionRange) {
@@ -1478,31 +1523,20 @@ class ModelToProtobufKotlinCommonGenerator(
                             // discard unknown fields if set in the config
                             code("decoder.skipUnknownField(tag)".scoped())
                         }, elseBlock = {
-                            // we the config is not set, or discardUnknownFields is set to false,
-                            // we will read and store all unknown fields
-                            ifBranch(condition = "msg._unknownFieldsEncoder == null".scoped(), ifBlock = {
-                                code(
-                                    "msg._unknownFieldsEncoder = %T(msg._unknownFields)"
-                                        .scoped(FqName.RpcClasses.WireEncoder)
-                                )
-                            })
-                            code("decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)".scoped())
+                            code("decoder.readUnknownField(tag, msg._unknownFields)".scoped())
                         })
                     }
                 }
-            }
-
-            if (!declaration.isGroup) {
-                // we must flush the encoder and "delete" it
-                code("msg._unknownFieldsEncoder?.flush()".scoped())
-                code("msg._unknownFieldsEncoder = null".scoped())
             }
 
             // TODO: Make lists and maps immutable (KRPC-190)
         }
     }
 
-    private fun CodeGenerator.readMatchCase(field: FieldDeclaration) {
+    private fun CodeGenerator.readMatchCase(
+        field: FieldDeclaration,
+        tagNames: Map<Pair<Int, Boolean>, ScopedFormattedString>,
+    ) {
         val lvalue = "msg.${field.name}".scoped()
 
         fun CodeGenerator.repeatedDecodeTarget(): ScopedFormattedString {
@@ -1545,8 +1579,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
         when (val fieldType = field.type) {
             is FieldType.IntegralType -> whenCase(
-                "${field.number} if tag.wireType == %T"
-                    .scoped(FqName.RpcClasses.WireType.nested(fieldType.wireType.name))
+                tagNames.getValue(field.number to false)
             ) {
                 generateDecodeFieldValue(fieldType, lvalue)
             }
@@ -1557,8 +1590,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 // and vice versa.
                 if (fieldType.value.isPackable) {
                     whenCase(
-                        "${field.number} if tag.wireType == %T"
-                            .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
+                        tagNames.getValue(field.number to true)
                     ) {
                         val target = repeatedDecodeTarget()
                         generateDecodeFieldValue(fieldType, target, isPacked = true)
@@ -1566,8 +1598,7 @@ class ModelToProtobufKotlinCommonGenerator(
                 }
 
                 whenCase(
-                    "${field.number} if tag.wireType == %T"
-                        .scoped(FqName.RpcClasses.WireType.nested(fieldType.value.wireType.name))
+                    tagNames.getValue(field.number to false)
                 ) {
                     val target = repeatedDecodeTarget()
                     generateDecodeFieldValue(fieldType, target, isPacked = false)
@@ -1575,16 +1606,14 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Enum -> whenCase(
-                "${field.number} if tag.wireType == %T"
-                    .scoped(FqName.RpcClasses.WireType_VARINT)
+                tagNames.getValue(field.number to false)
             ) {
                 generateDecodeFieldValue(fieldType, lvalue)
             }
 
             is FieldType.Message -> {
                 whenCase(
-                    "${field.number} if tag.wireType == %T"
-                        .scoped(FqName.RpcClasses.WireType.nested(fieldType.wireType.name))
+                    tagNames.getValue(field.number to false)
                 ) {
                     val target = messageDecodeTarget(fieldType.dec.value)
                     generateDecodeFieldValue(fieldType, target)
@@ -1592,8 +1621,7 @@ class ModelToProtobufKotlinCommonGenerator(
             }
 
             is FieldType.Map -> whenCase(
-                "${field.number} if tag.wireType == %T"
-                    .scoped(FqName.RpcClasses.WireType_LENGTH_DELIMITED)
+                tagNames.getValue(field.number to false)
             ) {
                 val target = mapDecodeTarget()
                 generateDecodeFieldValue(fieldType, target)
@@ -2095,7 +2123,6 @@ class ModelToProtobufKotlinCommonGenerator(
         isPacked: Boolean = false,
     ): ScopedFormattedString {
         val sizeFuncName = decodeEncodeFuncName()?.replaceFirstChar { it.lowercase() }
-        val sizeFuncFqName = sizeFuncName?.let { FqName.RpcClasses.WireSize.topLevelFP(it) }
 
         val convertedVariable = if (isPacked && this is FieldType.List && value is FieldType.Enum) {
             variable.wrapIn { variable -> "$variable.map { it.number }" }
@@ -2104,7 +2131,7 @@ class ModelToProtobufKotlinCommonGenerator(
         }
 
         fun sizeFunc() = FqName.RpcClasses.WireSize.scoped()
-            .merge(sizeFuncFqName!!.scoped(), convertedVariable) { wireSize, sizeFuncName, convertedVariable ->
+            .merge(convertedVariable) { wireSize, convertedVariable ->
                 "$wireSize.$sizeFuncName($convertedVariable)"
             }
 
@@ -2153,7 +2180,7 @@ class ModelToProtobufKotlinCommonGenerator(
 
             is FieldType.Enum -> {
                 FqName.RpcClasses.WireSize.scoped()
-                    .merge(sizeFuncFqName!!.scoped(), variable) { wireSize, sizeFuncName, variable ->
+                    .merge(variable) { wireSize, variable ->
                         "$wireSize.$sizeFuncName($variable.number)"
                     }
             }
@@ -2169,9 +2196,8 @@ class ModelToProtobufKotlinCommonGenerator(
     }
 
     private fun tagSizeCall(number: Int, wireType: WireType): ScopedFormattedString {
-        return "%T.%F($number, %T)".scoped(
+        return "%T.tag($number, %T)".scoped(
             FqName.RpcClasses.WireSize,
-            FqName.RpcClasses.WireSize.topLevelFP("tag"),
             FqName.RpcClasses.WireType.nested(wireType.name)
         )
     }
@@ -2179,11 +2205,8 @@ class ModelToProtobufKotlinCommonGenerator(
     @Suppress("SameParameterValue")
     private fun int32SizeCall(number: ScopedFormattedString): ScopedFormattedString {
         return FqName.RpcClasses.WireSize.scoped()
-            .merge(
-                other = FqName.RpcClasses.WireSize.topLevelFP("int32").scoped(),
-                another = number,
-            ) { wireSize, int32, number ->
-                "$wireSize.$int32($number)"
+            .merge(number) { wireSize, number ->
+                "$wireSize.int32($number)"
             }
     }
 

@@ -18,12 +18,9 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -32,9 +29,6 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __typeUrlDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var typeUrl: String by __typeUrlDelegate
@@ -122,6 +116,11 @@ public class AnyInternal: Any.Builder, InternalMessage(fieldsWithPresence = 0) {
     }
 }
 
+private object AnyInternalTags {
+    const val TYPE_URL: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun AnyInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.typeUrl.isNotEmpty()) {
@@ -148,12 +147,16 @@ public fun AnyInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            AnyInternalTags.TYPE_URL -> {
                 msg.typeUrl = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            AnyInternalTags.VALUE -> {
                 msg.value = decoder.readBytes()
             }
             else -> {
@@ -164,18 +167,11 @@ public fun AnyInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun AnyInternal.computeSize(): Int {

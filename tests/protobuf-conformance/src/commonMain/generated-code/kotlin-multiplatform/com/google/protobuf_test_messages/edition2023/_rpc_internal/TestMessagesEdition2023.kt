@@ -15,46 +15,15 @@ import kotlinx.rpc.protobuf.internal.GeneratedProtoOneOfs
 import kotlinx.rpc.protobuf.internal.InternalExtensionDescriptor
 import kotlinx.rpc.protobuf.internal.InternalMessage
 import kotlinx.rpc.protobuf.internal.InternalPresenceObject
-import kotlinx.rpc.protobuf.internal.KTag
 import kotlinx.rpc.protobuf.internal.MsgFieldDelegate
 import kotlinx.rpc.protobuf.internal.ProtoDescriptor
 import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.fixed32
-import kotlinx.rpc.protobuf.internal.fixed64
-import kotlinx.rpc.protobuf.internal.float
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
-import kotlinx.rpc.protobuf.internal.packedBool
-import kotlinx.rpc.protobuf.internal.packedDouble
-import kotlinx.rpc.protobuf.internal.packedEnum
-import kotlinx.rpc.protobuf.internal.packedFixed32
-import kotlinx.rpc.protobuf.internal.packedFixed64
-import kotlinx.rpc.protobuf.internal.packedFloat
-import kotlinx.rpc.protobuf.internal.packedInt32
-import kotlinx.rpc.protobuf.internal.packedInt64
-import kotlinx.rpc.protobuf.internal.packedSFixed32
-import kotlinx.rpc.protobuf.internal.packedSFixed64
-import kotlinx.rpc.protobuf.internal.packedSInt32
-import kotlinx.rpc.protobuf.internal.packedSInt64
-import kotlinx.rpc.protobuf.internal.packedUInt32
-import kotlinx.rpc.protobuf.internal.packedUInt64
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.sFixed32
-import kotlinx.rpc.protobuf.internal.sFixed64
-import kotlinx.rpc.protobuf.internal.sInt32
-import kotlinx.rpc.protobuf.internal.sInt64
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
 class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWithPresence = 1) {
@@ -68,9 +37,6 @@ class ComplexMessageInternal: ComplexMessage.Builder, InternalMessage(fieldsWith
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __dDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.d) { 0 }
     override var d: Int by __dDelegate
@@ -219,9 +185,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _oneofFieldRef: Any? = null
     private var _oneofFieldNum: Long = 0L
@@ -1388,9 +1351,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __aDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.a) { 0 }
         override var a: Int by __aDelegate
         override fun clearA() {
@@ -1529,9 +1489,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1598,9 +1555,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -1669,9 +1623,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -1738,9 +1689,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -1809,9 +1757,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -1878,9 +1823,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -1949,9 +1891,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.key) { 0u }
         var key: UInt by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate(PresenceIndices.value) { 0u }
@@ -2018,9 +1957,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate(PresenceIndices.key) { 0uL }
         var key: ULong by __keyDelegate
@@ -2089,9 +2025,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.value) { 0 }
@@ -2158,9 +2091,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate(PresenceIndices.key) { 0L }
         var key: Long by __keyDelegate
@@ -2229,9 +2159,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate(PresenceIndices.value) { 0.0f }
@@ -2298,9 +2225,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
@@ -2369,9 +2293,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.key) { false }
         var key: Boolean by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate(PresenceIndices.value) { false }
@@ -2438,9 +2359,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2509,9 +2427,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate(PresenceIndices.value) { ByteString() }
@@ -2578,9 +2493,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2649,9 +2561,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignMessageEdition2023> = MsgFieldDelegate(PresenceIndices.value) { ForeignMessageEdition2023Internal.DEFAULT }
@@ -2718,9 +2627,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
@@ -2789,9 +2695,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<String> = MsgFieldDelegate(PresenceIndices.key) { "" }
         var key: String by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<ForeignEnumEdition2023> = MsgFieldDelegate(PresenceIndices.value) { ForeignEnumEdition2023.FOREIGN_FOO }
@@ -2858,9 +2761,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
 
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
-
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
 
         internal val __groupInt32Delegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.groupInt32) { 0 }
         override var groupInt32: Int by __groupInt32Delegate
@@ -3000,9 +2900,6 @@ class TestAllTypesEdition2023Internal: TestAllTypesEdition2023.Builder, Internal
         @InternalRpcApi
         override val _unknownFields: Buffer = Buffer()
 
-        @InternalRpcApi
-        internal var _unknownFieldsEncoder: WireEncoder? = null
-
         internal val __keyDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.key) { 0 }
         var key: Int by __keyDelegate
         internal val __valueDelegate: MsgFieldDelegate<TestAllTypesEdition2023> = MsgFieldDelegate(PresenceIndices.value) { DEFAULT }
@@ -3106,9 +3003,6 @@ class ForeignMessageEdition2023Internal: ForeignMessageEdition2023.Builder, Inte
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
     override var c: Int by __cDelegate
@@ -3229,9 +3123,6 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __cDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate(PresenceIndices.c) { 0 }
     override var c: Int by __cDelegate
 
@@ -3334,6 +3225,275 @@ class GroupLikeTypeInternal: GroupLikeType.Builder, InternalMessage(fieldsWithPr
     }
 }
 
+private object ComplexMessageInternalTags {
+    const val D: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object TestAllTypesEdition2023InternalTags {
+    const val OPTIONAL_INT32: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_INT64: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_UINT32: Int = (3 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_UINT64: Int = (4 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_SINT32: Int = (5 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_SINT64: Int = (6 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_FIXED32: Int = (7 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val OPTIONAL_FIXED64: Int = (8 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val OPTIONAL_SFIXED32: Int = (9 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val OPTIONAL_SFIXED64: Int = (10 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val OPTIONAL_FLOAT: Int = (11 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val OPTIONAL_DOUBLE: Int = (12 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val OPTIONAL_BOOL: Int = (13 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_STRING: Int = (14 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONAL_BYTES: Int = (15 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONAL_NESTED_MESSAGE: Int = (18 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONAL_FOREIGN_MESSAGE: Int = (19 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONAL_NESTED_ENUM: Int = (21 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_FOREIGN_ENUM: Int = (22 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONAL_STRING_PIECE: Int = (24 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONAL_CORD: Int = (25 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val RECURSIVE_MESSAGE: Int = (27 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_INT32: Int = (31 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_INT32_PACKED: Int = (31 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_INT64: Int = (32 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_INT64_PACKED: Int = (32 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_UINT32: Int = (33 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_UINT32_PACKED: Int = (33 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_UINT64: Int = (34 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_UINT64_PACKED: Int = (34 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_SINT32: Int = (35 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_SINT32_PACKED: Int = (35 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_SINT64: Int = (36 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_SINT64_PACKED: Int = (36 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_FIXED32: Int = (37 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val REPEATED_FIXED32_PACKED: Int = (37 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_FIXED64: Int = (38 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val REPEATED_FIXED64_PACKED: Int = (38 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_SFIXED32: Int = (39 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val REPEATED_SFIXED32_PACKED: Int = (39 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_SFIXED64: Int = (40 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val REPEATED_SFIXED64_PACKED: Int = (40 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_FLOAT: Int = (41 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val REPEATED_FLOAT_PACKED: Int = (41 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_DOUBLE: Int = (42 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val REPEATED_DOUBLE_PACKED: Int = (42 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_BOOL: Int = (43 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_BOOL_PACKED: Int = (43 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_STRING: Int = (44 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_BYTES: Int = (45 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_NESTED_MESSAGE: Int = (48 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_FOREIGN_MESSAGE: Int = (49 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_NESTED_ENUM: Int = (51 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_NESTED_ENUM_PACKED: Int = (51 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_FOREIGN_ENUM: Int = (52 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val REPEATED_FOREIGN_ENUM_PACKED: Int = (52 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_STRING_PIECE: Int = (54 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REPEATED_CORD: Int = (55 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_INT32: Int = (75 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_INT32_PACKED: Int = (75 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_INT64: Int = (76 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_INT64_PACKED: Int = (76 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_UINT32: Int = (77 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_UINT32_PACKED: Int = (77 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_UINT64: Int = (78 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_UINT64_PACKED: Int = (78 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_SINT32: Int = (79 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_SINT32_PACKED: Int = (79 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_SINT64: Int = (80 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_SINT64_PACKED: Int = (80 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_FIXED32: Int = (81 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val PACKED_FIXED32_PACKED: Int = (81 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_FIXED64: Int = (82 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val PACKED_FIXED64_PACKED: Int = (82 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_SFIXED32: Int = (83 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val PACKED_SFIXED32_PACKED: Int = (83 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_SFIXED64: Int = (84 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val PACKED_SFIXED64_PACKED: Int = (84 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_FLOAT: Int = (85 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val PACKED_FLOAT_PACKED: Int = (85 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_DOUBLE: Int = (86 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val PACKED_DOUBLE_PACKED: Int = (86 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_BOOL: Int = (87 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_BOOL_PACKED: Int = (87 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PACKED_NESTED_ENUM: Int = (88 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED_NESTED_ENUM_PACKED: Int = (88 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_INT32: Int = (89 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_INT32_PACKED: Int = (89 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_INT64: Int = (90 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_INT64_PACKED: Int = (90 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_UINT32: Int = (91 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_UINT32_PACKED: Int = (91 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_UINT64: Int = (92 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_UINT64_PACKED: Int = (92 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_SINT32: Int = (93 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_SINT32_PACKED: Int = (93 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_SINT64: Int = (94 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_SINT64_PACKED: Int = (94 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_FIXED32: Int = (95 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val UNPACKED_FIXED32_PACKED: Int = (95 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_FIXED64: Int = (96 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val UNPACKED_FIXED64_PACKED: Int = (96 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_SFIXED32: Int = (97 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val UNPACKED_SFIXED32_PACKED: Int = (97 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_SFIXED64: Int = (98 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val UNPACKED_SFIXED64_PACKED: Int = (98 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_FLOAT: Int = (99 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val UNPACKED_FLOAT_PACKED: Int = (99 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_DOUBLE: Int = (100 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val UNPACKED_DOUBLE_PACKED: Int = (100 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_BOOL: Int = (101 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_BOOL_PACKED: Int = (101 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val UNPACKED_NESTED_ENUM: Int = (102 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val UNPACKED_NESTED_ENUM_PACKED: Int = (102 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_INT32_INT32: Int = (56 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_INT64_INT64: Int = (57 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_UINT32_UINT32: Int = (58 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_UINT64_UINT64: Int = (59 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_SINT32_SINT32: Int = (60 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_SINT64_SINT64: Int = (61 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_FIXED32_FIXED32: Int = (62 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_FIXED64_FIXED64: Int = (63 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_SFIXED32_SFIXED32: Int = (64 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_SFIXED64_SFIXED64: Int = (65 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_INT32_FLOAT: Int = (66 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_INT32_DOUBLE: Int = (67 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_BOOL_BOOL: Int = (68 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_STRING: Int = (69 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_BYTES: Int = (70 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_NESTED_MESSAGE: Int = (71 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_FOREIGN_MESSAGE: Int = (72 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_NESTED_ENUM: Int = (73 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MAP_STRING_FOREIGN_ENUM: Int = (74 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOF_UINT32: Int = (111 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val ONEOF_NESTED_MESSAGE: Int = (112 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOF_STRING: Int = (113 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOF_BYTES: Int = (114 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOF_BOOL: Int = (115 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val ONEOF_UINT64: Int = (116 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val ONEOF_FLOAT: Int = (117 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    const val ONEOF_DOUBLE: Int = (118 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    const val ONEOF_ENUM: Int = (119 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val GROUPLIKETYPE: Int = (201 shl WireTag.TYPE_BITS) or WireType.START_GROUP
+    const val DELIMITED_FIELD: Int = (202 shl WireTag.TYPE_BITS) or WireType.START_GROUP
+    const val MAP_RECURSIVE: Int = (301 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    object NestedMessageInternalTags {
+        const val A: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val CORECURSIVE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+
+    object MapInt32Int32EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapInt64Int64EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapUint32Uint32EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapUint64Uint64EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapSint32Sint32EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapSint64Sint64EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapFixed32Fixed32EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED32
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    }
+
+    object MapFixed64Fixed64EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED64
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    }
+
+    object MapSfixed32Sfixed32EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED32
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    }
+
+    object MapSfixed64Sfixed64EntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED64
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    }
+
+    object MapInt32FloatEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED32
+    }
+
+    object MapInt32DoubleEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.FIXED64
+    }
+
+    object MapBoolBoolEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapStringStringEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+
+    object MapStringBytesEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+
+    object MapStringNestedMessageEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+
+    object MapStringForeignMessageEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+
+    object MapStringNestedEnumEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapStringForeignEnumEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object GroupLikeTypeInternalTags {
+        const val GROUP_INT32: Int = (202 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val GROUP_UINT32: Int = (203 shl WireTag.TYPE_BITS) or WireType.VARINT
+    }
+
+    object MapRecursiveEntryInternalTags {
+        const val KEY: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+        const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    }
+}
+
+private object ForeignMessageEdition2023InternalTags {
+    const val C: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object GroupLikeTypeInternalTags {
+    const val C: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
 @InternalRpcApi
 fun ComplexMessageInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (presenceMask[ComplexMessageInternal.PresenceIndices.d]) {
@@ -3356,9 +3516,13 @@ fun ComplexMessageInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ComplexMessageInternalTags.D -> {
                 msg.d = decoder.readInt32()
             }
             else -> {
@@ -3369,18 +3533,11 @@ fun ComplexMessageInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ComplexMessageInternal.computeSize(): Int {
@@ -4025,666 +4182,670 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
 ) {
     val knownExtensions = config?.extensionRegistry?.getAllExtensionsForMessage(TestAllTypesEdition2023::class) ?: emptyMap()
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_INT32 -> {
                 msg.optionalInt32 = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_INT64 -> {
                 msg.optionalInt64 = decoder.readInt64()
             }
-            3 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_UINT32 -> {
                 msg.optionalUint32 = decoder.readUInt32()
             }
-            4 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_UINT64 -> {
                 msg.optionalUint64 = decoder.readUInt64()
             }
-            5 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_SINT32 -> {
                 msg.optionalSint32 = decoder.readSInt32()
             }
-            6 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_SINT64 -> {
                 msg.optionalSint64 = decoder.readSInt64()
             }
-            7 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_FIXED32 -> {
                 msg.optionalFixed32 = decoder.readFixed32()
             }
-            8 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_FIXED64 -> {
                 msg.optionalFixed64 = decoder.readFixed64()
             }
-            9 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_SFIXED32 -> {
                 msg.optionalSfixed32 = decoder.readSFixed32()
             }
-            10 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_SFIXED64 -> {
                 msg.optionalSfixed64 = decoder.readSFixed64()
             }
-            11 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_FLOAT -> {
                 msg.optionalFloat = decoder.readFloat()
             }
-            12 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_DOUBLE -> {
                 msg.optionalDouble = decoder.readDouble()
             }
-            13 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_BOOL -> {
                 msg.optionalBool = decoder.readBool()
             }
-            14 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_STRING -> {
                 msg.optionalString = decoder.readString()
             }
-            15 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_BYTES -> {
                 msg.optionalBytes = decoder.readBytes()
             }
-            18 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_NESTED_MESSAGE -> {
                 val target = msg.__optionalNestedMessageDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.NestedMessageInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
-            19 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_FOREIGN_MESSAGE -> {
                 val target = msg.__optionalForeignMessageDelegate.getOrCreate(msg) { ForeignMessageEdition2023Internal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> ForeignMessageEdition2023Internal.decodeWith(msg, decoder, config) }
             }
-            21 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_NESTED_ENUM -> {
                 msg.optionalNestedEnum = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
             }
-            22 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_FOREIGN_ENUM -> {
                 msg.optionalForeignEnum = ForeignEnumEdition2023.fromNumber(decoder.readEnum())
             }
-            24 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_STRING_PIECE -> {
                 msg.optionalStringPiece = decoder.readString()
             }
-            25 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.OPTIONAL_CORD -> {
                 msg.optionalCord = decoder.readString()
             }
-            27 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.RECURSIVE_MESSAGE -> {
                 val target = msg.__recursiveMessageDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.decodeWith(msg, decoder, config) }
             }
-            31 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_INT32_PACKED -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            31 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_INT32 -> {
                 val target = msg.__repeatedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            32 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_INT64_PACKED -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            32 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_INT64 -> {
                 val target = msg.__repeatedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            33 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_UINT32_PACKED -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            33 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_UINT32 -> {
                 val target = msg.__repeatedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            34 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_UINT64_PACKED -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            34 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_UINT64 -> {
                 val target = msg.__repeatedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            35 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SINT32_PACKED -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            35 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SINT32 -> {
                 val target = msg.__repeatedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            36 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SINT64_PACKED -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            36 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SINT64 -> {
                 val target = msg.__repeatedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            37 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FIXED32_PACKED -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            37 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FIXED32 -> {
                 val target = msg.__repeatedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            38 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FIXED64_PACKED -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            38 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FIXED64 -> {
                 val target = msg.__repeatedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            39 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SFIXED32_PACKED -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            39 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SFIXED32 -> {
                 val target = msg.__repeatedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            40 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SFIXED64_PACKED -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            40 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_SFIXED64 -> {
                 val target = msg.__repeatedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            41 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FLOAT_PACKED -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            41 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FLOAT -> {
                 val target = msg.__repeatedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            42 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_DOUBLE_PACKED -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            42 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_DOUBLE -> {
                 val target = msg.__repeatedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            43 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_BOOL_PACKED -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            43 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_BOOL -> {
                 val target = msg.__repeatedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            44 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_STRING -> {
                 val target = msg.__repeatedStringDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            45 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_BYTES -> {
                 val target = msg.__repeatedBytesDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBytes()
                 target.add(elem)
             }
-            48 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_NESTED_MESSAGE -> {
                 val target = msg.__repeatedNestedMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesEdition2023Internal.NestedMessageInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            49 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FOREIGN_MESSAGE -> {
                 val target = msg.__repeatedForeignMessageDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignMessageEdition2023Internal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> ForeignMessageEdition2023Internal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            51 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_NESTED_ENUM_PACKED -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
             }
-            51 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_NESTED_ENUM -> {
                 val target = msg.__repeatedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            52 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FOREIGN_ENUM_PACKED -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { ForeignEnumEdition2023.fromNumber(it) })
             }
-            52 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_FOREIGN_ENUM -> {
                 val target = msg.__repeatedForeignEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = ForeignEnumEdition2023.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            54 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_STRING_PIECE -> {
                 val target = msg.__repeatedStringPieceDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            55 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.REPEATED_CORD -> {
                 val target = msg.__repeatedCordDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            75 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_INT32_PACKED -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            75 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_INT32 -> {
                 val target = msg.__packedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            76 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_INT64_PACKED -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            76 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_INT64 -> {
                 val target = msg.__packedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            77 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_UINT32_PACKED -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            77 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_UINT32 -> {
                 val target = msg.__packedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            78 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_UINT64_PACKED -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            78 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_UINT64 -> {
                 val target = msg.__packedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            79 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SINT32_PACKED -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            79 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SINT32 -> {
                 val target = msg.__packedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            80 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SINT64_PACKED -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            80 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SINT64 -> {
                 val target = msg.__packedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            81 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FIXED32_PACKED -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            81 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FIXED32 -> {
                 val target = msg.__packedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            82 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FIXED64_PACKED -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            82 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FIXED64 -> {
                 val target = msg.__packedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            83 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SFIXED32_PACKED -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            83 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SFIXED32 -> {
                 val target = msg.__packedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            84 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SFIXED64_PACKED -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            84 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_SFIXED64 -> {
                 val target = msg.__packedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            85 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FLOAT_PACKED -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            85 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_FLOAT -> {
                 val target = msg.__packedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            86 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_DOUBLE_PACKED -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            86 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.PACKED_DOUBLE -> {
                 val target = msg.__packedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            87 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_BOOL_PACKED -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            87 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_BOOL -> {
                 val target = msg.__packedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            88 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.PACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
             }
-            88 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.PACKED_NESTED_ENUM -> {
                 val target = msg.__packedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            89 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_INT32_PACKED -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt32())
             }
-            89 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_INT32 -> {
                 val target = msg.__unpackedInt32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt32()
                 target.add(elem)
             }
-            90 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_INT64_PACKED -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedInt64())
             }
-            90 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_INT64 -> {
                 val target = msg.__unpackedInt64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readInt64()
                 target.add(elem)
             }
-            91 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_UINT32_PACKED -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt32())
             }
-            91 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_UINT32 -> {
                 val target = msg.__unpackedUint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt32()
                 target.add(elem)
             }
-            92 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_UINT64_PACKED -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedUInt64())
             }
-            92 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_UINT64 -> {
                 val target = msg.__unpackedUint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readUInt64()
                 target.add(elem)
             }
-            93 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SINT32_PACKED -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt32())
             }
-            93 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SINT32 -> {
                 val target = msg.__unpackedSint32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt32()
                 target.add(elem)
             }
-            94 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SINT64_PACKED -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSInt64())
             }
-            94 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SINT64 -> {
                 val target = msg.__unpackedSint64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSInt64()
                 target.add(elem)
             }
-            95 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FIXED32_PACKED -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed32())
             }
-            95 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FIXED32 -> {
                 val target = msg.__unpackedFixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed32()
                 target.add(elem)
             }
-            96 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FIXED64_PACKED -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFixed64())
             }
-            96 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FIXED64 -> {
                 val target = msg.__unpackedFixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFixed64()
                 target.add(elem)
             }
-            97 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED32_PACKED -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed32())
             }
-            97 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED32 -> {
                 val target = msg.__unpackedSfixed32Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed32()
                 target.add(elem)
             }
-            98 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED64_PACKED -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedSFixed64())
             }
-            98 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_SFIXED64 -> {
                 val target = msg.__unpackedSfixed64Delegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readSFixed64()
                 target.add(elem)
             }
-            99 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FLOAT_PACKED -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedFloat())
             }
-            99 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_FLOAT -> {
                 val target = msg.__unpackedFloatDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readFloat()
                 target.add(elem)
             }
-            100 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_DOUBLE_PACKED -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedDouble())
             }
-            100 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_DOUBLE -> {
                 val target = msg.__unpackedDoubleDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readDouble()
                 target.add(elem)
             }
-            101 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_BOOL_PACKED -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedBool())
             }
-            101 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_BOOL -> {
                 val target = msg.__unpackedBoolDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readBool()
                 target.add(elem)
             }
-            102 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_NESTED_ENUM_PACKED -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 target.addAll(decoder.readPackedEnum().map { TestAllTypesEdition2023.NestedEnum.fromNumber(it) })
             }
-            102 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.UNPACKED_NESTED_ENUM -> {
                 val target = msg.__unpackedNestedEnumDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
                 target.add(elem)
             }
-            56 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_INT32_INT32 -> {
                 val target = msg.__mapInt32Int32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            57 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_INT64_INT64 -> {
                 val target = msg.__mapInt64Int64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            58 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_UINT32_UINT32 -> {
                 val target = msg.__mapUint32Uint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            59 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_UINT64_UINT64 -> {
                 val target = msg.__mapUint64Uint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            60 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_SINT32_SINT32 -> {
                 val target = msg.__mapSint32Sint32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            61 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_SINT64_SINT64 -> {
                 val target = msg.__mapSint64Sint64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            62 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_FIXED32_FIXED32 -> {
                 val target = msg.__mapFixed32Fixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            63 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_FIXED64_FIXED64 -> {
                 val target = msg.__mapFixed64Fixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            64 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_SFIXED32_SFIXED32 -> {
                 val target = msg.__mapSfixed32Sfixed32Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            65 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_SFIXED64_SFIXED64 -> {
                 val target = msg.__mapSfixed64Sfixed64Delegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            66 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_INT32_FLOAT -> {
                 val target = msg.__mapInt32FloatDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            67 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_INT32_DOUBLE -> {
                 val target = msg.__mapInt32DoubleDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            68 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_BOOL_BOOL -> {
                 val target = msg.__mapBoolBoolDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            69 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_STRING -> {
                 val target = msg.__mapStringStringDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringStringEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringStringEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            70 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_BYTES -> {
                 val target = msg.__mapStringBytesDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringBytesEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            71 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_NESTED_MESSAGE -> {
                 val target = msg.__mapStringNestedMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            72 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_FOREIGN_MESSAGE -> {
                 val target = msg.__mapStringForeignMessageDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            73 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_NESTED_ENUM -> {
                 val target = msg.__mapStringNestedEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            74 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_STRING_FOREIGN_ENUM -> {
                 val target = msg.__mapStringForeignEnumDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.decodeWith(msg, decoder, config) }
                     target[key] = value
                 }
             }
-            111 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_UINT32 -> {
                 msg.oneofUint32 = decoder.readUInt32()
             }
-            112 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_NESTED_MESSAGE -> {
                 val target = if (msg.presenceMask[TestAllTypesEdition2023Internal.PresenceIndices.oneofNestedMessage]) msg.oneofNestedMessage.asInternal() else TestAllTypesEdition2023Internal.NestedMessageInternal().also { msg.oneofNestedMessage = it }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
-            113 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_STRING -> {
                 msg.oneofString = decoder.readString()
             }
-            114 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_BYTES -> {
                 msg.oneofBytes = decoder.readBytes()
             }
-            115 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_BOOL -> {
                 msg.oneofBool = decoder.readBool()
             }
-            116 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_UINT64 -> {
                 msg.oneofUint64 = decoder.readUInt64()
             }
-            117 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_FLOAT -> {
                 msg.oneofFloat = decoder.readFloat()
             }
-            118 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_DOUBLE -> {
                 msg.oneofDouble = decoder.readDouble()
             }
-            119 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.ONEOF_ENUM -> {
                 msg.oneofEnum = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
             }
-            201 if tag.wireType == WireType.START_GROUP -> {
+            TestAllTypesEdition2023InternalTags.GROUPLIKETYPE -> {
                 val target = msg.__groupliketypeDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.GroupLikeTypeInternal() }
                 decoder.readGroup(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
             }
-            202 if tag.wireType == WireType.START_GROUP -> {
+            TestAllTypesEdition2023InternalTags.DELIMITED_FIELD -> {
                 val target = msg.__delimitedFieldDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.GroupLikeTypeInternal() }
                 decoder.readGroup(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.GroupLikeTypeInternal.decodeWith(msg, decoder, config, tag) }
             }
-            301 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MAP_RECURSIVE -> {
                 val target = msg.__mapRecursiveDelegate.getOrCreate(msg) { mutableMapOf() } as MutableMap
                 with(TestAllTypesEdition2023Internal.MapRecursiveEntryInternal()) {
                     decoder.readMessage(this.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.decodeWith(msg, decoder, config) }
@@ -4707,18 +4868,11 @@ fun TestAllTypesEdition2023Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.computeSize(): Int {
@@ -5283,9 +5437,13 @@ fun ForeignMessageEdition2023Internal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ForeignMessageEdition2023InternalTags.C -> {
                 msg.c = decoder.readInt32()
             }
             else -> {
@@ -5296,18 +5454,11 @@ fun ForeignMessageEdition2023Internal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ForeignMessageEdition2023Internal.computeSize(): Int {
@@ -5347,9 +5498,13 @@ fun GroupLikeTypeInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            GroupLikeTypeInternalTags.C -> {
                 msg.c = decoder.readInt32()
             }
             else -> {
@@ -5360,18 +5515,11 @@ fun GroupLikeTypeInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun GroupLikeTypeInternal.computeSize(): Int {
@@ -5418,12 +5566,16 @@ fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.NestedMessageInternalTags.A -> {
                 msg.a = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.NestedMessageInternalTags.CORECURSIVE -> {
                 val target = msg.__corecursiveDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.decodeWith(msg, decoder, config) }
             }
@@ -5435,18 +5587,11 @@ fun TestAllTypesEdition2023Internal.NestedMessageInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.NestedMessageInternal.computeSize(): Int {
@@ -5497,12 +5642,16 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeW
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapInt32Int32EntryInternalTags.KEY -> {
                 msg.key = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapInt32Int32EntryInternalTags.VALUE -> {
                 msg.value = decoder.readInt32()
             }
             else -> {
@@ -5513,18 +5662,11 @@ fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32Int32EntryInternal.computeSize(): Int {
@@ -5575,12 +5717,16 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeW
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapInt64Int64EntryInternalTags.KEY -> {
                 msg.key = decoder.readInt64()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapInt64Int64EntryInternalTags.VALUE -> {
                 msg.value = decoder.readInt64()
             }
             else -> {
@@ -5591,18 +5737,11 @@ fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt64Int64EntryInternal.computeSize(): Int {
@@ -5653,12 +5792,16 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decod
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapUint32Uint32EntryInternalTags.KEY -> {
                 msg.key = decoder.readUInt32()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapUint32Uint32EntryInternalTags.VALUE -> {
                 msg.value = decoder.readUInt32()
             }
             else -> {
@@ -5669,18 +5812,11 @@ fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapUint32Uint32EntryInternal.computeSize(): Int {
@@ -5731,12 +5867,16 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decod
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapUint64Uint64EntryInternalTags.KEY -> {
                 msg.key = decoder.readUInt64()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapUint64Uint64EntryInternalTags.VALUE -> {
                 msg.value = decoder.readUInt64()
             }
             else -> {
@@ -5747,18 +5887,11 @@ fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapUint64Uint64EntryInternal.computeSize(): Int {
@@ -5809,12 +5942,16 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decod
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapSint32Sint32EntryInternalTags.KEY -> {
                 msg.key = decoder.readSInt32()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapSint32Sint32EntryInternalTags.VALUE -> {
                 msg.value = decoder.readSInt32()
             }
             else -> {
@@ -5825,18 +5962,11 @@ fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSint32Sint32EntryInternal.computeSize(): Int {
@@ -5887,12 +6017,16 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decod
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapSint64Sint64EntryInternalTags.KEY -> {
                 msg.key = decoder.readSInt64()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapSint64Sint64EntryInternalTags.VALUE -> {
                 msg.value = decoder.readSInt64()
             }
             else -> {
@@ -5903,18 +6037,11 @@ fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSint64Sint64EntryInternal.computeSize(): Int {
@@ -5965,12 +6092,16 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.dec
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED32 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapFixed32Fixed32EntryInternalTags.KEY -> {
                 msg.key = decoder.readFixed32()
             }
-            2 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.MapFixed32Fixed32EntryInternalTags.VALUE -> {
                 msg.value = decoder.readFixed32()
             }
             else -> {
@@ -5981,18 +6112,11 @@ fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapFixed32Fixed32EntryInternal.computeSize(): Int {
@@ -6043,12 +6167,16 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.dec
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED64 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapFixed64Fixed64EntryInternalTags.KEY -> {
                 msg.key = decoder.readFixed64()
             }
-            2 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.MapFixed64Fixed64EntryInternalTags.VALUE -> {
                 msg.value = decoder.readFixed64()
             }
             else -> {
@@ -6059,18 +6187,11 @@ fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.Companion.dec
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapFixed64Fixed64EntryInternal.computeSize(): Int {
@@ -6121,12 +6242,16 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.d
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED32 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapSfixed32Sfixed32EntryInternalTags.KEY -> {
                 msg.key = decoder.readSFixed32()
             }
-            2 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.MapSfixed32Sfixed32EntryInternalTags.VALUE -> {
                 msg.value = decoder.readSFixed32()
             }
             else -> {
@@ -6137,18 +6262,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSfixed32Sfixed32EntryInternal.computeSize(): Int {
@@ -6199,12 +6317,16 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.d
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED64 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapSfixed64Sfixed64EntryInternalTags.KEY -> {
                 msg.key = decoder.readSFixed64()
             }
-            2 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.MapSfixed64Sfixed64EntryInternalTags.VALUE -> {
                 msg.value = decoder.readSFixed64()
             }
             else -> {
@@ -6215,18 +6337,11 @@ fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapSfixed64Sfixed64EntryInternal.computeSize(): Int {
@@ -6277,12 +6392,16 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeW
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapInt32FloatEntryInternalTags.KEY -> {
                 msg.key = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.FIXED32 -> {
+            TestAllTypesEdition2023InternalTags.MapInt32FloatEntryInternalTags.VALUE -> {
                 msg.value = decoder.readFloat()
             }
             else -> {
@@ -6293,18 +6412,11 @@ fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.Companion.decodeW
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32FloatEntryInternal.computeSize(): Int {
@@ -6355,12 +6467,16 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decode
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapInt32DoubleEntryInternalTags.KEY -> {
                 msg.key = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.FIXED64 -> {
+            TestAllTypesEdition2023InternalTags.MapInt32DoubleEntryInternalTags.VALUE -> {
                 msg.value = decoder.readDouble()
             }
             else -> {
@@ -6371,18 +6487,11 @@ fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapInt32DoubleEntryInternal.computeSize(): Int {
@@ -6433,12 +6542,16 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWit
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapBoolBoolEntryInternalTags.KEY -> {
                 msg.key = decoder.readBool()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapBoolBoolEntryInternalTags.VALUE -> {
                 msg.value = decoder.readBool()
             }
             else -> {
@@ -6449,18 +6562,11 @@ fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.Companion.decodeWit
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapBoolBoolEntryInternal.computeSize(): Int {
@@ -6511,12 +6617,16 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decod
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringStringEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MapStringStringEntryInternalTags.VALUE -> {
                 msg.value = decoder.readString()
             }
             else -> {
@@ -6527,18 +6637,11 @@ fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.Companion.decod
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringStringEntryInternal.computeSize(): Int {
@@ -6589,12 +6692,16 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decode
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringBytesEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MapStringBytesEntryInternalTags.VALUE -> {
                 msg.value = decoder.readBytes()
             }
             else -> {
@@ -6605,18 +6712,11 @@ fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.Companion.decode
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringBytesEntryInternal.computeSize(): Int {
@@ -6667,12 +6767,16 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companio
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringNestedMessageEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MapStringNestedMessageEntryInternalTags.VALUE -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal.NestedMessageInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.NestedMessageInternal.decodeWith(msg, decoder, config) }
             }
@@ -6684,18 +6788,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.Companio
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringNestedMessageEntryInternal.computeSize(): Int {
@@ -6746,12 +6843,16 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Compani
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringForeignMessageEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MapStringForeignMessageEntryInternalTags.VALUE -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { ForeignMessageEdition2023Internal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> ForeignMessageEdition2023Internal.decodeWith(msg, decoder, config) }
             }
@@ -6763,18 +6864,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.Compani
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringForeignMessageEntryInternal.computeSize(): Int {
@@ -6825,12 +6919,16 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.d
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringNestedEnumEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapStringNestedEnumEntryInternalTags.VALUE -> {
                 msg.value = TestAllTypesEdition2023.NestedEnum.fromNumber(decoder.readEnum())
             }
             else -> {
@@ -6841,18 +6939,11 @@ fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.Companion.d
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringNestedEnumEntryInternal.computeSize(): Int {
@@ -6903,12 +6994,16 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapStringForeignEnumEntryInternalTags.KEY -> {
                 msg.key = decoder.readString()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.MapStringForeignEnumEntryInternalTags.VALUE -> {
                 msg.value = ForeignEnumEdition2023.fromNumber(decoder.readEnum())
             }
             else -> {
@@ -6919,18 +7014,11 @@ fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.Companion.
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapStringForeignEnumEntryInternal.computeSize(): Int {
@@ -6979,10 +7067,11 @@ fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(
     msg: TestAllTypesEdition2023Internal.GroupLikeTypeInternal,
     decoder: WireDecoder,
     config: ProtoConfig?,
-    startGroup: KTag?,
+    startGroup: WireTag?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: run {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
             startGroup?.let {
                 throw ProtobufDecodingException("Missing END_GROUP tag for field: ${startGroup.fieldNr}.")
             }
@@ -6998,22 +7087,18 @@ fun TestAllTypesEdition2023Internal.GroupLikeTypeInternal.Companion.decodeWith(
             return
         }
 
-        when (tag.fieldNr) {
-            202 if tag.wireType == WireType.VARINT -> {
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.GroupLikeTypeInternalTags.GROUP_INT32 -> {
                 msg.groupInt32 = decoder.readInt32()
             }
-            203 if tag.wireType == WireType.VARINT -> {
+            TestAllTypesEdition2023InternalTags.GroupLikeTypeInternalTags.GROUP_UINT32 -> {
                 msg.groupUint32 = decoder.readUInt32()
             }
             else -> {
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
@@ -7068,12 +7153,16 @@ fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWi
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestAllTypesEdition2023InternalTags.MapRecursiveEntryInternalTags.KEY -> {
                 msg.key = decoder.readInt32()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestAllTypesEdition2023InternalTags.MapRecursiveEntryInternalTags.VALUE -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { TestAllTypesEdition2023Internal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> TestAllTypesEdition2023Internal.decodeWith(msg, decoder, config) }
             }
@@ -7085,18 +7174,11 @@ fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.Companion.decodeWi
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestAllTypesEdition2023Internal.MapRecursiveEntryInternal.computeSize(): Int {

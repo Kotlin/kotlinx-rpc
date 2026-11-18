@@ -7,6 +7,7 @@
 package kotlinx.rpc.protobuf.test
 
 import kotlinx.io.Buffer
+import kotlinx.io.readByteArray
 import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.protobuf.ProtobufDecodingException
@@ -145,6 +146,8 @@ class WireInputTest {
                 assertFailsWith<ProtobufDecodingException> { it.readBytes(-1) }
                 assertFailsWith<ProtobufDecodingException> { it.readBytes(Int.MAX_VALUE) }
                 assertFailsWith<ProtobufDecodingException> { it.skip(-1) }
+                assertFailsWith<ProtobufDecodingException> { it.readBytesInto(Buffer(), -1) }
+                assertFailsWith<ProtobufDecodingException> { it.readBytesInto(Buffer(), Int.MAX_VALUE) }
             }
         }
     }
@@ -171,6 +174,24 @@ class WireInputTest {
                 assertEquals(3, it.readByte())
                 it.skip(2)
                 assertTrue(it.isAtLimit)
+            }
+        }
+    }
+
+    @Test
+    fun copyAppendsAcrossInputAndOutputSegments() {
+        val input = ByteArray(20_000) { (it % 251).toByte() }
+        for (chunk in listOf(1, 3, 7, 8192)) {
+            wireInput(input, chunk) { reader ->
+                val prefix = ByteArray(8190) { 42 }
+                val destination = Buffer().apply { write(prefix) }
+                reader.skip(3)
+                reader.readBytesInto(destination, input.size - 4)
+                assertContentEquals(prefix + input.copyOfRange(3, input.lastIndex), destination.readByteArray())
+                assertEquals(input.last(), reader.readByte())
+                assertTrue(reader.isAtLimit)
+                reader.readBytesInto(destination, 0)
+                assertTrue(destination.exhausted())
             }
         }
     }
@@ -227,6 +248,7 @@ class WireInputTest {
         assertTruncatedAtLimit(data, 3) { it.readBytes(4) }
         assertTruncatedAtLimit(data, 3) { it.readUtf8(4) }
         assertTruncatedAtLimit(data, 3) { it.skip(4) }
+        assertTruncatedAtLimit(data, 3) { it.readBytesInto(Buffer(), 4) }
     }
 
     @Test

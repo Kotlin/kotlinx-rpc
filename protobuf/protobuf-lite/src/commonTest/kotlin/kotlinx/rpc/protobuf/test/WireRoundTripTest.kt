@@ -27,7 +27,6 @@ private const val ROUNDS = 100
 private const val MAX_OPERATIONS = 40
 private const val CAPACITY = 1 shl 15
 
-/** A write and the read that must give back the written value. */
 private class Operation(val write: (WireOutput) -> Unit, val read: (WireInput) -> Unit)
 
 class WireRoundTripTest {

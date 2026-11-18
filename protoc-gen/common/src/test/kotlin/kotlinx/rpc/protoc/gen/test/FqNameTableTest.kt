@@ -17,6 +17,26 @@ private fun FqNameTable.scoped(packageFqName: FqName.Package) = scoped(packageFq
 
 class FqNameTableTest {
     @Test
+    fun testUniqueRegistrationIncludesLazyNamesAndEarlierReservations() {
+        val table = FqNameTable()
+        val parent = FqName.Package.fromString("com.example")
+        val name = FqName.Declaration("MessageTags", parent)
+        table.register(name)
+        table.register { FqName.Declaration("MessageTags_", parent) }
+
+        val first = table.registerUnique(name)
+        val second = table.registerUnique(name)
+        assertEquals("MessageTags__", first.simpleName)
+        assertEquals("MessageTags___", second.simpleName)
+        assertEquals("MessageTags__", table.scoped(parent).resolve(first))
+        assertEquals("MessageTags___", table.scoped(parent).resolve(second))
+
+        val otherPackage = FqName.Package.fromString("com.other")
+        val other = FqName.Declaration("MessageTags", otherPackage)
+        assertEquals(other, table.registerUnique(other))
+    }
+
+    @Test
     fun testSamePackageUsesSimpleName() = runTableTest {
         val name = fq("com.example", "MyClass")
         table.register(name)

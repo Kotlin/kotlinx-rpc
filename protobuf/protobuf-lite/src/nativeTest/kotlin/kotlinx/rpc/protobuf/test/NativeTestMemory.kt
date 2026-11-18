@@ -33,7 +33,6 @@ internal class HeapReader(bytes: ByteArray) : NativeBufferMessageReader(bytes.si
         block(if (size == 0) { null } else { storage })
     }
 
-    /** Sets all bytes of the native copy to 0. */
     fun overwrite() {
         for (index in 0 until size) {
             storage[index] = 0
@@ -76,7 +75,6 @@ internal class HeapMessageWriter(size: Int) : NativeBufferMessageWriter(size) {
         }
     }
 
-    /** A copy of the written memory. */
     fun snapshot(): ByteArray = ByteArray(size) { allocation[it + 1] }
 
     fun assertGuardsIntact() {

@@ -17,12 +17,8 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1) {
@@ -36,9 +32,6 @@ public class TypeInternal: Type.Builder, InternalMessage(fieldsWithPresence = 1)
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
@@ -185,9 +178,6 @@ public class FieldInternal: Field.Builder, InternalMessage(fieldsWithPresence = 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __kindDelegate: MsgFieldDelegate<Field.Kind> = MsgFieldDelegate { Field.Kind.TYPE_UNKNOWN }
     public override var kind: Field.Kind by __kindDelegate
@@ -336,9 +326,6 @@ public class EnumInternal: Enum.Builder, InternalMessage(fieldsWithPresence = 1)
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __enumvalueDelegate: MsgFieldDelegate<List<EnumValue>> = MsgFieldDelegate { emptyList() }
@@ -479,9 +466,6 @@ public class EnumValueInternal: EnumValue.Builder, InternalMessage(fieldsWithPre
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
     internal val __numberDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
@@ -586,9 +570,6 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var name: String by __nameDelegate
@@ -698,6 +679,49 @@ public class OptionInternal: Option.Builder, InternalMessage(fieldsWithPresence 
     }
 }
 
+private object TypeInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val FIELDS: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOFS: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONS: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SOURCE_CONTEXT: Int = (5 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SYNTAX: Int = (6 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val EDITION: Int = (7 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object FieldInternalTags {
+    const val KIND: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val CARDINALITY: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val NUMBER: Int = (3 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val NAME: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val TYPE_URL: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ONEOF_INDEX: Int = (7 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val PACKED: Int = (8 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONS: Int = (9 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val JSON_NAME: Int = (10 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val DEFAULT_VALUE: Int = (11 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object EnumInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val ENUMVALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val OPTIONS: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SOURCE_CONTEXT: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SYNTAX: Int = (5 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val EDITION: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object EnumValueInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val NUMBER: Int = (2 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val OPTIONS: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object OptionInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val VALUE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun TypeInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
@@ -750,36 +774,40 @@ public fun TypeInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TypeInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TypeInternalTags.FIELDS -> {
                 val target = msg.__fieldsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = FieldInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> FieldInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TypeInternalTags.ONEOFS -> {
                 val target = msg.__oneofsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = decoder.readString()
                 target.add(elem)
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TypeInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TypeInternalTags.SOURCE_CONTEXT -> {
                 val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) }
             }
-            6 if tag.wireType == WireType.VARINT -> {
+            TypeInternalTags.SYNTAX -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TypeInternalTags.EDITION -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -790,18 +818,11 @@ public fun TypeInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TypeInternal.computeSize(): Int {
@@ -903,39 +924,43 @@ public fun FieldInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FieldInternalTags.KIND -> {
                 msg.kind = Field.Kind.fromNumber(decoder.readEnum())
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            FieldInternalTags.CARDINALITY -> {
                 msg.cardinality = Field.Cardinality.fromNumber(decoder.readEnum())
             }
-            3 if tag.wireType == WireType.VARINT -> {
+            FieldInternalTags.NUMBER -> {
                 msg.number = decoder.readInt32()
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            FieldInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            FieldInternalTags.TYPE_URL -> {
                 msg.typeUrl = decoder.readString()
             }
-            7 if tag.wireType == WireType.VARINT -> {
+            FieldInternalTags.ONEOF_INDEX -> {
                 msg.oneofIndex = decoder.readInt32()
             }
-            8 if tag.wireType == WireType.VARINT -> {
+            FieldInternalTags.PACKED -> {
                 msg.packed = decoder.readBool()
             }
-            9 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            FieldInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            10 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            FieldInternalTags.JSON_NAME -> {
                 msg.jsonName = decoder.readString()
             }
-            11 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            FieldInternalTags.DEFAULT_VALUE -> {
                 msg.defaultValue = decoder.readString()
             }
             else -> {
@@ -946,18 +971,11 @@ public fun FieldInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FieldInternal.computeSize(): Int {
@@ -1057,31 +1075,35 @@ public fun EnumInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            EnumInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            EnumInternalTags.ENUMVALUE -> {
                 val target = msg.__enumvalueDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = EnumValueInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> EnumValueInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            EnumInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
                 target.add(elem)
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            EnumInternalTags.SOURCE_CONTEXT -> {
                 val target = msg.__sourceContextDelegate.getOrCreate(msg) { SourceContextInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> SourceContextInternal.decodeWith(msg, decoder, config) }
             }
-            5 if tag.wireType == WireType.VARINT -> {
+            EnumInternalTags.SYNTAX -> {
                 msg.syntax = Syntax.fromNumber(decoder.readEnum())
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            EnumInternalTags.EDITION -> {
                 msg.edition = decoder.readString()
             }
             else -> {
@@ -1092,18 +1114,11 @@ public fun EnumInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumInternal.computeSize(): Int {
@@ -1173,15 +1188,19 @@ public fun EnumValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            EnumValueInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.VARINT -> {
+            EnumValueInternalTags.NUMBER -> {
                 msg.number = decoder.readInt32()
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            EnumValueInternalTags.OPTIONS -> {
                 val target = msg.__optionsDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = OptionInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> OptionInternal.decodeWith(msg, decoder, config) }
@@ -1195,18 +1214,11 @@ public fun EnumValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun EnumValueInternal.computeSize(): Int {
@@ -1258,12 +1270,16 @@ public fun OptionInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            OptionInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            OptionInternalTags.VALUE -> {
                 val target = msg.__valueDelegate.getOrCreate(msg) { AnyInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> AnyInternal.decodeWith(msg, decoder, config) }
             }
@@ -1275,18 +1291,11 @@ public fun OptionInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun OptionInternal.computeSize(): Int {

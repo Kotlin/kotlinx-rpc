@@ -85,7 +85,7 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.RpcClasses.MsgFieldDelegate,
         FqName.RpcClasses.GrpcMarshaller,
         FqName.RpcClasses.ProtoGrpcMarshaller,
-        FqName.RpcClasses.KTag,
+        FqName.RpcClasses.WireTag,
         FqName.RpcClasses.ProtobufException,
         FqName.RpcClasses.ProtobufDecodingException,
         FqName.RpcClasses.ProtoConfig,

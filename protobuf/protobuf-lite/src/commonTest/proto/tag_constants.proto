@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package tag_constants;
+
+import "tag_constants_shadowing.proto";
+
+message TagConstantNames {
+    repeated int32 values = 1;
+    int32 values_packed = 2;
+    Left.Inner left = 3;
+    Right.Inner right = 4;
+    TagConstantNamesInternalTags shadow = 5;
+    CrossFile.Inner cross_file = 6;
+}
+
+message Left {
+    message Inner {
+        int32 value = 1;
+    }
+}
+
+message Right {
+    message Inner {
+        string value = 1;
+    }
+}

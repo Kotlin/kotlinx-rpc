@@ -59,21 +59,18 @@ class CodecIoMatrixTest {
     }
 }
 
-/** A message and its marshaller. [bytes] is the encoding of [message] through a [BufferMessageWriter]. */
 internal class CodecCase<M : Any>(
     private val marshaller: GrpcMarshaller<M>,
     val message: M,
 ) {
     val bytes: ByteArray = marshaller.encodeToByteArray(message)
 
-    /** Encodes [message] to [writer] and checks that [written] gives [bytes]. */
     fun checkEncode(writer: GrpcMessageWriter, kind: String, written: () -> ByteArray) {
         marshaller.prepare(message).writeTo(writer)
         assertEquals(0, writer.remaining, "$kind, $message")
         assertContentEquals(bytes, written(), "$kind, $message")
     }
 
-    /** Decodes from [reader], checks the result, and checks that the result encodes to [bytes]. */
     fun checkDecode(reader: GrpcMessageReader, kind: String) {
         val decoded = marshaller.decode(reader)
         assertEquals(message, decoded, kind)
@@ -82,10 +79,8 @@ internal class CodecCase<M : Any>(
     }
 }
 
-/** A reader type, and how to make a reader of that type over some bytes. */
 internal class ReaderKind(val name: String, val create: (ByteArray) -> GrpcMessageReader)
 
-/** Each reader type that the common codec handles in a different way. */
 internal val readerKinds: List<ReaderKind> = buildList {
     add(ReaderKind("ByteArrayMessageReader") { ByteArrayMessageReader(it) })
     add(ReaderKind("BufferMessageReader") { BufferMessageReader(Buffer().apply { write(it) }, it.size) })
@@ -97,7 +92,6 @@ internal val readerKinds: List<ReaderKind> = buildList {
     add(ReaderKind("ThirdPartyReader") { ThirdPartyReader(it) })
 }
 
-/** The messages that the codec tests encode and decode with each reader and writer type. */
 internal fun codecCases(): List<CodecCase<*>> = listOf(
     CodecCase(grpcMarshallerOf<AllPrimitives>(), AllPrimitives {
         int32 = -123
@@ -196,6 +190,5 @@ internal class ThirdPartyWriter(size: Int) : AbstractGrpcMessageWriter(size) {
         recordWrite(count) { bytes.copyInto(storage, written, startIndex, endIndex) }
     }
 
-    /** The bytes written so far. */
     fun bytes(): ByteArray = storage.copyOf(written)
 }

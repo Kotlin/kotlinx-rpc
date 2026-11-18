@@ -11,7 +11,7 @@ import kotlinx.io.InternalIoApi
 import kotlinx.io.readByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
-import kotlinx.rpc.protobuf.internal.WireEncoder
+import kotlinx.rpc.protobuf.internal.encodeWire
 import test.submsg.Other
 import test.submsg.asInternal
 import test.submsg.encodeWith
@@ -404,23 +404,21 @@ class UnknownFieldsTest {
     fun `test unknown fields - groups`() {
         // create a buffer with nested group messages manually using WireEncoder
         val originalBuffer = Buffer()
-        val encoder = WireEncoder(originalBuffer)
+        encodeWire(originalBuffer) { encoder ->
+            // write field1 = 123
+            encoder.writeInt32(fieldNr = 1, value = 123)
 
-        // write field1 = 123
-        encoder.writeInt32(fieldNr = 1, value = 123)
+            val internalMessage = Other {
+                arg1 = "Hello"
+                arg2 = "World"
+            }
 
-        val internalMessage = Other {
-            arg1 = "Hello"
-            arg2 = "World"
+            // write a group field (field 50) with nested content
+            // groups use START_GROUP (wire type 3) and END_GROUP (wire type 4)
+            encoder.writeGroupMessage(fieldNr = 50, internalMessage.asInternal()) { encodeWith(it, null) }
+            // write another regular (unknown) field after the group
+            encoder.writeInt32(fieldNr = 2, value = 456)
         }
-
-        // write a group field (field 50) with nested content
-        // groups use START_GROUP (wire type 3) and END_GROUP (wire type 4)
-        encoder.writeGroupMessage(fieldNr = 50, internalMessage.asInternal()) { encodeWith(it, null) }
-        // write another regular (unknown) field after the group
-        encoder.writeInt32(fieldNr = 2, value = 456)
-
-        encoder.flush()
 
         // save the original bytes for comparison
         val originalCopy = originalBuffer.copy()

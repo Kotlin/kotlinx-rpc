@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package tag_constants;
+
+message TagConstantNamesInternalTags {
+    string value = 1;
+}
+
+message CrossFile {
+    message Inner {
+        int32 value = 1;
+    }
+}

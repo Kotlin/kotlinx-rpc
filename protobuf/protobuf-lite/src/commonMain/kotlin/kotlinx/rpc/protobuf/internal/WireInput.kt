@@ -4,6 +4,9 @@
 
 package kotlinx.rpc.protobuf.internal
 
+import kotlinx.io.Buffer
+import kotlinx.io.UnsafeIoApi
+import kotlinx.io.unsafe.UnsafeBufferOperations
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 
 /**
@@ -154,6 +157,24 @@ internal class WireInput(private val segments: InputSegments, val size: Int) : A
             return current
         }
         return CharArray(count).also { charsBuffer = it }
+    }
+
+    @OptIn(UnsafeIoApi::class)
+    fun readBytesInto(buffer: Buffer, count: Int) {
+        checkCount(count)
+        var left = count
+        while (left > 0) {
+            if (pos == readEnd) {
+                refill()
+            }
+            val copied = UnsafeBufferOperations.writeToTail(buffer, 1) { bytes, start, end ->
+                val chunk = minOf(readEnd - pos, left, end - start)
+                window.copyTo(bytes, start, pos, chunk)
+                chunk
+            }
+            pos += copied
+            left -= copied
+        }
     }
 
     fun skip(count: Int) {

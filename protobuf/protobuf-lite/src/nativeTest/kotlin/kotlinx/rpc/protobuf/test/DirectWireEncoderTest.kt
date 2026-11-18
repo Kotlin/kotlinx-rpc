@@ -17,6 +17,7 @@ import kotlinx.rpc.grpc.marshaller.internal.BufferMessageWriter
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.encodeTo
+import kotlinx.rpc.protobuf.internal.encodeWire
 import test.groups.WithGroups
 import test.groups.invoke
 import test.nested.NestedOuter
@@ -137,7 +138,7 @@ class DirectWireEncoderTest {
 
     private fun <M : Any> compareRequiredString(marshaller: GrpcMarshaller<M>, value: String) {
         val wire = Buffer()
-        WireEncoder(wire).apply { writeString(1, value); flush() }
+        encodeWire(wire) { it.writeString(1, value) }
         compare(marshaller.decodeFromSource(wire), marshaller)
     }
 

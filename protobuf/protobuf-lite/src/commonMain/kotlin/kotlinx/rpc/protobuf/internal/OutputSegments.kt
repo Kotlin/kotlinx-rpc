@@ -6,7 +6,6 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.protobuf.ProtobufEncodingException
 
-/** The destination of a [WireOutput] as a sequence of segments. */
 internal interface OutputSegments {
     /**
      * Attaches the next free segment to [window] and returns its capacity, which is more than 0.

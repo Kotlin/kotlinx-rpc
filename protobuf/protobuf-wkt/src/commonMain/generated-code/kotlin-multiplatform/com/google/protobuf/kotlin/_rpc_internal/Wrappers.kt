@@ -18,18 +18,9 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.double
-import kotlinx.rpc.protobuf.internal.float
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.int64
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
-import kotlinx.rpc.protobuf.internal.uInt32
-import kotlinx.rpc.protobuf.internal.uInt64
 
 @InternalRpcApi
 public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -38,9 +29,6 @@ public class DoubleValueInternal: DoubleValue.Builder, InternalMessage(fieldsWit
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __valueDelegate: MsgFieldDelegate<Double> = MsgFieldDelegate { 0.0 }
     public override var value: Double by __valueDelegate
@@ -130,9 +118,6 @@ public class FloatValueInternal: FloatValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valueDelegate: MsgFieldDelegate<Float> = MsgFieldDelegate { 0.0f }
     public override var value: Float by __valueDelegate
 
@@ -220,9 +205,6 @@ public class Int64ValueInternal: Int64Value.Builder, InternalMessage(fieldsWithP
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __valueDelegate: MsgFieldDelegate<Long> = MsgFieldDelegate { 0L }
     public override var value: Long by __valueDelegate
@@ -312,9 +294,6 @@ public class UInt64ValueInternal: UInt64Value.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valueDelegate: MsgFieldDelegate<ULong> = MsgFieldDelegate { 0uL }
     public override var value: ULong by __valueDelegate
 
@@ -402,9 +381,6 @@ public class Int32ValueInternal: Int32Value.Builder, InternalMessage(fieldsWithP
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __valueDelegate: MsgFieldDelegate<Int> = MsgFieldDelegate { 0 }
     public override var value: Int by __valueDelegate
@@ -494,9 +470,6 @@ public class UInt32ValueInternal: UInt32Value.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valueDelegate: MsgFieldDelegate<UInt> = MsgFieldDelegate { 0u }
     public override var value: UInt by __valueDelegate
 
@@ -584,9 +557,6 @@ public class BoolValueInternal: BoolValue.Builder, InternalMessage(fieldsWithPre
 
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __valueDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
     public override var value: Boolean by __valueDelegate
@@ -676,9 +646,6 @@ public class StringValueInternal: StringValue.Builder, InternalMessage(fieldsWit
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valueDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     public override var value: String by __valueDelegate
 
@@ -767,9 +734,6 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     @InternalRpcApi
     public override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __valueDelegate: MsgFieldDelegate<ByteString> = MsgFieldDelegate { ByteString() }
     public override var value: ByteString by __valueDelegate
 
@@ -850,6 +814,42 @@ public class BytesValueInternal: BytesValue.Builder, InternalMessage(fieldsWithP
     }
 }
 
+private object DoubleValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED64
+}
+
+private object FloatValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.FIXED32
+}
+
+private object Int64ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object UInt64ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object Int32ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object UInt32ValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object BoolValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object StringValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object BytesValueInternalTags {
+    const val VALUE: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
 @InternalRpcApi
 public fun DoubleValueInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.value != 0.0) {
@@ -872,9 +872,13 @@ public fun DoubleValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED64 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            DoubleValueInternalTags.VALUE -> {
                 msg.value = decoder.readDouble()
             }
             else -> {
@@ -885,18 +889,11 @@ public fun DoubleValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun DoubleValueInternal.computeSize(): Int {
@@ -936,9 +933,13 @@ public fun FloatValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.FIXED32 -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FloatValueInternalTags.VALUE -> {
                 msg.value = decoder.readFloat()
             }
             else -> {
@@ -949,18 +950,11 @@ public fun FloatValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FloatValueInternal.computeSize(): Int {
@@ -1000,9 +994,13 @@ public fun Int64ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            Int64ValueInternalTags.VALUE -> {
                 msg.value = decoder.readInt64()
             }
             else -> {
@@ -1013,18 +1011,11 @@ public fun Int64ValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun Int64ValueInternal.computeSize(): Int {
@@ -1064,9 +1055,13 @@ public fun UInt64ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            UInt64ValueInternalTags.VALUE -> {
                 msg.value = decoder.readUInt64()
             }
             else -> {
@@ -1077,18 +1072,11 @@ public fun UInt64ValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun UInt64ValueInternal.computeSize(): Int {
@@ -1128,9 +1116,13 @@ public fun Int32ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            Int32ValueInternalTags.VALUE -> {
                 msg.value = decoder.readInt32()
             }
             else -> {
@@ -1141,18 +1133,11 @@ public fun Int32ValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun Int32ValueInternal.computeSize(): Int {
@@ -1192,9 +1177,13 @@ public fun UInt32ValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            UInt32ValueInternalTags.VALUE -> {
                 msg.value = decoder.readUInt32()
             }
             else -> {
@@ -1205,18 +1194,11 @@ public fun UInt32ValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun UInt32ValueInternal.computeSize(): Int {
@@ -1256,9 +1238,13 @@ public fun BoolValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            BoolValueInternalTags.VALUE -> {
                 msg.value = decoder.readBool()
             }
             else -> {
@@ -1269,18 +1255,11 @@ public fun BoolValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun BoolValueInternal.computeSize(): Int {
@@ -1320,9 +1299,13 @@ public fun StringValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            StringValueInternalTags.VALUE -> {
                 msg.value = decoder.readString()
             }
             else -> {
@@ -1333,18 +1316,11 @@ public fun StringValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun StringValueInternal.computeSize(): Int {
@@ -1384,9 +1360,13 @@ public fun BytesValueInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            BytesValueInternalTags.VALUE -> {
                 msg.value = decoder.readBytes()
             }
             else -> {
@@ -1397,18 +1377,11 @@ public fun BytesValueInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun BytesValueInternal.computeSize(): Int {

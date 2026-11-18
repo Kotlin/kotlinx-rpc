@@ -6,15 +6,6 @@ package kotlinx.rpc.protobuf.internal
 
 import kotlinx.rpc.protobuf.ProtobufDecodingException
 
-/**
- * Varint sizes, encoding, and decoding. The functions have these roles:
- *
- * - `bits`: the varint bits of a field type. It is the only mapping from a field type to its encoding.
- * - `sizeOf`: the size in bytes. No overload takes a plain `Int` or `Long`, so the caller must name the field type.
- * - `encode`: gives the bytes of a [UInt32] or [UInt64] to a function. The caller chooses where the bytes go.
- * - `decode`: reads a varint of at most [MAX_SIZE_64] bytes from a function. The caller chooses where the bytes
- *   come from.
- */
 internal object Varint {
     const val MAX_SIZE_32: Int = 5
     const val MAX_SIZE_64: Int = 10
@@ -39,7 +30,6 @@ internal object Varint {
 
     fun sizeOf(value: SInt64): Int = sizeOf(bits(value))
 
-    /** Gives the bytes of the varint of [value] to [put], from the first to the last. */
     inline fun encode(value: UInt32, put: (Byte) -> Unit) {
         var v = value.value
         while (v and 0x7F.inv() != 0) {
@@ -49,7 +39,6 @@ internal object Varint {
         put(v.toByte())
     }
 
-    /** Gives the bytes of the varint of [value] to [put], from the first to the last. */
     inline fun encode(value: UInt64, put: (Byte) -> Unit) {
         var v = value.value
         while (v and 0x7F.inv() != 0L) {

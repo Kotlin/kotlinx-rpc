@@ -19,14 +19,9 @@ import kotlinx.rpc.protobuf.internal.ProtoGrpcMarshaller
 import kotlinx.rpc.protobuf.internal.WireDecoder
 import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
+import kotlinx.rpc.protobuf.internal.WireTag
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.bool
-import kotlinx.rpc.protobuf.internal.bytes
-import kotlinx.rpc.protobuf.internal.enum
-import kotlinx.rpc.protobuf.internal.int32
 import kotlinx.rpc.protobuf.internal.protoToString
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
 
 @InternalRpcApi
 class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence = 0) {
@@ -35,9 +30,6 @@ class TestStatusInternal: TestStatus.Builder, InternalMessage(fieldsWithPresence
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     internal val __nameDelegate: MsgFieldDelegate<String> = MsgFieldDelegate { "" }
     override var name: String by __nameDelegate
@@ -139,9 +131,6 @@ class FailureSetInternal: FailureSet.Builder, InternalMessage(fieldsWithPresence
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __testDelegate: MsgFieldDelegate<List<TestStatus>> = MsgFieldDelegate { emptyList() }
     override var test: List<TestStatus> by __testDelegate
 
@@ -239,9 +228,6 @@ class ConformanceRequestInternal: ConformanceRequest.Builder, InternalMessage(fi
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _payloadRef: Any? = null
 
@@ -490,9 +476,6 @@ class ConformanceResponseInternal: ConformanceResponse.Builder, InternalMessage(
 
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
-
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
 
     private var _resultRef: Any? = null
 
@@ -788,9 +771,6 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     @InternalRpcApi
     override val _unknownFields: Buffer = Buffer()
 
-    @InternalRpcApi
-    internal var _unknownFieldsEncoder: WireEncoder? = null
-
     internal val __useJspbArrayAnyFormatDelegate: MsgFieldDelegate<Boolean> = MsgFieldDelegate { false }
     override var useJspbArrayAnyFormat: Boolean by __useJspbArrayAnyFormatDelegate
 
@@ -871,6 +851,44 @@ class JspbEncodingConfigInternal: JspbEncodingConfig.Builder, InternalMessage(fi
     }
 }
 
+private object TestStatusInternalTags {
+    const val NAME: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val FAILURE_MESSAGE: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val MATCHED_NAME: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object FailureSetInternalTags {
+    const val TEST: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object ConformanceRequestInternalTags {
+    const val PROTOBUF_PAYLOAD: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val JSON_PAYLOAD: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val JSPB_PAYLOAD: Int = (7 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val TEXT_PAYLOAD: Int = (8 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val REQUESTED_OUTPUT_FORMAT: Int = (3 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val MESSAGE_TYPE: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val TEST_CATEGORY: Int = (5 shl WireTag.TYPE_BITS) or WireType.VARINT
+    const val JSPB_ENCODING_OPTIONS: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PRINT_UNKNOWN_FIELDS: Int = (9 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
+private object ConformanceResponseInternalTags {
+    const val PARSE_ERROR: Int = (1 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SERIALIZE_ERROR: Int = (6 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val TIMEOUT_ERROR: Int = (9 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val RUNTIME_ERROR: Int = (2 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val PROTOBUF_PAYLOAD: Int = (3 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val JSON_PAYLOAD: Int = (4 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val SKIPPED: Int = (5 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val JSPB_PAYLOAD: Int = (7 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+    const val TEXT_PAYLOAD: Int = (8 shl WireTag.TYPE_BITS) or WireType.LENGTH_DELIMITED
+}
+
+private object JspbEncodingConfigInternalTags {
+    const val USE_JSPB_ARRAY_ANY_FORMAT: Int = (1 shl WireTag.TYPE_BITS) or WireType.VARINT
+}
+
 @InternalRpcApi
 fun TestStatusInternal.encodeWith(encoder: WireEncoder, config: ProtoConfig?) {
     if (this.name.isNotEmpty()) {
@@ -901,15 +919,19 @@ fun TestStatusInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            TestStatusInternalTags.NAME -> {
                 msg.name = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestStatusInternalTags.FAILURE_MESSAGE -> {
                 msg.failureMessage = decoder.readString()
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            TestStatusInternalTags.MATCHED_NAME -> {
                 msg.matchedName = decoder.readString()
             }
             else -> {
@@ -920,18 +942,11 @@ fun TestStatusInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun TestStatusInternal.computeSize(): Int {
@@ -981,9 +996,13 @@ fun FailureSetInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            FailureSetInternalTags.TEST -> {
                 val target = msg.__testDelegate.getOrCreate(msg) { mutableListOf() } as MutableList
                 val elem = TestStatusInternal()
                 decoder.readMessage(elem.asInternal()) { msg, decoder -> TestStatusInternal.decodeWith(msg, decoder, config) }
@@ -997,18 +1016,11 @@ fun FailureSetInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun FailureSetInternal.computeSize(): Int {
@@ -1080,34 +1092,38 @@ fun ConformanceRequestInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ConformanceRequestInternalTags.PROTOBUF_PAYLOAD -> {
                 msg.protobufPayload = decoder.readBytes()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceRequestInternalTags.JSON_PAYLOAD -> {
                 msg.jsonPayload = decoder.readString()
             }
-            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceRequestInternalTags.JSPB_PAYLOAD -> {
                 msg.jspbPayload = decoder.readString()
             }
-            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceRequestInternalTags.TEXT_PAYLOAD -> {
                 msg.textPayload = decoder.readString()
             }
-            3 if tag.wireType == WireType.VARINT -> {
+            ConformanceRequestInternalTags.REQUESTED_OUTPUT_FORMAT -> {
                 msg.requestedOutputFormat = WireFormat.fromNumber(decoder.readEnum())
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceRequestInternalTags.MESSAGE_TYPE -> {
                 msg.messageType = decoder.readString()
             }
-            5 if tag.wireType == WireType.VARINT -> {
+            ConformanceRequestInternalTags.TEST_CATEGORY -> {
                 msg.testCategory = TestCategory.fromNumber(decoder.readEnum())
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceRequestInternalTags.JSPB_ENCODING_OPTIONS -> {
                 val target = msg.__jspbEncodingOptionsDelegate.getOrCreate(msg) { JspbEncodingConfigInternal() }
                 decoder.readMessage(target.asInternal()) { msg, decoder -> JspbEncodingConfigInternal.decodeWith(msg, decoder, config) }
             }
-            9 if tag.wireType == WireType.VARINT -> {
+            ConformanceRequestInternalTags.PRINT_UNKNOWN_FIELDS -> {
                 msg.printUnknownFields = decoder.readBool()
             }
             else -> {
@@ -1118,18 +1134,11 @@ fun ConformanceRequestInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceRequestInternal.computeSize(): Int {
@@ -1233,33 +1242,37 @@ fun ConformanceResponseInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            ConformanceResponseInternalTags.PARSE_ERROR -> {
                 msg.parseError = decoder.readString()
             }
-            6 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.SERIALIZE_ERROR -> {
                 msg.serializeError = decoder.readString()
             }
-            9 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.TIMEOUT_ERROR -> {
                 msg.timeoutError = decoder.readString()
             }
-            2 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.RUNTIME_ERROR -> {
                 msg.runtimeError = decoder.readString()
             }
-            3 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.PROTOBUF_PAYLOAD -> {
                 msg.protobufPayload = decoder.readBytes()
             }
-            4 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.JSON_PAYLOAD -> {
                 msg.jsonPayload = decoder.readString()
             }
-            5 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.SKIPPED -> {
                 msg.skipped = decoder.readString()
             }
-            7 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.JSPB_PAYLOAD -> {
                 msg.jspbPayload = decoder.readString()
             }
-            8 if tag.wireType == WireType.LENGTH_DELIMITED -> {
+            ConformanceResponseInternalTags.TEXT_PAYLOAD -> {
                 msg.textPayload = decoder.readString()
             }
             else -> {
@@ -1270,18 +1283,11 @@ fun ConformanceResponseInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun ConformanceResponseInternal.computeSize(): Int {
@@ -1353,9 +1359,13 @@ fun JspbEncodingConfigInternal.Companion.decodeWith(
     config: ProtoConfig?,
 ) {
     while (true) {
-        val tag = decoder.readTag() ?: break // EOF, we read the whole message
-        when (tag.fieldNr) {
-            1 if tag.wireType == WireType.VARINT -> {
+        val tag = decoder.readTag()
+        if (tag.isEnd) {
+            break
+        }
+
+        when (tag.raw) {
+            JspbEncodingConfigInternalTags.USE_JSPB_ARRAY_ANY_FORMAT -> {
                 msg.useJspbArrayAnyFormat = decoder.readBool()
             }
             else -> {
@@ -1366,18 +1376,11 @@ fun JspbEncodingConfigInternal.Companion.decodeWith(
                 if (config?.discardUnknownFields ?: false) {
                     decoder.skipUnknownField(tag)
                 } else {
-                    if (msg._unknownFieldsEncoder == null) {
-                        msg._unknownFieldsEncoder = WireEncoder(msg._unknownFields)
-                    }
-
-                    decoder.readUnknownField(tag, msg._unknownFieldsEncoder!!)
+                    decoder.readUnknownField(tag, msg._unknownFields)
                 }
             }
         }
     }
-
-    msg._unknownFieldsEncoder?.flush()
-    msg._unknownFieldsEncoder = null
 }
 
 private fun JspbEncodingConfigInternal.computeSize(): Int {

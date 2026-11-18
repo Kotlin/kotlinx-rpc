@@ -188,7 +188,6 @@ class Utf8Test {
         }
     }
 
-    /** Checks [Utf8.encodedLength] and [Utf8.encode]. */
     private fun checkEncode(value: String, expected: ByteArray) {
         assertEquals(expected.size, Utf8.encodedLength(value))
         assertContentEquals(expected, utf8Bytes(value))

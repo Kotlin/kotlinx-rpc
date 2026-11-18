@@ -10,7 +10,6 @@ import kotlin.jvm.JvmInline
 @JvmInline
 internal value class Int32(val value: Int)
 
-/** An `int64` value. */
 @JvmInline
 internal value class Int64(val value: Long)
 
@@ -18,7 +17,6 @@ internal value class Int64(val value: Long)
 @JvmInline
 internal value class UInt32(val value: Int)
 
-/** The bits of a `uint64` value. */
 @JvmInline
 internal value class UInt64(val value: Long)
 

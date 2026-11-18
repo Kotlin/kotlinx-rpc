@@ -13,12 +13,9 @@ import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.grpc.marshaller.internal.ByteArrayMessageReader
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtobufDecodingException
-import kotlinx.rpc.protobuf.internal.WireEncoder
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.WireType
-import kotlinx.rpc.protobuf.internal.int32
-import kotlinx.rpc.protobuf.internal.string
-import kotlinx.rpc.protobuf.internal.tag
+import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -72,9 +69,8 @@ class CodecErrorTest {
             }
             val value = chars.concatToString()
             val buffer = Buffer()
-            WireEncoder(buffer).apply {
-                writeString(1, value)
-                flush()
+            encodeWire(buffer) { encoder ->
+                encoder.writeString(1, value)
             }
             val length = WireSize.string(value)
             val expected = WireSize.tag(1, WireType.LENGTH_DELIMITED) + WireSize.int32(length) + length
@@ -83,7 +79,6 @@ class CodecErrorTest {
     }
 }
 
-/** An input for the decode tests, and the marshaller that decodes it. */
 internal class DecodeErrorCase(
     val name: String,
     val bytes: ByteArray,
@@ -95,7 +90,6 @@ internal class DecodeErrorCase(
     fun decode(reader: GrpcMessageReader): Result<Any?> = runCatching { marshaller.decode(reader, config) }
 }
 
-/** Checks that two decodes completed with equal messages, or that both threw an exception of the same class. */
 internal fun assertSameOutcome(expected: Result<Any?>, actual: Result<Any?>, message: String) {
     val expectedFailure = expected.exceptionOrNull()
     val actualFailure = actual.exceptionOrNull()

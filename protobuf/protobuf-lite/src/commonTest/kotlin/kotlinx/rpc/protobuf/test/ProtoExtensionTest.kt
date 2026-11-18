@@ -10,7 +10,7 @@ import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
 import kotlinx.rpc.protobuf.ProtoConfig
 import kotlinx.rpc.protobuf.ProtoExtensionRegistry
-import kotlinx.rpc.protobuf.internal.WireEncoder
+import kotlinx.rpc.protobuf.internal.encodeWire
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -326,15 +326,15 @@ class ProtoExtensionTest {
     @Test
     fun `test generated packed extension decodes unpacked wire format`() {
         val buffer = Buffer()
-        val encoder = WireEncoder(buffer)
 
-        listOf(1, 2, 3).forEach { value ->
-            encoder.writeInt32(ExtensionBase.repeatedInt32.fieldNumber, value)
+        encodeWire(buffer) { encoder ->
+            listOf(1, 2, 3).forEach { value ->
+                encoder.writeInt32(ExtensionBase.repeatedInt32.fieldNumber, value)
+            }
+            listOf(MyEnum.ONE, MyEnum.THREE).forEach { value ->
+                encoder.writeEnum(ExtensionBase.repeatedEnum.fieldNumber, value.number)
+            }
         }
-        listOf(MyEnum.ONE, MyEnum.THREE).forEach { value ->
-            encoder.writeEnum(ExtensionBase.repeatedEnum.fieldNumber, value.number)
-        }
-        encoder.flush()
 
         val registry = ProtoExtensionRegistry {
             +ExtensionBase.repeatedInt32
