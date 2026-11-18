@@ -114,73 +114,78 @@ public class WireEncoder internal constructor(private val output: WireOutput) {
         output.writeStringLengthDelimited(value)
     }
 
-    public fun writePackedBool(fieldNr: Int, value: List<Boolean>) {
+    /**
+     * The packed writers. Each `value` is the primitive array list of the field type, see [IntArrayList]. `fieldSize`
+     * is the payload size from the packed size cache of the generated message.
+     */
+    public fun writePackedInt32(fieldNr: Int, value: IntArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachInt { output.writeVarint(Int32(it)) }
+    }
+
+    public fun writePackedInt64(fieldNr: Int, value: LongArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachLong { output.writeVarint(Int64(it)) }
+    }
+
+    public fun writePackedUInt32(fieldNr: Int, value: UIntArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachUInt { output.writeVarint(UInt32(it.toInt())) }
+    }
+
+    public fun writePackedUInt64(fieldNr: Int, value: ULongArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachULong { output.writeVarint(UInt64(it.toLong())) }
+    }
+
+    public fun writePackedSInt32(fieldNr: Int, value: IntArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachInt { output.writeVarint(SInt32(it)) }
+    }
+
+    public fun writePackedSInt64(fieldNr: Int, value: LongArrayList, fieldSize: Int) {
+        writePackedHeader(fieldNr, fieldSize)
+        value.forEachLong { output.writeVarint(SInt64(it)) }
+    }
+
+    public fun writePackedBool(fieldNr: Int, value: BooleanArrayList) {
         writePackedHeader(fieldNr, value.size)
-        value.forEach { output.writeByte(it.asWireByte) }
+        value.forEachBoolean { output.writeByte(it.asWireByte) }
     }
 
-    public fun writePackedInt32(fieldNr: Int, value: List<Int>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(Int32(it)) }
-    }
-
-    public fun writePackedInt64(fieldNr: Int, value: List<Long>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(Int64(it)) }
-    }
-
-    public fun writePackedUInt32(fieldNr: Int, value: List<UInt>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(UInt32(it.toInt())) }
-    }
-
-    public fun writePackedUInt64(fieldNr: Int, value: List<ULong>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(UInt64(it.toLong())) }
-    }
-
-    public fun writePackedSInt32(fieldNr: Int, value: List<Int>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(SInt32(it)) }
-    }
-
-    public fun writePackedSInt64(fieldNr: Int, value: List<Long>, fieldSize: Int) {
-        writePackedHeader(fieldNr, fieldSize)
-        value.forEach { output.writeVarint(SInt64(it)) }
-    }
-
-    public fun writePackedFixed32(fieldNr: Int, value: List<UInt>) {
+    public fun writePackedFixed32(fieldNr: Int, value: UIntArrayList) {
         writePackedHeader(fieldNr, value.size * 4)
-        value.forEach { output.writeFixed32(it.toInt()) }
+        value.forEachUInt { output.writeFixed32(it.toInt()) }
     }
 
-    public fun writePackedFixed64(fieldNr: Int, value: List<ULong>) {
-        writePackedHeader(fieldNr, value.size * 8)
-        value.forEach { output.writeFixed64(it.toLong()) }
-    }
-
-    public fun writePackedSFixed32(fieldNr: Int, value: List<Int>) {
+    public fun writePackedSFixed32(fieldNr: Int, value: IntArrayList) {
         writePackedHeader(fieldNr, value.size * 4)
-        value.forEach { output.writeFixed32(it) }
+        value.forEachInt { output.writeFixed32(it) }
     }
 
-    public fun writePackedSFixed64(fieldNr: Int, value: List<Long>) {
-        writePackedHeader(fieldNr, value.size * 8)
-        value.forEach { output.writeFixed64(it) }
-    }
-
-    public fun writePackedFloat(fieldNr: Int, value: List<Float>) {
+    public fun writePackedFloat(fieldNr: Int, value: FloatArrayList) {
         writePackedHeader(fieldNr, value.size * 4)
-        value.forEach { output.writeFixed32(it.toRawBits()) }
+        value.forEachFloat { output.writeFixed32(it.toRawBits()) }
     }
 
-    public fun writePackedDouble(fieldNr: Int, value: List<Double>) {
+    public fun writePackedFixed64(fieldNr: Int, value: ULongArrayList) {
         writePackedHeader(fieldNr, value.size * 8)
-        value.forEach { output.writeFixed64(it.toRawBits()) }
+        value.forEachULong { output.writeFixed64(it.toLong()) }
     }
 
-    public fun writePackedEnum(fieldNr: Int, value: List<Int>, fieldSize: Int) {
+    public fun writePackedSFixed64(fieldNr: Int, value: LongArrayList) {
+        writePackedHeader(fieldNr, value.size * 8)
+        value.forEachLong { output.writeFixed64(it) }
+    }
+
+    /** Writes the numbers of a packed enum field. */
+    public fun writePackedEnum(fieldNr: Int, value: IntArrayList, fieldSize: Int) {
         writePackedInt32(fieldNr, value, fieldSize)
+    }
+
+    public fun writePackedDouble(fieldNr: Int, value: DoubleArrayList) {
+        writePackedHeader(fieldNr, value.size * 8)
+        value.forEachDouble { output.writeFixed64(it.toRawBits()) }
     }
 
     public fun <T : InternalMessage> writeMessage(

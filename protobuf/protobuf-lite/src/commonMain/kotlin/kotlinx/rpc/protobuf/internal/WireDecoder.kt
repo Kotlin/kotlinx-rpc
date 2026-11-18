@@ -88,60 +88,76 @@ public class WireDecoder internal constructor(
         }
     }
 
-    public fun readPackedBool(destination: MutableList<Boolean>) {
-        readPackedVarints(destination) { readBool() }
-    }
-
-    public fun readPackedInt32(destination: MutableList<Int>) {
-        readPackedVarints(destination) { readInt32() }
-    }
-
-    public fun readPackedInt64(destination: MutableList<Long>) {
-        readPackedVarints(destination) { readInt64() }
-    }
-
-    public fun readPackedUInt32(destination: MutableList<UInt>) {
-        readPackedVarints(destination) { readUInt32() }
-    }
-
-    public fun readPackedUInt64(destination: MutableList<ULong>) {
-        readPackedVarints(destination) { readUInt64() }
-    }
-
-    public fun readPackedSInt32(destination: MutableList<Int>) {
-        readPackedVarints(destination) { readSInt32() }
-    }
-
-    public fun readPackedSInt64(destination: MutableList<Long>) {
-        readPackedVarints(destination) { readSInt64() }
-    }
-
     public fun <T> readPackedEnum(destination: MutableList<T>, fromNumber: (Int) -> T) {
-        readPackedVarints(destination) { fromNumber(readEnum()) }
+        readPackedVarints { destination.add(fromNumber(readEnum())) }
     }
 
-    public fun readPackedFixed32(destination: MutableList<UInt>) {
-        readPackedFixed(destination, 4) { readFixed32() }
+    /**
+     * The packed readers. Each `destination` is the primitive array list of the field type, see [IntArrayList].
+     * Each occurrence of a field appends to the same destination.
+     */
+    public fun readPackedInt32(destination: IntArrayList) {
+        readPackedVarints { destination.addInt(readInt32()) }
     }
 
-    public fun readPackedSFixed32(destination: MutableList<Int>) {
-        readPackedFixed(destination, 4) { readSFixed32() }
+    public fun readPackedInt64(destination: LongArrayList) {
+        readPackedVarints { destination.addLong(readInt64()) }
     }
 
-    public fun readPackedFloat(destination: MutableList<Float>) {
-        readPackedFixed(destination, 4) { readFloat() }
+    public fun readPackedUInt32(destination: UIntArrayList) {
+        readPackedVarints { destination.addUInt(readUInt32()) }
     }
 
-    public fun readPackedFixed64(destination: MutableList<ULong>) {
-        readPackedFixed(destination, 8) { readFixed64() }
+    public fun readPackedUInt64(destination: ULongArrayList) {
+        readPackedVarints { destination.addULong(readUInt64()) }
     }
 
-    public fun readPackedSFixed64(destination: MutableList<Long>) {
-        readPackedFixed(destination, 8) { readSFixed64() }
+    public fun readPackedSInt32(destination: IntArrayList) {
+        readPackedVarints { destination.addInt(readSInt32()) }
     }
 
-    public fun readPackedDouble(destination: MutableList<Double>) {
-        readPackedFixed(destination, 8) { readDouble() }
+    public fun readPackedSInt64(destination: LongArrayList) {
+        readPackedVarints { destination.addLong(readSInt64()) }
+    }
+
+    public fun readPackedBool(destination: BooleanArrayList) {
+        readPackedVarints { destination.addBoolean(readBool()) }
+    }
+
+    public fun readPackedFixed32(destination: UIntArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addUInt(readFixed32()) }
+    }
+
+    public fun readPackedSFixed32(destination: IntArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addInt(readSFixed32()) }
+    }
+
+    public fun readPackedFloat(destination: FloatArrayList) {
+        val count = readPackedFixedCount(4)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addFloat(readFloat()) }
+    }
+
+    public fun readPackedFixed64(destination: ULongArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addULong(readFixed64()) }
+    }
+
+    public fun readPackedSFixed64(destination: LongArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addLong(readSFixed64()) }
+    }
+
+    public fun readPackedDouble(destination: DoubleArrayList) {
+        val count = readPackedFixedCount(8)
+        destination.ensureCapacity(destination.size + count)
+        repeat(count) { destination.addDouble(readDouble()) }
     }
 
     public fun <T : InternalMessage> readMessage(msg: T, decoder: (T, WireDecoder) -> Unit) {
@@ -194,27 +210,25 @@ public class WireDecoder internal constructor(
         depth++
     }
 
-    private inline fun <T> readPackedVarints(destination: MutableList<T>, read: () -> T) {
+    private inline fun readPackedVarints(readElement: () -> Unit) {
         val length = readLength()
         if (length == 0) {
             return
         }
         val oldLimit = input.pushLimit(length)
         while (!input.isAtLimit) {
-            destination.add(read())
+            readElement()
         }
         input.popLimit(oldLimit)
     }
 
-    private inline fun <T> readPackedFixed(destination: MutableList<T>, elementSize: Int, read: () -> T) {
+    /** Reads the length of a packed fixed-width field and returns its element count. */
+    private fun readPackedFixedCount(elementSize: Int): Int {
         val length = readLength()
         if (length % elementSize != 0) {
             throw ProtobufDecodingException("Packed field length $length isn't a multiple of $elementSize.")
         }
-        val count = length / elementSize
-        repeat(count) {
-            destination.add(read())
-        }
+        return length / elementSize
     }
 
     private fun readOrSkipUnknownField(tag: WireTag, out: Buffer?) {

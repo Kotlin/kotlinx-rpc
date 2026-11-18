@@ -98,6 +98,13 @@ private fun initNameTable(nameTable: FqNameTable) {
         FqName.RpcClasses.WireType_FIXED32,
         FqName.RpcClasses.WireType_START_GROUP,
         FqName.RpcClasses.WireType_FIXED64,
+        FqName.RpcClasses.IntArrayList,
+        FqName.RpcClasses.LongArrayList,
+        FqName.RpcClasses.UIntArrayList,
+        FqName.RpcClasses.ULongArrayList,
+        FqName.RpcClasses.FloatArrayList,
+        FqName.RpcClasses.DoubleArrayList,
+        FqName.RpcClasses.BooleanArrayList,
 
         FqName.Annotations.ExperimentalRpcApi,
         FqName.Annotations.InternalRpcApi,

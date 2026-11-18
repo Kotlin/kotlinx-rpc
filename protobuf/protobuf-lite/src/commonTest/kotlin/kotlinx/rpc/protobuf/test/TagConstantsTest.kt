@@ -8,6 +8,7 @@ import kotlinx.io.Buffer
 import kotlinx.rpc.grpc.marshaller.decodeFromSource
 import kotlinx.rpc.grpc.marshaller.encodeToByteArray
 import kotlinx.rpc.grpc.marshaller.grpcMarshallerOf
+import kotlinx.rpc.protobuf.internal.IntArrayList
 import kotlinx.rpc.protobuf.internal.WireSize
 import kotlinx.rpc.protobuf.internal.encodeWire
 import tag_constants.CrossFile
@@ -40,9 +41,10 @@ class TagConstantsTest {
     @Test
     fun acceptsMixedPackedAndUnpackedOccurrencesWithCollidingTagNames() {
         val buffer = Buffer()
+        val packed = IntArrayList.copyOf(listOf(2, 3))
         encodeWire(buffer) { encoder ->
             encoder.writeInt32(1, 1)
-            encoder.writePackedInt32(1, listOf(2, 3), WireSize.packedInt32(listOf(2, 3)))
+            encoder.writePackedInt32(1, packed, WireSize.packedInt32(packed))
             encoder.writeInt32(2, 42)
             encoder.writeInt32(1, 4)
         }

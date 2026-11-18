@@ -107,6 +107,17 @@ public class MsgFieldDelegate<T>(
         storeValue(thisRef, value)
     }
 
+    /** Stores [value] without a property reference, for generated code with a custom setter. */
+    public fun set(thisRef: InternalMessage, value: T) {
+        storeValue(thisRef, value)
+    }
+
+    /** Returns the set value, or null if the field was never set, for generated code with a custom getter. */
+    public fun getOrNull(thisRef: InternalMessage): T? {
+        @Suppress("UNCHECKED_CAST")
+        return if (valueSet) value as T else null
+    }
+
     /**
      * Returns the set value or the default if not set.
      */
