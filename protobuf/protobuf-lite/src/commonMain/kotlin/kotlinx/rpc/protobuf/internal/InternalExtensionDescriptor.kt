@@ -723,5 +723,4 @@ private fun <T : Any> Any.encodingCast(valueType: KClass<T>): T {
     )
 }
 
-/** Returns this list when it is already an [L], or a copy that [copyOf] makes. */
 private inline fun <V, reified L : List<V>> List<V>.asPrimitiveList(copyOf: (List<V>) -> L): L = this as? L ?: copyOf(this)

@@ -44,14 +44,12 @@ public class IntArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMut
 
     override val size: Int get() = count
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         if (minCapacity > array.size) {
             array = array.copyOf(maxOf(minCapacity, array.size * 2))
         }
     }
 
-    /** Appends [element]. */
     public fun addInt(element: Int) {
         ensureCapacity(count + 1)
         array[count] = element
@@ -59,13 +57,11 @@ public class IntArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMut
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getInt(index: Int): Int {
         checkElementIndex(index, count)
         return array[index]
     }
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfInt(selector: (Int) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -74,7 +70,6 @@ public class IntArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMut
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachInt(action: (Int) -> Unit) {
         for (index in 0 until size) {
             action(getInt(index))
@@ -137,9 +132,7 @@ public class IntArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMut
         return result
     }
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<Int>): IntArrayList {
             if (values is IntArrayList) {
                 val copy = IntArrayList(values.count)
@@ -164,14 +157,12 @@ public class LongArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMu
 
     override val size: Int get() = count
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         if (minCapacity > array.size) {
             array = array.copyOf(maxOf(minCapacity, array.size * 2))
         }
     }
 
-    /** Appends [element]. */
     public fun addLong(element: Long) {
         ensureCapacity(count + 1)
         array[count] = element
@@ -179,13 +170,11 @@ public class LongArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMu
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getLong(index: Int): Long {
         checkElementIndex(index, count)
         return array[index]
     }
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfLong(selector: (Long) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -194,7 +183,6 @@ public class LongArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMu
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachLong(action: (Long) -> Unit) {
         for (index in 0 until size) {
             action(getLong(index))
@@ -257,9 +245,7 @@ public class LongArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractMu
         return result
     }
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<Long>): LongArrayList {
             if (values is LongArrayList) {
                 val copy = LongArrayList(values.count)
@@ -285,21 +271,17 @@ public class UIntArrayList private constructor(
 
     override val size: Int get() = ints.size
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         ints.ensureCapacity(minCapacity)
     }
 
-    /** Appends [element]. */
     public fun addUInt(element: UInt) {
         ints.addInt(element.toInt())
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getUInt(index: Int): UInt = ints.getInt(index).toUInt()
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfUInt(selector: (UInt) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -308,7 +290,6 @@ public class UIntArrayList private constructor(
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachUInt(action: (UInt) -> Unit) {
         for (index in 0 until size) {
             action(getUInt(index))
@@ -351,9 +332,7 @@ public class UIntArrayList private constructor(
     // A UInt has the hash code of its bits, so the hash code of the bits list is the same.
     override fun hashCode(): Int = ints.hashCode()
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<UInt>): UIntArrayList {
             if (values is UIntArrayList) {
                 return UIntArrayList(IntArrayList.copyOf(values.ints))
@@ -376,21 +355,17 @@ public class ULongArrayList private constructor(
 
     override val size: Int get() = longs.size
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         longs.ensureCapacity(minCapacity)
     }
 
-    /** Appends [element]. */
     public fun addULong(element: ULong) {
         longs.addLong(element.toLong())
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getULong(index: Int): ULong = longs.getLong(index).toULong()
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfULong(selector: (ULong) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -399,7 +374,6 @@ public class ULongArrayList private constructor(
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachULong(action: (ULong) -> Unit) {
         for (index in 0 until size) {
             action(getULong(index))
@@ -442,9 +416,7 @@ public class ULongArrayList private constructor(
     // A ULong has the hash code of its bits, so the hash code of the bits list is the same.
     override fun hashCode(): Int = longs.hashCode()
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<ULong>): ULongArrayList {
             if (values is ULongArrayList) {
                 return ULongArrayList(LongArrayList.copyOf(values.longs))
@@ -470,14 +442,12 @@ public class FloatArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractM
 
     override val size: Int get() = count
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         if (minCapacity > array.size) {
             array = array.copyOf(maxOf(minCapacity, array.size * 2))
         }
     }
 
-    /** Appends [element]. */
     public fun addFloat(element: Float) {
         ensureCapacity(count + 1)
         array[count] = element
@@ -485,13 +455,11 @@ public class FloatArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractM
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getFloat(index: Int): Float {
         checkElementIndex(index, count)
         return array[index]
     }
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfFloat(selector: (Float) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -500,7 +468,6 @@ public class FloatArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractM
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachFloat(action: (Float) -> Unit) {
         for (index in 0 until size) {
             action(getFloat(index))
@@ -563,9 +530,7 @@ public class FloatArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : AbstractM
         return result
     }
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<Float>): FloatArrayList {
             if (values is FloatArrayList) {
                 val copy = FloatArrayList(values.count)
@@ -594,14 +559,12 @@ public class DoubleArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstract
 
     override val size: Int get() = count
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         if (minCapacity > array.size) {
             array = array.copyOf(maxOf(minCapacity, array.size * 2))
         }
     }
 
-    /** Appends [element]. */
     public fun addDouble(element: Double) {
         ensureCapacity(count + 1)
         array[count] = element
@@ -609,13 +572,11 @@ public class DoubleArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstract
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getDouble(index: Int): Double {
         checkElementIndex(index, count)
         return array[index]
     }
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfDouble(selector: (Double) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -624,7 +585,6 @@ public class DoubleArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstract
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachDouble(action: (Double) -> Unit) {
         for (index in 0 until size) {
             action(getDouble(index))
@@ -687,9 +647,7 @@ public class DoubleArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstract
         return result
     }
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<Double>): DoubleArrayList {
             if (values is DoubleArrayList) {
                 val copy = DoubleArrayList(values.count)
@@ -714,14 +672,12 @@ public class BooleanArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstrac
 
     override val size: Int get() = count
 
-    /** Makes room for [minCapacity] elements. */
     public fun ensureCapacity(minCapacity: Int) {
         if (minCapacity > array.size) {
             array = array.copyOf(maxOf(minCapacity, array.size * 2))
         }
     }
 
-    /** Appends [element]. */
     public fun addBoolean(element: Boolean) {
         ensureCapacity(count + 1)
         array[count] = element
@@ -729,13 +685,11 @@ public class BooleanArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstrac
         modCount++
     }
 
-    /** Returns the element at [index]. */
     public fun getBoolean(index: Int): Boolean {
         checkElementIndex(index, count)
         return array[index]
     }
 
-    /** Returns the sum of [selector] over all elements. */
     public inline fun sumOfBoolean(selector: (Boolean) -> Int): Int {
         var total = 0
         for (index in 0 until size) {
@@ -744,7 +698,6 @@ public class BooleanArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstrac
         return total
     }
 
-    /** Calls [action] for each element. */
     public inline fun forEachBoolean(action: (Boolean) -> Unit) {
         for (index in 0 until size) {
             action(getBoolean(index))
@@ -807,9 +760,7 @@ public class BooleanArrayList(initialCapacity: Int = DEFAULT_CAPACITY) : Abstrac
         return result
     }
 
-    /** Copies other lists into primitive array lists. */
     public companion object {
-        /** Returns a new list with the elements of [values]. */
         public fun copyOf(values: List<Boolean>): BooleanArrayList {
             if (values is BooleanArrayList) {
                 val copy = BooleanArrayList(values.count)
