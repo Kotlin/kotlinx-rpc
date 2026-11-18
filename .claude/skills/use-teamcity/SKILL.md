@@ -191,7 +191,6 @@ Key files when you need to understand or modify build configs:
 | `project/release/__project.kt` | Release subproject structure |
 | `util/id.kt` | All build configuration IDs |
 | `util/target.kt` | Platform target definitions |
-| `util/compilerVersions.kt` | Supported Kotlin versions list |
 | `util/agent.kt` | Agent requirements |
 | `util/repository.kt` | Publication repository definitions |
 | `settings/kotlin.kt` | Kotlin version parameters, IDE integration |
